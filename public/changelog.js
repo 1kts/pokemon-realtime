@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.9.0', date: '2026-10-25', title: 'Logros e insignias',
+      items: [
+        ['nuevo', '18 logros de bronce, plata y oro con premios: títulos, dinero y marcos nuevos (Pokédex, Shiny, Campeón y Torre).'],
+        ['nuevo', 'Fija hasta 3 logros como insignias en tu perfil; se ven también en tu ficha pública.'],
+      ],
+    },
+    {
       v: '0.8.2', date: '2026-10-25', title: 'Mochila y estilo propio',
       items: [
         ['nuevo', 'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.'],

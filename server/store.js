@@ -292,7 +292,7 @@ function ladder(board, { page = 0, q = '', me = null, online = new Set() } = {})
   const list = needle ? all.filter(x => x.p.name.toLowerCase().includes(needle)) : all;
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   page = Math.max(0, Math.min(pages - 1, page | 0));
-  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, online: online.has(p.id), ...BOARDS[board].row(p) });
+  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
   const mine = me && all.find(x => x.p === me);
   return { board, page, pages, total: all.length, found: list.length, q: needle, rows: list.slice(page * PAGE, (page + 1) * PAGE).map(row), me: mine ? row(mine) : null };
 }
@@ -306,7 +306,7 @@ function publicUser(id, online = new Set()) {
     .sort((a, b) => b.level - a.level).slice(0, 6).map(m => ({ dex: m.dex, level: m.level, shiny: !!m.shiny }));
   const t = tw(p);
   return {
-    id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, online: online.has(p.id), created: p.created,
+    id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
     elo: p.elo, wins: p.wins, losses: p.losses, ranked: p.ranked,
     tower: { best: t.best || 0, streak: t.team ? t.streak : 0, symbols: t.symbols || [], wins: t.wins || 0, team: t.bestTeam || [] },
     caught: (p.caught || []).length, shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},

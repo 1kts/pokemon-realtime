@@ -7,6 +7,7 @@ import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
+import { achievementViews } from './achievements.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg } from './pixicons.js';
 import { accountViews } from './account.js';
@@ -49,6 +50,7 @@ export class UI {
 
   setProfile(p, board, rank) {
     const first = !this.profile;
+    if (!first) this.celebrateAchievements(this.profile.achievements, p.achievements);
     this.profile = p;
     this.board = board || this.board;
     this.rank = rank;
@@ -930,4 +932,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews);

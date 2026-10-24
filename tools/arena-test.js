@@ -233,4 +233,19 @@ check('el Pokémon misterioso sale con IV perfectos más o menos 1 de cada 3 vec
   assert(perfect / n > 0.28 && perfect / n < 0.39, `${perfect}/${n}`);
 });
 
+check('logros: se desbloquean una vez, dan su premio y se pueden fijar (máx. 3)', () => {
+  const rewards = require('../server/rewards.js');
+  const p = { coins: 0, items: {}, mons: [{ dex: 4, iv: { hp: 31, atk: 31, def: 31, spe: 31 } }], caught: [4, 16], prog: { kanto: 13, johto: 0 }, elo: 1000, wins: 0, tower: { best: 0 } };
+  rewards.migrate(p);
+  assert(p.achievements.captura1 && p.achievements.kantoChamp && p.achievements.perfecto, 'desbloqueados');
+  assert(p.cosmetics.frames.includes('campeon') && p.cosmetics.titles.includes('Campeón de Kanto'), 'premios cosméticos');
+  const coins = p.coins;
+  assert(coins >= 300 + 8000 + 2000, 'dinero');
+  rewards.migrate(p);
+  assert.strictEqual(p.coins, coins, 'no se cobra dos veces');
+  assert.strictEqual(rewards.setLook(p, { showcase: ['kantoChamp', 'perfecto'] }), null);
+  assert(rewards.setLook(p, { showcase: ['dex250'] }), 'no se fija uno no conseguido');
+  assert(rewards.setLook(p, { showcase: ['captura1', 'perfecto', 'kantoChamp', 'kanto8'] }), 'máximo 3');
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

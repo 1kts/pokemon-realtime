@@ -1005,3 +1005,43 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .bag-mon.no small { color: var(--muted); }
 .bag-mon:not(:disabled):hover { border-color: var(--yellow); }
 @media (max-width: 860px) { .bag-body { grid-template-columns: 1fr; } }
+
+/* Logros e insignias */
+.ach-ico { position: relative; display: inline-grid; place-items: center; width: var(--s); height: var(--s); flex: none; border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #6a5034, #3a2a18); box-shadow: inset 0 0 0 3px #c27c46, inset 0 -4px 0 rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.4); }
+.ach-ico.silver { background: radial-gradient(circle at 50% 35%, #5a6478, #2c3344); box-shadow: inset 0 0 0 3px #cfd8e3, inset 0 -4px 0 rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.4); }
+.ach-ico.gold { background: radial-gradient(circle at 50% 35%, #7a5a10, #3e2c06); box-shadow: inset 0 0 0 3px #ffcb05, inset 0 -4px 0 rgba(0,0,0,.25), 0 0 14px rgba(255,203,5,.45); }
+.ach-ico img { image-rendering: pixelated; position: relative; }
+.ach-ico:not(.got) { filter: grayscale(1) brightness(.55); }
+.ach-tier { position: absolute; right: -4px; bottom: -4px; font-style: normal; }
+.ach-tier img { image-rendering: pixelated; }
+.achievements .ach-head { display: flex; align-items: baseline; justify-content: space-between; }
+.ach-count { font: 800 18px var(--display); color: #ffd76a; }
+.ach-grid { display: grid; gap: 8px; max-height: 420px; overflow: auto; padding-right: 4px; }
+.ach-card { position: relative; display: flex; gap: 12px; align-items: center; padding: 10px 44px 10px 10px; border-radius: 16px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
+.ach-card.got { background: linear-gradient(90deg, rgba(255,210,63,.12), rgba(0,0,0,.18)); border-color: rgba(255,210,63,.35); }
+.ach-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.ach-body b { font: 800 15px var(--display); } .ach-body small { color: #c4d0e4; }
+.ach-body .ach-prize { color: #ffd76a; display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+.ach-done { font-style: normal; font-weight: 800; color: #8ff0a8; font-size: 12px; }
+.ach-bar { height: 7px; border-radius: 4px; background: rgba(255,255,255,.1); overflow: hidden; margin-top: 3px; } .ach-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ffb21a, #ffe066); }
+.ach-num { font-size: 11px; }
+.ach-pin { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; padding: 0; display: grid; place-items: center; border-radius: 50%; filter: grayscale(1) opacity(.5); }
+.ach-pin.on, .ach-pin:hover { filter: none; border-color: var(--yellow); }
+.ach-pin img { image-rendering: pixelated; }
+.showcase { display: flex; gap: 8px; margin-top: 8px; }
+.ach-pop { position: fixed; top: 84px; left: 50%; z-index: 60; display: flex; align-items: center; gap: 14px; padding: 12px 22px 12px 12px; border-radius: 20px; transform: translateX(-50%);
+  background: linear-gradient(180deg, #2a3a7a, #1b2550); border: 2px solid #c27c46; box-shadow: 0 14px 40px rgba(0,0,0,.5); animation: achIn .5s cubic-bezier(.2,1.5,.4,1); transition: opacity .5s, transform .5s; }
+.ach-pop.silver { border-color: #cfd8e3; } .ach-pop.gold { border-color: #ffcb05; box-shadow: 0 0 30px rgba(255,203,5,.4), 0 14px 40px rgba(0,0,0,.5); }
+.ach-pop small { display: block; color: #ffd76a; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; font-size: 11px; }
+.ach-pop b { display: block; font: 800 20px var(--display); } .ach-pop span { color: #c4d0e4; font-size: 13px; }
+.ach-pop.out { opacity: 0; transform: translate(-50%, -20px); }
+@keyframes achIn { 0% { transform: translate(-50%, -30px) scale(.8); opacity: 0; } 100% { transform: translate(-50%, 0) scale(1); opacity: 1; } }
+/* Marcos de logros */
+.frame-pokedex { --ring: #ff5a5a; } .frame-torre { --ring: #b47cff; }
+.ava.frame-pokedex { box-shadow: 0 0 14px var(--ring); } .ava.frame-torre { box-shadow: 0 0 16px var(--ring); }
+.frame-shiny { --ring: #fff3a0; } .ava.frame-shiny { box-shadow: 0 0 16px #fff3a0, 0 0 30px rgba(160,230,255,.6); animation: shinyRing 2.4s ease-in-out infinite; }
+@keyframes shinyRing { 50% { box-shadow: 0 0 22px #a0e6ff, 0 0 40px rgba(255,243,160,.7); } }
+.frame-campeon { --ring: #ffcb05; } .ava.frame-campeon { border-color: transparent; background: radial-gradient(circle at 50% 60%, #3a2a10, #1a1206) padding-box, conic-gradient(#ffcb05, #fff3a0, #ff9a1a, #ffcb05) border-box; box-shadow: 0 0 20px rgba(255,203,5,.55); }
+.sw.frame-campeon { border: 0; background: radial-gradient(circle closest-side, #1a1206 66%, transparent 70%), conic-gradient(#ffcb05, #fff3a0, #ff9a1a, #ffcb05); }
+.sw.frame-shiny { border: 0; background: radial-gradient(circle closest-side, #1a1d2a 66%, transparent 70%), conic-gradient(#fff3a0, #a0e6ff, #ffb0e8, #fff3a0); }
