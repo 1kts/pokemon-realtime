@@ -80,9 +80,11 @@ export function regionMapSVG(region) {
   // Lagos
   for (const [x, y, rx, ry] of a.lakes) out.push(`<g fill="#f3e2a4">${ell(x, y, rx, ry, 0.7)}</g><g fill="#4aa0e6">${ell(x, y, rx, ry)}</g><g fill="#7cc4f6">${ell(x - rx * 0.15, y - ry * 0.25, rx * 0.55, ry * 0.4)}</g>`);
   // Rutas marinas y caminos
-  for (const l of a.sea) out.push(`<polyline points="${pts(l)}" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width=".55" stroke-dasharray="1.3 1.1" stroke-linecap="round" stroke-linejoin="round"/>`);
+  // Bien visibles: sombra, borde oscuro, cuneta, firme claro y línea central discontinua
+  const sea = a.sea.map(l => `<polyline points="${pts(l)}"/>`).join('');
+  out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#0f3f73" stroke-opacity=".75" stroke-width="1.6">${sea}</g><g stroke="#ffffff" stroke-width=".85" stroke-dasharray="1.7 1.1">${sea}</g></g>`);
   const roads = a.roads.map(l => `<polyline points="${pts(l)}"/>`).join('');
-  out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#a7834c" stroke-opacity=".75" stroke-width="2.1">${roads}</g><g stroke="#f6e6b6" stroke-width="1.35">${roads}</g><g stroke="#fffaf0" stroke-opacity=".55" stroke-width=".35" stroke-dasharray="1 1.2">${roads}</g></g>`);
+  out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-opacity=".22" stroke-width="4.4" transform="translate(.25 .35)">${roads}</g><g stroke="#5a3a1a" stroke-width="3.6">${roads}</g><g stroke="#c9974e" stroke-width="2.8">${roads}</g><g stroke="#f8de98" stroke-width="2.1">${roads}</g><g stroke="#fff8e2" stroke-opacity=".9" stroke-width=".45" stroke-dasharray="1.4 1.2">${roads}</g></g>`);
   // Iconos ordenados de arriba abajo: árboles, montes y ciudades
   const icons = [];
   for (const [x, y, n] of a.forests) {
