@@ -1007,9 +1007,23 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 @media (max-width: 860px) { .bag-body { grid-template-columns: 1fr; } }
 
 /* Botón de apoyo: al pasar el ratón, lo que cuesta mantener el juego */
-.support-wrap { position: relative; display: inline-flex; }
-.support-tip { position: absolute; top: calc(100% + 10px); right: 0; z-index: 40; width: 280px; padding: 12px 14px; border-radius: 14px; background: #17213a; border: 1px solid rgba(255,107,138,.45); box-shadow: var(--shadow); color: var(--fg); font-size: 13px; line-height: 1.4; text-align: left; opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .15s, transform .15s; }
-.support-wrap:hover .support-tip, .support-wrap:focus-within .support-tip { opacity: 1; transform: none; }
+/* Tarjetas al pasar el ratón por la barra superior (la del botón de apoyo, con los costes) */
+.tip-wrap { position: relative; display: inline-flex; }
+.tb-tip { position: absolute; top: calc(100% + 10px); left: 50%; z-index: 40; width: 260px; padding: 11px 13px; border-radius: 14px; background: #17213a; border: 1px solid var(--line-hi); box-shadow: var(--shadow); color: var(--fg); font-size: 13px; line-height: 1.4; text-align: left; white-space: normal; font-weight: 400; opacity: 0; transform: translate(-50%, -4px); pointer-events: none; transition: opacity .15s, transform .15s; }
+.tip-wrap:hover .tb-tip, .tip-wrap:focus-within .tb-tip { opacity: 1; transform: translate(-50%, 0); }
+.tb-tip > b { display: block; font-size: 14px; }
+.tb-tip p { margin: 6px 0 0; color: var(--muted); }
+.tb-tip .tip-sub { display: block; margin-top: 2px; color: #ffd76a; font-weight: 700; }
+.tb-tip .tip-warn { color: #ffb070; }
+.tb-tip .tip-good { color: #8ff0a8; font-weight: 700; }
+.tb-tip .tip-bar { height: 6px; margin-top: 6px; border-radius: 3px; background: rgba(255,255,255,.1); overflow: hidden; }
+.tb-tip .tip-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ffd76a, #ffcb05); }
+/* Los de la derecha (dinero, perfil, novedades, ajustes, apoyo) se alinean a la derecha para no salirse */
+.tb-me .tb-tip { left: auto; right: 0; transform: translateY(-4px); }
+.tb-me .tip-wrap:hover .tb-tip, .tb-me .tip-wrap:focus-within .tb-tip { transform: none; }
+.tb-left .tb-tip { left: 0; transform: translateY(-4px); }
+.tb-left .tip-wrap:hover .tb-tip, .tb-left .tip-wrap:focus-within .tb-tip { transform: none; }
+.support-tip { width: 280px; border-color: rgba(255,107,138,.45); }
 .support-tip ul { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .support-tip li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 8px; border-radius: 8px; background: rgba(0,0,0,.25); }
 .support-tip li b { color: #ff9db1; }
@@ -1024,7 +1038,8 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .topbar { position: relative; z-index: 30; }
 /* En pantallas estrechas, la tarjeta ocupa el ancho de la barra (la barra es su bloque contenedor) */
 @container (max-width: 620px) {
-  .support-tip { position: fixed; top: calc(100% + 8px); left: 0; right: 0; width: auto; }
+  .tb-tip, .tb-me .tb-tip, .tb-left .tb-tip { position: fixed; top: calc(100% + 8px); left: 0; right: 0; width: auto; transform: none; }
+  .tip-wrap:hover .tb-tip, .tb-me .tip-wrap:hover .tb-tip { transform: none; }
 }
 
 /* Logros e insignias */

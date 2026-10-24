@@ -132,22 +132,28 @@ export const accountViews = {
   },
 
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
+  // Tarjeta que sale al pasar el ratón (o con el foco) por un botón de la barra superior
+  hoverTip(node, html, cls = '') {
+    const wrap = el('span', 'tip-wrap');
+    const tip = el('div', 'tb-tip ' + cls, html);
+    tip.setAttribute('role', 'tooltip');
+    node.removeAttribute('title');   // la tarjeta sustituye al título nativo
+    wrap.append(node, tip);
+    return wrap;
+  },
+
   // Al pasar el ratón, lo que cuesta de verdad mantener el juego
   supportButton() {
-    const wrap = el('span', 'support-wrap');
     const a = el('a', 'tb-btn support', `${icon('heart', 24)}<span>${t('Apoyar')}</span>`);
     a.href = KOFI_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.setAttribute('aria-describedby', 'support-tip');
-    const tip = el('div', 'support-tip', `<b>${t('Lo que cuesta mantener PokéArenas')}</b>
+    a.setAttribute('aria-label', t('Apoyar'));
+    return this.hoverTip(a, `<b>${t('Lo que cuesta mantener PokéArenas')}</b>
       <ul><li><span>${t('Servidor')}</span><b>${t('unos 10 € al mes')}</b></li><li><span>${t('Dominio')}</span><b>${t('12 € al año')}</b></li></ul>
-      <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`);
-    tip.id = 'support-tip';
-    tip.setAttribute('role', 'tooltip');
-    wrap.append(a, tip);
-    return wrap;
+      <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`, 'support-tip');
   },
+
 
   // Pie del menú principal: aviso legal, enlace a los créditos y versión
   menuLegal() {
@@ -310,26 +316,30 @@ export const accountViews = {
     b.append(this.avatar(30));
     b.append(el('span', '', escapeHtml(p.name)));
     if (this.claimable().length || !p.account) b.append(el('i', 'ndot'));
-    b.title = p.account ? t('Perfil de {user}', { user: handle(p.account.user) }) : t('Perfil (invitado: crea una cuenta para no perder tu partida)');
+    b.setAttribute('aria-label', t('Perfil'));
     b.onclick = () => this.show('profile');
-    return b;
+    const ready = this.claimable().length;
+    return this.hoverTip(b, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO${p.account ? ` · ${escapeHtml(handle(p.account.user))}` : ''}</span>
+      <p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>
+      ${!p.account ? `<p class="tip-warn">${t('Invitado: crea una cuenta para no perder tu partida.')}</p>` : ''}
+      ${ready ? `<p class="tip-good">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</p>` : ''}`);
   },
 
   // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
   newsIcon() {
     const b = el('button', 'tb-btn icon news-btn', `${icon('book', 24)}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
-    b.title = t('Novedades');
     b.setAttribute('aria-label', t('Novedades'));
     b.onclick = () => this.patchNotes();
-    return b;
+    return this.hoverTip(b, `<b>${t('Novedades de la v{v}', { v: VERSION })}</b><p>${escapeHtml(t(CHANGELOG[0].title))}</p>
+      <p class="${this.hasNews() ? 'tip-good' : ''}">${this.hasNews() ? t('Hay novedades que aún no has leído.') : t('Lo nuevo de cada versión del juego.')}</p>`);
   },
 
   // Botón de la barra superior que lleva a Ajustes
   settingsButton() {
     const b = el('button', 'tb-btn settings-btn', `${icon('gear', 24)}<span>${t('Ajustes')}</span>`);
-    b.title = t('Ajustes: idioma, perfil, novedades y créditos');
+    b.setAttribute('aria-label', t('Ajustes'));
     b.onclick = () => this.show('settings');
-    return b;
+    return this.hoverTip(b, `<b>${t('Ajustes')}</b><p>${t('Idioma, perfil y cuenta, novedades y créditos.')}</p>`);
   },
 
   // ---------- Ajustes ----------

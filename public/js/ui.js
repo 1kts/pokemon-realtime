@@ -98,31 +98,37 @@ export class UI {
     const p = this.profile;
     const bar = el('div', 'topbar');
     // Botón con icono y texto; si la barra se queda estrecha, solo queda el icono (ver .topbar en style.css)
-    const btn = (icon, label, onClick, cls = '') => {
+    // Con tip, al pasar el ratón sale una tarjeta con qué hay y datos del jugador
+    const btn = (icon, label, onClick, cls = '', tip = null) => {
       const b = el('button', 'tb-btn ' + cls, `${icon}<span>${label}</span>`);
       b.title = label;
+      b.setAttribute('aria-label', label);
       b.onclick = onClick;
-      return b;
+      return tip ? this.hoverTip(b, `<b>${label}</b>${tip}`) : b;
     };
+    const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
+    const total = Object.keys(SPECIES).length;
+    const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
+      ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica') };
     const left = el('div', 'tb-left');
-    if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back'));
+    if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back', VIEW_NAME[back] ? `<p>${t('Volver a {view}', { view: VIEW_NAME[back] })}</p>` : null));
     left.append(el('h2', '', title));
     bar.append(left);
     const right = el('div', 'tb-right');
     // Accesos fijos a Mis Pokémon, Tienda y Ladder desde cualquier pantalla fuera de combate
     const nav = el('nav', 'tb-nav');
     if (p.mons.length) {
-      if (this.view !== 'team') nav.append(btn(itemImg('pokeball', 26), t('Mis Pokémon'), () => this.openFrom('team')));
-      if (this.view !== 'bag') nav.append(btn(itemImg('seal-bag', 26), t('Mochila'), () => this.openFrom('bag')));
-      if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop')));
+      if (this.view !== 'team') nav.append(btn(itemImg('pokeball', 26), t('Mis Pokémon'), () => this.openFrom('team'), '', `<span class="tip-sub">${t('{n} Pokémon · {s} shiny', { n: p.mons.length, s: p.mons.filter(m => m.shiny).length })}</span><p>${t('Tu equipo y tu caja de cada región: elige quién combate, sus movimientos y mira su ficha.')}</p>`));
+      if (this.view !== 'bag') nav.append(btn(itemImg('seal-bag', 26), t('Mochila'), () => this.openFrom('bag'), '', `<span class="tip-sub">${t('{n} objetos', { n: items })}</span><p>${t('Tus objetos: Poké Balls, Caramelos Raros, vitaminas y piedras evolutivas.')}</p>`));
+      if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop'), '', `<span class="tip-sub">${t('Tienes {coins}', { coins: coins(p.coins) })}</span><p>${t('Balls, Caramelos Raros, vitaminas, piedras evolutivas y los Pokémon del día.')}</p>`));
     }
-    if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex')));
-    if (this.view !== 'ladder') nav.append(btn(itemImg('medal-box', 26), t('Ladder'), () => this.openLadder()));
+    if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex'), '', `<div class="tip-bar"><i style="width:${p.caught.length / total * 100}%"></i></div><p>${t('{a} de {b} especies capturadas. Mira cuáles te faltan y en qué rutas salen hoy.', { a: p.caught.length, b: total })}</p>`));
+    if (this.view !== 'ladder') nav.append(btn(itemImg('medal-box', 26), t('Ladder'), () => this.openLadder(), '', `<p>${t('Rankings de clasificatoria, Torre Batalla y Pokédex. Busca a cualquier entrenador y mira su ficha.')}</p>`));
     right.append(nav);
     // Dinero, tu perfil, novedades (en el menú) y Ajustes
     const me = el('div', 'tb-me');
     me.append(this.supportButton());
-    me.append(el('span', 'pill coins', coins(p.coins)));
+    me.append(this.hoverTip(el('span', 'pill coins', coins(p.coins)), `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`));
     if (this.view !== 'profile') me.append(this.profileChip());
     if (this.view === 'menu') me.append(this.newsIcon());
     if (this.view !== 'settings') me.append(this.settingsButton());
