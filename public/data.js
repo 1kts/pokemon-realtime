@@ -584,9 +584,27 @@
   const RANKED_LEVEL = 50;
   const LEAGUES = [[0, 'Bronce'], [1100, 'Plata'], [1250, 'Oro'], [1400, 'Platino'], [1550, 'Diamante'], [1700, 'Maestro']];
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
+  // Temporada actual. Al subir el id, cada perfil cobra el premio de la anterior según su mejor liga
+  // y su ELO se acerca a la mitad hacia 1000.
+  const SEASON = { id: 1, name: 'Temporada 1', start: '2026-10-24', end: '2026-12-31' };
+  // Recompensas por alcanzar una liga por primera vez en la temporada (se reclaman a mano).
+  // Los títulos y marcos se quedan para siempre; dinero y objetos son para la historia.
+  const RANKED_REWARDS = {
+    Bronce: { coins: 0, items: {}, title: 'Novato', frame: 'bronce' },
+    Plata: { coins: 1000, items: { superball: 5 }, title: 'Aspirante', frame: 'plata' },
+    Oro: { coins: 2000, items: { ultraball: 5, caramelo: 1 }, title: 'Estratega', frame: 'oro' },
+    Platino: { coins: 3500, items: { caramelo: 3 }, title: 'Veterano', frame: 'platino' },
+    Diamante: { coins: 5000, items: { caramelo: 5, proteina: 1, carburante: 1 }, title: 'As del draft', frame: 'diamante' },
+    Maestro: { coins: 8000, items: { caramelo: 10, maspsps: 1, hierro: 1 }, title: 'Maestro de la Arena', frame: 'maestro' },
+  };
+  // Premio de fin de temporada según la mejor liga alcanzada en ella
+  const SEASON_REWARDS = { Bronce: 300, Plata: 800, Oro: 1500, Platino: 2500, Diamante: 4000, Maestro: 6000 };
+  const seasonTitle = (league, season) => `${league} · T${season}`;
+  // Dinero por combate de clasificatoria y extra por la primera victoria del día
+  const RANKED_PAY = { win: 120, loss: 40, firstWin: 400 };
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

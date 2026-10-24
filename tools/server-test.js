@@ -1,5 +1,6 @@
 // Prueba de integración del servidor por WebSocket: perfil, historia, tienda, objetos,
-// combates (rendición), gimnasios en orden, clasificatoria con draft y ELO, Torre Batalla y ladder.
+// combates (rendición), gimnasios en orden, clasificatoria con draft y ELO, recompensas de
+// liga y temporada, cuentas con usuario y contraseña, Torre Batalla y ladder.
 //   node tools/server-test.js        (arranca su propio servidor en un puerto libre)
 const path = require('path');
 const os = require('os');
@@ -216,6 +217,72 @@ class Client {
   const [r1, r2] = await Promise.all([ob, oc]);
   const bWon = r1.winner === r1.you;
   ok(bWon && r1.reward.elo > 0 && r2.reward.elo === -r1.reward.elo, `ELO: ganador +${r1.reward.elo}, perdedor ${r2.reward.elo}`);
+  ok(r1.reward.coins === D.RANKED_PAY.win + D.RANKED_PAY.firstWin && r1.reward.firstWin && r2.reward.coins === D.RANKED_PAY.loss, 'clasificatoria: dinero por combate y extra por la primera victoria del día');
+  m = await b.wait('profile');
+  ok(m.p.history.length === 1 && m.p.history[0].won && m.p.history[0].foe === 'Verde' && m.p.history[0].team.length === 3 && m.rank === 1, 'historial de clasificatorias y puesto en el ranking');
+  ok(m.board[0].name === 'Azul' && !('account' in m.board[0]) && !('token' in m.board[0]), 'el ranking no filtra datos privados');
+
+  // ---------- Recompensas de liga y temporada ----------
+  const seasonMod = require('../server/rewards.js');
+  const bp = store.get(m.p.token);
+  m = await b.req({ t: 'claim', league: 'Plata' });
+  ok(m.p.coins === bp.coins && !m.p.season.claimed.includes('Plata'), 'no se puede reclamar una liga no alcanzada');
+  bp.elo = 1260; seasonMod.afterRanked(bp, { won: true, delta: 0, foe: 'X', foeElo: 1000, team: [], foeTeam: [] });
+  const oroCoins0 = bp.coins, ultra0 = bp.items.ultraball || 0;
+  m = await b.req({ t: 'claim', league: 'Oro' });
+  ok(m.p.coins === oroCoins0 + D.RANKED_REWARDS.Oro.coins && m.p.items.ultraball === ultra0 + 5 && m.p.cosmetics.titles.includes('Estratega') && m.p.cosmetics.frames.includes('oro'), 'reclamar Oro: dinero, objetos, título y marco');
+  m = await b.req({ t: 'claim', league: 'Oro' });
+  ok(m.p.coins === oroCoins0 + D.RANKED_REWARDS.Oro.coins, 'cada liga se reclama una sola vez por temporada');
+  m = await b.req({ t: 'look', title: 'Estratega', frame: 'oro' });
+  ok(m.p.title === 'Estratega' && m.p.frame === 'oro' && m.board[0].title === 'Estratega', 'equipar título y marco (se ven en el ranking)');
+  m = await b.req({ t: 'look', title: 'Maestro de la Arena' });
+  ok(m.p.title === 'Estratega', 'no se puede equipar un título bloqueado');
+  m = await b.req({ t: 'look', avatar: 1 });
+  ok(!m.p.avatar, 'el avatar tiene que ser un Pokémon atrapado');
+  // Fin de temporada (simulado subiendo el id)
+  const sid = D.SEASON.id, coins1 = bp.coins;
+  D.SEASON.id = sid + 1;
+  seasonMod.migrate(bp);
+  ok(bp.season.id === sid + 1 && bp.coins === coins1 + D.SEASON_REWARDS.Oro && bp.cosmetics.titles.includes(D.seasonTitle('Oro', sid)) && bp.elo === 1130 && bp.inbox.length === 1 && !bp.season.claimed.length, 'fin de temporada: premio por la mejor liga, título, ELO a mitad hacia 1000');
+  D.SEASON.id = sid;
+  m = await b.req({ t: 'inboxread' });
+  ok(m.p.inbox.length === 0, 'el aviso de fin de temporada se marca como leído');
+
+  // ---------- Cuentas ----------
+  const ua = new Client(port); await ua.open();
+  ok(ua.msgs.some(x => x.t === 'welcome' && x.version === require('../package.json').version), 'al conectar el servidor dice su versión');
+  ok(require('../public/changelog.js')[0].v === require('../package.json').version, 'la primera nota de versión coincide con package.json');
+  m = await ua.req({ t: 'hello', name: 'Invitado' });
+  const guestToken = m.p.token;
+  ok(m.p.account === null, 'un perfil nuevo es de invitado');
+  m = await ua.req({ t: 'register', user: 'ab', pass: '123456' }, 'autherr');
+  ok(/usuario/i.test(m.msg), 'usuario demasiado corto');
+  m = await ua.req({ t: 'register', user: 'rojo_1', pass: '123' }, 'autherr');
+  ok(/contraseña/i.test(m.msg), 'contraseña demasiado corta');
+  m = await ua.req({ t: 'register', user: 'Rojo_1', pass: 'pikachu' });
+  ok(m.p.account && m.p.account.user === 'Rojo_1' && m.p.token === guestToken && !m.p.account.hash && !m.p.account.salt, 'registrar conserva el perfil de invitado y no envía el hash');
+  const raw = JSON.parse(JSON.stringify(store.get(guestToken)));
+  ok(raw.account.hash && raw.account.hash !== 'pikachu', 'la contraseña se guarda cifrada');
+  const ub = new Client(port); await ub.open();
+  m = await ub.req({ t: 'register', user: 'rojo_1', pass: 'otraclave' }, 'autherr');
+  ok(/existe/.test(m.msg), 'no se repite usuario (sin distinguir mayúsculas)');
+  m = await ub.req({ t: 'login', user: 'rojo_1', pass: 'mala' }, 'autherr');
+  ok(/incorrectos/.test(m.msg), 'contraseña incorrecta');
+  m = await ub.req({ t: 'login', user: 'ROJO_1', pass: 'pikachu' });
+  ok(m.p.token === guestToken, 'iniciar sesión desde otro dispositivo recupera el mismo perfil');
+  m = await ub.req({ t: 'passwd', old: 'mala', pass: 'raichu1' }, 'autherr');
+  ok(/actual/.test(m.msg), 'cambiar contraseña pide la actual');
+  await ub.req({ t: 'passwd', old: 'pikachu', pass: 'raichu1' });
+  ok(store.login('rojo_1', 'raichu1') && !store.login('rojo_1', 'pikachu'), 'contraseña cambiada');
+  const uc = new Client(port); await uc.open();
+  m = await uc.req({ t: 'register', user: 'Nuevo', pass: 'abcdef' });
+  ok(m.p.name === 'Nuevo' && m.p.account.user === 'Nuevo' && m.p.coins === 500, 'registrarse desde la portada crea un perfil nuevo');
+  const limited = uc.wait('autherr', x => /intentos/.test(x.msg));
+  for (let i = 0; i < 8; i++) uc.send({ t: 'login', user: 'Nuevo', pass: 'x' });
+  uc.send({ t: 'login', user: 'Nuevo', pass: 'abcdef' });
+  ok(!!(await limited), 'límite de intentos de contraseña');
+  const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
+  ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
 
   // Desconexión durante el draft
   const e1 = new Client(port), e2 = new Client(port);

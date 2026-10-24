@@ -52,6 +52,31 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
 
 Los perfiles se guardan en `data/profiles.json`; cada navegador recuerda su token.
 
+## Cuentas, perfil y temporadas
+
+- Se puede jugar como **invitado** (la partida vive en ese navegador) o con **cuenta** (usuario y contraseña,
+  guardada con scrypt y sal). Un invitado puede registrarse desde su perfil sin perder nada.
+- **Perfil**: estadísticas, últimas 15 clasificatorias, títulos, marcos y Pokémon de avatar.
+- **Temporada** (`SEASON` en `public/data.js`): cada liga alcanzada da un premio que se reclama una vez por
+  temporada (`RANKED_REWARDS`). Para cerrar una temporada, sube `SEASON.id` (y sus fechas): al entrar, cada
+  jugador cobra `SEASON_REWARDS` según su mejor liga, gana un título desde Oro y su ELO se acerca a la mitad
+  hacia 1000.
+- **Novedades**: `public/changelog.js`. La primera entrada debe coincidir con `version` de `package.json`;
+  los jugadores con la página abierta ven un aviso para recargar cuando se despliega otra versión.
+
+## Publicar
+
+```bash
+PORT=8080 PROFILES_FILE=/ruta/persistente/profiles.json npm start
+```
+
+- Hace falta un **Node con proceso persistente** (WebSocket): Render, Railway, Fly.io, un VPS… no sirve un
+  hosting estático ni serverless.
+- `PROFILES_FILE` debe estar en un **disco persistente** (volumen); si no, cada despliegue borra las partidas.
+- Detrás de HTTPS el cliente usa `wss://` solo. `GET /healthz` devuelve `{ ok, version, players }` para la
+  comprobación de vida del hosting.
+- No definas `ARENA_DEV` en producción (activa el gancho de desarrollo que regala dinero y Pokémon).
+
 ## Arquitectura
 
 - **Servidor autoritativo** (Node + `ws`, 30 ticks/s): `server/battle.js` simula el combate,

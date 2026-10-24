@@ -1,0 +1,86 @@
+// Recompensas de clasificatoria, temporadas y cosméticos del perfil (títulos y marcos).
+// Por temporada: cada liga alcanzada por primera vez da un premio que se reclama a mano;
+// al cambiar de temporada se cobra el premio de la anterior según la mejor liga y el ELO se
+// acerca a la mitad hacia 1000. Cada combate paga algo y la primera victoria del día, más.
+const D = require('../public/data.js');
+
+const LEAGUE_NAMES = D.LEAGUES.map(l => l[1]);
+const leagueIndex = name => LEAGUE_NAMES.indexOf(name);
+const HISTORY = 15;
+
+// Campos nuevos en perfiles antiguos y cambio de temporada
+function migrate(p) {
+  if (!p.cosmetics) p.cosmetics = { titles: ['Novato'], frames: ['bronce'] };
+  if (!p.history) p.history = [];
+  if (p.peakElo === undefined) p.peakElo = p.elo;
+  if (!p.season) p.season = { id: D.SEASON.id, peak: p.elo, claimed: [] };
+  if (!p.inbox) p.inbox = [];
+  if (p.season.id < D.SEASON.id) rollSeason(p);
+}
+
+function rollSeason(p) {
+  const prev = p.season;
+  const league = D.leagueOf(prev.peak);
+  const coins = D.SEASON_REWARDS[league] || 0;
+  p.coins += coins;
+  const title = leagueIndex(league) >= leagueIndex('Oro') ? D.seasonTitle(league, prev.id) : null;
+  if (title) unlock(p, 'titles', title);
+  p.inbox.push({ kind: 'season', season: prev.id, league, coins, title, at: Date.now() });
+  p.elo = Math.round(1000 + (p.elo - 1000) / 2);
+  p.season = { id: D.SEASON.id, peak: p.elo, claimed: [] };
+}
+
+function unlock(p, kind, id) {
+  if (!p.cosmetics[kind].includes(id)) p.cosmetics[kind].push(id);
+}
+
+// Tras cada clasificatoria: pico de ELO, historial y dinero
+function afterRanked(p, { won, delta, foe, foeElo, team, foeTeam }) {
+  migrate(p);
+  p.peakElo = Math.max(p.peakElo, p.elo);
+  p.season.peak = Math.max(p.season.peak, p.elo);
+  const today = D.dayKey();
+  const first = won && p.lastWinDay !== today;
+  if (first) p.lastWinDay = today;
+  const coins = (won ? D.RANKED_PAY.win : D.RANKED_PAY.loss) + (first ? D.RANKED_PAY.firstWin : 0);
+  p.coins += coins;
+  p.history.unshift({ at: Date.now(), won, delta, elo: p.elo, foe, foeElo, team, foeTeam });
+  p.history.length = Math.min(p.history.length, HISTORY);
+  return { coins, firstWin: first };
+}
+
+// Reclamar el premio de una liga ya alcanzada en esta temporada
+function claim(p, league) {
+  migrate(p);
+  const r = D.RANKED_REWARDS[league];
+  const min = (D.LEAGUES.find(l => l[1] === league) || [])[0];
+  if (!r || min === undefined) return 'Esa liga no existe';
+  if (p.season.peak < min) return `Aún no has llegado a ${league}`;
+  if (p.season.claimed.includes(league)) return 'Ya has reclamado ese premio esta temporada';
+  p.season.claimed.push(league);
+  p.coins += r.coins;
+  for (const [id, n] of Object.entries(r.items)) p.items[id] = (p.items[id] || 0) + n;
+  unlock(p, 'titles', r.title);
+  unlock(p, 'frames', r.frame);
+  return null;
+}
+
+// Elegir título, marco o Pokémon de avatar entre los desbloqueados
+function setLook(p, msg) {
+  migrate(p);
+  if (msg.title !== undefined) {
+    if (msg.title !== null && !p.cosmetics.titles.includes(msg.title)) return 'No tienes ese título';
+    p.title = msg.title;
+  }
+  if (msg.frame !== undefined) {
+    if (msg.frame !== null && !p.cosmetics.frames.includes(msg.frame)) return 'No tienes ese marco';
+    p.frame = msg.frame;
+  }
+  if (msg.avatar !== undefined) {
+    if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
+    p.avatar = msg.avatar;
+  }
+  return null;
+}
+
+module.exports = { migrate, afterRanked, claim, setLook };
