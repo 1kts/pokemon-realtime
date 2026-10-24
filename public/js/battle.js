@@ -460,6 +460,7 @@ export class BattleClient {
 
   banner(text, cls = '') {
     const b = el('div', 'banner ' + cls, escapeHtml(text));
+    if (cls === 'big') this.bannerEl.querySelectorAll('.banner.big').forEach(x => x.remove());   // la cuenta atrás se sustituye
     this.bannerEl.append(b);
     while (this.bannerEl.children.length > 3) this.bannerEl.firstChild.remove();
     setTimeout(() => b.remove(), cls === 'big' ? 900 : 1800);

@@ -81,6 +81,33 @@ class Client {
   m = await a2.req({ t: 'hello', token, name: 'Rojo' });
   ok(m.p.mons.length === 1 && m.p.items.pokeball === 8, 'el token recupera la partida');
 
+  // Captura: un cliente que juega con las instantáneas (como el navegador), debilita al salvaje
+  // y deja de atacar y le lanza Poké Balls cuando le quedan menos del 28 % de PS
+  require('../server/store.js').get(token).mons[0].level = 12;
+  let captured = null;
+  for (let attempt = 0; attempt < 6 && !captured; attempt++) {
+    const st = a2.wait('start'); a2.send({ t: 'story', a: 'route', id: 'ruta1' });
+    const sm = await st;
+    const foeMax = sm.sides[1].team[0].maxHp;
+    let seq = 0;
+    const loop = setInterval(() => {
+      const sn = a2.lastSnap;
+      if (!sn || sn.state !== 'fight') return;
+      const me = sn.ps[0], foe = sn.ps[1];
+      if (foe.x === undefined) return;
+      const dx = foe.x - me.x, dy = foe.y - me.y, d = Math.hypot(dx, dy);
+      const low = foe.hp[0] / foeMax < 0.28;
+      seq++;
+      a2.send({ t: 'in', s: seq, mx: d > 220 ? dx / d : 0, my: d > 220 ? dy / d : 0, a: Math.atan2(dy, dx), tx: foe.x, ty: foe.y, c: seq % 4 === 0 ? (low ? 5 : 0) : -1, sw: -1, ball: 'pokeball' });
+    }, 1000 / 30);
+    const end = await a2.wait('over', () => true, 120000);
+    clearInterval(loop);
+    if (end.captured) captured = end;
+  }
+  ok(!!captured && captured.reward && captured.reward.captured, 'capturar un Pokémon salvaje con una Poké Ball');
+  m = await a2.wait('profile');
+  ok(captured && m.p.mons.length === 2 && m.p.mons.some(x => x.dex === captured.captured.dex) && m.p.items.pokeball < 8, 'el capturado entra en el perfil y se gastan Balls');
+
   // Objetos: Caramelo Raro y evolución por nivel (manipulando el perfil en memoria)
   const store = require('../server/store.js');
   const prof = store.get(token);
@@ -106,7 +133,7 @@ class Client {
   const fakeBattle = { sides: [{ team: setup.opts.sides[0].team.map(t => ({ ...t, fainted: false })), balls: null }, { team: setup.opts.sides[1].team.map(t => ({ level: t.level })) }] };
   const before = prof.badges;
   const reward = story.applyResult(prof, setup, { winner: 0 }, fakeBattle);
-  ok(reward.won && reward.coins === D.GYMS[3].reward && reward.xp.length === 2, 'victoria en gimnasio da dinero y experiencia');
+  ok(reward.won && reward.coins === D.GYMS[3].reward && reward.xp.length === prof.team.length, 'victoria en gimnasio da dinero y experiencia');
   ok(prof.badges === before, 'revancha de un gimnasio ya ganado no suma medalla');
 
   // ---------- Clasificatoria con draft ----------
