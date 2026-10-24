@@ -1070,6 +1070,8 @@
   }
   // Probabilidad de que un salvaje sea shiny (los misteriosos, el triple; los huevos, mucho más)
   const SHINY_RATE = 1 / 300;
+  // Un shiny se puede ver con sus colores normales (m.plain): sigue siendo shiny, solo cambia cómo se ve
+  const looksShiny = m => !!(m && m.shiny && !m.plain);
   // Precio al vender un Pokémon: por fuerza de la especie y nivel; los shiny valen mucho más
   function sellPrice(mon) {
     const sp = SPECIES[mon.dex];
@@ -1130,7 +1132,7 @@
     ? { iv: Object.fromEntries(STAT_KEYS.map(k => [k, IV_MAX])), ev: Object.fromEntries(STAT_KEYS.map(k => [k, ELITE_EV])) } : {};
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

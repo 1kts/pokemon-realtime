@@ -374,7 +374,7 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell', 'appearance'].includes(msg.a)) {
     if (c.battle) return;
     const coins = c.profile.coins;
     const err = story.action(c.profile, msg);

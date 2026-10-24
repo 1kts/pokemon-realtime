@@ -77,7 +77,7 @@ function battleMon(p, e) {
   const m = p.mons.find(x => x.uid === e.uid);
   if (!m) return null;
   const moves = [...new Set([...(m.moves || []), ...D.defaultMoves(m.dex, LEVEL)])].filter(k => D.MOVES[k]).slice(0, 4);
-  return { dex: m.dex, level: LEVEL, uid: m.uid, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: !!m.shiny };
+  return { dex: m.dex, level: LEVEL, uid: m.uid, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m) };
 }
 
 // Acciones fuera de combate: start (elegir equipo), order (reordenar), retire. Devuelve error o null.
@@ -132,7 +132,7 @@ function endRun(p) {
 const teamSummary = (p, team) => team.map(e => {
   if (!e.uid) return { dex: e.dex, rental: true };
   const m = p.mons.find(x => x.uid === e.uid);
-  return m ? { dex: m.dex, shiny: !!m.shiny } : null;
+  return m ? { dex: m.dex, shiny: D.looksShiny(m) } : null;
 }).filter(Boolean);
 
 // Premios por hito: cada victoria da dinero (más cuanto más alto el bloque), cada bloque de 7

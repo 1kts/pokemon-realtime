@@ -112,6 +112,12 @@ function action(p, msg) {
     addMon(p, msg.dex, 5, { region });
     p.starters[region] = msg.dex;
     if (region === 'kanto') p.starter = msg.dex;
+  } else if (a === 'appearance') {
+    // Ver un shiny con sus colores normales o shiny (también en combate); sigue contando como shiny
+    const mon = monByUid(p, msg.uid | 0);
+    if (!mon) return 'Ese Pokémon no es tuyo';
+    if (!mon.shiny) return 'Solo los Pokémon shiny pueden cambiar de aspecto';
+    if (msg.plain) mon.plain = true; else delete mon.plain;
   } else if (a === 'team') {
     const uids = Array.isArray(msg.uids) ? [...new Set(msg.uids.map(Number))] : [];
     if (uids.length < 1 || uids.length > 3 || !uids.every(u => { const m = monByUid(p, u); return m && m.region === region; })) return 'Equipo no válido (máximo 3, todos de la misma región)';
@@ -184,7 +190,7 @@ function battleSetup(p, msg) {
   // Solo se combate con Pokémon de la región del lugar
   const team = teamMons(p, node.region);
   if (!team.length) return { error: `Primero elige tu Pokémon inicial de ${D.REGIONS[node.region].name}` };
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny })) };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m) })) };
   if (msg.a === 'route') {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };

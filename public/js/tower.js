@@ -49,7 +49,7 @@ export const towerViews = {
         const s = el('div', 'tslot' + (e ? ' full' : ''));
         if (e) {
           const m = e.uid && p.mons.find(x => x.uid === e.uid);
-          s.append(portrait(dexOf(e), 56, { shiny: !!(m && m.shiny) }), el('small', '', `${SPECIES[dexOf(e)].name}<br>${e.uid ? t('tuyo') : t('alquiler')}`));
+          s.append(portrait(dexOf(e), 56, { shiny: Data.looksShiny(m) }), el('small', '', `${SPECIES[dexOf(e)].name}<br>${e.uid ? t('tuyo') : t('alquiler')}`));
           s.title = t('Quitar');
           s.onclick = () => { chosen.splice(i, 1); refresh(); };
         } else s.append(el('small', '', t('Hueco {n}', { n: i + 1 })));
@@ -130,7 +130,7 @@ export const towerViews = {
       const m = e.uid && p.mons.find(x => x.uid === e.uid);
       const dex = m ? m.dex : e.dex;
       const c = el('div', 'tcard');
-      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: !!(m && m.shiny) }), el('div', '', `<b>${SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small>`));
+      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: Data.looksShiny(m) }), el('div', '', `<b>${SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small>`));
       const move = (d) => {
         const order = [0, 1, 2];
         [order[i], order[i + d]] = [order[i + d], order[i]];

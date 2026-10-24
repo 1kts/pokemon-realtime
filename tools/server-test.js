@@ -370,6 +370,24 @@ class Client {
   m = await tw.req({ t: 'tower', a: 'retire' });
   ok(!m.p.tower.team && m.p.tower.best === 21 && m.p.tower.runs === 3, 'retirarse termina la racha sin tocar el récord');
 
+  // ---------- Aspecto de un shiny (verlo normal) ----------
+  {
+    const prof = store.get(token);
+    const mon = prof.mons.find(x => (x.region || 'kanto') === 'kanto');
+    mon.shiny = false;
+    let r = await a2.req({ t: 'story', a: 'appearance', uid: mon.uid, plain: true }, 'error');
+    ok(/shiny/.test(r.msg), 'solo los shiny pueden cambiar de aspecto');
+    mon.shiny = true;
+    if (!prof.shinies.includes(mon.dex)) prof.shinies.push(mon.dex);
+    r = await a2.req({ t: 'story', a: 'appearance', uid: mon.uid, plain: true });
+    const seen = r.p.mons.find(x => x.uid === mon.uid);
+    const setup = story.battleSetup(prof, { a: 'route', id: D.REGIONS.kanto.nodes.find(n => n.kind === 'route').id });
+    ok(seen.plain && seen.shiny && prof.shinies.includes(mon.dex), 'un shiny se puede ver normal y sigue contando como shiny');
+    ok(setup.opts && setup.opts.sides[0].team.some(x => x.uid === mon.uid && x.shiny === false), 'en combate sale con sus colores normales');
+    r = await a2.req({ t: 'story', a: 'appearance', uid: mon.uid, plain: false });
+    ok(!r.p.mons.find(x => x.uid === mon.uid).plain, 'y se puede volver a ver shiny');
+  }
+
   // ---------- Ladder ----------
   // Rojo es un invitado: no sale en los rankings hasta que se registra
   tower.action(store.get(token), { a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });

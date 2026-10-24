@@ -1005,3 +1005,8 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .bag-mon.no small { color: var(--muted); }
 .bag-mon:not(:disabled):hover { border-color: var(--yellow); }
 @media (max-width: 860px) { .bag-body { grid-template-columns: 1fr; } }
+
+/* Mis Pokémon: buscador y filtros de la caja */
+.mon-filters { margin: -4px 0 12px; }
+.mon-card[hidden] { display: none; }
+.mon-card .acts button.look.on { border-color: rgba(255,203,5,.7); color: var(--yellow); }

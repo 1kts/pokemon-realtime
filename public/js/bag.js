@@ -76,7 +76,7 @@ export const bagViews = {
           for (const m of mons) {
             const u = usable(p, sel, m);
             const b = el('button', 'bag-mon' + (u.ok ? '' : ' no'));
-            b.append(portrait(m.dex, 48, { shiny: m.shiny }));
+            b.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }));
             b.append(el('span', '', `<b>${SPECIES[m.dex].name}</b><small>${t('Nv.{n}', { n: m.level })} · ${u.why}</small>`));
             b.disabled = !u.ok;
             b.onclick = () => { this.bagSel = sel.id; this.net.send({ t: 'story', a: 'use', item: sel.id, uid: m.uid }); };

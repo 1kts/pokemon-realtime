@@ -17,6 +17,8 @@ export const el = (tag, cls, html) => { const e = document.createElement(tag); i
 export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
 export const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
 export const lv = n => t('Nv.{n}', { n });
+// Para buscar sin que importen mayúsculas ni tildes (Flabébé = flabebe)
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 export const wl = (w, l) => t('{w}V {l}D', { w, l });
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
@@ -215,12 +217,19 @@ export class UI {
         t('Cada ataque tiene <b>preparación</b> (se ve en el suelo: ¡esquívalo!) y <b>recuperación</b> (eres vulnerable).'),
         t('<b>Protección</b> bloquea el 80 %. Si el golpe llega en sus primeros {ms} ms haces <b>parry</b>: devuelves el proyectil o aturdes al atacante.', { ms: Math.round(Data.PROTECT.perfect * 1000) }),
         t('Los ataques fuertes gastan <b>energía</b>; se recarga sola y al golpear.'),
-        t('<b>Cambio perfecto</b>: si el que entra recibe un ataque de un tipo que resiste, no le hace nada y ganas energía.')])}</ul></div>
+        t('<b>Cambio perfecto</b>: si el que entra recibe un ataque de un tipo que resiste, no le hace nada y ganas energía.'),
+        t('Cada ataque tiene su <b>forma</b>: proyectil, cono delante de ti, rayo, ola o explosión donde apuntas. Te lo dice el emblema del movimiento.')])}</ul></div>
       <div><h4>${t('Terreno')}</h4><ul>${li([
         t('En la <b>hierba alta</b> te escondes si no atacas. El <b>vapor</b> también oculta.'),
         t('El fuego <b>quema la hierba</b> y se propaga. Fuego + agua = <b>vapor</b>.'),
         t('Un ataque eléctrico en un charco <b>electrocuta</b> a quien esté en el agua. Mojado = más daño eléctrico y de hielo.'),
-        t('A los 2 min, <b>muerte súbita</b>; a los 3 min gana quien tenga más PS.')])}</ul></div>
+        t('El hielo <b>congela el agua</b> y el fuego derrite el hielo.'),
+        t('A los 2 min, <b>muerte súbita</b>: más daño y sin curar. A los 3 min gana quien tenga más PS.')])}</ul></div>
+      <div><h4>${t('Arenas')}</h4><ul>${li([
+        t('Cada líder pelea en <b>su arena</b>, con su escenario y su mecánica: rocas que caen, marea, placas eléctricas, lava, teletransportes…'),
+        t('Los Pokémon del tipo de la arena <b>aguantan su peligro</b>: los de fuego la lava, los eléctricos las placas, los voladores el viento…'),
+        t('Contra el <b>Terremoto</b>, escóndete detrás de una roca (zona verde) y la onda no te alcanza.'),
+        t('El Alto Mando y los Campeones tienen <b>salas propias</b>, con varias mecánicas a la vez y Pokémon muy entrenados.')])}</ul></div>
       </div>`;
     return d;
   }
@@ -340,7 +349,7 @@ export class UI {
     }
     box.append(el('h4', '', t('Tu equipo')));
     const team = el('div', 'mini-team');
-    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); team.append(c); }
+    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); team.append(c); }
     box.append(team);
   }
 
@@ -494,21 +503,54 @@ export class UI {
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
     wrap.append(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
+    // Buscador y filtros de la caja (se recuerdan al volver). Filtran al momento ocultando tarjetas, sin
+    // volver a pintar la pantalla (así no se pierde lo que se escribe); el orden sí la vuelve a pintar.
+    const f = this.monFilter = this.monFilter || { q: '', type: '', shiny: 'all', leg: 'all', sort: 'level' };
+    const filters = el('div', 'dex-filters mon-filters');
+    const search = el('input');
+    search.type = 'search'; search.placeholder = t('Buscar por nombre o número'); search.value = f.q;
+    search.oninput = () => { f.q = search.value; apply(); };
+    const type = el('select');
+    type.innerHTML = `<option value="">${t('Todos los tipos')}</option>` + Object.keys(TYPE_LABEL).map(ty => `<option value="${ty}"${f.type === ty ? ' selected' : ''}>${TYPE_LABEL[ty]}</option>`).join('');
+    type.onchange = () => { f.type = type.value; apply(); };
+    const seg = (key, opts) => {
+      const s = el('div', 'seg');
+      for (const [k, label] of opts) {
+        const b = el('button', f[key] === k ? 'sel' : '', label);
+        b.onclick = () => { f[key] = k; s.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); apply(); };
+        s.append(b);
+      }
+      return s;
+    };
+    const sort = el('select');
+    sort.innerHTML = [['level', t('Orden: nivel')], ['dex', t('Orden: nº de Pokédex')], ['name', t('Orden: nombre')], ['new', t('Orden: más recientes')]]
+      .map(([k, l]) => `<option value="${k}"${f.sort === k ? ' selected' : ''}>${l}</option>`).join('');
+    sort.onchange = () => { f.sort = sort.value; this.show('team', true); };
+    filters.append(search, type, seg('shiny', [['all', t('Todos')], ['shiny', '✦ ' + t('Shiny')], ['plain', t('Sin shiny')]]),
+      seg('leg', [['all', t('Todos')], ['leg', t('Legendarios')], ['noleg', t('Sin legendarios')]]), sort);
+    if (mine.length > 1) wrap.append(filters);
     // Dos secciones: el equipo (máximo 3) y la caja con el resto
     const scroll = el('div', 'team-sections scroll');
     const inTeamList = team.map(u => mine.find(m => m.uid === u)).filter(Boolean);
-    const boxList = mine.filter(m => !team.includes(m.uid)).sort((a, b) => b.level - a.level);
+    const nameOf = m => SPECIES[m.dex].name;
+    const SORTS = { level: (a, b) => b.level - a.level || a.dex - b.dex, dex: (a, b) => a.dex - b.dex || b.level - a.level,
+      name: (a, b) => nameOf(a).localeCompare(nameOf(b), locale()) || b.level - a.level, new: (a, b) => b.uid - a.uid };
+    const boxList = mine.filter(m => !team.includes(m.uid)).sort(SORTS[f.sort] || SORTS.level);
     const grids = {};
+    let boxTitle = null;
     for (const [key, title, list] of [['team', t('Equipo ({n}/3)', { n: inTeamList.length }), inTeamList], ['box', t('Caja ({n})', { n: boxList.length }), boxList]]) {
       if (!list.length) continue;
-      scroll.append(el('h3', 'sec-title', title));
+      const h = el('h3', 'sec-title', title);
+      if (key === 'box') boxTitle = h;
+      scroll.append(h);
       scroll.append(grids[key] = el('div', 'mon-grid'));
     }
     for (const m of [...inTeamList, ...boxList]) {
       const grid = grids[team.includes(m.uid) ? 'team' : 'box'];
       const inTeam = team.includes(m.uid);
       const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
-      card.append(portrait(m.dex, 72, { shiny: !!m.shiny }));
+      Object.assign(card.dataset, { q: norm(`${nameOf(m)} ${m.dex}`), types: SPECIES[m.dex].types.join(' '), shiny: m.shiny ? '1' : '', leg: SPECIES[m.dex].leg ? '1' : '', box: inTeam ? '' : '1' });
+      card.append(portrait(m.dex, 72, { shiny: Data.looksShiny(m) }));
       const need = xpToNext(m.level);
       const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
@@ -529,6 +571,13 @@ export class UI {
       const ficha = el('button', '', t('Ficha'));
       ficha.onclick = () => this.statsModal(m);
       acts.append(ficha);
+      // Un shiny se puede ver con sus colores normales (también en combate); sigue contando como shiny
+      if (m.shiny) {
+        const look = el('button', 'look' + (m.plain ? '' : ' on'), m.plain ? t('Ver shiny') : t('Ver normal'));
+        look.title = t('Solo cambia cómo se ve (también en combate); sigue contando como shiny');
+        look.onclick = () => this.net.send({ t: 'story', a: 'appearance', uid: m.uid, plain: !m.plain });
+        acts.append(look);
+      }
       const mv = el('button', known.length ? 'evo' : '', t('Movimientos'));
       mv.onclick = () => this.moveManager(m);
       acts.append(mv);
@@ -557,6 +606,25 @@ export class UI {
       card.append(acts);
       grid.append(card);
     }
+    const empty = el('p', 'small mon-empty', t('Ningún Pokémon con estos filtros.'));
+    scroll.append(empty);
+    // Solo se filtra la caja: el equipo (3 como mucho) se ve siempre
+    const apply = () => {
+      const q = norm(f.q.trim()).replace(/^#/, '');
+      let shown = 0, total = 0;
+      for (const card of scroll.querySelectorAll('.mon-card')) {
+        const d = card.dataset;
+        if (!d.box) continue;
+        const ok = (!q || d.q.includes(q)) && (!f.type || d.types.split(' ').includes(f.type))
+          && (f.shiny === 'all' || (f.shiny === 'shiny') === !!d.shiny) && (f.leg === 'all' || (f.leg === 'leg') === !!d.leg);
+        card.hidden = !ok;
+        total++;
+        if (ok) shown++;
+      }
+      if (boxTitle) boxTitle.textContent = shown === total ? t('Caja ({n})', { n: total }) : t('Caja ({n} de {total})', { n: shown, total });
+      empty.hidden = shown > 0 || !total;
+    };
+    apply();
     wrap.append(scroll);
     this.root.append(wrap);
   }
