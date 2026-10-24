@@ -55,6 +55,12 @@ export class UI {
     if (sc && scroll) sc.scrollTop = scroll;
   }
 
+  // Abre Mis Pokémon o la Tienda recordando de dónde se viene para que "Volver" regrese allí
+  openFrom(view) {
+    if (!['team', 'shop'].includes(this.view)) this.returnTo = this.view;
+    this.show(view);
+  }
+
   hide() { this.root.hidden = true; this.root.innerHTML = ''; }
 
   topbar(title, back) {
@@ -62,6 +68,15 @@ export class UI {
     const bar = el('div', 'topbar');
     if (back) { const b = el('button', 'back', '← Volver'); b.onclick = () => this.show(back); bar.append(b); }
     bar.append(el('h2', '', title));
+    // Accesos fijos a Mis Pokémon y Tienda desde cualquier pantalla fuera de combate
+    const nav = el('div', 'tools nav');
+    for (const [view, label] of [['team', 'Mis Pokémon'], ['shop', 'Tienda']]) {
+      if (this.view === view || !p.mons.length) continue;
+      const b = el('button', '', label);
+      b.onclick = () => this.openFrom(view);
+      nav.append(b);
+    }
+    bar.append(nav);
     bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="badges">${GYMS.slice(0, 8).map((g, i) => `<i class="badge${i < p.badges ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
     return bar;
   }
@@ -107,6 +122,7 @@ export class UI {
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
+    if (p.mons.length) card('Mis Pokémon', `${p.mons.length} Pokémon · equipo, fichas, movimientos, vitaminas y venta`, 'mons', lead ? lead.dex : 25, () => this.openFrom('team'));
     top.append(grid, this.profilePanel(lead));
     wrap.append(top, this.howTo());
     this.root.append(wrap);
@@ -160,9 +176,6 @@ export class UI {
     const wrap = el('div', 'story');
     const bar = this.topbar('Kanto', 'menu');
     const tools = el('div', 'tools');
-    const team = el('button', '', 'Equipo'); team.onclick = () => this.show('team');
-    const shop = el('button', '', 'Tienda'); shop.onclick = () => this.show('shop');
-    tools.append(team, shop);
     bar.append(tools);
     wrap.append(bar);
     const body = el('div', 'story-body');
@@ -290,7 +303,7 @@ export class UI {
   view_team() {
     const p = this.profile;
     const wrap = el('div', 'teamview');
-    wrap.append(this.topbar('Equipo', 'story'));
+    wrap.append(this.topbar('Mis Pokémon', this.returnTo || 'menu'));
     const cap = Data.levelCap(p.badges);
     const next = GYMS[p.badges];
     wrap.append(el('p', 'intro', `Mete o saca Pokémon del equipo (máximo 3) y elige sus movimientos desde su ficha. <span class="cap">Tope de nivel: <b>${cap}</b>${next ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
@@ -467,7 +480,7 @@ export class UI {
   view_shop() {
     const p = this.profile;
     const wrap = el('div', 'shop');
-    wrap.append(this.topbar('Tienda', 'story'));
+    wrap.append(this.topbar('Tienda', this.returnTo || 'menu'));
     const grid = el('div', 'shop-grid scroll');
     for (const item of SHOP) {
       const locked = (item.req || 0) > p.badges;

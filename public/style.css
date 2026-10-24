@@ -355,3 +355,6 @@ body.in-battle, body.in-battle #view, body.in-battle #hud { cursor: none; }
 .stat-row .vdots b { color: #e8eef8; }
 .stat-row .vdots b.iv-top { color: #ffd84a; }
 .evgain { color: #7ae0ff; }
+
+.topbar .nav { display: flex; gap: 8px; }
+.menu-card.mons { --c: #c070e0; }
