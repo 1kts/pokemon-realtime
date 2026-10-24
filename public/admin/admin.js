@@ -22,7 +22,7 @@ function toast(text, bad) {
 }
 
 // ---------- Conexión ----------
-let ws, logged = false, rid = 0;
+let ws, logged = false, rid = 0, myId = null;
 const waiting = new Map();   // rid -> resolve
 function connect() {
   ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host);
@@ -61,6 +61,7 @@ $('#login').addEventListener('submit', e => {
 });
 function onLogin(m) {
   logged = true;
+  myId = m.id;
   $('#login').hidden = true;
   $('#login [name=pass]').value = '';
   $('#top').hidden = false;
@@ -166,6 +167,7 @@ async function openPlayer(id) {
       h('button', { onclick: () => act('kick', { reason: reason.value })() }, 'Desconectar')),
     h('div', { class: 'actions' },
       h('label', {}, 'Nombre de entrenador', newName), h('button', { onclick: () => act('rename', { name: newName.value })() }, 'Renombrar'),
+      p.id === myId && h('button', { onclick: () => confirm('¿Desbloquear todo en tu cuenta? (Pokédex completa, legendarios shiny perfectos, medallas, dinero, objetos y cosméticos). Tu cuenta dejará de salir en los rankings.') && act('unlockall')() }, 'Desbloquear todo (mi cuenta)'),
       h('button', { class: 'danger', onclick: () => {
         const name = prompt(`Borrar a ${p.name} del todo (perfil, partida, cuenta y su registro). No se puede deshacer.\n\nEscribe su nombre de entrenador para confirmar:`);
         if (name !== null) act('remove', { confirm: name })();

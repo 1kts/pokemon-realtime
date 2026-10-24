@@ -262,7 +262,8 @@ const BOARDS = {
   dex: { has: p => (p.caught || []).length > 0, cmp: (a, b) => b.caught.length - a.caught.length || (b.shinies || []).length - (a.shinies || []).length || badgesOf(b) - badgesOf(a),
     row: p => ({ caught: p.caught.length, shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
 };
-for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !banned(p) && has(p); }
+// Fuera de los rankings: los suspendidos y las cuentas del equipo con todo desbloqueado (staff)
+for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !banned(p) && !p.staff && has(p); }
 const PAGE = 20;
 const sorted = board => [...profiles.values()].filter(BOARDS[board].has).sort(BOARDS[board].cmp);
 

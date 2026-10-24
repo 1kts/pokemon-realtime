@@ -9,6 +9,10 @@ const store = require('./store.js');
 const audit = require('./audit.js');
 const totp = require('./totp.js');
 const limits = require('./limits.js');
+const story = require('./story.js');
+const rewards = require('./rewards.js');
+const tower = require('./tower.js');
+const D = require('../public/data.js');
 
 const { db } = store;
 db.exec(`CREATE TABLE IF NOT EXISTS admins (id TEXT PRIMARY KEY, secret TEXT NOT NULL, last_counter INTEGER NOT NULL DEFAULT 0,
@@ -60,7 +64,7 @@ function createAdmin(ctx) {
     db.prepare('UPDATE admins SET last_counter = ? WHERE id = ?').run(counter, p.id);
     c.admin = { id: p.id, name: p.name, at: Date.now(), seen: Date.now() };
     audit.log('admin.login', { actor: p.id, ip: c.ip });
-    send(c, { t: 'admin.ok', name: p.name, version });
+    send(c, { t: 'admin.ok', id: p.id, name: p.name, version });
   }
 
   function overview() {
@@ -149,6 +153,15 @@ function createAdmin(ctx) {
       audit.log('admin.borrar', { actor: c.admin.id, target: p.id, ip: c.ip, events });
       return `Perfil borrado (y ${events} eventos de su registro)`;
     },
+    // Solo con la cuenta propia: desde el panel no se editan partidas de otros jugadores
+    unlockall(c, msg, p) {
+      if (p.id !== c.admin.id) return 'Solo se puede desbloquear tu propia cuenta';
+      const added = unlockAll(p);
+      store.persist(p);
+      for (const x of conns(p.id)) sendProfile(x);
+      audit.log('admin.desbloquear', { actor: c.admin.id, target: p.id, ip: c.ip, mons: added });
+      return `Todo desbloqueado${added ? ` (${added} legendarios nuevos)` : ' (dinero y objetos rellenados)'}`;
+    },
     async resetpass(c, msg, p) {
       if (!p.account) return 'Es un invitado: no tiene contraseña';
       // Se enseña una vez al admin para que se la pase al jugador; no se guarda en ningún sitio
@@ -212,6 +225,45 @@ function createAdmin(ctx) {
   return { handle, kick };
 }
 
+// ---------- Cuenta con todo desbloqueado ----------
+// Pokédex completa (normal y shiny); cada legendario, shiny, en cada región (los Pokémon no viajan
+// entre regiones) a nivel 100 con IV perfectos, los 510 EV del tope (252 en su ataque, 252 en
+// velocidad y 6 en PS) y la naturaleza que sube su ataque; todas las medallas, Alto Mando y Campeón;
+// dinero y objetos de sobra; todos los títulos, marcos y símbolos. No toca lo que se gana compitiendo
+// (ELO, rachas), y la cuenta deja de salir en los rankings (staff). Repetirlo rellena dinero y objetos
+// sin duplicar Pokémon. Devuelve cuántos Pokémon ha añadido.
+const UNLOCK_COINS = 999999999, UNLOCK_ITEMS = 999;
+function unlockAll(p) {
+  story.migrate(p);
+  rewards.migrate(p);
+  tower.state(p);
+  const all = Object.keys(D.SPECIES).map(Number).sort((a, b) => a - b);
+  p.caught = [...new Set([...p.caught, ...all])];
+  p.shinies = [...new Set([...(p.shinies || []), ...all])];
+  let added = 0;
+  for (const r of D.REGION_IDS) {
+    p.prog[r] = D.leadersOf(r).length;
+    if (!p.starters[r] && D.REGION_STARTERS[r]) p.starters[r] = D.REGION_STARTERS[r][0];
+    for (const dex of all.filter(d => D.SPECIES[d].leg)) {
+      if (p.mons.some(m => m.region === r && m.dex === dex && m.met === 'admin')) continue;
+      const sp = D.SPECIES[dex], physical = !sp.base || sp.base[1] >= sp.base[3];
+      const mon = story.devAddMon(p, dex, 100, true, r);
+      Object.assign(mon, { met: 'admin', nat: physical ? 'firme' : 'modesta',
+        iv: Object.fromEntries(D.STAT_KEYS.map(k => [k, D.IV_MAX])), ev: { hp: 6, atk: 252, def: 0, spe: 252 } });
+      added++;
+    }
+  }
+  p.coins = UNLOCK_COINS;
+  for (const it of D.SHOP) p.items[it.id] = UNLOCK_ITEMS;
+  const leagues = Object.keys(D.RANKED_REWARDS);
+  p.cosmetics.titles = [...new Set([...p.cosmetics.titles, ...leagues.map(l => D.RANKED_REWARDS[l].title), ...leagues.map(l => D.seasonTitle(l, D.SEASON.id))])];
+  p.cosmetics.frames = [...new Set([...p.cosmetics.frames, ...leagues.map(l => D.RANKED_REWARDS[l].frame)])];
+  p.tower.symbols = [...new Set([...p.tower.symbols, ...Object.values(tower.BRAINS).map(b => b.symbol)])];
+  p.staff = true;
+  story.migrate(p);   // medallas a partir del progreso
+  return added;
+}
+
 // ---------- Consola (tools/admin.js) ----------
 function grant(user, note = '') {
   const p = store.byUser(user);
@@ -232,4 +284,4 @@ function revoke(user) {
 const list = () => db.prepare('SELECT id, created, note FROM admins ORDER BY created').all()
   .map(r => { const p = store.byId(r.id); return { ...r, name: p ? p.name : '?', user: p && p.account ? p.account.user : '?' }; });
 
-module.exports = { createAdmin, grant, revoke, list, adminRow, BAN_HOURS };
+module.exports = { createAdmin, grant, revoke, list, adminRow, unlockAll, BAN_HOURS };

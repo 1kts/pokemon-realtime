@@ -74,7 +74,10 @@ Qué hay en el panel:
   altas de hoy, suspendidos, memoria, carga, tamaño de la base de datos y eventos de las últimas 24 h.
 - **Jugadores**: buscar por nombre, usuario o id; ficha con sus datos, IPs, otros perfiles desde las mismas
   IPs e historial. Suspender (con motivo y duración), levantar la suspensión, desconectar, renombrar y
-  resetear la contraseña (la nueva se ve una sola vez).
+  resetear la contraseña (la nueva se ve una sola vez) y borrar el perfil del todo (derecho de supresión: hay que
+  escribir su nombre para confirmar). En tu propia ficha, **Desbloquear todo**: Pokédex completa (también shiny),
+  cada legendario shiny a nivel 100 con IV y EV al tope en cada región, todas las medallas, dinero, objetos,
+  títulos, marcos y símbolos. Esa cuenta deja de salir en los rankings.
 - **Auditoría**: todo lo que pasa (entradas y fallos de contraseña, registros, cambios de nombre, tienda,
   clasificatoria, premios, límites, arranques y paradas, y cada acción de un admin), con filtros por tipo,
   jugador, IP y fechas, y exportación a CSV. Se guarda 40 días; las acciones de los admins, siempre.

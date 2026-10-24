@@ -138,6 +138,29 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   ok(left.length && left.every(t => t.startsWith('admin.')) && left.includes('admin.borrar'), 'su registro se borra; solo queda constancia del borrado (sin datos personales)');
   ok(!store.db.prepare('SELECT 1 FROM profiles WHERE data LIKE ?').get('%borrame%'), 'no queda nada de él en la base de datos');
 
+  // ---------- Desbloquear todo (solo la cuenta propia) ----------
+  const D = require('../public/data.js');
+  ok(/propia cuenta/.test((await adm.ask('admin.action', { a: 'unlockall', id: normal.p.id })).ok), 'no se puede desbloquear la cuenta de otro jugador');
+  const un = await adm.ask('admin.action', { a: 'unlockall', id: boss.p.id });
+  const me = store.byId(boss.p.id);
+  const legs = Object.values(D.SPECIES).filter(sp => sp.leg).length;
+  const mine = me.mons.filter(m => m.met === 'admin');
+  ok(/desbloqueado/.test(un.ok) && mine.length === legs * D.REGION_IDS.length, `${mine.length} legendarios (${legs} en cada región)`);
+  ok(mine.every(m => m.shiny && m.level === 100 && Object.values(m.iv).every(v => v === D.IV_MAX)
+    && Object.values(m.ev).reduce((a, b) => a + b, 0) === 510 && Math.max(...Object.values(m.ev)) === 252 && ['firme', 'modesta'].includes(m.nat)),
+    'todos shiny, nivel 100, IV perfectos, EV al tope (510) y naturaleza que sube su ataque');
+  ok(me.caught.length === Object.keys(D.SPECIES).length && me.shinies.length === me.caught.length, 'Pokédex completa, también la shiny');
+  ok(D.REGION_IDS.every(r => me.prog[r] === D.leadersOf(r).length && D.levelCap(me, r) === 100) && me.badges === 8, 'todas las medallas, Alto Mando y Campeón; sin tope de nivel');
+  ok(me.coins === 999999999 && D.SHOP.every(i => me.items[i.id] === 999), 'dinero y objetos de sobra');
+  ok(Object.values(D.RANKED_REWARDS).every(r => me.cosmetics.titles.includes(r.title) && me.cosmetics.frames.includes(r.frame)) && me.tower.symbols.length === 2,
+    'todos los títulos, marcos y símbolos');
+  me.coins = 5;
+  const un2 = await adm.ask('admin.action', { a: 'unlockall', id: boss.p.id });
+  ok(/rellenados/.test(un2.ok) && me.coins === 999999999 && me.mons.filter(m => m.met === 'admin').length === mine.length, 'repetirlo rellena el dinero sin duplicar Pokémon');
+  me.caught.length && store.persist(me);
+  const dexBoard = store.ladder('dex');
+  ok(me.staff && !dexBoard.rows.some(r => r.id === me.id) && store.rankOf(me) === null, 'la cuenta desbloqueada no sale en los rankings');
+
   // ---------- Servidor ----------
   const r5 = await adm.ask('admin.broadcast', { msg: 'Reinicio en 5 minutos' });
   const ann = await normal.wait(m => m.t === 'announce');
