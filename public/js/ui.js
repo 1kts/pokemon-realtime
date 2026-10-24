@@ -121,6 +121,7 @@ export class UI {
     card(t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
     card(t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card(t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
+    if (p.admin) card(t('Escenarios'), t('Acceso total: combate en cualquier mapa o arena sin medallas ni nivel'), 'arenas', 137, () => this.show('arenas'));
     const tw = p.tower;
     card(t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
     card(t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
@@ -638,6 +639,33 @@ export class UI {
   }
 
   // ---------- Práctica ----------
+  // Escenarios (acceso total, ?fullaccess): todos los mapas y arenas, sin requisitos ni premios
+  view_arenas() {
+    const wrap = el('div', 'draft');
+    wrap.append(this.topbar(t('Escenarios'), 'menu'));
+    const opts = el('div', 'arena-opts');
+    let passive = this.arenaPassive ?? true;
+    const toggle = el('label', 'arena-toggle', `<input type="checkbox" ${passive ? 'checked' : ''}> ${t('Rival quieto (para mirar el escenario y sus mecánicas)')}`);
+    toggle.querySelector('input').onchange = e => { passive = this.arenaPassive = e.target.checked; };
+    const off = el('button', '', t('Quitar acceso total'));
+    off.onclick = () => this.net.send({ t: 'admin', off: true });
+    opts.append(toggle, off);
+    const grid = el('div', 'arena-grid scroll');
+    const ROUTE_MAPS = { pradera: ['Pradera', 'Mapa de ruta: hierba alta para esconderse.'], bosque: ['Bosque', 'Mapa de ruta: mucha hierba alta.'], cueva: ['Cueva', 'Mapa de ruta: rocas y charcos.'], lago: ['Lago', 'Mapa de ruta: agua y orilla de arena.'] };
+    const entries = [
+      ...Object.entries(ROUTE_MAPS).map(([id, [name, desc]]) => ({ id, name: t(name), desc: t(desc), color: '#6aa847', who: t('Rutas, práctica, clasificatoria y Torre') })),
+      ...Object.entries(Data.ARENAS).map(([id, a]) => ({ id, name: t(a.name), desc: t(a.desc), color: TYPE_COLOR[id.slice(2)],
+        who: [...new Set(Object.values(Data.NODES).filter(n => n.kind !== 'route' && n.map === id).map(n => n.leader))].join(', ') })),
+    ];
+    for (const e of entries) {
+      const c = el('button', 'arena-card', `<i style="--tc:${e.color}"></i><b>${e.name}</b><small>${e.who}</small><span>${e.desc}</span>`);
+      c.onclick = () => { this.lastMode = { kind: 'arena', map: e.id, passive }; this.net.send({ t: 'arena', map: e.id, passive }); };
+      grid.append(c);
+    }
+    wrap.append(opts, grid);
+    this.root.append(wrap);
+  }
+
   view_practice() {
     const wrap = el('div', 'draft');
     wrap.append(this.topbar(t('Práctica contra la IA'), 'menu'));
@@ -733,11 +761,16 @@ export class UI {
     const acts = el('div', 'acts');
     const back = el('button', 'primary', t('Continuar'));
     const lm = this.lastMode;
-    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
+    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : lm && lm.kind === 'arena' ? 'arenas' : 'menu');
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
+      acts.append(again);
+    }
+    if (lm && lm.kind === 'arena') {
+      const again = el('button', '', t('Otra vez'));
+      again.onclick = () => this.net.send({ t: 'arena', map: lm.map, passive: lm.passive });
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {

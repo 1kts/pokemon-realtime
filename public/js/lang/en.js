@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Escenarios (acceso total) ----------
+    'Escenarios': 'Stages',
+    'Acceso total: combate en cualquier mapa o arena sin medallas ni nivel': 'Full access: battle on any map or arena with no badges or level needed',
+    'Rival quieto (para mirar el escenario y sus mecánicas)': 'Idle rival (to look around the stage and its mechanics)',
+    'Quitar acceso total': 'Remove full access',
+    'Rutas, práctica, clasificatoria y Torre': 'Routes, practice, ranked and Tower',
+    'Pradera': 'Meadow',
+    'Bosque': 'Forest',
+    'Cueva': 'Cave',
+    'Lago': 'Lake',
+    'Mapa de ruta: hierba alta para esconderse.': 'Route map: tall grass to hide in.',
+    'Mapa de ruta: mucha hierba alta.': 'Route map: lots of tall grass.',
+    'Mapa de ruta: rocas y charcos.': 'Route map: rocks and puddles.',
+    'Mapa de ruta: agua y orilla de arena.': 'Route map: water and a sandy shore.',
+    'Abre el juego con ?fullaccess para entrar en los escenarios': 'Open the game with ?fullaccess to enter the stages',
     // ---------- General ----------
     '← Volver': '← Back',
     'Volver': 'Back',

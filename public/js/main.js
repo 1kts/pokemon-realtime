@@ -95,7 +95,13 @@ net.on('disconnected', () => {
   if (app.battle) endBattle();
   ui.show('menu');
 });
-net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
+// Acceso total: ?fullaccess activa en este perfil el menú Escenarios (y se quita de la barra)
+let fullAccess = new URLSearchParams(location.search).has('fullaccess');
+if (fullAccess) history.replaceState(null, '', location.pathname);
+net.on('profile', m => {
+  if (fullAccess) { net.send({ t: 'admin' }); fullAccess = false; }
+  ui.setProfile(m.p, m.board, m.rank);
+});
 net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
