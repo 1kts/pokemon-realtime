@@ -3,7 +3,7 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { Net } from './net.js';
-import { REGION_ART, regionMapImage, probeRealMap, realMapLayout } from './regionmap.js';
+import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
@@ -188,42 +188,39 @@ export class UI {
     wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
-    // Mapa real si está generado (tools/fetch-maps.js); si no, el de tiles CC0
-    const real = realMapLayout(region);
-    if (real === undefined) probeRealMap(region).then(ok => { if (ok && this.view === 'story' && this.region === region) this.show('story'); });
-    const layout = real || { cities: REGION_ART[region].cities, pos: n => [n.x, n.y] };
-    if (real) { map.style.backgroundImage = `url(${real.src})`; map.classList.add('ready', 'real'); }
-    else regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
+    // Lienzo con la proporción del mapa (16:10), centrado; el mar del SVG rellena lo que sobre
+    const stage = el('div', 'map-stage', regionMapSVG(region));
+    map.append(stage);
+    const art = REGION_ART[region];
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
-    const cityAt = n => { const [nx, ny] = layout.pos(n); return layout.cities.find(([, x, y]) => Math.hypot(x - nx, y - ny) < 4); };
+    const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
     const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
-    for (const city of layout.cities) {
+    for (const city of art.cities) {
       if (leaderCities.has(city)) continue;
       const [name, x, y] = city;
       const c = el('div', 'city', `<span>${name}</span>`);
       c.style.left = x + '%'; c.style.top = y + '%';
-      map.append(c);
+      stage.append(c);
     }
     const nodes = R.nodes;
     // Camino: une cada líder con el anterior pasando por sus rutas (en orden)
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
-    map.append(svg);
+    stage.append(svg);
     const info = el('div', 'node-info');
     nodes.forEach(n => {
       const isLeader = n.kind !== 'route';
       const unlocked = isLeader ? n.index <= prog : n.req <= prog;
       const done = isLeader && n.index < prog;
       const b = el('button', `node ${isLeader ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isLeader && n.index === prog ? ' next' : ''}`);
-      const [px, py] = layout.pos(n);
-      b.style.left = px + '%'; b.style.top = py + '%';
+      b.style.left = n.x + '%'; b.style.top = n.y + '%';
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
       b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${city[0]}</small>` : ''}</label>`;
       if (!isLeader && unlocked && n.wild.length) b.prepend(portrait(n.wild[0][0], 30));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
-      map.append(b);
+      stage.append(b);
     });
     body.append(map, info);
     wrap.append(body);

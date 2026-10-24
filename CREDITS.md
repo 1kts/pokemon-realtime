@@ -2,19 +2,8 @@
 
 ## Mapas de región
 
-El mapa de cada región se monta con tiles pixel art de dos packs con licencia
-[CC0](https://creativecommons.org/publicdomain/zero/1.0/) (dominio público):
-
-- `public/maptiles/overworld.png`: suelo, agua y costa de
-  [Zelda-like tilesets and sprites](https://opengameart.org/content/zelda-like-tilesets-and-sprites), de ArMM1998.
-- `public/maptiles/tinytown.png`: árboles y casas de [Tiny Town](https://kenney.nl/assets/tiny-town), de Kenney.
-
-Caminos, montes y rutas marinas se dibujan por código.
-
-Si se ejecuta `node tools/fetch-maps.js`, se usa en su lugar el mapa del Pokégear de Pokémon Oro HeartGold /
-Plata SoulSilver (© Nintendo / Game Freak), montado en local a partir de
-[pret/pokeheartgold](https://github.com/pret/pokeheartgold). Esas imágenes (`public/maps/`) no se incluyen en
-el repositorio.
+Los mapas de región son dibujos propios en SVG (`public/js/regionmap.js`), aproximados a la geografía
+de los juegos. No se usa ningún mapa oficial.
 
 ## Sprites
 
