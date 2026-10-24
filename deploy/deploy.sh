@@ -11,6 +11,11 @@ cd "$REL"
 npm ci --omit=dev --no-audit --no-fund --loglevel=error
 want=$(node -p "require('./package.json').version")
 
+# Los servicios de systemd y Caddy solo los instala setup.sh (como root): si han cambiado, avisar
+for f in arena.service arena-backup.service arena-backup.timer; do
+  cmp -s "deploy/$f" "/etc/systemd/system/$f" || echo "AVISO: deploy/$f ha cambiado: ejecuta setup.sh en el servidor para aplicarlo" >&2
+done
+
 echo "Parando el servidor (espera a los combates en curso)…"
 sudo systemctl stop arena
 ln -sfn "$REL" /srv/arena/current

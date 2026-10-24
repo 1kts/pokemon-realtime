@@ -59,6 +59,8 @@ export class Net {
       if (msg.t === 'pong') { const r = performance.now() - msg.ts; this.rtt = this.rtt ? this.rtt * 0.7 + r * 0.3 : r; return; }
       if (msg.t === 'profile' && msg.p && msg.p.token) { storage.set(TOKEN_KEY, msg.p.token); storage.set(NAME_KEY, msg.p.name); this.joined = true; }
       if (msg.t === 'welcome') this.serverVersion = msg.version;
+      // Cuenta suspendida: el servidor cierra y no hay que reconectar
+      if (msg.t === 'banned') this.closedByUs = true;
       this.emit(msg);
     };
     ws.onclose = () => {

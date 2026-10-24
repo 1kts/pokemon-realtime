@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · Arena Pokémon</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<header id="top" hidden>
+  <b>Arena Pokémon · Admin</b>
+  <nav id="tabs">
+    <button data-tab="resumen" class="sel">Resumen</button>
+    <button data-tab="jugadores">Jugadores</button>
+    <button data-tab="auditoria">Auditoría</button>
+    <button data-tab="servidor">Servidor</button>
+  </nav>
+  <span id="who"></span>
+  <button id="logout">Cerrar sesión</button>
+</header>
+
+<main>
+  <form id="login" class="card login" hidden>
+    <h1>Panel de administración</h1>
+    <label>Usuario <input name="user" autocomplete="username" required></label>
+    <label>Contraseña <input name="pass" type="password" autocomplete="current-password" required></label>
+    <label>Código de la app (6 cifras) <input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" required></label>
+    <button type="submit">Entrar</button>
+    <p id="login-err" class="err"></p>
+    <p class="small">Las cuentas de admin se dan de alta desde el servidor (<code>arena-admin alta &lt;usuario&gt;</code>).</p>
+  </form>
+
+  <section id="resumen" class="tab" hidden></section>
+
+  <section id="jugadores" class="tab" hidden>
+    <form id="search" class="row">
+      <input name="q" placeholder="Nombre, usuario o id" autocomplete="off">
+      <button type="submit">Buscar</button>
+    </form>
+    <div class="split">
+      <div id="results" class="card scroll"></div>
+      <div id="player" class="card scroll"><p class="small">Elige un jugador.</p></div>
+    </div>
+  </section>
+
+  <section id="auditoria" class="tab" hidden>
+    <form id="filters" class="row wrap">
+      <label>Tipo <input name="type" list="types" placeholder="todos"></label>
+      <datalist id="types">
+        <option value="admin.">admin.</option><option value="cuenta.">cuenta.</option><option value="cuenta.fallo">cuenta.fallo</option>
+        <option value="limite.">limite.</option><option value="ranked.">ranked.</option><option value="tienda.">tienda.</option>
+        <option value="perfil.">perfil.</option><option value="sesion">sesion</option><option value="servidor.">servidor.</option>
+      </datalist>
+      <label>Jugador (id) <input name="who" placeholder="id"></label>
+      <label>IP <input name="ip"></label>
+      <label>Desde <input name="from" type="datetime-local"></label>
+      <label>Hasta <input name="to" type="datetime-local"></label>
+      <button type="submit">Buscar</button>
+      <button type="button" id="clear">Limpiar</button>
+      <button type="button" id="csv">Exportar CSV</button>
+    </form>
+    <div class="card scroll"><table id="audit"><thead><tr><th>Fecha</th><th>Tipo</th><th>Quién</th><th>A quién</th><th>IP</th><th>Datos</th></tr></thead><tbody></tbody></table>
+      <button id="more" hidden>Cargar más</button></div>
+  </section>
+
+  <section id="servidor" class="tab" hidden>
+    <div class="grid2">
+      <form id="announce" class="card">
+        <h2>Anuncio a todos los conectados</h2>
+        <textarea name="msg" maxlength="300" rows="3" placeholder="Ej.: Reinicio en 5 minutos para actualizar" required></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+      <div class="card">
+        <h2>Mantenimiento</h2>
+        <p class="small">No se empiezan combates ni colas nuevas; los que están en marcha terminan. El resto del juego sigue.</p>
+        <p>Estado: <b id="maint-state">—</b></p>
+        <button id="maint-on">Activar</button> <button id="maint-off">Desactivar</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" hidden></div>
+<div id="conn" hidden>Conectando con el servidor…</div>
+<script type="module" src="/admin/admin.js"></script>
+</body>
+</html>

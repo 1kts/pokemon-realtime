@@ -12,6 +12,7 @@ combate en curso (espera a que acabe y el corte es de ~50 ms), copia de segurida
 | Base de datos (SQLite) | `/var/lib/arena/arena.db` |
 | Copias diarias (04:30 UTC, 14 días) | `/var/backups/arena/arena-AAAA-MM-DD.db` |
 | Servicios | `arena`, `arena-backup.timer`, `caddy` |
+| Admins del panel | `arena-admin alta\|baja\|lista` |
 
 ## Puesta en marcha (una vez)
 
@@ -45,6 +46,34 @@ preparación con el dominio:
 ssh root@IP "bash /root/arena-deploy/setup.sh tudominio.com"
 ```
 Si usas Cloudflare, deja el registro en "solo DNS" (nube gris) hasta que Caddy haya sacado el certificado.
+
+## Panel de administración
+
+En `https://<dominio>/admin`. Para entrar hacen falta tres cosas: una cuenta registrada del juego, que esa
+cuenta esté dada de alta como admin (solo desde el servidor: desde la web no hay forma) y el código de 6 cifras
+de una app de autenticación (Google Authenticator, Authy, 1Password…).
+
+1. Regístrate en el juego con usuario y contraseña (si aún no lo estás).
+2. En **tu terminal** (la clave que sale es secreta: no la pegues en ningún chat):
+   ```bash
+   ssh root@IP arena-admin alta <tu-usuario>
+   ```
+3. En la app del móvil: añadir código → introducir clave → pega la clave que ha salido.
+4. Entra en `/admin` con usuario, contraseña y el código de la app.
+
+Otras órdenes: `arena-admin lista`, `arena-admin baja <usuario>`. Si pierdes el móvil, vuelve a ejecutar `alta`
+(da una clave nueva y la vieja deja de valer). La sesión caduca a los 30 min sin usarla (o a las 12 h).
+
+Qué hay en el panel:
+- **Resumen** (se actualiza solo): conectados y qué hacen, combates por modo, colas, perfiles y cuentas,
+  altas de hoy, suspendidos, memoria, carga, tamaño de la base de datos y eventos de las últimas 24 h.
+- **Jugadores**: buscar por nombre, usuario o id; ficha con sus datos, IPs, otros perfiles desde las mismas
+  IPs e historial. Suspender (con motivo y duración), levantar la suspensión, desconectar, renombrar y
+  resetear la contraseña (la nueva se ve una sola vez).
+- **Auditoría**: todo lo que pasa (entradas y fallos de contraseña, registros, cambios de nombre, tienda,
+  clasificatoria, premios, límites, arranques y paradas, y cada acción de un admin), con filtros por tipo,
+  jugador, IP y fechas, y exportación a CSV. Se guarda 40 días; las acciones de los admins, siempre.
+- **Servidor**: anuncio a todos los conectados y modo mantenimiento (no se empiezan combates nuevos).
 
 ## Día a día
 

@@ -80,12 +80,20 @@ vez, el dominio, las copias de seguridad y cómo volver a una versión anterior:
 - Detrás de HTTPS el cliente usa `wss://` solo. `GET /healthz` devuelve `{ ok, version, players }`.
 - No definas `ARENA_DEV` en producción (activa el gancho de desarrollo que regala dinero y Pokémon).
 
+## Administración
+
+Panel en `/admin` (cuenta del juego dada de alta como admin desde el servidor + código 2FA): resumen en
+directo, jugadores (suspender, desconectar, renombrar, resetear contraseña), registro de auditoría con filtros
+y exportación, anuncios y modo mantenimiento. Cómo dar de alta un admin: [deploy/README.md](deploy/README.md).
+En local: `node tools/admin.js alta <usuario>` con el mismo `DB_FILE` que el servidor.
+
 ## Arquitectura
 
 - **Servidor autoritativo** (Node + `ws`, 30 ticks/s): `server/battle.js` simula el combate,
   `server/ai.js` la IA (usa la misma entrada que un jugador), `server/story.js` la historia,
   `server/tower.js` la Torre Batalla, `server/index.js` conexiones, colas, draft y ELO, `server/store.js` los
-  perfiles (SQLite, solo se escribe lo que cambia) y la ladder.
+  perfiles (SQLite, solo se escribe lo que cambia) y la ladder, `server/limits.js` los límites contra abusos,
+  `server/audit.js` el registro de auditoría y `server/admin.js` el panel de administración.
 - **Datos y reglas compartidos**: `public/data.js` (tipos, 62 movimientos, 78 Pokémon, mapas, rutas,
   gimnasios, tienda) y `public/shared.js` (movimiento con colisiones, estadísticas por nivel).
 - **Cliente** (`public/js/`): predicción del propio movimiento con reconciliación e interpolación del

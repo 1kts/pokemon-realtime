@@ -63,10 +63,10 @@ export class UI {
     if (!this.root.hidden) this.showInbox();
   }
 
-  toast(text, cls = '') {
+  toast(text, cls = '', ms = 3200) {
     const t = el('div', 'toast ' + cls, escapeHtml(text));
     this.toastEl.append(t);
-    setTimeout(() => t.remove(), 3200);
+    setTimeout(() => t.remove(), ms);
   }
 
   show(view, keepScroll) {
