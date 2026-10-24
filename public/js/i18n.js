@@ -8,10 +8,10 @@
 import { storage } from './net.js';
 
 // En el orden del selector: inglés y español, y después de más a menos hablado
-export const LANGS = { en: 'English', es: 'Español', zh: '中文（简体）', fr: 'Français' };
+export const LANGS = { en: 'English', es: 'Español', zh: '中文（简体）', fr: 'Français', de: 'Deutsch' };
 // Código corto que se enseña junto a cada idioma
-export const LANG_CODES = { en: 'EN', es: 'ES', zh: 'CN', fr: 'FR' };
-const LOCALES = { es: 'es-ES', en: 'en-GB', zh: 'zh-CN', fr: 'fr-FR' };
+export const LANG_CODES = { en: 'EN', es: 'ES', zh: 'CN', fr: 'FR', de: 'DE' };
+const LOCALES = { es: 'es-ES', en: 'en-GB', zh: 'zh-CN', fr: 'fr-FR', de: 'de-DE' };
 const KEY = 'arena.lang';
 // Idiomas con nombres oficiales de PokeAPI (lang/names-<idioma>.js); en inglés y español ya son los de los datos
 const HAS_NAMES = new Set(['en', 'zh', 'fr', 'de', 'ja', 'ko', 'it']);
