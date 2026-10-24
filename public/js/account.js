@@ -141,6 +141,16 @@ export const accountViews = {
     return a;
   },
 
+  // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
+  supportButton() {
+    const a = el('a', 'tb-btn support', `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17.2S2.8 12.8 2.8 7.6A3.9 3.9 0 0 1 10 5.4a3.9 3.9 0 0 1 7.2 2.2c0 5.2-7.2 9.6-7.2 9.6Z" fill="currentColor"/></svg><span>${t('Apoyar')}</span>`);
+    a.href = KOFI_URL;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.title = t('PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor');
+    return a;
+  },
+
   footer() {
     const f = el('div', 'footer');
     const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · ${t('Novedades')}`);

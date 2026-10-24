@@ -170,6 +170,16 @@ async function login(user, pass) {
   return p && use(p);
 }
 
+// Contraseña nueva sin pedir la actual (el admin la resetea por soporte)
+async function setPassword(p, pass) {
+  if (!p.account) return 'Este perfil no tiene cuenta';
+  const salt = crypto.randomBytes(16).toString('hex');
+  p.account.hash = await hash(pass, salt);
+  p.account.salt = salt;
+  persist(p);
+  return null;
+}
+
 async function changePassword(p, oldPass, newPass) {
   if (!p.account) return 'Este perfil no tiene cuenta';
   if (!await check(p.account.user, String(oldPass || ''))) return 'La contraseña actual no es correcta';
@@ -180,6 +190,39 @@ async function changePassword(p, oldPass, newPass) {
   p.account.salt = salt;
   save();
   return null;
+}
+
+// ---------- Moderación ----------
+// Suspensión: p.ban = { until (null = para siempre), reason, by, at }. Los suspendidos no pueden
+// entrar ni salen en los rankings.
+const banned = p => !!(p.ban && (!p.ban.until || p.ban.until > Date.now()));
+// Escribe el perfil ya, esté en uso o no (cambios del admin a jugadores desconectados)
+function persist(p) {
+  const json = JSON.stringify(p);
+  writeRows([[p, json]]);
+  const u = inUse.get(p);
+  if (u) u.json = json;
+}
+const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase())) || null;
+// Busca por nombre de entrenador, usuario o id (los registrados primero)
+function search(q, limit = 50) {
+  const needle = String(q || '').trim().toLowerCase().slice(0, 64);
+  const list = [];
+  for (const p of profiles.values()) {
+    if (needle && !(p.name.toLowerCase().includes(needle) || p.id === needle || (p.account && p.account.user.toLowerCase().includes(needle)))) continue;
+    list.push(p);
+  }
+  return list.sort((a, b) => !!b.account - !!a.account || (b.created || 0) - (a.created || 0)).slice(0, limit);
+}
+function stats() {
+  const day = new Date(); day.setHours(0, 0, 0, 0);
+  let accountsN = 0, today = 0, bannedN = 0;
+  for (const p of profiles.values()) {
+    if (p.account) accountsN++;
+    if ((p.created || 0) >= day.getTime()) today++;
+    if (banned(p)) bannedN++;
+  }
+  return { profiles: profiles.size, accounts: accountsN, newToday: today, banned: bannedN, dbBytes: fs.statSync(FILE).size };
 }
 
 // ---------- Ranking ----------
@@ -210,6 +253,7 @@ const BOARDS = {
   dex: { has: p => (p.caught || []).length > 0, cmp: (a, b) => b.caught.length - a.caught.length || (b.shinies || []).length - (a.shinies || []).length || badgesOf(b) - badgesOf(a),
     row: p => ({ caught: p.caught.length, shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
 };
+for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !banned(p) && has(p); }
 const PAGE = 20;
 const sorted = board => [...profiles.values()].filter(BOARDS[board].has).sort(BOARDS[board].cmp);
 
@@ -253,4 +297,5 @@ function rankOf(p) {
   return rank;
 }
 
-module.exports = { get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };
+module.exports = { db, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
+  check, setPassword, banned, persist, byId, byUser, search, stats };

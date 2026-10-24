@@ -49,6 +49,9 @@ install -m 644 "$HERE/arena.service" "$HERE/arena-backup.service" "$HERE/arena-b
 systemctl daemon-reload
 systemctl enable arena            # arranca con el primer despliegue
 systemctl enable --now arena-backup.timer
+# arena-admin alta|baja|lista: administradores del panel (como el usuario arena, con su base de datos)
+printf '%s\n' '#!/bin/sh' 'exec sudo -u arena DB_FILE=/var/lib/arena/arena.db /usr/bin/node /srv/arena/current/tools/admin.js "$@"' > /usr/local/bin/arena-admin
+chmod 755 /usr/local/bin/arena-admin
 sed "s/^DOMINIO /$DOMAIN /" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
 systemctl reload-or-restart caddy
 

@@ -12,6 +12,9 @@ const rewards = require('./rewards.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
 const limits = require('./limits.js');
+const audit = require('./audit.js');
+const { createAdmin } = require('./admin.js');
+const STARTED = Date.now();
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
@@ -42,6 +45,8 @@ const server = http.createServer((req, res) => {
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
+  if (url === '/admin' || url === '/admin/') url = '/admin/index.html';
+  if (url.startsWith('/admin/')) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {
@@ -86,6 +91,12 @@ function startBattle(clientsBySide, opts, onEnd) {
 // ---------- Colas y draft ----------
 const queues = { ranked: [], casual: [] };
 const DRAFT_BAN_T = 20, DRAFT_PICK_T = 30;
+
+// ---------- Administración (server/admin.js) ----------
+// Mantenimiento: como al apagar, no se empiezan combates ni colas nuevas, pero el servidor sigue
+let maintenance = false;
+const adminPanel = createAdmin({ clients, send, sendProfile, queues, version: VERSION, startedAt: STARTED,
+  maintenance: () => maintenance, setMaintenance: on => { maintenance = on; } });
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
@@ -194,6 +205,8 @@ function finishDraft(draft) {
     pa.elo += da; pb.elo -= da;
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
+    const [win, lose] = sa ? [pa, pb] : [pb, pa];
+    audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: draft.mode });
     const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
     const pay = [
       rewards.afterRanked(pa, { won: !!sa, delta: da, foe: pb.name, foeElo: eb0, team: draft.picks[0], foeTeam: draft.picks[1] }),
@@ -254,6 +267,7 @@ const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
 wss.on('connection', (ws, req) => {
   const ip = limits.clientIp(req);
   if (!limits.connOpen(ip)) {
+    audit.logNoisy('limite.conexiones', ip);
     ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
     return ws.close(1008);
   }
@@ -266,7 +280,7 @@ wss.on('connection', (ws, req) => {
     if (!msg || typeof msg.t !== 'string') return;
     // Quien manda mensajes sin parar (un script) pierde los que sobran y, si insiste, la conexión
     const { ok, kick } = limits.allow(c.limits, msg.t);
-    if (kick) return ws.terminate();
+    if (kick) { audit.logNoisy('limite.inundacion', ip, { actor: c.profile ? c.profile.id : null }); return ws.terminate(); }
     if (!ok) return;
     const fail = e => console.error('Error con el mensaje', msg.t, e);
     try { Promise.resolve(handle(c, msg)).catch(fail); } catch (e) { fail(e); }
@@ -281,15 +295,30 @@ wss.on('connection', (ws, req) => {
   });
 });
 
+// Suspendidos: se les dice por qué y hasta cuándo, y se cierra la conexión
+function refuseBanned(c, p) {
+  audit.logNoisy('cuenta.suspendida', c.ip, { actor: p.id });
+  send(c, { t: 'banned', reason: p.ban.reason, until: p.ban.until });
+  c.ws.close(4001);
+}
+
 function handle(c, msg) {
   if (msg.t === 'ping') return send(c, { t: 'pong', ts: msg.ts });
+  if (msg.t.startsWith('admin.')) return adminPanel.handle(c, msg);
   if (msg.t === 'hello') {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
     if (busy(c) || c.authing) return;
     const token = typeof msg.token === 'string' ? msg.token : null;
-    if (!store.has(token) && !limits.newProfile(c.ip)) return send(c, { t: 'error', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
-    setProfile(c, store.get(token, name));
+    const known = store.has(token);
+    if (!known && !limits.newProfile(c.ip)) {
+      audit.logNoisy('limite.perfiles', c.ip);
+      return send(c, { t: 'error', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
+    }
+    const p = store.get(token, name);
+    if (store.banned(p)) { store.release(p); return refuseBanned(c, p); }
+    setProfile(c, p);
+    audit.log(known ? 'sesion' : 'perfil.nuevo', { actor: p.id, ip: c.ip });
     return sendProfile(c);
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
@@ -319,7 +348,9 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'name') {
+    const old = c.profile.name;
     c.profile.name = String(msg.name || '').trim().slice(0, 16) || c.profile.name;
+    if (c.profile.name !== old) audit.log('perfil.nombre', { actor: c.profile.id, ip: c.ip, old, name: c.profile.name });
     store.save();
     return sendProfile(c);
   }
@@ -327,6 +358,7 @@ function handle(c, msg) {
     if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
     return store.changePassword(c.profile, msg.old, msg.pass).then(err => {
       if (err) return send(c, { t: 'autherr', msg: err });
+      audit.log('cuenta.contraseña', { actor: c.profile.id, ip: c.ip });
       send(c, { t: 'authok', msg: 'Contraseña cambiada' });
       sendProfile(c);
     });
@@ -334,17 +366,23 @@ function handle(c, msg) {
   if (msg.t === 'claim' || msg.t === 'look') {
     const err = msg.t === 'claim' ? rewards.claim(c.profile, String(msg.league)) : rewards.setLook(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });
+    else if (msg.t === 'claim') audit.log('premio.liga', { actor: c.profile.id, ip: c.ip, league: String(msg.league) });
     store.save();
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
   if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell'].includes(msg.a)) {
     if (c.battle) return;
+    const coins = c.profile.coins;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });
+    // Lo que mueve dinero o Pokémon queda apuntado (para investigar trampas o reclamaciones)
+    else if (['buy', 'sell', 'release'].includes(msg.a)) audit.log('tienda.' + msg.a, { actor: c.profile.id, ip: c.ip,
+      item: typeof msg.item === 'string' ? msg.item.slice(0, 32) : undefined, uid: Number.isInteger(msg.uid) ? msg.uid : undefined,
+      qty: Number.isInteger(msg.qty) ? msg.qty : undefined, coins: c.profile.coins - coins });
     return sendProfile(c);
   }
-  if (draining && starts(msg)) return send(c, { t: 'error', msg: DRAIN_MSG });
+  if ((draining || maintenance) && starts(msg)) return send(c, { t: 'error', msg: draining ? DRAIN_MSG : MAINT_MSG });
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
   if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
@@ -385,10 +423,16 @@ function setProfile(c, p) {
 async function auth(c, msg) {
   if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
   // Además del tope por conexión, por IP (abrir conexiones nuevas no da más intentos) y por cuenta
-  if (!limits.authAttempt(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' });
+  if (!limits.authAttempt(c.ip)) {
+    audit.logNoisy('limite.intentos', c.ip);
+    return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' });
+  }
   if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   const user = typeof msg.user === 'string' ? msg.user.trim() : '';
-  if (msg.t === 'login' && limits.userLocked(user)) return send(c, { t: 'autherr', msg: 'Demasiados intentos con esta cuenta: espera 15 minutos' });
+  if (msg.t === 'login' && limits.userLocked(user)) {
+    audit.logNoisy('cuenta.bloqueada', c.ip, { user: user.slice(0, 64) });
+    return send(c, { t: 'autherr', msg: 'Demasiados intentos con esta cuenta: espera 15 minutos' });
+  }
   if (msg.t === 'register' && !c.profile && !limits.newProfile(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
   c.authing = true;
   let r;
@@ -396,8 +440,14 @@ async function auth(c, msg) {
     r = msg.t === 'login' ? { p: await store.login(user, msg.pass) } : await store.register(c.profile, user, msg.pass);
   } finally { c.authing = false; }
   if (r.err) return send(c, { t: 'autherr', msg: r.err });
-  if (!r.p) { limits.userFailed(user); return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' }); }
+  if (!r.p) {
+    limits.userFailed(user);
+    audit.log('cuenta.fallo', { ip: c.ip, user: user.slice(0, 64) });
+    return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
+  }
   if (!clients.has(c)) return store.release(r.p);
+  if (store.banned(r.p)) { if (r.p !== c.profile) store.release(r.p); return refuseBanned(c, r.p); }
+  audit.log(msg.t === 'login' ? 'cuenta.entra' : 'cuenta.registro', { actor: r.p.id, ip: c.ip, user: r.p.account.user });
   // Registrar el perfil actual (invitado) lo deja igual; entrar o registrar desde la portada lo cambia
   if (r.p !== c.profile) setProfile(c, r.p);
   else if (msg.t === 'login') store.release(r.p);   // ya lo tenía: que no cuente dos veces
@@ -411,6 +461,7 @@ async function auth(c, msg) {
 // proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
 const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
+const MAINT_MSG = 'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.';
 const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
   || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
 let draining = false;
@@ -418,6 +469,7 @@ let draining = false;
 function shutdown() {
   if (draining) { store.flush(); process.exit(0); }
   draining = true;
+  audit.log('servidor.para', { version: VERSION, online: [...clients].filter(c => c.profile).length });
   console.log('Apagando: esperando a los combates en curso…');
   for (const c of clients) {
     if (c.queue) { leaveQueue(c); send(c, { t: 'cancelled', reason: DRAIN_MSG }); } else send(c, { t: 'error', msg: DRAIN_MSG });
@@ -433,6 +485,7 @@ function shutdown() {
 function start(port = PORT) {
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
+  audit.log('servidor.arranca', { version: VERSION });
   return new Promise(resolve => server.listen(port, HOST, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }
 

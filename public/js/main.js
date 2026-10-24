@@ -97,6 +97,24 @@ net.on('disconnected', () => {
 });
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
 net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
+// Anuncio de un administrador a todos los conectados
+net.on('announce', m => ui.toast(`${t('Aviso')}: ${tServer(m.msg)}`, 'announce', 12000));
+// Cuenta suspendida: pantalla con el motivo y hasta cuándo (no se reconecta)
+net.on('banned', m => {
+  if (app.battle) endBattle();
+  const box = document.createElement('div');
+  box.className = 'nojs banned';
+  const inner = document.createElement('div');
+  const until = m.until ? new Date(m.until).toLocaleString() : null;
+  for (const [tag, text] of [['h2', t('Tu cuenta está suspendida')], ['p', t('Motivo: {reason}', { reason: m.reason })],
+    ['p', until ? t('Hasta: {date}', { date: until }) : t('La suspensión no tiene fecha de fin.')]]) {
+    const e = document.createElement(tag);
+    e.textContent = text;
+    inner.append(e);
+  }
+  box.append(inner);
+  document.body.append(box);
+});
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 net.on('authok', m => { ui.authError(''); ui.toast(tServer(m.msg)); });

@@ -259,6 +259,7 @@ export default {
     'Ríos de lava, erupciones y el viento de las alas de los dragones.': '熔岩河、火山喷发，还有龙振翅掀起的风。',
 
     // ---------- 场景（完全权限） ----------
+    'Apoyar': '支持',
     // ---------- Novedades 0.5 a 0.7 ----------
     'Nuevo nombre: PokéArenas': '新名字：PokéArenas',
     'El juego pasa a llamarse PokéArenas.': '游戏更名为PokéArenas。',
@@ -317,7 +318,6 @@ export default {
     '¡hoy!': '今天！',
     'Cada ruta saca 4 especies al día de su lista; las rutas cambian cada día.': '每条道路每天从其名单中出现4种宝可梦；道路每天都会变化。',
     'No aparece en las rutas de Kanto ni Johto: puede salir como Pokémon misterioso, en la tienda o en futuras regiones.': '它不会出现在关都或城都的道路上：可能作为神秘宝可梦出现、在商店里出售，或在以后的地区登场。',
-    '{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas': '已捕捉{a}/{b}种：看看还缺哪些、在哪里能找到',
     'Abrir la Pokédex': '打开图鉴',
     'Pokémon de las rutas nuevos en': '道路宝可梦刷新倒计时',
     'Estos Pokémon cambian en': '这些宝可梦刷新倒计时',
@@ -706,6 +706,14 @@ export default {
     'Elige al menos un Pokémon': '请至少选择一只宝可梦',
     'Combate desconocido': '未知对战',
     'Demasiados intentos: espera un minuto': '尝试次数过多：请等一分钟',
+    'Aviso': '通知',
+    'Tu cuenta está suspendida': '你的账号已被封禁',
+    'Motivo: {reason}': '原因：{reason}',
+    'Hasta: {date}': '截止：{date}',
+    'La suspensión no tiene fecha de fin.': '此封禁没有结束日期。',
+    'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.': '服务器维护中：现在无法开始新的对战。',
+    'Mantenimiento: termina tu combate; durante un rato no se podrán empezar otros.': '维护中：请打完当前对战；一段时间内无法开始新的对战。',
+    'Un administrador te ha desconectado': '管理员已将你断开连接',
     'Demasiadas conexiones desde tu red: espera un poco': '来自你的网络的连接过多：请稍等',
     'Demasiados perfiles nuevos desde tu red: espera un rato': '来自你的网络的新档案过多：请过一会儿再试',
     'Demasiados intentos desde tu red: espera unos minutos': '来自你的网络的尝试次数过多：请等几分钟',

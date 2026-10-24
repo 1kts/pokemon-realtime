@@ -11,6 +11,7 @@ const CLASSES = {
 
 export default {
   text: {
+    'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
     'Nuevo nombre: PokéArenas': 'New name: PokéArenas',
     'El juego pasa a llamarse PokéArenas.': 'The game is now called PokéArenas.',
@@ -69,7 +70,6 @@ export default {
     '¡hoy!': 'today!',
     'Cada ruta saca 4 especies al día de su lista; las rutas cambian cada día.': 'Each route shows 4 species a day from its list; routes change every day.',
     'No aparece en las rutas de Kanto ni Johto: puede salir como Pokémon misterioso, en la tienda o en futuras regiones.': 'It doesn\'t appear on Kanto or Johto routes: it may show up as a mystery Pokémon, in the shop or in future regions.',
-    '{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas': '{a} of {b} species caught: see which ones you\'re missing and where to find them',
     'Abrir la Pokédex': 'Open the Pokédex',
     'Pokémon de las rutas nuevos en': 'New route Pokémon in',
     'Estos Pokémon cambian en': 'These Pokémon change in',
@@ -707,6 +707,14 @@ export default {
     'Elige al menos un Pokémon': 'Choose at least one Pokémon',
     'Combate desconocido': 'Unknown battle',
     'Demasiados intentos: espera un minuto': 'Too many attempts: wait a minute',
+    'Aviso': 'Notice',
+    'Tu cuenta está suspendida': 'Your account is suspended',
+    'Motivo: {reason}': 'Reason: {reason}',
+    'Hasta: {date}': 'Until: {date}',
+    'La suspensión no tiene fecha de fin.': 'The suspension has no end date.',
+    'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.': 'The server is under maintenance: new battles can\'t be started right now.',
+    'Mantenimiento: termina tu combate; durante un rato no se podrán empezar otros.': 'Maintenance: finish your battle; new ones can\'t be started for a while.',
+    'Un administrador te ha desconectado': 'An administrator disconnected you',
     'Demasiadas conexiones desde tu red: espera un poco': 'Too many connections from your network: wait a bit',
     'Demasiados perfiles nuevos desde tu red: espera un rato': 'Too many new profiles from your network: wait a while',
     'Demasiados intentos desde tu red: espera unos minutos': 'Too many attempts from your network: wait a few minutes',
