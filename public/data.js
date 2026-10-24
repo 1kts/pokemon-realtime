@@ -40,7 +40,9 @@
   }
 
   // ---------- Movimientos ----------
-  // kind: proj (proyectil) · beam (rayo instantáneo en línea) · melee (golpe en arco delante)
+  // kind: proj (proyectil; con explode, estalla donde apuntas) · beam (rayo instantáneo en línea)
+  //       melee (golpe en arco delante) · cone (chorro o ráfaga en abanico: range, arc)
+  //       wave (ola que avanza con un frente ancho: width) · area (con count: varios impactos, scatter o line)
   //       dash (embestida) · area (zona con retardo, en el cursor o en uno mismo)
   //       blink (teletransporte) · heal · buff · smoke (nube de vapor que oculta)
   //       wall (muro que bloquea) · ball (Poké Ball, la añade el servidor)
@@ -59,21 +61,21 @@
     confusion: { name: 'Confusión', type: 'psiquico', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, speed: 600, range: 520, radius: 7 },
     lenguetazo: { name: 'Lengüetazo', type: 'fantasma', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 9, range: 70, arc: 1.4, slow: 0.6 },
     golpeKarate: { name: 'Golpe Kárate', type: 'lucha', kind: 'melee', cost: 0, cd: 0.45, wind: 0.08, rec: 0.12, dmg: 11, range: 62, arc: 1.5, knock: 50 },
-    bofetonLodo: { name: 'Bofetón Lodo', type: 'tierra', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.12, dmg: 7, speed: 560, range: 440, radius: 8, slow: 0.6 },
+    bofetonLodo: { name: 'Bofetón Lodo', type: 'tierra', kind: 'cone', cost: 0, cd: 0.55, wind: 0.08, rec: 0.12, dmg: 7, range: 150, arc: 0.75, slow: 0.6 },
     furiaDragon: { name: 'Furia Dragón', type: 'dragon', kind: 'proj', cost: 0, cd: 0.5, wind: 0.1, rec: 0.1, dmg: 8, speed: 600, range: 500, radius: 9 },
-    nievePolvo: { name: 'Nieve Polvo', type: 'hielo', kind: 'proj', cost: 0, cd: 0.6, wind: 0.08, rec: 0.12, dmg: 5, speed: 520, range: 440, radius: 7, count: 2, spread: 0.15, slow: 0.8 },
+    nievePolvo: { name: 'Nieve Polvo', type: 'hielo', kind: 'cone', cost: 0, cd: 0.6, wind: 0.08, rec: 0.12, dmg: 6, range: 160, arc: 0.9, slow: 0.8 },
     acido: { name: 'Ácido', type: 'veneno', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 560, range: 460, radius: 8, poison: 2 },
     tijeraX: { name: 'Tijera X', type: 'bicho', kind: 'melee', cost: 0, cd: 0.45, wind: 0.08, rec: 0.1, dmg: 11, range: 66, arc: 1.8 },
     mordisco: { name: 'Mordisco', type: 'siniestro', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 12, range: 70, arc: 1.4 },
     salpicadura: { name: 'Salpicadura', type: 'normal', kind: 'buff', cost: 0, cd: 1, wind: 0.2, rec: 0.3, dur: 0.1, splash: true },
 
     // Habilidades
-    lanzallamas: { name: 'Lanzallamas', type: 'fuego', kind: 'proj', cost: 30, cd: 4, wind: 0.35, rec: 0.2, dmg: 18, speed: 400, range: 600, radius: 16, burn: 3, terrain: 'fuego' },
-    llamarada: { name: 'Llamarada', type: 'fuego', kind: 'area', at: 'cursor', cost: 50, cd: 10, wind: 0.3, rec: 0.3, dmg: 26, radius: 95, delay: 0.65, maxRange: 480, burn: 3, terrain: 'fuego' },
+    lanzallamas: { name: 'Lanzallamas', type: 'fuego', kind: 'cone', cost: 30, cd: 4, wind: 0.3, rec: 0.25, dmg: 18, range: 230, arc: 0.6, burn: 3, terrain: 'fuego' },
+    llamarada: { name: 'Llamarada', type: 'fuego', kind: 'proj', cost: 50, cd: 10, wind: 0.35, rec: 0.3, dmg: 28, speed: 430, range: 480, radius: 18, maxRange: 480, explode: 95, burn: 3, terrain: 'fuego' },
     nitrocarga: { name: 'Nitrocarga', type: 'fuego', kind: 'dash', cost: 20, cd: 5, wind: 0.12, rec: 0.15, dmg: 14, dist: 260, dur: 0.22, haste: 2 },
     punoFuego: { name: 'Puño Fuego', type: 'fuego', kind: 'melee', cost: 20, cd: 4, wind: 0.25, rec: 0.2, dmg: 18, range: 70, arc: 1.4, burn: 3 },
     hidrobomba: { name: 'Hidrobomba', type: 'agua', kind: 'beam', cost: 40, cd: 6, wind: 0.55, rec: 0.3, dmg: 22, len: 540, width: 26, knock: 130, terrain: 'agua' },
-    surf: { name: 'Surf', type: 'agua', kind: 'area', at: 'self', cost: 45, cd: 9, wind: 0.2, rec: 0.3, dmg: 20, radius: 150, delay: 0.5, knock: 150, terrain: 'agua', wet: 4 },
+    surf: { name: 'Surf', type: 'agua', kind: 'wave', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 20, speed: 340, range: 560, width: 260, thick: 22, knock: 150, terrain: 'agua', wet: 4 },
     acuaJet: { name: 'Acua Jet', type: 'agua', kind: 'dash', cost: 15, cd: 4, wind: 0.06, rec: 0.12, dmg: 10, dist: 220, dur: 0.15 },
     acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 12, wind: 0.3, rec: 0.2, heal: 0.2 },
     latigoCepa: { name: 'Látigo Cepa', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.2, rec: 0.2, dmg: 14, speed: 850, range: 230, radius: 14, pull: 110, fx: 'vine' },
@@ -84,7 +86,7 @@
     trueno: { name: 'Trueno', type: 'electrico', kind: 'area', at: 'cursor', cost: 50, cd: 9, wind: 0.25, rec: 0.3, dmg: 24, radius: 85, delay: 0.7, maxRange: 460, stun: 0.6 },
     ondaTrueno: { name: 'Onda Trueno', type: 'electrico', kind: 'proj', cost: 30, cd: 10, wind: 0.2, rec: 0.2, dmg: 2, speed: 520, range: 500, radius: 10, stun: 1.1 },
     rayoHielo: { name: 'Rayo Hielo', type: 'hielo', kind: 'beam', cost: 35, cd: 6, wind: 0.45, rec: 0.25, dmg: 17, len: 470, width: 20, slow: 2, terrain: 'hielo' },
-    ventisca: { name: 'Ventisca', type: 'hielo', kind: 'area', at: 'cursor', cost: 55, cd: 10, wind: 0.3, rec: 0.3, dmg: 22, radius: 115, delay: 0.8, maxRange: 460, slow: 2.5, terrain: 'hielo' },
+    ventisca: { name: 'Ventisca', type: 'hielo', kind: 'cone', cost: 55, cd: 10, wind: 0.4, rec: 0.3, dmg: 22, range: 290, arc: 1.25, slow: 2.5, terrain: 'hielo' },
     psiquico: { name: 'Psíquico', type: 'psiquico', kind: 'area', at: 'cursor', cost: 35, cd: 6, wind: 0.2, rec: 0.25, dmg: 20, radius: 70, delay: 0.5, maxRange: 520, stun: 0.3 },
     psicorrayo: { name: 'Psicorrayo', type: 'psiquico', kind: 'beam', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 16, len: 460, width: 18, slow: 1 },
     teletransporte: { name: 'Teletransporte', type: 'psiquico', kind: 'blink', cost: 20, cd: 6, wind: 0.05, rec: 0.1, dist: 230 },
@@ -95,7 +97,7 @@
     terremoto: { name: 'Terremoto', type: 'tierra', kind: 'area', at: 'self', cost: 55, cd: 10, wind: 0.3, rec: 0.35, dmg: 25, radius: 170, delay: 0.6, stun: 0.3 },
     excavar: { name: 'Excavar', type: 'tierra', kind: 'dash', cost: 30, cd: 7, wind: 0.15, rec: 0.15, dmg: 16, dist: 250, dur: 0.5, invuln: true },
     tumbaRocas: { name: 'Tumba Rocas', type: 'roca', kind: 'area', at: 'cursor', cost: 30, cd: 7, wind: 0.2, rec: 0.25, dmg: 14, radius: 60, delay: 0.45, maxRange: 420, slow: 2, rockWall: true },
-    avalancha: { name: 'Avalancha', type: 'roca', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 22, radius: 90, delay: 0.6, maxRange: 440, stun: 0.5 },
+    avalancha: { name: 'Avalancha', type: 'roca', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 12, radius: 60, delay: 0.5, maxRange: 420, count: 3, pattern: 'line', stagger: 0.12, stun: 0.4 },
     golpeAereo: { name: 'Golpe Aéreo', type: 'volador', kind: 'dash', cost: 20, cd: 5, wind: 0.1, rec: 0.15, dmg: 14, dist: 270, dur: 0.2 },
     vendaval: { name: 'Vendaval', type: 'volador', kind: 'area', at: 'cursor', cost: 50, cd: 9, wind: 0.3, rec: 0.3, dmg: 22, radius: 100, delay: 0.6, maxRange: 460, knock: 170 },
     ataqueRapido: { name: 'Ataque Rápido', type: 'normal', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 8, dist: 210, dur: 0.14 },
@@ -105,7 +107,7 @@
     autodestruccion: { name: 'Autodestrucción', type: 'normal', kind: 'area', at: 'self', cost: 60, cd: 30, wind: 0.6, rec: 0.1, dmg: 48, radius: 150, delay: 0.25, selfKO: true },
     patadaBaja: { name: 'Patada Baja', type: 'lucha', kind: 'melee', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 17, range: 72, arc: 1.6, stun: 0.45 },
     punoDinamico: { name: 'Puño Dinámico', type: 'lucha', kind: 'melee', cost: 45, cd: 9, wind: 0.5, rec: 0.3, dmg: 28, range: 78, arc: 1.3, stun: 0.9, knock: 120 },
-    bombaLodo: { name: 'Bomba Lodo', type: 'veneno', kind: 'proj', cost: 30, cd: 4, wind: 0.3, rec: 0.2, dmg: 16, speed: 460, range: 520, radius: 13, poison: 4 },
+    bombaLodo: { name: 'Bomba Lodo', type: 'veneno', kind: 'proj', cost: 30, cd: 5, wind: 0.3, rec: 0.2, dmg: 16, speed: 460, range: 480, radius: 13, maxRange: 480, explode: 60, poison: 4, puddle: 'veneno' },
     toxico: { name: 'Tóxico', type: 'veneno', kind: 'proj', cost: 25, cd: 8, wind: 0.25, rec: 0.15, dmg: 2, speed: 500, range: 480, radius: 10, poison: 7 },
     pantallaHumo: { name: 'Pantalla de Humo', type: 'normal', kind: 'smoke', cost: 20, cd: 10, wind: 0.1, rec: 0.1, radius: 2 },
     danzaDragon: { name: 'Danza Dragón', type: 'dragon', kind: 'buff', cost: 30, cd: 12, wind: 0.3, rec: 0.1, haste: 4, power: 4 },
@@ -121,17 +123,17 @@
     pulsoUmbrio: { name: 'Pulso Umbrío', type: 'siniestro', kind: 'proj', cost: 30, cd: 4, wind: 0.3, rec: 0.2, dmg: 18, speed: 500, range: 540, radius: 13 },
     golpeBajo: { name: 'Golpe Bajo', type: 'siniestro', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 11, dist: 210, dur: 0.14 },
     triturar: { name: 'Triturar', type: 'siniestro', kind: 'melee', cost: 40, cd: 8, wind: 0.35, rec: 0.25, dmg: 26, range: 72, arc: 1.4, stun: 0.3 },
-    vientoFeerico: { name: 'Viento Feérico', type: 'hada', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, speed: 560, range: 480, radius: 9 },
+    vientoFeerico: { name: 'Viento Feérico', type: 'hada', kind: 'cone', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, range: 170, arc: 0.8 },
     brilloMagico: { name: 'Brillo Mágico', type: 'hada', kind: 'area', at: 'self', cost: 35, cd: 7, wind: 0.25, rec: 0.25, dmg: 18, radius: 130, delay: 0.45 },
     fuerzaLunar: { name: 'Fuerza Lunar', type: 'hada', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 420, range: 560, radius: 15 },
     luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 12, wind: 0.35, rec: 0.2, heal: 0.22 },
     disparoDemora: { name: 'Disparo Demora', type: 'bicho', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 520, range: 440, radius: 8, slow: 0.6 },
-    zumbido: { name: 'Zumbido', type: 'bicho', kind: 'beam', cost: 30, cd: 5, wind: 0.4, rec: 0.2, dmg: 17, len: 440, width: 22 },
-    idaYVuelta: { name: 'Ida y Vuelta', type: 'bicho', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 10, dist: 220, dur: 0.15 },
+    zumbido: { name: 'Zumbido', type: 'bicho', kind: 'cone', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 16, range: 300, arc: 0.95 },
+    idaYVuelta: { name: 'Ida y Vuelta', type: 'bicho', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 11, dist: 220, dur: 0.15, back: true },
     megacuerno: { name: 'Megacuerno', type: 'bicho', kind: 'melee', cost: 45, cd: 9, wind: 0.45, rec: 0.3, dmg: 30, range: 74, arc: 1.3, knock: 100 },
     infortunio: { name: 'Infortunio', type: 'fantasma', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.25, rec: 0.3, dmg: 24, radius: 85, delay: 0.6, maxRange: 480, slow: 1.5 },
     pulsoDragon: { name: 'Pulso Dragón', type: 'dragon', kind: 'proj', cost: 30, cd: 4, wind: 0.3, rec: 0.2, dmg: 18, speed: 480, range: 540, radius: 14 },
-    cometaDraco: { name: 'Cometa Draco', type: 'dragon', kind: 'area', at: 'cursor', cost: 60, cd: 12, wind: 0.35, rec: 0.35, dmg: 32, radius: 105, delay: 0.8, maxRange: 480 },
+    cometaDraco: { name: 'Cometa Draco', type: 'dragon', kind: 'area', at: 'cursor', cost: 60, cd: 12, wind: 0.35, rec: 0.35, dmg: 17, radius: 70, delay: 0.8, maxRange: 480, count: 3, scatter: 80, stagger: 0.18 },
     tierraViva: { name: 'Tierra Viva', type: 'tierra', kind: 'area', at: 'cursor', cost: 30, cd: 6, wind: 0.2, rec: 0.25, dmg: 18, radius: 70, delay: 0.5, maxRange: 480 },
     cantoHelado: { name: 'Canto Helado', type: 'hielo', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 210, dur: 0.14, slow: 0.8 },
     lanzaMugre: { name: 'Lanza Mugre', type: 'veneno', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 440, range: 540, radius: 15, poison: 4 },

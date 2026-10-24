@@ -165,4 +165,54 @@ check('los combates de ruta usan el mapa de su ruta', () => {
   assert.deepStrictEqual(bt.terrain, S.parseMap('r:k-ruta1').terrain);
 });
 
+// ---------- Movimientos según lo que son ----------
+// Lanza un movimiento del bando 0 contra el bando 1 en una pradera y deja pasar 'secs'
+function cast(key, place, secs = 1.5, aimAt = null) {
+  const bt = battle('pradera', [{ dex: 6, level: 50, moves: [key] }], [{ dex: 143, level: 50 }]);
+  const [me, foe] = bt.sides;
+  me.x = 200; me.y = 300; me.energy = 100;
+  place(foe);
+  const hp = bt.mon(foe).hp;
+  const t = aimAt || foe;
+  me.inputs.push({ mx: 0, my: 0, a: Math.atan2(t.y - me.y, t.x - me.x), tx: t.x, ty: t.y, c: 0, s: 1 });
+  run(bt, secs);
+  return { bt, me, foe, lost: hp - bt.mon(foe).hp };
+}
+
+check('el cono pega delante y no a los lados', () => {
+  assert(cast('lanzallamas', f => { f.x = 380; f.y = 300; }).lost > 0, 'delante');
+  assert.strictEqual(cast('lanzallamas', f => { f.x = 200; f.y = 480; }, 1.5, { x: 400, y: 300 }).lost, 0, 'al lado');
+  assert.strictEqual(cast('lanzallamas', f => { f.x = 700; f.y = 300; }).lost, 0, 'fuera de alcance');
+});
+
+check('la ola es ancha: pilla aunque no esté en línea', () => {
+  const r = cast('surf', f => { f.x = 520; f.y = 400; }, 2, { x: 600, y: 300 });
+  assert(r.lost > 0, 'pilla de lado');
+  assert(r.bt.terrain.some(t => t === S.T.WATER), 'moja el suelo');
+});
+
+check('Bomba Lodo estalla donde apuntas y deja un charco tóxico', () => {
+  const r = cast('bombaLodo', f => { f.x = 430; f.y = 330; }, 2, { x: 400, y: 300 });
+  assert(r.lost > 0, 'la explosión le alcanza');
+  assert(r.bt.terrain.some(t => t === S.T.POISON), 'charco');
+});
+
+check('Avalancha cae en tres puntos en fila', () => {
+  const bt = battle('pradera', [{ dex: 76, level: 50, moves: ['avalancha'] }], [{ dex: 143, level: 50 }]);
+  const [me] = bt.sides;
+  me.x = 200; me.y = 300; me.energy = 100;
+  const warns = [];
+  const ev = bt.ev.bind(bt); bt.ev = e => { if (e.k === 'warn') warns.push(e); ev(e); };
+  me.inputs.push({ mx: 0, my: 0, a: 0, tx: 500, ty: 300, c: 0, s: 1 });
+  run(bt, 1);
+  assert.strictEqual(warns.length, 3);
+  assert(warns.every(w => Math.abs(w.y - 300) < 2) && warns[0].x < warns[1].x && warns[1].x < warns[2].x, 'en fila');
+});
+
+check('Ida y Vuelta vuelve a su sitio', () => {
+  const r = cast('idaYVuelta', f => { f.x = 330; f.y = 300; }, 1);
+  assert(r.lost > 0, 'golpea');
+  assert(Math.hypot(r.me.x - 200, r.me.y - 300) < 40, `vuelve (${Math.round(r.me.x)},${Math.round(r.me.y)})`);
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

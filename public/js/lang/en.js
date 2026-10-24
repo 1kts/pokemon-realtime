@@ -12,6 +12,13 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Escenarios (acceso total) ----------
+    'deja un charco tóxico': 'leaves a toxic puddle',
+    'vuelve a su sitio': 'returns to where it started',
+    'Proyectil que estalla donde apuntas': 'Projectile that bursts where you aim',
+    'Impactos en fila hacia el cursor': 'Impacts in a line towards the cursor',
+    'Impactos alrededor del cursor': 'Impacts around the cursor',
+    'Cono delante de ti': 'Cone in front of you',
+    'Ola que avanza': 'Advancing wave',
     'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Earthquakes: a wave sweeps the arena from the epicentre. Hide behind a rock (the green zone) or use Protect; Flying types aren\'t affected.',
     '¡Terremoto! Ponte detrás de una roca': 'Earthquake! Get behind a rock',
     '¡A cubierto!': 'Covered!',

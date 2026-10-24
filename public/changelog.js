@@ -4,6 +4,16 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.6.0', date: '2026-10-24', title: 'Movimientos con forma propia',
+      items: [
+        ['cambio', 'Lanzallamas, Ventisca, Zumbido, Nieve Polvo, Viento Feérico y Bofetón Lodo salen en cono delante de ti.'],
+        ['cambio', 'Surf es una ola ancha que avanza, moja el suelo y no se puede devolver con un parry.'],
+        ['cambio', 'Llamarada y Bomba Lodo estallan donde apuntas; Bomba Lodo deja un charco tóxico.'],
+        ['cambio', 'Cometa Draco hace caer tres meteoritos, Avalancha cae en fila e Ida y Vuelta vuelve a su sitio.'],
+        ['nuevo', 'Terremoto de las arenas con counterplay: escóndete detrás de una roca (zona verde) y la onda no te alcanza.'],
+      ],
+    },
+    {
       v: '0.5.0', date: '2026-10-24', title: 'Salas del Alto Mando y rutas únicas',
       items: [
         ['nuevo', 'Cada miembro del Alto Mando y cada Campeón tiene su propia sala, con dos o tres mecánicas a la vez y más intensas.'],

@@ -16,7 +16,7 @@ let nextId = 1;
 
 const STAB = 1.15;
 const BURN_DPS = 0.025, POISON_DPS = 0.022, SEED_DPS = 0.03, FIRE_DPS = 0.05;  // % de PS máx. por segundo
-const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, ICE_TTL = 8, SPREAD_T = 0.6;
+const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, ICE_TTL = 8, POISON_TTL = 6, SPREAD_T = 0.6;
 const FORCED_SWAP_T = 1.2, ENTRY_INVULN = 0.8;
 const WILD_HP = 0.6, WILD_DMG = 0.85;
 // Duración de la animación de captura (debe coincidir con la del cliente, effects.js)
@@ -241,6 +241,8 @@ class Battle {
       }
       if ((d.t -= dt) <= 0 || (Math.hypot(side.x - before.x, side.y - before.y) < 0.5 && key === 'kb')) {
         side[key] = null;
+        // Ida y Vuelta: tras la ida, vuelve por el mismo camino (sin volver a golpear)
+        if (key === 'dash' && d.m.back && !d.returning) { side.dash = { ...d, vx: -d.vx, vy: -d.vy, t: d.m.dur, hit: true, returning: true }; continue; }
         if (key === 'dash' && d.m.invuln) S.pushOut(side, this.rad(side), this.obstacles);
       }
     }
@@ -303,11 +305,19 @@ class Battle {
     this.ev({ k: 'cast', s: side.idx, c: w.c, a: +a.toFixed(2), x: Math.round(side.x), y: Math.round(side.y) });
     if (m.kind === 'proj') {
       const n = m.count || 1;
+      // Los que explotan (Llamarada, Bomba Lodo) estallan en el punto al que apuntas
+      const reach = m.explode && m.maxRange ? Math.max(60, Math.min(m.maxRange, Math.hypot(w.tx - side.x, w.ty - side.y))) : m.range;
       for (let j = 0; j < n; j++) {
         const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
         this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c],
-          x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: m.range, r: m.radius });
+          x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: reach, r: m.radius });
       }
+    } else if (m.kind === 'wave') {
+      // Ola (Surf): un frente ancho que avanza, atraviesa las rocas y moja el suelo a su paso
+      this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], wide: m.width / 2,
+        x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: ax * m.speed, vy: ay * m.speed, left: m.range, r: m.thick || 20 });
+    } else if (m.kind === 'cone') {
+      this.cone(side, m, a);
     } else if (m.kind === 'beam') {
       this.beam(side, m, a);
     } else if (m.kind === 'melee') {
@@ -324,8 +334,15 @@ class Battle {
       if (m.haste) side.haste = m.haste;
     } else if (m.kind === 'area') {
       const at = m.at === 'self' ? { x: side.x, y: side.y } : { x: w.tx, y: w.ty };
-      this.areas.push({ owner: side, m, x: at.x, y: at.y, t: m.delay });
-      this.ev({ k: 'warn', s: side.idx, x: Math.round(at.x), y: Math.round(at.y), r: m.radius, d: m.delay, ty: m.type });
+      // Varios impactos: meteoritos alrededor del objetivo (scatter) o en fila hacia él (line)
+      const pts = !m.count ? [at] : m.pattern === 'line'
+        ? Array.from({ length: m.count }, (_, k) => { const f = (k + 1) / m.count; return { x: side.x + (at.x - side.x) * f, y: side.y + (at.y - side.y) * f }; })
+        : Array.from({ length: m.count }, (_, k) => { const an = Math.random() * Math.PI * 2, d = k === 0 ? 0 : 30 + Math.random() * (m.scatter || 70); return { x: at.x + Math.cos(an) * d, y: at.y + Math.sin(an) * d }; });
+      pts.forEach((pt, k) => {
+        const x = S.clamp(pt.x, 10, S.ARENA.w - 10), y = S.clamp(pt.y, 10, S.ARENA.h - 10), d = m.delay + k * (m.stagger || 0);
+        this.areas.push({ owner: side, m, x, y, t: d });
+        this.ev({ k: 'warn', s: side.idx, x: Math.round(x), y: Math.round(y), r: m.radius, d, ty: m.type });
+      });
     } else if (m.kind === 'blink') {
       const from = { x: side.x, y: side.y };
       side.x += ax * m.dist; side.y += ay * m.dist;
@@ -357,6 +374,21 @@ class Battle {
         this.obstacles.push(o);
       }
     }
+  }
+
+  // Cono delante (Lanzallamas, Ventisca, Zumbido...): golpe instantáneo en un sector; deja terreno
+  cone(side, m, a) {
+    this.ev({ k: 'cone', s: side.idx, x: Math.round(side.x), y: Math.round(side.y), a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
+    const inCone = (x, y, extra = 0) => {
+      const dx = x - side.x, dy = y - side.y, d = Math.hypot(dx, dy);
+      let diff = Math.atan2(dy, dx) - a;
+      while (diff > Math.PI) diff -= 2 * Math.PI;
+      while (diff < -Math.PI) diff += 2 * Math.PI;
+      return d < m.range + extra && (Math.abs(diff) < m.arc / 2 || d < extra);
+    };
+    if (m.terrain) for (let i = 0; i < this.terrain.length; i++) { const c = S.cellCenter(i); if (inCone(c.x, c.y) && Math.random() < 0.75) this.paint(i, m.terrain); }
+    const f = this.foe(side);
+    if (!this.mon(f).fainted && inCone(f.x, f.y, this.rad(f))) this.hit(side, f, m, f.x, f.y, { a });
   }
 
   beam(side, m, a) {
@@ -420,7 +452,7 @@ class Battle {
     const am = this.mon(src), dm = this.mon(dst);
     // Protección
     if (dst.prot >= 0 && m.kind !== 'area' && !o.dot) {
-      if (dst.prot < D.PROTECT.perfect) {
+      if (dst.prot < D.PROTECT.perfect && !m.noParry) {   // las olas no se devuelven: solo se bloquean
         dst.energy = Math.min(D.ENERGY.max, dst.energy + 20);
         dst.prot = -1;
         if (o.proj) {      // el proyectil vuelve a quien lo lanzó
@@ -489,6 +521,7 @@ class Battle {
       for (let k = 0; k < steps && p.left > 0; k++) {
         p.x += p.vx * dt / steps; p.y += p.vy * dt / steps;
         p.left -= Math.hypot(p.vx, p.vy) * dt / steps;
+        if (p.wide) { this.updateWave(p); continue; }
         // Obstáculos
         const o = this.obstacles.find(o => Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
         if (o) { this.damageObstacle(o, p.m.dmg || 1); this.projectileEnd(p, true); break; }
@@ -500,7 +533,7 @@ class Battle {
         const f = this.foe(p.owner);
         if (Math.hypot(f.x - p.x, f.y - p.y) < this.rad(f) + p.r && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
           if (p.ball) { this.ballHit(p, f); p.left = 0; break; }
-          if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) this.projectileEnd(p, true);
+          if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) { p.hitFoe = true; this.projectileEnd(p, true); }
           break;
         }
         if (p.x < -40 || p.y < -40 || p.x > S.ARENA.w + 40 || p.y > S.ARENA.h + 40) p.left = 0;
@@ -510,10 +543,44 @@ class Battle {
     this.projectiles = this.projectiles.filter(p => p.left > 0);
   }
 
+  // Frente de la ola: moja el suelo bajo todo su ancho y golpea una vez a quien pille
+  updateWave(p) {
+    const ux = p.vx / (Math.hypot(p.vx, p.vy) || 1), uy = p.vy / (Math.hypot(p.vx, p.vy) || 1);
+    if (p.m.terrain) for (let o = -p.wide; o <= p.wide; o += CELL * 0.75) {
+      const x = p.x - uy * o, y = p.y + ux * o;
+      if (x >= 0 && y >= 0 && x < S.ARENA.w && y < S.ARENA.h && Math.random() < 0.5) this.paint(S.cellIndex(x, y), p.m.terrain);
+    }
+    const f = this.foe(p.owner);
+    if (!p.hitFoe && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
+      const dx = f.x - p.x, dy = f.y - p.y;
+      if (Math.abs(dx * ux + dy * uy) < p.r + this.rad(f) && Math.abs(-dx * uy + dy * ux) < p.wide + this.rad(f)) {
+        p.hitFoe = true;
+        this.hit(p.owner, f, { ...p.m, noParry: true }, f.x, f.y, { a: Math.atan2(p.vy, p.vx) });
+      }
+    }
+    if (p.left <= 0 || p.x < -60 || p.y < -60 || p.x > S.ARENA.w + 60 || p.y > S.ARENA.h + 60) p.left = 0;
+  }
+
   projectileEnd(p, impact) {
     p.left = 0;
     const i = S.cellIndex(p.x, p.y);
-    if (p.m.terrain) this.paint(i, p.m.terrain);
+    if (p.m.terrain && !p.m.explode) this.paint(i, p.m.terrain);
+    // Explosión al final (Llamarada, Bomba Lodo): daño en área si no le dio de lleno, y terreno alrededor
+    if (p.m.explode) {
+      const m = p.m, R = m.explode;
+      this.ev({ k: 'boom', s: p.owner.idx, x: Math.round(p.x), y: Math.round(p.y), r: R, ty: m.type });
+      const f = this.foe(p.owner);
+      if (!p.hitFoe && Math.hypot(f.x - p.x, f.y - p.y) < R + this.rad(f)) this.hit(p.owner, f, { ...m, kind: 'area', dmg: Math.round(m.dmg * 0.6) }, f.x, f.y);
+      const c0 = i, cx = c0 % COLS, cy = Math.floor(c0 / COLS), rr = Math.ceil(R / CELL);
+      for (let y = cy - rr; y <= cy + rr; y++) for (let x = cx - rr; x <= cx + rr; x++) {
+        if (x < 0 || y < 0 || x >= COLS || y >= ROWS) continue;
+        const cc = S.cellCenter(y * COLS + x);
+        if (Math.hypot(cc.x - p.x, cc.y - p.y) > R) continue;
+        if (m.terrain) this.paint(y * COLS + x, m.terrain);
+        if (m.puddle) this.paint(y * COLS + x, m.puddle);
+      }
+      return;
+    }
     if (p.m.type === 'electrico' && this.terrain[i] === T.WATER) this.electrify(i, p.owner, p.m);
     if (!p.ball) this.ev({ k: 'pend', x: Math.round(p.x), y: Math.round(p.y), ty: p.m.type, imp: impact ? 1 : 0 });
   }
@@ -603,6 +670,8 @@ class Battle {
       else if (cur !== T.GRASS && cur !== T.ICE && cur !== T.WEB) this.setCell(i, T.WATER, WATER_TTL);
     } else if (kind === 'hielo') {
       if (cur === T.WATER) this.setCell(i, T.ICE, ICE_TTL);
+    } else if (kind === 'veneno') {
+      if (cur === T.NONE || cur === T.BURNT) this.setCell(i, T.POISON, POISON_TTL);
     }
   }
 
@@ -727,7 +796,7 @@ class Battle {
     const common = {
       t: 'snap', st: Math.round(this.t * 1000), state: this.state, cd: Math.ceil(this.countdown),
       tl: Math.max(0, Math.ceil(LIMIT - (this.fightT || 0))), sd: this.sudden ? 1 : 0,
-      pr: this.projectiles.map(p => ({ id: p.id, x: Math.round(p.x), y: Math.round(p.y), r: p.r, o: p.owner.idx, mk: p.mk, ball: p.ball || undefined, a: +Math.atan2(p.vy, p.vx).toFixed(2) })),
+      pr: this.projectiles.map(p => ({ id: p.id, x: Math.round(p.x), y: Math.round(p.y), r: p.r, o: p.owner.idx, mk: p.mk, ball: p.ball || undefined, w: p.wide || undefined, a: +Math.atan2(p.vy, p.vx).toFixed(2) })),
       ob: this.obstacles.filter(o => o.kind !== 'rock').map(o => ({ id: o.id, x: Math.round(o.x), y: Math.round(o.y), r: o.r, k: o.kind })),
       tr: terrainDiff, ev: this.events, ar: this.arena.snap(),
     };

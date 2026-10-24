@@ -32,7 +32,7 @@ function personality(dex) {
   if (p) return p;
   const sp = D.SPECIES[dex];
   const moves = sp.moves.map(k => D.MOVES[k]);
-  const melee = moves.filter(m => m.kind === 'melee' || m.kind === 'dash').length;
+  const melee = moves.filter(m => m.kind === 'melee' || m.kind === 'dash' || m.kind === 'cone').length;
   const control = moves.filter(m => m.kind === 'area' || m.stun || m.slow || m.kind === 'wall').length;
   const heals = moves.some(m => m.kind === 'heal');
   if (melee >= 2) p = { style: 'luchador', range: 55, aggro: 0.65 };
@@ -50,7 +50,7 @@ function threatOf(p, me, r) {
   const t = ((me.x - p.x) * p.vx + (me.y - p.y) * p.vy) / v2;
   if (t < 0 || t > 0.8) return null;
   const miss = Math.hypot(me.x - (p.x + p.vx * t), me.y - (p.y + p.vy * t));
-  if (miss > r + p.r + 6) return null;
+  if (miss > r + (p.wide || p.r) + 6) return null;   // las olas son anchas
   return { t, vx: p.vx, vy: p.vy, id: p.id };
 }
 
@@ -200,7 +200,10 @@ function aiInput(b, side, dt) {
     const key = 'w' + Math.floor(b.t * 2) + ':' + f.wind.c;
     if (m.kind === 'area' && m.at === 'cursor' && Math.hypot(side.x - f.wind.tx, side.y - f.wind.ty) < m.radius + r) {
       if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.wind.ty, side.x - f.wind.tx); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; }
-    } else if ((m.kind === 'beam' || m.kind === 'proj' || m.kind === 'dash') && Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < 0.35) {
+    } else if (m.kind === 'cone' && dist < m.range + r + 30) {
+      // Cono: salir hacia atrás, fuera de su alcance
+      if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.y, side.x - f.x); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; }
+    } else if ((m.kind === 'beam' || m.kind === 'proj' || m.kind === 'dash' || m.kind === 'wave') && Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < (m.kind === 'wave' ? 0.7 : 0.35)) {
       if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; }
     }
   }
@@ -248,7 +251,7 @@ function aiInput(b, side, dt) {
     if (f.wind && !f.hidden) {
       const m = f.wind.m, left = m.wind - f.wind.t;
       const aimed = Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < 0.4;
-      const inRange = m.kind === 'melee' ? dist < m.range + r + 20 : m.kind === 'beam' ? dist < m.len : m.kind === 'dash' ? dist < m.dist + 40 : false;
+      const inRange = m.kind === 'melee' || m.kind === 'cone' ? dist < m.range + r + 20 : m.kind === 'beam' ? dist < m.len : m.kind === 'dash' ? dist < m.dist + 40 : false;
       if (aimed && inRange && left < 0.06 + (1 - skill) * 0.06 && decide(st, 'pw' + Math.floor(b.t * 2), skill * 0.45 + guard)) { inp.c = 4; return aim(inp, toFoe, skill); }
     }
   }
@@ -287,6 +290,8 @@ function aiInput(b, side, dt) {
     if (m.kind === 'proj') u = dist < m.range * 0.92 ? (m.dmg + 2) * (m.count || 1) * 0.6 + (m.stun ? 8 : 0) : 0;
     else if (m.kind === 'beam') u = dist < m.len * 0.92 ? m.dmg * (opening ? 1.7 : 0.75) : 0;
     else if (m.kind === 'melee') u = dist < m.range + fr + 8 ? m.dmg * 1.2 : 0;
+    else if (m.kind === 'cone') u = dist < m.range + fr - 10 ? m.dmg * 1.25 : 0;
+    else if (m.kind === 'wave') u = dist < m.range * 0.9 ? m.dmg * (opening ? 1.5 : 0.9) : 0;
     else if (m.kind === 'dash') u = dist < m.dist + 30 && dist > 60 ? m.dmg * (mode === 'atacar' ? 1.3 : mode === 'defender' ? 0.2 : 0.7) : 0;
     else if (m.kind === 'area') {
       if (m.at === 'self') u = dist < m.radius * 0.85 ? m.dmg * 1.3 : 0;
@@ -298,7 +303,7 @@ function aiInput(b, side, dt) {
     else if (m.kind === 'wall') u = f.wind && (f.wind.m.kind === 'beam' || f.wind.m.kind === 'proj') ? 25 : mode === 'defender' ? 8 : 0;
     else if (m.kind === 'blink') u = (threat && threat.t < 0.25) || (mode === 'defender' && dist < 140) ? 24 : 0;
     // Estilo según el estado
-    if (u > 0 && mode === 'defender' && (m.kind === 'melee' || m.kind === 'dash') && foeHp > 0.2) u *= 0.3;
+    if (u > 0 && mode === 'defender' && (m.kind === 'melee' || m.kind === 'dash' || m.kind === 'cone') && foeHp > 0.2) u *= 0.3;
     if (u > 0 && mode === 'atacar' && big) u *= 1.3;
     if (u > 0 && foeHp < 0.2 && m.dmg) u *= 1.4;
     // Combos: mojado + eléctrico/hielo
@@ -310,7 +315,7 @@ function aiInput(b, side, dt) {
   if (best === null) return aim(inp, toFoe, skill);
   const m = moves[best];
   // Apuntar con anticipación (más precisa cuanto más hábil)
-  const lead = m.kind === 'proj' ? dist / m.speed : m.kind === 'area' ? m.delay + m.wind : m.wind;
+  const lead = m.kind === 'proj' || m.kind === 'wave' ? dist / m.speed : m.kind === 'area' ? m.delay + m.wind : m.wind;
   const px = target.x + vel.x * lead * skill, py = target.y + vel.y * lead * skill;
   inp.a = Math.atan2(py - side.y, px - side.x) + (rnd() - 0.5) * (1 - skill) * 0.6;
   inp.tx = px + (rnd() - 0.5) * (1 - skill) * 100; inp.ty = py + (rnd() - 0.5) * (1 - skill) * 100;

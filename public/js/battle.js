@@ -121,14 +121,14 @@ export class BattleClient {
       case 'wind': {
         const m = this.moveOf(s, e.c);
         if (!m) break;
-        if (m.wind >= 0.2 && ['proj', 'beam', 'area'].includes(m.kind)) actor.play('Charge');
+        if (m.wind >= 0.2 && ['proj', 'beam', 'area', 'cone', 'wave'].includes(m.kind)) actor.play('Charge');
         if (m.wind >= 0.3) this.p.emit(toWorld(pos.x, pos.y).x, 0.2, toWorld(pos.x, pos.y).z, { n: 14, colors: PALETTE[m.type], up: 1, speed: 1.2, life: m.wind, size: 0.18, jitter: 0.8 });
         break;
       }
       case 'cast': {
         const m = this.moveOf(s, e.c);
         if (!m) break;
-        actor.play(m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : m.kind === 'proj' || m.kind === 'beam' ? 'Shoot' : 'Charge');
+        actor.play(m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : ['proj', 'beam', 'cone', 'wave'].includes(m.kind) ? 'Shoot' : 'Charge');
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
         if (m.kind === 'heal') this.p.emit(w.x, 0.1, w.z, { n: 40, colors: ['#ffffff', '#b0ffd0', '#70f0ff'], dir: [0, 1, 0], spread: 0.4, speed: 2.5, life: 1, size: 0.18, jitter: 1 });
@@ -137,6 +137,7 @@ export class BattleClient {
         break;
       }
       case 'beam': this.fx.beam(e); break;
+      case 'cone': this.fx.cone(e); break;
       case 'melee': this.fx.melee(e, pos); break;
       case 'warn': this.fx.warn(e); break;
       case 'boom': this.fx.boom(e); break;
@@ -604,7 +605,9 @@ export function escapeHtml(s) {
 }
 
 export function describeMove(m) {
-  const kinds = { proj: 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida', area: m.at === 'self' ? 'Área a tu alrededor' : 'Área en el cursor',
+  const kinds = { proj: m.explode ? 'Proyectil que estalla donde apuntas' : 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida',
+    area: m.at === 'self' ? 'Área a tu alrededor' : m.pattern === 'line' ? 'Impactos en fila hacia el cursor' : m.count ? 'Impactos alrededor del cursor' : 'Área en el cursor',
+    cone: 'Cono delante de ti', wave: 'Ola que avanza',
     blink: 'Teletransporte', heal: 'Curación', buff: 'Mejora', smoke: 'Nube que oculta', wall: 'Muro' };
   const parts = [`${t(kinds[m.kind])} · ${Data.TYPE_LABEL[m.type]}`];
   if (m.dmg) parts.push(`${t('Daño {n}', { n: m.dmg })}${m.count > 1 ? ' ×' + m.count : ''}`);
@@ -614,6 +617,7 @@ export function describeMove(m) {
   if (m.stun) fx.push(t('aturde {n} s', { n: m.stun })); if (m.knock) fx.push(t('empuja')); if (m.pull) fx.push(t('atrae')); if (m.drain) fx.push(t('drena PS'));
   if (m.terrain) fx.push(t('deja {terrain} en el suelo', { terrain: t(m.terrain) })); if (m.heal) fx.push(t('cura {n} %', { n: Math.round(m.heal * 100) }));
   if (m.haste) fx.push(t('más velocidad')); if (m.power) fx.push(t('más daño')); if (m.invuln) fx.push(t('invulnerable bajo tierra'));
+  if (m.puddle) fx.push(t('deja un charco tóxico')); if (m.back) fx.push(t('vuelve a su sitio'));
   if (m.selfKO) fx.push(t('¡te debilita!')); if (m.rockWall) fx.push(t('deja una roca')); if (m.splash) fx.push(t('no hace nada'));
   if (fx.length) parts.push(fx.join(', '));
   return parts.join('\n');

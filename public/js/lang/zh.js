@@ -260,6 +260,13 @@ export default {
     // ---------- 场景（完全权限） ----------
     'Acceso total activado: tienes el menú Escenarios': '已开启完全权限：可以使用“场景”菜单了',
     'Escenarios': '场景',
+    'deja un charco tóxico': '留下毒水洼',
+    'vuelve a su sitio': '会返回原位',
+    'Proyectil que estalla donde apuntas': '在瞄准处爆炸的弹射物',
+    'Impactos en fila hacia el cursor': '朝光标方向连成一排的冲击',
+    'Impactos alrededor del cursor': '光标周围的多次冲击',
+    'Cono delante de ti': '前方扇形范围',
+    'Ola que avanza': '向前推进的波浪',
     'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': '地震：冲击波从震中扫过整个场地。躲到岩石后面（绿色区域）或使用守住；飞行属性不受影响。',
     '¡Terremoto! Ponte detrás de una roca': '地震！快躲到岩石后面',
     '¡A cubierto!': '躲过了！',

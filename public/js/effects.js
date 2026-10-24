@@ -68,6 +68,16 @@ export class Effects {
     }
     const g = t.obj;
     if (g.userData.atCaster) g.position.copy(toWorld(pos.x, pos.y, 0.04));
+    // Objetivo de un proyectil que explota y fila de impactos: relativos al lanzador (que se mueve)
+    for (const key of ['target', 'line']) {
+      const d = g.userData[key];
+      if (!d) continue;
+      let dx = d.tx - pos.x, dy = d.ty - pos.y;
+      const len = Math.hypot(dx, dy) || 1, max = d.max || move.maxRange || len;
+      if (len > max) { dx *= max / len; dy *= max / len; }
+      if (key === 'target') d.obj.position.set(dx * U, 0, dy * U);
+      else for (const c of d.g.children) c.position.set(dx * U * c.userData.f, 0, dy * U * c.userData.f);
+    }
     if (g.userData.fill) g.userData.fill.scale.setScalar(Math.max(0.02, Math.min(1, w.p)));
     if (g.userData.bar) g.userData.bar.scale.x = Math.max(0.02, Math.min(1, w.p));
     g.userData.edge && (g.userData.edge.material.opacity = 0.5 + Math.sin(performance.now() / 60) * 0.25);
@@ -79,8 +89,20 @@ export class Effects {
     const base = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false });
     const strong = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.45, depthWrite: false });
     const flat = mesh => { mesh.rotation.x = -Math.PI / 2; return mesh; };
-    if (m.kind === 'area') {
+    if (m.kind === 'area' && m.count && m.pattern === 'line') {
+      // Impactos en fila hacia el cursor (Avalancha): un círculo por impacto
+      const g2 = new THREE.Group();
       const r = m.radius * U;
+      for (let k = 1; k <= m.count; k++) {
+        const c = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 32), base));
+        c.userData.f = k / m.count;
+        g2.add(c);
+      }
+      g.add(g2);
+      g.userData.line = { g: g2, tx: w.tx, ty: w.ty };
+      g.userData.atCaster = true;
+    } else if (m.kind === 'area') {
+      const r = (m.radius + (m.count ? m.scatter || 70 : 0)) * U;   // con varios impactos, la zona donde pueden caer
       g.add(flat(new THREE.Mesh(new THREE.CircleGeometry(r, 48), base)));
       const fill = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 48), strong));
       g.add(fill); g.userData.fill = fill;
@@ -88,8 +110,8 @@ export class Effects {
       g.add(edge); g.userData.edge = edge;
       if (m.at === 'self') g.userData.atCaster = true;
       else g.position.copy(toWorld(w.tx, w.ty, 0.04));
-    } else if (m.kind === 'melee') {
-      const r = (m.range + 22) * U;
+    } else if (m.kind === 'melee' || m.kind === 'cone') {
+      const r = (m.range + (m.kind === 'melee' ? 22 : 0)) * U;
       const sector = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 24, -m.arc / 2, m.arc), base));
       sector.rotation.z = -w.a;
       g.add(sector);
@@ -97,9 +119,19 @@ export class Effects {
       fill.rotation.z = -w.a;
       g.add(fill); g.userData.fill = fill;
       g.userData.atCaster = true;
-    } else if (['proj', 'beam', 'dash', 'blink'].includes(m.kind)) {
-      const len = (m.kind === 'beam' ? m.len : m.kind === 'proj' ? Math.min(m.range, 340) : m.dist) * U;
-      const wid = (m.kind === 'beam' ? m.width : m.kind === 'proj' ? m.radius * 2 + 6 : 40) * U;
+    } else if (['proj', 'beam', 'dash', 'blink', 'wave'].includes(m.kind)) {
+      const len = (m.kind === 'beam' ? m.len : m.kind === 'wave' ? m.range : m.kind === 'proj' ? Math.min(m.range, 340) : m.dist) * U;
+      const wid = (m.kind === 'beam' ? m.width : m.kind === 'wave' ? m.width : m.kind === 'proj' ? m.radius * 2 + 6 : 40) * U;
+      // Los que explotan marcan además dónde van a estallar
+      if (m.explode) {
+        const ring = flat(new THREE.Mesh(new THREE.RingGeometry(m.explode * U * 0.9, m.explode * U, 40), strong.clone()));
+        const disc = flat(new THREE.Mesh(new THREE.CircleGeometry(m.explode * U, 40), base));
+        const target = new THREE.Group();
+        target.add(ring, disc);
+        g.add(target);
+        g.userData.target = { obj: target, tx: w.tx, ty: w.ty, max: m.maxRange };
+        g.userData.edge = ring;
+      }
       const geo = new THREE.PlaneGeometry(len, wid).translate(len / 2, 0, 0);
       const holder = new THREE.Group();
       holder.add(flat(new THREE.Mesh(geo, base)));
@@ -147,7 +179,29 @@ export class Effects {
       return { obj: m, h: 0.6, update: (_, pos, dt) => { m.rotation.z -= dt * 14; p.trickle(30, dt, pos.x, pos.y, pos.z, { colors: ['#ffffff'], layer: 'glow', speed: 0.3, life: 0.25, size: 0.2 }); } };
     }
     const m = MOVES[pr.mk];
-    const ty = m.type, pal = PALETTE[ty];
+    const ty = m.type, pal = PALETTE[ty] || ['#ffffff'];
+    if (pr.w) {
+      // Ola: un rodillo de agua tumbado a lo largo del frente (se ve desde cualquier ángulo) con cresta de espuma
+      const W = pr.w * 2 * U;
+      const holder = new THREE.Group();
+      const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, W, 16, 1), new THREE.MeshStandardMaterial({ color: '#3f8fe0', transparent: true, opacity: 0.82, roughness: 0.12, metalness: 0.15 }));
+      roll.rotation.z = Math.PI / 2; roll.scale.set(1, 1, 0.75);
+      const foam = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, W * 0.96, 10, 1), new THREE.MeshStandardMaterial({ color: '#f2fbff', transparent: true, opacity: 0.9, roughness: 0.6 }));
+      foam.rotation.z = Math.PI / 2; foam.position.set(0, 0.28, 0.12);
+      holder.add(roll, foam);
+      const wg = new THREE.Group();
+      wg.add(holder);
+      return {
+        obj: wg, h: 0.4,
+        update: (pr2, pos, dt) => {
+          holder.rotation.y = -pr2.a - Math.PI / 2;   // el rodillo, perpendicular a la dirección en que avanza
+          for (let k = 0; k < 3; k++) {
+            const o = (Math.random() - 0.5) * W, ca = Math.cos(pr2.a), sa = Math.sin(pr2.a);
+            p.emit(pos.x - sa * o, 0.8, pos.z + ca * o, { n: 1, colors: ['#ffffff', '#cfefff'], layer: 'solid', dir: [ca, 1, sa], spread: 0.4, speed: 2, life: 0.4, size: 0.1, grav: 9 });
+          }
+        },
+      };
+    }
     const r = pr.r * U;
     const g = new THREE.Group();
     const trail = (rate, o = {}) => (pr2, pos, dt) => p.trickle(rate, dt, pos.x, pos.y, pos.z, { colors: pal, layer: 'glow', speed: 0.6, life: 0.35, size: r * 2.2, jitter: r, ...o });
@@ -364,6 +418,32 @@ export class Effects {
         }
       });
     }, e.d * 1000);
+  }
+
+  // Cono (Lanzallamas, Ventisca, Zumbido...): abanico que se ilumina y un chorro de partículas
+  cone(e) {
+    const pos = toWorld(e.x, e.y, 0.05), r = e.r * U, ty = e.ty, pal = PALETTE[ty] || ['#ffffff'];
+    const fan = new THREE.Mesh(new THREE.CircleGeometry(r, 32, -e.arc / 2, e.arc), additive(bright(TYPE_COLOR[ty], 1.6), 0.55));
+    fan.rotation.x = -Math.PI / 2; fan.rotation.z = -e.a; fan.position.copy(pos);
+    this.addTemp(fan, 320, f => { fan.material.opacity = 0.55 * (1 - f); fan.scale.setScalar(0.6 + f * 0.4); });
+    const n = Math.round(40 + e.r * e.arc * 0.25);
+    for (let k = 0; k < n; k++) {
+      const a = e.a + (Math.random() - 0.5) * e.arc, sp = (e.r / 40) * (2.2 + Math.random() * 1.6);
+      const o = { n: 1, colors: pal, dir: [Math.cos(a), 0.12, Math.sin(a)], spread: 0.08, speed: sp, life: 0.35 + Math.random() * 0.15, size: 0.22, drag: 0.9 };
+      if (ty === 'fuego') Object.assign(o, { layer: 'glow', size: 0.45, grav: -2 });
+      else if (ty === 'hielo') Object.assign(o, { layer: 'solid', size: 0.1 });
+      else if (ty === 'tierra') Object.assign(o, { layer: 'solid', colors: DUST, size: 0.12, grav: 6 });
+      else if (ty === 'bicho') Object.assign(o, { layer: 'soft', size: 0.35, alpha: 0.5 });
+      this.p.emit(pos.x, 0.5, pos.z, o);
+    }
+    if (ty === 'fuego') this.flashLight(toWorld(e.x + Math.cos(e.a) * e.r * 0.5, e.y + Math.sin(e.a) * e.r * 0.5, 1), '#ff8a30', 8, 300);
+    if (ty === 'bicho') {   // ondas de sonido
+      for (let k = 0; k < 3; k++) {
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 32, 1, -e.arc / 2, e.arc), additive(bright(TYPE_COLOR[ty], 1.4), 0.6));
+        ring.rotation.x = -Math.PI / 2; ring.rotation.z = -e.a; ring.position.copy(pos); ring.position.y = 0.5;
+        this.addTemp(ring, 420, f => { const sc = Math.max(0.05, (f + k * 0.18) * r); ring.scale.setScalar(sc); ring.material.opacity = 0.6 * (1 - f); });
+      }
+    }
   }
 
   // Zonas a cubierto del terremoto: la sombra de cada roca vista desde el epicentro (mismo
