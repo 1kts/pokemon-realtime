@@ -29,8 +29,13 @@ export class UI {
     const first = !this.profile;
     this.profile = p;
     this.board = board || this.board;
+    if (this.pendingFicha) {
+      const mon = p.mons.find(m => m.uid === this.pendingFicha);
+      this.pendingFicha = null;
+      if (mon && !this.root.hidden) setTimeout(() => this.statsModal(mon), 0);
+    }
     if (first) this.show('menu');
-    else if (['menu', 'story', 'team', 'shop', 'online'].includes(this.view)) this.show(this.view, true);
+    else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online'].includes(this.view)) this.show(this.view, true);
   }
 
   toast(text, cls = '') {
@@ -113,13 +118,13 @@ export class UI {
     const box = el('div', 'panel profile');
     const who = el('div', 'who');
     const ava = el('div', 'ava');
-    if (lead) ava.append(animatedPortrait(lead.dex, 84, 'Idle'));
+    if (lead) ava.append(animatedPortrait(lead.dex, 84, 'Idle', !!lead.shiny));
     who.append(ava, el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${p.league} · ${p.elo}</span>`));
     box.append(who);
     box.append(el('div', 'rows', `
       <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
       <div class="stat"><small>Medallas</small><b>${Math.min(8, p.badges)}/8</b></div>
-      <div class="stat"><small>Pokémon</small><b>${p.mons.length}</b></div>
+      <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
       <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>`));
     box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
     return box;
@@ -240,7 +245,7 @@ export class UI {
     // Equipo actual
     box.append(el('h4', '', 'Tu equipo'));
     const team = el('div', 'mini-team');
-    for (const uid of p.team) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48)); c.append(el('small', '', `${SPECIES[m.dex].name}<br>Nv.${m.level}`)); team.append(c); }
+    for (const uid of p.team) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>Nv.${m.level}`)); team.append(c); }
     box.append(team);
   }
 
@@ -293,13 +298,13 @@ export class UI {
     const sorted = [...p.mons].sort((a, b) => (p.team.includes(b.uid) - p.team.includes(a.uid)) || b.level - a.level);
     for (const m of sorted) {
       const inTeam = p.team.includes(m.uid);
-      const card = el('div', 'mon-card' + (inTeam ? ' in' : ''));
-      card.append(portrait(m.dex, 72));
+      const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
+      card.append(portrait(m.dex, 72, { shiny: !!m.shiny }));
       const need = xpToNext(m.level);
       const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
-      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}</b> <small>Nv.${m.level}${m.level >= cap ? ' · <span class="cap">tope</span>' : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
+      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''}</b> <small>Nv.${m.level}${m.level >= cap ? ' · <span class="cap">tope</span>' : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
         <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length} movimiento${known.length > 1 ? 's' : ''} más para elegir</small>` : ''}
         ${upcoming ? `<small class="moves">Aprende ${MOVES[upcoming[1]].name} al Nv.${upcoming[0]}</small>` : ''}`));
@@ -312,6 +317,9 @@ export class UI {
         this.net.send({ t: 'story', a: 'team', uids: team });
       };
       acts.append(toggle);
+      const ficha = el('button', '', 'Ficha');
+      ficha.onclick = () => this.statsModal(m);
+      acts.append(ficha);
       const mv = el('button', known.length ? 'evo' : '', 'Movimientos');
       mv.onclick = () => this.moveManager(m);
       acts.append(mv);
@@ -342,6 +350,68 @@ export class UI {
     }
     wrap.append(grid);
     this.root.append(wrap);
+  }
+
+  // Ficha de un Pokémon: estadísticas (con vitaminas), stats base reales, movimientos, evolución y venta
+  statsModal(mon) {
+    const p = this.profile;
+    const sp = SPECIES[mon.dex];
+    const vit = mon.vit || { hp: 0, atk: 0, def: 0, spe: 0 };
+    const st = Shared.monStats(mon.dex, mon.level, vit);
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box ficha');
+    const head = el('div', 'ficha-head');
+    head.append(animatedPortrait(mon.dex, 120, 'Idle', !!mon.shiny));
+    const route = mon.met ? ROUTES.find(r => r.id === mon.met) : null;
+    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>Nv.${mon.level}</small></h3><div class="types">${typeChips(mon.dex)}</div>
+      <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ' · <b>legendario</b>' : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · Capturado en ${route.name}` : ''}</p>`));
+    box.append(head);
+    // Estadísticas de combate: valor actual, barra relativa y dosis de vitaminas
+    const rows = el('div', 'stat-rows');
+    const bars = [
+      ['hp', 'PS', st.maxHp, 400, `${st.maxHp}`],
+      ['atk', 'Ataque', st.atk, 2, `×${st.atk.toFixed(2)}`],
+      ['def', 'Defensa', st.def, 1.7, `×${st.def.toFixed(2)}`],
+      ['spe', 'Velocidad', sp.spd * st.spdMult, 340, `${Math.round(sp.spd * st.spdMult)} px/s`],
+    ];
+    const vitItems = SHOP.filter(i => i.vit);
+    for (const [key, label, val, max, text] of bars) {
+      const row = el('div', 'stat-row');
+      const item = vitItems.find(i => i.vit === key);
+      const have = p.items[item.id] || 0;
+      row.innerHTML = `<span class="sl">${label}</span><div class="sbar"><div style="width:${Math.min(100, val / max * 100)}%"></div></div><b>${text}</b>
+        <span class="vdots" title="Vitaminas: ${vit[key]}/${Data.VIT_MAX}">${'●'.repeat(vit[key])}${'○'.repeat(Data.VIT_MAX - vit[key])}</span>`;
+      const use = el('button', have && vit[key] < Data.VIT_MAX ? 'evo' : 'dim', `${item.name}${have ? ` (${have})` : ''}`);
+      use.disabled = !have || vit[key] >= Data.VIT_MAX;
+      use.title = have ? `+2,5 % de ${label}` : `Cómpralo en la tienda: ${item.name}`;
+      use.onclick = () => { this.net.send({ t: 'story', a: 'use', item: item.id, uid: mon.uid }); back.remove(); this.pendingFicha = mon.uid; };
+      row.append(use);
+      rows.append(row);
+    }
+    box.append(rows);
+    // Stats base reales de la especie
+    const base = sp.base || [0, 0, 0, 0, 0, 0];
+    const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'];
+    box.append(el('div', 'base-stats', `<small>Stats base de la especie (total ${sp.bst})</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
+    const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
+    box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')));
+    const evo = sp.evo;
+    if (evo) {
+      const list = Array.isArray(evo[0]) ? evo : [evo];
+      box.append(el('p', 'small', 'Evoluciona a ' + list.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? 'Nv.' + c : 'Piedra ' + (SHOP.find(i => i.id === c) || { name: c }).name.replace('Piedra ', '')})`).join(', ')));
+    }
+    const acts = el('div', 'acts');
+    const price = Data.sellPrice(mon);
+    const sell = el('button', 'danger', `Vender por ${coins(price)}`);
+    sell.disabled = p.mons.length <= 1;
+    sell.onclick = () => { if (confirm(`¿Vender a ${sp.name}${mon.shiny ? ' shiny' : ''} (Nv.${mon.level}) por ${price} ₽? No se puede deshacer.`)) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
+    const close = el('button', 'primary', 'Cerrar');
+    close.onclick = () => back.remove();
+    acts.append(sell, close);
+    box.append(acts);
+    back.append(box);
+    back.onclick = e => { if (e.target === back) back.remove(); };
+    document.body.append(back);
   }
 
   // Gestor de movimientos: elegir hasta 4 de los aprendidos
@@ -563,8 +633,8 @@ export class UI {
     box.append(el('h1', won || msg.captured ? 'win' : draw ? '' : 'lose', title));
     if (msg.captured) {
       const c = el('div', 'caught');
-      c.append(animatedPortrait(msg.captured.dex, 140, 'Idle'));
-      c.append(el('p', '', `¡Has atrapado a <b>${SPECIES[msg.captured.dex].name}</b> (Nv.${msg.captured.level})!${r.captured && !r.captured.inTeam ? '<br><small>Tu equipo está lleno: lo encontrarás en Equipo.</small>' : ''}`));
+      c.append(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
+      c.append(el('p', '', `¡Has atrapado a <b>${SPECIES[msg.captured.dex].name}</b>${msg.captured.shiny ? ' <i class="shiny-star">✦ ¡SHINY!</i>' : ''} (Nv.${msg.captured.level})!${r.captured && !r.captured.inTeam ? '<br><small>Tu equipo está lleno: lo encontrarás en Equipo.</small>' : ''}`));
       box.append(c);
     }
     if (r.badge) box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[GYMS[r.badge.index].type]}"></i><p>¡Has vencido a <b>${r.badge.leader}</b>!${r.badge.index < 8 ? ' Medalla conseguida.' : ''}</p>`));
@@ -574,7 +644,8 @@ export class UI {
       const list = el('div', 'xp-list');
       for (const x of r.xp) {
         const row = el('div', 'xp-row');
-        row.append(portrait(x.dex, 48));
+        const pm = this.profile && this.profile.mons.find(m => m.uid === x.uid);
+        row.append(portrait(x.dex, 48, { shiny: !!(pm && pm.shiny) }));
         const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <span class="lvup">Nv.${x.level} ¡sube de nivel!</span>` : `Nv.${x.level}`;
         const learned = (x.learned || []).map(k => MOVES[k].name);
         row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? '<span class="cap">en el tope de nivel</span>' : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}${learned.length ? `<br><span class="lvup">Nuevo movimiento: ${learned.join(', ')}</span> <small>(elígelo en Equipo)</small>` : ''}`));

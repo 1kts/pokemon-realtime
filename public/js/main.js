@@ -108,7 +108,7 @@ net.on('over', m => {
     if (app.battle !== b) return;
     endBattle();
     ui.results(m, b);
-  }, m.captured ? 1800 : 1400);
+  }, m.captured ? 1300 : 1000);
 });
 
 function endBattle() {

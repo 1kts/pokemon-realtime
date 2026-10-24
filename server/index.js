@@ -238,12 +238,22 @@ function handle(c, msg) {
     });
     return;
   }
+  // Gancho de desarrollo (solo con ARENA_DEV=1): dinero, medallas, objetos y Pokémon para probar
+  if (msg.t === 'dev' && process.env.ARENA_DEV) {
+    const p = c.profile;
+    if (Number.isFinite(msg.coins)) p.coins += msg.coins;
+    if (Number.isInteger(msg.badges)) p.badges = msg.badges;
+    if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
+    if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny);
+    store.save();
+    return sendProfile(c);
+  }
   if (msg.t === 'name') {
     c.profile.name = String(msg.name || '').trim().slice(0, 16) || c.profile.name;
     store.save();
     return sendProfile(c);
   }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell'].includes(msg.a)) {
     if (c.battle) return;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });

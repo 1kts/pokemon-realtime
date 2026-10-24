@@ -14,7 +14,7 @@
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
 
-const { T, F, RADIUS } = S;
+const { T, F } = S;
 const rnd = () => Math.random();
 const clamp01 = v => Math.max(0, Math.min(1, v));
 
@@ -44,13 +44,13 @@ function personality(dex) {
 }
 
 // Tiempo hasta el impacto de un proyectil contra un punto (o null si no viene hacia él)
-function threatOf(p, me) {
+function threatOf(p, me, r) {
   const v2 = p.vx * p.vx + p.vy * p.vy;
   if (!v2) return null;
   const t = ((me.x - p.x) * p.vx + (me.y - p.y) * p.vy) / v2;
   if (t < 0 || t > 0.8) return null;
   const miss = Math.hypot(me.x - (p.x + p.vx * t), me.y - (p.y + p.vy * t));
-  if (miss > RADIUS + p.r + 6) return null;
+  if (miss > r + p.r + 6) return null;
   return { t, vx: p.vx, vy: p.vy, id: p.id };
 }
 
@@ -88,6 +88,7 @@ function aiInput(b, side, dt) {
   const mon = b.mon(side);
   const f = b.foe(side);
   const fmon = b.mon(f);
+  const r = mon.r, fr = fmon.r;   // radios de colisión (los pequeños son difíciles de acertar)
   st.decided = st.decided || new Map();
   if (st.decided.size > 300) st.decided.clear();
 
@@ -176,7 +177,7 @@ function aiInput(b, side, dt) {
   const dodgeP = (0.08 + 0.72 * skill) * (side.wild ? 0.4 : 1);
   for (const p of b.projectiles) {
     if (p.owner === side) continue;
-    const th = threatOf(p, side);
+    const th = threatOf(p, side, r);
     if (!th) continue;
     if (!threat || th.t < threat.t) threat = th;
     if (decide(st, 'd' + p.id, dodgeP)) {
@@ -189,7 +190,7 @@ function aiInput(b, side, dt) {
   for (const ar of b.areas) {
     if (ar.owner === side) continue;
     const d = Math.hypot(side.x - ar.x, side.y - ar.y);
-    if (d < ar.m.radius + RADIUS + 10 && decide(st, 'a' + ar.x + ':' + ar.y, dodgeP)) {
+    if (d < ar.m.radius + r + 10 && decide(st, 'a' + ar.x + ':' + ar.y, dodgeP)) {
       mx += (side.x - ar.x) / (d || 1) * 2.5; my += (side.y - ar.y) / (d || 1) * 2.5;
     }
   }
@@ -197,7 +198,7 @@ function aiInput(b, side, dt) {
   if (f.wind && !f.hidden) {
     const m = f.wind.m;
     const key = 'w' + Math.floor(b.t * 2) + ':' + f.wind.c;
-    if (m.kind === 'area' && m.at === 'cursor' && Math.hypot(side.x - f.wind.tx, side.y - f.wind.ty) < m.radius + RADIUS) {
+    if (m.kind === 'area' && m.at === 'cursor' && Math.hypot(side.x - f.wind.tx, side.y - f.wind.ty) < m.radius + r) {
       if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.wind.ty, side.x - f.wind.tx); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; }
     } else if ((m.kind === 'beam' || m.kind === 'proj' || m.kind === 'dash') && Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < 0.35) {
       if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; }
@@ -225,7 +226,7 @@ function aiInput(b, side, dt) {
     if (f.wind && !f.hidden) {
       const m = f.wind.m, left = m.wind - f.wind.t;
       const aimed = Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < 0.4;
-      const inRange = m.kind === 'melee' ? dist < m.range + RADIUS + 20 : m.kind === 'beam' ? dist < m.len : m.kind === 'dash' ? dist < m.dist + 40 : false;
+      const inRange = m.kind === 'melee' ? dist < m.range + r + 20 : m.kind === 'beam' ? dist < m.len : m.kind === 'dash' ? dist < m.dist + 40 : false;
       if (aimed && inRange && left < 0.06 + (1 - skill) * 0.06 && decide(st, 'pw' + Math.floor(b.t * 2), skill * 0.45 + guard)) { inp.c = 4; return aim(inp, toFoe, skill); }
     }
   }
@@ -263,7 +264,7 @@ function aiInput(b, side, dt) {
     const big = m.cost >= 40;
     if (m.kind === 'proj') u = dist < m.range * 0.92 ? (m.dmg + 2) * (m.count || 1) * 0.6 + (m.stun ? 8 : 0) : 0;
     else if (m.kind === 'beam') u = dist < m.len * 0.92 ? m.dmg * (opening ? 1.7 : 0.75) : 0;
-    else if (m.kind === 'melee') u = dist < m.range + RADIUS + 8 ? m.dmg * 1.2 : 0;
+    else if (m.kind === 'melee') u = dist < m.range + fr + 8 ? m.dmg * 1.2 : 0;
     else if (m.kind === 'dash') u = dist < m.dist + 30 && dist > 60 ? m.dmg * (mode === 'atacar' ? 1.3 : mode === 'defender' ? 0.2 : 0.7) : 0;
     else if (m.kind === 'area') {
       if (m.at === 'self') u = dist < m.radius * 0.85 ? m.dmg * 1.3 : 0;

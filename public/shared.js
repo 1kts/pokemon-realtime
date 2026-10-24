@@ -1,12 +1,14 @@
 // Reglas compartidas entre servidor y cliente: medidas de la arena, rejilla de terreno,
 // movimiento con colisiones y estadísticas según el nivel. Los datos están en data.js.
 (function (root) {
-  const Data = typeof module !== 'undefined' && module.exports ? require('./data.js') : root.Data;
+  const node = typeof module !== 'undefined' && module.exports;
+  const Data = node ? require('./data.js') : root.Data;
+  const HITBOX = node ? require('./hitbox.js') : root.HITBOX;
 
   const TICK = 30;                 // ticks de simulación por segundo
   const DT = 1 / TICK;
   const ARENA = { w: 960, h: 600 };
-  const RADIUS = 22;               // radio de colisión de un Pokémon
+  const RADIUS = 22;               // radio de colisión por defecto (cada especie tiene el suyo)
   const CELL = 40;                 // celdas de terreno de 40x40
   const COLS = ARENA.w / CELL, ROWS = ARENA.h / CELL;
   const ROCK_R = 24;
@@ -17,6 +19,9 @@
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   const cellIndex = (x, y) => clamp(Math.floor(y / CELL), 0, ROWS - 1) * COLS + clamp(Math.floor(x / CELL), 0, COLS - 1);
   const cellCenter = i => ({ x: (i % COLS) * CELL + CELL / 2, y: Math.floor(i / COLS) * CELL + CELL / 2 });
+
+  // Radio de colisión de una especie (según el tamaño de su sprite; ver tools/import-sprites.js)
+  const hitboxOf = dex => (HITBOX && HITBOX[dex]) || RADIUS;
 
   // Mapa de texto -> terreno inicial y rocas fijas.
   function parseMap(name) {
@@ -48,34 +53,42 @@
   }
 
   // Movimiento determinista de un paso; lo usan el servidor y la predicción del cliente.
-  function stepMove(p, mx, my, speed, dt, obstacles) {
+  function stepMove(p, mx, my, speed, dt, obstacles, r = RADIUS) {
     const len = Math.hypot(mx, my);
     if (len > 0) { mx /= len; my /= len; }
     p.x += mx * speed * dt;
     p.y += my * speed * dt;
-    pushOut(p, RADIUS, obstacles || []);
+    pushOut(p, r, obstacles || []);
   }
 
   // Velocidad efectiva según estados. f = banderas del jugador (ver server/battle.js, flags()).
+  // mult = bonificación propia del Pokémon (vitaminas).
   const F = { STUN: 1, SLOW: 2, BURN: 4, POISON: 8, WET: 16, PROTECT: 32, PERFECT: 64, HIDDEN: 128,
     SWAP: 256, HASTE: 512, POWER: 1024, WIND: 2048, REC: 4096, DASH: 8192, INVULN: 16384, SEED: 32768, FAINTED: 65536 };
-  function speedOf(dex, f) {
+  function speedOf(dex, f, mult = 1) {
     if (f & (F.STUN | F.SWAP | F.DASH | F.FAINTED)) return 0;
-    let s = Data.SPECIES[dex].spd;
+    let s = Data.SPECIES[dex].spd * mult;
     if (f & F.SLOW) s *= 0.55;
     if (f & F.HASTE) s *= 1.3;
     if (f & (F.WIND | F.REC)) s *= 0.45;
     return s;
   }
 
-  function monStats(dex, level) {
+  // Estadísticas de un Pokémon a un nivel, con sus vitaminas: { maxHp, atk, def, spdMult }
+  function monStats(dex, level, vit) {
     const sp = Data.SPECIES[dex];
     const k = Data.levelMult(level);
-    return { maxHp: Math.round(sp.hp * k * 2), atk: sp.atk * k };
+    const v = s => 1 + Data.VIT_STEP * ((vit && vit[s]) || 0);
+    return {
+      maxHp: Math.round(sp.hp * k * 2 * v('hp')),
+      atk: +(sp.atk * k * v('atk')).toFixed(3),
+      def: +((sp.def || 1) * v('def')).toFixed(3),
+      spdMult: +v('spe').toFixed(3),
+    };
   }
 
-  const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, clamp, cellIndex, cellCenter,
+  const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, clamp, cellIndex, cellCenter, hitboxOf,
     parseMap, pushOut, stepMove, speedOf, monStats };
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (node) module.exports = api;
   else root.Shared = api;
 })(this);

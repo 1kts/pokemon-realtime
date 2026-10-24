@@ -317,3 +317,36 @@ body:not(.in-battle) #hud { display: none; }
 .move-row em { font-style: normal; color: var(--muted); font-size: 12px; }
 .move-row .slot { grid-row: span 2; font: 12px Bungee, sans-serif; color: var(--yellow); text-align: center; }
 .move-row.sel { background: linear-gradient(90deg, rgba(255,203,5,.2), rgba(255,203,5,.04)); border-color: var(--yellow); border-left-color: var(--tc); }
+
+/* Shiny, ficha y vitaminas */
+.shiny-star { font-style: normal; color: #ffd84a; text-shadow: 0 0 8px rgba(255,216,74,.9); font-weight: 700; }
+.portrait.shiny { filter: drop-shadow(0 0 6px rgba(255,220,90,.75)); }
+.mon-card.is-shiny { border-color: rgba(255,216,74,.55); background: linear-gradient(160deg, rgba(255,216,74,.12), var(--panel)); }
+.ficha { width: min(640px, 100%); }
+.ficha-head { display: flex; gap: 14px; align-items: center; }
+.ficha-head h3 { margin: 0 0 4px; }
+.stat-rows { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 4px; }
+.stat-row { display: grid; grid-template-columns: 76px 1fr 84px 120px auto; gap: 8px; align-items: center; font-size: 13px; }
+.stat-row .sl { color: var(--muted); }
+.stat-row .sbar { height: 9px; border-radius: 5px; background: rgba(255,255,255,.1); overflow: hidden; }
+.stat-row .sbar > div { height: 100%; background: linear-gradient(90deg, #3aa0ff, #7ae0ff); }
+.stat-row .vdots { font-size: 10px; letter-spacing: 1px; color: #c8a8ff; white-space: nowrap; }
+.stat-row button { padding: 4px 8px; font-size: 12px; }
+.stat-row button.dim { opacity: .5; }
+.base-stats { margin: 8px 0 4px; }
+.base-stats small { color: var(--muted); }
+.base-stats .bs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 4px; }
+.base-stats .bs div { display: flex; flex-direction: column; align-items: center; gap: 2px; height: 86px; justify-content: flex-end; font-size: 11px; }
+.base-stats .bs i { display: block; width: 100%; max-width: 34px; background: linear-gradient(180deg, #ffcb05, #e8403a); border-radius: 4px 4px 0 0; min-height: 3px; }
+.base-stats .bs b { font-size: 12px; }
+.base-stats .bs span { color: var(--muted); }
+.item-icon.maspsps { border-radius: 30%; background: radial-gradient(circle at 35% 30%, #fff, #ffd040 45%, #c08000); }
+.item-icon.proteina { border-radius: 30%; background: radial-gradient(circle at 35% 30%, #fff, #ff8060 45%, #a02020); }
+.item-icon.hierro { border-radius: 30%; background: radial-gradient(circle at 35% 30%, #fff, #b8c0d8 45%, #404860); }
+.item-icon.carburante { border-radius: 30%; background: radial-gradient(circle at 35% 30%, #fff, #7ae0ff 45%, #2060a0); }
+
+/* Cursor personalizado: Poké Ball; en los botones se pone dorada. En combate manda la retícula 3D. */
+html, body, #screen, button, input { cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M2 2 L2 20 L7 15 L11 24 L15 22 L11 13 L18 13 Z%22 fill=%22#ffffff%22 stroke=%22#1a1a1a%22 stroke-width=%222%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%226.5%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.6%22/%3E%3Cpath d=%22M13.5 20 A6.5 6.5 0 0 1 26.5 20 Z%22 fill=%22#e83030%22/%3E%3Crect x=%2213.5%22 y=%2219.2%22 width=%2213%22 height=%221.6%22 fill=%22#1a1a1a%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%221.8%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.2%22/%3E%3C/svg%3E") 2 2, auto; }
+button:not(:disabled):hover, .menu-card:hover, .node:hover, .pool-card:hover, .starter-card:hover, .howto summary:hover, .move-row:hover { cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M2 2 L2 20 L7 15 L11 24 L15 22 L11 13 L18 13 Z%22 fill=%22#fff4b0%22 stroke=%22#1a1a1a%22 stroke-width=%222%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%226.5%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.6%22/%3E%3Cpath d=%22M13.5 20 A6.5 6.5 0 0 1 26.5 20 Z%22 fill=%22#ffcb05%22/%3E%3Crect x=%2213.5%22 y=%2219.2%22 width=%2213%22 height=%221.6%22 fill=%22#1a1a1a%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%221.8%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.2%22/%3E%3C/svg%3E") 2 2, auto; }
+button:disabled { cursor: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M2 2 L2 20 L7 15 L11 24 L15 22 L11 13 L18 13 Z%22 fill=%22#ffffff%22 stroke=%22#1a1a1a%22 stroke-width=%222%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%226.5%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.6%22/%3E%3Cpath d=%22M13.5 20 A6.5 6.5 0 0 1 26.5 20 Z%22 fill=%22#e83030%22/%3E%3Crect x=%2213.5%22 y=%2219.2%22 width=%2213%22 height=%221.6%22 fill=%22#1a1a1a%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%221.8%22 fill=%22#f4f4f4%22 stroke=%22#1a1a1a%22 stroke-width=%221.2%22/%3E%3C/svg%3E") 2 2, auto; }
+body.in-battle, body.in-battle #view, body.in-battle #hud { cursor: none; }

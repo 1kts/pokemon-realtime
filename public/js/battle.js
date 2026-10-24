@@ -38,13 +38,24 @@ export class BattleClient {
     this.lastPos = [{ x: 140, y: 300 }, { x: 820, y: 300 }];
     this.world.loadMap(start.map, start.terrain);
     this.fx.clear(); this.p.clear();
-    this.actors = this.sides.map(s => new Actor(this.world.scene, this.world.camera, s.team[0].dex));
-    preload(this.sides.flatMap(s => s.team.map(m => m.dex)));
+    this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you));
+    preload(this.sides.flatMap(s => s.team.map(m => ({ dex: m.dex, shiny: !!m.shiny }))));
+    this.shinyT = [0, 0];
+    for (const i of [0, 1]) if (this.sides[i].team[0].shiny) setTimeout(() => this.shinyAppear(i), 600);
     this.buildHud();
     this.bindInput();
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
     if (foe.rare) setTimeout(() => this.banner(`¡Un ${foe.team[0] && Data.SPECIES[foe.team[0].dex].name} salvaje muy raro!`, 'rare'), 300);
+  }
+
+  // Un shiny entra en combate: destellos y aviso
+  shinyAppear(i) {
+    const p = this.posOf(i), w = toWorld(p.x, p.y, 0.9);
+    this.p.emit(w.x, w.y, w.z, { n: 60, colors: ['#ffffff', '#fff6a0', '#ffd040', '#a0f0ff'], speed: 2.5, life: 1.1, size: 0.22, jitter: 0.8 });
+    this.fx.flashLight(w, '#fff6c0', 8, 500);
+    this.shinyT[i] = performance.now();
+    if (i !== this.you) this.banner(`✨ ¡${this.monName(i)} shiny! ✨`, 'rare');
   }
 
   // ---------- Red ----------
@@ -71,8 +82,9 @@ export class BattleClient {
     const p = { x: me.x, y: me.y };
     if (m.state === 'fight') {
       const obstacles = this.world.collisionList();
-      const speed = Shared.speedOf(this.dexOf(this.you), me.f);
-      if (!(me.f & F.DASH)) for (const i of this.pending) Shared.stepMove(p, i.mx, i.my, speed, DT, obstacles);
+      const speed = Shared.speedOf(this.dexOf(this.you), me.f, this.monOf(this.you).spdMult);
+      const r = this.monOf(this.you).r || Shared.hitboxOf(this.dexOf(this.you));
+      if (!(me.f & F.DASH)) for (const i of this.pending) Shared.stepMove(p, i.mx, i.my, speed, DT, obstacles, r);
     }
     const jump = me.f & (F.DASH | F.SWAP) || !old;
     if (old && !jump) { this.err.x += old.x - p.x; this.err.y += old.y - p.y; }
@@ -83,6 +95,7 @@ export class BattleClient {
   }
 
   dexOf(i) { return this.sides[i].team[this.act[i]].dex; }
+  monOf(i) { return this.sides[i].team[this.act[i]]; }
   movesOf(i) { const m = this.sides[i].team[this.act[i]]; return m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves; }
   moveOf(i, c) { return MOVES[this.movesOf(i)[c]]; }
   monName(i) { return SPECIES[this.dexOf(i)].name; }
@@ -135,8 +148,9 @@ export class BattleClient {
       case 'swap':
         this.fx.swapFlash(pos);
         this.act[s] = e.to;
-        actor.setDex(this.dexOf(s));
+        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny);
         actor.play('Idle', false);
+        if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
         this.buildTeams();
         if (s === this.you) this.buildMoves();
         break;
@@ -197,6 +211,25 @@ export class BattleClient {
     addEventListener('blur', this.onBlur);
     this.ray = new THREE.Raycaster();
     this.ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    // Retícula: anillo con cuatro marcas que gira despacio y late, siempre bajo el ratón
+    const ret = this.reticle = new THREE.Group();
+    const mat = () => new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.85, depthWrite: false, toneMapped: false });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.36, 40), mat());
+    ring.rotation.x = -Math.PI / 2;
+    ret.add(ring);
+    for (let k = 0; k < 4; k++) {
+      const tick = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.16), mat());
+      tick.rotation.x = -Math.PI / 2;
+      tick.position.set(Math.cos(k * Math.PI / 2) * 0.47, 0, Math.sin(k * Math.PI / 2) * 0.47);
+      tick.rotation.z = -k * Math.PI / 2;
+      ret.add(tick);
+    }
+    const dot = new THREE.Mesh(new THREE.CircleGeometry(0.05, 16), mat());
+    dot.rotation.x = -Math.PI / 2;
+    ret.add(dot);
+    ret.position.y = 0.06;
+    ret.renderOrder = 3;
+    this.world.scene.add(ret);
   }
 
   // Punto del suelo bajo el ratón, en px de juego
@@ -239,10 +272,12 @@ export class BattleClient {
       const fighting = this.latest.state === 'fight';
       if (fighting) this.pending.push(inp);
       this.prevPred = { ...this.pred };
+      const mine = this.monOf(this.you);
+      const speed = Shared.speedOf(mine.dex, this.me.f, mine.spdMult);
       if (fighting && !(this.me.f & F.DASH)) {
-        Shared.stepMove(this.pred, inp.mx, inp.my, Shared.speedOf(this.dexOf(this.you), this.me.f), DT, this.world.collisionList());
+        Shared.stepMove(this.pred, inp.mx, inp.my, speed, DT, this.world.collisionList(), mine.r || Shared.hitboxOf(mine.dex));
       }
-      this.moving = (inp.mx || inp.my) && Shared.speedOf(this.dexOf(this.you), this.me.f) > 0;
+      this.moving = (inp.mx || inp.my) && speed > 0;
     }
     this.err.x *= 0.85; this.err.y *= 0.85;
     this.render(now, dt);
@@ -282,6 +317,15 @@ export class BattleClient {
       this.lastPos[i] = { x, y };
     }
     this.renderPos = pos;
+    // Retícula bajo el ratón: gira, late y se vuelve amarilla cuando apunta a la hitbox del rival
+    const ret = this.reticle;
+    const aimW = toWorld(this.aim.x, this.aim.y, 0.06);
+    ret.position.lerp(aimW, 0.6);
+    ret.rotation.y += dt * 0.8;
+    const foe = pos[this.foeIdx];
+    const onFoe = foe.st.x !== undefined && Math.hypot(this.aim.x - foe.x, this.aim.y - foe.y) < (this.monOf(this.foeIdx).r || 22);
+    ret.scale.setScalar((onFoe ? 1.25 : 1) * (1 + Math.sin(now / 180) * 0.05));
+    for (const c of ret.children) c.material.color.set(onFoe ? '#ffd23a' : '#ffffff');
     for (let i = 0; i < 2; i++) {
       const { x, y, a, st, moving } = pos[i];
       const actor = this.actors[i];
@@ -324,6 +368,7 @@ export class BattleClient {
   statusFx(i, x, y, f, dt) {
     const w = toWorld(x, y);
     const p = this.p;
+    if (this.monOf(i).shiny) p.trickle(5, dt, w.x, 0.9, w.z, { colors: ['#ffffff', '#fff6a0', '#ffd040'], speed: 0.3, life: 0.8, size: 0.14, jitter: 1.1 });
     if (f & F.BURN) p.trickle(14, dt, w.x, 0.5, w.z, { colors: PALETTE.fuego, dir: [0, 1, 0], spread: 0.3, speed: 1.2, life: 0.5, size: 0.22, jitter: 0.6 });
     if (f & F.POISON) p.trickle(6, dt, w.x, 0.6, w.z, { colors: PALETTE.veneno, layer: 'solid', dir: [0, 1, 0], spread: 0.3, speed: 0.6, life: 0.8, size: 0.12, jitter: 0.6 });
     if (f & F.WET) p.trickle(8, dt, w.x, 1.1, w.z, { colors: PALETTE.agua, layer: 'solid', dir: [0, -1, 0], spread: 0.2, speed: 0.5, life: 0.6, size: 0.07, grav: 4, jitter: 0.7 });
@@ -366,8 +411,8 @@ export class BattleClient {
       box.innerHTML = `<div class="tname">${escapeHtml(this.sides[i].name)}</div>`;
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
-        row.append(portrait(m.dex, 40));
-        row.append(el('div', 'tinfo', `<b>${SPECIES[m.dex].name}</b> <small>Nv.${m.level}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
+        row.append(portrait(m.dex, 40, { shiny: !!m.shiny }));
+        row.append(el('div', 'tinfo', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>Nv.${m.level}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
         row.dataset.slot = slot;
         box.append(row);
       });
@@ -469,7 +514,7 @@ export class BattleClient {
     if (f & F.HASTE) icons.push('<i class="st haste">VEL</i>');
     if (f & F.POWER) icons.push('<i class="st power">ATQ</i>');
     if (f & F.HIDDEN) icons.push('<i class="st hidden">OCULTO</i>');
-    plate.innerHTML = `<div class="pn">${SPECIES[mon.dex].name} <small>Nv.${mon.level}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
+    plate.innerHTML = `<div class="pn">${SPECIES[mon.dex].name}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>Nv.${mon.level}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
   }
 
   floatText(x, y, text, cls = '', sub = '', big = false) {
@@ -498,6 +543,8 @@ export class BattleClient {
     removeEventListener('contextmenu', this.onContext);
     removeEventListener('blur', this.onBlur);
     for (const a of this.actors) a.dispose();
+    this.world.scene.remove(this.reticle);
+    for (const c of this.reticle.children) { c.geometry.dispose(); c.material.dispose(); }
     this.fx.clear();
     this.p.clear();
     this.app.root.innerHTML = '';

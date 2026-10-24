@@ -1,14 +1,18 @@
 // Hojas de sprites de SpriteCollab: carga, elección de fotograma y retratos para la interfaz.
-// Hojas en sprites/{dex}/{Anim}.png; columnas = fotogramas, filas = 8 direcciones.
+// Hojas en sprites/{dex}/{Anim}.png (shiny en sprites/{dex}/s/); columnas = fotogramas, filas = 8 direcciones.
 const META = window.SPRITE_META;
-const images = new Map();   // "dex/Anim" -> HTMLImageElement
+const images = new Map();   // "dex/Anim" | "dex/s/Anim" -> HTMLImageElement
 
-export function sheet(dex, anim) {
-  const key = dex + '/' + anim;
+// ¿Hay versión shiny de esa animación?
+export const hasShiny = (dex, anim) => !!(META[dex].sh && META[dex].sh.includes(anim));
+
+export function sheet(dex, anim, shiny = false) {
+  const s = shiny && hasShiny(dex, anim);
+  const key = dex + (s ? '/s/' : '/') + anim;
   let img = images.get(key);
   if (!img) {
     img = new Image();
-    img.src = `sprites/${dex}/${anim}.png`;
+    img.src = `sprites/${dex}/${s ? 's/' : ''}${anim}.png`;
     images.set(key, img);
   }
   return img;
@@ -36,23 +40,24 @@ export function frameAt(m, t, once) {
 // Fila según el ángulo en coordenadas de juego (0 = derecha, PI/2 = abajo).
 export const dirRow = a => ((2 - Math.round(a / (Math.PI / 4))) % 8 + 8) % 8;
 
-// Precarga las hojas de una lista de especies (para que el combate no parpadee al empezar).
-export function preload(dexes) {
+// Precarga las hojas de una lista de { dex, shiny } (para que el combate no parpadee al empezar).
+export function preload(list) {
   const anims = ['Idle', 'Walk', 'Attack', 'Shoot', 'Charge', 'Hurt', 'Faint'];
-  return Promise.all(dexes.flatMap(d => anims.filter(a => META[d].a[a]).map(a => {
-    const img = sheet(d, a);
+  return Promise.all(list.flatMap(({ dex, shiny }) => anims.filter(a => META[dex].a[a]).map(a => {
+    const img = sheet(dex, a, shiny);
     return img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; });
   })));
 }
 
 // Retrato: primer fotograma de Idle mirando abajo, escalado sin suavizar.
+// opts: { shiny, silhouette (negro, para los misteriosos), className }
 export function portrait(dex, size = 64, opts = {}) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
-  c.className = 'portrait' + (opts.className ? ' ' + opts.className : '');
+  c.className = 'portrait' + (opts.className ? ' ' + opts.className : '') + (opts.shiny ? ' shiny' : '');
+  const img = sheet(dex, 'Idle', opts.shiny);
   const draw = () => {
     const { m } = animMeta(dex, 'Idle');
-    const img = sheet(dex, 'Idle');
     const g = c.getContext('2d');
     g.imageSmoothingEnabled = false;
     g.clearRect(0, 0, size, size);
@@ -60,25 +65,24 @@ export function portrait(dex, size = 64, opts = {}) {
     const w = m.w * scale, h = m.h * scale;
     // Centrar sobre el ancla (los pies) un poco por debajo del centro
     g.drawImage(img, 0, 0, m.w, m.h, Math.round(size / 2 - m.ax * scale), Math.round(size * 0.78 - m.ay * scale), w, h);
-    if (opts.silhouette) {   // silueta negra para los Pokémon misteriosos
+    if (opts.silhouette) {
       g.globalCompositeOperation = 'source-in';
       g.fillStyle = '#10141e';
       g.fillRect(0, 0, size, size);
       g.globalCompositeOperation = 'source-over';
     }
   };
-  const img = sheet(dex, 'Idle');
   if (img.complete && img.naturalWidth) draw(); else img.addEventListener('load', draw, { once: true });
   return c;
 }
 
 // Retrato animado (para menús): devuelve el canvas; se anima mientras esté en el documento.
-export function animatedPortrait(dex, size = 96, anim = 'Idle') {
+export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
-  c.className = 'portrait';
+  c.className = 'portrait' + (shiny ? ' shiny' : '');
   const { name, m } = animMeta(dex, anim);
-  const img = sheet(dex, name);
+  const img = sheet(dex, name, shiny);
   const scale = Math.floor(size / Math.max(m.w, m.h) * 1.5 * 10) / 10;
   const t0 = performance.now();
   const loop = now => {

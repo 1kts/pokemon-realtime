@@ -10,7 +10,7 @@ const D = require('../public/data.js');
 const S = require('../public/shared.js');
 const { aiInput } = require('./ai.js');
 
-const { T, F, RADIUS, CELL, COLS, ROWS } = S;
+const { T, F, CELL, COLS, ROWS } = S;
 let nextId = 1;
 
 const STAB = 1.15;
@@ -23,11 +23,13 @@ const CATCH_IN = 1.0, CATCH_SHAKE = 0.75, CATCH_CLICK = 0.9, CATCH_BREAK = 0.5;
 // A los SUDDEN s empieza la muerte súbita (más daño, sin curar); a los LIMIT s gana quien tenga más PS.
 const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
 
-// moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie
+// moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie.
+// vit: vitaminas · shiny · r: radio de colisión según el tamaño de la especie.
 function makeMon(dex, level, extra = {}) {
-  const st = S.monStats(dex, level);
+  const st = S.monStats(dex, level, extra.vit);
   const moves = (extra.moves && extra.moves.length ? extra.moves : D.SPECIES[dex].moves).filter(m => D.MOVES[m]).slice(0, 4);
-  return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, cds: [0, 0, 0, 0], fainted: false, ...extra, moves };
+  return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, def: st.def, spdMult: st.spdMult, r: S.hitboxOf(dex),
+    shiny: !!extra.shiny, cds: [0, 0, 0, 0], fainted: false, ...extra, moves };
 }
 
 class Battle {
@@ -61,7 +63,7 @@ class Battle {
       idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
-        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves });
+        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, vit: m.vit, shiny: m.shiny });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
         return mon;
       }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,
@@ -76,7 +78,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }
@@ -87,6 +89,7 @@ class Battle {
 
   foe(side) { return this.sides[1 - side.idx]; }
   mon(side) { return side.team[side.act]; }
+  rad(side) { return this.mon(side).r; }   // radio de colisión del Pokémon activo
   ev(e) { this.events.push(e); }
 
   // ---------- Bucle ----------
@@ -159,8 +162,8 @@ class Battle {
     const mon = this.mon(side);
     // Movimiento (el dash y el empuje se mueven en updateSide)
     if (!side.dash && !side.kb) {
-      const speed = S.speedOf(mon.dex, this.flags(side));
-      if (speed > 0) S.stepMove(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles);
+      const speed = S.speedOf(mon.dex, this.flags(side), mon.spdMult);
+      if (speed > 0) S.stepMove(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles, mon.r);
     }
     // Cambio de Pokémon: voluntario (con recarga) o tras un debilitado (elige el jugador)
     if (inp.sw >= 0 && inp.sw < side.team.length && inp.sw !== side.act && !side.team[inp.sw].fainted) {
@@ -220,17 +223,17 @@ class Battle {
       const d = side[key];
       if (!d) continue;
       const before = { x: side.x, y: side.y };
-      S.stepMove(side, d.vx, d.vy, d.speed, dt, key === 'dash' && d.m.invuln ? [] : this.obstacles);
+      S.stepMove(side, d.vx, d.vy, d.speed, dt, key === 'dash' && d.m.invuln ? [] : this.obstacles, this.rad(side));
       if (key === 'dash') {
         const f = this.foe(side);
-        if (!d.hit && !this.mon(f).fainted && Math.hypot(f.x - side.x, f.y - side.y) < RADIUS * 2.3) {
+        if (!d.hit && !this.mon(f).fainted && Math.hypot(f.x - side.x, f.y - side.y) < this.rad(side) + this.rad(f) + 7) {
           d.hit = true;
           this.hit(side, f, d.m, side.x, side.y, { a: Math.atan2(d.vy, d.vx) });
         }
       }
       if ((d.t -= dt) <= 0 || (Math.hypot(side.x - before.x, side.y - before.y) < 0.5 && key === 'kb')) {
         side[key] = null;
-        if (key === 'dash' && d.m.invuln) S.pushOut(side, RADIUS, this.obstacles);
+        if (key === 'dash' && d.m.invuln) S.pushOut(side, this.rad(side), this.obstacles);
       }
     }
     // Cambio en curso
@@ -288,7 +291,7 @@ class Battle {
       for (let j = 0; j < n; j++) {
         const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
         this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c],
-          x: side.x + ax * RADIUS, y: side.y + ay * RADIUS, vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: m.range, r: m.radius });
+          x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: m.range, r: m.radius });
       }
     } else if (m.kind === 'beam') {
       this.beam(side, m, a);
@@ -299,7 +302,7 @@ class Battle {
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
       this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
-      if (Math.hypot(dx, dy) < m.range + RADIUS && Math.abs(diff) < m.arc / 2) this.hit(side, f, m, f.x, f.y, { a });
+      if (Math.hypot(dx, dy) < m.range + this.rad(f) && Math.abs(diff) < m.arc / 2) this.hit(side, f, m, f.x, f.y, { a });
     } else if (m.kind === 'dash') {
       side.dash = { m, vx: ax, vy: ay, speed: m.dist / m.dur, t: m.dur, hit: false };
       if (m.invuln) side.invuln = m.dur;
@@ -311,7 +314,7 @@ class Battle {
     } else if (m.kind === 'blink') {
       const from = { x: side.x, y: side.y };
       side.x += ax * m.dist; side.y += ay * m.dist;
-      S.pushOut(side, RADIUS, this.obstacles);
+      S.pushOut(side, this.rad(side), this.obstacles);
       this.ev({ k: 'blink', s: side.idx, x: Math.round(from.x), y: Math.round(from.y) });
     } else if (m.kind === 'heal') {
       const mon = this.mon(side);
@@ -343,7 +346,7 @@ class Battle {
 
   beam(side, m, a) {
     const ax = Math.cos(a), ay = Math.sin(a);
-    const x1 = side.x + ax * RADIUS, y1 = side.y + ay * RADIUS;
+    const x1 = side.x + ax * this.rad(side), y1 = side.y + ay * this.rad(side);
     // El rayo se corta en el primer obstáculo
     let len = m.len, blocker = null;
     for (const o of this.obstacles) {
@@ -364,7 +367,7 @@ class Battle {
     }
     const f = this.foe(side);
     const t = Math.max(0, Math.min(len, (f.x - x1) * ax + (f.y - y1) * ay));
-    if (Math.hypot(f.x - (x1 + ax * t), f.y - (y1 + ay * t)) < m.width / 2 + RADIUS) this.hit(side, f, m, f.x, f.y, { a });
+    if (Math.hypot(f.x - (x1 + ax * t), f.y - (y1 + ay * t)) < m.width / 2 + this.rad(f)) this.hit(side, f, m, f.x, f.y, { a });
   }
 
   throwBall(side, inp) {
@@ -374,7 +377,7 @@ class Battle {
     side.rec = 0.3;
     const a = side.a;
     this.projectiles.push({ id: nextId++, owner: side, ball: kind, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 0 }, mk: 'ball',
-      x: side.x + Math.cos(a) * RADIUS, y: side.y + Math.sin(a) * RADIUS, vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 });
+      x: side.x + Math.cos(a) * this.rad(side), y: side.y + Math.sin(a) * this.rad(side), vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 });
     this.ev({ k: 'throw', s: side.idx, ball: kind, left: side.balls[kind] });
   }
 
@@ -415,6 +418,7 @@ class Battle {
       if (D.SPECIES[am.dex].types.includes(m.type)) dmg *= STAB;
       if (src.power > 0) dmg *= 1.25;
       dmg *= src.dmgMult;
+      dmg /= dm.def;
       if (dst.wet > 0 && (m.type === 'electrico' || m.type === 'hielo')) dmg *= 1.3;
       if (this.sudden) dmg *= SUDDEN_MULT;
       const blocked = dst.prot >= 0 && m.kind !== 'area';
@@ -440,7 +444,7 @@ class Battle {
     }
     if (m.pull) {
       const pa = Math.atan2(src.y - dst.y, src.x - dst.x);
-      const d = Math.min(m.pull, Math.hypot(src.x - dst.x, src.y - dst.y) - RADIUS * 2.2);
+      const d = Math.min(m.pull, Math.hypot(src.x - dst.x, src.y - dst.y) - (this.rad(src) + this.rad(dst)) * 1.1);
       if (d > 0) dst.kb = { vx: Math.cos(pa), vy: Math.sin(pa), speed: d / 0.18, t: 0.18 };
     }
     return true;
@@ -462,7 +466,7 @@ class Battle {
         if (p.m.type === 'fuego' && this.terrain[i] === T.GRASS && p.m.terrain === 'fuego') this.paint(i, 'fuego');
         // Rival
         const f = this.foe(p.owner);
-        if (Math.hypot(f.x - p.x, f.y - p.y) < RADIUS + p.r && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
+        if (Math.hypot(f.x - p.x, f.y - p.y) < this.rad(f) + p.r && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
           if (p.ball) { this.ballHit(p, f); p.left = 0; break; }
           if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) this.projectileEnd(p, true);
           break;
@@ -505,7 +509,7 @@ class Battle {
     if ((c.t -= dt) > 0) return;
     this.capturing = null;
     const mon = this.mon(c.foe);
-    if (c.ok) return this.finish(c.thrower.idx, { captured: { dex: mon.dex, level: mon.level } });
+    if (c.ok) return this.finish(c.thrower.idx, { captured: { dex: mon.dex, level: mon.level, shiny: mon.shiny } });
     this.state = 'fight';
     c.foe.invuln = 0.8;
     this.ev({ k: 'escape', s: c.foe.idx, x: Math.round(c.foe.x), y: Math.round(c.foe.y) });
@@ -517,7 +521,7 @@ class Battle {
       if ((ar.t -= dt) > 0) continue;
       const m = ar.m, src = ar.owner, f = this.foe(src);
       this.ev({ k: 'boom', s: src.idx, x: Math.round(ar.x), y: Math.round(ar.y), r: m.radius, ty: m.type });
-      if (Math.hypot(f.x - ar.x, f.y - ar.y) < m.radius + RADIUS) this.hit(src, f, m, f.x, f.y);
+      if (Math.hypot(f.x - ar.x, f.y - ar.y) < m.radius + this.rad(f)) this.hit(src, f, m, f.x, f.y);
       // Terreno en el área
       const r = Math.ceil(m.radius / CELL);
       const c0 = S.cellIndex(ar.x, ar.y), cx = c0 % COLS, cy = Math.floor(c0 / COLS);
@@ -537,7 +541,7 @@ class Battle {
       for (const o of this.obstacles) if (Math.hypot(o.x - ar.x, o.y - ar.y) < m.radius + o.r) this.damageObstacle(o, m.dmg);
       if (m.rockWall) {
         this.obstacles.push({ id: nextId++, kind: 'rockwall', x: ar.x, y: ar.y, r: 26, hp: 60, ttl: 6 });
-        for (const s of this.sides) S.pushOut(s, RADIUS, this.obstacles);
+        for (const s of this.sides) S.pushOut(s, this.rad(s), this.obstacles);
       }
       if (m.selfKO) { const mon = this.mon(src); mon.hp = 0; }
     }

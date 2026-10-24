@@ -1,17 +1,17 @@
 // Pokémon en la escena 3D: un plano con el sprite que siempre mira a la cámara (billboard),
-// con sombra real (la silueta del sprite) y una sombra suave de contacto en el suelo.
+// con sombra real (la silueta del sprite), una sombra suave de contacto y el anillo de su hitbox.
 import * as THREE from 'three';
-import { animMeta, sheet, frameAt, dirRow, hovers } from './sprites.js';
+import { animMeta, sheet, frameAt, dirRow, hovers, hasShiny } from './sprites.js';
 import { U, toWorld, softDisc } from './world.js';
 
 const ART = 2.3 * U;            // unidades 3D por píxel de arte
-const textures = new Map();      // "dex/Anim" -> THREE.Texture base (las de cada actor son clones)
+const textures = new Map();      // "dex/Anim[/s]" -> THREE.Texture base (las de cada actor son clones)
 
-function baseTexture(dex, anim) {
-  const key = dex + '/' + anim;
+function baseTexture(dex, anim, shiny) {
+  const key = dex + '/' + anim + (shiny ? '/s' : '');
   let t = textures.get(key);
   if (!t) {
-    const img = sheet(dex, anim);
+    const img = sheet(dex, anim, shiny);
     t = new THREE.Texture(img);
     t.magFilter = THREE.NearestFilter;
     t.minFilter = THREE.NearestFilter;
@@ -27,7 +27,8 @@ function baseTexture(dex, anim) {
 let blobTex = null;
 
 export class Actor {
-  constructor(scene, camera, dex) {
+  // mine: anillo amarillo (propio) o rojo (rival)
+  constructor(scene, camera, dex, shiny = false, mine = false) {
     this.scene = scene;
     this.camera = camera;
     this.group = new THREE.Group();
@@ -39,7 +40,18 @@ export class Actor {
     this.blob = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.75), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
     this.blob.rotation.x = -Math.PI / 2;
     this.blob.position.y = 0.02;
-    this.group.add(this.mesh, this.blob);
+    // Indicador de la hitbox: anillo del radio de colisión con una marca hacia donde mira
+    const col = mine ? '#ffd23a' : '#ff6a5a';
+    this.ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 48), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.55, depthWrite: false, toneMapped: false }));
+    this.ring.rotation.x = -Math.PI / 2;
+    this.ring.position.y = 0.035;
+    this.ringGlow = new THREE.Mesh(new THREE.RingGeometry(0.78, 0.9, 48), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.14, depthWrite: false, toneMapped: false }));
+    this.ringGlow.rotation.x = -Math.PI / 2;
+    this.ringGlow.position.y = 0.034;
+    this.arrow = new THREE.Mesh(new THREE.CircleGeometry(1.08, 3), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.8, depthWrite: false, toneMapped: false }));
+    this.arrow.rotation.x = -Math.PI / 2;
+    this.arrow.position.y = 0.036;
+    this.group.add(this.mesh, this.blob, this.ring, this.ringGlow, this.arrow);
     scene.add(this.group);
     this.texCache = new Map();
     this.anim = { name: 'Idle', t0: 0, once: false };
@@ -47,21 +59,25 @@ export class Actor {
     this.alpha = 1;
     this.scale = 1;
     this.ghosts = [];
-    this.setDex(dex);
+    this.setDex(dex, shiny);
   }
 
-  setDex(dex) {
+  setDex(dex, shiny = false) {
     this.dex = dex;
+    this.shiny = shiny;
     this.hover = hovers(dex);
+    this.r = (window.HITBOX && window.HITBOX[dex] || 22) * U;
     this.texCache.clear();
   }
 
   texFor(anim) {
-    let t = this.texCache.get(anim);
+    const shiny = this.shiny && hasShiny(this.dex, anim);
+    const key = anim + (shiny ? '/s' : '');
+    let t = this.texCache.get(key);
     if (!t) {
-      t = baseTexture(this.dex, anim).clone();
+      t = baseTexture(this.dex, anim, shiny).clone();
       t.needsUpdate = true;
-      this.texCache.set(anim, t);
+      this.texCache.set(key, t);
     }
     return t;
   }
@@ -82,6 +98,15 @@ export class Actor {
     ({ name, m } = animMeta(this.dex, this.anim.name));
     const tex = this.texFor(name);
     const img = tex.image;
+    this.group.position.copy(toWorld(x, y));
+    // Anillo de la hitbox (se encoge con el Pokémon al entrar en una Ball o cambiar)
+    const rs = this.r * this.scale;
+    this.ring.scale.setScalar(rs); this.ringGlow.scale.setScalar(rs);
+    this.arrow.scale.setScalar(rs * 0.22);
+    this.arrow.position.set(Math.cos(a) * rs, 0.036, Math.sin(a) * rs);
+    this.arrow.rotation.z = -a;
+    const vis = this.alpha * (this.scale > 0.2 ? 1 : 0);
+    this.ring.material.opacity = 0.55 * vis; this.ringGlow.material.opacity = 0.14 * vis; this.arrow.material.opacity = 0.8 * vis;
     if (!img || !img.naturalWidth) { this.mesh.visible = false; return; }
     this.mesh.visible = true;
     const f = frameAt(m, now - this.anim.t0, this.anim.once);
@@ -98,8 +123,7 @@ export class Actor {
     const lift = this.hover ? 0.25 + Math.sin(now / 300) * 0.06 : 0;
     this.mesh.position.copy(right.multiplyScalar((m.w / 2 - m.ax) * s)).add(up.multiplyScalar((m.ay - m.h / 2) * s));
     this.mesh.position.y += lift + 0.02;
-    this.group.position.copy(toWorld(x, y));
-    this.blob.scale.setScalar((this.hover ? 0.8 : 1) * this.scale);
+    this.blob.scale.setScalar((this.hover ? 0.8 : 1) * this.scale * (this.r / (22 * U)));
     // Destello blanco al recibir un golpe; transparencia si está oculto
     const flash = now < this.flashUntil;
     this.mat.color.setScalar(flash ? 6 : 1);
@@ -143,5 +167,6 @@ export class Actor {
     for (const t of this.texCache.values()) t.dispose();
     this.mesh.geometry.dispose();
     this.mat.dispose();
+    for (const m of [this.ring, this.ringGlow, this.arrow, this.blob]) { m.geometry.dispose(); m.material.dispose(); }
   }
 }

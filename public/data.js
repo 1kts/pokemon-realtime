@@ -271,9 +271,11 @@
     const dex = +id;
     const [name, types, st, gen, leg, , rate] = d;
     const bst = st.reduce((a, b) => a + b, 0);
-    if (SPECIES[dex]) { Object.assign(SPECIES[dex], { gen, leg, rate, bst, name }); continue; }
+    // Defensa: multiplicador del daño recibido (1 / def); de la media de Defensa y Def. Especial
+    const def = +clampN(0.9 + ((st[2] + st[4]) / 2 - 70) / 330, 0.75, 1.3).toFixed(2);
+    if (SPECIES[dex]) { Object.assign(SPECIES[dex], { gen, leg, rate, bst, name, def, base: st }); continue; }
     SPECIES[dex] = {
-      dex, name, types, gen, leg, rate, bst,
+      dex, name, types, gen, leg, rate, bst, def, base: st,
       hp: Math.round(clampN(55 + st[0] * 0.95, 60, 200)),
       atk: +clampN(0.9 + (Math.max(st[1], st[3]) - 60) / 350 + (bst - 450) / 3000, 0.7, 1.3).toFixed(2),
       spd: Math.round(clampN(175 + st[5] * 0.6, 170, 268)),
@@ -496,13 +498,28 @@
     const hard = Math.min(1, Math.sqrt(rate / 45));
     return Math.max(0.02, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1) * hard));
   }
+  // Vitaminas: cada dosis sube un 2,5 % la estadística (máximo 10 dosis = +25 %).
+  const VIT_STEP = 0.025, VIT_MAX = 10;
+  const VIT_STATS = { hp: 'PS', atk: 'Ataque', def: 'Defensa', spe: 'Velocidad' };
+  // Probabilidad de que un salvaje sea shiny (los misteriosos, el triple; los huevos, mucho más)
+  const SHINY_RATE = 1 / 300;
+  // Precio al vender un Pokémon: por fuerza de la especie y nivel; los shiny valen mucho más
+  function sellPrice(mon) {
+    const sp = SPECIES[mon.dex];
+    const base = 30 + Math.max(0, sp.bst - 150) * 0.5 + mon.level * 10 + (sp.leg ? 1500 : 0);
+    return Math.round(base * (mon.shiny ? 6 : 1));
+  }
   // Tienda: Poké Balls (multiplican la probabilidad de captura), piedras evolutivas,
-  // Caramelo Raro y Pokémon raros a la venta.
+  // Caramelo Raro, vitaminas y Pokémon raros a la venta.
   const SHOP = [
     { id: 'pokeball', name: 'Poké Ball', price: 100, ball: 1, desc: 'La de siempre. Mejor con el salvaje debilitado' },
     { id: 'superball', name: 'Super Ball', price: 350, ball: 1.5, desc: 'Captura con más facilidad que la Poké Ball', req: 2 },
     { id: 'ultraball', name: 'Ultra Ball', price: 900, ball: 2.2, desc: 'Muy eficaz: casi siempre atrapa a un salvaje tocado', req: 5 },
     { id: 'caramelo', name: 'Caramelo Raro', price: 1200, desc: 'Sube un nivel a un Pokémon', req: 1 },
+    { id: 'maspsps', name: 'Más PS', price: 2500, vit: 'hp', desc: '+2,5 % de PS máximos (hasta 10 dosis)', req: 1 },
+    { id: 'proteina', name: 'Proteína', price: 2500, vit: 'atk', desc: '+2,5 % de Ataque (hasta 10 dosis)', req: 1 },
+    { id: 'hierro', name: 'Hierro', price: 2500, vit: 'def', desc: '+2,5 % de Defensa (hasta 10 dosis)', req: 1 },
+    { id: 'carburante', name: 'Carburante', price: 2500, vit: 'spe', desc: '+2,5 % de Velocidad (hasta 10 dosis)', req: 1 },
     { id: 'agua', name: 'Piedra Agua', price: 2000, stone: true, desc: 'Evoluciona a Eevee, Staryu…', req: 2 },
     { id: 'trueno', name: 'Piedra Trueno', price: 2000, stone: true, desc: 'Evoluciona a Pikachu, Eevee…', req: 3 },
     { id: 'fuego', name: 'Piedra Fuego', price: 2000, stone: true, desc: 'Evoluciona a Vulpix, Growlithe, Eevee', req: 3 },
@@ -527,7 +544,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, VIT_STEP, VIT_MAX, VIT_STATS, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

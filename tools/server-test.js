@@ -140,6 +140,29 @@ class Client {
   ok(m.p.mons.find(x => x.uid === eevee.uid).dex === 135 && m.p.items.trueno === 0, 'Piedra Trueno: Eevee -> Jolteon');
   err = a2.wait('error'); a2.send({ t: 'story', a: 'use', item: 'caramelo', uid: 999 });
   ok(!!(await err), 'usar objeto sobre un Pokémon inexistente da error');
+  // Vitaminas: suben la estadística y tienen tope; venta: da dinero y quita el Pokémon
+  m = await a2.req({ t: 'story', a: 'buy', id: 'proteina', qty: 3 });
+  const vitMon = m.p.mons[0];
+  const atkBefore = require('../public/shared.js').monStats(vitMon.dex, vitMon.level, vitMon.vit).atk;
+  m = await a2.req({ t: 'story', a: 'use', item: 'proteina', uid: vitMon.uid });
+  const vm = m.p.mons.find(x => x.uid === vitMon.uid);
+  ok(vm.vit.atk === 1 && require('../public/shared.js').monStats(vm.dex, vm.level, vm.vit).atk > atkBefore && m.p.items.proteina === 2, 'Proteína: +1 dosis y sube el Ataque');
+  require('../server/store.js').get(token).mons.find(x => x.uid === vitMon.uid).vit.atk = D.VIT_MAX;
+  err = a2.wait('error'); a2.send({ t: 'story', a: 'use', item: 'proteina', uid: vitMon.uid });
+  ok((await err).msg.includes('máximo'), 'las vitaminas tienen tope de dosis');
+  const sellMon = m.p.mons.find(x => x.uid !== vitMon.uid);
+  const coinsBefore = m.p.coins;
+  m = await a2.req({ t: 'story', a: 'sell', uid: sellMon.uid });
+  ok(m.p.coins === coinsBefore + D.sellPrice(sellMon) && !m.p.mons.some(x => x.uid === sellMon.uid), `vender un Pokémon da ${D.sellPrice(sellMon)} ₽ y lo quita`);
+  err = a2.wait('error'); a2.send({ t: 'story', a: 'sell', uid: 999 });
+  ok(!!(await err), 'vender un Pokémon inexistente da error');
+  // Shiny y vitaminas llegan al combate (hitbox, velocidad y stats por Pokémon)
+  const { Battle } = require('../server/battle.js');
+  const tb = new Battle({ mode: 'practice', map: 'pradera', sides: [{ name: 'a', team: [{ dex: 25, level: 50, shiny: true, vit: { hp: 10, atk: 0, def: 0, spe: 4 } }] }, { name: 'b', team: [{ dex: 95, level: 50 }] }] });
+  tb.stop();
+  const pika = tb.sides[0].team[0], onix = tb.sides[1].team[0];
+  ok(pika.shiny && pika.spdMult > 1 && pika.maxHp > require('../public/shared.js').monStats(25, 50).maxHp && pika.r < onix.r, 'shiny, vitaminas e hitbox por tamaño en el combate');
+  ok(tb.startMsg(tb.sides[0]).sides[0].team[0].shiny === true && tb.startMsg(tb.sides[1]).sides[0].team[0].r === pika.r, 'el mensaje de inicio lleva shiny, velocidad e hitbox');
   err = a2.wait('error'); a2.send({ t: 'story', a: 'team', uids: [] });
   ok(!!(await err), 'el equipo no puede quedar vacío');
 
