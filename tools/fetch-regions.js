@@ -21,6 +21,40 @@ async function q(query) {
   return j.data;
 }
 
+// Junta las rutas reales entre dos líderes en 1 nodo (o 2 si el tramo tiene 4 o más), sumando
+// sus encuentros. El nombre y la posición son los de su ruta más representativa.
+const MAP_RANK = { cueva: 3, bosque: 2, lago: 1, pradera: 0 };
+function mergeGroup(group) {
+  const acc = new Map();
+  for (const n of group) for (const [dex, min, max, w] of n.wild) {
+    const o = acc.get(dex) || { min: 99, max: 0, w: 0 };
+    o.min = Math.min(o.min, min); o.max = Math.max(o.max, max); o.w += w;
+    acc.set(dex, o);
+  }
+  const total = [...acc.values()].reduce((a, o) => a + o.w, 0) || 1;
+  const wild = [...acc.entries()].sort((a, b) => b[1].w - a[1].w).map(([dex, o]) => [dex, o.min, o.max, Math.max(1, Math.round(o.w / total * 100))]);
+  const mid = group[Math.floor(group.length / 2)];
+  const special = group.reduce((b, n) => (MAP_RANK[n.map] > MAP_RANK[b.map] ? n : b), group[0]);
+  const name = group.length === 1 ? group[0].name : `${group[0].name} · ${special !== group[0] ? special.name : group[group.length - 1].name}`;
+  return { kind: 'route', id: group[0].id, name, req: group[0].req, map: special.map, x: mid.x, y: mid.y, parts: group.map(n => n.name), wild };
+}
+function groupRoutes(nodes) {
+  const out = [];
+  let seg = [];
+  const flush = () => {
+    if (!seg.length) return;
+    if (seg.length >= 4) { const h = Math.ceil(seg.length / 2); out.push(mergeGroup(seg.slice(0, h)), mergeGroup(seg.slice(h))); }
+    else out.push(mergeGroup(seg));
+    seg = [];
+  };
+  for (const n of nodes) {
+    if (n.kind === 'route' && n.wild.length) seg.push(n);
+    else if (n.kind !== 'route') { flush(); out.push(n); }
+  }
+  flush();
+  return out;
+}
+
 (async () => {
   const out = {};
   for (const [rid, reg] of Object.entries(SRC)) {
@@ -55,14 +89,14 @@ async function q(query) {
         acc.set(dex, o);
       }
       const total = [...acc.values()].reduce((a, o) => a + o.w, 0) || 1;
-      // Peso relativo en % (mínimo 1) y como mucho 9 especies (las más comunes)
-      const wild = [...acc.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 9)
+      // Peso relativo en % (mínimo 1) y como mucho 12 especies (las más comunes)
+      const wild = [...acc.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 12)
         .map(([dex, o]) => [dex, o.min, o.max, Math.max(1, Math.round(o.w / total * 100))]);
       if (!wild.length) console.warn(`  ${rid}: ${n.name} sin encuentros`);
       const { loc, ...rest } = n;
       return { kind: 'route', ...rest, wild };
     });
-    out[rid] = { id: rid, name: reg.name, legends: reg.legends.filter(d => Data.SPECIES[d]), nodes };
+    out[rid] = { id: rid, name: reg.name, legends: reg.legends.filter(d => Data.SPECIES[d]), nodes: groupRoutes(nodes) };
     console.log(`${reg.name}: ${nodes.filter(n => n.kind === 'route').length} rutas, ${nodes.filter(n => n.kind !== 'route').length} combates de líder`);
   }
   fs.writeFileSync(path.join(__dirname, '..', 'public', 'regions.js'),

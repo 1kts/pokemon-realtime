@@ -436,13 +436,33 @@
     return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
   }
   const dayKey = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
-  // Encuentros de una ruta: los reales del juego más el Pokémon misterioso del día (legendario o
-  // muy raro de la región, cambia cada día). Igual en servidor y cliente.
+  // Encuentros de una ruta: cada día salen 4 especies al azar de las que aparecen de verdad en ese
+  // tramo (las comunes, más a menudo) y 1 especial: un legendario o muy raro de la región que
+  // comparta tipo con la zona si es posible. Igual en servidor y cliente.
+  const DAILY_WEIGHTS = [35, 30, 20, 15];
+  const routeCache = new Map();
   function routeWild(route, day = dayKey()) {
+    const key = route.id + day;
+    if (routeCache.has(key)) return routeCache.get(key);
+    const r = seeded(key);
+    const pool = route.wild.slice();
+    const picks = [];
+    while (picks.length < 4 && pool.length) {
+      const total = pool.reduce((a, w) => a + w[3], 0);
+      let x = r() * total, i = 0;
+      while (i < pool.length - 1 && (x -= pool[i][3]) > 0) i++;
+      picks.push(pool.splice(i, 1)[0]);
+    }
+    picks.sort((a, b) => b[3] - a[3]);
+    const types = new Set(route.wild.flatMap(([d]) => SPECIES[d].types));
     const legends = REGIONS[route.region].legends;
-    const r = seeded(route.id + day);
-    const rare = legends[Math.floor(r() * legends.length)];
-    return { day, list: route.wild.map(([dex, min, max, weight]) => ({ dex, min, max, weight })), rare: { dex: rare, chance: route.rare } };
+    const fitting = legends.filter(d => SPECIES[d].types.some(t => types.has(t)));
+    const pickFrom = fitting.length ? fitting : legends;
+    const rare = pickFrom[Math.floor(r() * pickFrom.length)];
+    const out = { day, list: picks.map(([dex, min, max], i) => ({ dex, min, max, weight: DAILY_WEIGHTS[i] })), rare: { dex: rare, chance: route.rare } };
+    routeCache.set(key, out);
+    if (routeCache.size > 300) routeCache.delete(routeCache.keys().next().value);
+    return out;
   }
   function rollWild(route, rand = Math.random, day = dayKey()) {
     const w = routeWild(route, day);
@@ -465,18 +485,16 @@
     const idx = team.map((t, i) => i).sort((i, j) => team[j][1] - team[i][1] || j - i).slice(0, 3).sort((i, j) => i - j);
     return idx.map(i => team[i]);
   }
-  // Los Pokémon no pasan de la media de niveles del siguiente líder de la región más avanzada
-  // (sin tope cuando alguna región está completada). Acepta un perfil o, por compatibilidad, un número de medallas de Kanto.
-  function levelCap(p) {
-    const prog = typeof p === 'number' ? { kanto: p } : (p && p.prog) || {};
-    let cap = 0;
-    for (const r of REGION_IDS) {
-      const next = leadersOf(r)[prog[r] || 0];
-      if (!next) return 100;
-      cap = Math.max(cap, Math.round(next.team.reduce((a, [, l]) => a + l, 0) / next.team.length));
-    }
-    return cap;
+  // Tope de nivel POR REGIÓN: los Pokémon de una región no pasan de la media de niveles del
+  // siguiente líder de esa región (sin tope cuando la región está completada).
+  // levelCap(perfil, región) · levelCap(medallas) = Kanto (compatibilidad).
+  function levelCap(p, region = 'kanto') {
+    const prog = typeof p === 'number' ? p : progOf(p, region);
+    const next = leadersOf(region)[prog];
+    return next ? Math.round(next.team.reduce((a, [, l]) => a + l, 0) / next.team.length) : 100;
   }
+  // Iniciales de cada región (al empezar una región eliges uno nuevo: los Pokémon no viajan)
+  const REGION_STARTERS = { kanto: [1, 4, 7], johto: [152, 155, 158] };
   // Iniciales de las 9 generaciones (solo los que tienen sprites)
   const STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912].filter(d => SPECIES[d]);
   // Probabilidad de captura: sube cuantos menos PS le quedan y si tiene un estado alterado.
@@ -568,7 +586,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

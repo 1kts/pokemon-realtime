@@ -73,7 +73,7 @@ class Client {
   ok((await err).msg.includes('dinero'), 'no se puede comprar sin dinero');
   err = a.wait('error'); a.send({ t: 'story', a: 'gym', id: 'misty' });
   ok((await err).msg.includes('anterior'), 'los gimnasios van en orden');
-  err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'k-montemoon' });
+  err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'k-ruta3' });
   ok((await err).msg.includes('medallas'), 'ruta bloqueada sin medallas');
 
   // Combate en ruta y rendición
@@ -175,8 +175,16 @@ class Client {
   const reward = story.applyResult(prof, setup, { winner: 0 }, fakeBattle);
   ok(reward.won && reward.coins === Math.round(D.NODES.erika.reward / 2) && reward.xp.length === prof.team.length, 'revancha en gimnasio: la mitad del dinero y experiencia');
   ok(prof.prog.kanto === before, 'revancha de un gimnasio ya ganado no suma medalla');
+  // Regiones: los Pokémon no viajan; Johto empieza con su propio inicial y su tope
+  const noJohto = story.battleSetup(prof, { a: 'gym', id: 'falkner' });
+  ok(noJohto.error && noJohto.error.includes('Johto'), 'sin Pokémon de Johto no se puede combatir allí');
+  ok(story.action(prof, { a: 'starter', dex: 4, region: 'johto' }) === 'Inicial no válido', 'en Johto solo se eligen los iniciales de Johto');
+  ok(story.action(prof, { a: 'starter', dex: 155, region: 'johto' }) === null && prof.teams.johto.length === 1, 'eliges Cyndaquil como inicial de Johto');
+  ok(story.action(prof, { a: 'team', uids: [prof.teams.johto[0], prof.teams.kanto[0]], region: 'johto' }) !== null, 'no se mezclan Pokémon de regiones en un equipo');
+  ok(D.levelCap(prof, 'johto') === 11 && D.levelCap(prof, 'kanto') > 11, 'el tope de nivel va por región');
   // Primera victoria contra un líder de Johto: medalla de Johto y premio
   const jset = story.battleSetup(prof, { a: 'gym', id: 'falkner' });
+  ok(jset.opts && jset.opts.sides[0].team.every(t => prof.mons.find(m => m.uid === t.uid).region === 'johto'), 'contra Pegaso solo salen tus Pokémon de Johto');
   ok(!jset.error && jset.region === 'johto' && jset.opts.sides[1].team.length === 2, 'Pegaso (Johto) con su equipo real');
   const jfake = { sides: [{ team: jset.opts.sides[0].team.map(t => ({ ...t, fainted: false })), balls: null }, { team: jset.opts.sides[1].team.map(t => ({ dex: t.dex, level: t.level })) }] };
   const items0 = prof.items.caramelo || 0;

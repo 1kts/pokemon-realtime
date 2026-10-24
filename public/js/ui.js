@@ -9,6 +9,33 @@ const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls)
 const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
+// Mapa aproximado de cada región (no es el oficial): ciudades, caminos, rutas marinas y relieve,
+// en las mismas coordenadas (%) que los nodos de regions-src.js.
+const REGION_ART = {
+  kanto: {
+    cities: [['Pueblo Paleta', 18, 86], ['Ciudad Verde', 18, 64], ['Ciudad Plateada', 18, 28], ['Ciudad Celeste', 64, 22], ['Ciudad Azafrán', 64, 44],
+      ['Ciudad Carmín', 64, 70], ['Pueblo Lavanda', 88, 46], ['Ciudad Azulona', 40, 46], ['Ciudad Fucsia', 48, 84], ['Isla Canela', 12, 96], ['Meseta Añil', 6, 10]],
+    roads: [[[18, 86], [18, 64], [18, 42], [18, 28]], [[18, 64], [8, 62], [6, 46], [6, 32], [6, 10]], [[18, 28], [30, 26], [42, 20], [52, 24], [64, 22]],
+      [[64, 22], [64, 10], [76, 8]], [[64, 22], [64, 44], [64, 70]], [[64, 22], [76, 22], [88, 28], [88, 46]], [[88, 46], [76, 46], [64, 44], [50, 46], [40, 46]],
+      [[64, 70], [76, 70], [88, 64], [88, 46]], [[88, 64], [82, 80], [72, 86], [60, 86], [48, 84]], [[40, 46], [30, 46], [26, 62], [34, 80], [48, 84]], [[18, 64], [44, 64], [64, 70]]],
+    sea: [[[48, 84], [48, 98], [36, 96], [26, 96], [12, 96]], [[12, 96], [14, 86], [18, 86]]],
+    mountains: [[42, 17], [38, 21], [46, 22], [6, 30], [10, 34], [88, 38], [92, 41], [4, 18]],
+    forests: [[18, 42], [14, 45], [22, 40], [48, 94], [52, 92]],
+    lakes: [[26, 96, 5, 3]],
+  },
+  johto: {
+    cities: [['Pueblo Primavera', 90, 74], ['Ciudad Cerezo', 74, 68], ['Ciudad Malva', 58, 42], ['Pueblo Azalea', 44, 78], ['Ciudad Trigal', 32, 52], ['Ciudad Iris', 42, 12],
+      ['Ciudad Olivo', 16, 32], ['Ciudad Orquídea', 4, 52], ['Pueblo Caoba', 72, 22], ['Ciudad Endrino', 92, 26], ['Liga Pokémon', 82, 92]],
+    roads: [[[90, 74], [82, 72], [74, 68], [72, 60], [66, 46], [58, 42]], [[58, 42], [58, 58], [56, 70], [50, 80], [44, 78]], [[44, 78], [32, 76], [32, 64], [32, 52]],
+      [[32, 52], [32, 40], [42, 34], [48, 28], [58, 42]], [[42, 34], [42, 22], [42, 12]], [[42, 12], [28, 14], [18, 20], [16, 32]], [[42, 12], [56, 14], [62, 20], [72, 22]],
+      [[72, 22], [72, 12], [74, 4]], [[72, 22], [80, 22], [88, 14], [92, 26]], [[92, 26], [92, 42], [88, 58], [82, 72]], [[90, 74], [96, 62], [96, 82], [82, 92]], [[58, 42], [48, 50], [32, 52]]],
+    sea: [[[16, 32], [12, 44], [8, 60], [4, 52]], [[8, 60], [16, 66]]],
+    mountains: [[62, 16], [58, 19], [66, 21], [86, 12], [90, 15], [96, 10], [98, 40], [92, 46]],
+    forests: [[32, 76], [28, 79], [36, 79], [42, 34], [46, 36]],
+    lakes: [[74, 4, 4, 3], [96, 13, 3, 2]],
+  },
+};
+
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
 export class UI {
@@ -116,7 +143,8 @@ export class UI {
       c.onclick = onClick;
       grid.append(c);
     };
-    const lead = p.mons.length ? p.mons.find(m => m.uid === p.team[0]) : null;
+    const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
+    const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0] || null;
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
     card('Historia', p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y viaja por Kanto y Johto', 'story', lead ? lead.dex : 25, () => this.show('story'));
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
@@ -178,31 +206,35 @@ export class UI {
 
   view_story() {
     const p = this.profile;
-    if (!p.mons.length) return this.view_starter();
     const region = this.region = this.region || 'kanto';
+    if (!p.mons.some(m => (m.region || 'kanto') === region)) return this.view_starter(region);
     const R = Data.REGIONS[region];
     const prog = Data.progOf(p, region);
     const wrap = el('div', 'story');
     const bar = this.topbar(R.name, 'menu');
-    const tabs = el('div', 'tools region-tabs');
-    for (const rid of Data.REGION_IDS) {
-      const t = el('button', rid === region ? 'sel' : '', `${Data.REGIONS[rid].name} <small>${Math.min(8, Data.progOf(p, rid))}/8</small>`);
-      t.onclick = () => { this.region = rid; this.show('story'); };
-      tabs.append(t);
-    }
-    bar.insertBefore(tabs, bar.children[2] || null);
+    bar.insertBefore(this.regionTabs(region, rid => { this.region = rid; this.show('story'); }), bar.children[2] || null);
     wrap.append(bar);
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
-    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="${this.regionShape(region)}" /></svg>`;
+    const art = REGION_ART[region];
+    const pts = l => l.map(([x, y]) => `${x},${y}`).join(' ');
+    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="${this.regionShape(region)}" />
+      ${art.lakes.map(([x, y, rx, ry]) => `<ellipse class="lake" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"/>`).join('')}
+      ${art.forests.map(([x, y]) => `<circle class="forest" cx="${x}" cy="${y}" r="2.4"/>`).join('')}
+      ${art.mountains.map(([x, y]) => `<path class="mount" d="M${x - 3},${y + 2.5} L${x},${y - 3} L${x + 3},${y + 2.5} Z"/><path class="snow" d="M${x - 1},${y - 0.8} L${x},${y - 3} L${x + 1},${y - 0.8} Z"/>`).join('')}
+      ${art.sea.map(l => `<polyline class="searoute" points="${pts(l)}"/>`).join('')}
+      ${art.roads.map(l => `<polyline class="road-edge" points="${pts(l)}"/>`).join('')}
+      ${art.roads.map(l => `<polyline class="road" points="${pts(l)}"/>`).join('')}
+    </svg>`;
+    for (const [name, x, y] of art.cities) {
+      const c = el('div', 'city', `<i></i><span>${name}</span>`);
+      c.style.left = x + '%'; c.style.top = y + '%';
+      map.append(c);
+    }
     const nodes = R.nodes;
     // Camino: une cada líder con el anterior pasando por sus rutas (en orden)
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
-    const leaders = nodes.filter(n => n.kind !== 'route');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    line.setAttribute('points', leaders.map(n => `${n.x},${n.y}`).join(' '));
-    svg.append(line);
     map.append(svg);
     const info = el('div', 'node-info');
     nodes.forEach(n => {
@@ -275,7 +307,7 @@ export class UI {
     }
     box.append(el('h4', '', 'Tu equipo'));
     const team = el('div', 'mini-team');
-    for (const uid of p.team) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>Nv.${m.level}`)); team.append(c); }
+    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>Nv.${m.level}`)); team.append(c); }
     box.append(team);
   }
 
@@ -284,52 +316,58 @@ export class UI {
     this.net.send({ t: 'story', a, id });
   }
 
-  view_starter() {
+  view_starter(region = 'kanto') {
+    const R = Data.REGIONS[region];
     const wrap = el('div', 'starter');
-    wrap.append(this.topbar('Elige tu primer Pokémon', 'menu'));
-    wrap.append(el('p', 'intro', 'Elige a tu compañero entre los iniciales de las 9 generaciones. Te acompañará por todo Kanto.'));
-    const tabs = el('div', 'gen-tabs');
+    const bar = this.topbar(`Tu inicial de ${R.name}`, 'menu');
+    bar.insertBefore(this.regionTabs(region, rid => { this.region = rid; this.show('story'); }), bar.children[2] || null);
+    wrap.append(bar);
+    wrap.append(el('p', 'intro', `Cada región es un viaje nuevo: tus Pokémon de otras regiones no vienen contigo. Elige a tu compañero para ${R.name}.`));
     const row = el('div', 'starter-row');
-    const gens = [...new Set(STARTERS.map(d => SPECIES[d].gen))];
-    const showGen = g => {
-      tabs.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.dataset.gen === g));
-      row.innerHTML = '';
-      for (const dex of STARTERS.filter(d => SPECIES[d].gen === g)) {
-        const c = el('button', 'starter-card');
-        c.style.setProperty('--tc', TYPE_COLOR[SPECIES[dex].types[0]]);
-        c.append(animatedPortrait(dex, 150, 'Idle'));
-        c.append(el('b', '', SPECIES[dex].name));
-        c.append(el('div', 'types', typeChips(dex)));
-        c.append(el('small', '', SPECIES[dex].moves.map(k => MOVES[k].name).join(' · ')));
-        c.onclick = () => this.net.send({ t: 'story', a: 'starter', dex });
-        row.append(c);
-      }
-    };
-    for (const g of gens) {
-      const b = el('button', '', `Gen ${g}`);
-      b.dataset.gen = g;
-      b.onclick = () => showGen(g);
-      tabs.append(b);
+    for (const dex of Data.REGION_STARTERS[region]) {
+      const c = el('button', 'starter-card');
+      c.style.setProperty('--tc', TYPE_COLOR[SPECIES[dex].types[0]]);
+      c.append(animatedPortrait(dex, 150, 'Idle'));
+      c.append(el('b', '', SPECIES[dex].name));
+      c.append(el('div', 'types', typeChips(dex)));
+      c.append(el('small', '', Data.defaultMoves(dex, 5).map(k => MOVES[k].name).join(' · ')));
+      c.onclick = () => this.net.send({ t: 'story', a: 'starter', dex, region });
+      row.append(c);
     }
-    wrap.append(tabs, row);
+    wrap.append(row);
     this.root.append(wrap);
-    showGen(gens[0]);
+  }
+
+  // Pestañas de región (medallas de cada una)
+  regionTabs(current, onPick) {
+    const p = this.profile;
+    const tabs = el('div', 'tools region-tabs');
+    for (const rid of Data.REGION_IDS) {
+      const t = el('button', rid === current ? 'sel' : '', `${Data.REGIONS[rid].name} <small>${Math.min(8, Data.progOf(p, rid))}/8</small>`);
+      t.onclick = () => onPick(rid);
+      tabs.append(t);
+    }
+    return tabs;
   }
 
   // ---------- Equipo ----------
   view_team() {
     const p = this.profile;
     const wrap = el('div', 'teamview');
-    wrap.append(this.topbar('Mis Pokémon', this.returnTo || 'menu'));
-    const cap = Data.levelCap(p);
-    const nextReg = Data.REGION_IDS.map(r => Data.leadersOf(r)[Data.progOf(p, r)]).filter(Boolean)
-      .sort((x, y) => y.team.reduce((a, [, l]) => a + l, 0) / y.team.length - x.team.reduce((a, [, l]) => a + l, 0) / x.team.length);
-    const next = cap < 100 ? nextReg[0] : null;
-    wrap.append(el('p', 'intro', `Mete o saca Pokémon del equipo (máximo 3) y elige sus movimientos desde su ficha. <span class="cap">Tope de nivel: <b>${cap}</b>${next ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
+    const region = this.teamRegion = this.teamRegion || this.region || 'kanto';
+    const bar = this.topbar('Mis Pokémon', this.returnTo || 'menu');
+    bar.insertBefore(this.regionTabs(region, rid => { this.teamRegion = rid; this.show('team'); }), bar.children[2] || null);
+    wrap.append(bar);
+    const cap = Data.levelCap(p, region);
+    const next = Data.leadersOf(region)[Data.progOf(p, region)];
+    const team = (p.teams && p.teams[region]) || [];
+    const mine = p.mons.filter(m => (m.region || 'kanto') === region);
+    wrap.append(el('p', 'intro', `Pokémon de ${Data.REGIONS[region].name}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha. <span class="cap">Tope de nivel en ${Data.REGIONS[region].name}: <b>${cap}</b>${next && cap < 100 ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
+    if (!mine.length) wrap.append(el('p', 'warn', `Aún no tienes Pokémon en ${Data.REGIONS[region].name}: elige tu inicial en Historia.`));
     const grid = el('div', 'mon-grid scroll');
-    const sorted = [...p.mons].sort((a, b) => (p.team.includes(b.uid) - p.team.includes(a.uid)) || b.level - a.level);
+    const sorted = [...mine].sort((a, b) => (team.includes(b.uid) - team.includes(a.uid)) || b.level - a.level);
     for (const m of sorted) {
-      const inTeam = p.team.includes(m.uid);
+      const inTeam = team.includes(m.uid);
       const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
       card.append(portrait(m.dex, 72, { shiny: !!m.shiny }));
       const need = xpToNext(m.level);
@@ -343,10 +381,10 @@ export class UI {
       const acts = el('div', 'acts');
       const toggle = el('button', inTeam ? 'on' : '', inTeam ? 'En el equipo' : 'Al equipo');
       toggle.onclick = () => {
-        let team = p.team.filter(u => u !== m.uid);
-        if (!inTeam) { if (p.team.length >= 3) return this.toast('El equipo ya tiene 3 Pokémon: saca uno antes', 'bad'); team = [...p.team, m.uid]; }
-        if (!team.length) return this.toast('El equipo necesita al menos un Pokémon', 'bad');
-        this.net.send({ t: 'story', a: 'team', uids: team });
+        let next = team.filter(u => u !== m.uid);
+        if (!inTeam) { if (team.length >= 3) return this.toast('El equipo ya tiene 3 Pokémon: saca uno antes', 'bad'); next = [...team, m.uid]; }
+        if (!next.length) return this.toast('El equipo necesita al menos un Pokémon', 'bad');
+        this.net.send({ t: 'story', a: 'team', uids: next, region });
       };
       acts.append(toggle);
       const ficha = el('button', '', 'Ficha');
@@ -372,7 +410,7 @@ export class UI {
         acts.append(b);
       }
       if (evo && !stones.length && typeof evo[1] === 'number') acts.append(el('small', 'evohint', `Evoluciona a ${SPECIES[evo[0]].name} al Nv.${evo[1]}`));
-      if (p.mons.length > 1) {
+      if (mine.length > 1) {
         const rel = el('button', 'danger', 'Liberar');
         rel.onclick = () => { if (confirm(`¿Liberar a ${SPECIES[m.dex].name} (Nv.${m.level})? No se puede deshacer.`)) this.net.send({ t: 'story', a: 'release', uid: m.uid }); };
         acts.append(rel);
@@ -442,7 +480,7 @@ export class UI {
     const acts = el('div', 'acts');
     const price = Data.sellPrice(mon);
     const sell = el('button', 'danger', `Vender por ${coins(price)}`);
-    sell.disabled = p.mons.length <= 1;
+    sell.disabled = p.mons.filter(x => (x.region || 'kanto') === (mon.region || 'kanto')).length <= 1;
     sell.onclick = () => { if (confirm(`¿Vender a ${sp.name}${mon.shiny ? ' shiny' : ''} (Nv.${mon.level}) por ${price} ₽? No se puede deshacer.`)) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
     const close = el('button', 'primary', 'Cerrar');
     close.onclick = () => back.remove();
@@ -512,7 +550,7 @@ export class UI {
       else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
         const b = el('button', '', qty === 1 ? 'Comprar' : `×${qty}`);
         b.disabled = p.coins < item.price * qty;
-        b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty });
+        b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty, region: this.region || 'kanto' });
         acts.append(b);
       }
       c.append(acts);

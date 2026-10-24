@@ -6,11 +6,14 @@ const store = require('./store.js');
 const MAX_LEVEL = 100;
 
 const newEv = () => ({ hp: 0, atk: 0, def: 0, spe: 0 });
-// extra: { shiny, met (dónde se consiguió), iv, nat }
+// extra: { region (a la que pertenece: no viaja a otras), shiny, met (dónde se consiguió), iv, nat }
 function addMon(p, dex, level, extra = {}) {
-  const mon = { uid: p.nextUid++, dex, level, xp: 0, moves: D.defaultMoves(dex, level), ev: newEv(), iv: extra.iv || D.randomIv(), nat: extra.nat || D.randomNature(), shiny: !!extra.shiny, met: extra.met || null };
+  const region = D.REGIONS[extra.region] ? extra.region : 'kanto';
+  const mon = { uid: p.nextUid++, dex, level, xp: 0, region, moves: D.defaultMoves(dex, level), ev: newEv(), iv: extra.iv || D.randomIv(), nat: extra.nat || D.randomNature(), shiny: !!extra.shiny, met: extra.met || null };
   p.mons.push(mon);
-  if (p.team.length < 3) p.team.push(mon.uid);
+  if (!p.teams) p.teams = {};
+  const team = p.teams[region] = p.teams[region] || [];
+  if (team.length < 3) team.push(mon.uid);
   if (!p.caught.includes(dex)) p.caught.push(dex);
   if (mon.shiny && !(p.shinies || []).includes(dex)) p.shinies = [...(p.shinies || []), dex];
   return mon;
@@ -25,7 +28,16 @@ function migrate(p) {
     if (!m.iv) m.iv = D.randomIv();
     if (!m.nat) m.nat = D.randomNature();
     if (m.shiny === undefined) m.shiny = false;
+    if (!m.region) m.region = 'kanto';   // los Pokémon de antes de las regiones eran de Kanto
   }
+  // Equipo por región (antes: uno solo)
+  if (!p.teams) p.teams = { kanto: (p.team || []).slice() };
+  for (const r of D.REGION_IDS) {
+    p.teams[r] = (p.teams[r] || []).filter(u => { const m = monByUid(p, u); return m && m.region === r; });
+    if (!p.teams[r].length) { const first = p.mons.find(m => m.region === r); if (first) p.teams[r] = [first.uid]; }
+  }
+  p.team = p.teams.kanto;
+  if (!p.starters) p.starters = p.starter ? { kanto: p.starter } : {};
   if (!p.shinies) p.shinies = [];
   // Progreso por región (antes: un solo contador de medallas de Kanto)
   if (!p.prog) p.prog = { kanto: p.badges || 0 };
@@ -36,7 +48,15 @@ function migrate(p) {
 function syncBadges(p) { p.badges = Math.max(0, ...D.REGION_IDS.map(r => Math.min(8, p.prog[r] || 0))); }
 // Lo que puede llevar: lo aprendido por nivel en su especie actual más lo que ya llevaba
 const learnable = mon => [...new Set([...D.learnedAt(mon.dex, mon.level), ...mon.moves])];
-const teamMons = p => p.team.map(uid => monByUid(p, uid)).filter(Boolean);
+const teamMons = (p, region = 'kanto') => ((p.teams && p.teams[region]) || []).map(uid => monByUid(p, uid)).filter(Boolean);
+const regionMons = (p, region) => p.mons.filter(m => m.region === region);
+// Quita un Pokémon del perfil y de su equipo
+function removeMon(p, mon) {
+  p.mons = p.mons.filter(m => m !== mon);
+  const team = p.teams[mon.region] = (p.teams[mon.region] || []).filter(u => u !== mon.uid);
+  if (!team.length) { const first = regionMons(p, mon.region)[0]; if (first) team.push(first.uid); }
+  p.team = p.teams.kanto || [];
+}
 
 // Evoluciona si toca por nivel (o con la piedra indicada). Devuelve el dex nuevo o null.
 function tryEvolve(mon, stone) {
@@ -82,15 +102,19 @@ function giveXp(mon, xp, cap) {
 // Acciones fuera de combate. Devuelve un mensaje de error o null.
 function action(p, msg) {
   const a = msg.a;
+  migrate(p);
+  const region = D.REGIONS[msg.region] ? msg.region : 'kanto';
   if (a === 'starter') {
-    if (p.mons.length) return 'Ya tienes inicial';
-    if (!D.STARTERS.includes(msg.dex)) return 'Inicial no válido';
-    addMon(p, msg.dex, 5);
-    p.starter = msg.dex;
+    if (regionMons(p, region).length) return `Ya tienes inicial en ${D.REGIONS[region].name}`;
+    if (!D.REGION_STARTERS[region].includes(msg.dex)) return 'Inicial no válido';
+    addMon(p, msg.dex, 5, { region });
+    p.starters[region] = msg.dex;
+    if (region === 'kanto') p.starter = msg.dex;
   } else if (a === 'team') {
     const uids = Array.isArray(msg.uids) ? [...new Set(msg.uids.map(Number))] : [];
-    if (uids.length < 1 || uids.length > 3 || !uids.every(u => monByUid(p, u))) return 'Equipo no válido';
-    p.team = uids;
+    if (uids.length < 1 || uids.length > 3 || !uids.every(u => { const m = monByUid(p, u); return m && m.region === region; })) return 'Equipo no válido (máximo 3, todos de la misma región)';
+    p.teams[region] = uids;
+    p.team = p.teams.kanto || [];
   } else if (a === 'buy') {
     const item = D.SHOP.find(s => s.id === msg.id);
     const qty = Math.max(1, Math.min(99, msg.qty | 0 || 1));
@@ -99,16 +123,15 @@ function action(p, msg) {
     if (item.dex && qty > 1) return 'Solo uno a la vez';
     if (p.coins < item.price * qty) return 'No tienes suficiente dinero';
     p.coins -= item.price * qty;
-    if (item.dex) addMon(p, item.dex, item.level);
+    if (item.dex) addMon(p, item.dex, item.level, { region });
     else p.items[item.id] = (p.items[item.id] || 0) + qty;
   } else if (a === 'use') {
     const mon = monByUid(p, msg.uid);
     const item = D.SHOP.find(s => s.id === msg.item);
     if (!mon || !item || !(p.items[item.id] > 0)) return 'No puedes usar eso';
     if (item.id === 'caramelo') {
-      migrate(p);
-      const cap = Math.min(MAX_LEVEL, D.levelCap(p));
-      if (mon.level >= cap) return `Tope de nivel ${cap}: vence al siguiente gimnasio para subir más`;
+      const cap = Math.min(MAX_LEVEL, D.levelCap(p, mon.region));
+      if (mon.level >= cap) return `Tope de nivel ${cap} en ${D.REGIONS[mon.region].name}: vence al siguiente líder para subir más`;
       mon.xp = 0;
       levelUp(mon, cap);
     } else if (item.stone) {
@@ -130,16 +153,13 @@ function action(p, msg) {
   } else if (a === 'sell') {
     const mon = monByUid(p, msg.uid);
     if (!mon || p.mons.length <= 1) return 'No puedes vender tu único Pokémon';
+    if (regionMons(p, mon.region).length <= 1) return `Es tu único Pokémon de ${D.REGIONS[mon.region].name}`;
     p.coins += D.sellPrice(mon);
-    p.mons = p.mons.filter(m => m !== mon);
-    p.team = p.team.filter(u => u !== mon.uid);
-    if (!p.team.length) p.team = [p.mons[0].uid];
+    removeMon(p, mon);
   } else if (a === 'release') {
     const mon = monByUid(p, msg.uid);
-    if (!mon || p.mons.length <= 1) return 'No puedes liberarlo';
-    p.mons = p.mons.filter(m => m !== mon);
-    p.team = p.team.filter(u => u !== mon.uid);
-    if (!p.team.length) p.team = [p.mons[0].uid];
+    if (!mon || regionMons(p, mon.region).length <= 1) return 'No puedes liberarlo';
+    removeMon(p, mon);
   } else return 'Acción desconocida';
   store.save();
   return null;
@@ -147,11 +167,13 @@ function action(p, msg) {
 
 // Prepara un combate de historia. Devuelve { error } o { opts } para crear la Battle.
 function battleSetup(p, msg) {
-  const team = teamMons(p);
-  if (!team.length) return { error: 'Primero elige tu Pokémon inicial' };
   migrate(p);
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny })) };
   const node = D.NODES[msg.id];
+  if (!node) return { error: 'Lugar desconocido' };
+  // Solo se combate con Pokémon de la región del lugar
+  const team = teamMons(p, node.region);
+  if (!team.length) return { error: `Primero elige tu Pokémon inicial de ${D.REGIONS[node.region].name}` };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny })) };
   if (msg.a === 'route') {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };
@@ -167,10 +189,10 @@ function battleSetup(p, msg) {
   if (msg.a === 'gym') {
     if (!node || node.kind === 'route') return { error: 'Gimnasio desconocido' };
     if (node.index > D.progOf(p, node.region)) return { error: 'Antes tienes que vencer al anterior' };
-    const team = D.leaderTeam(node, p.starter || (p.mons[0] && p.mons[0].dex));
+    const lt = D.leaderTeam(node, p.starters[node.region] || (team[0] && team[0].dex));
     return {
       kind: 'gym', gym: node, index: node.index, region: node.region,
-      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: team.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: node.ai }] },
+      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: node.ai }] },
     };
   }
   return { error: 'Combate desconocido' };
@@ -190,8 +212,9 @@ function applyResult(p, setup, result, battle) {
     const foes = battle.sides[1].team;
     const foeLevels = foes.reduce((s, m) => s + m.level, 0);
     if (result.captured) {
-      const mon = addMon(p, result.captured.dex, result.captured.level, { shiny: !!result.captured.shiny, met: setup.route ? setup.route.id : null });
-      reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, inTeam: p.team.includes(mon.uid) };
+      const region = setup.route ? setup.route.region : 'kanto';
+      const mon = addMon(p, result.captured.dex, result.captured.level, { region, shiny: !!result.captured.shiny, met: setup.route ? setup.route.id : null });
+      reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, inTeam: p.teams[region].includes(mon.uid) };
       reward.coins = 10;
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;
@@ -212,7 +235,8 @@ function applyResult(p, setup, result, battle) {
     // Experiencia para los que han combatido sin debilitarse; la mitad para los debilitados.
     // Nadie pasa del tope de nivel (media del siguiente gimnasio).
     const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);
-    const cap = Math.min(MAX_LEVEL, D.levelCap(p));
+    const region = setup.region || (setup.route && setup.route.region) || 'kanto';
+    const cap = Math.min(MAX_LEVEL, D.levelCap(p, region));
     reward.cap = cap;
     side.team.forEach(bm => {
       const mon = monByUid(p, bm.uid);
@@ -225,4 +249,4 @@ function applyResult(p, setup, result, battle) {
   return reward;
 }
 
-module.exports = { action, battleSetup, applyResult, teamMons, migrate, learnable, devAddMon: (p, dex, level, shiny) => addMon(p, dex, level, { shiny }) };
+module.exports = { action, battleSetup, applyResult, teamMons, migrate, learnable, devAddMon: (p, dex, level, shiny, region) => addMon(p, dex, level, { shiny, region }) };
