@@ -84,6 +84,7 @@ class Client {
   // Captura: un cliente que juega con las instantáneas (como el navegador), debilita al salvaje
   // y deja de atacar y le lanza Poké Balls cuando le quedan menos del 28 % de PS
   require('../server/store.js').get(token).mons[0].level = 12;
+  require('../server/store.js').get(token).items.pokeball = 30;
   let captured = null;
   for (let attempt = 0; attempt < 6 && !captured; attempt++) {
     const st = a2.wait('start'); a2.send({ t: 'story', a: 'route', id: 'ruta1' });
@@ -98,7 +99,10 @@ class Client {
       const dx = foe.x - me.x, dy = foe.y - me.y, d = Math.hypot(dx, dy);
       const low = foe.hp[0] / foeMax < 0.28;
       seq++;
-      a2.send({ t: 'in', s: seq, mx: d > 220 ? dx / d : 0, my: d > 220 ? dy / d : 0, a: Math.atan2(dy, dx), tx: foe.x, ty: foe.y, c: seq % 4 === 0 ? (low ? 5 : 0) : -1, sw: -1, ball: 'pokeball' });
+      // Atacar a ritmo normal; con poca vida, acercarse y lanzar una Ball cada 0,8 s
+      const want = low ? 120 : 220;
+      const c = low ? (seq % 24 === 0 && d < 200 ? 5 : -1) : (seq % 4 === 0 ? 0 : -1);
+      a2.send({ t: 'in', s: seq, mx: d > want ? dx / d : 0, my: d > want ? dy / d : 0, a: Math.atan2(dy, dx), tx: foe.x, ty: foe.y, c, sw: -1, ball: 'pokeball' });
     }, 1000 / 30);
     const end = await a2.wait('over', () => true, 120000);
     clearInterval(loop);
@@ -106,7 +110,7 @@ class Client {
   }
   ok(!!captured && captured.reward && captured.reward.captured, 'capturar un Pokémon salvaje con una Poké Ball');
   m = await a2.wait('profile');
-  ok(captured && m.p.mons.length === 2 && m.p.mons.some(x => x.dex === captured.captured.dex) && m.p.items.pokeball < 8, 'el capturado entra en el perfil y se gastan Balls');
+  ok(captured && m.p.mons.length === 2 && m.p.mons.some(x => x.dex === captured.captured.dex) && m.p.items.pokeball < 30, 'el capturado entra en el perfil y se gastan Balls');
 
   // Objetos: Caramelo Raro y evolución por nivel (manipulando el perfil en memoria)
   const store = require('../server/store.js');
