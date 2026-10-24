@@ -56,7 +56,7 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, balls: s.balls || null,
+      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid });
@@ -74,7 +74,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }
@@ -485,7 +485,7 @@ class Battle {
   ballHit(p, f) {
     const mon = this.mon(f);
     const status = f.burn > 0 || f.poison > 0 || f.stun > 0 || f.slow > 0 || f.seed > 0;
-    const chance = D.catchChance(mon.hp / mon.maxHp, p.ball, status);
+    const chance = D.catchChance(mon.hp / mon.maxHp, p.ball, status, mon.dex);
     const per = Math.cbrt(chance);
     let shakes = 0;
     while (shakes < 3 && Math.random() < per) shakes++;

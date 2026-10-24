@@ -237,3 +237,7 @@ body:not(.in-battle) #hud { display: none; }
 }
 .float.shake { font-size: 26px; color: #fff; }
 .banner.big2 { font-size: 44px; }
+.gen-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.gen-tabs button.sel { border-color: var(--yellow); background: rgba(255,203,5,.2); }
+.mini.rare { background: linear-gradient(160deg, rgba(255,203,5,.25), rgba(160,80,255,.25)); outline: 1px solid rgba(255,203,5,.6); }
+.banner.rare { color: #ffd84a; font-size: 30px; text-shadow: 0 3px 0 #000, 0 0 18px rgba(255,200,40,.9); }

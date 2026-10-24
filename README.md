@@ -33,7 +33,9 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
 
 ## Modos
 
-- **Historia**: elige inicial, explora 9 rutas (captura debilitando y lanzando Poké Balls), compra en la
+- **Historia**: elige inicial (de las 9 generaciones), explora 9 rutas temáticas donde cada día salen 5 especies
+  de cualquier generación y un Pokémon misterioso muy raro (legendario o pseudolegendario), captura con
+  Poké Balls (3 sacudidas, probabilidad según PS y estado), compra en la
   tienda (Balls, Caramelos Raros, piedras evolutivas y Pokémon raros), vence a los 8 gimnasios, al Alto
   Mando y al Campeón. La IA de cada líder es más hábil que la anterior. Experiencia, niveles y
   evoluciones (por nivel o con piedra).
@@ -62,5 +64,6 @@ npm run test:sim 300   # más combates
 
 ## Sprites
 
-`node tools/import-sprites.js <clon de PokéSurvivor>` copia los sprites de todas las especies de
+`node tools/fetch-dex.js <clon de PokéSurvivor>` descarga de PokeAPI los datos de las 966 especies con sprite
+(`public/dex.js`) y `node tools/import-sprites.js <clon de PokéSurvivor>` copia los sprites de todas las especies de
 `data.js` y regenera `public/sprites/meta.js` y la tabla de artistas de `CREDITS.md`.

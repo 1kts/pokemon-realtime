@@ -43,6 +43,8 @@ export class BattleClient {
     this.buildHud();
     this.bindInput();
     this.banner('3', 'big');
+    const foe = this.sides[this.foeIdx];
+    if (foe.rare) setTimeout(() => this.banner(`¡Un ${foe.team[0] && Data.SPECIES[foe.team[0].dex].name} salvaje muy raro!`, 'rare'), 300);
   }
 
   // ---------- Red ----------
@@ -435,7 +437,7 @@ export class BattleClient {
     if (this.ballEl) {
       const fs = ps[this.foeIdx], fm = this.sides[this.foeIdx].team[fs.act];
       const status = !!(fs.f & (F.BURN | F.POISON | F.STUN | F.SLOW | F.SEED));
-      for (const row of this.ballEl.querySelectorAll('.ball')) row.querySelector('.pct').textContent = Math.round(Data.catchChance(Math.max(0, fs.hp[fs.act] / fm.maxHp), row.dataset.ball, status) * 100) + ' %';
+      for (const row of this.ballEl.querySelectorAll('.ball')) row.querySelector('.pct').textContent = Math.round(Data.catchChance(Math.max(0, fs.hp[fs.act] / fm.maxHp), row.dataset.ball, status, fm.dex) * 100) + ' %';
     }
     this.energyEl.lastChild.textContent = `${me.e} ⚡`;
   }

@@ -60,6 +60,12 @@ export function portrait(dex, size = 64, opts = {}) {
     const w = m.w * scale, h = m.h * scale;
     // Centrar sobre el ancla (los pies) un poco por debajo del centro
     g.drawImage(img, 0, 0, m.w, m.h, Math.round(size / 2 - m.ax * scale), Math.round(size * 0.78 - m.ay * scale), w, h);
+    if (opts.silhouette) {   // silueta negra para los Pokémon misteriosos
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = '#10141e';
+      g.fillRect(0, 0, size, size);
+      g.globalCompositeOperation = 'source-over';
+    }
   };
   const img = sheet(dex, 'Idle');
   if (img.complete && img.naturalWidth) draw(); else img.addEventListener('load', draw, { once: true });

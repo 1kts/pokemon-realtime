@@ -187,15 +187,24 @@ export class UI {
         box.append(go);
       }
     } else {
-      box.append(el('h3', '', n.name), el('p', 'small', 'Pokémon salvajes que puedes encontrar:'));
+      const w = Data.routeWild(n);
+      box.append(el('h3', '', n.name), el('p', 'small', `Hoy pueden salir (cambian cada día) · Nv.${n.lvl[0]}-${n.lvl[1]} · ${n.types.map(t => TYPE_LABEL[t]).join(', ')}`));
       const list = el('div', 'mini-team');
-      const total = n.wild.reduce((s, w) => s + w[3], 0);
-      for (const [dex, min, max, w] of n.wild) {
+      const total = w.list.reduce((a, x) => a + x.weight, 0) / (1 - w.rare.chance);
+      for (const { dex, weight } of w.list) {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
         c.append(portrait(dex, 56));
-        c.append(el('small', '', `${SPECIES[dex].name}<br>Nv.${min}-${max} · ${Math.round(w / total * 100)} %`));
+        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.round(weight / total * 100)} %`));
+        c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
         list.append(c);
       }
+      // El misterioso: silueta hasta que lo atrapas
+      const known = p.caught.includes(w.rare.dex);
+      const rare = el('div', 'mini rare' + (known ? ' caught' : ''));
+      rare.append(portrait(w.rare.dex, 56, { silhouette: !known }));
+      rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · Nv.${n.lvl[1] + 3}`));
+      rare.title = 'Pokémon misterioso: aparece muy de vez en cuando y cuesta mucho atraparlo';
+      list.append(rare);
       box.append(list);
       const balls = (p.items.pokeball || 0) + (p.items.superball || 0) + (p.items.ultraball || 0);
       box.append(el('p', 'small', `Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>) para capturarlo. Tienes ${balls} Balls.`));
@@ -221,19 +230,33 @@ export class UI {
   view_starter() {
     const wrap = el('div', 'starter');
     wrap.append(this.topbar('Elige tu primer Pokémon', 'menu'));
-    wrap.append(el('p', 'intro', 'El Profesor Oak te ofrece uno de estos tres. Será tu compañero en todo Kanto.'));
+    wrap.append(el('p', 'intro', 'Elige a tu compañero entre los iniciales de las 9 generaciones. Te acompañará por todo Kanto.'));
+    const tabs = el('div', 'gen-tabs');
     const row = el('div', 'starter-row');
-    for (const dex of STARTERS) {
-      const c = el('button', 'starter-card');
-      c.append(animatedPortrait(dex, 150, 'Idle'));
-      c.append(el('b', '', SPECIES[dex].name));
-      c.append(el('div', 'types', typeChips(dex)));
-      c.append(el('small', '', SPECIES[dex].moves.map(k => MOVES[k].name).join(' · ')));
-      c.onclick = () => this.net.send({ t: 'story', a: 'starter', dex });
-      row.append(c);
+    const gens = [...new Set(STARTERS.map(d => SPECIES[d].gen))];
+    const showGen = g => {
+      tabs.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.dataset.gen === g));
+      row.innerHTML = '';
+      for (const dex of STARTERS.filter(d => SPECIES[d].gen === g)) {
+        const c = el('button', 'starter-card');
+        c.style.setProperty('--tc', TYPE_COLOR[SPECIES[dex].types[0]]);
+        c.append(animatedPortrait(dex, 150, 'Idle'));
+        c.append(el('b', '', SPECIES[dex].name));
+        c.append(el('div', 'types', typeChips(dex)));
+        c.append(el('small', '', SPECIES[dex].moves.map(k => MOVES[k].name).join(' · ')));
+        c.onclick = () => this.net.send({ t: 'story', a: 'starter', dex });
+        row.append(c);
+      }
+    };
+    for (const g of gens) {
+      const b = el('button', '', `Gen ${g}`);
+      b.dataset.gen = g;
+      b.onclick = () => showGen(g);
+      tabs.append(b);
     }
-    wrap.append(row);
+    wrap.append(tabs, row);
     this.root.append(wrap);
+    showGen(gens[0]);
   }
 
   // ---------- Equipo ----------

@@ -88,16 +88,6 @@ function action(p, msg) {
   return null;
 }
 
-function pickWild(route) {
-  const total = route.wild.reduce((s, w) => s + w[3], 0);
-  let r = Math.random() * total;
-  for (const [dex, min, max, w] of route.wild) {
-    if ((r -= w) <= 0) return { dex, level: min + Math.floor(Math.random() * (max - min + 1)) };
-  }
-  const [dex, min] = route.wild[0];
-  return { dex, level: min };
-}
-
 // Prepara un combate de historia. Devuelve { error } o { opts } para crear la Battle.
 function battleSetup(p, msg) {
   const team = teamMons(p);
@@ -107,11 +97,11 @@ function battleSetup(p, msg) {
     const route = D.ROUTES.find(r => r.id === msg.id);
     if (!route) return { error: 'Ruta desconocida' };
     if (route.req > p.badges) return { error: `Necesitas ${route.req} medallas` };
-    const wild = pickWild(route);
+    const wild = D.rollWild(route);
     const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
     return {
       kind: 'route', route,
-      opts: { mode: 'wild', map: route.map, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [wild], ai: route.ai, wild: true }] },
+      opts: { mode: 'wild', map: route.map, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
     };
   }
   if (msg.a === 'gym') {

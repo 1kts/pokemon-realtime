@@ -3,32 +3,35 @@
 (function (root) {
   // ---------- Tipos ----------
   const TYPE_NAMES = ['normal', 'fuego', 'agua', 'planta', 'electrico', 'hielo', 'lucha', 'veneno',
-    'tierra', 'volador', 'psiquico', 'bicho', 'roca', 'fantasma', 'dragon'];
+    'tierra', 'volador', 'psiquico', 'bicho', 'roca', 'fantasma', 'dragon', 'acero', 'siniestro', 'hada'];
   const TYPE_LABEL = { normal: 'Normal', fuego: 'Fuego', agua: 'Agua', planta: 'Planta', electrico: 'Eléctrico',
     hielo: 'Hielo', lucha: 'Lucha', veneno: 'Veneno', tierra: 'Tierra', volador: 'Volador', psiquico: 'Psíquico',
-    bicho: 'Bicho', roca: 'Roca', fantasma: 'Fantasma', dragon: 'Dragón' };
+    bicho: 'Bicho', roca: 'Roca', fantasma: 'Fantasma', dragon: 'Dragón', acero: 'Acero', siniestro: 'Siniestro', hada: 'Hada' };
   const TYPE_COLOR = { normal: '#c8c0a0', fuego: '#ff7a30', agua: '#4a90ff', planta: '#5cd04a', electrico: '#ffd23a',
     hielo: '#90e8ff', lucha: '#e05030', veneno: '#b050d0', tierra: '#d8b060', volador: '#a8a8ff', psiquico: '#ff5890',
-    bicho: '#a8c830', roca: '#b8a058', fantasma: '#7058c0', dragon: '#7038f8' };
+    bicho: '#a8c830', roca: '#b8a058', fantasma: '#7058c0', dragon: '#7038f8', acero: '#b8b8d0', siniestro: '#705848', hada: '#ff9ee0' };
   // Atacante -> defensor. Lo que no aparece vale 1. Las inmunidades se suavizan a 0.25
   // para que en tiempo real nunca haya un golpe que no haga nada.
   const S = 1.5, W = 0.67, I = 0.25;
   const CHART = {
-    normal: { roca: W, fantasma: I },
-    fuego: { fuego: W, agua: W, planta: S, hielo: S, bicho: S, roca: W, dragon: W },
+    normal: { roca: W, fantasma: I, acero: W },
+    fuego: { fuego: W, agua: W, planta: S, hielo: S, bicho: S, roca: W, dragon: W, acero: S },
     agua: { fuego: S, agua: W, planta: W, tierra: S, roca: S, dragon: W },
-    planta: { fuego: W, agua: S, planta: W, veneno: W, tierra: S, volador: W, bicho: W, roca: S, dragon: W },
+    planta: { fuego: W, agua: S, planta: W, veneno: W, tierra: S, volador: W, bicho: W, roca: S, dragon: W, acero: W },
     electrico: { agua: S, planta: W, electrico: W, tierra: I, volador: S, dragon: W },
-    hielo: { fuego: W, agua: W, planta: S, hielo: W, tierra: S, volador: S, dragon: S },
-    lucha: { normal: S, hielo: S, veneno: W, volador: W, psiquico: W, bicho: W, roca: S, fantasma: I },
-    veneno: { planta: S, veneno: W, tierra: W, roca: W, fantasma: W },
-    tierra: { fuego: S, planta: W, electrico: S, veneno: S, volador: I, bicho: W, roca: S },
-    volador: { planta: S, electrico: W, lucha: S, bicho: S, roca: W },
-    psiquico: { lucha: S, veneno: S, psiquico: W },
-    bicho: { fuego: W, planta: S, lucha: W, veneno: W, volador: W, psiquico: S, fantasma: W },
-    roca: { fuego: S, hielo: S, lucha: W, tierra: W, volador: S, bicho: S },
-    fantasma: { normal: I, psiquico: S, fantasma: S },
-    dragon: { dragon: S },
+    hielo: { fuego: W, agua: W, planta: S, hielo: W, tierra: S, volador: S, dragon: S, acero: W },
+    lucha: { normal: S, hielo: S, veneno: W, volador: W, psiquico: W, bicho: W, roca: S, fantasma: I, acero: S, siniestro: S, hada: W },
+    veneno: { planta: S, veneno: W, tierra: W, roca: W, fantasma: W, acero: I, hada: S },
+    tierra: { fuego: S, planta: W, electrico: S, veneno: S, volador: I, bicho: W, roca: S, acero: S },
+    volador: { planta: S, electrico: W, lucha: S, bicho: S, roca: W, acero: W },
+    psiquico: { lucha: S, veneno: S, psiquico: W, acero: W, siniestro: I },
+    bicho: { fuego: W, planta: S, lucha: W, veneno: W, volador: W, psiquico: S, fantasma: W, acero: W, siniestro: S, hada: W },
+    roca: { fuego: S, hielo: S, lucha: W, tierra: W, volador: S, bicho: S, acero: W },
+    fantasma: { normal: I, psiquico: S, fantasma: S, siniestro: W },
+    dragon: { dragon: S, acero: W, hada: I },
+    acero: { fuego: W, agua: W, electrico: W, hielo: S, roca: S, acero: W, hada: S },
+    siniestro: { lucha: W, psiquico: S, fantasma: S, siniestro: W, hada: W },
+    hada: { fuego: W, lucha: S, veneno: W, dragon: S, siniestro: S, acero: W },
   };
   function typeMult(atk, defTypes) {
     let m = 1;
@@ -61,7 +64,7 @@
     nievePolvo: { name: 'Nieve Polvo', type: 'hielo', kind: 'proj', cost: 0, cd: 0.6, wind: 0.08, rec: 0.12, dmg: 5, speed: 520, range: 440, radius: 7, count: 2, spread: 0.15, slow: 0.8 },
     acido: { name: 'Ácido', type: 'veneno', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 560, range: 460, radius: 8, poison: 2 },
     tijeraX: { name: 'Tijera X', type: 'bicho', kind: 'melee', cost: 0, cd: 0.45, wind: 0.08, rec: 0.1, dmg: 11, range: 66, arc: 1.8 },
-    mordisco: { name: 'Mordisco', type: 'normal', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 12, range: 70, arc: 1.4 },
+    mordisco: { name: 'Mordisco', type: 'siniestro', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 12, range: 70, arc: 1.4 },
     salpicadura: { name: 'Salpicadura', type: 'normal', kind: 'buff', cost: 0, cd: 1, wind: 0.2, rec: 0.3, dur: 0.1, splash: true },
 
     // Habilidades
@@ -110,6 +113,29 @@
     ciclon: { name: 'Ciclón', type: 'dragon', kind: 'proj', cost: 30, cd: 5, wind: 0.3, rec: 0.2, dmg: 9, speed: 520, range: 480, radius: 12, count: 3, spread: 0.3 },
     fuegoFatuo: { name: 'Fuego Fatuo', type: 'fuego', kind: 'proj', cost: 25, cd: 8, wind: 0.2, rec: 0.15, dmg: 2, speed: 380, range: 520, radius: 10, burn: 6 },
     rayoBurbuja: { name: 'Rayo Burbuja', type: 'agua', kind: 'proj', cost: 25, cd: 4, wind: 0.25, rec: 0.2, dmg: 6, speed: 480, range: 480, radius: 8, count: 3, spread: 0.25, slow: 1, wet: 3 },
+    // Movimientos de los tipos y Pokémon de otras generaciones
+    garraMetal: { name: 'Garra Metal', type: 'acero', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 11, range: 66, arc: 1.5 },
+    focoResplandor: { name: 'Foco Resplandor', type: 'acero', kind: 'beam', cost: 35, cd: 5, wind: 0.45, rec: 0.25, dmg: 19, len: 470, width: 20 },
+    cabezaHierro: { name: 'Cabeza de Hierro', type: 'acero', kind: 'dash', cost: 25, cd: 6, wind: 0.15, rec: 0.2, dmg: 16, dist: 220, dur: 0.22, stun: 0.3 },
+    punoMeteoro: { name: 'Puño Meteoro', type: 'acero', kind: 'melee', cost: 45, cd: 9, wind: 0.45, rec: 0.3, dmg: 28, range: 76, arc: 1.4, knock: 110 },
+    pulsoUmbrio: { name: 'Pulso Umbrío', type: 'siniestro', kind: 'proj', cost: 30, cd: 4, wind: 0.3, rec: 0.2, dmg: 18, speed: 500, range: 540, radius: 13 },
+    golpeBajo: { name: 'Golpe Bajo', type: 'siniestro', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 11, dist: 210, dur: 0.14 },
+    triturar: { name: 'Triturar', type: 'siniestro', kind: 'melee', cost: 40, cd: 8, wind: 0.35, rec: 0.25, dmg: 26, range: 72, arc: 1.4, stun: 0.3 },
+    vientoFeerico: { name: 'Viento Feérico', type: 'hada', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, speed: 560, range: 480, radius: 9 },
+    brilloMagico: { name: 'Brillo Mágico', type: 'hada', kind: 'area', at: 'self', cost: 35, cd: 7, wind: 0.25, rec: 0.25, dmg: 18, radius: 130, delay: 0.45 },
+    fuerzaLunar: { name: 'Fuerza Lunar', type: 'hada', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 420, range: 560, radius: 15 },
+    luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 12, wind: 0.35, rec: 0.2, heal: 0.22 },
+    disparoDemora: { name: 'Disparo Demora', type: 'bicho', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 520, range: 440, radius: 8, slow: 0.6 },
+    zumbido: { name: 'Zumbido', type: 'bicho', kind: 'beam', cost: 30, cd: 5, wind: 0.4, rec: 0.2, dmg: 17, len: 440, width: 22 },
+    idaYVuelta: { name: 'Ida y Vuelta', type: 'bicho', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 10, dist: 220, dur: 0.15 },
+    megacuerno: { name: 'Megacuerno', type: 'bicho', kind: 'melee', cost: 45, cd: 9, wind: 0.45, rec: 0.3, dmg: 30, range: 74, arc: 1.3, knock: 100 },
+    infortunio: { name: 'Infortunio', type: 'fantasma', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.25, rec: 0.3, dmg: 24, radius: 85, delay: 0.6, maxRange: 480, slow: 1.5 },
+    pulsoDragon: { name: 'Pulso Dragón', type: 'dragon', kind: 'proj', cost: 30, cd: 4, wind: 0.3, rec: 0.2, dmg: 18, speed: 480, range: 540, radius: 14 },
+    cometaDraco: { name: 'Cometa Draco', type: 'dragon', kind: 'area', at: 'cursor', cost: 60, cd: 12, wind: 0.35, rec: 0.35, dmg: 32, radius: 105, delay: 0.8, maxRange: 480 },
+    tierraViva: { name: 'Tierra Viva', type: 'tierra', kind: 'area', at: 'cursor', cost: 30, cd: 6, wind: 0.2, rec: 0.25, dmg: 18, radius: 70, delay: 0.5, maxRange: 480 },
+    cantoHelado: { name: 'Canto Helado', type: 'hielo', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 210, dur: 0.14, slow: 0.8 },
+    lanzaMugre: { name: 'Lanza Mugre', type: 'veneno', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 440, range: 540, radius: 15, poison: 4 },
+    aireAfilado: { name: 'Aire Afilado', type: 'volador', kind: 'proj', cost: 25, cd: 4, wind: 0.25, rec: 0.2, dmg: 16, speed: 640, range: 520, radius: 10 },
   };
   // Protección (Espacio) la tienen todos: los primeros PERFECT segundos devuelven el golpe.
   const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.55, perfect: 0.18, block: 0.8 };
@@ -117,6 +143,7 @@
   const SWAP = { cd: 4, time: 0.3, perfect: 0.35 };
 
   // ---------- Pokémon ----------
+  const STONE_IDS = ['agua', 'trueno', 'fuego', 'hoja', 'lunar', 'sol', 'hielo', 'noche', 'alba', 'dia'];
   // hp, atk (multiplicador de daño) y spd a nivel 50. evo: [dex, nivel] o [dex, 'piedra'].
   const SPECIES = {};
   function sp(dex, name, types, hp, atk, spd, moves, evo) {
@@ -201,6 +228,72 @@
   sp(148, 'Dragonair', ['dragon'], 104, 1.08, 228, ['furiaDragon', 'ciclon', 'rayo', 'danzaDragon'], [149, 55]);
   sp(149, 'Dragonite', ['dragon', 'volador'], 140, 1.2, 230, ['furiaDragon', 'golpeAereo', 'danzaDragon', 'hiperrayo']);
 
+  // ---------- Resto de especies (todas las generaciones), generadas desde dex.js ----------
+  // Cada tipo tiene un kit: básico, habilidad, embestida, curación, apoyo y definitivo.
+  const KIT = {
+    normal: { basic: 'placaje', skill: 'golpeCuerpo', dash: 'ataqueRapido', big: 'hiperrayo', heal: 'descanso' },
+    fuego: { basic: 'ascuas', skill: 'lanzallamas', dash: 'nitrocarga', big: 'llamarada', util: 'fuegoFatuo' },
+    agua: { basic: 'pistolaAgua', skill: 'hidrobomba', dash: 'acuaJet', big: 'surf', heal: 'acuaAro' },
+    planta: { basic: 'hojaAfilada', skill: 'latigoCepa', big: 'rayoSolar', heal: 'sintesis', util: 'drenadoras' },
+    electrico: { basic: 'impactrueno', skill: 'rayo', big: 'trueno', util: 'ondaTrueno' },
+    hielo: { basic: 'nievePolvo', skill: 'rayoHielo', dash: 'cantoHelado', big: 'ventisca' },
+    lucha: { basic: 'golpeKarate', skill: 'patadaBaja', big: 'punoDinamico' },
+    veneno: { basic: 'acido', skill: 'bombaLodo', big: 'lanzaMugre', util: 'toxico' },
+    tierra: { basic: 'bofetonLodo', skill: 'tierraViva', dash: 'excavar', big: 'terremoto' },
+    volador: { basic: 'tornado', skill: 'aireAfilado', dash: 'golpeAereo', big: 'vendaval' },
+    psiquico: { basic: 'confusion', skill: 'psicorrayo', dash: 'teletransporte', big: 'psiquico', util: 'hipnosis' },
+    bicho: { basic: 'disparoDemora', skill: 'zumbido', dash: 'idaYVuelta', big: 'megacuerno' },
+    roca: { basic: 'lanzarrocas', skill: 'tumbaRocas', big: 'avalancha' },
+    fantasma: { basic: 'lenguetazo', skill: 'bolaSombra', dash: 'teletransporte', big: 'infortunio', util: 'hipnosis' },
+    dragon: { basic: 'furiaDragon', skill: 'pulsoDragon', big: 'cometaDraco', util: 'danzaDragon' },
+    acero: { basic: 'garraMetal', skill: 'focoResplandor', dash: 'cabezaHierro', big: 'punoMeteoro' },
+    siniestro: { basic: 'mordisco', skill: 'pulsoUmbrio', dash: 'golpeBajo', big: 'triturar' },
+    hada: { basic: 'vientoFeerico', skill: 'brilloMagico', big: 'fuerzaLunar', heal: 'luzLunar' },
+  };
+
+  function genMoves(types, st) {
+    const [hp, atk, def, spa, spd, spe] = st;
+    const k1 = KIT[types[0]], k2 = KIT[types[1]] || k1;
+    const moves = [k1.basic, k1.skill];
+    const bulky = (hp + def + spd) / 3 >= 85;
+    const util = spe >= 85 ? (k1.dash || k2.dash) : bulky ? (k1.heal || k2.heal) : null;
+    moves.push(util || k1.util || k2.util || k1.dash || k2.dash || k2.skill || 'ataqueRapido');
+    moves.push(types[1] ? k2.big : k1.big);
+    // Sin repetidos
+    const pool = [k2.skill, k1.big, k2.big, k1.util, k2.util, 'ataqueRapido', 'agilidad', 'placaje'];
+    for (let i = 1; i < 4; i++) while (moves.indexOf(moves[i]) !== i || !moves[i]) moves[i] = pool.shift();
+    return moves;
+  }
+
+  const DEX = typeof module !== 'undefined' && module.exports ? require('./dex.js') : root.DEX;
+  const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+  for (const [id, d] of Object.entries(DEX)) {
+    const dex = +id;
+    const [name, types, st, gen, leg, , rate] = d;
+    const bst = st.reduce((a, b) => a + b, 0);
+    if (SPECIES[dex]) { Object.assign(SPECIES[dex], { gen, leg, rate, bst, name }); continue; }
+    SPECIES[dex] = {
+      dex, name, types, gen, leg, rate, bst,
+      hp: Math.round(clampN(55 + st[0] * 0.95, 60, 200)),
+      atk: +clampN(0.9 + (Math.max(st[1], st[3]) - 60) / 350 + (bst - 450) / 3000, 0.7, 1.3).toFixed(2),
+      spd: Math.round(clampN(175 + st[5] * 0.6, 170, 268)),
+      moves: genMoves(types, st), evo: null,
+    };
+  }
+  // Evoluciones: por nivel, con piedra, o el resto (amistad, intercambio…) convertidas a nivel
+  for (const [id, d] of Object.entries(DEX)) {
+    const from = d[5], how = d[7];
+    if (!from || !SPECIES[from] || !SPECIES[id]) continue;
+    const base = SPECIES[from];
+    const handmade = base.evo && (Array.isArray(base.evo[0]) ? base.evo : [base.evo]).some(e => e[0] === +id);
+    if (handmade) continue;
+    const stage = DEX[from] && DEX[from][5] ? 2 : 1;
+    const cond = typeof how === 'number' ? how : STONE_IDS.includes(how) ? how : stage === 1 ? 30 : 40;
+    const list = base.evo ? (Array.isArray(base.evo[0]) ? base.evo : [base.evo]) : [];
+    list.push([+id, cond]);
+    base.evo = list.length === 1 ? list[0] : list;
+  }
+
   // Nivel -> multiplicador de PS y daño. A nivel 50 vale 1.
   const levelMult = lvl => 0.55 + lvl * 0.009;
   const xpToNext = lvl => 20 + lvl * 12;
@@ -279,18 +372,65 @@
   };
 
   // ---------- Modo historia ----------
-  // Rutas: [dex, nivel min, nivel max, peso]. req = medallas necesarias.
+  // Rutas temáticas: cada día salen 5 especies (de cualquier generación) de sus tipos y con
+  // fuerza (suma de stats base) acorde a la ruta, iguales para todos los jugadores.
+  // Además hay un Pokémon misterioso (legendario o muy fuerte) con una probabilidad pequeña.
+  // req = medallas necesarias.
   const ROUTES = [
-    { id: 'ruta1', name: 'Ruta 1', req: 0, map: 'pradera', ai: 0.02, wild: [[16, 2, 4, 5], [19, 2, 4, 5]], x: 8, y: 86 },
-    { id: 'bosque', name: 'Bosque Verde', req: 0, map: 'bosque', ai: 0.03, wild: [[16, 4, 7, 4], [19, 4, 6, 3], [25, 4, 6, 2], [69, 5, 7, 2]], x: 18, y: 70 },
-    { id: 'montemoon', name: 'Monte Moon', req: 1, map: 'cueva', ai: 0.05, wild: [[74, 8, 11, 4], [27, 8, 11, 3], [32, 8, 11, 3], [50, 9, 12, 1]], x: 40, y: 66 },
-    { id: 'ruta24', name: 'Puente Pepita', req: 2, map: 'lago', ai: 0.07, wild: [[63, 12, 15, 3], [43, 12, 15, 3], [54, 12, 15, 3], [69, 12, 15, 2], [129, 10, 14, 2]], x: 62, y: 62 },
-    { id: 'tunelroca', name: 'Túnel Roca', req: 3, map: 'cueva', ai: 0.09, wild: [[66, 17, 21, 3], [95, 18, 21, 2], [100, 17, 21, 3], [81, 17, 21, 3]], x: 88, y: 62 },
-    { id: 'torre', name: 'Torre Pokémon', req: 4, map: 'cueva', ai: 0.11, wild: [[92, 21, 25, 4], [93, 24, 26, 1], [109, 21, 25, 3], [88, 21, 25, 3]], x: 68, y: 38 },
-    { id: 'safari', name: 'Zona Safari', req: 5, map: 'bosque', ai: 0.14, wild: [[111, 26, 30, 3], [123, 26, 30, 2], [77, 26, 30, 3], [58, 26, 30, 3], [147, 24, 28, 1], [114, 26, 30, 2]], x: 44, y: 38 },
-    { id: 'islas', name: 'Islas Espuma', req: 6, map: 'lago', ai: 0.17, wild: [[120, 30, 34, 3], [55, 30, 34, 3], [124, 30, 34, 2], [131, 30, 34, 1], [129, 25, 30, 2]], x: 20, y: 40 },
-    { id: 'victoria', name: 'Calle Victoria', req: 8, map: 'cueva', ai: 0.22, wild: [[67, 38, 42, 3], [75, 38, 42, 3], [95, 40, 44, 2], [51, 38, 42, 2], [126, 38, 42, 2], [148, 38, 42, 1]], x: 32, y: 24 },
+    { id: 'ruta1', name: 'Ruta 1', req: 0, map: 'pradera', ai: 0.02, types: ['normal', 'volador', 'bicho'], lvl: [2, 5], bst: [180, 330], rare: 0.02, x: 8, y: 86 },
+    { id: 'bosque', name: 'Bosque Verde', req: 0, map: 'bosque', ai: 0.03, types: ['bicho', 'planta', 'electrico'], lvl: [4, 8], bst: [190, 360], rare: 0.02, x: 18, y: 70 },
+    { id: 'montemoon', name: 'Monte Moon', req: 1, map: 'cueva', ai: 0.05, types: ['roca', 'tierra', 'hada', 'veneno'], lvl: [8, 12], bst: [200, 380], rare: 0.025, x: 40, y: 66 },
+    { id: 'ruta24', name: 'Puente Pepita', req: 2, map: 'lago', ai: 0.07, types: ['agua', 'psiquico', 'planta', 'hada'], lvl: [12, 16], bst: [220, 400], rare: 0.025, x: 62, y: 62 },
+    { id: 'tunelroca', name: 'Túnel Roca', req: 3, map: 'cueva', ai: 0.09, types: ['roca', 'electrico', 'lucha', 'acero'], lvl: [17, 21], bst: [240, 420], rare: 0.03, x: 88, y: 62 },
+    { id: 'torre', name: 'Torre Pokémon', req: 4, map: 'cueva', ai: 0.11, types: ['fantasma', 'veneno', 'siniestro', 'psiquico'], lvl: [21, 26], bst: [250, 440], rare: 0.03, x: 68, y: 38 },
+    { id: 'safari', name: 'Zona Safari', req: 5, map: 'bosque', ai: 0.14, types: ['normal', 'planta', 'bicho', 'tierra', 'dragon'], lvl: [26, 31], bst: [270, 470], rare: 0.035, x: 44, y: 38 },
+    { id: 'islas', name: 'Islas Espuma', req: 6, map: 'lago', ai: 0.17, types: ['agua', 'hielo'], lvl: [30, 35], bst: [290, 490], rare: 0.035, x: 20, y: 40 },
+    { id: 'victoria', name: 'Calle Victoria', req: 8, map: 'cueva', ai: 0.22, types: ['lucha', 'roca', 'acero', 'dragon', 'siniestro'], lvl: [38, 44], bst: [330, 530], rare: 0.04, x: 32, y: 24 },
   ];
+  const WILD_WEIGHTS = [30, 25, 20, 15, 10];
+
+  // Generador con semilla: la misma ruta y el mismo día dan las mismas especies en servidor y cliente
+  function seeded(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+  }
+  const dayKey = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+  const routeCache = new Map();
+  // Las 5 especies del día y el misterioso de una ruta
+  function routeWild(route, day = dayKey()) {
+    const key = route.id + day;
+    if (routeCache.has(key)) return routeCache.get(key);
+    const r = seeded(key);
+    const fits = sp => sp.types.some(t => route.types.includes(t));
+    const all = Object.values(SPECIES);
+    let cands = all.filter(sp => !sp.leg && fits(sp) && sp.bst >= route.bst[0] && sp.bst <= route.bst[1]);
+    const picks = [];
+    while (picks.length < 5 && cands.length) {
+      const i = Math.floor(r() * cands.length);
+      const sp = cands.splice(i, 1)[0];
+      if (picks.some(p => p.types[0] === sp.types[0]) && cands.some(c => !picks.some(p => p.types[0] === c.types[0])) && r() < 0.6) { cands.push(sp); continue; }
+      picks.push(sp);
+    }
+    picks.sort((a, b) => a.bst - b.bst);   // los más fuertes, más raros
+    const rarePool = all.filter(sp => (sp.leg || sp.bst >= 580) && fits(sp));
+    const pool = rarePool.length ? rarePool : all.filter(sp => sp.leg);
+    const rare = pool[Math.floor(r() * pool.length)];
+    const out = { day, list: picks.map((sp, i) => ({ dex: sp.dex, weight: WILD_WEIGHTS[i] })), rare: { dex: rare.dex, chance: route.rare } };
+    routeCache.set(key, out);
+    if (routeCache.size > 200) routeCache.delete(routeCache.keys().next().value);
+    return out;
+  }
+  // Un encuentro: misterioso con su probabilidad; si no, una de las 5 por peso
+  function rollWild(route, rand = Math.random, day = dayKey()) {
+    const w = routeWild(route, day);
+    const [lo, hi] = route.lvl;
+    if (rand() < w.rare.chance) return { dex: w.rare.dex, level: hi + 3, rare: true };
+    const total = w.list.reduce((a, x) => a + x.weight, 0);
+    let x = rand() * total;
+    for (const e of w.list) if ((x -= e.weight) <= 0) return { dex: e.dex, level: lo + Math.floor(rand() * (hi - lo + 1)) };
+    return { dex: w.list[0].dex, level: lo };
+  }
   // Gimnasios en orden; la Liga va después de las 8 medallas. ai = habilidad de la IA (0-1).
   const GYMS = [
     { id: 'plateada', name: 'Gimnasio Plateada', leader: 'Brock', type: 'roca', map: 'cueva', ai: 0.2, reward: 600, team: [[74, 12], [95, 14]], x: 30, y: 82 },
@@ -307,16 +447,20 @@
     { id: 'lance', name: 'Alto Mando', leader: 'Lance', type: 'dragon', map: 'lago', ai: 0.82, reward: 4000, team: [[130, 58], [148, 56], [149, 62]], x: 82, y: 22, elite: true },
     { id: 'campeon', name: 'Campeón', leader: 'Azul', type: 'normal', map: 'pradera', ai: 0.88, reward: 8000, team: [[18, 61], [65, 63], [6, 65]], x: 92, y: 10, elite: true },
   ];
-  const STARTERS = [1, 4, 7];
+  // Iniciales de las 9 generaciones (solo los que tienen sprites)
+  const STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912].filter(d => SPECIES[d]);
   // Probabilidad de captura: sube cuantos menos PS le quedan y si tiene un estado alterado.
   // Cada Ball hace 3 sacudidas; cada una sale bien con p^(1/3), así que las 3 juntas valen p.
-  function catchChance(hpFrac, ballId, hasStatus) {
+  // Las especies difíciles (ratio de captura bajo: legendarios, pseudolegendarios) cuestan bastante más.
+  function catchChance(hpFrac, ballId, hasStatus, dex) {
     const item = SHOP.find(s => s.id === ballId);
     const base = 0.12 + 0.78 * (1 - hpFrac) * (1 - hpFrac * 0.35);
-    return Math.max(0.05, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1)));
+    const rate = dex && SPECIES[dex] && SPECIES[dex].rate ? SPECIES[dex].rate : 45;
+    const hard = Math.min(1, Math.sqrt(rate / 45));
+    return Math.max(0.02, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1) * hard));
   }
-  // Tienda: Poké Balls (capturan si los PS del salvaje están por debajo de 'cap'),
-  // piedras evolutivas, Caramelo Raro y Pokémon raros a la venta.
+  // Tienda: Poké Balls (multiplican la probabilidad de captura), piedras evolutivas,
+  // Caramelo Raro y Pokémon raros a la venta.
   const SHOP = [
     { id: 'pokeball', name: 'Poké Ball', price: 100, ball: 1, desc: 'La de siempre. Mejor con el salvaje debilitado' },
     { id: 'superball', name: 'Super Ball', price: 350, ball: 1.5, desc: 'Captura con más facilidad que la Poké Ball', req: 2 },
@@ -326,7 +470,12 @@
     { id: 'trueno', name: 'Piedra Trueno', price: 2000, stone: true, desc: 'Evoluciona a Pikachu, Eevee…', req: 3 },
     { id: 'fuego', name: 'Piedra Fuego', price: 2000, stone: true, desc: 'Evoluciona a Vulpix, Growlithe, Eevee', req: 3 },
     { id: 'hoja', name: 'Piedra Hoja', price: 2000, stone: true, desc: 'Evoluciona a Gloom, Weepinbell', req: 4 },
-    { id: 'lunar', name: 'Piedra Lunar', price: 2000, stone: true, desc: 'Evoluciona a Nidorino', req: 4 },
+    { id: 'lunar', name: 'Piedra Lunar', price: 2000, stone: true, desc: 'Evoluciona a Nidorino, Clefairy…', req: 4 },
+    { id: 'sol', name: 'Piedra Solar', price: 2000, stone: true, desc: 'Evoluciona a Gloom, Sunkern, Cottonee…', req: 4 },
+    { id: 'hielo', name: 'Piedra Hielo', price: 2500, stone: true, desc: 'Evoluciona a Eevee (Glaceon), Vulpix de Alola…', req: 5 },
+    { id: 'noche', name: 'Piedra Noche', price: 2500, stone: true, desc: 'Evoluciona a Murkrow, Misdreavus…', req: 5 },
+    { id: 'alba', name: 'Piedra Alba', price: 2500, stone: true, desc: 'Evoluciona a Kirlia (macho), Snorunt (hembra)…', req: 6 },
+    { id: 'dia', name: 'Piedra Día', price: 2500, stone: true, desc: 'Evoluciona a Togetic, Roselia, Minccino…', req: 6 },
     { id: 'poke133', name: 'Eevee', price: 3000, dex: 133, level: 20, desc: 'Pokémon de la tienda (nivel 20)', req: 2 },
     { id: 'poke143', name: 'Snorlax', price: 7000, dex: 143, level: 30, desc: 'Pokémon de la tienda (nivel 30)', req: 4 },
     { id: 'poke131', name: 'Lapras', price: 9000, dex: 131, level: 32, desc: 'Pokémon de la tienda (nivel 32)', req: 5 },
@@ -341,7 +490,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);
