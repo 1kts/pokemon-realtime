@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.5.0', date: '2026-10-24', title: 'Salas del Alto Mando y rutas únicas',
+      items: [
+        ['nuevo', 'Cada miembro del Alto Mando y cada Campeón tiene su propia sala, con dos o tres mecánicas a la vez y más intensas.'],
+        ['nuevo', 'Carámbanos en la Cámara Glacial de Lorelei, aliento de dragón giratorio en la Guarida de Lance y haz psíquico en la sala de Mento.'],
+        ['cambio', 'El Alto Mando y los Campeones llevan Pokémon con IV perfectos y entrenamiento en todas las estadísticas.'],
+        ['nuevo', 'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.'],
+        ['cambio', 'Las rutas de Johto tienen colores de otoño.'],
+        ['nuevo', 'Escenarios (con ?fullaccess) incluye todas las rutas.'],
+      ],
+    },
+    {
       v: '0.4.0', date: '2026-10-24', title: 'Arenas de gimnasio',
       items: [
         ['nuevo', 'Cada líder, Alto Mando y Campeón pelea en una arena de su tipo, con su escenario y una mecánica propia.'],

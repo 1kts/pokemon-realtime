@@ -26,7 +26,68 @@
   // Radio de colisión de una especie (según el tamaño de su sprite; ver tools/import-sprites.js)
   const hitboxOf = dex => (HITBOX && HITBOX[dex]) || RADIUS;
 
-  const rowsOf = name => Data.MAPS[name] || (Data.ARENAS && Data.ARENAS[name] && Data.ARENAS[name].rows) || Data.MAPS.pradera;
+  // ---------- Mapas de las rutas ----------
+  // Cada ruta tiene su propio mapa, generado a partir de su id (siempre el mismo) y del tipo de
+  // lugar (pradera, bosque, cueva, lago). Se genera la mitad izquierda y se refleja: los dos
+  // bandos lo tienen igual. La zona donde aparece cada Pokémon queda libre.
+  function hashStr(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+    return h >>> 0;
+  }
+  const MIRROR = { v: '^', '^': 'v' };
+  function routeRows(id) {
+    const node = Data.NODES && Data.NODES[id];
+    const kind = node && node.map ? node.map : 'pradera';
+    let seed = hashStr('ruta:' + id) % 2147483646 + 1;
+    const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const half = COLS / 2;
+    const g = Array.from({ length: ROWS }, () => new Array(COLS).fill('.'));
+    const spawn = (x, y) => Math.abs(x - 3) <= 2 && Math.abs(y - 7) <= 2;
+    const free = (x, y) => x >= 0 && y >= 0 && x < half && y < ROWS && !spawn(x, y) && g[y][x] === '.';
+    // Mancha irregular de un terreno: elipse con el borde ruidoso
+    const blob = (ch, cx, cy, rx, ry) => {
+      for (let y = Math.floor(cy - ry - 1); y <= cy + ry + 1; y++) for (let x = Math.floor(cx - rx - 1); x <= cx + rx + 1; x++) {
+        const d = ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2;
+        if (d < 1 - (r() - 0.5) * 0.5 && free(x, y)) g[y][x] = ch;
+      }
+    };
+    const blobs = (ch, n, rmin, rmax, xmin = 0.5, xmax = half - 0.5) => {
+      for (let k = 0; k < n; k++) blob(ch, xmin + r() * (xmax - xmin), 1 + r() * (ROWS - 2), rmin + r() * (rmax - rmin), rmin + r() * (rmax - rmin) * 0.8);
+    };
+    // Rocas sueltas, nunca pegadas a otra (no cierran pasillos)
+    const rocks = n => {
+      for (let k = 0, tries = 0; k < n && tries < 80; tries++) {
+        const x = 1 + Math.floor(r() * (half - 1)), y = 1 + Math.floor(r() * (ROWS - 2));
+        if (!free(x, y)) continue;
+        let near = false;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (g[y + dy] && g[y + dy][x + dx] === 'o') near = true;
+        if (near) continue;
+        g[y][x] = 'o'; k++;
+      }
+    };
+    const n = (a, b) => a + Math.floor(r() * (b - a + 1));
+    if (kind === 'bosque') { blobs('#', n(5, 7), 1.2, 2.6); rocks(n(1, 3)); }
+    else if (kind === 'cueva') { rocks(n(4, 7)); blobs('~', n(1, 2), 0.9, 1.8); if (r() < 0.4) blobs('#', 1, 0.8, 1.4); }
+    else if (kind === 'lago') {
+      if (r() < 0.5) blob('~', half, 3 + r() * 9, 2.5 + r() * 2.5, 1.8 + r() * 1.6);      // lago en el centro
+      else { blob('~', 4 + r() * 7, 0, 3 + r() * 4, 2 + r()); blob('~', 4 + r() * 7, ROWS, 3 + r() * 4, 2 + r()); }   // orillas arriba y abajo
+      blobs('#', n(2, 3), 1, 1.8); rocks(n(0, 2));
+    } else {
+      blobs('#', n(3, 5), 1, 2.2); rocks(n(1, 2));
+      if (r() < 0.4) blob('~', half, 3 + r() * 9, 1.5 + r(), 1 + r());                     // charca en el centro
+    }
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < half; x++) g[y][COLS - 1 - x] = MIRROR[g[y][x]] || g[y][x];
+    return g.map(row => row.join(''));
+  }
+  const routeCache = new Map();
+  const rowsOf = name => {
+    if (name.startsWith('r:')) {
+      if (!routeCache.has(name)) routeCache.set(name, routeRows(name.slice(2)));
+      return routeCache.get(name);
+    }
+    return Data.MAPS[name] || (Data.ARENAS && Data.ARENAS[name] && Data.ARENAS[name].rows) || Data.MAPS.pradera;
+  };
   const CHAR_T = { '#': T.GRASS, '~': T.WATER, 'v': T.WATER, '^': T.WATER, i: T.ICE, p: T.POISON, w: T.WEB, L: T.LAVA };
   const FLOW_DIR = { v: [0, 1], '^': [0, -1] };
 
@@ -136,7 +197,7 @@
 
   parseMap.flowOf = name => { parseMap(name); return parsed.get(name).flow; };
   const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
-    parseMap, mechOf, pushOut, stepMove, arenaStep, speedOf, monStats };
+    parseMap, rowsOf, hashStr, mechOf, pushOut, stepMove, arenaStep, speedOf, monStats };
   if (node) module.exports = api;
   else root.Shared = api;
 })(this);

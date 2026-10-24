@@ -18,8 +18,11 @@ function battle(map, a = [{ dex: 25, level: 30 }], b = [{ dex: 74, level: 30 }])
 }
 const run = (bt, secs, inp = { mx: 0, my: 0 }) => { for (let i = 0; i < secs * S.TICK; i++) { for (const s of bt.sides) s.inputs.push({ ...inp }); bt.tick(); } };
 
-check('cada líder pelea en la arena de su tipo', () => {
-  for (const n of Object.values(D.NODES)) if (n.kind !== 'route') assert.strictEqual(n.map, 'g-' + n.type, n.id);
+check('cada líder pelea en la arena de su tipo y el Alto Mando en su sala', () => {
+  for (const n of Object.values(D.NODES)) {
+    if (n.kind === 'gym') assert.strictEqual(n.map, 'g-' + n.type, n.id);
+    else if (n.kind !== 'route') assert.strictEqual(n.map, 'e-' + n.id, n.id);
+  }
   for (const [id, a] of Object.entries(D.ARENAS)) {
     assert.strictEqual(a.rows.length, S.ROWS, id);
     for (const r of a.rows) assert.strictEqual(r.length, S.COLS, id);
@@ -118,6 +121,33 @@ check('en la oscuridad no se ve al rival de lejos', () => {
   bt.sides[0].x = 100; bt.sides[1].x = 860;
   run(bt, 1.2);
   assert(bt.sides[1].hidden, 'oculto');
+});
+
+check('el Alto Mando lleva IV perfectos y EV', () => {
+  const x = D.leaderExtras(D.NODES.lance);
+  assert.strictEqual(x.iv.atk, D.IV_MAX);
+  assert(D.evTotal(x.ev) <= D.EV_TOTAL);
+  assert.deepStrictEqual(D.leaderExtras(D.NODES.brock), {});
+});
+
+check('cada ruta tiene su mapa: siempre el mismo, simétrico y con la salida libre', () => {
+  const routes = Object.values(D.NODES).filter(n => n.kind === 'route');
+  const seen = new Set();
+  for (const n of routes) {
+    const rows = S.rowsOf('r:' + n.id);
+    assert.deepStrictEqual(rows, S.rowsOf('r:' + n.id), 'determinista');
+    assert.strictEqual(rows.length, S.ROWS);
+    const flip = { v: '^', '^': 'v' };
+    rows.forEach((r, y) => { assert.strictEqual(r.length, S.COLS); for (let x = 0; x < S.COLS; x++) assert.strictEqual(r[S.COLS - 1 - x], flip[r[x]] || r[x], `${n.id} simétrico`); });
+    for (const [x, y] of [[3, 7], [20, 7]]) assert.strictEqual(rows[y][x], '.', `${n.id} salida libre`);
+    seen.add(rows.join(''));
+  }
+  assert(seen.size > routes.length * 0.9, 'casi todas distintas');
+});
+
+check('los combates de ruta usan el mapa de su ruta', () => {
+  const bt = battle('r:k-ruta1');
+  assert.deepStrictEqual(bt.terrain, S.parseMap('r:k-ruta1').terrain);
 });
 
 console.log(`\n${ok} pruebas de arenas correctas`);
