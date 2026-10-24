@@ -639,3 +639,10 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .map-stage { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(90cqw, 144cqh); height: min(88cqh, 56.25cqw); }
 .map .mapart { overflow: visible; z-index: 0; }
 .next-foe .mini { background: radial-gradient(circle at 50% 60%, rgba(200,215,240,.55), rgba(120,140,180,.18) 70%); }
+
+/* Regiones que llegarán más adelante */
+.subbar .region-tabs { flex-wrap: wrap; }
+.subbar .region-tabs button.soon { min-width: 0; padding: 6px 10px; opacity: .5; border-style: dashed; background: rgba(0,0,0,.2); }
+.subbar .region-tabs button.soon:hover { opacity: .75; background: rgba(0,0,0,.2); }
+.subbar .region-tabs button.soon b { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
+.subbar .region-tabs button.soon svg { width: 12px; height: 12px; flex: none; }

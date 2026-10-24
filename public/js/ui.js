@@ -13,6 +13,9 @@ export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" 
 export const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
+// Regiones que llegarán más adelante: se enseñan con candado en la barra de región
+const UPCOMING_REGIONS = ['Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
+const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 
 export class UI {
   constructor(app) {
@@ -313,6 +316,13 @@ export class UI {
       const done = Math.min(8, Data.progOf(p, rid));
       const t = el('button', rid === current ? 'sel' : '', `<b>${Data.REGIONS[rid].name}</b><small>${Data.progOf(p, rid) >= Data.leadersOf(rid).length ? '♛ Campeón' : done + '/8 medallas'}</small>`);
       t.onclick = () => onPick(rid);
+      tabs.append(t);
+    }
+    for (const name of UPCOMING_REGIONS) {
+      const t = el('button', 'soon', `<b>${LOCK_SVG}${name}</b><small>Próximamente</small>`);
+      t.setAttribute('aria-disabled', 'true');
+      t.title = `${name} llegará en una próxima actualización`;
+      t.onclick = () => this.toast(`${name} todavía no está disponible: ¡llegará pronto!`);
       tabs.append(t);
     }
     bar.append(tabs);
