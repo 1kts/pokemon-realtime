@@ -814,6 +814,13 @@ export default {
     'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.': 'Le serveur est en maintenance : impossible de commencer de nouveaux combats pour le moment.',
     'Mantenimiento: termina tu combate; durante un rato no se podrán empezar otros.': 'Maintenance : termine ton combat ; pendant un moment, on ne pourra pas en commencer d\'autres.',
     'Un administrador te ha desconectado': 'Un administrateur t\'a déconnecté',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': 'Ce que coûte PokéArenas',
+    'Servidor': 'Serveur',
+    'unos 10 € al mes': 'environ 10 € par mois',
+    'Dominio': 'Nom de domaine',
+    '12 € al año': '12 € par an',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': 'Les dons aident à couvrir ces frais. Le jeu est gratuit, sans publicité, et faire un don ne donne aucun avantage.',
   },
 
   patterns: [

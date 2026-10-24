@@ -810,6 +810,13 @@ export default {
     'Pokémon de las 9 generaciones, rutas temáticas y Pokémon misterioso del día.': 'Pokémon from all 9 generations, themed routes and a mystery Pokémon of the day.',
     'Captura con Poké Balls y animación de 3 sacudidas.': 'Catching with Poké Balls and a 3-shake animation.',
     'IA por utilidad que se adapta al combate.': 'Utility-based AI that adapts to the battle.',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': 'What it costs to keep PokéArenas running',
+    'Servidor': 'Server',
+    'unos 10 € al mes': 'about €10 a month',
+    'Dominio': 'Domain',
+    '12 € al año': '€12 a year',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': 'Donations help cover these costs. The game is free, has no ads, and donating gives no advantage.',
   },
 
   patterns: [

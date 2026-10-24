@@ -169,7 +169,7 @@ export class UI {
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     top.append(main, this.profilePanel(lead));
-    wrap.append(top, this.howTo());
+    wrap.append(top, this.howTo(), this.menuLegal());
     this.root.append(wrap);
   }
 

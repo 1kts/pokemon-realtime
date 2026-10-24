@@ -1005,3 +1005,24 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .bag-mon.no small { color: var(--muted); }
 .bag-mon:not(:disabled):hover { border-color: var(--yellow); }
 @media (max-width: 860px) { .bag-body { grid-template-columns: 1fr; } }
+
+/* Botón de apoyo: al pasar el ratón, lo que cuesta mantener el juego */
+.support-wrap { position: relative; display: inline-flex; }
+.support-tip { position: absolute; top: calc(100% + 10px); right: 0; z-index: 40; width: 280px; padding: 12px 14px; border-radius: 14px; background: #17213a; border: 1px solid rgba(255,107,138,.45); box-shadow: var(--shadow); color: var(--fg); font-size: 13px; line-height: 1.4; text-align: left; opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .15s, transform .15s; }
+.support-wrap:hover .support-tip, .support-wrap:focus-within .support-tip { opacity: 1; transform: none; }
+.support-tip ul { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.support-tip li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 8px; border-radius: 8px; background: rgba(0,0,0,.25); }
+.support-tip li b { color: #ff9db1; }
+.support-tip p { margin: 0; color: var(--muted); }
+
+/* Pie del menú principal: aviso legal, créditos y versión */
+.menu-legal { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 760px; margin: 4px auto 18px; text-align: center; color: #fff; font-size: 13px; line-height: 1.45; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+.menu-legal p { margin: 0; }
+.menu-legal .link { color: #fff; text-decoration: underline; }
+.menu-legal small { color: #fff; opacity: .85; }
+/* La barra va por encima del contenido para que la tarjeta de apoyo no quede debajo de las tarjetas del menú */
+.topbar { position: relative; z-index: 30; }
+/* En pantallas estrechas, la tarjeta ocupa el ancho de la barra (la barra es su bloque contenedor) */
+@container (max-width: 620px) {
+  .support-tip { position: fixed; top: calc(100% + 8px); left: 0; right: 0; width: auto; }
+}

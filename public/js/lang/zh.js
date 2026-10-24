@@ -809,6 +809,13 @@ export default {
     'Pokémon de las 9 generaciones, rutas temáticas y Pokémon misterioso del día.': '9 个世代的宝可梦、主题道路和每日神秘宝可梦。',
     'Captura con Poké Balls y animación de 3 sacudidas.': '用精灵球捕捉，还有摇晃 3 次的动画。',
     'IA por utilidad que se adapta al combate.': '基于效用的 AI，会根据战况调整。',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': '维持 PokéArenas 运行的费用',
+    'Servidor': '服务器',
+    'unos 10 € al mes': '每月约 10 欧元',
+    'Dominio': '域名',
+    '12 € al año': '每年 12 欧元',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '捐款用于帮助支付这些费用。游戏免费、没有广告，捐款不会带来任何优势。',
   },
 
   patterns: [

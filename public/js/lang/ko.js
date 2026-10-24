@@ -820,6 +820,13 @@ export default {
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': '화면을 새로 단장: 둥근 글꼴, 줄무늬 버튼과 창, 아이콘이 있는 메뉴 카드.',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': '상점·지닌 포켓몬·보상에 실제 도구 아이콘, 도트 코인.',
     'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': '기술마다 타입과 모양(투사체, 부채꼴, 빔, 돌진…)을 보여 주는 엠블럼.',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': 'PokéArenas 운영 비용',
+    'Servidor': '서버',
+    'unos 10 € al mes': '한 달에 약 10유로',
+    'Dominio': '도메인',
+    '12 € al año': '1년에 12유로',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '후원금은 이 비용을 충당하는 데 쓰입니다. 게임은 무료이고 광고가 없으며, 후원해도 유리해지지 않습니다.',
   },
 
   patterns: [

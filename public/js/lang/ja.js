@@ -820,6 +820,13 @@ export default {
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': '画面を 一新：丸い 書体、しま模様の ボタンと ウィンドウ、アイコンつきの メニューカード。',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'ショップ・手持ち・ほうびに 本物の どうぐアイコン、ドット絵の コイン。',
     'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'わざごとに タイプと 形（とびどうぐ、扇形、ビーム、突進…）の エンブレムを 表示。',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': 'PokéArenas の 運営費',
+    'Servidor': 'サーバー',
+    'unos 10 € al mes': '月 約10ユーロ',
+    'Dominio': 'ドメイン',
+    '12 € al año': '年 12ユーロ',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '寄付は この費用に あてられます。ゲームは 無料・広告なしで、寄付しても 有利には なりません。',
   },
 
   patterns: [

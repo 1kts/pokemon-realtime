@@ -820,6 +820,13 @@ export default {
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Interfaccia rinnovata: caratteri arrotondati, pulsanti e finestre a righe e schede del menu con icona.',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Icone vere degli strumenti nel negozio, nella squadra e nei premi, e monete in pixel art.',
     'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Ogni mossa mostra un emblema con il suo tipo e la sua forma (proiettile, cono, raggio, carica…).',
+    // ---------- Apoyo: costes reales ----------
+    'Lo que cuesta mantener PokéArenas': 'Quanto costa mantenere PokéArenas',
+    'Servidor': 'Server',
+    'unos 10 € al mes': 'circa 10 € al mese',
+    'Dominio': 'Dominio',
+    '12 € al año': '12 € all\'anno',
+    'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': 'Le donazioni aiutano a coprire questi costi. Il gioco è gratuito, senza pubblicità, e donare non dà alcun vantaggio.',
   },
 
   patterns: [

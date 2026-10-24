@@ -131,13 +131,31 @@ export const accountViews = {
   },
 
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
+  // Al pasar el ratón, lo que cuesta de verdad mantener el juego
   supportButton() {
+    const wrap = el('span', 'support-wrap');
     const a = el('a', 'tb-btn support', `${icon('heart', 24)}<span>${t('Apoyar')}</span>`);
     a.href = KOFI_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.title = t('PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor');
-    return a;
+    a.setAttribute('aria-describedby', 'support-tip');
+    const tip = el('div', 'support-tip', `<b>${t('Lo que cuesta mantener PokéArenas')}</b>
+      <ul><li><span>${t('Servidor')}</span><b>${t('unos 10 € al mes')}</b></li><li><span>${t('Dominio')}</span><b>${t('12 € al año')}</b></li></ul>
+      <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`);
+    tip.id = 'support-tip';
+    tip.setAttribute('role', 'tooltip');
+    wrap.append(a, tip);
+    return wrap;
+  },
+
+  // Pie del menú principal: aviso legal, enlace a los créditos y versión
+  menuLegal() {
+    const f = el('div', 'menu-legal');
+    f.append(el('p', '', t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
+    const legal = el('button', 'link', t('Ver créditos y datos que guardamos'));
+    legal.onclick = () => this.legal();
+    f.append(legal, el('small', '', `PokéArenas v${VERSION}`));
+    return f;
   },
 
   footer() {
