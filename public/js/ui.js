@@ -18,6 +18,14 @@ export const wl = (w, l) => t('{w}V {l}D', { w, l });
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 // Regiones que llegarán más adelante: se enseñan con candado en la barra de región
 const UPCOMING_REGIONS = ['Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
+// Iconos de la barra superior
+const svg = body => `<svg viewBox="0 0 20 20" aria-hidden="true">${body}</svg>`;
+const ICON = {
+  back: svg('<path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
+  ball: svg('<circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.8 10h4.6M12.6 10h4.6" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.3 8.6a7.2 7.2 0 0 1 13.4 0" fill="currentColor" opacity=".35"/>'),
+  bag: svg('<path d="M4.5 7.5h11l-.9 9h-9.2l-.9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 7.5V6a2.7 2.7 0 0 1 5.4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>'),
+  trophy: svg('<path d="M6 3.5h8v4a4 4 0 0 1-8 0v-4Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 5H3.5a2.5 2.5 0 0 0 2.6 3M14 5h2.5a2.5 2.5 0 0 1-2.6 3M10 11.5V14M6.8 16.5h6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'),
+};
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 
 export class UI {
@@ -79,26 +87,37 @@ export class UI {
   topbar(title, back) {
     const p = this.profile;
     const bar = el('div', 'topbar');
-    if (back) { const b = el('button', 'back', t('← Volver')); b.onclick = () => this.show(back); bar.append(b); }
-    bar.append(el('h2', '', title));
-    // Accesos fijos a Mis Pokémon y Tienda desde cualquier pantalla fuera de combate
-    const nav = el('div', 'tools nav');
-    for (const [view, label] of [['team', t('Mis Pokémon')], ['shop', t('Tienda')]]) {
-      if (this.view === view || !p.mons.length) continue;
-      const b = el('button', '', label);
-      b.onclick = () => this.openFrom(view);
-      nav.append(b);
+    // Botón con icono y texto; si la barra se queda estrecha, solo queda el icono (ver .topbar en style.css)
+    const btn = (icon, label, onClick, cls = '') => {
+      const b = el('button', 'tb-btn ' + cls, `${icon}<span>${label}</span>`);
+      b.title = label;
+      b.onclick = onClick;
+      return b;
+    };
+    const left = el('div', 'tb-left');
+    if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back'));
+    left.append(el('h2', '', title));
+    bar.append(left);
+    const right = el('div', 'tb-right');
+    // Accesos fijos a Mis Pokémon, Tienda y Ladder desde cualquier pantalla fuera de combate
+    const nav = el('nav', 'tb-nav');
+    if (p.mons.length) {
+      if (this.view !== 'team') nav.append(btn(ICON.ball, t('Mis Pokémon'), () => this.openFrom('team')));
+      if (this.view !== 'shop') nav.append(btn(ICON.bag, t('Tienda'), () => this.openFrom('shop')));
     }
-    if (this.view !== 'ladder') { const b = el('button', '', t('Ladder')); b.onclick = () => this.openLadder(); nav.append(b); }
-    bar.append(nav);
-    // Dinero, tu perfil (avatar, nombre y liga) y Ajustes (idioma, novedades, créditos)
-    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span>`);
-    if (this.view !== 'profile') stats.append(this.profileChip());
-    if (this.view === 'menu') stats.append(this.newsIcon());
-    if (this.view !== 'settings') stats.append(this.settingsButton());
-    bar.append(stats);
+    if (this.view !== 'ladder') nav.append(btn(ICON.trophy, t('Ladder'), () => this.openLadder()));
+    right.append(nav);
+    // Dinero, tu perfil, novedades (en el menú) y Ajustes
+    const me = el('div', 'tb-me');
+    me.append(el('span', 'pill coins', coins(p.coins)));
+    if (this.view !== 'profile') me.append(this.profileChip());
+    if (this.view === 'menu') me.append(this.newsIcon());
+    if (this.view !== 'settings') me.append(this.settingsButton());
+    right.append(me);
+    bar.append(right);
     return bar;
   }
+
 
   // ---------- Menú ----------
   view_menu() {

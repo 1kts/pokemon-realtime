@@ -733,3 +733,47 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .news-btn { position: relative; display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; }
 .news-btn svg { width: 19px; height: 19px; }
 .news-btn .ndot { position: absolute; top: 3px; right: 3px; }
+
+/* ---------- Barra superior adaptable ----------
+   Píldoras con icono y texto. La barra mira su propio ancho (container query): si no cabe todo,
+   las opciones se quedan solo con el icono, luego el perfil solo con el avatar y en móvil las
+   opciones pasan a una segunda fila a lo ancho. */
+.topbar { container-type: inline-size; justify-content: space-between; gap: 8px 14px; padding: 8px 10px 8px 12px; border-radius: 22px; }
+.tb-left { display: flex; align-items: center; gap: 12px; flex: 1 1 240px; min-width: 0; }
+.tb-left h2 { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-right { display: flex; align-items: center; gap: 8px; flex: 0 1 auto; min-width: 0; }
+.tb-nav, .tb-me { display: flex; align-items: center; gap: 6px; }
+.tb-nav:not(:empty) { padding-right: 8px; border-right: 1px solid var(--line); }
+.tb-nav:empty { display: none; }
+.tb-btn { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 15px 0 12px; border-radius: 99px; font-weight: 600; white-space: nowrap; position: relative; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)); }
+.tb-btn:hover:not(:disabled) { border-color: rgba(255,203,5,.6); }
+.tb-btn svg { width: 19px; height: 19px; flex: none; }
+.tb-btn.icon { width: 40px; padding: 0; justify-content: center; }
+.tb-btn .ndot { position: absolute; top: 3px; right: 3px; }
+.tb-left .back { flex: none; }
+.topbar .pill.coins { display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 99px; font-weight: 700; background: rgba(0,0,0,.3); border: 1px solid var(--line); white-space: nowrap; }
+.topbar .me-chip { height: 40px; flex: none; }
+.topbar .me-chip span { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@container (max-width: 1180px) {
+  .tb-nav .tb-btn span, .tb-me .settings-btn span { display: none; }
+  .tb-nav .tb-btn, .tb-me .settings-btn { width: 40px; padding: 0; justify-content: center; }
+}
+@container (max-width: 860px) {
+  .topbar .me-chip span { display: none; }
+  .topbar .me-chip { padding: 3px; position: relative; }
+  .topbar .me-chip .ndot { position: absolute; top: 1px; right: 1px; margin: 0; }
+  .tb-left .back span { display: none; }
+  .tb-left .back { width: 40px; padding: 0; justify-content: center; }
+  .tb-left h2 { font-size: 19px; }
+}
+@container (max-width: 620px) {
+  .tb-right { flex: 1 1 100%; justify-content: space-between; gap: 6px; }
+  .tb-nav, .tb-me { gap: 4px; }
+  .tb-nav:not(:empty) { padding-right: 6px; }
+  .tb-btn, .tb-nav .tb-btn, .tb-me .settings-btn, .tb-btn.icon, .tb-left .back { width: 36px; height: 36px; }
+  .topbar .me-chip { height: 36px; }
+  .topbar .me-chip .ava { --s: 28px; }
+  .topbar .pill.coins { height: 36px; padding: 0 10px; font-size: 13px; }
+  .tb-left h2 { font-size: 17px; }
+}

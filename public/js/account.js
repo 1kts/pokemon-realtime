@@ -269,7 +269,7 @@ export const accountViews = {
 
   // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
   newsIcon() {
-    const b = el('button', 'news-btn', `${BOOK_SVG}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
+    const b = el('button', 'tb-btn icon news-btn', `${BOOK_SVG}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
     b.title = t('Novedades');
     b.setAttribute('aria-label', t('Novedades'));
     b.onclick = () => this.patchNotes();
@@ -278,7 +278,7 @@ export const accountViews = {
 
   // Botón de la barra superior que lleva a Ajustes
   settingsButton() {
-    const b = el('button', 'settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>`);
+    const b = el('button', 'tb-btn settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>`);
     b.title = t('Ajustes: idioma, perfil, novedades y créditos');
     b.onclick = () => this.show('settings');
     return b;
