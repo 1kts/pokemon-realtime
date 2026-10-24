@@ -1095,3 +1095,100 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .ava-opt[hidden] { display: none; }
 .ava-opt.is-shiny { background: linear-gradient(160deg, rgba(255,203,5,.14), transparent 70%); }
 .ava-opt .shiny-star { position: absolute; top: 3px; right: 5px; font-size: 12px; font-style: normal; }
+
+/* ---------- Misiones, cofres y recoger premios ---------- */
+.menu-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; }
+.menu-top > .menu-side > .profile { position: static; }
+@media (max-width: 900px) { .menu-side { position: static; } }
+.missions-view { display: flex; flex-direction: column; height: 100%; }
+.mv-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; overflow: auto; padding-bottom: 20px; }
+.missions { display: flex; flex-direction: column; gap: 8px; }
+.missions .m-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.missions .m-head h3 { margin: 0; }
+.m-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.mcount { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; color: #c4d0e4; font-variant-numeric: tabular-nums; }
+.mcount img { image-rendering: pixelated; }
+.mission, .chest-row, .rm { position: relative; display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 14px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
+.mission.compact { padding: 7px 8px; gap: 9px; }
+.m-ico { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,.06); }
+.mission.compact .m-ico, .rm .m-ico { width: 36px; height: 36px; }
+.m-ico img { image-rendering: pixelated; }
+.m-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.m-body b { font: 800 14px/1.25 var(--display); }
+.mission.compact .m-body b { font-size: 13px; }
+.m-body small { color: #c4d0e4; }
+.m-bar { position: relative; height: 14px; border-radius: 7px; background: rgba(255,255,255,.1); overflow: hidden; }
+.m-bar i { display: block; height: 100%; border-radius: 7px; background: linear-gradient(90deg, #3b78d8, #6fb4ff); transition: width .9s cubic-bezier(.2,.8,.2,1); }
+.m-bar span { position: absolute; inset: 0; display: grid; place-items: center; font: 800 10px/1 var(--text); text-shadow: 0 1px 2px #000; }
+.mission.done .m-bar i, .rm.done .m-bar i { background: linear-gradient(90deg, #ffb21a, #ffe066); }
+.m-prize { display: flex; flex-wrap: wrap; gap: 4px; }
+.mp { display: inline-flex; align-items: center; gap: 2px; padding: 1px 7px 1px 4px; border-radius: 9px; background: rgba(255,255,255,.07); font-size: 12px; font-weight: 700; }
+.mp img { image-rendering: pixelated; }
+.mp .sw { width: 14px; height: 14px; margin-right: 3px; }
+.m-acts { flex: none; display: flex; align-items: center; }
+.m-ok { font-style: normal; font-weight: 800; color: #8ff0a8; font-size: 12px; }
+.mission.claimed { opacity: .6; }
+.mission.claimed .m-bar i { background: linear-gradient(90deg, #2f9a52, #5fe08a); }
+.mission.done:not(.claimed), .chest-row.ready, .rm.done { border-color: rgba(255,203,5,.6); background: linear-gradient(90deg, rgba(255,210,63,.16), rgba(0,0,0,.2)); animation: glow 1.6s ease-in-out infinite; }
+.reroll { padding: 6px 9px; font-size: 16px; line-height: 1; display: flex; align-items: center; gap: 4px; }
+.reroll small { font-size: 11px; color: var(--muted); }
+.reroll .coin img { width: 12px; height: 12px; }
+button.claim-btn { padding: 9px 14px; white-space: nowrap; animation: claimBeat 1.3s ease-in-out infinite; }
+@keyframes claimBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.ach-card .claim-btn { align-self: flex-start; margin-top: 4px; padding: 6px 12px; }
+.ach-card.ready { border-color: rgba(255,203,5,.7); animation: glow 1.6s ease-in-out infinite; }
+.ach-pop em { display: block; font-style: normal; font-size: 12px; color: #ffd76a; margin-top: 2px; }
+.ach-pop { cursor: pointer; }
+.chest { flex: none; display: grid; place-items: center; width: 46px; height: 46px; }
+.chest-svg { width: 40px; height: 35px; overflow: visible; }
+.chest-svg .lid { transform-origin: 3px 13px; transition: transform .35s; }
+.chest-row.opened { opacity: .55; }
+.chest-row.opened .lid, .chest-row.opening .lid { transform: rotate(-28deg) translateY(-2px); }
+.chest-row.ready .chest { animation: chestShake 1.4s ease-in-out infinite; }
+@keyframes chestShake { 0%, 60%, 100% { transform: rotate(0); } 66% { transform: rotate(-8deg); } 72% { transform: rotate(8deg); } 78% { transform: rotate(-5deg); } 84% { transform: rotate(4deg); } }
+.missions-widget { display: flex; flex-direction: column; gap: 7px; padding: 14px; }
+.mw-head { display: flex; align-items: center; gap: 8px; padding: 2px 2px 4px; border: 0; background: none; text-align: left; flex-wrap: wrap; }
+.mw-head:hover:not(:disabled) { background: none; }
+.mw-head b { font: 800 16px var(--display); color: var(--yellow); }
+.mw-head .go { margin-left: auto; font-style: normal; font-size: 12px; color: var(--muted); }
+.m-ready { font-size: 11px; font-weight: 800; color: #1a1405; background: var(--yellow); border-radius: 9px; padding: 1px 8px; animation: claimBeat 1.3s ease-in-out infinite; }
+.nbadge { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font: 800 11px/18px var(--text); font-style: normal; text-align: center; box-shadow: 0 0 0 2px rgba(0,0,0,.45), 0 0 10px var(--red); animation: claimBeat 1.3s ease-in-out infinite; }
+.tb-btn.quest { position: relative; }
+.tb-btn.quest.has-ready svg { color: var(--yellow); }
+.results-missions { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; text-align: left; }
+.rm { padding: 7px 10px; }
+.rm .m-body small { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+/* Recoger: ventana con rayos, confeti y lo recibido saltando */
+.loot-pop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(5,9,18,.62); backdrop-filter: blur(3px); animation: fadein .2s; padding: 16px; }
+.loot-pop.out { opacity: 0; transition: opacity .25s; }
+.loot-box { position: relative; overflow: hidden; width: min(440px, 100%); padding: 26px 22px 20px; border-radius: 22px; text-align: center; background: radial-gradient(circle at 50% 30%, #2a3a66, #121b31 70%); border: 2px solid var(--yellow); box-shadow: 0 0 40px rgba(255,203,5,.35), 0 20px 60px rgba(0,0,0,.6); animation: lootIn .45s cubic-bezier(.2,1.4,.4,1); }
+@keyframes lootIn { from { transform: scale(.6); opacity: 0; } }
+.loot-box .rays { position: absolute; left: 50%; top: 38%; width: 640px; height: 640px; margin: -320px 0 0 -320px; background: repeating-conic-gradient(rgba(255,215,90,.13) 0 10deg, transparent 10deg 20deg); border-radius: 50%; animation: spin 14s linear infinite; pointer-events: none; }
+.loot-box .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.loot-box h2 { position: relative; margin: 0 0 4px; font: 30px var(--display); color: var(--yellow); text-shadow: 0 3px 0 #2a5bb0, 0 6px 16px rgba(0,0,0,.5); }
+.loot-sub { position: relative; margin: 0 0 8px; color: #c4d0e4; font-size: 13px; }
+.loot-box .chest.big { position: relative; width: auto; height: auto; margin: 4px auto; }
+.loot-box .chest.big .chest-svg { width: 96px; height: 84px; }
+.loot-box .chest.big .lid { animation: lidOpen .5s .15s cubic-bezier(.3,1.6,.5,1) forwards; }
+@keyframes lidOpen { to { transform: rotate(-35deg) translateY(-3px); } }
+.loot-items { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 12px 0 16px; }
+.loot-items .li { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 76px; opacity: 0; animation: lootItem .5s cubic-bezier(.2,1.6,.4,1) forwards; }
+@keyframes lootItem { from { opacity: 0; transform: translateY(18px) scale(.4); } to { opacity: 1; transform: none; } }
+.loot-items .li-art { display: grid; place-items: center; min-width: 64px; height: 64px; filter: drop-shadow(0 4px 10px rgba(255,203,5,.45)); }
+.loot-items .li-art img { image-rendering: pixelated; }
+.loot-items small { font-size: 12px; color: #e8eef8; font-weight: 700; }
+.loot-items .count { font: 26px var(--display); color: var(--yellow); }
+.loot-items .sw.big { width: 44px; height: 44px; }
+.ava-preview { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.2), rgba(255,255,255,.04)); border: 3px solid var(--yellow); }
+.loot-box .acts { position: relative; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.chest-hint { flex-basis: 100%; margin: 4px 0 0; color: #ffd76a; }
+.pill.coins.bump { animation: coinBump .7s cubic-bezier(.2,1.6,.4,1); }
+@keyframes coinBump { 30% { transform: scale(1.25); box-shadow: 0 0 18px rgba(255,203,5,.7); } }
+/* Avatares de colección y medallas por recoger */
+.ava.ava-icon img { image-rendering: pixelated; }
+.ava-col { max-height: 180px; margin-bottom: 8px; }
+.ava-opt .ava-art { image-rendering: pixelated; }
+.avatar-pick h4 { margin: 8px 0 6px; }
+button.case-slot { padding: 0; border: 0; border-radius: 50%; }
+.case-slot.ready { position: relative; animation: claimBeat 1.3s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(255,203,5,.9)); }
+.case-slot.ready::after { content: '!'; position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%; background: var(--red); color: #fff; font: 800 11px/16px var(--text); text-align: center; }

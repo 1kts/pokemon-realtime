@@ -8,6 +8,7 @@ import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
+import { missionViews } from './missions.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { accountViews } from './account.js';
@@ -33,6 +34,7 @@ const ICON = {
   back: svg('<path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   ball: svg('<circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.8 10h4.6M12.6 10h4.6" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.3 8.6a7.2 7.2 0 0 1 13.4 0" fill="currentColor" opacity=".35"/>'),
   bag: svg('<path d="M4.5 7.5h11l-.9 9h-9.2l-.9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 7.5V6a2.7 2.7 0 0 1 5.4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>'),
+  quest: svg('<rect x="4" y="3.5" width="12" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 3.5V2.6h5v.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m6.8 9.6 1.5 1.5 2.9-3M6.8 14.2h6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'),
   trophy: svg('<path d="M6 3.5h8v4a4 4 0 0 1-8 0v-4Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 5H3.5a2.5 2.5 0 0 0 2.6 3M14 5h2.5a2.5 2.5 0 0 1-2.6 3M10 11.5V14M6.8 16.5h6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'),
 };
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
@@ -65,7 +67,7 @@ export class UI {
       this.show('menu');
       // Primera vez en esta versión: enseñar las novedades
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings'].includes(this.view)) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions'].includes(this.view)) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -109,7 +111,7 @@ export class UI {
     const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
     const total = Object.keys(SPECIES).length;
     const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
-      ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica') };
+      ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica'), missions: t('Misiones') };
     const left = el('div', 'tb-left');
     if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back', VIEW_NAME[back] ? `<p>${t('Volver a {view}', { view: VIEW_NAME[back] })}</p>` : null));
     left.append(el('h2', '', title));
@@ -123,12 +125,23 @@ export class UI {
       if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop'), '', `<span class="tip-sub">${t('Tienes {coins}', { coins: coins(p.coins) })}</span><p>${t('Balls, Caramelos Raros, vitaminas, piedras evolutivas y los Pokémon del día.')}</p>`));
     }
     if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex'), '', `<div class="tip-bar"><i style="width:${p.caught.length / total * 100}%"></i></div><p>${t('{a} de {b} especies capturadas. Mira cuáles te faltan y en qué rutas salen hoy.', { a: p.caught.length, b: total })}</p>`));
+    // Misiones: con la cuenta de lo que hay por recoger
+    if (this.view !== 'missions' && p.missions) {
+      const ready = this.readyCount();
+      const done = ['daily', 'weekly'].map(k => p.missions[k].filter(m => m.claimed).length);
+      const mb = btn(ICON.quest, t('Misiones'), () => this.show('missions'), 'quest' + (ready ? ' has-ready' : ''),
+        `<span class="tip-sub">${t('Diarias {a}/3 · Semanales {b}/3', { a: done[0], b: done[1] })}</span><p>${t('Misiones diarias y semanales: cúmplelas, recoge su premio y abre el cofre. ¿No te convence una? Cámbiala.')}</p>${ready ? `<p class="tip-good">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</p>` : ''}`);
+      if (ready) (mb.querySelector('.tb-btn') || mb).append(el('i', 'nbadge', String(ready)));
+      nav.append(mb);
+    }
     if (this.view !== 'ladder') nav.append(btn(itemImg('medal-box', 26), t('Ladder'), () => this.openLadder(), '', `<p>${t('Rankings de clasificatoria, Torre Batalla y Pokédex. Busca a cualquier entrenador y mira su ficha.')}</p>`));
     right.append(nav);
     // Dinero, tu perfil, novedades (en el menú) y Ajustes
     const me = el('div', 'tb-me');
     me.append(this.supportButton());
-    me.append(this.hoverTip(el('span', 'pill coins', coins(p.coins)), `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`));
+    const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
+    this.coinBump = false;
+    me.append(this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`));
     if (this.view !== 'profile') me.append(this.profileChip());
     if (this.view === 'menu') me.append(this.newsIcon());
     if (this.view !== 'settings') me.append(this.settingsButton());
@@ -178,7 +191,10 @@ export class UI {
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
-    top.append(main, this.profilePanel(lead));
+    const side = el('div', 'menu-side');
+    side.append(this.profilePanel(lead));
+    if (p.missions) side.append(this.missionsWidget());
+    top.append(main, side);
     wrap.append(top, this.howTo(), this.menuLegal());
     this.root.append(wrap);
   }
@@ -977,6 +993,7 @@ export class UI {
       box.append(list);
     }
     if (r.tower) this.towerResults(box, r);
+    this.resultsMissions(box, r.missions);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
     if (r.promoted) box.append(el('div', 'promoted', `<i class="sw frame-${Data.RANKED_REWARDS[r.promoted].frame}"></i><p>${t('¡Has subido a <b>{league}</b>! Reclama tu premio en Clasificatoria.', { league: t(r.promoted) })}</p>`));
     if (r.firstWin) box.append(el('p', 'small', t('Incluye {n} extra por la primera victoria del día.', { n: coins(Data.RANKED_PAY.firstWin) })));
@@ -1006,4 +1023,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews);

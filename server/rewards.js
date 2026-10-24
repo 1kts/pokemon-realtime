@@ -1,4 +1,4 @@
-// Recompensas de clasificatoria, temporadas y cosméticos del perfil (títulos y marcos).
+// Recompensas de clasificatoria, temporadas, logros y cosméticos del perfil (títulos, marcos y avatares).
 // Por temporada: cada liga alcanzada por primera vez da un premio que se reclama a mano;
 // al cambiar de temporada se cobra el premio de la anterior según la mejor liga y el ELO se
 // acerca a la mitad hacia 1000. Cada combate paga algo y la primera victoria del día, más.
@@ -19,22 +19,52 @@ function migrate(p) {
   if (p.season.id < D.SEASON.id) rollSeason(p);
   if (!p.achievements) p.achievements = {};
   if (!p.showcase) p.showcase = [];
+  // Avatares de colección: los logros de antes (ya cobrados) dan su icono sin más
+  if (!p.cosmetics.avatars) {
+    p.cosmetics.avatars = [];
+    for (const a of D.ACHIEVEMENTS) if (p.achievements[a.id] && D.achievementAvatar(a)) unlock(p, 'avatars', D.achievementAvatar(a));
+  }
+  if (!p.achClaim) p.achClaim = [];
   checkAchievements(p);
 }
 
-// Logros: los que se acaban de cumplir se guardan con su fecha y dan su premio una sola vez
+// Logros: los que se acaban de cumplir se guardan con su fecha y su premio queda pendiente de
+// recoger a mano (claimAchievement), una sola vez
 function checkAchievements(p) {
   const fresh = [];
   for (const a of D.ACHIEVEMENTS) {
     if (p.achievements[a.id] || a.progress(p) < a.goal) continue;
     p.achievements[a.id] = Date.now();
-    const rw = a.reward || {};
-    if (rw.coins) p.coins = Math.min(MAX_COINS, p.coins + rw.coins);
-    if (rw.title) unlock(p, 'titles', rw.title);
-    if (rw.frame) unlock(p, 'frames', rw.frame);
+    p.achClaim.push(a.id);
     fresh.push(a.id);
   }
   return fresh;
+}
+
+// Recoger el premio de un logro: dinero, título, marco y su icono como avatar
+function claimAchievement(p, id) {
+  migrate(p);
+  const a = D.ACHIEVEMENTS.find(x => x.id === id);
+  if (!a || !p.achClaim.includes(id)) return { error: 'No hay nada que recoger de ese logro' };
+  p.achClaim = p.achClaim.filter(x => x !== id);
+  const rw = a.reward || {};
+  const loot = { coins: rw.coins || 0, items: {}, title: rw.title || null, frame: rw.frame || null, avatar: D.achievementAvatar(a), achievement: id };
+  p.coins = Math.min(MAX_COINS, p.coins + loot.coins);
+  if (loot.title) unlock(p, 'titles', loot.title);
+  if (loot.frame) unlock(p, 'frames', loot.frame);
+  if (loot.avatar) unlock(p, 'avatars', loot.avatar);
+  return { loot };
+}
+
+// Medallas ganadas cuyo avatar aún no se ha recogido
+const badgesToClaim = p => D.REGION_IDS.flatMap(r => Array.from({ length: Math.min(8, D.progOf(p, r)) }, (_, i) => D.badgeAvatar(r, i)))
+  .filter(id => !p.cosmetics.avatars.includes(id));
+function claimBadge(p, region, index) {
+  migrate(p);
+  const id = D.badgeAvatar(region, index);
+  if (!badgesToClaim(p).includes(id)) return { error: 'No hay nada que recoger de esa medalla' };
+  unlock(p, 'avatars', id);
+  return { loot: { coins: 0, items: {}, avatar: id, badge: { region, index } } };
 }
 
 function rollSeason(p) {
@@ -100,7 +130,11 @@ function setLook(p, msg) {
     if (list.length > D.SHOWCASE_MAX || !list.every(id => p.achievements[id])) return 'Solo puedes mostrar logros que hayas conseguido';
     p.showcase = list;
   }
-  if (msg.avatar !== undefined) {
+  if (typeof msg.avatar === 'string') {
+    if (!p.cosmetics.avatars.includes(msg.avatar)) return 'No tienes ese avatar';
+    p.avatar = msg.avatar;
+    p.avatarShiny = false;
+  } else if (msg.avatar !== undefined) {
     const shiny = !!msg.avatarShiny && msg.avatar !== null;
     if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     if (shiny && !(p.shinies || []).includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
@@ -110,4 +144,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { migrate, afterRanked, claim, setLook, checkAchievements };
+module.exports = { migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim };

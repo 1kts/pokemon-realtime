@@ -233,16 +233,28 @@ check('el Pokémon misterioso sale con IV perfectos más o menos 1 de cada 3 vec
   assert(perfect / n > 0.28 && perfect / n < 0.39, `${perfect}/${n}`);
 });
 
-check('logros: se desbloquean una vez, dan su premio y se pueden fijar (máx. 3)', () => {
+check('logros: se desbloquean una vez, su premio se recoge a mano y se pueden fijar (máx. 3)', () => {
   const rewards = require('../server/rewards.js');
   const p = { coins: 0, items: {}, mons: [{ dex: 4, iv: { hp: 31, atk: 31, def: 31, spe: 31 } }], caught: [4, 16], prog: { kanto: 13, johto: 0 }, elo: 1000, wins: 0, tower: { best: 0 } };
   rewards.migrate(p);
   assert(p.achievements.captura1 && p.achievements.kantoChamp && p.achievements.perfecto, 'desbloqueados');
-  assert(p.cosmetics.frames.includes('campeon') && p.cosmetics.titles.includes('Campeón de Kanto'), 'premios cosméticos');
+  assert(p.coins === 0 && p.achClaim.includes('kantoChamp') && !p.cosmetics.frames.includes('campeon'), 'el premio espera a que se recoja');
+  for (const id of [...p.achClaim]) assert(rewards.claimAchievement(p, id).loot, 'recoger ' + id);
+  assert(p.cosmetics.frames.includes('campeon') && p.cosmetics.titles.includes('Campeón de Kanto') && p.cosmetics.avatars.includes('item:relic-crown'), 'premios cosméticos y avatar');
   const coins = p.coins;
   assert(coins >= 300 + 8000 + 2000, 'dinero');
+  assert(rewards.claimAchievement(p, 'kantoChamp').error, 'no se recoge dos veces');
   rewards.migrate(p);
   assert.strictEqual(p.coins, coins, 'no se cobra dos veces');
+  // Medallas: cada una ganada da su avatar (una vez)
+  assert.strictEqual(rewards.badgesToClaim(p).length, 8, '8 medallas de Kanto por recoger');
+  assert(rewards.claimBadge(p, 'kanto', 0).loot && rewards.claimBadge(p, 'kanto', 0).error && rewards.claimBadge(p, 'johto', 0).error, 'medalla: una vez y solo si se ha ganado');
+  assert.strictEqual(rewards.setLook(p, { avatar: 'badge:kanto:0' }), null);
+  assert(rewards.setLook(p, { avatar: 'badge:kanto:1' }), 'no se usa un avatar sin recoger');
+  // Perfiles de antes: sus logros ya cobrados no se vuelven a pagar, pero dan su avatar
+  const old = { coins: 5, items: {}, mons: [], caught: [4, 16], prog: { kanto: 0 }, elo: 1000, wins: 0, tower: { best: 0 }, cosmetics: { titles: ['Novato'], frames: ['bronce'] }, achievements: { captura1: 1 } };
+  rewards.migrate(old);
+  assert(old.achClaim.length === 0 && old.coins === 5 && old.cosmetics.avatars.includes('item:poke-ball'), 'logros antiguos: avatar sin volver a cobrar');
   assert.strictEqual(rewards.setLook(p, { showcase: ['kantoChamp', 'perfecto'] }), null);
   assert(rewards.setLook(p, { showcase: ['dex250'] }), 'no se fija uno no conseguido');
   assert(rewards.setLook(p, { showcase: ['captura1', 'perfecto', 'kantoChamp', 'kanto8'] }), 'máximo 3');

@@ -8,6 +8,7 @@ import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
+import { avatarArt, avatarName } from './missions.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -305,6 +306,8 @@ export const accountViews = {
     const p = this.profile;
     const a = el('div', 'ava frame-' + (p.frame || 'none'));
     a.style.setProperty('--s', size + 'px');
+    // Avatar de colección (medalla o icono de logro)
+    if (typeof p.avatar === 'string' && avatarArt(p.avatar, size)) { a.classList.add('ava-icon'); a.innerHTML = avatarArt(p.avatar, size); return a; }
     const { dex, shiny } = this.avatarDex();
     a.append(animated ? animatedPortrait(dex, size, 'Idle', shiny) : portrait(dex, size, { shiny }));
     return a;
@@ -442,10 +445,14 @@ export const accountViews = {
       const row = el('div', 'case-row');
       row.append(el('b', 'case-region', `${Data.REGIONS[rid].name}<small>${Math.min(8, prog)}/8</small>`));
       const slots = el('div', 'case-slots');
+      const avatars = (p.cosmetics && p.cosmetics.avatars) || [];
       leaders.forEach((g, i) => {
         const got = i < prog;
-        const slot = el('span', 'case-slot' + (got ? ' got' : ''), badgeImg(rid, i, got, 44));
-        slot.title = got ? `${g.badge} · ${g.leader}` : t('Vence a {who} para conseguirla', { who: g.leader });
+        // Ganada y sin recoger su avatar: brilla y se recoge al pulsarla
+        const ready = got && !avatars.includes(Data.badgeAvatar(rid, i));
+        const slot = el(ready ? 'button' : 'span', 'case-slot' + (got ? ' got' : '') + (ready ? ' ready' : ''), badgeImg(rid, i, got, 44));
+        slot.title = ready ? t('¡Recoge el avatar de la {badge}!', { badge: g.badge }) : got ? `${g.badge} · ${g.leader}` : t('Vence a {who} para conseguirla', { who: g.leader });
+        if (ready) slot.onclick = () => { slot.disabled = true; this.net.send({ t: 'badgeclaim', region: rid, index: i }); };
         slots.append(slot);
       });
       row.append(slots);
@@ -504,7 +511,7 @@ export const accountViews = {
     }
     look.append(el('h4', '', t('Marco')), frames);
     look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.')));
-    const avaBtn = el('button', '', t('Elegir Pokémon de avatar'));
+    const avaBtn = el('button', '', t('Elegir avatar'));
     avaBtn.onclick = () => this.avatarPicker();
     look.append(el('h4', '', t('Avatar')), avaBtn);
     right.append(look);
@@ -518,7 +525,19 @@ export const accountViews = {
   avatarPicker() {
     const p = this.profile;
     modal('avatar-pick', (box, close) => {
-      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.')));
+      box.append(el('h3', '', t('Avatar')));
+      // Colección: medallas e iconos de logros recogidos
+      const col = (p.cosmetics && p.cosmetics.avatars) || [];
+      box.append(el('h4', '', t('Colección')));
+      const cgrid = el('div', 'ava-grid ava-col');
+      if (!col.length) cgrid.append(el('p', 'small', t('Recoge medallas y logros en Misiones para conseguir avatares de colección.')));
+      for (const id of col) {
+        const b = el('button', 'ava-opt' + (p.avatar === id ? ' sel' : ''), avatarArt(id, 48));
+        b.title = avatarName(id);
+        b.onclick = () => { this.net.send({ t: 'look', avatar: id }); close(); };
+        cgrid.append(b);
+      }
+      box.append(cgrid, el('h4', '', t('Pokémon')), el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.')));
       const search = el('input');
       search.type = 'search'; search.placeholder = t('Buscar por nombre o número');
       const grid = el('div', 'ava-grid scroll');

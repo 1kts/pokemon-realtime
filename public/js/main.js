@@ -98,6 +98,7 @@ net.on('disconnected', () => {
 });
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
 net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
+net.on('loot', m => ui.onLoot(m.r));
 // Anuncio de un administrador a todos los conectados
 net.on('announce', m => ui.toast(`${t('Aviso')}: ${tServer(m.msg)}`, 'announce', 12000));
 // Cuenta suspendida: pantalla con el motivo y hasta cuándo (no se reconecta)

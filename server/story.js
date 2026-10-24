@@ -2,6 +2,7 @@
 // Todo se valida aquí; el cliente solo pide acciones.
 const D = require('../public/data.js');
 const store = require('./store.js');
+const missions = require('./missions.js');
 
 const MAX_LEVEL = 100;
 
@@ -14,7 +15,7 @@ function addMon(p, dex, level, extra = {}) {
   if (!p.teams) p.teams = {};
   const team = p.teams[region] = p.teams[region] || [];
   if (team.length < 3) team.push(mon.uid);
-  if (!p.caught.includes(dex)) p.caught.push(dex);
+  if (!p.caught.includes(dex)) { p.caught.push(dex); missions.track(p, 'dex'); }
   if (mon.shiny && !(p.shinies || []).includes(dex)) p.shinies = [...(p.shinies || []), dex];
   return mon;
 }
@@ -148,9 +149,11 @@ function action(p, msg) {
       const cap = Math.min(MAX_LEVEL, D.levelCap(p, mon.region));
       if (mon.level >= cap) return `Tope de nivel ${cap} en ${D.REGIONS[mon.region].name}: vence al siguiente líder para subir más`;
       mon.xp = 0;
-      levelUp(mon, cap);
+      if (levelUp(mon, cap).evolved) missions.track(p, 'evolve');
+      missions.track(p, 'level');
     } else if (item.stone) {
       if (!tryEvolve(mon, item.id)) return 'No tiene efecto';
+      missions.track(p, 'evolve');
     } else if (item.vit) {
       if (!mon.ev) mon.ev = newEv();
       if (mon.ev[item.vit] >= D.EV_MAX) return `Ya tiene el máximo de EV de ${D.VIT_STATS[item.vit]} (${D.EV_MAX})`;
@@ -261,6 +264,14 @@ function applyResult(p, setup, result, battle) {
       if (mon) reward.xp.push(giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap));
     });
     p.coins += reward.coins;
+    // Misiones: lo conseguido en el combate
+    const teamTypes = missions.typesOf(side.team.map(bm => (monByUid(p, bm.uid) || bm).dex));
+    if (result.captured) missions.track(p, 'catch', 1, missions.typesOf([result.captured.dex]));
+    else if (setup.kind === 'route') missions.track(p, 'wild');
+    if (setup.kind === 'gym') missions.track(p, 'gym');
+    missions.track(p, 'win', 1, teamTypes);
+    missions.track(p, 'level', reward.xp.reduce((a, x) => a + x.level - x.fromLevel, 0));
+    missions.track(p, 'evolve', reward.xp.filter(x => x.evolved).length);
   }
   reward.won = won;
   store.save();

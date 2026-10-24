@@ -421,6 +421,81 @@ class Client {
   const nobody = await tw.req({ t: 'user', id: 'nadie' }, 'user');
   ok(nobody.u === null, 'ficha de un id inexistente');
 
+  // ---------- Misiones, logros y medallas por recoger ----------
+  {
+    const missions = require('../server/missions.js');
+    const mc = new Client(port); await mc.open();
+    let r = await mc.req({ t: 'hello', name: 'Misiones' });
+    const prof = store.get(r.p.token);
+    ok(r.p.missions && r.p.missions.daily.length === 3 && r.p.missions.weekly.length === 3 && new Set(r.p.missions.daily.map(x => x.id)).size === 3
+      && r.p.missions.freeRerolls.daily === D.MISSION_REROLLS.daily && r.p.missions.ends.daily > Date.now(), '3 misiones diarias y 3 semanales distintas, con cambios gratis y hora de renovación');
+    prof.missions.daily = [{ id: 'd-wild', n: 0, claimed: false }, { id: 'd-catch-type', type: 'agua', n: 0, claimed: false }, { id: 'd-level', n: 0, claimed: false }];
+    const before = missions.snapshot(prof);
+    missions.track(prof, 'catch', 1, ['fuego']);
+    missions.track(prof, 'catch', 1, ['agua', 'volador']);
+    for (let i = 0; i < 7; i++) missions.track(prof, 'wild');
+    const moved = missions.diff(prof, before);
+    ok(prof.missions.daily[0].n === 5 && prof.missions.daily[1].n === 1, 'avanzan con lo que se hace (la de tipo, solo con ese tipo) sin pasar de la meta');
+    ok(moved.some(x => x.kind === 'daily' && x.i === 0 && x.from === 0 && x.n === 5 && x.goal === 5), 'se sabe cuánto ha avanzado cada una en el combate');
+    let e = mc.wait('error'); mc.send({ t: 'mission', a: 'reroll', kind: 'daily', i: 0 });
+    ok(/recoge/.test((await e).msg), 'una misión cumplida no se cambia: se recoge');
+    e = mc.wait('error'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 2 });
+    ok(/cumplida/.test((await e).msg), 'una sin cumplir no se recoge');
+    const coins0 = prof.coins;
+    let loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 0 });
+    let l = await loot;
+    ok(l.r.coins === D.MISSION_BY_ID['d-wild'].reward.coins && prof.coins === coins0 + l.r.coins && prof.missions.daily[0].claimed, 'recoger da el premio');
+    e = mc.wait('error'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 0 });
+    ok(/Ya has/.test((await e).msg), 'y solo una vez');
+    // Cambios: los gratis y después pagando
+    for (let i = 0; i < D.MISSION_REROLLS.daily; i++) r = await mc.req({ t: 'mission', a: 'reroll', kind: 'daily', i: 2 });
+    ok(r.p.missions.freeRerolls.daily === 0 && new Set(r.p.missions.daily.map(x => x.id)).size === 3, 'cambios gratis gastados, sin repetir misión');
+    prof.coins = 10;
+    e = mc.wait('error'); mc.send({ t: 'mission', a: 'reroll', kind: 'daily', i: 2 });
+    ok(/dinero/.test((await e).msg), 'sin cambios gratis, cuesta dinero');
+    prof.coins = 1000;
+    r = await mc.req({ t: 'mission', a: 'reroll', kind: 'daily', i: 2 });
+    ok(r.p.coins === 1000 - D.MISSION_REROLL_COST.daily, 'cambio pagado');
+    // Cofre: al recoger las 3
+    e = mc.wait('error'); mc.send({ t: 'mission', a: 'chest', kind: 'daily' });
+    ok(/Recoge antes/.test((await e).msg), 'el cofre espera a las 3 misiones');
+    prof.missions.daily[2].n = D.MISSION_BY_ID[prof.missions.daily[2].id].goal;
+    await mc.req({ t: 'mission', a: 'claim', kind: 'daily', i: 1 });
+    loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 2 });
+    ok((await loot).r.chestReady, 'al recoger la tercera, el cofre queda listo');
+    const candy = prof.items.caramelo || 0;
+    loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'chest', kind: 'daily' });
+    l = await loot;
+    ok(l.r.chest === 'daily' && prof.items.caramelo === candy + D.MISSION_CHEST.daily.items.caramelo, 'abrir el cofre diario');
+    e = mc.wait('error'); mc.send({ t: 'mission', a: 'chest', kind: 'daily' });
+    ok(/Ya has/.test((await e).msg), 'el cofre se abre una vez');
+    // Día nuevo: misiones, cambios y cofre nuevos
+    prof.missions.day = '2000-01-01';
+    r = await mc.req({ t: 'mission', a: 'refresh' });
+    ok(r.p.missions.daily.every(x => !x.n && !x.claimed) && !r.p.missions.chest.daily && r.p.missions.freeRerolls.daily === D.MISSION_REROLLS.daily, 'cada día, misiones nuevas');
+    // Un combate ganado en ruta cuenta para la misión
+    prof.missions.daily[0] = { id: 'd-wild', n: 0, claimed: false };
+    m = await mc.req({ t: 'story', a: 'starter', dex: 7 });
+    story.applyResult(prof, { kind: 'route', route: D.NODES['k-ruta1'] }, { winner: 0 }, { sides: [{ team: [{ uid: prof.mons[0].uid, fainted: false }] }, { team: [{ level: 3 }] }] });
+    ok(prof.missions.daily[0].n === 1, 'vencer a un salvaje cuenta');
+    // Logros: el premio se recoge a mano
+    prof.caught.push(16);
+    r = await mc.req({ t: 'mission', a: 'refresh' });
+    ok(r.p.achClaim.includes('captura1') && r.p.achievements.captura1, 'logro conseguido, premio pendiente');
+    const c1 = prof.coins;
+    loot = mc.wait('loot'); mc.send({ t: 'achclaim', id: 'captura1' });
+    l = await loot;
+    ok(l.r.coins === 300 && prof.coins === c1 + 300 && l.r.avatar === 'item:poke-ball' && !prof.achClaim.includes('captura1'), 'recoger el logro: dinero y su avatar');
+    // Medallas: cada una da su avatar
+    prof.prog.kanto = 1;
+    loot = mc.wait('loot'); mc.send({ t: 'badgeclaim', region: 'kanto', index: 0 });
+    ok((await loot).r.avatar === 'badge:kanto:0', 'la primera medalla da su avatar');
+    e = mc.wait('error'); mc.send({ t: 'badgeclaim', region: 'kanto', index: 1 });
+    ok(/nada que recoger/.test((await e).msg), 'una medalla sin ganar no da nada');
+    r = await mc.req({ t: 'look', avatar: 'badge:kanto:0' });
+    ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
+  }
+
   // Mensajes basura no tumban el servidor
   const g = new Client(port); await g.open();
   g.ws.send('no es json'); g.send({ t: 'in', mx: 'x', a: null }); g.send({ t: 'story', a: 'buy', id: { x: 1 } }); g.send({ foo: 1 });

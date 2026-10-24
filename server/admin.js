@@ -266,6 +266,10 @@ function unlockAll(p) {
     if (rw.title && !p.cosmetics.titles.includes(rw.title)) p.cosmetics.titles.push(rw.title);
     if (rw.frame && !p.cosmetics.frames.includes(rw.frame)) p.cosmetics.frames.push(rw.frame);
   }
+  p.achClaim = [];
+  // Todos los avatares de colección: iconos de logros y medallas
+  p.cosmetics.avatars = [...new Set([...(p.cosmetics.avatars || []), ...D.avatarIds(),
+    ...D.REGION_IDS.flatMap(r => Array.from({ length: 8 }, (_, i) => D.badgeAvatar(r, i)))])];
   p.staff = true;
   story.migrate(p);   // medallas a partir del progreso
   return added;

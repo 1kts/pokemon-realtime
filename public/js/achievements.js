@@ -35,16 +35,23 @@ export const achievementViews = {
     box.append(el('p', 'small', t('Fija hasta {n} logros como insignias de tu perfil con la estrella.', { n: Data.SHOWCASE_MAX })));
     const grid = el('div', 'ach-grid');
     // Primero los conseguidos, luego por lo cerca que estás
-    const list = [...ACHIEVEMENTS].sort((a, b) => (got[b.id] ? 1 : 0) - (got[a.id] ? 1 : 0)
+    const pending = p.achClaim || [];
+    const list = [...ACHIEVEMENTS].sort((a, b) => pending.includes(b.id) - pending.includes(a.id) || (got[b.id] ? 1 : 0) - (got[a.id] ? 1 : 0)
       || Data.achievementProgress(p, b) / b.goal - Data.achievementProgress(p, a) / a.goal);
     for (const a of list) {
       const ok = !!got[a.id], cur = Data.achievementProgress(p, a);
+      const ready = (p.achClaim || []).includes(a.id);
       const rw = a.reward || {};
-      const prize = [rw.title && `${t('Título')}: <b>${t(rw.title)}</b>`, rw.frame && `${t('Marco')}: <b>${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}</b>`, rw.coins && `${icon('coin', 14)}${rw.coins.toLocaleString()}`].filter(Boolean).join(' · ');
-      const card = el('div', 'ach-card' + (ok ? ' got' : ''));
+      const prize = [rw.title && `${t('Título')}: <b>${t(rw.title)}</b>`, rw.frame && `${t('Marco')}: <b>${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}</b>`, Data.achievementAvatar(a) && t('Avatar'), rw.coins && `${icon('coin', 14)}${rw.coins.toLocaleString()}`].filter(Boolean).join(' · ');
+      const card = el('div', 'ach-card' + (ok ? ' got' : '') + (ready ? ' ready' : ''));
       card.innerHTML = `${achIcon(a, 52, ok)}<div class="ach-body"><b>${t(a.name)}</b><small>${t(a.desc)}</small>
         ${ok ? `<em class="ach-done">${t('Conseguido')}</em>` : `<div class="ach-bar"><i style="width:${cur / a.goal * 100}%"></i></div><small class="ach-num">${cur} / ${a.goal}</small>`}
         <small class="ach-prize">${prize}</small></div>`;
+      if (ready) {
+        const b = el('button', 'primary claim-btn', t('¡Recoger!'));
+        b.onclick = () => { b.disabled = true; this.net.send({ t: 'achclaim', id: a.id }); };
+        card.querySelector('.ach-body').append(b);
+      }
       if (ok) {
         const pin = el('button', 'ach-pin' + (pinned.includes(a.id) ? ' on' : ''), icon('star', 22));
         pin.title = pinned.includes(a.id) ? t('Quitar de las insignias') : t('Fijar como insignia');
@@ -67,7 +74,8 @@ export const achievementViews = {
     const fresh = ACHIEVEMENTS.filter(a => next[a.id] && !prev[a.id]);
     fresh.forEach((a, i) => setTimeout(() => {
       const rw = a.reward || {};
-      const pop = el('div', 'ach-pop ' + TIER[a.tier], `${achIcon(a, 64)}<div><small>${t('¡Logro desbloqueado!')}</small><b>${t(a.name)}</b><span>${[rw.title && t(rw.title), rw.frame && `${t('Marco')} ${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}`, rw.coins && '+' + rw.coins.toLocaleString() + ' ₽'].filter(Boolean).join(' · ')}</span></div>`);
+      const pop = el('div', 'ach-pop ' + TIER[a.tier], `${achIcon(a, 64)}<div><small>${t('¡Logro desbloqueado!')}</small><b>${t(a.name)}</b><span>${[rw.title && t(rw.title), rw.frame && `${t('Marco')} ${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}`, rw.coins && '+' + rw.coins.toLocaleString() + ' ₽'].filter(Boolean).join(' · ')}</span><em>${t('Recoge el premio en Misiones')}</em></div>`);
+      pop.onclick = () => { pop.remove(); this.show('missions'); };
       document.body.append(pop);
       setTimeout(() => pop.classList.add('out'), 4200);
       setTimeout(() => pop.remove(), 4800);

@@ -1163,9 +1163,57 @@
   ];
   const achievementProgress = (p, a) => Math.min(a.goal, a.progress(p));
   const SHOWCASE_MAX = 3;
+  // Avatares de colección (además de los Pokémon atrapados): el icono de cada logro conseguido
+  // ('item:<sprite>') y cada medalla de gimnasio ganada ('badge:<región>:<n>'). Se recogen a mano.
+  const achievementAvatar = a => a.icon.startsWith('badge:') ? null : 'item:' + a.icon;
+  const badgeAvatar = (region, index) => `badge:${region}:${index}`;
+  const avatarIds = () => [...new Set(ACHIEVEMENTS.map(achievementAvatar).filter(Boolean))];
+
+  // ---------- Misiones diarias y semanales ----------
+  // Cada día (medianoche UTC) salen 3 diarias y cada lunes 3 semanales, al azar de estas listas.
+  // ev: lo que cuenta (server/missions.js) · type: sale con un tipo al azar de MISSION_TYPES ·
+  // max: cuenta el mejor valor y no la suma. Cumplida, el premio se recoge a mano; las que no
+  // convencen se cambian (unas gratis y después pagando) y recoger las 3 abre el cofre.
+  const MISSIONS = {
+    daily: [
+      { id: 'd-wild', ev: 'wild', goal: 5, name: 'Vence a {n} Pokémon salvajes', reward: { coins: 300 } },
+      { id: 'd-catch', ev: 'catch', goal: 3, name: 'Atrapa {n} Pokémon', reward: { coins: 250, items: { pokeball: 3 } } },
+      { id: 'd-catch-type', ev: 'catch', type: true, goal: 1, name: 'Atrapa un Pokémon de tipo {type}', reward: { coins: 300, items: { superball: 2 } } },
+      { id: 'd-win-type', ev: 'win', type: true, goal: 3, name: 'Gana {n} combates con un Pokémon de tipo {type} en tu equipo', reward: { coins: 350 } },
+      { id: 'd-gym', ev: 'gym', goal: 2, name: 'Gana {n} combates contra líderes de gimnasio', reward: { coins: 400 } },
+      { id: 'd-tower', ev: 'tower', goal: 3, name: 'Gana {n} combates en la Torre Batalla', reward: { coins: 400, items: { caramelo: 1 } } },
+      { id: 'd-online', ev: 'online', goal: 2, name: 'Juega {n} combates online', reward: { coins: 400 } },
+      { id: 'd-level', ev: 'level', goal: 5, name: 'Sube {n} niveles a tus Pokémon', reward: { coins: 300, items: { caramelo: 1 } } },
+    ],
+    weekly: [
+      { id: 'w-wild', ev: 'wild', goal: 30, name: 'Vence a {n} Pokémon salvajes', reward: { coins: 1500, items: { ultraball: 3 } } },
+      { id: 'w-catch', ev: 'catch', goal: 15, name: 'Atrapa {n} Pokémon', reward: { coins: 1500, items: { ultraball: 5 } } },
+      { id: 'w-dex', ev: 'dex', goal: 5, name: 'Registra {n} especies nuevas en la Pokédex', reward: { coins: 2000, items: { caramelo: 2 } } },
+      { id: 'w-win-type', ev: 'win', type: true, goal: 10, name: 'Gana {n} combates con un Pokémon de tipo {type} en tu equipo', reward: { coins: 1800 } },
+      { id: 'w-gym', ev: 'gym', goal: 6, name: 'Gana {n} combates contra líderes de gimnasio', reward: { coins: 2000, items: { caramelo: 1 } } },
+      { id: 'w-tower', ev: 'towerStreak', max: true, goal: 7, name: 'Consigue una racha de {n} en la Torre Batalla', reward: { coins: 2500, items: { caramelo: 2 } } },
+      { id: 'w-ranked', ev: 'rankedWin', goal: 5, name: 'Gana {n} clasificatorias', reward: { coins: 2500, items: { caramelo: 2 } } },
+      { id: 'w-evolve', ev: 'evolve', goal: 2, name: 'Haz evolucionar {n} Pokémon', reward: { coins: 1800, items: { caramelo: 1 } } },
+      { id: 'w-level', ev: 'level', goal: 30, name: 'Sube {n} niveles a tus Pokémon', reward: { coins: 1800, items: { caramelo: 2 } } },
+    ],
+  };
+  const MISSION_COUNT = 3;
+  const MISSION_TYPES = ['normal', 'fuego', 'agua', 'planta', 'electrico', 'bicho', 'volador', 'veneno', 'tierra', 'roca', 'psiquico', 'lucha'];
+  // Cambios gratis por día (diarias) y por semana (semanales); después cuestan dinero
+  const MISSION_REROLLS = { daily: 2, weekly: 1 };
+  const MISSION_REROLL_COST = { daily: 200, weekly: 1000 };
+  const MISSION_CHEST = {
+    daily: { coins: 500, items: { caramelo: 1, superball: 3 } },
+    weekly: { coins: 4000, items: { caramelo: 4, ultraball: 5, maspsps: 1, proteina: 1 } },
+  };
+  const MISSION_BY_ID = Object.fromEntries([...MISSIONS.daily, ...MISSIONS.weekly].map(m => [m.id, m]));
+  // Semana: la fecha (UTC) de su lunes, y cuándo empieza la siguiente
+  const weekKey = (t = Date.now()) => { const d = new Date(t); return dayKey(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - (d.getUTCDay() + 6) % 7)); };
+  const nextWeek = (t = Date.now()) => Date.parse(weekKey(t)) + 7 * 86400e3;
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, seasonTitle, RANKED_PAY,
+    achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

@@ -11,6 +11,7 @@ const story = require('./story.js');
 const rewards = require('./rewards.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
+const missions = require('./missions.js');
 const limits = require('./limits.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
@@ -72,7 +73,7 @@ function sendProfile(c) {
 }
 function publicProfile(p) {
   const { account, ...rest } = p;
-  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p) };
+  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p) };
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
 const busy = c => c.battle || c.queue || c.draft;
@@ -198,7 +199,22 @@ function finishDraft(draft) {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
     sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl })) })),
   }, (result) => {
-    if (draft.mode !== 'ranked' || result.winner < 0) return [];
+    if (result.winner < 0) return [];
+    // Misiones de los dos: combate online jugado, victoria (con los tipos de su equipo) y clasificatoria ganada
+    const before = draft.players.map(c => missions.snapshot(c.profile));
+    draft.players.forEach((c, i) => {
+      missions.track(c.profile, 'online');
+      if (result.winner === i) {
+        missions.track(c.profile, 'win', 1, missions.typesOf(draft.picks[i]));
+        if (draft.mode === 'ranked') missions.track(c.profile, 'rankedWin');
+      }
+    });
+    const progress = draft.players.map((c, i) => missions.diff(c.profile, before[i]));
+    if (draft.mode !== 'ranked') {
+      store.save();
+      setTimeout(() => draft.players.forEach(sendProfile), 50);
+      return progress.map(m => ({ missions: m }));
+    }
     // ELO con K=32
     const [pa, pb] = [a.profile, b.profile];
     const [ea0, eb0] = [pa.elo, pb.elo];
@@ -217,7 +233,7 @@ function finishDraft(draft) {
     ];
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
-    return [pa, pb].map((p, i) => ({ elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin,
+    return [pa, pb].map((p, i) => ({ elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, missions: progress[i],
       league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
@@ -248,7 +264,9 @@ function startStory(c, msg) {
   const setup = story.battleSetup(c.profile, msg);
   if (setup.error) return send(c, { t: 'error', msg: setup.error });
   startBattle([c, null], setup.opts, (result, b) => {
+    const before = missions.snapshot(c.profile);
     const reward = story.applyResult(c.profile, setup, result, b);
+    reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
   });
@@ -259,7 +277,9 @@ function startTower(c) {
   const setup = tower.battleSetup(c.profile);
   if (setup.error) { send(c, { t: 'error', msg: setup.error }); return sendProfile(c); }
   startBattle([c, null], setup.opts, result => {
+    const before = missions.snapshot(c.profile);
     const reward = tower.applyResult(c.profile, setup, result);
+    reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
   });
@@ -371,6 +391,21 @@ function handle(c, msg) {
     if (err) send(c, { t: 'error', msg: err });
     else if (msg.t === 'claim') audit.log('premio.liga', { actor: c.profile.id, ip: c.ip, league: String(msg.league) });
     store.save();
+    return sendProfile(c);
+  }
+  // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
+  if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
+  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim') {
+    const r = msg.t === 'mission' ? missions.action(c.profile, msg)
+      : msg.t === 'achclaim' ? rewards.claimAchievement(c.profile, String(msg.id))
+        : rewards.claimBadge(c.profile, String(msg.region), msg.index | 0);
+    if (r.error) send(c, { t: 'error', msg: r.error });
+    else {
+      if (r.loot) send(c, { t: 'loot', r: r.loot });
+      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : 'medalla'), { actor: c.profile.id, ip: c.ip,
+        coins: r.loot ? r.loot.coins : -(r.cost || 0) });
+      store.save();
+    }
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }

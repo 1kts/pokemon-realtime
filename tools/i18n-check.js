@@ -31,11 +31,12 @@ function loadDict(f) {
   new Function('module', src)(mod);
   return mod.exports.text;
 }
-// Textos que vienen de los datos y se pasan por t() al enseñarlos: notas de parche y arenas
+// Textos que vienen de los datos y se pasan por t() al enseñarlos: notas de parche, arenas y misiones
 const CHANGELOG = require('../public/changelog.js');
 for (const r of CHANGELOG) for (const x of [r.title, ...r.items.map(i => i[1])]) if (!keys.has(x)) keys.set(x, 'changelog.js');
 const D = require('../public/data.js');
 for (const a of Object.values(D.ARENAS || {})) for (const x of [a.name, a.desc]) if (x && !keys.has(x)) keys.set(x, 'data.js (arenas)');
+for (const m of Object.values(D.MISSION_BY_ID || {})) if (!keys.has(m.name)) keys.set(m.name, 'data.js (misiones)');
 // El inglés es la referencia: además de los textos del código tiene los dinámicos (ligas, títulos,
 // novedades, nombres de arenas…), y los demás idiomas tienen que traducir todo lo que tiene él
 const en = loadDict('en.js');

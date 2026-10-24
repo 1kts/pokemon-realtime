@@ -6,6 +6,7 @@
 // La Torre no da experiencia: los premios son dinero y objetos, así que no salta el tope de nivel.
 const D = require('../public/data.js');
 const store = require('./store.js');
+const missions = require('./missions.js');
 
 const LEVEL = 50, BLOCK = 7, BRAIN_EVERY = 21;
 const PERFECT_IV = { hp: 31, atk: 31, def: 31, spe: 31 };
@@ -175,6 +176,9 @@ function applyResult(p, setup, result) {
   if (r.symbol) { t.symbols.push(r.symbol); reward.tower.symbol = r.symbol; }
   if (t.streak % BLOCK === 0) reward.tower.blockUp = blockOf(t.streak + 1) + 1;
   Object.assign(reward.tower, { streak: t.streak, best: t.best });
+  missions.track(p, 'tower');
+  missions.track(p, 'towerStreak', t.streak);
+  missions.track(p, 'win', 1, missions.typesOf(teamSummary(p, t.team).map(m => m.dex)));
   nextFoe(t);
   store.save();
   return reward;
