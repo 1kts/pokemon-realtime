@@ -11,6 +11,25 @@ const CLASSES = {
 
 export default {
   text: {
+    'Vence a {who} para conseguirla': 'Besiege {who}, um ihn zu erhalten',
+    'Tope Nv.{n}': 'Grenze Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': 'EVs auf Maximum',
+    'EV totales al máximo': 'EV-Summe auf Maximum',
+    'Mochila': 'Beutel',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': 'Dein Beutel ist leer. Kaufe Items im Shop oder verdiene sie, indem du Arenaleiter besiegst.',
+    'Ir a la Tienda': 'Zum Shop',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': 'Pokébälle werden im Kampf gegen wilde Pokémon benutzt: Drücke <kbd>F</kbd> zum Werfen und <kbd>R</kbd> zum Wechseln des Balls.',
+    '¿En qué Pokémon?': 'Für welches Pokémon?',
+    'Elige un objeto de la lista.': 'Wähle ein Item aus der Liste.',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': 'Benutze Items im <b>Beutel</b>: erst das Item wählen, dann das Pokémon.',
+    'Mochila y estilo propio': 'Beutel und eigener Stil',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': 'Neuer Beutel in der oberen Leiste: Sieh alle deine Items und benutze sie, indem du das Item und dann das Pokémon wählst.',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'PokéArenas’ eigene goldene Buttons und blaue Kopfzeilen.',
+    'Medallas y ataques nuevos': 'Neue Orden und Attacken',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'Die Orden sind die aus den Spielen: in der Regionsleiste, beim Gewinnen und im neuen Ordenetui im Profil.',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': 'Projektile sind Pixel-Art-Sprites in der Form jeder Attacke: Flammen, Tropfen, Blitze, Blasen, Sterne…',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': 'Auf hellen Arenen (Eis, Becken, Fliesen) werden Effekte und Warnungen dunkler, damit man sie gut sieht.',
     // ---------- Allgemein ----------
     '← Volver': '← Zurück',
     'Volver': 'Zurück',

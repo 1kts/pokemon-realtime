@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    'Vence a {who} para conseguirla': '{who}に勝つと手に入る',
+    'Tope Nv.{n}': '上限Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': '努力値が最大',
+    'EV totales al máximo': '努力値の合計が最大',
+    'Mochila': 'バッグ',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': 'バッグは空っぽだ。ショップで道具を買うか、ジムリーダーに勝って手に入れよう。',
+    'Ir a la Tienda': 'ショップへ',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': 'モンスターボールは野生のポケモンとのバトルで使う：<kbd>F</kbd>で投げて、<kbd>R</kbd>でボールを切り替える。',
+    '¿En qué Pokémon?': 'どのポケモンに使う？',
+    'Elige un objeto de la lista.': 'リストから道具を選んでね。',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': '道具は<b>バッグ</b>から使う：道具を選んでからポケモンを選ぶ。',
+    'Mochila y estilo propio': 'バッグと独自のスタイル',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': '上のバーに新しいバッグ：持っている道具をすべて確認し、道具とポケモンを選んで使える。',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'PokéArenas独自の金色ボタンと青いヘッダー。',
+    'Medallas y ataques nuevos': '新しいバッジと技',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'バッジはゲームと同じもの：地方バー、獲得時、そしてプロフィールの新しいバッジケースに表示。',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': '弾はそれぞれの技の形をしたドット絵：炎、しずく、雷、泡、星……',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': '明るいステージ（氷、プール、タイル）では、エフェクトと予告が見やすく暗くなる。',
     // ---------- 共通 ----------
     '← Volver': '← もどる',
     'Volver': 'もどる',
