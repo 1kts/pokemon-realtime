@@ -1,14 +1,15 @@
 // Pantallas fuera de combate: inicio, menú, historia (inicial, mapa, equipo, tienda),
-// clasificatoria (cola, draft, ranking), práctica y resultados.
+// clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js.
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { Net } from './net.js';
 import { REGION_ART, regionMapImage } from './regionmap.js';
+import { towerViews } from './tower.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
-const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
-const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
+export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
+export const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
@@ -35,7 +36,7 @@ export class UI {
       if (mon && !this.root.hidden) setTimeout(() => this.statsModal(mon), 0);
     }
     if (first) this.show('menu');
-    else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online'].includes(this.view)) this.show(this.view, true);
+    else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'tower'].includes(this.view)) this.show(this.view, true);
   }
 
   toast(text, cls = '') {
@@ -76,6 +77,7 @@ export class UI {
       b.onclick = () => this.openFrom(view);
       nav.append(b);
     }
+    if (this.view !== 'ladder') { const b = el('button', '', 'Ladder'); b.onclick = () => this.openLadder(); nav.append(b); }
     bar.append(nav);
     bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`));
     return bar;
@@ -124,6 +126,9 @@ export class UI {
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
+    const tw = p.tower;
+    card('Torre Batalla', tw.team ? `Racha en curso: ${tw.streak} · bloque ${tw.block}` : `Combates seguidos a Nv.50 · récord ${tw.best}`, 'tower', 248, () => this.show('tower'));
+    card('Ladder', 'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador', 'ladder', 448, () => this.openLadder());
     top.append(grid, this.profilePanel(lead));
     wrap.append(top, this.howTo());
     this.root.append(wrap);
@@ -142,7 +147,8 @@ export class UI {
       <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
       <div class="stat"><small>Medallas</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
       <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
-      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>`));
+      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>
+      <div class="stat"><small>Torre: récord</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">racha ${p.tower.streak}</small>` : ''}</b></div>`));
     box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
     return box;
   }
@@ -548,7 +554,11 @@ export class UI {
     go.onclick = () => { this.lastMode = 'ranked'; this.net.send({ t: 'queue', mode: 'ranked' }); };
     me.append(go);
     const board = el('div', 'panel board');
-    board.innerHTML = `<h3>Mejores entrenadores</h3>` + (this.board.length ? `<ol>${this.board.map(b => `<li><b>${escapeHtml(b.name)}</b><span>${b.elo}</span><small>${b.wins}V ${b.losses}D</small></li>`).join('')}</ol>` : '<p class="small">Todavía nadie ha jugado una clasificatoria.</p>');
+    board.innerHTML = `<h3>Mejores entrenadores</h3>` + (this.board.length ? `<ol>${this.board.map(b => `<li class="clickable${b.id === p.id ? ' me' : ''}" data-id="${b.id}"><b>${escapeHtml(b.name)}</b><span>${b.elo}</span><small>${b.wins}V ${b.losses}D</small></li>`).join('')}</ol>` : '<p class="small">Todavía nadie ha jugado una clasificatoria.</p>');
+    board.querySelectorAll('li[data-id]').forEach(li => { li.onclick = () => this.userModal(li.dataset.id); });
+    const all = el('button', '', 'Ver la ladder completa');
+    all.onclick = () => { this.ladderBoard = 'ranked'; this.openLadder(); };
+    board.append(all);
     body.append(me, board);
     wrap.append(body);
     this.root.append(wrap);
@@ -707,17 +717,23 @@ export class UI {
       }
       box.append(list);
     }
+    if (r.tower) this.towerResults(box, r);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
     if (!won && !draw && battle && battle.mode === 'wild') box.append(el('p', 'small', 'Tus Pokémon se recuperan después de cada combate. ¡Inténtalo otra vez!'));
     const acts = el('div', 'acts');
     const back = el('button', 'primary', 'Continuar');
     const lm = this.lastMode;
-    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : 'menu');
+    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? 'Otra vez' : 'Seguir explorando');
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
       acts.append(again);
+    }
+    if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
+      const next = el('button', '', `Combate ${r.tower.streak + 1}`);
+      next.onclick = () => this.towerBattle();
+      acts.append(next);
     }
     if (lm === 'ranked' || lm === 'casual') {
       const again = el('button', '', 'Buscar otra');
@@ -728,3 +744,5 @@ export class UI {
     this.root.append(box);
   }
 }
+
+Object.assign(UI.prototype, towerViews);

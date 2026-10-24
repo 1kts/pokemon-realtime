@@ -1,5 +1,5 @@
 // Prueba de integración del servidor por WebSocket: perfil, historia, tienda, objetos,
-// combates (rendición), gimnasios en orden y clasificatoria con draft y ELO.
+// combates (rendición), gimnasios en orden, clasificatoria con draft y ELO, Torre Batalla y ladder.
 //   node tools/server-test.js        (arranca su propio servidor en un puerto libre)
 const path = require('path');
 const os = require('os');
@@ -228,6 +228,76 @@ class Client {
   const cancel = e2.wait('cancelled');
   e1.ws.close();
   ok(!!(await cancel), 'si el rival se va durante el draft, se cancela');
+
+  // ---------- Torre Batalla ----------
+  const tower = require('../server/tower.js');
+  const tw = new Client(port); await tw.open();
+  m = await tw.req({ t: 'hello', name: 'Torre' });
+  const twProf = store.get(m.p.token);
+  ok(m.p.tower && m.p.tower.streak === 0 && m.p.tower.best === 0 && !m.p.tower.team, 'perfil con Torre vacía');
+  err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ dex: 6 }, { dex: 9 }] });
+  ok((await err).msg.includes('3'), 'la Torre pide 3 Pokémon');
+  err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ dex: 6 }, { dex: 6 }, { dex: 9 }] });
+  ok((await err).msg.includes('especie'), 'no se repite especie');
+  const legend = story.devAddMon(twProf, 150, 70, false, 'kanto');
+  err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ uid: legend.uid }, { dex: 9 }, { dex: 3 }] });
+  ok((await err).msg.includes('legendarios'), 'los legendarios no entran');
+  const low = story.devAddMon(twProf, 4, 5, false, 'kanto');
+  m = await tw.req({ t: 'tower', a: 'start', team: [{ uid: low.uid }, { dex: 9 }, { dex: 3 }] });
+  ok(m.p.tower.team.length === 3 && m.p.tower.streak === 0 && m.p.tower.next.team.length === 3 && m.p.tower.block === 1, 'empieza la racha con uno propio y dos de alquiler; ya se ve el siguiente rival');
+  err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+  ok((await err).msg.includes('retírate'), 'con racha en curso no se cambia de equipo');
+  m = await tw.req({ t: 'tower', a: 'order', order: [2, 0, 1] });
+  ok(m.p.tower.team[0].dex === 3 && m.p.tower.team[1].uid === low.uid, 'reordenar el equipo entre combates');
+  err = tw.wait('error'); tw.send({ t: 'story', a: 'release', uid: low.uid });
+  ok((await err).msg.includes('Torre'), 'no se libera un Pokémon del equipo de la Torre');
+  const foeTeam = m.p.tower.next.team;
+  let tstart = tw.wait('start'); tw.send({ t: 'tower', a: 'battle' });
+  s = await tstart;
+  ok(s.mode === 'tower' && s.sides.every(x => x.team.every(t => t.level === 50)) && s.sides[0].team[1].moves.length === 4, 'combate de Torre: todos a Nv.50 (el Charmander Nv.5 también, con 4 movimientos)');
+  ok(JSON.stringify(s.sides[1].team.map(t => t.dex)) === JSON.stringify(foeTeam), 'el rival es el que se enseñaba en silueta');
+  over = tw.wait('over'); tw.send({ t: 'forfeit' });
+  m = await over;
+  ok(m.reward.tower && m.reward.tower.ended && m.reward.tower.streak === 0, 'rendirse en la Torre termina la racha');
+  m = await tw.wait('profile');
+  ok(!m.p.tower.team && m.p.tower.streak === 0, 'tras perder, sin equipo ni racha');
+  // Racha larga aplicando resultados (sin jugar): bloques, premios, Cerebro de la Frontera y récord
+  ok(tower.action(twProf, { a: 'start', team: [{ uid: low.uid }, { dex: 9 }, { dex: 3 }] }) === null, 'nueva racha');
+  const coins0 = twProf.coins, candy0 = twProf.items.caramelo || 0, lvl0 = low.level;
+  const firstAi = tower.battleSetup(twProf).foe.ai;
+  let rw;
+  for (let i = 0; i < 7; i++) rw = tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 0 });
+  const v7 = tower.view(twProf);
+  ok(v7.streak === 7 && v7.best === 7 && v7.block === 2 && v7.next.ai > firstAi && rw.tower.blockUp === 2, '7 victorias: bloque 2 con IA más lista');
+  ok(rw.items && rw.items.caramelo === 1 && Object.keys(rw.items).some(k => D.SHOP.find(x => x.id === k && x.vit)) && twProf.coins > coins0 && twProf.items.caramelo === candy0 + 1, 'premio de bloque: dinero, Caramelo Raro y vitamina');
+  ok(low.level === lvl0, 'la Torre no da experiencia: no se salta el tope de nivel');
+  for (let i = 0; i < 13; i++) tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 0 });
+  const brainSetup = tower.battleSetup(twProf);
+  ok(brainSetup.foe.n === 21 && brainSetup.foe.brain && JSON.stringify(brainSetup.foe.team) === JSON.stringify(tower.BRAINS.plata.team), 'combate 21: Cerebro de la Frontera con su equipo fijo');
+  rw = tower.applyResult(twProf, brainSetup, { winner: 0 });
+  ok(rw.tower.symbol === 'Símbolo Plata' && twProf.tower.symbols.includes('Símbolo Plata') && twProf.tower.best === 21, 'vencer al Cerebro da el Símbolo Plata');
+  rw = tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 1 });
+  ok(rw.tower.ended && twProf.tower.streak === 0 && !twProf.tower.team && twProf.tower.best === 21, 'perder resetea la racha pero guarda el récord');
+  // Retirarse guarda la racha
+  tower.action(twProf, { a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+  tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 0 });
+  m = await tw.req({ t: 'tower', a: 'retire' });
+  ok(!m.p.tower.team && m.p.tower.best === 21 && m.p.tower.runs === 3, 'retirarse termina la racha sin tocar el récord');
+
+  // ---------- Ladder ----------
+  tower.action(store.get(token), { a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+  for (let i = 0; i < 3; i++) tower.applyResult(store.get(token), tower.battleSetup(store.get(token)), { winner: 0 });
+  let lad = await tw.req({ t: 'ladder', board: 'tower' }, 'ladder');
+  ok(lad.rows.length >= 2 && lad.rows[0].name === 'Torre' && lad.rows[0].best === 21 && lad.rows[0].online && lad.me.rank === 1, 'ladder de la Torre ordenada por mejor racha, con quién está en línea');
+  ok(lad.rows.find(r => r.name === 'Rojo').streak === 3, 'la ladder enseña la racha en curso');
+  lad = await tw.req({ t: 'ladder', board: 'ranked' }, 'ladder');
+  ok(lad.rows.length === 2 && lad.rows[0].elo > lad.rows[1].elo && !lad.me, 'ladder de clasificatoria por ELO (sin quien no ha jugado)');
+  lad = await tw.req({ t: 'ladder', board: 'dex', q: 'roj' }, 'ladder');
+  ok(lad.rows.length === 1 && lad.rows[0].name === 'Rojo' && lad.found === 1 && lad.total > 1, 'buscar entrenador por nombre');
+  const u = await tw.req({ t: 'user', id: lad.rows[0].id }, 'user');
+  ok(u.u && u.u.name === 'Rojo' && u.u.tower.streak === 3 && u.u.caught > 0 && !('token' in u.u) && !JSON.stringify(u.u).includes(token), 'ficha pública de un entrenador sin su token');
+  const nobody = await tw.req({ t: 'user', id: 'nadie' }, 'user');
+  ok(nobody.u === null, 'ficha de un id inexistente');
 
   // Mensajes basura no tumban el servidor
   const g = new Client(port); await g.open();

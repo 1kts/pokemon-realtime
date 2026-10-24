@@ -94,6 +94,8 @@ net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'))
 net.on('cancelled', m => { ui.toast(m.reason, 'bad'); ui.show('menu'); });
 net.on('draft', m => ui.draft(m));
 net.on('draftwait', () => {});
+net.on('ladder', m => ui.onLadder(m));
+net.on('user', m => ui.onUser(m));
 net.on('start', m => {
   if (app.battle) endBattle();
   ui.hide();

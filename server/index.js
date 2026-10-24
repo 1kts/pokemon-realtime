@@ -8,6 +8,7 @@ const D = require('../public/data.js');
 const { Battle } = require('./battle.js');
 const store = require('./store.js');
 const story = require('./story.js');
+const tower = require('./tower.js');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -33,8 +34,9 @@ function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)
 function sendProfile(c) { story.migrate(c.profile); send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard() }); }
 function publicProfile(p) {
   const { token, ...rest } = p;
-  return { ...rest, token, league: D.leagueOf(p.elo) };
+  return { ...rest, token, league: D.leagueOf(p.elo), tower: tower.view(p) };
 }
+const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
 const busy = c => c.battle || c.queue || c.draft;
 
 // ---------- Combates ----------
@@ -199,6 +201,17 @@ function startStory(c, msg) {
   });
 }
 
+// ---------- Torre Batalla ----------
+function startTower(c) {
+  const setup = tower.battleSetup(c.profile);
+  if (setup.error) { send(c, { t: 'error', msg: setup.error }); return sendProfile(c); }
+  startBattle([c, null], setup.opts, result => {
+    const reward = tower.applyResult(c.profile, setup, result);
+    setTimeout(() => sendProfile(c), 50);
+    return [reward, null];
+  });
+}
+
 // ---------- Conexiones ----------
 const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
 wss.on('connection', ws => {
@@ -238,13 +251,14 @@ function handle(c, msg) {
     });
     return;
   }
-  // Gancho de desarrollo (solo con ARENA_DEV=1): dinero, medallas, objetos y Pokémon para probar
+  // Gancho de desarrollo (solo con ARENA_DEV=1): dinero, medallas, objetos, Pokémon y racha de la Torre para probar
   if (msg.t === 'dev' && process.env.ARENA_DEV) {
     const p = c.profile;
     if (Number.isFinite(msg.coins)) p.coins += msg.coins;
     if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
+    if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
     store.save();
     return sendProfile(c);
   }
@@ -261,6 +275,18 @@ function handle(c, msg) {
   }
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
+  if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
+  if (msg.t === 'tower') {
+    if (c.battle) return;
+    const err = tower.action(c.profile, msg);
+    if (err) send(c, { t: 'error', msg: err });
+    return sendProfile(c);
+  }
+  if (msg.t === 'ladder') {
+    const q = typeof msg.q === 'string' ? msg.q : '';
+    return send(c, { t: 'ladder', ...store.ladder(String(msg.board), { page: msg.page | 0, q, me: c.profile, online: onlineIds() }) });
+  }
+  if (msg.t === 'user') return send(c, { t: 'user', u: store.publicUser(String(msg.id), onlineIds()) });
   if (msg.t === 'queue' && (msg.mode === 'ranked' || msg.mode === 'casual')) return joinQueue(c, msg.mode);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'ban' || msg.t === 'pick') return draftAction(c, msg);
