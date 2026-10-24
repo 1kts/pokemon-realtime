@@ -1,0 +1,17 @@
+# Vigilante externo (ver worker.js y deploy/README.md, «Vigilancia»)
+name = "pokearenas-vigilante"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[triggers]
+crons = ["* * * * *"]   # cada minuto
+
+[vars]
+URL = "https://pokearenas.com/healthz"
+# TELEGRAM_CHAT y TELEGRAM_TOKEN son secretos: wrangler secret put …
+
+# Estado (caído o no): se crea con `wrangler kv namespace create STATE` y su id va aquí
+[[kv_namespaces]]
+binding = "STATE"
+id = "PENDIENTE"

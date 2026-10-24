@@ -83,6 +83,26 @@ Qué hay en el panel:
   jugador, IP y fechas, y exportación a CSV. Se guarda 40 días; las acciones de los admins, siempre.
 - **Servidor**: anuncio a todos los conectados y modo mantenimiento (no se empiezan combates nuevos).
 
+## Vigilancia
+
+Dos vigilantes que avisan por **Telegram** (bot @PokeArenasBot) solo cuando algo pasa a ir mal y cuando
+se resuelve:
+
+- **Externo** (`deploy/monitor/`): un Cloudflare Worker gratuito que cada minuto comprueba
+  `https://pokearenas.com/healthz` desde fuera de Hetzner. Si falla dos veces seguidas (con 20 s entre
+  medias), avisa de que el juego está caído; cuando vuelve, avisa con cuánto ha durado. Visitar la dirección
+  del Worker hace una comprobación al momento.
+- **Interno** (`deploy/watchdog.sh`, cada 5 min en el servidor): servicios parados, el juego sin responder,
+  reinicios por error (con las últimas líneas del registro), disco > 85 %, memoria < 300 MB, la copia de la
+  base de datos que falta y el certificado HTTPS a menos de 14 días de caducar.
+
+El token del bot es secreto (con él cualquiera escribe como el bot). Para cambiarlo: en @BotFather,
+`/revoke` → elige el bot → copia el token nuevo, y en **tu terminal**:
+```bash
+ssh root@IP "TELEGRAM_TOKEN='TOKEN_NUEVO' TELEGRAM_CHAT='TU_CHAT' bash /root/arena-deploy/setup.sh"
+cd deploy/monitor && npx wrangler@4 secret put TELEGRAM_TOKEN      # te pide el token (no se ve en pantalla)
+```
+
 ## Día a día
 
 ```bash

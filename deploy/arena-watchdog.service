@@ -1,0 +1,6 @@
+[Unit]
+Description=Vigilante interno de PokéArenas (avisos por Telegram)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/arena-watchdog

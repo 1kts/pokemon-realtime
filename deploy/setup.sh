@@ -48,10 +48,18 @@ chmod 440 /etc/sudoers.d/arena-deploy
 visudo -cf /etc/sudoers.d/arena-deploy
 
 echo "== Servicios"
-install -m 644 "$HERE/arena.service" "$HERE/arena-backup.service" "$HERE/arena-backup.timer" /etc/systemd/system/
+install -m 644 "$HERE/arena.service" "$HERE/arena-backup.service" "$HERE/arena-backup.timer" \
+  "$HERE/arena-watchdog.service" "$HERE/arena-watchdog.timer" /etc/systemd/system/
+install -m 755 "$HERE/watchdog.sh" /usr/local/bin/arena-watchdog
+# Avisos por Telegram del vigilante interno: TELEGRAM_TOKEN=… TELEGRAM_CHAT=… bash setup.sh (solo la
+# primera vez o para cambiarlos; se guardan en /etc/arena-alerts.env, que solo lee root)
+if [ -n "${TELEGRAM_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT:-}" ]; then
+  install -m 600 /dev/null /etc/arena-alerts.env
+  printf 'TELEGRAM_TOKEN=%s\nTELEGRAM_CHAT=%s\n' "$TELEGRAM_TOKEN" "$TELEGRAM_CHAT" > /etc/arena-alerts.env
+fi
 systemctl daemon-reload
 systemctl enable arena            # arranca con el primer despliegue
-systemctl enable --now arena-backup.timer
+systemctl enable --now arena-backup.timer arena-watchdog.timer
 # arena-admin alta|baja|lista: administradores del panel (como el usuario arena, con su base de datos)
 printf '%s\n' '#!/bin/sh' 'exec sudo -u arena DB_FILE=/var/lib/arena/arena.db /usr/bin/node /srv/arena/current/tools/admin.js "$@"' > /usr/local/bin/arena-admin
 chmod 755 /usr/local/bin/arena-admin
