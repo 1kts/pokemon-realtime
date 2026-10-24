@@ -21,7 +21,6 @@
         ['cambio', 'El Alto Mando y los Campeones llevan Pokémon con IV perfectos y entrenamiento en todas las estadísticas.'],
         ['nuevo', 'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.'],
         ['cambio', 'Las rutas de Johto tienen colores de otoño.'],
-        ['nuevo', 'Escenarios (con ?fullaccess) incluye todas las rutas.'],
       ],
     },
     {

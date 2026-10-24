@@ -64,7 +64,7 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
+      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny });
@@ -106,8 +106,7 @@ class Battle {
       if (this.countdown <= 0) this.state = 'fight';
     }
     for (const side of this.sides) {
-      // passive: rival quieto (modo de ver escenarios)
-      if (side.ai !== null) side.inputs.push(side.passive ? { mx: 0, my: 0, a: side.a } : aiInput(this, side, dt));
+      if (side.ai !== null) side.inputs.push(aiInput(this, side, dt));
       let steps = side.inputs.length > 3 ? 2 : 1;   // si hay atraso, consumir dos para recuperar
       while (steps-- > 0) {
         const inp = side.inputs.shift();

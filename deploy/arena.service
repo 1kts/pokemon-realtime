@@ -6,7 +6,7 @@ After=network.target
 User=arena
 Group=arena
 WorkingDirectory=/srv/arena/current
-Environment=NODE_ENV=production PORT=3000 DB_FILE=/var/lib/arena/arena.db
+Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 DB_FILE=/var/lib/arena/arena.db
 ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server.js
 Restart=always
 RestartSec=2

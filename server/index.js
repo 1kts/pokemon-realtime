@@ -15,6 +15,8 @@ const limits = require('./limits.js');
 const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
+// En producción 127.0.0.1: solo se llega a través de Caddy (HTTPS y la IP real para los límites)
+const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
@@ -39,8 +41,6 @@ const server = http.createServer((req, res) => {
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
-  // Acceso total (ver escenarios): /fullaccess lleva al juego con ?fullaccess
-  if (url === '/fullaccess') { res.writeHead(302, { Location: '/?fullaccess' }); return res.end(); }
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
@@ -57,6 +57,7 @@ const server = http.createServer((req, res) => {
 const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
 function sendProfile(c) {
+  delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
   send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
@@ -226,25 +227,6 @@ function startPractice(c, msg) {
   }, () => []);
 }
 
-// ---------- Acceso total: ver cualquier escenario ----------
-// Quien abre el juego con ?fullaccess puede combatir en cualquier mapa o arena sin medallas ni
-// nivel. Son combates de práctica (sin premios ni progreso), así que no hace falta clave.
-function startArenaView(c, msg) {
-  const routeId = typeof msg.map === 'string' && msg.map.startsWith('r:') ? msg.map.slice(2) : null;
-  const map = typeof msg.map === 'string' && (D.MAPS[msg.map] || D.ARENAS[msg.map] || (routeId && D.NODES[routeId] && D.NODES[routeId].kind === 'route')) ? msg.map : null;
-  if (!map) return send(c, { t: 'error', msg: 'Escenario desconocido' });
-  const leader = Object.values(D.NODES).find(n => n.kind !== 'route' && n.map === map);
-  const pool = shuffle(D.RANKED_POOL);
-  const foe = leader ? D.leaderTeam(leader, 1).map(([dex]) => dex) : pool.slice(3, 6);
-  startBattle([c, null], {
-    mode: 'practice', map,
-    sides: [
-      { name: c.profile.name, team: pool.slice(0, 3).map(dex => ({ dex, level: D.RANKED_LEVEL })) },
-      { name: leader ? leader.leader : 'Bot', team: foe.map(dex => ({ dex, level: D.RANKED_LEVEL, ...(leader ? D.leaderExtras(leader) : {}) })), ai: leader ? leader.ai : 0.28, passive: !!msg.passive },
-    ],
-  }, () => []);
-}
-
 // ---------- Historia ----------
 function startStory(c, msg) {
   const setup = story.battleSetup(c.profile, msg);
@@ -365,16 +347,6 @@ function handle(c, msg) {
   if (draining && starts(msg)) return send(c, { t: 'error', msg: DRAIN_MSG });
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
-  if (msg.t === 'admin') {
-    c.profile.admin = !msg.off;
-    store.save();
-    return sendProfile(c);
-  }
-  if (msg.t === 'arena') {
-    if (!c.profile.admin) return send(c, { t: 'error', msg: 'Abre el juego con ?fullaccess para entrar en los escenarios' });
-    if (!busy(c)) startArenaView(c, msg);
-    return;
-  }
   if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
   if (msg.t === 'tower') {
     if (c.battle) return;
@@ -439,7 +411,7 @@ async function auth(c, msg) {
 // proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
 const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
-const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice' || msg.t === 'arena'
+const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
   || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
 let draining = false;
 
@@ -461,7 +433,7 @@ function shutdown() {
 function start(port = PORT) {
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
-  return new Promise(resolve => server.listen(port, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
+  return new Promise(resolve => server.listen(port, HOST, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }
 
 module.exports = { start };

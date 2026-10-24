@@ -259,8 +259,6 @@ export default {
     'Ríos de lava, erupciones y el viento de las alas de los dragones.': '熔岩河、火山喷发，还有龙振翅掀起的风。',
 
     // ---------- 场景（完全权限） ----------
-    'Acceso total activado: tienes el menú Escenarios': '已开启完全权限：可以使用“场景”菜单了',
-    'Escenarios': '场景',
     'deja un charco tóxico': '留下毒水洼',
     'vuelve a su sitio': '会返回原位',
     'Proyectil que estalla donde apuntas': '在瞄准处爆炸的弹射物',
@@ -272,8 +270,6 @@ export default {
     '¡Terremoto! Ponte detrás de una roca': '地震！快躲到岩石后面',
     '¡A cubierto!': '躲过了！',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': '其队伍经过精心培育：个体值完美，所有能力都经过训练。',
-    'Práctica, clasificatoria y Torre': '练习、排位赛和对战塔',
-    'Mapa propio de esta ruta, siempre el mismo.': '这条道路专属的地图，始终不变。',
     'Cámara Glacial': '冰川之间',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': '四天王。结冰的地面、从天花板落下的冰柱，以及会把你吹走的暴风雪。',
     'Dojo de Roca': '岩石道场',
@@ -294,19 +290,11 @@ export default {
     'Alto Mando. Oscuridad y emboscadas desde las sombras.': '四天王。黑暗之中，有来自阴影的伏击。',
     'Cumbre del Dragón': '龙之巅',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': '冠军。熔岩、不断的喷发、狂风和地震。',
-    'Acceso total: combate en cualquier mapa o arena sin medallas ni nivel': '完全权限：无需徽章和等级，可在任何地图或场地对战',
-    'Rival quieto (para mirar el escenario y sus mecánicas)': '对手不动（方便观察场景和机制）',
-    'Quitar acceso total': '关闭完全权限',
     'Rutas, práctica, clasificatoria y Torre': '道路、练习、排位赛和对战塔',
     'Pradera': '草原',
     'Bosque': '森林',
     'Cueva': '洞窟',
     'Lago': '湖泊',
-    'Mapa de ruta: hierba alta para esconderse.': '道路地图：可以藏身的高草。',
-    'Mapa de ruta: mucha hierba alta.': '道路地图：大片高草。',
-    'Mapa de ruta: rocas y charcos.': '道路地图：岩石和水洼。',
-    'Mapa de ruta: agua y orilla de arena.': '道路地图：水面和沙滩。',
-    'Abre el juego con ?fullaccess para entrar en los escenarios': '用 ?fullaccess 打开游戏即可进入场景',
 
     // ---------- 主菜单 ----------
     '{n} Pokémon': '{n} 只宝可梦',

@@ -11,7 +11,6 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Escenarios (acceso total) ----------
     'deja un charco tóxico': 'leaves a toxic puddle',
     'vuelve a su sitio': 'returns to where it started',
     'Proyectil que estalla donde apuntas': 'Projectile that bursts where you aim',
@@ -23,8 +22,6 @@ export default {
     '¡Terremoto! Ponte detrás de una roca': 'Earthquake! Get behind a rock',
     '¡A cubierto!': 'Covered!',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'Their team is carefully raised: perfect IVs and training in every stat.',
-    'Práctica, clasificatoria y Torre': 'Practice, ranked and Tower',
-    'Mapa propio de esta ruta, siempre el mismo.': 'This route\'s own map, always the same.',
     'Cámara Glacial': 'Glacial Chamber',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': 'Elite Four. Icy floor, icicles falling from the ceiling and blizzards that drag you along.',
     'Dojo de Roca': 'Rock Dojo',
@@ -45,21 +42,11 @@ export default {
     'Alto Mando. Oscuridad y emboscadas desde las sombras.': 'Elite Four. Darkness and ambushes from the shadows.',
     'Cumbre del Dragón': 'Dragon\'s Summit',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'Champion. Lava, nonstop eruptions, gales and earthquakes.',
-    'Acceso total activado: tienes el menú Escenarios': 'Full access enabled: you now have the Stages menu',
-    'Escenarios': 'Stages',
-    'Acceso total: combate en cualquier mapa o arena sin medallas ni nivel': 'Full access: battle on any map or arena with no badges or level needed',
-    'Rival quieto (para mirar el escenario y sus mecánicas)': 'Idle rival (to look around the stage and its mechanics)',
-    'Quitar acceso total': 'Remove full access',
     'Rutas, práctica, clasificatoria y Torre': 'Routes, practice, ranked and Tower',
     'Pradera': 'Meadow',
     'Bosque': 'Forest',
     'Cueva': 'Cave',
     'Lago': 'Lake',
-    'Mapa de ruta: hierba alta para esconderse.': 'Route map: tall grass to hide in.',
-    'Mapa de ruta: mucha hierba alta.': 'Route map: lots of tall grass.',
-    'Mapa de ruta: rocas y charcos.': 'Route map: rocks and puddles.',
-    'Mapa de ruta: agua y orilla de arena.': 'Route map: water and a sandy shore.',
-    'Abre el juego con ?fullaccess para entrar en los escenarios': 'Open the game with ?fullaccess to enter the stages',
     // ---------- General ----------
     '← Volver': '← Back',
     'Volver': 'Back',
