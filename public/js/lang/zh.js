@@ -649,6 +649,20 @@ export default {
     'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.': '服务器即将更新：请打完当前对战。几分钟后就可以开始新的对战。',
 
     // ---------- 更新内容 ----------
+    'Movimientos con forma propia': '招式有了各自的形状',
+    'Lanzallamas, Ventisca, Zumbido, Nieve Polvo, Viento Feérico y Bofetón Lodo salen en cono delante de ti.': '喷射火焰、暴风雪、虫鸣、细雪、妖精之风和掷泥会以锥形向前方扩散。',
+    'Surf es una ola ancha que avanza, moja el suelo y no se puede devolver con un parry.': '冲浪是一道向前推进的宽大浪潮，会淋湿地面，无法被弹反。',
+    'Llamarada y Bomba Lodo estallan donde apuntas; Bomba Lodo deja un charco tóxico.': '大字爆炎和污泥炸弹会在瞄准处爆炸；污泥炸弹还会留下毒水洼。',
+    'Cometa Draco hace caer tres meteoritos, Avalancha cae en fila e Ida y Vuelta vuelve a su sitio.': '流星群会落下三颗陨石，岩崩会排成一列落下，急速折返会回到原位。',
+    'Terremoto de las arenas con counterplay: escóndete detrás de una roca (zona verde) y la onda no te alcanza.': '场地地震有了应对方法：躲到岩石后面（绿色区域），冲击波就打不到你。',
+    'Salas del Alto Mando y rutas únicas': '四天王专属房间和独特道路',
+    'Cada miembro del Alto Mando y cada Campeón tiene su propia sala, con dos o tres mecánicas a la vez y más intensas.': '每位四天王和冠军都有自己的房间，同时有两到三种更激烈的机制。',
+    'Carámbanos en la Cámara Glacial de Lorelei, aliento de dragón giratorio en la Guarida de Lance y haz psíquico en la sala de Mento.': '科拿的冰河之间有冰柱落下，阿渡的龙之巢穴有旋转的龙息，一树的房间有超能力光束。',
+    'El Alto Mando y los Campeones llevan Pokémon con IV perfectos y entrenamiento en todas las estadísticas.': '四天王和冠军的宝可梦个体值完美，各项能力都经过训练。',
+    'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.': '每条道路都有自己固定的地图，分为草原、森林、洞窟或湖泊。',
+    'Las rutas de Johto tienen colores de otoño.': '城都的道路换上了秋天的颜色。',
+    'Escenarios (con ?fullaccess) incluye todas las rutas.': '“场景”（用 ?fullaccess 开启）包含所有道路。',
+    '{m} salvaje': '野生的{m}',
     'Arenas de gimnasio': '道馆场地',
     'Cada líder, Alto Mando y Campeón pelea en una arena de su tipo, con su escenario y una mecánica propia.': '每位道馆馆主、四天王和冠军都在自己属性的场地作战，各有专属场景和机制。',
     'Rocas que caen en la cueva de Brock, marea en la piscina de Misty, placas eléctricas en la central de Lt. Surge y hierba que vuelve a crecer en el jardín de Erika.': '小刚的洞窟有落石，小霞的泳池有潮汐，马志士的发电厂有通电地板，莉佳的花园里草会重新长出来。',
@@ -693,11 +707,37 @@ export default {
     [/^Aún no has llegado a (.+)$/, (m, l) => `你还没有达到${LEAGUE[l] || l}`],
     [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1：传说和幻之宝可梦不能进入对战塔'],
     [/^¡Hola de nuevo, (.+)!$/, '欢迎回来，$1！'],
-    [/^(.+) salvaje$/, '野生的$1'],
     [/^Temporada (\d+)$/, '第 $1 赛季'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · 第${n}赛季`],
     [new RegExp(`^(${Object.keys(CLASSES).sort((a, b) => b.length - a.length).join('|')}) (.+)$`), (m, c, name) => `${CLASSES[c]} ${name}`],
   ],
+
+  // ---------- 地图数据 ----------
+  // PokeAPI 没有关都和城都的简体中文地名，所以写在这里
+  route: n => `${n}号道路`,
+  gym: city => city.replace(/(市|镇|岛)$/, '') + '道馆',
+  places: {
+    'Pueblo Paleta': '真新镇', 'Ciudad Verde': '常青市', 'Ciudad Plateada': '深灰市', 'Ciudad Celeste': '华蓝市', 'Ciudad Carmín': '枯叶市',
+    'Pueblo Lavanda': '紫苑镇', 'Ciudad Azulona': '玉虹市', 'Ciudad Azafrán': '金黄市', 'Ciudad Fucsia': '浅红市', 'Isla Canela': '红莲岛',
+    'Meseta Añil': '石英高原', 'Liga Pokémon': '宝可梦联盟', 'Pueblo Primavera': '若叶镇', 'Ciudad Cerezo': '吉花市', 'Ciudad Malva': '桔梗市',
+    'Pueblo Azalea': '桧皮镇', 'Ciudad Trigal': '满金市', 'Ciudad Iris': '圆朱市', 'Ciudad Orquídea': '湛蓝市', 'Ciudad Olivo': '浅葱市',
+    'Pueblo Caoba': '卡吉镇', 'Ciudad Endrino': '烟墨市',
+    'Bosque Verde': '常青森林', 'Monte Moon': '月见山', 'Cueva Diglett': '地鼠洞穴', 'Túnel Roca': '岩山隧道', 'Torre Pokémon': '宝可梦塔',
+    'Zona Safari': '狩猎地带', 'Islas Espuma': '双子岛', 'Calle Victoria': '冠军之路', 'Cueva Oscura': '黑暗洞穴', 'Torre Bellsprout': '喇叭芽之塔',
+    'Ruinas Alfa': '阿露福遗迹', 'Cueva Unión': '相连洞穴', 'Pozo Slowpoke': '呆呆兽之井', 'Encinar': '桧皮森林', 'Parque Nacional': '自然公园',
+    'Torre Quemada': '烧焦塔', 'Islas Remolino': '漩涡群岛', 'Monte Mortero': '擂钵山', 'Lago de la Furia': '愤怒之湖', 'Ruta Helada': '冰之抜道',
+    'Guarida Dragón': '龙之穴', 'Cataratas Tohjo': '东城瀑布',
+  },
+  leaders: {
+    brock: '小刚', misty: '小霞', surge: '马志士', erika: '莉佳', koga: '阿桔', sabrina: '娜姿', blaine: '夏伯', giovanni: '坂木',
+    lorelei: '科拿', bruno: '希巴', agatha: '菊子', lance: '阿渡', azul: '青绿',
+    falkner: '阿速', bugsy: '阿笔', whitney: '小茜', morty: '松叶', chuck: '阿四', jasmine: '阿蜜', pryce: '柳伯', clair: '小椿',
+    will: '一树', kogaj: '阿桔', brunoj: '希巴', karen: '梨花', lancej: '阿渡',
+  },
+  badges: {
+    brock: '灰色徽章', misty: '蓝色徽章', surge: '橙色徽章', erika: '彩虹徽章', koga: '粉红徽章', sabrina: '金色徽章', blaine: '深红徽章', giovanni: '绿色徽章',
+    falkner: '飞翼徽章', bugsy: '昆虫徽章', whitney: '普通徽章', morty: '幻影徽章', chuck: '冲击徽章', jasmine: '钢铁徽章', pryce: '冰冻徽章', clair: '升龙徽章',
+  },
 
   // 地区名（关都、城都）
   regions: { kanto: '关都', johto: '城都' },

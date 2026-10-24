@@ -234,7 +234,7 @@ export class UI {
     for (const city of art.cities) {
       if (leaderCities.has(city)) continue;
       const [name, x, y] = city;
-      const c = el('div', 'city', `<span>${name}</span>`);
+      const c = el('div', 'city', `<span>${t(name)}</span>`);
       c.style.left = x + '%'; c.style.top = y + '%';
       stage.append(c);
     }
@@ -253,7 +253,7 @@ export class UI {
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
-      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${city[0]}</small>` : ''}</label>`;
+      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>`;
       if (!isLeader && unlocked && n.wild.length) b.prepend(portrait(n.wild[0][0], 30));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       stage.append(b);
@@ -805,7 +805,7 @@ export class UI {
     }
     if (r.badge) {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
-      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>${t('¡Has vencido a <b>{who}</b>!', { who: r.badge.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: r.badge.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
+      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>${t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
     }
     if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`).join(' · ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));

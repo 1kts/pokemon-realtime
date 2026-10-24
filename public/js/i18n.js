@@ -14,7 +14,7 @@ export const LANG_CODES = { en: 'EN', es: 'ES', zh: 'CN' };
 const LOCALES = { es: 'es-ES', en: 'en-GB', zh: 'zh-CN' };
 const KEY = 'arena.lang';
 // Idiomas con nombres oficiales de PokeAPI (lang/names-<idioma>.js); en inglés y español ya son los de los datos
-const HAS_NAMES = new Set(['zh']);
+const HAS_NAMES = new Set(['en', 'zh', 'fr', 'de', 'ja', 'ko', 'it']);
 const DICTS = {}, NAMES = {};
 
 // Por defecto, inglés; si el jugador ha elegido otro idioma, ese
@@ -48,6 +48,10 @@ function lookup(s) {
   const d = DICTS[lang];
   if (!d || typeof s !== 'string') return s;
   if (d.text[s] !== undefined) return d.text[s];
+  if (DATA_TEXT.has(s)) return DATA_TEXT.get(s);
+  // «Pikachu salvaje» (nombre del rival que manda el servidor): con el nombre del Pokémon traducido
+  const wild = /^(.+) salvaje$/.exec(s);
+  if (wild && SPECIES_BY_NAME[wild[1]]) return (d.text['{m} salvaje'] || '{m} salvaje').replace('{m}', Data.SPECIES[SPECIES_BY_NAME[wild[1]]].name);
   for (const [re, rep] of d.patterns || []) if (re.test(s)) return s.replace(re, rep);
   missing.add(s);
   return s;
@@ -71,6 +75,13 @@ for (const [k, m] of Object.entries(Data.MOVES)) original.moves[k] = m.name;
 for (const i of Data.SHOP) original.shop[i.id] = { name: i.name, desc: i.desc };
 for (const [k, n] of Object.entries(Data.NATURES)) original.natures[k] = n[0];
 for (const [k, r] of Object.entries(Data.REGIONS)) original.regions[k] = r.name;
+const SPECIES_BY_NAME = Object.fromEntries(Object.entries(original.species).map(([dex, name]) => [name, dex]));
+// Datos del mapa: rutas (y sus partes), gimnasios, medallas y líderes de cada nodo
+const nodes = new Map();
+for (const R of Object.values(Data.REGIONS)) for (const n of R.nodes) nodes.set(n, { name: n.name, leader: n.leader, badge: n.badge, parts: n.parts ? [...n.parts] : null });
+// Original en español -> traducción de los nombres de los datos (lugares, gimnasios, medallas, líderes),
+// para t() (p. ej. las ciudades del mapa) y para lo que manda el servidor ya montado (el nombre del líder)
+const DATA_TEXT = new Map();
 
 export function applyData() {
   const d = DICTS[lang] || {}, n = NAMES[lang] || {};
@@ -89,7 +100,32 @@ export function applyData() {
   for (const k of Object.keys(original.vit)) Data.VIT_STATS[k] = pick('vit', k, original.vit[k], 'stats');
   for (const k of Object.keys(original.stat6)) Data.STAT6[k] = pick('stat6', k, original.stat6[k], 'stats');
   for (const [k, name] of Object.entries(original.regions)) Data.REGIONS[k].name = pick('regions', k, name);
+  applyMapData(d, n);
   document.documentElement.lang = lang;
+}
+
+// Lugares: el nombre del diccionario, el oficial de PokeAPI, o «Ruta N» con la plantilla del idioma
+function place(es, d, n) {
+  if (d.places && d.places[es]) return d.places[es];
+  if (n.places && n.places[es]) return n.places[es];
+  const route = /^Ruta (\d+)$/.exec(es);
+  return route && d.route ? d.route(route[1]) : es;
+}
+
+function applyMapData(d, n) {
+  DATA_TEXT.clear();
+  const set = (es, val) => { if (val && val !== es) DATA_TEXT.set(es, val); return val || es; };
+  const placeNames = new Set([...Object.keys(n.places || {}), ...Object.keys(d.places || {})]);
+  for (const es of placeNames) set(es, place(es, d, n));
+  // «Gimnasio Plateada» -> su ciudad («Ciudad Plateada») -> nombre del gimnasio en el idioma
+  const cityOf = gym => [...placeNames].find(k => /^(Ciudad|Pueblo|Isla) /.test(k) && k.endsWith(' ' + gym.replace(/^Gimnasio /, '')));
+  for (const [node, o] of nodes) {
+    if (node.kind === 'route') node.name = set(o.name, (o.parts || [o.name]).map(p => set(p, place(p, d, n))).join(' · '));
+    else if (node.kind === 'gym') { const city = cityOf(o.name); node.name = set(o.name, city && d.gym ? d.gym(place(city, d, n)) : null); }
+    else node.name = t(o.name);
+    if (o.leader) node.leader = set(o.leader, d.leaders && d.leaders[node.id]);
+    if (o.badge) node.badge = set(o.badge, d.badges && d.badges[node.id]);
+  }
 }
 
 // Cambia de idioma (descarga su diccionario si hace falta). Devuelve si ha cambiado.

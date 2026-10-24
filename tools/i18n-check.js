@@ -1,5 +1,5 @@
-// Comprueba las traducciones: busca en public/js los textos t('…') y lista, por idioma, los que
-// aún no están traducidos y las traducciones cuyas variables {x} no coinciden con las del original.
+// Comprueba las traducciones: busca en public/js los textos t('…') (más las notas de parche y las
+// arenas, que vienen de los datos) y lista, por idioma, los que aún no están traducidos y las traducciones cuyas variables {x} no coinciden con las del original.
 //   node tools/i18n-check.js           resumen y textos que faltan
 //   node tools/i18n-check.js --strict  además falla (código 1) si falta algo o hay variables mal
 // Los textos que llegan ya montados (servidor, datos) no salen aquí: se ven en el navegador en
@@ -31,6 +31,11 @@ function loadDict(f) {
   new Function('module', src)(mod);
   return mod.exports.text;
 }
+// Textos que vienen de los datos y se pasan por t() al enseñarlos: notas de parche y arenas
+const CHANGELOG = require('../public/changelog.js');
+for (const r of CHANGELOG) for (const x of [r.title, ...r.items.map(i => i[1])]) if (!keys.has(x)) keys.set(x, 'changelog.js');
+const D = require('../public/data.js');
+for (const a of Object.values(D.ARENAS || {})) for (const x of [a.name, a.desc]) if (x && !keys.has(x)) keys.set(x, 'data.js (arenas)');
 // El inglés es la referencia: además de los textos del código tiene los dinámicos (ligas, títulos,
 // novedades, nombres de arenas…), y los demás idiomas tienen que traducir todo lo que tiene él
 const en = loadDict('en.js');

@@ -1,5 +1,5 @@
-// Nombres oficiales de PokeAPI por idioma: Pokémon, movimientos, tipos, objetos, naturalezas y
-// estadísticas. Genera public/js/lang/names-<idioma>.js (lo carga i18n.js junto al diccionario).
+// Nombres oficiales de PokeAPI por idioma: Pokémon, movimientos, tipos, objetos, naturalezas,
+// estadísticas y lugares del mapa (rutas, ciudades, cuevas…). Genera public/js/lang/names-<idioma>.js (lo carga i18n.js junto al diccionario).
 //   node tools/fetch-names.js zh fr de ...
 // Nuestros movimientos, tipos y naturalezas se identifican por su nombre en inglés (lang/en.js);
 // los objetos de la tienda, por la tabla ITEMS de aquí abajo.
@@ -15,6 +15,18 @@ const ITEMS = {
   proteina: 'protein', hierro: 'iron', carburante: 'carbos', agua: 'water-stone', trueno: 'thunder-stone', fuego: 'fire-stone',
   hoja: 'leaf-stone', lunar: 'moon-stone', sol: 'sun-stone', hielo: 'ice-stone', noche: 'dusk-stone', alba: 'dawn-stone', dia: 'shiny-stone',
 };
+// Ciudades del mapa de cada región (public/js/regionmap.js) -> lugar de PokeAPI. Las rutas y demás
+// lugares de la historia salen de tools/regions-src.js (su `loc`).
+const CITIES = {
+  'Pueblo Paleta': 'pallet-town', 'Ciudad Verde': 'viridian-city', 'Ciudad Plateada': 'pewter-city', 'Ciudad Celeste': 'cerulean-city',
+  'Ciudad Carmín': 'vermilion-city', 'Pueblo Lavanda': 'lavender-town', 'Ciudad Azulona': 'celadon-city', 'Ciudad Azafrán': 'saffron-city',
+  'Ciudad Fucsia': 'fuchsia-city', 'Isla Canela': 'cinnabar-island', 'Meseta Añil': 'indigo-plateau', 'Liga Pokémon': 'pokemon-league',
+  'Pueblo Primavera': 'new-bark-town', 'Ciudad Cerezo': 'cherrygrove-city', 'Ciudad Malva': 'violet-city', 'Pueblo Azalea': 'azalea-town',
+  'Ciudad Trigal': 'goldenrod-city', 'Ciudad Iris': 'ecruteak-city', 'Ciudad Orquídea': 'cianwood-city', 'Ciudad Olivo': 'olivine-city',
+  'Pueblo Caoba': 'mahogany-town', 'Ciudad Endrino': 'blackthorn-city',
+};
+// Japonés: si no hay nombre en kanji/kana, el de solo kana
+const FALLBACK_LANG = { 11: 1 };
 const STATS = { hp: 'hp', atk: 'attack', def: 'defense', spa: 'special-attack', spd: 'special-defense', spe: 'speed' };
 
 // CSV con comillas
@@ -67,6 +79,8 @@ function englishTables() {
   const DEX = require('../public/dex.js');
   const [species, moveNames, typeNames, types, itemNames, items, natureNames, natures, statNames, stats] = await Promise.all(
     ['pokemon_species_names', 'move_names', 'type_names', 'types', 'item_names', 'items', 'nature_names', 'natures', 'stat_names', 'stats'].map(csv));
+  const [locNames, locs] = await Promise.all(['location_names', 'locations'].map(csv));
+  const SRC = require('./regions-src.js');
   const EN = POKEAPI_LANG.en;
   const byLang = (rows, idKey, lang) => new Map(rows.filter(r => +r.local_language_id === lang).map(r => [r[idKey], r.name]));
   const idOf = (rows, ident) => (rows.find(r => r.identifier === ident) || {}).id;
@@ -74,7 +88,7 @@ function englishTables() {
 
   for (const l of langs) {
     const lang = POKEAPI_LANG[l];
-    const out = { species: {}, moves: {}, types: {}, shop: {}, natures: {}, stats: {} };
+    const out = { species: {}, moves: {}, types: {}, shop: {}, natures: {}, stats: {}, places: {} };
     const sp = byLang(species, 'pokemon_species_id', lang);
     for (const dex of Object.keys(DEX)) if (sp.get(dex)) out.species[dex] = sp.get(dex);
     // Movimientos: por su nombre en inglés
@@ -90,10 +104,21 @@ function englishTables() {
     const statL = byLang(statNames, 'stat_id', lang);
     for (const [k, ident] of Object.entries(STATS)) { const id = idOf(stats, ident); if (id && statL.get(id)) out.stats[k] = statL.get(id); }
 
+    // Lugares: nombre en español (el de los datos) -> nombre oficial en el idioma
+    const locL = byLang(locNames, 'location_id', lang), locF = FALLBACK_LANG[lang] ? byLang(locNames, 'location_id', FALLBACK_LANG[lang]) : new Map();
+    const places = { ...CITIES };
+    for (const R of Object.values(SRC)) for (const n of R.nodes) if (n.loc && n.loc.length) places[n.name] = n.loc[0];
+    const noPlace = [];
+    for (const [es, ident] of Object.entries(places)) {
+      const id = idOf(locs, ident);
+      const name = id && (locL.get(id) || locF.get(id));
+      if (name) out.places[es] = name; else noPlace.push(es);
+    }
     const file = path.join(__dirname, '..', 'public', 'js', 'lang', `names-${l}.js`);
     fs.writeFileSync(file, `// Generado por tools/fetch-names.js con datos de PokeAPI (https://pokeapi.co). No editar a mano.\nexport default ${JSON.stringify(out)};\n`);
     const n = k => Object.keys(out[k]).length;
-    console.log(`${l}: ${n('species')} Pokémon, ${n('moves')}/${Object.keys(en.moves).length} movimientos, ${n('types')} tipos, ${n('shop')} objetos, ${n('natures')} naturalezas, ${n('stats')} estadísticas -> ${path.relative(process.cwd(), file)}`);
+    console.log(`${l}: ${n('species')} Pokémon, ${n('moves')}/${Object.keys(en.moves).length} movimientos, ${n('types')} tipos, ${n('shop')} objetos, ${n('natures')} naturalezas, ${n('stats')} estadísticas, ${n('places')} lugares -> ${path.relative(process.cwd(), file)}`);
+    if (noPlace.length) console.log(`  sin nombre oficial (${noPlace.length}): ${noPlace.join(', ')}`);
   }
   fs.rmSync(tmp, { recursive: true, force: true });
 })().catch(e => { console.error(e); process.exit(1); });

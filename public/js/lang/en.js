@@ -651,6 +651,20 @@ export default {
     'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.': 'The server is about to update: finish your battle. You\'ll be able to start another one in a few minutes.',
 
     // ---------- Novedades ----------
+    'Movimientos con forma propia': 'Moves with their own shape',
+    'Lanzallamas, Ventisca, Zumbido, Nieve Polvo, Viento Feérico y Bofetón Lodo salen en cono delante de ti.': 'Flamethrower, Blizzard, Bug Buzz, Powder Snow, Fairy Wind and Mud-Slap come out in a cone in front of you.',
+    'Surf es una ola ancha que avanza, moja el suelo y no se puede devolver con un parry.': 'Surf is a wide advancing wave that soaks the ground and can\'t be parried back.',
+    'Llamarada y Bomba Lodo estallan donde apuntas; Bomba Lodo deja un charco tóxico.': 'Fire Blast and Sludge Bomb burst where you aim; Sludge Bomb leaves a toxic puddle.',
+    'Cometa Draco hace caer tres meteoritos, Avalancha cae en fila e Ida y Vuelta vuelve a su sitio.': 'Draco Meteor drops three meteors, Rock Slide falls in a line and U-turn returns to where it started.',
+    'Terremoto de las arenas con counterplay: escóndete detrás de una roca (zona verde) y la onda no te alcanza.': 'Arena earthquakes with counterplay: hide behind a rock (green zone) and the wave won\'t reach you.',
+    'Salas del Alto Mando y rutas únicas': 'Elite Four halls and unique routes',
+    'Cada miembro del Alto Mando y cada Campeón tiene su propia sala, con dos o tres mecánicas a la vez y más intensas.': 'Every Elite Four member and every Champion has their own hall, with two or three mechanics at once, and more intense.',
+    'Carámbanos en la Cámara Glacial de Lorelei, aliento de dragón giratorio en la Guarida de Lance y haz psíquico en la sala de Mento.': 'Icicles in Lorelei\'s Glacial Chamber, spinning dragon breath in Lance\'s Lair and a psychic beam in Will\'s hall.',
+    'El Alto Mando y los Campeones llevan Pokémon con IV perfectos y entrenamiento en todas las estadísticas.': 'The Elite Four and the Champions use Pokémon with perfect IVs and training in every stat.',
+    'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.': 'Every route has its own map, always the same, depending on whether it\'s meadow, forest, cave or lake.',
+    'Las rutas de Johto tienen colores de otoño.': 'Johto\'s routes have autumn colours.',
+    'Escenarios (con ?fullaccess) incluye todas las rutas.': 'Scenarios (with ?fullaccess) includes every route.',
+    '{m} salvaje': 'Wild {m}',
     'Arenas de gimnasio': 'Gym arenas',
     'Cada líder, Alto Mando y Campeón pelea en una arena de su tipo, con su escenario y una mecánica propia.': 'Every leader, Elite Four member and Champion fights in an arena of their type, with its own scenery and mechanic.',
     'Rocas que caen en la cueva de Brock, marea en la piscina de Misty, placas eléctricas en la central de Lt. Surge y hierba que vuelve a crecer en el jardín de Erika.': 'Falling rocks in Brock\'s cave, tides in Misty\'s pool, electric plates in Lt. Surge\'s power plant and grass that grows back in Erika\'s garden.',
@@ -695,11 +709,24 @@ export default {
     [/^Aún no has llegado a (.+)$/, (m, l) => `You haven't reached ${LEAGUE[l] || l} yet`],
     [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1: legendary and mythical Pokémon can\'t enter the Tower'],
     [/^¡Hola de nuevo, (.+)!$/, 'Welcome back, $1!'],
-    [/^(.+) salvaje$/, 'Wild $1'],
     [/^Temporada (\d+)$/, 'Season $1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],
     [new RegExp(`^(${Object.keys(CLASSES).sort((a, b) => b.length - a.length).join('|')}) (.+)$`), (m, c, name) => `${CLASSES[c]} ${name}`],
   ],
+
+  // ---------- Datos del mapa ----------
+  // Las rutas, ciudades y lugares salen de names-en.js (PokeAPI)
+  gym: city => city.replace(/ (City|Town|Island)$/, '') + ' Gym',
+  leaders: {
+    brock: 'Brock', misty: 'Misty', surge: 'Lt. Surge', erika: 'Erika', koga: 'Koga', sabrina: 'Sabrina', blaine: 'Blaine', giovanni: 'Giovanni',
+    lorelei: 'Lorelei', bruno: 'Bruno', agatha: 'Agatha', lance: 'Lance', azul: 'Blue',
+    falkner: 'Falkner', bugsy: 'Bugsy', whitney: 'Whitney', morty: 'Morty', chuck: 'Chuck', jasmine: 'Jasmine', pryce: 'Pryce', clair: 'Clair',
+    will: 'Will', kogaj: 'Koga', brunoj: 'Bruno', karen: 'Karen', lancej: 'Lance',
+  },
+  badges: {
+    brock: 'Boulder Badge', misty: 'Cascade Badge', surge: 'Thunder Badge', erika: 'Rainbow Badge', koga: 'Soul Badge', sabrina: 'Marsh Badge', blaine: 'Volcano Badge', giovanni: 'Earth Badge',
+    falkner: 'Zephyr Badge', bugsy: 'Hive Badge', whitney: 'Plain Badge', morty: 'Fog Badge', chuck: 'Storm Badge', jasmine: 'Mineral Badge', pryce: 'Glacier Badge', clair: 'Rising Badge',
+  },
 
   types: {
     normal: 'Normal', fuego: 'Fire', agua: 'Water', planta: 'Grass', electrico: 'Electric', hielo: 'Ice', lucha: 'Fighting',
