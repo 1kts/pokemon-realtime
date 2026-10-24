@@ -33,6 +33,62 @@ export const REGION_ART = {
   },
 };
 
+// ---------- Mapa real (opcional) ----------
+// Si existe public/maps/{región}.png (lo genera tools/fetch-maps.js a partir del mapa del Pokégear
+// de HeartGold/SoulSilver; no se sube al repo), se usa como fondo con estas posiciones, en píxeles
+// del mapa original. crop = [x, y, ancho, alto] igual que en tools/fetch-maps.js.
+const REAL_MAPS = {
+  kanto: {
+    crop: [190, 24, 186, 124],
+    cities: [['Pueblo Paleta', 260, 108], ['Ciudad Verde', 256, 80], ['Ciudad Plateada', 264, 40], ['Ciudad Celeste', 328, 48], ['Ciudad Azafrán', 328, 72],
+      ['Ciudad Carmín', 328, 96], ['Pueblo Lavanda', 356, 76], ['Ciudad Azulona', 304, 80], ['Ciudad Fucsia', 304, 120], ['Isla Canela', 260, 140]],
+    nodes: {
+      'k-ruta1': [260, 95], giovanni: [256, 80], 'k-ruta2': [262, 59], brock: [264, 40], 'k-ruta3': [292, 43], misty: [328, 48], 'k-ruta24': [345, 28],
+      'k-ruta6': [324, 84], surge: [328, 96], 'k-ruta11': [356, 56], 'k-tunelroca': [344, 76], erika: [304, 80], 'k-torre': [356, 100],
+      'k-ruta15': [284, 104], koga: [304, 120], 'k-safari': [304, 104], sabrina: [328, 72], 'k-ruta19': [284, 140], 'k-espuma': [260, 124],
+      blaine: [260, 140], 'k-ruta23': [228, 78], lorelei: [228, 58], bruno: [214, 55], agatha: [201, 50], lance: [197, 39], azul: [208, 31],
+    },
+  },
+  johto: {
+    crop: [0, 8, 236, 152],
+    cities: [['Pueblo Primavera', 172, 116], ['Ciudad Cerezo', 136, 116], ['Ciudad Malva', 120, 80], ['Pueblo Azalea', 104, 132], ['Ciudad Trigal', 84, 104],
+      ['Ciudad Iris', 96, 56], ['Ciudad Olivo', 72, 80], ['Ciudad Orquídea', 44, 104], ['Pueblo Caoba', 132, 60], ['Ciudad Endrino', 168, 56]],
+    nodes: {
+      'j-ruta29': [154, 116], 'j-oscura': [150, 94], falkner: [120, 80], 'j-ruta32': [115, 104], 'j-ruta33': [117, 122], bugsy: [104, 132],
+      'j-encinar': [90, 121], whitney: [84, 104], 'j-ruta35': [107, 88], 'j-ruta37': [100, 70], morty: [96, 56], 'j-ruta38': [76, 58],
+      'j-ruta41': [60, 104], chuck: [44, 104], jasmine: [72, 80], 'j-ruta42': [116, 60], 'j-ruta43': [132, 32], pryce: [132, 60],
+      'j-ruta44': [150, 60], clair: [168, 56], 'j-guarida': [164, 80], 'j-ruta46': [208, 110],
+      will: [227, 58], kogaj: [215, 48], brunoj: [203, 38], karen: [191, 28], lancej: [179, 19],
+    },
+  },
+};
+const realOk = {};
+const realProbe = {};
+// Comprueba (una vez) si la imagen del mapa real está disponible. Devuelve una promesa de true/false.
+export function probeRealMap(region) {
+  if (!REAL_MAPS[region]) return Promise.resolve(false);
+  return realProbe[region] || (realProbe[region] = new Promise(ok => {
+    const i = new Image();
+    i.onload = () => ok(realOk[region] = true);
+    i.onerror = () => ok(realOk[region] = false);
+    i.src = `/maps/${region}.png`;
+  }));
+}
+// Disposición del mapa real ya comprobado: { src, cities: [[nombre, x%, y%]], pos(node) -> [x%, y%] }.
+// undefined = aún sin comprobar, null = no hay mapa real (se usa el de tiles).
+export function realMapLayout(region) {
+  if (realOk[region] === undefined) return undefined;
+  if (!realOk[region]) return null;
+  const m = REAL_MAPS[region], [x0, y0, w, h] = m.crop;
+  const pct = ([x, y]) => [+((x - x0) / w * 100).toFixed(2), +((y - y0) / h * 100).toFixed(2)];
+  return {
+    src: `/maps/${region}.png`,
+    cities: m.cities.map(([name, x, y]) => [name, ...pct([x, y])]),
+    pos: n => (m.nodes[n.id] ? pct(m.nodes[n.id]) : [n.x, n.y]),
+  };
+}
+for (const r of Object.keys(REAL_MAPS)) probeRealMap(r);
+
 const TILE = 16, COLS = 64, ROWS = 40, OUT = 2;   // rejilla de 64x40 tiles; se exporta a 2x
 const W = COLS * TILE, H = ROWS * TILE;
 const SHEETS = { ow: ['/maptiles/overworld.png', 40], tt: ['/maptiles/tinytown.png', 12] };

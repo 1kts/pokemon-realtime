@@ -3,7 +3,7 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { Net } from './net.js';
-import { REGION_ART, regionMapImage } from './regionmap.js';
+import { REGION_ART, regionMapImage, probeRealMap, realMapLayout } from './regionmap.js';
 import { towerViews } from './tower.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
@@ -188,12 +188,16 @@ export class UI {
     wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
-    const art = REGION_ART[region];
-    regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
+    // Mapa real si está generado (tools/fetch-maps.js); si no, el de tiles CC0
+    const real = realMapLayout(region);
+    if (real === undefined) probeRealMap(region).then(ok => { if (ok && this.view === 'story' && this.region === region) this.show('story'); });
+    const layout = real || { cities: REGION_ART[region].cities, pos: n => [n.x, n.y] };
+    if (real) { map.style.backgroundImage = `url(${real.src})`; map.classList.add('ready', 'real'); }
+    else regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
-    const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
+    const cityAt = n => { const [nx, ny] = layout.pos(n); return layout.cities.find(([, x, y]) => Math.hypot(x - nx, y - ny) < 4); };
     const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
-    for (const city of art.cities) {
+    for (const city of layout.cities) {
       if (leaderCities.has(city)) continue;
       const [name, x, y] = city;
       const c = el('div', 'city', `<span>${name}</span>`);
@@ -211,7 +215,8 @@ export class UI {
       const unlocked = isLeader ? n.index <= prog : n.req <= prog;
       const done = isLeader && n.index < prog;
       const b = el('button', `node ${isLeader ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isLeader && n.index === prog ? ' next' : ''}`);
-      b.style.left = n.x + '%'; b.style.top = n.y + '%';
+      const [px, py] = layout.pos(n);
+      b.style.left = px + '%'; b.style.top = py + '%';
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);

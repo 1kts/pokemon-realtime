@@ -11,6 +11,10 @@ npm install
 npm start          # http://localhost:3000
 ```
 
+Opcional: `node tools/fetch-maps.js` descarga el mapa del Pokégear de HeartGold/SoulSilver (del proyecto
+pret/pokeheartgold) y lo deja en `public/maps/`. Ese mapa es arte de Nintendo y no está en el repositorio;
+sin él, la historia usa un mapa de tiles con licencia CC0.
+
 Para jugar online con alguien, abrid los dos la misma dirección (misma red o servidor público) y buscad
 partida a la vez. Para probarlo solo, abre dos pestañas.
 
