@@ -27,6 +27,8 @@ export class BattleClient {
     this.you = start.you;
     this.foeIdx = 1 - start.you;
     this.mode = start.mode;
+    this.mapName = start.map;
+    this.arena = Data.ARENAS[start.map] || null;   // arena de gimnasio con mecánicas
     this.sides = start.sides;
     this.balls = start.balls ? { ...start.balls } : null;
     this.ballType = this.balls ? BALLS.find(b => this.balls[b] > 0) || 'pokeball' : null;
@@ -69,6 +71,7 @@ export class BattleClient {
     this.latest = m;
     if (m.tr) for (const [i, t] of m.tr) this.world.setCell(i, t);
     this.world.syncObstacles(m.ob || []);
+    this.world.setArena(m.ar);
     for (const e of m.ev) this.onEvent(e);
     if (m.state === 'countdown') this.countdown(m.cd);
     else if (this.cdShown) { this.cdShown = null; this.banner(t('¡A combatir!'), 'big'); }
@@ -80,12 +83,12 @@ export class BattleClient {
     this.me = me;
     this.pending = this.pending.filter(i => i.s > me.ack);
     const old = this.pred;
-    const p = { x: me.x, y: me.y };
+    const p = { x: me.x, y: me.y, vx: me.v ? me.v[0] : 0, vy: me.v ? me.v[1] : 0 };
     if (m.state === 'fight') {
       const obstacles = this.world.collisionList();
       const speed = Shared.speedOf(this.dexOf(this.you), me.f, this.monOf(this.you).spdMult);
       const r = this.monOf(this.you).r || Shared.hitboxOf(this.dexOf(this.you));
-      if (!(me.f & F.DASH)) for (const i of this.pending) Shared.stepMove(p, i.mx, i.my, speed, DT, obstacles, r);
+      if (!(me.f & F.DASH)) for (const i of this.pending) this.step(p, i, speed, obstacles, r);
     }
     const jump = me.f & (F.DASH | F.SWAP) || !old;
     if (old && !jump) { this.err.x += old.x - p.x; this.err.y += old.y - p.y; }
@@ -93,6 +96,14 @@ export class BattleClient {
     this.pred = p;
     if (!this.prevPred || jump) this.prevPred = { ...p };
     this.updateHud();
+  }
+
+  // Un paso de movimiento propio, igual que en el servidor (en las arenas: corriente, viento, hielo)
+  step(p, inp, speed, obstacles, r) {
+    if (!this.arena) return Shared.stepMove(p, inp.mx, inp.my, speed, DT, obstacles, r);
+    const wd = this.latest && this.latest.ar && this.latest.ar.wd;
+    const wind = wd && !SPECIES[this.dexOf(this.you)].types.includes('volador') ? wd : null;
+    Shared.arenaStep(p, inp.mx || 0, inp.my || 0, speed, DT, obstacles, r, { map: this.mapName, terrain: this.world.types, wind });
   }
 
   dexOf(i) { return this.sides[i].team[this.act[i]].dex; }
@@ -178,6 +189,32 @@ export class BattleClient {
       case 'escape': this.catchSeq = null; break;
       case 'throw': if (s === this.you && this.balls) { this.balls[e.ball] = e.left; this.updateBallHud(); } break;
       case 'sudden': this.banner(t('¡Muerte súbita! Daño ×1,5 y sin curaciones'), 'bad'); break;
+      // Mecánicas de las arenas de gimnasio
+      case 'arena': this.banner(tServer(e.msg), 'info'); break;
+      case 'panel': this.world.panelFlash(e.g, e.ph, e.d); if (e.ph === 'zap') this.fx.panelZap(e.g); break;
+      case 'quake': this.fx.quake(e); this.banner(t('¡Terremoto!'), 'bad'); break;
+      case 'gust': {
+        const arrow = ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'][((Math.round(e.a / (Math.PI / 4)) % 8) + 8) % 8];
+        this.banner(t('¡Ráfaga de viento! {arrow}', { arrow }), 'info');
+        break;
+      }
+      case 'warp': {
+        for (const [x, y] of [[e.x1, e.y1], [e.x2, e.y2]]) { const w = toWorld(x, y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2.4, life: 0.5, size: 0.2 }); }
+        actor.ghost('#ff90d0');
+        break;
+      }
+    }
+  }
+
+  // Efectos continuos de la arena: estelas de viento mientras sopla
+  arenaFx(dt) {
+    const wd = this.latest && this.latest.ar && this.latest.ar.wd;
+    if (!wd) return;
+    const len = Math.hypot(wd[0], wd[1]) || 1, dx = wd[0] / len, dz = wd[1] / len;
+    for (let k = 0; k < 3; k++) {
+      if (Math.random() > dt * 30) continue;
+      const x = Math.random() * Shared.COLS, z = Math.random() * Shared.ROWS;
+      this.p.emit(x, 0.3 + Math.random() * 1.2, z, { n: 2, colors: ['#ffffff', '#e0f0ff'], layer: 'soft', dir: [dx, 0, dz], spread: 0.05, speed: 9, life: 0.6, size: 0.25, alpha: 0.5 });
     }
   }
 
@@ -276,12 +313,13 @@ export class BattleClient {
       const mine = this.monOf(this.you);
       const speed = Shared.speedOf(mine.dex, this.me.f, mine.spdMult);
       if (fighting && !(this.me.f & F.DASH)) {
-        Shared.stepMove(this.pred, inp.mx, inp.my, speed, DT, this.world.collisionList(), mine.r || Shared.hitboxOf(mine.dex));
+        this.step(this.pred, inp, speed, this.world.collisionList(), mine.r || Shared.hitboxOf(mine.dex));
       }
       this.moving = (inp.mx || inp.my) && speed > 0;
     }
     this.err.x *= 0.85; this.err.y *= 0.85;
     this.render(now, dt);
+    this.arenaFx(dt);
   }
 
   interpolated(renderT) {
@@ -318,6 +356,7 @@ export class BattleClient {
       this.lastPos[i] = { x, y };
     }
     this.renderPos = pos;
+    this.world.setFocus(pos[this.you].x, pos[this.you].y);
     // Retícula bajo el ratón: gira, late y se vuelve amarilla cuando apunta a la hitbox del rival
     const ret = this.reticle;
     const aimW = toWorld(this.aim.x, this.aim.y, 0.06);
@@ -393,6 +432,13 @@ export class BattleClient {
     this.energyEl = el('div', 'energy', '<div class="fill"></div><span></span>');
     this.ballEl = this.balls ? el('div', 'balls') : null;
     this.bannerEl = el('div', 'banners');
+    // Nombre y mecánica de la arena (la descripción se esconde a los pocos segundos)
+    if (this.arena) {
+      const tag = el('div', 'arena-tag', `<b>${escapeHtml(this.arena.name)}</b><span>${escapeHtml(this.arena.desc)}</span>`);
+      tag.title = this.arena.desc;
+      root.append(tag);
+      setTimeout(() => tag.classList.add('mini'), 9000);
+    }
     this.floatEl = el('div', 'floats');
     this.plates = [0, 1].map(i => el('div', 'plate ' + (i === this.you ? 'mine' : 'foe')));
     const bottom = el('div', 'bottom');

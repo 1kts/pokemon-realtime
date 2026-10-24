@@ -9,13 +9,14 @@
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
 const { aiInput } = require('./ai.js');
+const { Arena } = require('./arena.js');
 
 const { T, F, CELL, COLS, ROWS } = S;
 let nextId = 1;
 
 const STAB = 1.15;
 const BURN_DPS = 0.025, POISON_DPS = 0.022, SEED_DPS = 0.03, FIRE_DPS = 0.05;  // % de PS máx. por segundo
-const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, SPREAD_T = 0.6;
+const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, ICE_TTL = 8, SPREAD_T = 0.6;
 const FORCED_SWAP_T = 1.2, ENTRY_INVULN = 0.8;
 const WILD_HP = 0.6, WILD_DMG = 0.85;
 // Duración de la animación de captura (debe coincidir con la del cliente, effects.js)
@@ -41,12 +42,15 @@ class Battle {
     this.onEnd = opts.onEnd || (() => {});
     const { terrain, rocks } = S.parseMap(this.mapName);
     this.terrain = terrain;
-    // El agua del mapa es permanente; la que crean los ataques se evapora (WATER_TTL)
-    this.ttl = terrain.map(t => t === T.WATER ? Infinity : 0);
+    // Lo que forma parte del mapa (agua, hielo, veneno, telarañas, lava) es permanente y vuelve
+    // cuando se le pasa el efecto de un ataque; lo que crean los ataques dura un rato (WATER_TTL...)
+    this.base = terrain.slice();
+    this.ttl = terrain.map(t => S.PERMANENT.has(t) ? Infinity : 0);
     this.spread = new Array(terrain.length).fill(0);
     this.dirty = new Set();
     this.obstacles = rocks.map(r => ({ id: nextId++, ...r, hp: Infinity, ttl: Infinity, kind: 'rock' }));
     this.sides = opts.sides.map((s, i) => this.makeSide(s, i));
+    this.arena = new Arena(this);   // mecánicas del entorno (solo en las arenas de gimnasio)
     this.t = 0;
     this.state = 'countdown';
     this.countdown = 3;
@@ -91,6 +95,7 @@ class Battle {
   mon(side) { return side.team[side.act]; }
   rad(side) { return this.mon(side).r; }   // radio de colisión del Pokémon activo
   ev(e) { this.events.push(e); }
+  newId() { return nextId++; }
 
   // ---------- Bucle ----------
   tick() {
@@ -112,6 +117,7 @@ class Battle {
     }
     if (this.state === 'fight') {
       for (const side of this.sides) this.updateSide(side, dt);
+      this.arena.update(dt);
       this.updateProjectiles(dt);
       this.updateAreas(dt);
       this.updateTerrain(dt);
@@ -163,7 +169,8 @@ class Battle {
     // Movimiento (el dash y el empuje se mueven en updateSide)
     if (!side.dash && !side.kb) {
       const speed = S.speedOf(mon.dex, this.flags(side), mon.spdMult);
-      if (speed > 0) S.stepMove(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles, mon.r);
+      if (this.arena.active) S.arenaStep(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles, mon.r, this.arena.env(side));
+      else if (speed > 0) S.stepMove(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles, mon.r);
     }
     // Cambio de Pokémon: voluntario (con recarga) o tras un debilitado (elige el jugador)
     if (inp.sw >= 0 && inp.sw < side.team.length && inp.sw !== side.act && !side.team[inp.sw].fainted) {
@@ -246,12 +253,17 @@ class Battle {
     // Daño por estados y terreno, acumulado y aplicado cada segundo para que el número se lea
     if (!mon.fainted) {
       const cell = this.terrain[S.cellIndex(side.x, side.y)];
+      const types = D.SPECIES[mon.dex].types;
+      const grounded = side.invuln <= 0 && !(side.dash && side.dash.m.invuln);
       let rate = 0;
       if (side.burn > 0) rate += BURN_DPS;
       if (side.poison > 0) rate += POISON_DPS;
       if (side.seed > 0) rate += SEED_DPS;
-      if (cell === T.FIRE && side.invuln <= 0 && !(side.dash && side.dash.m.invuln)) { rate += FIRE_DPS; side.burn = Math.max(side.burn, 1.5); }
+      // Cada tipo aguanta el peligro de su propia arena (fuego la lava, veneno los charcos...)
+      if ((cell === T.FIRE || (cell === T.LAVA && !types.includes('fuego'))) && grounded) { rate += FIRE_DPS; side.burn = Math.max(side.burn, 1.5); }
       if (cell === T.WATER) side.wet = Math.max(side.wet, 1.5);
+      if (cell === T.POISON && grounded && !types.includes('veneno') && !types.includes('acero')) side.poison = Math.max(side.poison, 2);
+      if (cell === T.WEB && grounded && !types.includes('bicho')) side.slow = Math.max(side.slow, 0.3);
       side.dot += rate * mon.maxHp * dt;
       if (side.dot >= 1 && (this.t % 1) < dt) {
         const n = Math.floor(side.dot);
@@ -269,6 +281,8 @@ class Battle {
     const f = this.foe(side);
     const dist = Math.hypot(f.x - side.x, f.y - side.y);
     side.hidden = (cell === T.GRASS || cell === T.STEAM) && side.sinceAct > 0.8 && dist > (cell === T.STEAM ? 70 : 120);
+    // Arena a oscuras: de lejos no se ve al rival salvo justo cuando ataca
+    if (this.arena.dark && dist > this.arena.dark && side.sinceAct > 0.6) side.hidden = true;
   }
 
   doSwap(side, to, forced) {
@@ -379,6 +393,23 @@ class Battle {
     this.projectiles.push({ id: nextId++, owner: side, ball: kind, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 0 }, mk: 'ball',
       x: side.x + Math.cos(a) * this.rad(side), y: side.y + Math.sin(a) * this.rad(side), vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 });
     this.ev({ k: 'throw', s: side.idx, ball: kind, left: side.balls[kind] });
+  }
+
+  // Daño del entorno (rocas, descargas, erupciones...): un % de los PS máximos. Protección lo
+  // reduce como un golpe normal. extra: estados que deja (stun, slow, burn).
+  hazard(side, frac, ty, extra = {}) {
+    const mon = this.mon(side);
+    if (mon.fainted || side.invuln > 0 || side.forced > 0 || this.state !== 'fight') return;
+    const blocked = side.prot >= 0;
+    let dmg = frac * mon.maxHp * (this.sudden ? SUDDEN_MULT : 1);
+    if (blocked) dmg *= 1 - D.PROTECT.block;
+    dmg = Math.max(1, Math.round(dmg));
+    mon.hp = Math.max(0, mon.hp - dmg);
+    this.ev({ k: 'hit', s: side.idx, x: Math.round(side.x), y: Math.round(side.y), n: dmg, e: 0, b: blocked ? 1 : 0, ty, big: 0, env: 1 });
+    if (blocked) return;
+    if (extra.stun) { side.stun = Math.max(side.stun, extra.stun); side.wind = null; }
+    if (extra.slow) side.slow = Math.max(side.slow, extra.slow);
+    if (extra.burn) side.burn = Math.max(side.burn, extra.burn);
   }
 
   // ---------- Golpes ----------
@@ -558,14 +589,19 @@ class Battle {
   }
 
   // Pinta fuego o agua respetando las combinaciones.
+  // fuego: el agua da vapor, el hielo se derrite, la lava no cambia. agua: apaga el fuego y enfría
+  // la lava un momento. hielo: congela el agua. Al acabar el efecto, vuelve lo que hubiera en el mapa.
   paint(i, kind) {
     const cur = this.terrain[i];
     if (kind === 'fuego') {
       if (cur === T.WATER) this.setCell(i, T.STEAM, STEAM_TTL);
-      else if (cur !== T.STEAM) this.setCell(i, T.FIRE, FIRE_TTL);
+      else if (cur === T.ICE) this.setCell(i, T.WATER, WATER_TTL);
+      else if (cur !== T.STEAM && cur !== T.LAVA) this.setCell(i, T.FIRE, FIRE_TTL);
     } else if (kind === 'agua') {
-      if (cur === T.FIRE) this.setCell(i, T.STEAM, STEAM_TTL);
-      else if (cur !== T.GRASS) this.setCell(i, T.WATER, WATER_TTL);
+      if (cur === T.FIRE || cur === T.LAVA) this.setCell(i, T.STEAM, STEAM_TTL);
+      else if (cur !== T.GRASS && cur !== T.ICE && cur !== T.WEB) this.setCell(i, T.WATER, WATER_TTL);
+    } else if (kind === 'hielo') {
+      if (cur === T.WATER) this.setCell(i, T.ICE, ICE_TTL);
     }
   }
 
@@ -600,18 +636,20 @@ class Battle {
   updateTerrain(dt) {
     for (let i = 0; i < this.terrain.length; i++) {
       const t = this.terrain[i];
-      if (t !== T.FIRE && t !== T.WATER && t !== T.STEAM) continue;
-      if (t === T.FIRE && (this.spread[i] += dt) >= SPREAD_T) {   // el fuego se propaga por la hierba alta
+      if (t === T.FIRE && (this.spread[i] += dt) >= SPREAD_T) {   // el fuego se propaga por la hierba alta y las telarañas
         this.spread[i] = -99;
         const x = i % COLS, y = Math.floor(i / COLS);
         for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
           const n = ny * COLS + nx;
-          if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && this.terrain[n] === T.GRASS) this.setCell(n, T.FIRE, FIRE_TTL);
+          if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && (this.terrain[n] === T.GRASS || this.terrain[n] === T.WEB)) this.setCell(n, T.FIRE, FIRE_TTL);
         }
       }
+      if (!(this.ttl[i] > 0) || this.ttl[i] === Infinity) continue;
       if ((this.ttl[i] -= dt) <= 0) {
-        this.terrain[i] = t === T.FIRE ? T.BURNT : T.NONE;
-        this.ttl[i] = 0;
+        const base = this.base[i];
+        const back = S.PERMANENT.has(base) && base !== t;
+        this.terrain[i] = back ? base : t === T.FIRE ? T.BURNT : T.NONE;
+        this.ttl[i] = back ? Infinity : 0;
         this.dirty.add(i);
       }
     }
@@ -677,6 +715,7 @@ class Battle {
     if (viewer === s.idx) {
       o.cds = mon.cds.map(c => +c.toFixed(2)); o.pcd = +s.pcd.toFixed(2); o.swcd = +s.swapCd.toFixed(2); o.ack = s.ack;
       o.allcds = s.team.map(m => m.cds.map(c => +c.toFixed(1)));
+      if (this.arena.m.ice) o.v = [Math.round(s.vx || 0), Math.round(s.vy || 0)];   // inercia sobre hielo (predicción)
     }
     return o;
   }
@@ -689,8 +728,9 @@ class Battle {
       tl: Math.max(0, Math.ceil(LIMIT - (this.fightT || 0))), sd: this.sudden ? 1 : 0,
       pr: this.projectiles.map(p => ({ id: p.id, x: Math.round(p.x), y: Math.round(p.y), r: p.r, o: p.owner.idx, mk: p.mk, ball: p.ball || undefined, a: +Math.atan2(p.vy, p.vx).toFixed(2) })),
       ob: this.obstacles.filter(o => o.kind !== 'rock').map(o => ({ id: o.id, x: Math.round(o.x), y: Math.round(o.y), r: o.r, k: o.kind })),
-      tr: terrainDiff, ev: this.events,
+      tr: terrainDiff, ev: this.events, ar: this.arena.snap(),
     };
+    if (!common.ar) delete common.ar;
     if (!terrainDiff.length) delete common.tr;
     this.events = [];
     for (const s of this.sides) {

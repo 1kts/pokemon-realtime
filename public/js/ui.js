@@ -242,6 +242,8 @@ export class UI {
       for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }
       box.append(team);
       if (n.team.length > 3) box.append(el('p', 'small', t('Equipo real completo: {list}. En combate saca sus 3 más fuertes.', { list: n.team.map(([d, l]) => `${d === 'rival' ? t('tu rival') : SPECIES[d].name} ${l}`).join(', ') })));
+      const arena = Data.ARENAS[n.map];
+      if (arena) box.append(el('div', 'arena-info', `<b>${t(arena.name)}</b> · ${t(arena.desc)}`));
       box.append(el('p', 'small', t('Dificultad de la IA: {ai} % · Premio {prize} · la primera vez también Caramelo Raro y una vitamina', { ai: Math.round(n.ai * 100), prize: coins(n.reward) + (n.badge ? t(' y {b}', { b: n.badge }) : '') })));
       if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? t('Consigue las 8 medallas de la región y vence a los anteriores.') : t('Vence antes al anterior.')));
       else {

@@ -343,6 +343,39 @@ export class Effects {
     this.shake = Math.max(this.shake, Math.min(0.5, 0.15 + r * 0.08));
   }
 
+  // Terremoto: aviso en el epicentro y luego un anillo de polvo que se expande por la arena
+  quake(e) {
+    this.warn({ x: e.x, y: e.y, r: 70, d: e.d, ty: 'tierra' });
+    setTimeout(() => {
+      const pos = toWorld(e.x, e.y, 0.15);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.12, 6, 64), new THREE.MeshStandardMaterial({ color: '#a07a4a', roughness: 1, transparent: true, opacity: 0.9 }));
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.copy(pos);
+      const maxR = 1200 * U, life = 1200 / e.sp * 1000;
+      this.addTemp(ring, life, f => {
+        const R = Math.max(0.05, f * maxR);
+        ring.scale.set(R, R, 1 + f * 2);
+        ring.material.opacity = 0.9 * (1 - f);
+        this.shake = Math.max(this.shake, 0.25 * (1 - f));
+        if (Math.random() < 0.6) {
+          const a = Math.random() * Math.PI * 2;
+          this.p.emit(pos.x + Math.cos(a) * R, 0.2, pos.z + Math.sin(a) * R, { n: 3, colors: DUST, layer: 'soft', up: 0.6, speed: 1.5, life: 0.8, size: 0.5, grow: 1, alpha: 0.5 });
+        }
+      });
+    }, e.d * 1000);
+  }
+
+  // Descarga de las placas eléctricas de un grupo
+  panelZap(g) {
+    const panels = Shared.parseMap(this.world.mapName).panels.filter(i => (((i % Shared.COLS) >> 1) + (Math.floor(i / Shared.COLS) >> 1)) % 2 === g);
+    for (let k = 0; k < 14 && panels.length; k++) {
+      const i = panels[Math.floor(Math.random() * panels.length)];
+      this.p.emit((i % Shared.COLS) + 0.5, 0.1, Math.floor(i / Shared.COLS) + 0.5, { n: 6, colors: ['#ffffff', '#fff070', '#ffd23a'], dir: [0, 1, 0], spread: 0.8, speed: 3, life: 0.25, size: 0.16 });
+    }
+    this.flashLight(toWorld(480, 300, 1.5), '#fff6a0', 10, 220);
+    this.shake = Math.max(this.shake, 0.12);
+  }
+
   fallingRock(pos, r) {
     const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.2 + Math.random() * 0.2, 0), new THREE.MeshStandardMaterial({ color: '#9a8466', flatShading: true }));
     const x = pos.x + (Math.random() - 0.5) * r * 1.4, z = pos.z + (Math.random() - 0.5) * r * 1.4;
