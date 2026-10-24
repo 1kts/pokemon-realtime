@@ -203,6 +203,15 @@ function persist(p) {
   const u = inUse.get(p);
   if (u) u.json = json;
 }
+// Borra un perfil del todo (derecho de supresión): memoria, índices y base de datos. Quien lo esté
+// usando tiene que estar ya desconectado.
+function remove(p) {
+  profiles.delete(p.token);
+  ids.delete(p.id);
+  if (p.account) accounts.delete(p.account.user.toLowerCase());
+  inUse.delete(p);
+  db.prepare('DELETE FROM profiles WHERE token = ?').run(p.token);
+}
 const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase())) || null;
 // Busca por nombre de entrenador, usuario o id (los registrados primero)
 function search(q, limit = 50) {
@@ -298,4 +307,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, byId, byUser, search, stats };
+  check, setPassword, banned, persist, remove, byId, byUser, search, stats };

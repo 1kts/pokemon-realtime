@@ -959,3 +959,7 @@ button.with-ico img { image-rendering: pixelated; }
 button.buy { color: #fff; border: 0; background: var(--stripes), linear-gradient(180deg, #ff8a5c, var(--coral-2)); box-shadow: 0 3px 0 var(--coral-d); padding: 7px 16px; }
 button.buy:hover:not(:disabled) { background: var(--stripes), linear-gradient(180deg, #ff9a70, #ff5e80); }
 button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color: var(--muted); }
+
+/* Enlaces dentro de las ventanas (aviso legal, Ko-fi…): legibles sobre el fondo oscuro */
+.modal-box a { color: #8cc4ff; }
+.modal-box a:hover { color: #b8dbff; }

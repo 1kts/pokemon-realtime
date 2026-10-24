@@ -220,10 +220,10 @@ export const accountViews = {
         <p>${t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
         <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.')}</p>
         <p>${t('Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).')}</p>
-        <p>${t('La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.')}</p>
+        <p>${t('Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.', { url: getLang() === 'es' ? '/legal' : '/legal/en' })}</p>
         <p>${t('El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.', { url: KOFI_URL })}</p>
         <h4>${t('Datos que guardamos')}</h4>
-        <p class="small">${t('Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.')}</p>`));
+        <p class="small">${t('Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.')}</p>`));
       const acts = el('div', 'acts');
       const ok = el('button', 'primary', t('Cerrar'));
       ok.onclick = close;

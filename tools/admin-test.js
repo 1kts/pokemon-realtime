@@ -125,6 +125,19 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   ok(await store.check('normalito', r4.secret) && !await store.check('normalito', 'clave-larga-2'), 'la contraseña nueva vale y la vieja ya no');
   ok(!JSON.stringify(audit.query({ type: 'admin.resetpass' })).includes(r4.secret), 'la contraseña nueva no queda en la auditoría');
 
+  // ---------- Borrar un perfil (derecho de supresión) ----------
+  const gone = await player(null, 'borrame', 'clave-larga-3');
+  await sleep(50);
+  const goneName = gone.p.name;
+  ok(/escribe exactamente/.test((await adm.ask('admin.action', { a: 'remove', id: gone.p.id, confirm: 'otro' })).ok), 'borrar exige escribir su nombre');
+  const rm = await adm.ask('admin.action', { a: 'remove', id: gone.p.id, confirm: goneName });
+  await sleep(100);
+  ok(/borrado/.test(rm.ok) && gone.closed && !store.has(gone.p.token) && !store.byId(gone.p.id), 'borrar lo desconecta y quita el perfil');
+  ok(!await store.check('borrame', 'clave-larga-3'), 'su cuenta ya no existe');
+  const left = store.db.prepare('SELECT type FROM audit WHERE actor = ? OR target = ?').all(gone.p.id, gone.p.id).map(r => r.type);
+  ok(left.length && left.every(t => t.startsWith('admin.')) && left.includes('admin.borrar'), 'su registro se borra; solo queda constancia del borrado (sin datos personales)');
+  ok(!store.db.prepare('SELECT 1 FROM profiles WHERE data LIKE ?').get('%borrame%'), 'no queda nada de él en la base de datos');
+
   // ---------- Servidor ----------
   const r5 = await adm.ask('admin.broadcast', { msg: 'Reinicio en 5 minutos' });
   const ann = await normal.wait(m => m.t === 'announce');

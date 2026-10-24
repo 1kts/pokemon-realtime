@@ -53,11 +53,20 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
   const cspHeader = page.h['content-security-policy'] || '';
   ok(cspHeader.includes(hash), 'la CSP permite el importmap de la página por su hash');
   const scriptSrc = cspHeader.split('script-src')[1].split(';')[0];
-  ok(scriptSrc.includes("'self' https://cdn.jsdelivr.net") && !scriptSrc.includes('unsafe-inline'),
-    'la CSP no deja ejecutar scripts en línea que no sean los de la página');
+  ok(scriptSrc.trim().startsWith("'self' 'sha256-") && !/unsafe-inline|https?:/.test(scriptSrc) && /font-src 'self'/.test(cspHeader),
+    'la CSP solo deja scripts y fuentes de este servidor (ni en línea ajenos ni de terceros)');
   ok(/frame-ancestors 'none'/.test(cspHeader) && page.h['x-frame-options'] === 'DENY', 'no se puede meter el juego en un iframe de otra web');
   const js = await get('/js/main.js');
   ok(js.h['x-content-type-options'] === 'nosniff' && !js.h['content-security-policy'], 'nosniff en todo; la CSP solo en las páginas');
+
+  // ---------- Páginas legales ----------
+  for (const [url, lang] of [['/legal', 'es'], ['/legal/en', 'en']]) {
+    const lp = await get(url);
+    ok(/contacto@pokearenas\.com/.test(lp.body) && lp.body.includes(`lang="${lang}"`) && /CC BY-NC 4\.0/.test(lp.body) && /<tr><td>CHUNSOFT<\/td>/.test(lp.body)
+      && /default-src 'self'/.test(lp.h['content-security-policy'] || ''), `${url}: aviso legal, privacidad y artistas, con CSP`);
+  }
+  ok(!/(src|href)="https?:\/\/(?!creativecommons|github|polyform|pokeapi|threejs|ko-fi|www\.aepd)/.test((await get('/legal')).body + (await get('/')).body),
+    'ni el juego ni la página legal cargan nada de terceros (solo enlaces)');
 
   // ---------- Inundar de mensajes ----------
   const flood = connect('10.0.0.1');
