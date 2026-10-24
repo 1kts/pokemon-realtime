@@ -1,0 +1,23 @@
+[Unit]
+Description=Arena Pokémon
+After=network.target
+
+[Service]
+User=arena
+Group=arena
+WorkingDirectory=/srv/arena/current
+Environment=NODE_ENV=production PORT=3000 DB_FILE=/var/lib/arena/arena.db
+ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server.js
+Restart=always
+RestartSec=2
+# Al parar, el servidor espera a que acaben los combates en curso y sale solo (como mucho en 5 min)
+KillSignal=SIGTERM
+TimeoutStopSec=330
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/arena
+
+[Install]
+WantedBy=multi-user.target

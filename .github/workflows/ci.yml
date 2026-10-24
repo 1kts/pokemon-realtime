@@ -1,0 +1,56 @@
+# Pruebas en cada push y pull request. Un push a main, si las pruebas pasan, se despliega en el
+# servidor de Hetzner (ver deploy/README.md). Secretos del repositorio que hacen falta:
+#   DEPLOY_HOST         IP (o dominio) del servidor
+#   DEPLOY_SSH_KEY      clave privada cuya pública está en ~deploy/.ssh/authorized_keys
+#   DEPLOY_KNOWN_HOSTS  salida de: ssh-keyscan -t ed25519 <IP>
+name: ci
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Un despliegue a medias no se cancela; las pruebas de otras ramas sí
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # Parar el servidor espera a los combates en curso (hasta 5 min)
+    timeout-minutes: 15
+    environment: production
+    env:
+      HOST: ${{ secrets.DEPLOY_HOST }}
+      REL: /srv/arena/releases/${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clave SSH
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+      - name: Copiar el código
+        # --link-dest: lo que no ha cambiado respecto a la versión actual no se vuelve a subir
+        run: rsync -a --delete --exclude .git --exclude node_modules --exclude data --link-dest=/srv/arena/current/ ./ "deploy@$HOST:$REL/"
+      - name: Instalar y reiniciar
+        run: ssh "deploy@$HOST" bash "$REL/deploy/deploy.sh" "$REL"

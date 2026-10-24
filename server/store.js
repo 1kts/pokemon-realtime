@@ -1,29 +1,78 @@
-// Perfiles de jugador en data/profiles.json. Cada navegador guarda su token en localStorage
-// y con él recupera su partida. Un invitado puede registrar usuario y contraseña para entrar
-// desde otro dispositivo (la contraseña se guarda con scrypt y sal). Se escribe en disco como
-// mucho una vez por segundo.
+// Perfiles de jugador en SQLite (data/arena.db, o DB_FILE): una fila por perfil con su JSON.
+// Todos los perfiles están en memoria (la ladder y las fichas se calculan de ahí) y a disco solo
+// va lo que cambia: como mucho una vez por segundo se reescriben, en una transacción, los perfiles
+// en uso (los de los jugadores conectados) que hayan cambiado. Cada navegador guarda su token en
+// localStorage y con él recupera su partida. Un invitado puede registrar usuario y contraseña
+// para entrar desde otro dispositivo (la contraseña se guarda con scrypt y sal).
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { promisify } = require('util');
+const { DatabaseSync } = require('node:sqlite');
 
-const FILE = process.env.PROFILES_FILE || path.join(__dirname, '..', 'data', 'profiles.json');
-let profiles = {};
-try { profiles = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { profiles = {}; }
+const FILE = process.env.DB_FILE || path.join(__dirname, '..', 'data', 'arena.db');
+fs.mkdirSync(path.dirname(FILE), { recursive: true });
+const db = new DatabaseSync(FILE);
+db.exec(`PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;
+  CREATE TABLE IF NOT EXISTS profiles (token TEXT PRIMARY KEY, data TEXT NOT NULL, updated INTEGER NOT NULL)`);
+const upsert = db.prepare(`INSERT INTO profiles (token, data, updated) VALUES (?, ?, ?)
+  ON CONFLICT (token) DO UPDATE SET data = excluded.data, updated = excluded.updated`);
+
+const profiles = new Map();   // token -> perfil
+for (const r of db.prepare('SELECT data FROM profiles').all()) { const p = JSON.parse(r.data); profiles.set(p.token, p); }
+
+function writeRows(list) {
+  const now = Date.now();
+  db.exec('BEGIN');
+  try {
+    for (const [p, json] of list) upsert.run(p.token, json, now);
+    db.exec('COMMIT');
+  } catch (e) { db.exec('ROLLBACK'); throw e; }
+}
+
+// La primera vez se importa el antiguo profiles.json de la misma carpeta (se queda como copia)
+const OLD_JSON = path.join(path.dirname(FILE), 'profiles.json');
+if (!profiles.size && fs.existsSync(OLD_JSON)) {
+  for (const p of Object.values(JSON.parse(fs.readFileSync(OLD_JSON, 'utf8')))) profiles.set(p.token, p);
+  writeRows([...profiles.values()].map(p => [p, JSON.stringify(p)]));
+  fs.renameSync(OLD_JSON, OLD_JSON + '.importado');
+  console.log(`Importados ${profiles.size} perfiles de ${OLD_JSON}`);
+}
+
 // Id público de cada perfil (el token es secreto: con él se entra en la partida)
 const newId = () => crypto.randomBytes(5).toString('hex');
-const byId = id => Object.values(profiles).find(p => p.id === id) || null;
+const ids = new Map([...profiles.values()].filter(p => p.id).map(p => [p.id, p]));
+const byId = id => ids.get(id) || null;
 
 // Índice usuario (en minúsculas) -> token
 const accounts = new Map();
-for (const p of Object.values(profiles)) if (p.account) accounts.set(p.account.user.toLowerCase(), p.token);
+for (const p of profiles.values()) if (p.account) accounts.set(p.account.user.toLowerCase(), p.token);
+
+// Perfiles en uso: perfil -> { json: lo último escrito, refs: conexiones que lo usan }
+const inUse = new Map();
+function use(p) {
+  const u = inUse.get(p);
+  if (u) u.refs++; else inUse.set(p, { json: JSON.stringify(p), refs: 1 });
+  return p;
+}
+// Una conexión deja el perfil: se guarda si ha cambiado y, si nadie más lo usa, deja de vigilarse
+function release(p) {
+  const u = inUse.get(p);
+  if (!u) return;
+  const json = JSON.stringify(p);
+  if (json !== u.json) { writeRows([[p, json]]); u.json = json; }
+  if (--u.refs <= 0) inUse.delete(p);
+}
 
 let timer = null;
 function write() {
   timer = null;
-  fs.mkdirSync(path.dirname(FILE), { recursive: true });
-  const tmp = FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(profiles));
-  fs.renameSync(tmp, FILE);   // escritura atómica: nunca queda un JSON a medias
+  const changed = [];
+  for (const [p, u] of inUse) {
+    const json = JSON.stringify(p);
+    if (json !== u.json) { changed.push([p, json]); u.json = json; }
+  }
+  if (changed.length) writeRows(changed);
 }
 function save() {
   if (!timer) timer = setTimeout(write, 1000);
@@ -35,7 +84,7 @@ function flush() {
   write();
 }
 // Perfiles de antes del id público
-if (Object.values(profiles).filter(p => !p.id).map(p => { p.id = newId(); }).length) save();
+for (const p of profiles.values()) if (!p.id) { p.id = newId(); ids.set(p.id, p); writeRows([[p, JSON.stringify(p)]]); }
 
 function newProfile(name) {
   return {
@@ -45,17 +94,28 @@ function newProfile(name) {
   };
 }
 
-// Con token válido devuelve su perfil; si no, crea uno de invitado con ese nombre
+function addProfile(name) {
+  const p = newProfile(name);
+  profiles.set(p.token, p);
+  ids.set(p.id, p);
+  writeRows([[p, JSON.stringify(p)]]);
+  return p;
+}
+
+// Con token válido devuelve su perfil; si no, crea uno de invitado con ese nombre. La conexión
+// que lo pide lo tiene en uso hasta que llame a release().
 function get(token, name) {
-  let p = token && profiles[token];
-  if (!p) { p = newProfile(name || 'Entrenador'); profiles[p.token] = p; }
+  const p = (token && profiles.get(token)) || addProfile(name || 'Entrenador');
+  use(p);
   save();
   return p;
 }
 
 // ---------- Cuentas ----------
+// scrypt asíncrono: calcularlo cuesta ~30 ms y no debe parar los combates mientras tanto
 const USER_RE = /^[A-Za-z0-9_]{3,16}$/;
-const hash = (pass, salt) => crypto.scryptSync(pass, salt, 32).toString('hex');
+const scrypt = promisify(crypto.scrypt);
+const hash = async (pass, salt) => (await scrypt(pass, salt, 32)).toString('hex');
 
 function checkCredentials(user, pass) {
   if (typeof user !== 'string' || !USER_RE.test(user)) return 'El usuario debe tener de 3 a 16 letras, números o _';
@@ -64,44 +124,63 @@ function checkCredentials(user, pass) {
 }
 
 // Registra usuario y contraseña en el perfil (el invitado conserva toda su partida); sin
-// perfil crea uno nuevo. Devuelve { p } o { err }.
-function register(p, user, pass) {
+// perfil crea uno nuevo, en uso por quien lo pide. Devuelve { p } o { err }.
+async function register(p, user, pass) {
   const err = checkCredentials(user, pass);
   if (err) return { err };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
   if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
-  if (!p) { p = newProfile(user); profiles[p.token] = p; }
   const salt = crypto.randomBytes(16).toString('hex');
-  p.account = { user, salt, hash: hash(pass, salt), since: Date.now() };
+  const h = await hash(pass, salt);
+  // Mientras se calculaba el hash otro ha podido registrar el mismo usuario o este perfil
+  if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
+  if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
+  if (!p) p = use(addProfile(user));
+  p.account = { user, salt, hash: h, since: Date.now() };
   accounts.set(user.toLowerCase(), p.token);
   save();
   return { p };
 }
 
-// Devuelve el perfil si usuario y contraseña coinciden
-function login(user, pass) {
+async function check(user, pass) {
   if (typeof user !== 'string' || typeof pass !== 'string' || pass.length > 72) return null;
-  const p = profiles[accounts.get(user.toLowerCase())];
+  const p = profiles.get(accounts.get(user.toLowerCase()));
   if (!p || !p.account) return null;
-  const a = Buffer.from(hash(pass, p.account.salt), 'hex'), b = Buffer.from(p.account.hash, 'hex');
+  const a = Buffer.from(await hash(pass, p.account.salt), 'hex'), b = Buffer.from(p.account.hash, 'hex');
   return crypto.timingSafeEqual(a, b) ? p : null;
 }
 
-function changePassword(p, oldPass, newPass) {
+// Devuelve el perfil (en uso por quien lo pide) si usuario y contraseña coinciden
+async function login(user, pass) {
+  const p = await check(user, pass);
+  return p && use(p);
+}
+
+async function changePassword(p, oldPass, newPass) {
   if (!p.account) return 'Este perfil no tiene cuenta';
-  if (!login(p.account.user, String(oldPass || ''))) return 'La contraseña actual no es correcta';
+  if (!await check(p.account.user, String(oldPass || ''))) return 'La contraseña actual no es correcta';
   const err = checkCredentials(p.account.user, newPass);
   if (err) return err;
-  p.account.salt = crypto.randomBytes(16).toString('hex');
-  p.account.hash = hash(newPass, p.account.salt);
+  const salt = crypto.randomBytes(16).toString('hex');
+  p.account.hash = await hash(newPass, salt);
+  p.account.salt = salt;
   save();
   return null;
 }
 
 // ---------- Ranking ----------
+// Top n de clasificatoria y puesto de un jugador: se piden en cada envío de perfil, así que se
+// calculan con una sola pasada por los perfiles en vez de ordenarlos todos
 function leaderboard(n = 10) {
-  return Object.values(profiles).filter(p => p.ranked > 0)
-    .sort((a, b) => b.elo - a.elo).slice(0, n)
+  const { has, cmp } = BOARDS.ranked, top = [];
+  for (const p of profiles.values()) {
+    if (!has(p) || (top.length === n && cmp(p, top[n - 1]) >= 0)) continue;
+    let i = top.length;
+    while (i > 0 && cmp(p, top[i - 1]) < 0) i--;
+    top.splice(i, 0, p);
+    if (top.length > n) top.pop();
+  }
+  return top
     .map(p => ({ id: p.id, name: p.name, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
 }
 
@@ -118,7 +197,7 @@ const BOARDS = {
     row: p => ({ caught: p.caught.length, shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
 };
 const PAGE = 20;
-const sorted = board => Object.values(profiles).filter(BOARDS[board].has).sort(BOARDS[board].cmp);
+const sorted = board => [...profiles.values()].filter(BOARDS[board].has).sort(BOARDS[board].cmp);
 
 // Una página de una tabla. q filtra por nombre (el puesto es el de la tabla completa).
 // online: Set de ids conectados ahora mismo.
@@ -153,8 +232,11 @@ function publicUser(id, online = new Set()) {
 
 // Puesto en el ranking de clasificatoria (1 = primero) o null si no ha jugado
 function rankOf(p) {
-  const i = p.ranked > 0 ? sorted('ranked').indexOf(p) : -1;
-  return i < 0 ? null : i + 1;
+  const { has, cmp } = BOARDS.ranked;
+  if (!has(p)) return null;
+  let rank = 1;
+  for (const q of profiles.values()) if (has(q) && cmp(q, p) < 0) rank++;
+  return rank;
 }
 
-module.exports = { get, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };
+module.exports = { get, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };

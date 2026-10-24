@@ -50,7 +50,8 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
 - **Ladder**: rankings de clasificatoria (ELO), Torre (mejor racha) y Pokédex, con buscador, quién está en línea
   y la ficha pública de cada entrenador.
 
-Los perfiles se guardan en `data/profiles.json`; cada navegador recuerda su token.
+Los perfiles se guardan en `data/arena.db` (SQLite; un `data/profiles.json` antiguo se importa solo al arrancar);
+cada navegador recuerda su token.
 
 ## Cuentas, perfil y temporadas
 
@@ -66,15 +67,17 @@ Los perfiles se guardan en `data/profiles.json`; cada navegador recuerda su toke
 
 ## Publicar
 
-```bash
-PORT=8080 PROFILES_FILE=/ruta/persistente/profiles.json npm start
-```
+Va en un servidor de **Hetzner** (Ubuntu 24.04) con Caddy delante para el HTTPS. Cada push a `main` pasa las
+pruebas y se despliega solo con GitHub Actions (`.github/workflows/ci.yml`). Cómo preparar el servidor la primera
+vez, el dominio, las copias de seguridad y cómo volver a una versión anterior: [deploy/README.md](deploy/README.md).
 
-- Hace falta un **Node con proceso persistente** (WebSocket): Render, Railway, Fly.io, un VPS… no sirve un
-  hosting estático ni serverless.
-- `PROFILES_FILE` debe estar en un **disco persistente** (volumen); si no, cada despliegue borra las partidas.
-- Detrás de HTTPS el cliente usa `wss://` solo. `GET /healthz` devuelve `{ ok, version, players }` para la
-  comprobación de vida del hosting.
+- Hace falta un **Node con proceso persistente** (WebSocket): no sirve un hosting estático ni serverless.
+- Los perfiles van en SQLite (`DB_FILE`, por defecto `data/arena.db`), que debe estar en un **disco persistente**.
+- Al desplegar, el servidor recibe `SIGTERM`: deja de aceptar colas y combates nuevos, espera a que acaben los que
+  están en curso (como mucho 5 min) y guarda los perfiles antes de salir. El hosting tiene que dar ese margen
+  (systemd: `TimeoutStopSec=330`). Al volver a conectar, el cliente ve la versión nueva y se recarga solo en
+  cuanto el jugador está en los menús.
+- Detrás de HTTPS el cliente usa `wss://` solo. `GET /healthz` devuelve `{ ok, version, players }`.
 - No definas `ARENA_DEV` en producción (activa el gancho de desarrollo que regala dinero y Pokémon).
 
 ## Arquitectura
@@ -82,18 +85,11 @@ PORT=8080 PROFILES_FILE=/ruta/persistente/profiles.json npm start
 - **Servidor autoritativo** (Node + `ws`, 30 ticks/s): `server/battle.js` simula el combate,
   `server/ai.js` la IA (usa la misma entrada que un jugador), `server/story.js` la historia,
   `server/tower.js` la Torre Batalla, `server/index.js` conexiones, colas, draft y ELO, `server/store.js` los
-  perfiles y la ladder.
+  perfiles (SQLite, solo se escribe lo que cambia) y la ladder.
 - **Datos y reglas compartidos**: `public/data.js` (tipos, 62 movimientos, 78 Pokémon, mapas, rutas,
   gimnasios, tienda) y `public/shared.js` (movimiento con colisiones, estadísticas por nivel).
 - **Cliente** (`public/js/`): predicción del propio movimiento con reconciliación e interpolación del
   rival; Three.js con sombras, bloom y partículas; sprites como billboards con sombra de silueta.
-
-## Publicar
-
-Al desplegar, el servidor recibe `SIGTERM`: deja de aceptar colas y combates nuevos, espera a que acaben los
-que están en curso (como mucho 5 min) y guarda los perfiles antes de salir. El hosting tiene que dar ese margen
-antes de matar el proceso (systemd: `TimeoutStopSec=330`; Docker: `--stop-timeout 330`). Al volver a conectar,
-el cliente ve la versión nueva y se recarga solo en cuanto el jugador está en los menús.
 
 ## Idiomas
 

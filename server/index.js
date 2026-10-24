@@ -257,13 +257,15 @@ wss.on('connection', ws => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
-    try { handle(c, msg); } catch (e) { console.error('Error con el mensaje', msg.t, e); }
+    const fail = e => console.error('Error con el mensaje', msg.t, e);
+    try { Promise.resolve(handle(c, msg)).catch(fail); } catch (e) { fail(e); }
   });
   ws.on('close', () => {
     clients.delete(c);
     leaveQueue(c);
     if (c.draft) cancelDraft(c.draft, c);
     if (c.battle) c.battle.leave(c.battle.sides[c.side], true);
+    if (c.profile) store.release(c.profile);
   });
 });
 
@@ -272,7 +274,8 @@ function handle(c, msg) {
   if (msg.t === 'hello') {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
-    c.profile = store.get(typeof msg.token === 'string' ? msg.token : null, name);
+    if (busy(c) || c.authing) return;
+    setProfile(c, store.get(typeof msg.token === 'string' ? msg.token : null, name));
     return sendProfile(c);
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
@@ -308,10 +311,11 @@ function handle(c, msg) {
   }
   if (msg.t === 'passwd') {
     if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
-    const err = store.changePassword(c.profile, msg.old, msg.pass);
-    if (err) return send(c, { t: 'autherr', msg: err });
-    send(c, { t: 'authok', msg: 'Contraseña cambiada' });
-    return sendProfile(c);
+    return store.changePassword(c.profile, msg.old, msg.pass).then(err => {
+      if (err) return send(c, { t: 'autherr', msg: err });
+      send(c, { t: 'authok', msg: 'Contraseña cambiada' });
+      sendProfile(c);
+    });
   }
   if (msg.t === 'claim' || msg.t === 'look') {
     const err = msg.t === 'claim' ? rewards.claim(c.profile, String(msg.league)) : rewards.setLook(c.profile, msg);
@@ -366,20 +370,29 @@ function tooManyTries(c) {
   return c.authTries.length > 8;
 }
 
-function auth(c, msg) {
-  if (busy(c)) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
+// La conexión pasa a usar otro perfil: el anterior se suelta (se guarda y deja de vigilarse)
+function setProfile(c, p) {
+  if (c.profile && c.profile !== p) store.release(c.profile);
+  c.profile = p;
+}
+
+// El hash de la contraseña es asíncrono: mientras se calcula no se acepta otro login ni nada que
+// cambie el perfil de la conexión; si se ha desconectado entretanto, se suelta el perfil.
+async function auth(c, msg) {
   if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
+  if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   const user = typeof msg.user === 'string' ? msg.user.trim() : '';
-  if (msg.t === 'login') {
-    const p = store.login(user, msg.pass);
-    if (!p) return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
-    c.profile = p;
-  } else {
-    // Registrar el perfil actual (invitado) o, desde la portada, uno nuevo
-    const r = store.register(c.profile, user, msg.pass);
-    if (r.err) return send(c, { t: 'autherr', msg: r.err });
-    c.profile = r.p;
-  }
+  c.authing = true;
+  let r;
+  try {
+    r = msg.t === 'login' ? { p: await store.login(user, msg.pass) } : await store.register(c.profile, user, msg.pass);
+  } finally { c.authing = false; }
+  if (r.err) return send(c, { t: 'autherr', msg: r.err });
+  if (!r.p) return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
+  if (!clients.has(c)) return store.release(r.p);
+  // Registrar el perfil actual (invitado) lo deja igual; entrar o registrar desde la portada lo cambia
+  if (r.p !== c.profile) setProfile(c, r.p);
+  else if (msg.t === 'login') store.release(r.p);   // ya lo tenía: que no cuente dos veces
   send(c, { t: 'authok', msg: msg.t === 'login' ? `¡Hola de nuevo, ${c.profile.name}!` : 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' });
   sendProfile(c);
 }
