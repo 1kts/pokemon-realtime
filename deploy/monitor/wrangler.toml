@@ -2,7 +2,7 @@
 name = "pokearenas-vigilante"
 main = "worker.js"
 compatibility_date = "2026-10-01"
-workers_dev = true
+workers_dev = false   # sin dirección pública: solo la tarea programada
 
 [triggers]
 crons = ["* * * * *"]   # cada minuto
@@ -14,4 +14,4 @@ URL = "https://pokearenas.com/healthz"
 # Estado (caído o no): se crea con `wrangler kv namespace create STATE` y su id va aquí
 [[kv_namespaces]]
 binding = "STATE"
-id = "PENDIENTE"
+id = "6adb11d75faa4a34b0c679f39959a4c1"
