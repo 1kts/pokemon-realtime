@@ -1,15 +1,16 @@
 // Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
-// clasificatoria (cola, draft, ranking), práctica y resultados. La portada, el perfil,
-// las recompensas y las novedades están en account.js.
+// clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
+// la portada, el perfil, las recompensas y las novedades en account.js.
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
-import { REGION_ART, regionMapImage } from './regionmap.js';
+import { REGION_ART, regionMapImage, probeRealMap, realMapLayout } from './regionmap.js';
+import { towerViews } from './tower.js';
 import { accountViews } from './account.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
-const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
-const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
+export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
+export const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
@@ -40,7 +41,7 @@ export class UI {
       this.show('menu');
       // Primera vez en esta versión: enseñar las novedades
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'profile'].includes(this.view)) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'tower', 'profile'].includes(this.view)) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -82,6 +83,7 @@ export class UI {
       b.onclick = () => this.openFrom(view);
       nav.append(b);
     }
+    if (this.view !== 'ladder') { const b = el('button', '', 'Ladder'); b.onclick = () => this.openLadder(); nav.append(b); }
     if (this.view === 'menu') nav.append(this.newsButton());
     bar.append(nav);
     const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`);
@@ -113,6 +115,9 @@ export class UI {
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D${ready ? ` · <em class="ready">¡${ready} premio${ready > 1 ? 's' : ''} por reclamar!</em>` : ''}`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
+    const tw = p.tower;
+    card('Torre Batalla', tw.team ? `Racha en curso: ${tw.streak} · bloque ${tw.block}` : `Combates seguidos a Nv.50 · récord ${tw.best}`, 'tower', 248, () => this.show('tower'));
+    card('Ladder', 'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador', 'ladder', 448, () => this.openLadder());
     top.append(grid, this.profilePanel(lead));
     wrap.append(top, this.howTo(), this.footer());
     this.root.append(wrap);
@@ -136,7 +141,8 @@ export class UI {
       <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
       <div class="stat"><small>Medallas</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
       <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
-      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>`));
+      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>
+      <div class="stat"><small>Torre: récord</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">racha ${p.tower.streak}</small>` : ''}</b></div>`));
     box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
     return box;
   }
@@ -176,12 +182,16 @@ export class UI {
     wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
-    const art = REGION_ART[region];
-    regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
+    // Mapa real si está generado (tools/fetch-maps.js); si no, el de tiles CC0
+    const real = realMapLayout(region);
+    if (real === undefined) probeRealMap(region).then(ok => { if (ok && this.view === 'story' && this.region === region) this.show('story'); });
+    const layout = real || { cities: REGION_ART[region].cities, pos: n => [n.x, n.y] };
+    if (real) { map.style.backgroundImage = `url(${real.src})`; map.classList.add('ready', 'real'); }
+    else regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
-    const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
+    const cityAt = n => { const [nx, ny] = layout.pos(n); return layout.cities.find(([, x, y]) => Math.hypot(x - nx, y - ny) < 4); };
     const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
-    for (const city of art.cities) {
+    for (const city of layout.cities) {
       if (leaderCities.has(city)) continue;
       const [name, x, y] = city;
       const c = el('div', 'city', `<span>${name}</span>`);
@@ -199,7 +209,8 @@ export class UI {
       const unlocked = isLeader ? n.index <= prog : n.req <= prog;
       const done = isLeader && n.index < prog;
       const b = el('button', `node ${isLeader ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isLeader && n.index === prog ? ' next' : ''}`);
-      b.style.left = n.x + '%'; b.style.top = n.y + '%';
+      const [px, py] = layout.pos(n);
+      b.style.left = px + '%'; b.style.top = py + '%';
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
@@ -701,6 +712,7 @@ export class UI {
       }
       box.append(list);
     }
+    if (r.tower) this.towerResults(box, r);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
     if (r.promoted) box.append(el('div', 'promoted', `<i class="sw frame-${Data.RANKED_REWARDS[r.promoted].frame}"></i><p>¡Has subido a <b>${r.promoted}</b>! Reclama tu premio en Clasificatoria.</p>`));
     if (r.firstWin) box.append(el('p', 'small', `Incluye ${coins(Data.RANKED_PAY.firstWin)} extra por la primera victoria del día.`));
@@ -708,12 +720,17 @@ export class UI {
     const acts = el('div', 'acts');
     const back = el('button', 'primary', 'Continuar');
     const lm = this.lastMode;
-    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : 'menu');
+    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? 'Otra vez' : 'Seguir explorando');
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
       acts.append(again);
+    }
+    if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
+      const next = el('button', '', `Combate ${r.tower.streak + 1}`);
+      next.onclick = () => this.towerBattle();
+      acts.append(next);
     }
     if (lm === 'ranked' || lm === 'casual') {
       const again = el('button', '', 'Buscar otra');
@@ -725,4 +742,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, accountViews);
+Object.assign(UI.prototype, towerViews, accountViews);

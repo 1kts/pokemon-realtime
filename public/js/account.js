@@ -120,7 +120,7 @@ export const accountViews = {
 
   footer() {
     const f = el('div', 'footer');
-    const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="dot"></i>' : ''} · Novedades`);
+    const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · Novedades`);
     v.onclick = () => this.patchNotes();
     const legal = el('button', 'link', 'Créditos y aviso legal');
     legal.onclick = () => this.legal();
@@ -133,7 +133,7 @@ export const accountViews = {
 
   patchNotes() {
     storage.set(SEEN_KEY, VERSION);
-    this.root.querySelectorAll('.dot').forEach(d => d.remove());
+    document.querySelectorAll('.ndot.news').forEach(d => d.remove());
     modal('notes', (box, close) => {
       box.append(el('h3', '', 'Novedades'));
       const list = el('div', 'notes-list scroll');
@@ -228,14 +228,14 @@ export const accountViews = {
     const b = el('button', 'me-chip');
     b.append(this.avatar(30));
     b.append(el('span', '', escapeHtml(p.name)));
-    if (this.claimable().length || !p.account) b.append(el('i', 'dot'));
+    if (this.claimable().length || !p.account) b.append(el('i', 'ndot'));
     b.title = p.account ? `Perfil de ${p.account.user}` : 'Perfil (invitado: crea una cuenta para no perder tu partida)';
     b.onclick = () => this.show('profile');
     return b;
   },
 
   newsButton() {
-    const b = el('button', '', 'Novedades' + (this.hasNews() ? ' <i class="dot"></i>' : ''));
+    const b = el('button', '', 'Novedades' + (this.hasNews() ? ' <i class="ndot news"></i>' : ''));
     b.onclick = () => this.patchNotes();
     return b;
   },
@@ -464,11 +464,15 @@ export const accountViews = {
     if (!this.board.length) { board.append(el('p', 'small', 'Todavía nadie ha jugado una clasificatoria. ¡Sé el primero!')); return board; }
     const ol = el('ol');
     this.board.forEach((b, i) => {
-      const li = el('li', (b.name === p.name && this.rank === i + 1 ? 'me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
+      const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
+      li.onclick = () => this.userModal(b.id);
       li.innerHTML = `<span class="pos">${i + 1}</span><span class="who"><i class="sw frame-${b.frame || 'none'}"></i><b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(b.title)}</small>` : ''}</span><span class="pts">${b.elo}<small>${Data.leagueOf(b.elo)} · ${b.wins}V ${b.losses}D</small></span>`;
       ol.append(li);
     });
     board.append(ol);
+    const all = el('button', '', 'Ver la ladder completa');
+    all.onclick = () => { this.ladderBoard = 'ranked'; this.openLadder(); };
+    board.append(all);
     if (this.rank && this.rank > this.board.length) board.append(el('p', 'my-rank', `Tú: <b>#${this.rank}</b> · ${p.elo} ELO`));
     else if (!this.rank) board.append(el('p', 'small', 'Juega una clasificatoria para entrar en el ranking.'));
     return board;

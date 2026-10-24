@@ -11,6 +11,10 @@ npm install
 npm start          # http://localhost:3000
 ```
 
+Opcional: `node tools/fetch-maps.js` descarga el mapa del Pokégear de HeartGold/SoulSilver (del proyecto
+pret/pokeheartgold) y lo deja en `public/maps/`. Ese mapa es arte de Nintendo y no está en el repositorio;
+sin él, la historia usa un mapa de tiles con licencia CC0.
+
 Para jugar online con alguien, abrid los dos la misma dirección (misma red o servidor público) y buscad
 partida a la vez. Para probarlo solo, abre dos pestañas.
 
@@ -42,6 +46,13 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
 - **Clasificatoria**: cola por ELO, draft (cada uno veta 1 y elige 3 de 20), todos a nivel 50, ligas de
   Bronce a Maestro y ranking.
 - **Partida rápida**: online sin veto ni ELO. **Práctica**: contra la IA con 4 dificultades.
+- **Torre Batalla**: combates seguidos contra la IA con 3 Pokémon tuyos (de cualquier región, sin legendarios)
+  o de alquiler, todos a nivel 50. Cada 7 victorias sube el bloque (IA más lista, rivales más fuertes) y cada 21
+  combates espera el Cerebro de la Frontera. Se ve el siguiente rival en silueta y entre combates se puede reordenar
+  el equipo. Perder acaba la racha; retirarse la guarda. Premios en dinero, Caramelos Raros, vitaminas y símbolos
+  (sin experiencia: no salta el tope de nivel de la historia).
+- **Ladder**: rankings de clasificatoria (ELO), Torre (mejor racha) y Pokédex, con buscador, quién está en línea
+  y la ficha pública de cada entrenador.
 
 Los perfiles se guardan en `data/profiles.json`; cada navegador recuerda su token.
 
@@ -74,7 +85,8 @@ PORT=8080 PROFILES_FILE=/ruta/persistente/profiles.json npm start
 
 - **Servidor autoritativo** (Node + `ws`, 30 ticks/s): `server/battle.js` simula el combate,
   `server/ai.js` la IA (usa la misma entrada que un jugador), `server/story.js` la historia,
-  `server/index.js` conexiones, colas, draft y ELO, `server/store.js` los perfiles.
+  `server/tower.js` la Torre Batalla, `server/index.js` conexiones, colas, draft y ELO, `server/store.js` los
+  perfiles y la ladder.
 - **Datos y reglas compartidos**: `public/data.js` (tipos, 62 movimientos, 78 Pokémon, mapas, rutas,
   gimnasios, tienda) y `public/shared.js` (movimiento con colisiones, estadísticas por nivel).
 - **Cliente** (`public/js/`): predicción del propio movimiento con reconciliación e interpolación del

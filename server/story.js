@@ -20,6 +20,8 @@ function addMon(p, dex, level, extra = {}) {
 }
 
 const monByUid = (p, uid) => p.mons.find(m => m.uid === uid);
+// En el equipo de una racha de la Torre Batalla en curso (ver tower.js)
+const inTower = (p, uid) => !!(p.tower && p.tower.team && p.tower.team.some(e => e.uid === uid));
 // Perfiles anteriores a los movimientos por nivel: darles los que tocan por su nivel
 function migrate(p) {
   for (const m of p.mons) {
@@ -152,12 +154,14 @@ function action(p, msg) {
     mon.moves = list;
   } else if (a === 'sell') {
     const mon = monByUid(p, msg.uid);
+    if (mon && inTower(p, mon.uid)) return 'Está en tu equipo de la Torre Batalla: retírate antes';
     if (!mon || p.mons.length <= 1) return 'No puedes vender tu único Pokémon';
     if (regionMons(p, mon.region).length <= 1) return `Es tu único Pokémon de ${D.REGIONS[mon.region].name}`;
     p.coins += D.sellPrice(mon);
     removeMon(p, mon);
   } else if (a === 'release') {
     const mon = monByUid(p, msg.uid);
+    if (mon && inTower(p, mon.uid)) return 'Está en tu equipo de la Torre Batalla: retírate antes';
     if (!mon || regionMons(p, mon.region).length <= 1) return 'No puedes liberarlo';
     removeMon(p, mon);
   } else return 'Acción desconocida';
