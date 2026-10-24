@@ -122,7 +122,6 @@ export class UI {
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
-    if (p.mons.length) card('Mis Pokémon', `${p.mons.length} Pokémon · equipo, fichas, movimientos, vitaminas y venta`, 'mons', lead ? lead.dex : 25, () => this.openFrom('team'));
     top.append(grid, this.profilePanel(lead));
     wrap.append(top, this.howTo());
     this.root.append(wrap);
