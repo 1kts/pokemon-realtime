@@ -6,11 +6,14 @@ import { escapeHtml, describeMove } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { accountViews } from './account.js';
+import { t, locale } from './i18n.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
-export const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
+export const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
+export const lv = n => t('Nv.{n}', { n });
+export const wl = (w, l) => t('{w}V {l}D', { w, l });
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 // Regiones que llegarán más adelante: se enseñan con candado en la barra de región
@@ -76,20 +79,20 @@ export class UI {
   topbar(title, back) {
     const p = this.profile;
     const bar = el('div', 'topbar');
-    if (back) { const b = el('button', 'back', '← Volver'); b.onclick = () => this.show(back); bar.append(b); }
+    if (back) { const b = el('button', 'back', t('← Volver')); b.onclick = () => this.show(back); bar.append(b); }
     bar.append(el('h2', '', title));
     // Accesos fijos a Mis Pokémon y Tienda desde cualquier pantalla fuera de combate
     const nav = el('div', 'tools nav');
-    for (const [view, label] of [['team', 'Mis Pokémon'], ['shop', 'Tienda']]) {
+    for (const [view, label] of [['team', t('Mis Pokémon')], ['shop', t('Tienda')]]) {
       if (this.view === view || !p.mons.length) continue;
       const b = el('button', '', label);
       b.onclick = () => this.openFrom(view);
       nav.append(b);
     }
-    if (this.view !== 'ladder') { const b = el('button', '', 'Ladder'); b.onclick = () => this.openLadder(); nav.append(b); }
+    if (this.view !== 'ladder') { const b = el('button', '', t('Ladder')); b.onclick = () => this.openLadder(); nav.append(b); }
     if (this.view === 'menu') nav.append(this.newsButton());
     bar.append(nav);
-    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`);
+    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${t(p.league)} · ${p.elo}</span>`);
     if (this.view !== 'profile') stats.append(this.profileChip());
     bar.append(stats);
     return bar;
@@ -99,7 +102,7 @@ export class UI {
   view_menu() {
     const p = this.profile;
     const wrap = el('div', 'menu');
-    wrap.append(this.topbar(`¡Hola, ${escapeHtml(p.name)}!`));
+    wrap.append(this.topbar(t('¡Hola, {name}!', { name: escapeHtml(p.name) })));
     const top = el('div', 'menu-top');
     const grid = el('div', 'menu-grid');
     const card = (title, desc, cls, art, onClick) => {
@@ -113,14 +116,14 @@ export class UI {
     const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0] || null;
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
-    card('Historia', p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y viaja por Kanto y Johto', 'story', lead ? lead.dex : 25, () => this.show('story'));
+    card(t('Historia'), p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story', lead ? lead.dex : 25, () => this.show('story'));
     const ready = this.claimable().length;
-    card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D${ready ? ` · <em class="ready">¡${ready} premio${ready > 1 ? 's' : ''} por reclamar!</em>` : ''}`, 'ranked', 149, () => this.show('online'));
-    card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
-    card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
+    card(t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
+    card(t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
+    card(t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     const tw = p.tower;
-    card('Torre Batalla', tw.team ? `Racha en curso: ${tw.streak} · bloque ${tw.block}` : `Combates seguidos a Nv.50 · récord ${tw.best}`, 'tower', 248, () => this.show('tower'));
-    card('Ladder', 'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador', 'ladder', 448, () => this.openLadder());
+    card(t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
+    card(t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     top.append(grid, this.profilePanel(lead));
     wrap.append(top, this.howTo(), this.footer());
     this.root.append(wrap);
@@ -131,44 +134,45 @@ export class UI {
     const total = Object.keys(SPECIES).length;
     const box = el('div', 'panel profile');
     const who = el('button', 'who');
-    who.title = 'Ver perfil';
+    who.title = t('Ver perfil');
     who.onclick = () => this.show('profile');
-    who.append(this.avatar(84, true), el('div', '', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(p.title)}</span> ` : ''}<span class="elo">${p.league} · ${p.elo}</span>`));
+    who.append(this.avatar(84, true), el('div', '', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(t(p.title))}</span> ` : ''}<span class="elo">${t(p.league)} · ${p.elo}</span>`));
     box.append(who);
     if (!p.account) {
-      const reg = el('button', 'guest-cta', '<b>Juegas como invitado</b><small>Crea una cuenta para no perder tu partida</small>');
+      const reg = el('button', 'guest-cta', `<b>${t('Juegas como invitado')}</b><small>${t('Crea una cuenta para no perder tu partida')}</small>`);
       reg.onclick = () => this.show('profile');
       box.append(reg);
     }
     box.append(el('div', 'rows', `
-      <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
-      <div class="stat"><small>Medallas</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
+      <div class="stat"><small>${t('Dinero')}</small><b>${coins(p.coins)}</b></div>
+      <div class="stat"><small>${t('Medallas')}</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
       <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
-      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>
-      <div class="stat"><small>Torre: récord</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">racha ${p.tower.streak}</small>` : ''}</b></div>`));
+      <div class="stat"><small>${t('Clasificatoria')}</small><b>${wl(p.wins, p.losses)}</b></div>
+      <div class="stat"><small>${t('Torre: récord')}</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">${t('racha {n}', { n: p.tower.streak })}</small>` : ''}</b></div>`));
     box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
     return box;
   }
 
   howTo() {
     const d = el('details', 'howto');
-    d.innerHTML = `<summary>Cómo se juega</summary>
+    const li = items => items.map(x => `<li>${x}</li>`).join('');
+    d.innerHTML = `<summary>${t('Cómo se juega')}</summary>
       <div class="cols">
-      <div><h4>Controles</h4><ul>
-        <li><kbd>WASD</kbd> moverte · <kbd>Ratón</kbd> apuntar</li>
-        <li><kbd>Clic</kbd> <kbd>Clic dcho</kbd> <kbd>Q</kbd> <kbd>E</kbd> los 4 movimientos</li>
-        <li><kbd>Espacio</kbd> Protección · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> cambiar de Pokémon</li>
-        <li><kbd>F</kbd> lanzar Poké Ball · <kbd>R</kbd> cambiar de Ball (salvajes) · <kbd>Esc</kbd> rendirse</li></ul></div>
-      <div><h4>Combate</h4><ul>
-        <li>Cada ataque tiene <b>preparación</b> (se ve en el suelo: ¡esquívalo!) y <b>recuperación</b> (eres vulnerable).</li>
-        <li><b>Protección</b> bloquea el 80 %. Si el golpe llega en sus primeros ${Math.round(Data.PROTECT.perfect * 1000)} ms haces <b>parry</b>: devuelves el proyectil o aturdes al atacante.</li>
-        <li>Los ataques fuertes gastan <b>energía</b>; se recarga sola y al golpear.</li>
-        <li><b>Cambio perfecto</b>: si el que entra recibe un ataque de un tipo que resiste, no le hace nada y ganas energía.</li></ul></div>
-      <div><h4>Terreno</h4><ul>
-        <li>En la <b>hierba alta</b> te escondes si no atacas. El <b>vapor</b> también oculta.</li>
-        <li>El fuego <b>quema la hierba</b> y se propaga. Fuego + agua = <b>vapor</b>.</li>
-        <li>Un ataque eléctrico en un charco <b>electrocuta</b> a quien esté en el agua. Mojado = más daño eléctrico y de hielo.</li>
-        <li>A los 2 min, <b>muerte súbita</b>; a los 3 min gana quien tenga más PS.</li></ul></div>
+      <div><h4>${t('Controles')}</h4><ul>${li([
+        t('<kbd>WASD</kbd> moverte · <kbd>Ratón</kbd> apuntar'),
+        t('<kbd>Clic</kbd> <kbd>Clic dcho</kbd> <kbd>Q</kbd> <kbd>E</kbd> los 4 movimientos'),
+        t('<kbd>Espacio</kbd> Protección · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> cambiar de Pokémon'),
+        t('<kbd>F</kbd> lanzar Poké Ball · <kbd>R</kbd> cambiar de Ball (salvajes) · <kbd>Esc</kbd> rendirse')])}</ul></div>
+      <div><h4>${t('Combate')}</h4><ul>${li([
+        t('Cada ataque tiene <b>preparación</b> (se ve en el suelo: ¡esquívalo!) y <b>recuperación</b> (eres vulnerable).'),
+        t('<b>Protección</b> bloquea el 80 %. Si el golpe llega en sus primeros {ms} ms haces <b>parry</b>: devuelves el proyectil o aturdes al atacante.', { ms: Math.round(Data.PROTECT.perfect * 1000) }),
+        t('Los ataques fuertes gastan <b>energía</b>; se recarga sola y al golpear.'),
+        t('<b>Cambio perfecto</b>: si el que entra recibe un ataque de un tipo que resiste, no le hace nada y ganas energía.')])}</ul></div>
+      <div><h4>${t('Terreno')}</h4><ul>${li([
+        t('En la <b>hierba alta</b> te escondes si no atacas. El <b>vapor</b> también oculta.'),
+        t('El fuego <b>quema la hierba</b> y se propaga. Fuego + agua = <b>vapor</b>.'),
+        t('Un ataque eléctrico en un charco <b>electrocuta</b> a quien esté en el agua. Mojado = más daño eléctrico y de hielo.'),
+        t('A los 2 min, <b>muerte súbita</b>; a los 3 min gana quien tenga más PS.')])}</ul></div>
       </div>`;
     return d;
   }
@@ -231,29 +235,29 @@ export class UI {
     const p = this.profile;
     const R = Data.REGIONS[n.region];
     if (n.kind !== 'route') {
-      const title = n.kind === 'gym' ? n.name : n.kind === 'champion' ? `Campeón de ${R.name}` : `Alto Mando de ${R.name}`;
-      box.append(el('h3', '', title), el('p', 'leader', `${n.kind === 'gym' ? 'Líder' : n.kind === 'champion' ? 'Campeón' : 'Miembro'}: <b>${n.leader}</b> · tipo <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span>`));
+      const title = n.kind === 'gym' ? n.name : n.kind === 'champion' ? t('Campeón de {r}', { r: R.name }) : t('Alto Mando de {r}', { r: R.name });
+      box.append(el('h3', '', title), el('p', 'leader', `${n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Miembro')}: <b>${n.leader}</b> · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span>`));
       const used = Data.leaderTeam(n, p.starter || (p.mons[0] && p.mons[0].dex));
       const team = el('div', 'mini-team');
-      for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>Nv.${lvl}`)); team.append(c); }
+      for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }
       box.append(team);
-      if (n.team.length > 3) box.append(el('p', 'small', `Equipo real completo: ${n.team.map(([d, l]) => `${d === 'rival' ? 'tu rival' : SPECIES[d].name} ${l}`).join(', ')}. En combate saca sus 3 más fuertes.`));
-      box.append(el('p', 'small', `Dificultad de la IA: ${Math.round(n.ai * 100)} % · Premio ${coins(n.reward)}${n.badge ? ` y ${n.badge}` : ''} · la primera vez también Caramelo Raro y una vitamina`));
-      if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? 'Consigue las 8 medallas de la región y vence a los anteriores.' : 'Vence antes al anterior.'));
+      if (n.team.length > 3) box.append(el('p', 'small', t('Equipo real completo: {list}. En combate saca sus 3 más fuertes.', { list: n.team.map(([d, l]) => `${d === 'rival' ? t('tu rival') : SPECIES[d].name} ${l}`).join(', ') })));
+      box.append(el('p', 'small', t('Dificultad de la IA: {ai} % · Premio {prize} · la primera vez también Caramelo Raro y una vitamina', { ai: Math.round(n.ai * 100), prize: coins(n.reward) + (n.badge ? t(' y {b}', { b: n.badge }) : '') })));
+      if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? t('Consigue las 8 medallas de la región y vence a los anteriores.') : t('Vence antes al anterior.')));
       else {
-        const go = el('button', 'primary', done ? 'Revancha' : '¡Desafiar!');
+        const go = el('button', 'primary', done ? t('Revancha') : t('¡Desafiar!'));
         go.onclick = () => this.startStory('gym', n.id);
         box.append(go);
       }
     } else {
       const w = Data.routeWild(n);
-      box.append(el('h3', '', n.name), el('p', 'small', `${R.name} · Nv.${n.lvl[0]}-${n.lvl[1]} · encuentros reales del juego`));
+      box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
       const list = el('div', 'mini-team');
       const total = w.list.reduce((a, x) => a + x.weight, 0) / (1 - w.rare.chance);
       for (const { dex, weight, min, max } of w.list) {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
         c.append(portrait(dex, 56));
-        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.max(1, Math.round(weight / total * 100))} % · Nv.${min === max ? min : min + '-' + max}`));
+        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.max(1, Math.round(weight / total * 100))} % · ${lv(min === max ? min : min + '-' + max)}`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
         list.append(c);
       }
@@ -261,22 +265,22 @@ export class UI {
       const known = p.caught.includes(w.rare.dex);
       const rare = el('div', 'mini rare' + (known ? ' caught' : ''));
       rare.append(portrait(w.rare.dex, 56, { silhouette: !known }));
-      rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · Nv.${n.lvl[1] + 3}`));
-      rare.title = 'Pokémon misterioso del día: aparece muy de vez en cuando y cuesta mucho atraparlo';
+      rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · ${lv(n.lvl[1] + 3)}`));
+      rare.title = t('Pokémon misterioso del día: aparece muy de vez en cuando y cuesta mucho atraparlo');
       list.append(rare);
       box.append(list);
       const balls = (p.items.pokeball || 0) + (p.items.superball || 0) + (p.items.ultraball || 0);
-      box.append(el('p', 'small', `Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes ${balls} Balls. Shiny: 1 de ${Math.round(1 / Data.SHINY_RATE)}.`));
-      if (!unlocked) box.append(el('p', 'warn', `Necesitas ${n.req} medallas de ${R.name}.`));
+      box.append(el('p', 'small', t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })));
+      if (!unlocked) box.append(el('p', 'warn', t('Necesitas {n} medallas de {r}.', { n: n.req, r: R.name })));
       else {
-        const go = el('button', 'primary', 'Explorar');
+        const go = el('button', 'primary', t('Explorar'));
         go.onclick = () => this.startStory('route', n.id);
         box.append(go);
       }
     }
-    box.append(el('h4', '', 'Tu equipo'));
+    box.append(el('h4', '', t('Tu equipo')));
     const team = el('div', 'mini-team');
-    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>Nv.${m.level}`)); team.append(c); }
+    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); team.append(c); }
     box.append(team);
   }
 
@@ -288,9 +292,9 @@ export class UI {
   view_starter(region = 'kanto') {
     const R = Data.REGIONS[region];
     const wrap = el('div', 'starter');
-    const bar = this.topbar(`Tu inicial de ${R.name}`, 'menu');
+    const bar = this.topbar(t('Tu inicial de {r}', { r: R.name }), 'menu');
     wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
-    wrap.append(el('p', 'intro', `Cada región es un viaje nuevo: tus Pokémon de otras regiones no vienen contigo. Elige a tu compañero para ${R.name}.`));
+    wrap.append(el('p', 'intro', t('Cada región es un viaje nuevo: tus Pokémon de otras regiones no vienen contigo. Elige a tu compañero para {r}.', { r: R.name })));
     const row = el('div', 'starter-row');
     for (const dex of Data.REGION_STARTERS[region]) {
       const c = el('button', 'starter-card');
@@ -314,16 +318,16 @@ export class UI {
     const tabs = el('div', 'region-tabs');
     for (const rid of Data.REGION_IDS) {
       const done = Math.min(8, Data.progOf(p, rid));
-      const t = el('button', rid === current ? 'sel' : '', `<b>${Data.REGIONS[rid].name}</b><small>${Data.progOf(p, rid) >= Data.leadersOf(rid).length ? '♛ Campeón' : done + '/8 medallas'}</small>`);
-      t.onclick = () => onPick(rid);
-      tabs.append(t);
+      const tab = el('button', rid === current ? 'sel' : '', `<b>${Data.REGIONS[rid].name}</b><small>${Data.progOf(p, rid) >= Data.leadersOf(rid).length ? t('♛ Campeón') : t('{n}/8 medallas', { n: done })}</small>`);
+      tab.onclick = () => onPick(rid);
+      tabs.append(tab);
     }
     for (const name of UPCOMING_REGIONS) {
-      const t = el('button', 'soon', `<b>${LOCK_SVG}${name}</b><small>Próximamente</small>`);
-      t.setAttribute('aria-disabled', 'true');
-      t.title = `${name} llegará en una próxima actualización`;
-      t.onclick = () => this.toast(`${name} todavía no está disponible: ¡llegará pronto!`);
-      tabs.append(t);
+      const tab = el('button', 'soon', `<b>${LOCK_SVG}${name}</b><small>${t('Próximamente')}</small>`);
+      tab.setAttribute('aria-disabled', 'true');
+      tab.title = t('{r} llegará en una próxima actualización', { r: name });
+      tab.onclick = () => this.toast(t('{r} todavía no está disponible: ¡llegará pronto!', { r: name }));
+      tabs.append(tab);
     }
     bar.append(tabs);
     if (withBadges) {
@@ -331,7 +335,7 @@ export class UI {
       const leaders = Data.leadersOf(current);
       bar.append(el('div', 'badges', leaders.slice(0, 8).map((g, i) => `<i class="badge${i < prog ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.badge} · ${g.leader}"></i>`).join('')));
       const next = leaders[prog];
-      bar.append(el('div', 'next-goal', next ? `Siguiente: <b>${next.leader}</b> · ${next.kind === 'gym' ? next.name : next.kind === 'champion' ? 'Campeón' : 'Alto Mando'} <span class="cap">tope Nv.${Data.levelCap(p, current)}</span>` : '♛ ¡Región completada!'));
+      bar.append(el('div', 'next-goal', next ? `${t('Siguiente: <b>{who}</b>', { who: next.leader })} · ${next.kind === 'gym' ? next.name : next.kind === 'champion' ? t('Campeón') : t('Alto Mando')} <span class="cap">${t('tope Nv.{n}', { n: Data.levelCap(p, current) })}</span>` : t('♛ ¡Región completada!')));
     }
     return bar;
   }
@@ -341,14 +345,14 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'teamview');
     const region = this.teamRegion = this.teamRegion || this.region || 'kanto';
-    const bar = this.topbar('Mis Pokémon', this.returnTo || 'menu');
+    const bar = this.topbar(t('Mis Pokémon'), this.returnTo || 'menu');
     wrap.append(bar, this.regionBar(region, rid => { this.teamRegion = rid; this.show('team'); }, false));
     const cap = Data.levelCap(p, region);
     const next = Data.leadersOf(region)[Data.progOf(p, region)];
     const team = (p.teams && p.teams[region]) || [];
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
-    wrap.append(el('p', 'intro', `Pokémon de ${Data.REGIONS[region].name}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha. <span class="cap">Tope de nivel en ${Data.REGIONS[region].name}: <b>${cap}</b>${next && cap < 100 ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
-    if (!mine.length) wrap.append(el('p', 'warn', `Aún no tienes Pokémon en ${Data.REGIONS[region].name}: elige tu inicial en Historia.`));
+    wrap.append(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
+    if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
     const grid = el('div', 'mon-grid scroll');
     const sorted = [...mine].sort((a, b) => (team.includes(b.uid) - team.includes(a.uid)) || b.level - a.level);
     for (const m of sorted) {
@@ -359,27 +363,27 @@ export class UI {
       const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
-      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''}</b> <small>Nv.${m.level}${m.level >= cap ? ' · <span class="cap">tope</span>' : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
+      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
         <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')}</div>
-        ${known.length ? `<small class="newmoves">${known.length} movimiento${known.length > 1 ? 's' : ''} más para elegir</small>` : ''}
-        ${upcoming ? `<small class="moves">Aprende ${MOVES[upcoming[1]].name} al Nv.${upcoming[0]}</small>` : ''}`));
+        ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
+        ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}`));
       const acts = el('div', 'acts');
-      const toggle = el('button', inTeam ? 'on' : '', inTeam ? 'En el equipo' : 'Al equipo');
+      const toggle = el('button', inTeam ? 'on' : '', inTeam ? t('En el equipo') : t('Al equipo'));
       toggle.onclick = () => {
         let next = team.filter(u => u !== m.uid);
-        if (!inTeam) { if (team.length >= 3) return this.toast('El equipo ya tiene 3 Pokémon: saca uno antes', 'bad'); next = [...team, m.uid]; }
-        if (!next.length) return this.toast('El equipo necesita al menos un Pokémon', 'bad');
+        if (!inTeam) { if (team.length >= 3) return this.toast(t('El equipo ya tiene 3 Pokémon: saca uno antes'), 'bad'); next = [...team, m.uid]; }
+        if (!next.length) return this.toast(t('El equipo necesita al menos un Pokémon'), 'bad');
         this.net.send({ t: 'story', a: 'team', uids: next, region });
       };
       acts.append(toggle);
-      const ficha = el('button', '', 'Ficha');
+      const ficha = el('button', '', t('Ficha'));
       ficha.onclick = () => this.statsModal(m);
       acts.append(ficha);
-      const mv = el('button', known.length ? 'evo' : '', 'Movimientos');
+      const mv = el('button', known.length ? 'evo' : '', t('Movimientos'));
       mv.onclick = () => this.moveManager(m);
       acts.append(mv);
       if ((p.items.caramelo || 0) > 0) {
-        const b = el('button', '', `Caramelo Raro (${p.items.caramelo})`);
+        const b = el('button', '', `${SHOP.find(i => i.id === 'caramelo').name} (${p.items.caramelo})`);
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.uid });
         acts.append(b);
       }
@@ -390,14 +394,14 @@ export class UI {
         const have = p.items[stone] || 0;
         const b = el('button', have ? 'evo' : 'evo dim', `${item.name} → ${SPECIES[to].name}`);
         b.disabled = !have;
-        b.title = have ? '' : 'Cómprala en la tienda';
+        b.title = have ? '' : t('Cómprala en la tienda');
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: stone, uid: m.uid });
         acts.append(b);
       }
-      if (evo && !stones.length && typeof evo[1] === 'number') acts.append(el('small', 'evohint', `Evoluciona a ${SPECIES[evo[0]].name} al Nv.${evo[1]}`));
+      if (evo && !stones.length && typeof evo[1] === 'number') acts.append(el('small', 'evohint', t('Evoluciona a {m} al Nv.{n}', { m: SPECIES[evo[0]].name, n: evo[1] })));
       if (mine.length > 1) {
-        const rel = el('button', 'danger', 'Liberar');
-        rel.onclick = () => { if (confirm(`¿Liberar a ${SPECIES[m.dex].name} (Nv.${m.level})? No se puede deshacer.`)) this.net.send({ t: 'story', a: 'release', uid: m.uid }); };
+        const rel = el('button', 'danger', t('Liberar'));
+        rel.onclick = () => { if (confirm(t('¿Liberar a {m} ({lv})? No se puede deshacer.', { m: SPECIES[m.dex].name, lv: lv(m.level) }))) this.net.send({ t: 'story', a: 'release', uid: m.uid }); };
         acts.append(rel);
       }
       card.append(acts);
@@ -419,33 +423,33 @@ export class UI {
     head.append(animatedPortrait(mon.dex, 120, 'Idle', !!mon.shiny));
     const route = mon.met ? Data.NODES[mon.met] || null : null;
     const nat = Data.NATURES[mon.nat] || ['—', null, null];
-    const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (neutra)`;
-    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>Nv.${mon.level}</small></h3><div class="types">${typeChips(mon.dex)}</div>
-      <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ' · <b>legendario</b>' : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · Capturado en ${route.name}` : ''}</p>
-      <p class="small">Naturaleza: ${natTxt}</p>`));
+    const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (${t('neutra')})`;
+    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>${lv(mon.level)}</small></h3><div class="types">${typeChips(mon.dex)}</div>
+      <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ` · <b>${t('legendario')}</b>` : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · ${t('Capturado en {r}', { r: route.name })}` : ''}</p>
+      <p class="small">${t('Naturaleza')}: ${natTxt}</p>`));
     box.append(head);
     // Estadísticas de combate: valor actual, barra, IV, EV y vitaminas
     const rows = el('div', 'stat-rows');
     const total = Data.evTotal(ev);
-    rows.append(el('div', 'small vit-total', `EV: <b>${total}/${Data.EV_TOTAL}</b> en total (máx. ${Data.EV_MAX} por stat; solo con vitaminas: +${Data.EV_VIT} cada una) · IV fijos de nacimiento (0-${Data.IV_MAX})`));
+    rows.append(el('div', 'small vit-total', t('EV: <b>{n}/{total}</b> en total (máx. {max} por stat; solo con vitaminas: +{vit} cada una) · IV fijos de nacimiento (0-{iv})', { n: total, total: Data.EV_TOTAL, max: Data.EV_MAX, vit: Data.EV_VIT, iv: Data.IV_MAX })));
     const bars = [
-      ['hp', 'PS', st.maxHp, 400, `${st.maxHp}`],
-      ['atk', 'Ataque', st.atk, 2, `×${st.atk.toFixed(2)}`],
-      ['def', 'Defensa', st.def, 1.7, `×${st.def.toFixed(2)}`],
-      ['spe', 'Velocidad', sp.spd * st.spdMult, 340, `${Math.round(sp.spd * st.spdMult)} px/s`],
+      ['hp', t('PS'), st.maxHp, 400, `${st.maxHp}`],
+      ['atk', t('Ataque'), st.atk, 2, `×${st.atk.toFixed(2)}`],
+      ['def', t('Defensa'), st.def, 1.7, `×${st.def.toFixed(2)}`],
+      ['spe', t('Velocidad'), sp.spd * st.spdMult, 340, `${Math.round(sp.spd * st.spdMult)} px/s`],
     ];
     const vitItems = SHOP.filter(i => i.vit);
     for (const [key, label, val, max, text] of bars) {
       const row = el('div', 'stat-row');
       const item = vitItems.find(i => i.vit === key);
       const have = p.items[item.id] || 0;
-      const ivq = iv[key] >= 31 ? 'perfecto' : iv[key] >= 26 ? 'muy bueno' : iv[key] >= 16 ? 'bueno' : iv[key] >= 8 ? 'normal' : 'flojo';
+      const ivq = t(iv[key] >= 31 ? 'perfecto' : iv[key] >= 26 ? 'muy bueno' : iv[key] >= 16 ? 'bueno' : iv[key] >= 8 ? 'normal' : 'flojo');
       row.innerHTML = `<span class="sl">${label}</span><div class="sbar"><div style="width:${Math.min(100, val / max * 100)}%"></div></div><b>${text}</b>
         <span class="vdots" title="IV ${iv[key]}/31 (${ivq}) · EV ${ev[key]}/${Data.EV_MAX}">IV <b class="${iv[key] >= 31 ? 'iv-top' : ''}">${iv[key]}</b> · EV <b>${ev[key]}</b></span>`;
       const canUse = have && ev[key] < Data.EV_MAX && total < Data.EV_TOTAL;
       const use = el('button', canUse ? 'evo' : 'dim', `${item.name}${have ? ` (${have})` : ''}`);
       use.disabled = !canUse;
-      use.title = have ? `+${Data.EV_VIT} EV de ${label}` : `Cómpralo en la tienda: ${item.name}`;
+      use.title = have ? t('+{n} EV de {stat}', { n: Data.EV_VIT, stat: label }) : t('Cómpralo en la tienda: {item}', { item: item.name });
       use.onclick = () => { this.net.send({ t: 'story', a: 'use', item: item.id, uid: mon.uid }); back.remove(); this.pendingFicha = mon.uid; };
       row.append(use);
       rows.append(row);
@@ -453,21 +457,21 @@ export class UI {
     box.append(rows);
     // Stats base reales de la especie
     const base = sp.base || [0, 0, 0, 0, 0, 0];
-    const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'];
-    box.append(el('div', 'base-stats', `<small>Stats base de la especie (total ${sp.bst})</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
+    const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
+    box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: sp.bst })}</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
     box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')));
     const evo = sp.evo;
     if (evo) {
       const list = Array.isArray(evo[0]) ? evo : [evo];
-      box.append(el('p', 'small', 'Evoluciona a ' + list.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? 'Nv.' + c : 'Piedra ' + (SHOP.find(i => i.id === c) || { name: c }).name.replace('Piedra ', '')})`).join(', ')));
+      box.append(el('p', 'small', t('Evoluciona a {list}', { list: list.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? lv(c) : (SHOP.find(i => i.id === c) || { name: c }).name})`).join(', ') })));
     }
     const acts = el('div', 'acts');
     const price = Data.sellPrice(mon);
-    const sell = el('button', 'danger', `Vender por ${coins(price)}`);
+    const sell = el('button', 'danger', t('Vender por {price}', { price: coins(price) }));
     sell.disabled = p.mons.filter(x => (x.region || 'kanto') === (mon.region || 'kanto')).length <= 1;
-    sell.onclick = () => { if (confirm(`¿Vender a ${sp.name}${mon.shiny ? ' shiny' : ''} (Nv.${mon.level}) por ${price} ₽? No se puede deshacer.`)) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
-    const close = el('button', 'primary', 'Cerrar');
+    sell.onclick = () => { if (confirm(t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: sp.name + (mon.shiny ? ' shiny' : ''), lv: lv(mon.level), price }))) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
+    const close = el('button', 'primary', t('Cerrar'));
     close.onclick = () => back.remove();
     acts.append(sell, close);
     box.append(acts);
@@ -484,7 +488,7 @@ export class UI {
     const chosen = [...current];
     const back = el('div', 'modal');
     const box = el('div', 'panel modal-box');
-    box.append(el('h3', '', `Movimientos de ${SPECIES[mon.dex].name} <small>Nv.${mon.level}</small>`), el('p', 'small', 'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.'));
+    box.append(el('h3', '', `${t('Movimientos de {m}', { m: SPECIES[mon.dex].name })} <small>${lv(mon.level)}</small>`), el('p', 'small', t('Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.')));
     const list = el('div', 'move-list');
     const render = () => {
       list.innerHTML = '';
@@ -493,22 +497,22 @@ export class UI {
         const i = chosen.indexOf(k);
         const row = el('button', 'move-row' + (i >= 0 ? ' sel' : ''));
         row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-        row.innerHTML = `<span class="slot">${i >= 0 ? ['Clic', 'Dcho', 'Q', 'E'][i] : ''}</span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? 'Nv.' + levels.get(k) : 'aprendido'}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
+        row.innerHTML = `<span class="slot">${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
         row.onclick = () => {
           if (i >= 0) { if (chosen.length > 1) chosen.splice(i, 1); }
           else if (chosen.length < 4) chosen.push(k);
-          else this.toast('Ya lleva 4: quita uno antes', 'bad');
+          else this.toast(t('Ya lleva 4: quita uno antes'), 'bad');
           render();
         };
         list.append(row);
       }
       const upcoming = Data.learnset(mon.dex).filter(([l]) => l > mon.level);
-      if (upcoming.length) list.append(el('p', 'small', 'Próximamente: ' + upcoming.map(([l, k]) => `${MOVES[k].name} (Nv.${l})`).join(' · ')));
+      if (upcoming.length) list.append(el('p', 'small', t('Próximamente: {list}', { list: upcoming.map(([l, k]) => `${MOVES[k].name} (${lv(l)})`).join(' · ') })));
     };
     render();
     const acts = el('div', 'acts');
-    const cancel = el('button', '', 'Cancelar');
-    const save = el('button', 'primary', 'Guardar');
+    const cancel = el('button', '', t('Cancelar'));
+    const save = el('button', 'primary', t('Guardar'));
     cancel.onclick = () => back.remove();
     save.onclick = () => { this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: chosen }); back.remove(); };
     acts.append(cancel, save);
@@ -522,18 +526,18 @@ export class UI {
   view_shop() {
     const p = this.profile;
     const wrap = el('div', 'shop');
-    wrap.append(this.topbar('Tienda', this.returnTo || 'menu'));
+    wrap.append(this.topbar(t('Tienda'), this.returnTo || 'menu'));
     const grid = el('div', 'shop-grid scroll');
     for (const item of SHOP) {
       const locked = (item.req || 0) > p.badges;
       const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
       const icon = item.dex ? portrait(item.dex, 64) : el('i', 'item-icon ' + item.id);
       c.append(icon);
-      c.append(el('div', 'si', `<b>${item.name}</b><small>${item.desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>Tienes: ${p.items[item.id] || 0}</small>`}`));
+      c.append(el('div', 'si', `<b>${item.name}</b><small>${item.desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
       const acts = el('div', 'acts');
-      if (locked) acts.append(el('small', 'warn', `Requiere ${item.req} medallas`));
+      if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
       else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
-        const b = el('button', '', qty === 1 ? 'Comprar' : `×${qty}`);
+        const b = el('button', '', qty === 1 ? t('Comprar') : `×${qty}`);
         b.disabled = p.coins < item.price * qty;
         b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty, region: this.region || 'kanto' });
         acts.append(b);
@@ -549,14 +553,14 @@ export class UI {
   view_online() {
     const p = this.profile;
     const wrap = el('div', 'online');
-    wrap.append(this.topbar('Clasificatoria', 'menu'));
+    wrap.append(this.topbar(t('Clasificatoria'), 'menu'));
     const body = el('div', 'online-body');
     const me = el('div', 'panel');
     const next = LEAGUES.find(l => l[0] > p.elo);
-    me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="league">${p.league}</div><div class="big-elo">${p.elo}</div>
-      <p class="small">${p.wins} victorias · ${p.losses} derrotas${next ? ` · ${next[0] - p.elo} puntos para ${next[1]}` : ''}</p>
-      <p class="small">Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel ${Data.RANKED_LEVEL}.</p>`;
-    const go = el('button', 'primary', 'Buscar partida clasificatoria');
+    me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="league">${t(p.league)}</div><div class="big-elo">${p.elo}</div>
+      <p class="small">${t('{w} victorias · {l} derrotas', { w: p.wins, l: p.losses })}${next ? ` · ${t('{n} puntos para {league}', { n: next[0] - p.elo, league: t(next[1]) })}` : ''}</p>
+      <p class="small">${t('Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.', { n: Data.RANKED_LEVEL })}</p>`;
+    const go = el('button', 'primary', t('Buscar partida clasificatoria'));
     go.onclick = () => { this.lastMode = 'ranked'; this.net.send({ t: 'queue', mode: 'ranked' }); };
     me.append(go);
     const col = el('div', 'online-col');
@@ -568,9 +572,9 @@ export class UI {
 
   view_queue() {
     const box = el('div', 'panel center-panel');
-    const mode = this.queueMode === 'ranked' ? 'clasificatoria' : 'partida rápida';
-    box.innerHTML = `<div class="spinner"></div><h3>Buscando rival para ${mode}…</h3><p class="small qtime">0:00</p><p class="small">Para probar solo, abre otra pestaña y busca partida también.</p>`;
-    const cancel = el('button', '', 'Cancelar');
+    const mode = this.queueMode === 'ranked' ? t('Buscando rival para clasificatoria…') : t('Buscando rival para partida rápida…');
+    box.innerHTML = `<div class="spinner"></div><h3>${mode}</h3><p class="small qtime">0:00</p><p class="small">${t('Para probar solo, abre otra pestaña y busca partida también.')}</p>`;
+    const cancel = el('button', '', t('Cancelar'));
     cancel.onclick = () => this.net.send({ t: 'unqueue' });
     box.append(cancel);
     this.root.append(box);
@@ -591,10 +595,10 @@ export class UI {
     this.root.innerHTML = '';
     const wrap = el('div', 'draft');
     const ban = msg.phase === 'ban';
-    wrap.append(el('div', 'draft-head', `<h2>${ban ? 'Fase de veto' : 'Elige tu equipo'}</h2><p>contra <b>${escapeHtml(msg.foe)}</b>${msg.foeElo ? ` (${msg.foeElo})` : ''} · ${ban ? 'Veta 1 Pokémon: nadie podrá usarlo' : 'Elige 3 Pokémon'}</p><div class="dtimer"></div>`));
+    wrap.append(el('div', 'draft-head', `<h2>${ban ? t('Fase de veto') : t('Elige tu equipo')}</h2><p>${t('contra <b>{foe}</b>', { foe: escapeHtml(msg.foe) })}${msg.foeElo ? ` (${msg.foeElo})` : ''} · ${ban ? t('Veta 1 Pokémon: nadie podrá usarlo') : t('Elige 3 Pokémon')}</p><div class="dtimer"></div>`));
     const grid = el('div', 'pool scroll');
     const chosen = [];
-    const confirm = el('button', 'primary', ban ? 'Vetar' : 'Confirmar equipo');
+    const confirm = el('button', 'primary', ban ? t('Vetar') : t('Confirmar equipo'));
     confirm.disabled = true;
     for (const dex of msg.pool) {
       const banned = msg.bans.includes(dex);
@@ -616,7 +620,7 @@ export class UI {
     confirm.onclick = () => {
       this.net.send(ban ? { t: 'ban', dex: chosen[0] } : { t: 'pick', dexes: chosen });
       confirm.disabled = true;
-      confirm.textContent = 'Esperando al rival…';
+      confirm.textContent = t('Esperando al rival…');
       grid.querySelectorAll('.pool-card').forEach(x => { x.disabled = true; });
     };
     wrap.append(grid, confirm);
@@ -634,11 +638,11 @@ export class UI {
   // ---------- Práctica ----------
   view_practice() {
     const wrap = el('div', 'draft');
-    wrap.append(this.topbar('Práctica contra la IA', 'menu'));
+    wrap.append(this.topbar(t('Práctica contra la IA'), 'menu'));
     const chosen = [];
     let skill = 0.28;
     const grid = el('div', 'pool scroll');
-    const start = el('button', 'primary', 'Empezar');
+    const start = el('button', 'primary', t('Empezar'));
     start.disabled = true;
     for (const dex of RANKED_POOL) {
       const c = el('button', 'pool-card');
@@ -651,14 +655,14 @@ export class UI {
         if (i >= 0) chosen.splice(i, 1); else { if (chosen.length >= 3) chosen.shift(); chosen.push(dex); }
         grid.querySelectorAll('.pool-card').forEach(x => x.classList.toggle('sel', chosen.includes(+x.dataset.dex)));
         start.disabled = !chosen.length;
-        start.textContent = chosen.length ? `Empezar (${chosen.length} Pokémon)` : 'Empezar';
+        start.textContent = chosen.length ? t('Empezar ({n} Pokémon)', { n: chosen.length }) : t('Empezar');
       };
       grid.append(c);
     }
     const diff = el('div', 'diff');
-    diff.append(el('span', '', 'Dificultad:'));
+    diff.append(el('span', '', t('Dificultad:')));
     for (const [name, v] of DIFFICULTIES) {
-      const b = el('button', v === skill ? 'sel' : '', name);
+      const b = el('button', v === skill ? 'sel' : '', t(name));
       b.onclick = () => { skill = v; diff.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
       diff.append(b);
     }
@@ -666,7 +670,7 @@ export class UI {
       this.lastMode = { kind: 'practice', dexes: [...chosen], skill };
       this.net.send({ t: 'practice', dexes: chosen, skill });
     };
-    wrap.append(el('p', 'intro', 'Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.'), grid, diff, start);
+    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, start);
     this.root.append(wrap);
   }
 
@@ -678,7 +682,7 @@ export class UI {
     const r = msg.reward || {};
     const won = msg.winner === msg.you, draw = msg.winner === -1;
     const box = el('div', 'panel results');
-    const title = msg.captured ? '¡Capturado!' : draw ? 'Empate' : won ? '¡Victoria!' : 'Derrota';
+    const title = t(msg.captured ? '¡Capturado!' : draw ? 'Empate' : won ? '¡Victoria!' : 'Derrota');
     if (won || msg.captured) {
       const conf = el('div', 'confetti');
       const colors = ['#ffcb05', '#3b78d8', '#e8403a', '#4fd06a', '#ff9ee0', '#ffffff'];
@@ -696,51 +700,51 @@ export class UI {
     if (msg.captured) {
       const c = el('div', 'caught');
       c.append(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
-      c.append(el('p', '', `¡Has atrapado a <b>${SPECIES[msg.captured.dex].name}</b>${msg.captured.shiny ? ' <i class="shiny-star">✦ ¡SHINY!</i>' : ''} (Nv.${msg.captured.level})!${r.captured && !r.captured.inTeam ? '<br><small>Tu equipo está lleno: lo encontrarás en Equipo.</small>' : ''}`));
+      c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
       box.append(c);
     }
     if (r.badge) {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
-      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>¡Has vencido a <b>${r.badge.leader}</b>!${r.badge.kind === 'gym' ? ` ${r.badge.name} conseguida.` : r.badge.kind === 'champion' ? ' ¡Eres el nuevo Campeón!' : ''}</p>`));
+      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>${t('¡Has vencido a <b>{who}</b>!', { who: r.badge.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: r.badge.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
     }
-    if (r.items) box.append(el('p', 'reward-items', 'Premio: ' + Object.entries(r.items).map(([k, n]) => `${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`).join(' · ')));
+    if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`).join(' · ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
-    if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', `Tope de nivel ${r.cap}: vence al siguiente gimnasio para que sigan subiendo.`));
+    if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', t('Tope de nivel {n}: vence al siguiente gimnasio para que sigan subiendo.', { n: r.cap })));
     if (r.xp && r.xp.length) {
       const list = el('div', 'xp-list');
       for (const x of r.xp) {
         const row = el('div', 'xp-row');
         const pm = this.profile && this.profile.mons.find(m => m.uid === x.uid);
         row.append(portrait(x.dex, 48, { shiny: !!(pm && pm.shiny) }));
-        const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <span class="lvup">Nv.${x.level} ¡sube de nivel!</span>` : `Nv.${x.level}`;
+        const lvl = x.level > x.fromLevel ? `${lv(x.fromLevel)} → <span class="lvup">${lv(x.level)} ${t('¡sube de nivel!')}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
-        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? '<span class="cap">en el tope de nivel</span>' : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}${learned.length ? `<br><span class="lvup">Nuevo movimiento: ${learned.join(', ')}</span> <small>(elígelo en Equipo)</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
+        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<br><span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span> <small>${t('(elígelo en Equipo)')}</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
         list.append(row);
       }
       box.append(list);
     }
     if (r.tower) this.towerResults(box, r);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
-    if (r.promoted) box.append(el('div', 'promoted', `<i class="sw frame-${Data.RANKED_REWARDS[r.promoted].frame}"></i><p>¡Has subido a <b>${r.promoted}</b>! Reclama tu premio en Clasificatoria.</p>`));
-    if (r.firstWin) box.append(el('p', 'small', `Incluye ${coins(Data.RANKED_PAY.firstWin)} extra por la primera victoria del día.`));
-    if (!won && !draw && battle && battle.mode === 'wild') box.append(el('p', 'small', 'Tus Pokémon se recuperan después de cada combate. ¡Inténtalo otra vez!'));
+    if (r.promoted) box.append(el('div', 'promoted', `<i class="sw frame-${Data.RANKED_REWARDS[r.promoted].frame}"></i><p>${t('¡Has subido a <b>{league}</b>! Reclama tu premio en Clasificatoria.', { league: t(r.promoted) })}</p>`));
+    if (r.firstWin) box.append(el('p', 'small', t('Incluye {n} extra por la primera victoria del día.', { n: coins(Data.RANKED_PAY.firstWin) })));
+    if (!won && !draw && battle && battle.mode === 'wild') box.append(el('p', 'small', t('Tus Pokémon se recuperan después de cada combate. ¡Inténtalo otra vez!')));
     const acts = el('div', 'acts');
-    const back = el('button', 'primary', 'Continuar');
+    const back = el('button', 'primary', t('Continuar'));
     const lm = this.lastMode;
     back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
-      const again = el('button', '', lm.kind === 'practice' ? 'Otra vez' : 'Seguir explorando');
+      const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
-      const next = el('button', '', `Combate ${r.tower.streak + 1}`);
+      const next = el('button', '', t('Combate {n}', { n: r.tower.streak + 1 }));
       next.onclick = () => this.towerBattle();
       acts.append(next);
     }
     if (lm === 'ranked' || lm === 'casual') {
-      const again = el('button', '', 'Buscar otra');
+      const again = el('button', '', t('Buscar otra'));
       again.onclick = () => this.net.send({ t: 'queue', mode: lm });
       acts.append(again);
     }

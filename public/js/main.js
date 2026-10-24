@@ -10,11 +10,12 @@ import { Effects } from './effects.js';
 import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
 import { Net } from './net.js';
+import { t, tServer } from './i18n.js';
 
 const canvas = document.getElementById('view');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) {
-  document.body.insertAdjacentHTML('beforeend', '<div class="nojs">Tu navegador o tu tarjeta gráfica no admiten WebGL, que Arena Pokémon necesita. Prueba con Chrome, Firefox o Edge actualizados y la aceleración por hardware activada.</div>');
+  document.body.insertAdjacentHTML('beforeend', `<div class="nojs">${t('Tu navegador o tu tarjeta gráfica no admiten WebGL, que Arena Pokémon necesita. Prueba con Chrome, Firefox o Edge actualizados y la aceleración por hardware activada.')}</div>`);
   throw e;
 }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -37,7 +38,10 @@ const app = {
   world, particles, effects, canvas, net: new Net(), root: document.getElementById('hud'),
   battle: null, ui: null,
   connect(name) { this.net.connect(name); },
+  // Al cambiar de idioma: los textos fijos de index.html (las pantallas se vuelven a pintar solas)
+  onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
 };
+app.onLang();
 app.ui = new UI(app);
 window.__app = app;   // para depurar y para las pruebas automáticas
 world.loadMap('pradera', Shared.parseMap('pradera').terrain);
@@ -92,13 +96,13 @@ net.on('disconnected', () => {
   ui.show('menu');
 });
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
-net.on('error', m => ui.toast(m.msg, 'bad'));
+net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
 net.on('welcome', m => ui.versionCheck(m.version));
-net.on('autherr', m => { ui.authError(m.msg); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(m.msg, 'bad'); });
-net.on('authok', m => { ui.authError(''); ui.toast(m.msg); });
+net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
+net.on('authok', m => { ui.authError(''); ui.toast(tServer(m.msg)); });
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'));
-net.on('cancelled', m => { ui.toast(m.reason, 'bad'); ui.show('menu'); });
+net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); });
 net.on('draft', m => ui.draft(m));
 net.on('draftwait', () => {});
 net.on('ladder', m => ui.onLadder(m));
@@ -131,7 +135,7 @@ function endBattle() {
 
 addEventListener('keydown', e => {
   if (e.code === 'Escape' && app.battle && !app.battle.over) {
-    if (confirm('¿Rendirte y abandonar el combate?')) { app.battle.over = true; net.send({ t: 'forfeit' }); }
+    if (confirm(t('¿Rendirte y abandonar el combate?'))) { app.battle.over = true; net.send({ t: 'forfeit' }); }
   }
 });
 
