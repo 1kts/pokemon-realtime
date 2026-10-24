@@ -154,6 +154,8 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   ok(me.coins === 999999999 && D.SHOP.every(i => me.items[i.id] === 999), 'dinero y objetos de sobra');
   ok(Object.values(D.RANKED_REWARDS).every(r => me.cosmetics.titles.includes(r.title) && me.cosmetics.frames.includes(r.frame)) && me.tower.symbols.length === 2,
     'todos los títulos, marcos y símbolos');
+  ok(D.ACHIEVEMENTS.every(a => me.achievements[a.id] && (!a.reward.title || me.cosmetics.titles.includes(a.reward.title)) && (!a.reward.frame || me.cosmetics.frames.includes(a.reward.frame)))
+    && me.tower.best === 0 && !me.wins, 'todos los logros con sus títulos y marcos, sin inventar rachas ni victorias');
   me.coins = 5;
   const un2 = await adm.ask('admin.action', { a: 'unlockall', id: boss.p.id });
   ok(/rellenados/.test(un2.ok) && me.coins === 999999999 && me.mons.filter(m => m.met === 'admin').length === mine.length, 'repetirlo rellena el dinero sin duplicar Pokémon');

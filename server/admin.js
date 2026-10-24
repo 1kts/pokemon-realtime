@@ -229,7 +229,7 @@ function createAdmin(ctx) {
 // Pokédex completa (normal y shiny); cada legendario, shiny, en cada región (los Pokémon no viajan
 // entre regiones) a nivel 100 con IV perfectos, los 510 EV del tope (252 en su ataque, 252 en
 // velocidad y 6 en PS) y la naturaleza que sube su ataque; todas las medallas, Alto Mando y Campeón;
-// dinero y objetos de sobra; todos los títulos, marcos y símbolos. No toca lo que se gana compitiendo
+// dinero y objetos de sobra; todos los títulos, marcos, símbolos y logros. No toca lo que se gana compitiendo
 // (ELO, rachas), y la cuenta deja de salir en los rankings (staff). Repetirlo rellena dinero y objetos
 // sin duplicar Pokémon. Devuelve cuántos Pokémon ha añadido.
 const UNLOCK_COINS = 999999999, UNLOCK_ITEMS = 999;
@@ -259,6 +259,13 @@ function unlockAll(p) {
   p.cosmetics.titles = [...new Set([...p.cosmetics.titles, ...leagues.map(l => D.RANKED_REWARDS[l].title), ...leagues.map(l => D.seasonTitle(l, D.SEASON.id))])];
   p.cosmetics.frames = [...new Set([...p.cosmetics.frames, ...leagues.map(l => D.RANKED_REWARDS[l].frame)])];
   p.tower.symbols = [...new Set([...p.tower.symbols, ...Object.values(tower.BRAINS).map(b => b.symbol)])];
+  // Todos los logros con sus títulos y marcos, también los de Torre y clasificatoria (sin tocar rachas ni victorias)
+  for (const a of D.ACHIEVEMENTS) {
+    if (!p.achievements[a.id]) p.achievements[a.id] = Date.now();
+    const rw = a.reward || {};
+    if (rw.title && !p.cosmetics.titles.includes(rw.title)) p.cosmetics.titles.push(rw.title);
+    if (rw.frame && !p.cosmetics.frames.includes(rw.frame)) p.cosmetics.frames.push(rw.frame);
+  }
   p.staff = true;
   story.migrate(p);   // medallas a partir del progreso
   return added;
