@@ -4,28 +4,29 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
+import { t, locale, LANGS, getLang, setLang } from './i18n.js';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
+const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
 const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro' };
 const itemName = id => (SHOP.find(i => i.id === id) || { name: id }).name;
-const fmtDate = t => new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+const fmtDate = ts => new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
 const daysLeft = () => Math.max(0, Math.ceil((new Date(SEASON.end + 'T23:59:59') - Date.now()) / 86400000));
-function ago(t) {
-  const m = Math.round((Date.now() - t) / 60000);
-  if (m < 1) return 'ahora';
-  if (m < 60) return `hace ${m} min`;
+function ago(ts) {
+  const m = Math.round((Date.now() - ts) / 60000);
+  if (m < 1) return t('ahora');
+  if (m < 60) return t('hace {n} min', { n: m });
   const h = Math.round(m / 60);
-  return h < 24 ? `hace ${h} h` : `hace ${Math.round(h / 24)} d`;
+  return h < 24 ? t('hace {n} h', { n: h }) : t('hace {n} d', { n: Math.round(h / 24) });
 }
 
 // Campo de formulario con etiqueta
 function field(label, type, opts = {}) {
-  const wrap = el('label', 'field', `<span>${label}</span>`);
+  const wrap = el('label', 'field', `<span>${t(label)}</span>`);
   const input = el('input');
   input.type = type;
   Object.assign(input, opts);
@@ -48,7 +49,7 @@ export const accountViews = {
   // ---------- Portada ----------
   view_title() {
     const box = el('div', 'panel title-panel');
-    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones</p>`;
+    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">${t('Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones')}</p>`;
     const mons = el('div', 'title-mons');
     for (const d of [...STARTERS].sort(() => Math.random() - 0.5).slice(0, 3)) mons.append(animatedPortrait(d, 96, 'Idle'));
     box.append(mons);
@@ -61,9 +62,9 @@ export const accountViews = {
       box.classList.toggle('compact', this.authTab === 'login' || this.authTab === 'register');
       this.authMsg = el('p', 'auth-msg');
       if (this.authTab === 'continue') {
-        const go = el('button', 'primary', `Continuar como <b>${escapeHtml(saved)}</b>`);
-        go.onclick = () => { go.disabled = true; go.textContent = 'Conectando…'; this.app.connect(saved); };
-        const other = el('button', 'link', 'Entrar con otra cuenta');
+        const go = el('button', 'primary', t('Continuar como <b>{name}</b>', { name: escapeHtml(saved) }));
+        go.onclick = () => { go.disabled = true; go.textContent = t('Conectando…'); this.app.connect(saved); };
+        const other = el('button', 'link', t('Entrar con otra cuenta'));
         other.onclick = () => { this.authTab = 'login'; render(); };
         form.append(go, other, this.authMsg);
         setTimeout(() => go.focus(), 50);
@@ -71,18 +72,18 @@ export const accountViews = {
       }
       const tabs = el('div', 'auth-tabs');
       for (const [id, label] of [['guest', 'Invitado'], ['login', 'Iniciar sesión'], ['register', 'Crear cuenta']]) {
-        const t = el('button', id === this.authTab ? 'sel' : '', label);
-        t.onclick = () => { this.authTab = id; render(); };
-        tabs.append(t);
+        const tab = el('button', id === this.authTab ? 'sel' : '', t(label));
+        tab.onclick = () => { this.authTab = id; render(); };
+        tabs.append(tab);
       }
       form.append(tabs);
       let submit;
       if (this.authTab === 'guest') {
         const [f, name] = field('Nombre de entrenador', 'text', { maxLength: 16, value: Net.savedName(), autocomplete: 'nickname' });
-        const go = el('button', 'primary', 'Jugar');
-        submit = () => { go.disabled = true; go.textContent = 'Conectando…'; this.app.connect(name.value.trim() || 'Entrenador'); };
+        const go = el('button', 'primary', t('Jugar'));
+        submit = () => { go.disabled = true; go.textContent = t('Conectando…'); this.app.connect(name.value.trim() || t('Entrenador')); };
         go.onclick = submit;
-        form.append(f, go, el('p', 'small', 'Tu partida se guarda en este navegador. Crea una cuenta cuando quieras desde tu perfil para no perderla.'));
+        form.append(f, go, el('p', 'small', t('Tu partida se guarda en este navegador. Crea una cuenta cuando quieras desde tu perfil para no perderla.')));
         setTimeout(() => name.focus(), 50);
       } else {
         const reg = this.authTab === 'register';
@@ -91,9 +92,9 @@ export const accountViews = {
         form.append(fu, fp);
         let pass2;
         if (reg) { const [f2, p2] = field('Repite la contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' }); pass2 = p2; form.append(f2); }
-        const go = el('button', 'primary', reg ? 'Crear cuenta y jugar' : 'Entrar');
+        const go = el('button', 'primary', reg ? t('Crear cuenta y jugar') : t('Entrar'));
         submit = () => {
-          if (reg && pass.value !== pass2.value) return this.authError('Las contraseñas no coinciden');
+          if (reg && pass.value !== pass2.value) return this.authError(t('Las contraseñas no coinciden'));
           this.authError('');
           go.disabled = true;
           this.authBtn = go;
@@ -101,8 +102,8 @@ export const accountViews = {
         };
         go.onclick = submit;
         form.append(go);
-        if (reg) form.append(el('p', 'small', 'De 3 a 16 letras, números o _. Contraseña de al menos 6 caracteres.'));
-        else if (Net.hasSession()) form.append(el('p', 'warn', 'Si entras con otra cuenta, este navegador dejará de recordar tu partida de invitado. Regístrala antes desde tu perfil.'));
+        if (reg) form.append(el('p', 'small', t('De 3 a 16 letras, números o _. Contraseña de al menos 6 caracteres.')));
+        else if (Net.hasSession()) form.append(el('p', 'warn', t('Si entras con otra cuenta, este navegador dejará de recordar tu partida de invitado. Regístrala antes desde tu perfil.')));
         setTimeout(() => user.focus(), 50);
       }
       form.append(this.authMsg);
@@ -120,12 +121,26 @@ export const accountViews = {
 
   footer() {
     const f = el('div', 'footer');
-    const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · Novedades`);
+    const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · ${t('Novedades')}`);
     v.onclick = () => this.patchNotes();
-    const legal = el('button', 'link', 'Créditos y aviso legal');
+    const legal = el('button', 'link', t('Créditos y aviso legal'));
     legal.onclick = () => this.legal();
-    f.append(v, legal);
+    f.append(v, legal, this.langPicker());
     return f;
+  },
+
+  // Selector de idioma: cambia los textos y vuelve a pintar la pantalla actual
+  langPicker() {
+    const sel = el('select', 'lang-select');
+    sel.setAttribute('aria-label', 'Idioma / Language');
+    for (const [id, name] of Object.entries(LANGS)) {
+      const o = el('option', '', name);
+      o.value = id;
+      o.selected = id === getLang();
+      sel.append(o);
+    }
+    sel.onchange = () => { if (setLang(sel.value)) { this.app.onLang(); this.show(this.view); } };
+    return sel;
   },
 
   // ---------- Novedades ----------
@@ -135,16 +150,16 @@ export const accountViews = {
     storage.set(SEEN_KEY, VERSION);
     document.querySelectorAll('.ndot.news').forEach(d => d.remove());
     modal('notes', (box, close) => {
-      box.append(el('h3', '', 'Novedades'));
+      box.append(el('h3', '', t('Novedades')));
       const list = el('div', 'notes-list scroll');
       CHANGELOG.forEach((r, i) => {
         const sec = el('section', i === 0 ? 'current' : '');
-        sec.append(el('div', 'nv', `<b>v${r.v}</b><span>${escapeHtml(r.title)}</span><small>${fmtDate(r.date)}</small>${i === 0 ? '<em>actual</em>' : ''}`));
-        sec.append(el('ul', '', r.items.map(([tag, text]) => `<li><span class="ntag ${tag}">${TAG_LABEL[tag]}</span>${escapeHtml(text)}</li>`).join('')));
+        sec.append(el('div', 'nv', `<b>v${r.v}</b><span>${escapeHtml(t(r.title))}</span><small>${fmtDate(r.date)}</small>${i === 0 ? `<em>${t('actual')}</em>` : ''}`));
+        sec.append(el('ul', '', r.items.map(([tag, text]) => `<li><span class="ntag ${tag}">${t(TAG_LABEL[tag])}</span>${escapeHtml(t(text))}</li>`).join('')));
         list.append(sec);
       });
       const acts = el('div', 'acts');
-      const ok = el('button', 'primary', '¡A jugar!');
+      const ok = el('button', 'primary', t('¡A jugar!'));
       ok.onclick = close;
       acts.append(ok);
       box.append(list, acts);
@@ -153,18 +168,15 @@ export const accountViews = {
 
   legal() {
     modal('legal', (box, close) => {
-      box.append(el('h3', '', 'Créditos y aviso legal'));
+      box.append(el('h3', '', t('Créditos y aviso legal')));
       box.append(el('div', 'scroll', `
-        <p>Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo,
-        Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.</p>
-        <p>Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con
-        atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.</p>
-        <p>La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.</p>
-        <h4>Datos que guardamos</h4>
-        <p class="small">Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal).
-        No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.</p>`));
+        <p>${t('Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
+        <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.')}</p>
+        <p>${t('La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.')}</p>
+        <h4>${t('Datos que guardamos')}</h4>
+        <p class="small">${t('Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.')}</p>`));
       const acts = el('div', 'acts');
-      const ok = el('button', 'primary', 'Cerrar');
+      const ok = el('button', 'primary', t('Cerrar'));
       ok.onclick = close;
       acts.append(ok);
       box.append(acts);
@@ -179,7 +191,7 @@ export const accountViews = {
     const bar = el('div');
     bar.id = 'update-bar';
     const text = el('span');
-    const b = el('button', 'primary', 'Recargar');
+    const b = el('button', 'primary', t('Recargar'));
     b.onclick = () => location.reload();
     bar.append(text, b);
     document.body.append(bar);
@@ -187,9 +199,9 @@ export const accountViews = {
       && !document.activeElement?.matches('input, textarea, select');
     let left = 5;
     const tick = () => {
-      if (!idle()) { left = 5; text.textContent = `Hay una versión nueva (v${serverVersion}): se cargará al terminar lo que estás haciendo.`; }
+      if (!idle()) { left = 5; text.textContent = t('Hay una versión nueva (v{v}): se cargará al terminar lo que estás haciendo.', { v: serverVersion }); }
       else if (left === 0) return location.reload();
-      else text.textContent = `Hay una versión nueva (v${serverVersion}). Recargando en ${left--} s…`;
+      else text.textContent = t('Hay una versión nueva (v{v}). Recargando en {n} s…', { v: serverVersion, n: left-- });
       setTimeout(tick, 1000);
     };
     tick();
@@ -201,13 +213,13 @@ export const accountViews = {
     if (!p.inbox || !p.inbox.length || this.inboxOpen) return;
     this.inboxOpen = true;
     modal('inbox', (box, close) => {
-      box.append(el('h3', '', '¡Ha terminado la temporada!'));
+      box.append(el('h3', '', t('¡Ha terminado la temporada!')));
       for (const m of p.inbox) {
-        box.append(el('p', '', `Temporada ${m.season}: llegaste a <b>${m.league}</b>. Premio: ${coins(m.coins)}${m.title ? ` y el título <b class="title-chip">${escapeHtml(m.title)}</b>` : ''}.`));
+        box.append(el('p', '', t('Temporada {n}: llegaste a <b>{league}</b>. Premio: {prize}.', { n: m.season, league: t(m.league), prize: coins(m.coins) + (m.title ? ' ' + t('y el título {title}', { title: `<b class="title-chip">${escapeHtml(t(m.title))}</b>` }) : '') })));
       }
-      box.append(el('p', 'small', `Empieza ${SEASON.name}. Tu ELO se ha acercado a 1000 y los premios por liga se pueden volver a ganar.`));
+      box.append(el('p', 'small', t('Empieza {season}. Tu ELO se ha acercado a 1000 y los premios por liga se pueden volver a ganar.', { season: t(SEASON.name) })));
       const acts = el('div', 'acts');
-      const ok = el('button', 'primary', 'Recoger');
+      const ok = el('button', 'primary', t('Recoger'));
       ok.onclick = close;
       acts.append(ok);
       box.append(acts);
@@ -242,13 +254,13 @@ export const accountViews = {
     b.append(this.avatar(30));
     b.append(el('span', '', escapeHtml(p.name)));
     if (this.claimable().length || !p.account) b.append(el('i', 'ndot'));
-    b.title = p.account ? `Perfil de ${p.account.user}` : 'Perfil (invitado: crea una cuenta para no perder tu partida)';
+    b.title = p.account ? t('Perfil de {user}', { user: p.account.user }) : t('Perfil (invitado: crea una cuenta para no perder tu partida)');
     b.onclick = () => this.show('profile');
     return b;
   },
 
   newsButton() {
-    const b = el('button', '', 'Novedades' + (this.hasNews() ? ' <i class="ndot news"></i>' : ''));
+    const b = el('button', '', t('Novedades') + (this.hasNews() ? ' <i class="ndot news"></i>' : ''));
     b.onclick = () => this.patchNotes();
     return b;
   },
@@ -257,7 +269,7 @@ export const accountViews = {
   view_profile() {
     const p = this.profile;
     const wrap = el('div', 'profile-view');
-    wrap.append(this.topbar('Perfil', 'menu'));
+    wrap.append(this.topbar(t('Perfil'), 'menu'));
     const body = el('div', 'pv-body scroll');
     const left = el('div', 'pv-col');
     const right = el('div', 'pv-col');
@@ -268,12 +280,12 @@ export const accountViews = {
     const info = el('div', 'tc-info');
     const nameRow = el('div', 'name-row', `<h2>${escapeHtml(p.name)}</h2>`);
     const edit = el('button', 'icon', '✎');
-    edit.title = 'Cambiar nombre';
+    edit.title = t('Cambiar nombre');
     edit.onclick = () => {
       nameRow.innerHTML = '';
       const input = el('input');
       input.maxLength = 16; input.value = p.name;
-      const save = el('button', 'primary', 'Guardar');
+      const save = el('button', 'primary', t('Guardar'));
       const done = () => { const v = input.value.trim(); if (v && v !== p.name) this.net.send({ t: 'name', name: v }); else this.show('profile'); };
       save.onclick = done;
       input.onkeydown = e => { if (e.key === 'Enter') done(); if (e.key === 'Escape') this.show('profile'); };
@@ -282,11 +294,11 @@ export const accountViews = {
     };
     nameRow.append(edit);
     info.append(nameRow);
-    if (p.title) info.append(el('span', 'title-chip', escapeHtml(p.title)));
+    if (p.title) info.append(el('span', 'title-chip', escapeHtml(t(p.title))));
     info.append(el('p', 'small', p.account
-      ? `Cuenta <b>@${escapeHtml(p.account.user)}</b> · desde ${fmtDate(p.account.since)}`
-      : `<span class="warn">Invitado</span> · jugando desde ${fmtDate(p.created)}`));
-    info.append(el('div', 'tc-league', `<span class="league">${p.league}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">#${this.rank} del ranking</span>` : ''}`));
+      ? t('Cuenta <b>@{user}</b> · desde {date}', { user: escapeHtml(p.account.user), date: fmtDate(p.account.since) })
+      : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
+    info.append(el('div', 'tc-league', `<span class="league">${t(p.league)}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">${t('#{n} del ranking', { n: this.rank })}</span>` : ''}`));
     card.append(info);
     left.append(card);
 
@@ -294,21 +306,21 @@ export const accountViews = {
     const total = Object.keys(SPECIES).length;
     const games = p.wins + p.losses;
     const badges = Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0);
-    const stat = (label, value) => `<div class="stat"><small>${label}</small><b>${value}</b></div>`;
-    left.append(el('div', 'panel', `<h3>Clasificatoria</h3><div class="stat-grid">
+    const stat = (label, value) => `<div class="stat"><small>${t(label)}</small><b>${value}</b></div>`;
+    left.append(el('div', 'panel', `<h3>${t('Clasificatoria')}</h3><div class="stat-grid">
       ${stat('ELO', p.elo)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}
       ${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div>`));
-    left.append(el('div', 'panel', `<h3>Historia</h3><div class="stat-grid">
+    left.append(el('div', 'panel', `<h3>${t('Historia')}</h3><div class="stat-grid">
       ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${p.caught.length}/${total}`)}${stat('Pokémon', p.mons.length)}
       ${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—')}</div>`));
 
     // Historial
     const hist = el('div', 'panel history');
-    hist.append(el('h3', '', 'Últimas clasificatorias'));
-    if (!(p.history || []).length) hist.append(el('p', 'small', 'Aún no has jugado ninguna. ¡Prueba en Clasificatoria!'));
+    hist.append(el('h3', '', t('Últimas clasificatorias')));
+    if (!(p.history || []).length) hist.append(el('p', 'small', t('Aún no has jugado ninguna. ¡Prueba en Clasificatoria!')));
     for (const h of p.history || []) {
       const row = el('div', 'h-row ' + (h.won ? 'won' : 'lost'));
-      row.append(el('b', 'res', h.won ? 'V' : 'D'));
+      row.append(el('b', 'res', h.won ? t('V') : t('D')));
       const team = el('div', 'h-team');
       for (const d of h.team || []) team.append(portrait(d, 32));
       team.append(el('span', 'vs', 'vs'));
@@ -322,26 +334,27 @@ export const accountViews = {
 
     // Personalizar
     const look = el('div', 'panel look');
-    look.append(el('h3', '', 'Personalizar'));
+    look.append(el('h3', '', t('Personalizar')));
     const cos = p.cosmetics || { titles: [], frames: [] };
     const titles = el('div', 'chips');
-    for (const t of [null, ...cos.titles]) {
-      const b = el('button', 'chip' + ((p.title || null) === t ? ' sel' : ''), t ? escapeHtml(t) : 'Sin título');
-      b.onclick = () => this.net.send({ t: 'look', title: t });
+    for (const ti of [null, ...cos.titles]) {
+      const b = el('button', 'chip' + ((p.title || null) === ti ? ' sel' : ''), ti ? escapeHtml(t(ti)) : t('Sin título'));
+      b.onclick = () => this.net.send({ t: 'look', title: ti });
       titles.append(b);
     }
-    look.append(el('h4', '', 'Título'), titles);
+    look.append(el('h4', '', t('Título')), titles);
     const frames = el('div', 'chips');
     for (const f of [null, ...cos.frames]) {
-      const b = el('button', 'chip frame-swatch' + ((p.frame || null) === f ? ' sel' : ''), `<i class="sw frame-${f || 'none'}"></i>${f ? FRAME_LABEL[f] || f : 'Ninguno'}`);
+      const b = el('button', 'chip frame-swatch' + ((p.frame || null) === f ? ' sel' : ''), `<i class="sw frame-${f || 'none'}"></i>${f ? t(FRAME_LABEL[f] || f) : t('Ninguno')}`);
       b.onclick = () => this.net.send({ t: 'look', frame: f });
       frames.append(b);
     }
-    look.append(el('h4', '', 'Marco'), frames);
-    look.append(el('p', 'small', 'Consigue más títulos y marcos subiendo de liga en Clasificatoria.'));
-    const avaBtn = el('button', '', 'Elegir Pokémon de avatar');
+    look.append(el('h4', '', t('Marco')), frames);
+    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria.')));
+    const avaBtn = el('button', '', t('Elegir Pokémon de avatar'));
     avaBtn.onclick = () => this.avatarPicker();
-    look.append(el('h4', '', 'Avatar'), avaBtn);
+    look.append(el('h4', '', t('Avatar')), avaBtn);
+    look.append(el('h4', '', t('Idioma')), this.langPicker());
     right.append(look);
 
     right.append(this.accountPanel());
@@ -353,9 +366,9 @@ export const accountViews = {
   avatarPicker() {
     const p = this.profile;
     modal('avatar-pick', (box, close) => {
-      box.append(el('h3', '', 'Pokémon de avatar'), el('p', 'small', 'Cualquiera que hayas atrapado. Por defecto, el primero de tu equipo.'));
+      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado. Por defecto, el primero de tu equipo.')));
       const grid = el('div', 'ava-grid scroll');
-      const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), '<small>Automático</small>');
+      const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), `<small>${t('Automático')}</small>`);
       auto.onclick = () => { this.net.send({ t: 'look', avatar: null }); close(); };
       grid.append(auto);
       for (const dex of [...p.caught].sort((a, b) => a - b)) {
@@ -373,18 +386,18 @@ export const accountViews = {
   accountPanel() {
     const p = this.profile;
     const box = el('div', 'panel account');
-    box.append(el('h3', '', 'Cuenta'));
+    box.append(el('h3', '', t('Cuenta')));
     const msg = el('p', 'auth-msg');
     this.authMsg = msg;
     if (!p.account) {
-      box.append(el('p', 'warn', 'Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.'));
-      box.append(el('p', 'small', 'Crea una cuenta y conservarás todo lo que tienes.'));
+      box.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
+      box.append(el('p', 'small', t('Crea una cuenta y conservarás todo lo que tienes.')));
       const [fu, user] = field('Usuario', 'text', { maxLength: 16, autocomplete: 'username', spellcheck: false });
       const [fp, pass] = field('Contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const [f2, pass2] = field('Repite la contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
-      const go = el('button', 'primary', 'Crear cuenta');
+      const go = el('button', 'primary', t('Crear cuenta'));
       const submit = () => {
-        if (pass.value !== pass2.value) return this.authError('Las contraseñas no coinciden');
+        if (pass.value !== pass2.value) return this.authError(t('Las contraseñas no coinciden'));
         this.authError('');
         go.disabled = true;
         this.authBtn = go;
@@ -394,15 +407,15 @@ export const accountViews = {
       [user, pass, pass2].forEach(i => { i.onkeydown = e => { if (e.key === 'Enter') submit(); }; });
       box.append(fu, fp, f2, go, msg);
     } else {
-      box.append(el('p', '', `Usuario <b>@${escapeHtml(p.account.user)}</b>. Entra con él desde cualquier dispositivo.`));
+      box.append(el('p', '', t('Usuario <b>@{user}</b>. Entra con él desde cualquier dispositivo.', { user: escapeHtml(p.account.user) })));
       const d = el('details', 'pw');
-      d.append(el('summary', '', 'Cambiar contraseña'));
+      d.append(el('summary', '', t('Cambiar contraseña')));
       const [fo, old] = field('Contraseña actual', 'password', { maxLength: 72, autocomplete: 'current-password' });
       const [fn, pass] = field('Nueva contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const [f2, pass2] = field('Repite la nueva', 'password', { maxLength: 72, autocomplete: 'new-password' });
-      const go = el('button', '', 'Cambiar');
+      const go = el('button', '', t('Cambiar'));
       go.onclick = () => {
-        if (pass.value !== pass2.value) return this.authError('Las contraseñas no coinciden');
+        if (pass.value !== pass2.value) return this.authError(t('Las contraseñas no coinciden'));
         go.disabled = true;
         this.authBtn = go;
         this.net.send({ t: 'passwd', old: old.value, pass: pass.value });
@@ -410,9 +423,9 @@ export const accountViews = {
       d.append(fo, fn, f2, go);
       box.append(d, msg);
     }
-    const out = el('button', 'danger', 'Cerrar sesión');
+    const out = el('button', 'danger', t('Cerrar sesión'));
     out.onclick = () => {
-      if (!p.account && !confirm('Eres invitado: si cierras sesión sin crear una cuenta, perderás esta partida para siempre. ¿Seguro?')) return;
+      if (!p.account && !confirm(t('Eres invitado: si cierras sesión sin crear una cuenta, perderás esta partida para siempre. ¿Seguro?'))) return;
       this.logout();
     };
     box.append(out);
@@ -439,10 +452,10 @@ export const accountViews = {
     const s = p.season || { peak: p.elo, claimed: [] };
     const box = el('div', 'panel season');
     const left = daysLeft();
-    box.append(el('div', 'season-head', `<h3>${SEASON.name}</h3><span class="pill">${left ? `Termina en ${left} día${left > 1 ? 's' : ''}` : 'Último día'}</span>`));
+    box.append(el('div', 'season-head', `<h3>${t(SEASON.name)}</h3><span class="pill">${!left ? t('Último día') : left > 1 ? t('Termina en {n} días', { n: left }) : t('Termina en 1 día')}</span>`));
     // La barra va del ELO inicial (1000) a Maestro
     const top = LEAGUES[LEAGUES.length - 1][0], base = 1000;
-    box.append(el('p', 'small', `Mejor ELO de la temporada: <b>${s.peak}</b>. Cada liga que alcances te da un premio una vez por temporada. Además, ${coins(RANKED_PAY.win)} por victoria, ${coins(RANKED_PAY.loss)} por derrota y ${coins(RANKED_PAY.firstWin)} extra por la primera victoria del día.`));
+    box.append(el('p', 'small', t('Mejor ELO de la temporada: <b>{peak}</b>. Cada liga que alcances te da un premio una vez por temporada. Además, {win} por victoria, {loss} por derrota y {first} extra por la primera victoria del día.', { peak: s.peak, win: coins(RANKED_PAY.win), loss: coins(RANKED_PAY.loss), first: coins(RANKED_PAY.firstWin) })));
     const track = el('div', 'reward-track');
     track.append(el('div', 'track-bar', `<div style="width:${Math.max(0, Math.min(100, (s.peak - base) / (top - base) * 100))}%"></div>`));
     for (const [min, name] of LEAGUES) {
@@ -451,14 +464,14 @@ export const accountViews = {
       const claimed = min === 0 || s.claimed.includes(name);
       const card = el('div', `lr ${name.toLowerCase()}${reached ? ' reached' : ''}${reached && !claimed ? ' ready' : ''}${claimed && reached ? ' claimed' : ''}`);
       const loot = [r.coins ? coins(r.coins) : '', ...Object.entries(r.items).map(([id, n]) => `${itemName(id)} ×${n}`)].filter(Boolean);
-      card.innerHTML = `<i class="sw frame-${r.frame}"></i><b>${name}</b><small>${min ? min + ' ELO' : 'inicio'}</small>
-        <div class="loot">${loot.map(x => `<span>${x}</span>`).join('')}<span class="title-chip">${escapeHtml(r.title)}</span><span>Marco ${FRAME_LABEL[r.frame]}</span></div>`;
-      if (min === 0) card.append(el('em', 'state', 'De serie'));
-      else if (!reached) card.append(el('em', 'state', `Faltan ${min - s.peak}`));
-      else if (claimed) card.append(el('em', 'state', '✓ Reclamado'));
+      card.innerHTML = `<i class="sw frame-${r.frame}"></i><b>${t(name)}</b><small>${min ? min + ' ELO' : t('inicio')}</small>
+        <div class="loot">${loot.map(x => `<span>${x}</span>`).join('')}<span class="title-chip">${escapeHtml(t(r.title))}</span><span>${t('Marco {name}', { name: t(FRAME_LABEL[r.frame]) })}</span></div>`;
+      if (min === 0) card.append(el('em', 'state', t('De serie')));
+      else if (!reached) card.append(el('em', 'state', t('Faltan {n}', { n: min - s.peak })));
+      else if (claimed) card.append(el('em', 'state', t('✓ Reclamado')));
       else {
-        const b = el('button', 'primary', 'Reclamar');
-        b.onclick = () => { b.disabled = true; this.net.send({ t: 'claim', league: name }); this.toast(`Premio de ${name} reclamado`); };
+        const b = el('button', 'primary', t('Reclamar'));
+        b.onclick = () => { b.disabled = true; this.net.send({ t: 'claim', league: name }); this.toast(t('Premio de {league} reclamado', { league: t(name) })); };
         card.append(b);
       }
       track.append(card);
@@ -466,28 +479,28 @@ export const accountViews = {
     box.append(track);
     const peakLeague = Data.leagueOf(s.peak);
     const idx = LEAGUES.findIndex(l => l[1] === peakLeague);
-    box.append(el('p', 'small season-end', `Al acabar la temporada: ${coins(SEASON_REWARDS[peakLeague])} según tu mejor liga (ahora <b>${peakLeague}</b>)${idx >= 2 ? ` y el título <span class="title-chip">${Data.seasonTitle(peakLeague, SEASON.id)}</span>` : ' · desde Oro, también un título exclusivo de la temporada'}. Después tu ELO se acerca a la mitad hacia 1000.`));
+    box.append(el('p', 'small season-end', `${t('Al acabar la temporada: {prize} según tu mejor liga (ahora <b>{league}</b>)', { prize: coins(SEASON_REWARDS[peakLeague]), league: t(peakLeague) })}${idx >= 2 ? ' ' + t('y el título {title}', { title: `<span class="title-chip">${t(Data.seasonTitle(peakLeague, SEASON.id))}</span>` }) : ' · ' + t('desde Oro, también un título exclusivo de la temporada')}. ${t('Después tu ELO se acerca a la mitad hacia 1000.')}`));
     return box;
   },
 
   boardPanel() {
     const p = this.profile;
     const board = el('div', 'panel board');
-    board.append(el('h3', '', 'Mejores entrenadores'));
-    if (!this.board.length) { board.append(el('p', 'small', 'Todavía nadie ha jugado una clasificatoria. ¡Sé el primero!')); return board; }
+    board.append(el('h3', '', t('Mejores entrenadores')));
+    if (!this.board.length) { board.append(el('p', 'small', t('Todavía nadie ha jugado una clasificatoria. ¡Sé el primero!'))); return board; }
     const ol = el('ol');
     this.board.forEach((b, i) => {
       const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
       li.onclick = () => this.userModal(b.id);
-      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who"><i class="sw frame-${b.frame || 'none'}"></i><b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(b.title)}</small>` : ''}</span><span class="pts">${b.elo}<small>${Data.leagueOf(b.elo)} · ${b.wins}V ${b.losses}D</small></span>`;
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who"><i class="sw frame-${b.frame || 'none'}"></i><b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
       ol.append(li);
     });
     board.append(ol);
-    const all = el('button', '', 'Ver la ladder completa');
+    const all = el('button', '', t('Ver la ladder completa'));
     all.onclick = () => { this.ladderBoard = 'ranked'; this.openLadder(); };
     board.append(all);
-    if (this.rank && this.rank > this.board.length) board.append(el('p', 'my-rank', `Tú: <b>#${this.rank}</b> · ${p.elo} ELO`));
-    else if (!this.rank) board.append(el('p', 'small', 'Juega una clasificatoria para entrar en el ranking.'));
+    if (this.rank && this.rank > this.board.length) board.append(el('p', 'my-rank', t('Tú: <b>#{n}</b> · {elo} ELO', { n: this.rank, elo: p.elo })));
+    else if (!this.rank) board.append(el('p', 'small', t('Juega una clasificatoria para entrar en el ranking.')));
     return board;
   },
 };

@@ -1,5 +1,6 @@
 // Simula muchos combates IA contra IA a toda velocidad y comprueba que no haya errores:
 // excepciones, posiciones NaN o fuera de la arena, PS imposibles o combates que no acaban.
+// Incluye los mapas normales y las arenas de gimnasio con sus mecánicas.
 //   node tools/sim-test.js [combates]
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
@@ -15,7 +16,7 @@ for (let n = 0; n < N; n++) {
   const team = k => Array.from({ length: k }, () => ({ dex: pick(dexes), level: 5 + Math.floor(Math.random() * 60) }));
   let ended = null;
   const b = new Battle({
-    mode: wild ? 'wild' : 'trainer', map: pick(Object.keys(D.MAPS)),
+    mode: wild ? 'wild' : 'trainer', map: pick([...Object.keys(D.MAPS), ...Object.keys(D.ARENAS)]),
     sides: [
       { name: 'A', team: team(3), ai: Math.random(), balls: wild ? { pokeball: 3, superball: 1 } : null },
       { name: 'B', team: team(wild ? 1 : 3), ai: Math.random(), wild },

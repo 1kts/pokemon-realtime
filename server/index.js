@@ -205,6 +205,24 @@ function startPractice(c, msg) {
   }, () => []);
 }
 
+// ---------- Acceso total: ver cualquier escenario ----------
+// Quien abre el juego con ?fullaccess puede combatir en cualquier mapa o arena sin medallas ni
+// nivel. Son combates de práctica (sin premios ni progreso), así que no hace falta clave.
+function startArenaView(c, msg) {
+  const map = typeof msg.map === 'string' && (D.MAPS[msg.map] || D.ARENAS[msg.map]) ? msg.map : null;
+  if (!map) return send(c, { t: 'error', msg: 'Escenario desconocido' });
+  const leader = Object.values(D.NODES).find(n => n.kind !== 'route' && n.map === map);
+  const pool = shuffle(D.RANKED_POOL);
+  const foe = leader ? D.leaderTeam(leader, 1).map(([dex]) => dex) : pool.slice(3, 6);
+  startBattle([c, null], {
+    mode: 'practice', map,
+    sides: [
+      { name: c.profile.name, team: pool.slice(0, 3).map(dex => ({ dex, level: D.RANKED_LEVEL })) },
+      { name: leader ? leader.leader : 'Bot', team: foe.map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: leader ? leader.ai : 0.28, passive: !!msg.passive },
+    ],
+  }, () => []);
+}
+
 // ---------- Historia ----------
 function startStory(c, msg) {
   const setup = story.battleSetup(c.profile, msg);
@@ -313,6 +331,16 @@ function handle(c, msg) {
   if (draining && starts(msg)) return send(c, { t: 'error', msg: DRAIN_MSG });
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
+  if (msg.t === 'admin') {
+    c.profile.admin = !msg.off;
+    store.save();
+    return sendProfile(c);
+  }
+  if (msg.t === 'arena') {
+    if (!c.profile.admin) return send(c, { t: 'error', msg: 'Abre el juego con ?fullaccess para entrar en los escenarios' });
+    if (!busy(c)) startArenaView(c, msg);
+    return;
+  }
   if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
   if (msg.t === 'tower') {
     if (c.battle) return;
@@ -373,7 +401,7 @@ async function auth(c, msg) {
 // proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
 const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
-const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
+const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice' || msg.t === 'arena'
   || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
 let draining = false;
 

@@ -646,3 +646,24 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .subbar .region-tabs button.soon:hover { opacity: .75; background: rgba(0,0,0,.2); }
 .subbar .region-tabs button.soon b { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
 .subbar .region-tabs button.soon svg { width: 12px; height: 12px; flex: none; }
+
+/* Arena de gimnasio: nombre y mecánica en el combate y en la ficha del líder */
+.arena-tag { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); max-width: min(560px, 80vw); text-align: center; padding: 6px 12px; border-radius: 10px; background: rgba(10,14,24,.62); border: 1px solid rgba(255,255,255,.12); pointer-events: auto; transition: opacity .4s; }
+.arena-tag b { display: block; font: 14px Bungee, sans-serif; color: var(--yellow); }
+.arena-tag span { display: block; font-size: 12px; color: #dfe6f2; margin-top: 2px; }
+.arena-tag.mini { padding: 3px 10px; opacity: .75; }
+.arena-tag.mini span { display: none; }
+.arena-info { margin: 8px 0; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: 13px; color: #d8e2f0; }
+.arena-info b { color: var(--yellow); }
+
+/* Escenarios (modo administrador) */
+.arena-opts { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 4px 0 12px; }
+.arena-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #d8e2f0; cursor: pointer; white-space: nowrap; }
+.arena-toggle input { width: 18px; height: 18px; margin: 0; flex: none; }
+.arena-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); grid-auto-rows: max-content; align-content: start; gap: 10px; overflow: auto; min-height: 0; flex: 1; padding-bottom: 12px; }
+.arena-card { position: relative; height: auto; min-height: 0; white-space: normal; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; padding: 12px 12px 12px 18px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); overflow: hidden; }
+.arena-card:hover { background: rgba(255,255,255,.1); }
+.arena-card i { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--tc); }
+.arena-card b { font: 15px Bungee, sans-serif; color: #fff; }
+.arena-card small { font-size: 12px; color: var(--yellow); }
+.arena-card span { font-size: 12px; color: #b8c4d6; line-height: 1.35; }

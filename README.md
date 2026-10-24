@@ -91,6 +91,15 @@ vez, el dominio, las copias de seguridad y cómo volver a una versión anterior:
 - **Cliente** (`public/js/`): predicción del propio movimiento con reconciliación e interpolación del
   rival; Three.js con sombras, bloom y partículas; sprites como billboards con sombra de silueta.
 
+## Idiomas
+
+Inglés por defecto y español; cada jugador elige el suyo en la portada, el menú o el perfil (se recuerda en
+el navegador). Los textos se escriben en español dentro de `t('…')` (`public/js/i18n.js`) y esa frase es la
+clave en cada diccionario (`public/js/lang/en.js`); lo que no está traducido sale en español. Los nombres de
+tipos, movimientos, objetos y naturalezas se traducen en las tablas del diccionario, y los mensajes que llegan
+ya montados del servidor, con `patterns`. `npm run i18n` lista lo que falta (y `npm test` falla si falta algo).
+Para añadir un idioma: copia `en.js`, tradúcelo y añádelo a `LANGS` y `DICTS` en `i18n.js`.
+
 ## Pruebas
 
 ```bash

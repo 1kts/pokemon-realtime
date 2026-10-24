@@ -5,6 +5,7 @@ import { Actor } from './actors.js';
 import { toWorld } from './world.js';
 import { portrait, preload } from './sprites.js';
 import { PALETTE } from './particles.js';
+import { t, tServer } from './i18n.js';
 
 const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
@@ -26,6 +27,8 @@ export class BattleClient {
     this.you = start.you;
     this.foeIdx = 1 - start.you;
     this.mode = start.mode;
+    this.mapName = start.map;
+    this.arena = Data.ARENAS[start.map] || null;   // arena de gimnasio con mecánicas
     this.sides = start.sides;
     this.balls = start.balls ? { ...start.balls } : null;
     this.ballType = this.balls ? BALLS.find(b => this.balls[b] > 0) || 'pokeball' : null;
@@ -46,7 +49,7 @@ export class BattleClient {
     this.bindInput();
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
-    if (foe.rare) setTimeout(() => this.banner(`¡Un ${foe.team[0] && Data.SPECIES[foe.team[0].dex].name} salvaje muy raro!`, 'rare'), 300);
+    if (foe.rare) setTimeout(() => this.banner(t('¡Un {m} salvaje muy raro!', { m: foe.team[0] && Data.SPECIES[foe.team[0].dex].name }), 'rare'), 300);
   }
 
   // Un shiny entra en combate: destellos y aviso
@@ -55,7 +58,7 @@ export class BattleClient {
     this.p.emit(w.x, w.y, w.z, { n: 60, colors: ['#ffffff', '#fff6a0', '#ffd040', '#a0f0ff'], speed: 2.5, life: 1.1, size: 0.22, jitter: 0.8 });
     this.fx.flashLight(w, '#fff6c0', 8, 500);
     this.shinyT[i] = performance.now();
-    if (i !== this.you) this.banner(`✨ ¡${this.monName(i)} shiny! ✨`, 'rare');
+    if (i !== this.you) this.banner(t('✨ ¡{m} shiny! ✨', { m: this.monName(i) }), 'rare');
   }
 
   // ---------- Red ----------
@@ -68,9 +71,10 @@ export class BattleClient {
     this.latest = m;
     if (m.tr) for (const [i, t] of m.tr) this.world.setCell(i, t);
     this.world.syncObstacles(m.ob || []);
+    this.world.setArena(m.ar);
     for (const e of m.ev) this.onEvent(e);
     if (m.state === 'countdown') this.countdown(m.cd);
-    else if (this.cdShown) { this.cdShown = null; this.banner('¡A combatir!', 'big'); }
+    else if (this.cdShown) { this.cdShown = null; this.banner(t('¡A combatir!'), 'big'); }
     this.timerEl.textContent = m.tl > 0 ? `${Math.floor(m.tl / 60)}:${String(m.tl % 60).padStart(2, '0')}` : '0:00';
     this.timerEl.classList.toggle('sudden', !!m.sd);
 
@@ -79,12 +83,12 @@ export class BattleClient {
     this.me = me;
     this.pending = this.pending.filter(i => i.s > me.ack);
     const old = this.pred;
-    const p = { x: me.x, y: me.y };
+    const p = { x: me.x, y: me.y, vx: me.v ? me.v[0] : 0, vy: me.v ? me.v[1] : 0 };
     if (m.state === 'fight') {
       const obstacles = this.world.collisionList();
       const speed = Shared.speedOf(this.dexOf(this.you), me.f, this.monOf(this.you).spdMult);
       const r = this.monOf(this.you).r || Shared.hitboxOf(this.dexOf(this.you));
-      if (!(me.f & F.DASH)) for (const i of this.pending) Shared.stepMove(p, i.mx, i.my, speed, DT, obstacles, r);
+      if (!(me.f & F.DASH)) for (const i of this.pending) this.step(p, i, speed, obstacles, r);
     }
     const jump = me.f & (F.DASH | F.SWAP) || !old;
     if (old && !jump) { this.err.x += old.x - p.x; this.err.y += old.y - p.y; }
@@ -92,6 +96,14 @@ export class BattleClient {
     this.pred = p;
     if (!this.prevPred || jump) this.prevPred = { ...p };
     this.updateHud();
+  }
+
+  // Un paso de movimiento propio, igual que en el servidor (en las arenas: corriente, viento, hielo)
+  step(p, inp, speed, obstacles, r) {
+    if (!this.arena) return Shared.stepMove(p, inp.mx, inp.my, speed, DT, obstacles, r);
+    const wd = this.latest && this.latest.ar && this.latest.ar.wd;
+    const wind = wd && !SPECIES[this.dexOf(this.you)].types.includes('volador') ? wd : null;
+    Shared.arenaStep(p, inp.mx || 0, inp.my || 0, speed, DT, obstacles, r, { map: this.mapName, terrain: this.world.types, wind });
   }
 
   dexOf(i) { return this.sides[i].team[this.act[i]].dex; }
@@ -131,7 +143,7 @@ export class BattleClient {
       case 'hit': {
         this.actors[s].flash(); this.actors[s].play('Hurt');
         this.fx.impact(e, e.big);
-        const label = e.b ? 'Bloqueado' : e.e > 0 ? '¡Muy eficaz!' : e.e < 0 ? 'Poco eficaz' : '';
+        const label = e.b ? t('Bloqueado') : e.e > 0 ? t('¡Muy eficaz!') : e.e < 0 ? t('Poco eficaz') : '';
         this.floatText(e.x, e.y, '-' + e.n, e.e > 0 ? 'eff' : e.e < 0 ? 'weak' : '', label, e.big);
         break;
       }
@@ -139,10 +151,10 @@ export class BattleClient {
       case 'pend': if (!e.imp) { const w = toWorld(e.x, e.y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 6, colors: PALETTE[e.ty], speed: 1.5, life: 0.3, size: 0.15 }); } break;
       case 'parry':
         this.fx.parry(e);
-        this.banner(s === this.you ? '¡Parry perfecto!' : '¡Te han hecho parry!', s === this.you ? 'good' : 'bad');
+        this.banner(s === this.you ? t('¡Parry perfecto!') : t('¡Te han hecho parry!'), s === this.you ? 'good' : 'bad');
         break;
       case 'perfectswap':
-        this.banner(s === this.you ? '¡Cambio perfecto!' : '¡Cambio perfecto rival!', s === this.you ? 'good' : 'bad');
+        this.banner(s === this.you ? t('¡Cambio perfecto!') : t('¡Cambio perfecto rival!'), s === this.you ? 'good' : 'bad');
         this.p.emit(toWorld(e.x, e.y).x, 0.8, toWorld(e.x, e.y).z, { n: 40, colors: ['#ffffff', '#a0f0ff'], speed: 4, life: 0.5, size: 0.2 });
         break;
       case 'swap':
@@ -156,27 +168,53 @@ export class BattleClient {
         break;
       case 'faint':
         actor.play('Faint');
-        this.banner(`¡${SPECIES[this.sides[s].team[e.slot].dex].name} se ha debilitado!`, s === this.you ? 'bad' : 'good');
-        if (s === this.you && this.sides[s].team.some((m, i) => i !== e.slot && (this.me ? this.me.hp[i] > 0 : true))) this.banner('Elige otro Pokémon: 1 · 2 · 3', 'info');
+        this.banner(t('¡{m} se ha debilitado!', { m: SPECIES[this.sides[s].team[e.slot].dex].name }), s === this.you ? 'bad' : 'good');
+        if (s === this.you && this.sides[s].team.some((m, i) => i !== e.slot && (this.me ? this.me.hp[i] > 0 : true))) this.banner(t('Elige otro Pokémon: 1 · 2 · 3'), 'info');
         break;
       case 'heal': this.floatText(pos.x, pos.y, '+' + e.n, 'heal'); break;
-      case 'buff': if (e.splash) this.floatText(pos.x, pos.y, '¡Pero no pasó nada!', 'info'); break;
+      case 'buff': if (e.splash) this.floatText(pos.x, pos.y, t('¡Pero no pasó nada!'), 'info'); break;
       case 'blink': { const w = toWorld(e.x, e.y, 0.6); actor.ghost('#ff90d0'); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2, life: 0.5, size: 0.2 }); break; }
-      case 'zap': this.fx.zap(e.cells); this.floatText(this.posOf(this.foeIdx).x, this.posOf(this.foeIdx).y - 30, '¡Descarga en el agua!', 'info'); break;
+      case 'zap': this.fx.zap(e.cells); this.floatText(this.posOf(this.foeIdx).x, this.posOf(this.foeIdx).y - 30, t('¡Descarga en el agua!'), 'info'); break;
       case 'capture': {
         // El Pokémon entra en la Ball; las sacudidas se anuncian una a una
         const seq = this.fx.capture(e, step => {
-          if (step === 'ok') { this.banner(`¡${this.monName(s)} atrapado!`, 'good big2'); }
-          else if (step === 'fail') { this.banner('¡Oh, no! ¡Se ha escapado!', 'bad'); }
+          if (step === 'ok') { this.banner(t('¡{m} atrapado!', { m: this.monName(s) }), 'good big2'); }
+          else if (step === 'fail') { this.banner(t('¡Oh, no! ¡Se ha escapado!'), 'bad'); }
           else this.floatText(e.x, e.y - 10, step + '…', 'shake');
         });
         this.catchSeq = { s, t0: performance.now(), ok: !!e.ok, shakes: e.shakes, IN: seq.IN, SHAKE: seq.SHAKE };
-        this.banner(`Probabilidad: ${e.chance} %`, 'info');
+        this.banner(t('Probabilidad: {n} %', { n: e.chance }), 'info');
         break;
       }
       case 'escape': this.catchSeq = null; break;
       case 'throw': if (s === this.you && this.balls) { this.balls[e.ball] = e.left; this.updateBallHud(); } break;
-      case 'sudden': this.banner('¡Muerte súbita! Daño ×1,5 y sin curaciones', 'bad'); break;
+      case 'sudden': this.banner(t('¡Muerte súbita! Daño ×1,5 y sin curaciones'), 'bad'); break;
+      // Mecánicas de las arenas de gimnasio
+      case 'arena': this.banner(tServer(e.msg), 'info'); break;
+      case 'panel': this.world.panelFlash(e.g, e.ph, e.d); if (e.ph === 'zap') this.fx.panelZap(e.g); break;
+      case 'quake': this.fx.quake(e); this.banner(t('¡Terremoto!'), 'bad'); break;
+      case 'gust': {
+        const arrow = ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'][((Math.round(e.a / (Math.PI / 4)) % 8) + 8) % 8];
+        this.banner(t('¡Ráfaga de viento! {arrow}', { arrow }), 'info');
+        break;
+      }
+      case 'warp': {
+        for (const [x, y] of [[e.x1, e.y1], [e.x2, e.y2]]) { const w = toWorld(x, y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2.4, life: 0.5, size: 0.2 }); }
+        actor.ghost('#ff90d0');
+        break;
+      }
+    }
+  }
+
+  // Efectos continuos de la arena: estelas de viento mientras sopla
+  arenaFx(dt) {
+    const wd = this.latest && this.latest.ar && this.latest.ar.wd;
+    if (!wd) return;
+    const len = Math.hypot(wd[0], wd[1]) || 1, dx = wd[0] / len, dz = wd[1] / len;
+    for (let k = 0; k < 3; k++) {
+      if (Math.random() > dt * 30) continue;
+      const x = Math.random() * Shared.COLS, z = Math.random() * Shared.ROWS;
+      this.p.emit(x, 0.3 + Math.random() * 1.2, z, { n: 2, colors: ['#ffffff', '#e0f0ff'], layer: 'soft', dir: [dx, 0, dz], spread: 0.05, speed: 9, life: 0.6, size: 0.25, alpha: 0.5 });
     }
   }
 
@@ -275,12 +313,13 @@ export class BattleClient {
       const mine = this.monOf(this.you);
       const speed = Shared.speedOf(mine.dex, this.me.f, mine.spdMult);
       if (fighting && !(this.me.f & F.DASH)) {
-        Shared.stepMove(this.pred, inp.mx, inp.my, speed, DT, this.world.collisionList(), mine.r || Shared.hitboxOf(mine.dex));
+        this.step(this.pred, inp, speed, this.world.collisionList(), mine.r || Shared.hitboxOf(mine.dex));
       }
       this.moving = (inp.mx || inp.my) && speed > 0;
     }
     this.err.x *= 0.85; this.err.y *= 0.85;
     this.render(now, dt);
+    this.arenaFx(dt);
   }
 
   interpolated(renderT) {
@@ -317,6 +356,7 @@ export class BattleClient {
       this.lastPos[i] = { x, y };
     }
     this.renderPos = pos;
+    this.world.setFocus(pos[this.you].x, pos[this.you].y);
     // Retícula bajo el ratón: gira, late y se vuelve amarilla cuando apunta a la hitbox del rival
     const ret = this.reticle;
     const aimW = toWorld(this.aim.x, this.aim.y, 0.06);
@@ -392,13 +432,20 @@ export class BattleClient {
     this.energyEl = el('div', 'energy', '<div class="fill"></div><span></span>');
     this.ballEl = this.balls ? el('div', 'balls') : null;
     this.bannerEl = el('div', 'banners');
+    // Nombre y mecánica de la arena (la descripción se esconde a los pocos segundos)
+    if (this.arena) {
+      const tag = el('div', 'arena-tag', `<b>${escapeHtml(this.arena.name)}</b><span>${escapeHtml(this.arena.desc)}</span>`);
+      tag.title = this.arena.desc;
+      root.append(tag);
+      setTimeout(() => tag.classList.add('mini'), 9000);
+    }
     this.floatEl = el('div', 'floats');
     this.plates = [0, 1].map(i => el('div', 'plate ' + (i === this.you ? 'mine' : 'foe')));
     const bottom = el('div', 'bottom');
     bottom.append(this.energyEl, this.movesEl);
     root.append(this.floatEl, ...this.plates, this.timerEl, this.teamsEl[1], this.teamsEl[0], bottom, this.bannerEl);
     if (this.ballEl) root.append(this.ballEl);
-    const help = el('div', 'help-hint', 'WASD mover · Ratón apuntar · Espacio Protección · 1-3 cambiar' + (this.balls ? ' · F lanzar Ball · R cambiar Ball' : '') + ' · Esc rendirse');
+    const help = el('div', 'help-hint', t('WASD mover · Ratón apuntar · Espacio Protección · 1-3 cambiar') + (this.balls ? ' · ' + t('F lanzar Ball · R cambiar Ball') : '') + ' · ' + t('Esc rendirse'));
     root.append(help);
     this.buildTeams();
     this.buildMoves();
@@ -408,11 +455,11 @@ export class BattleClient {
   buildTeams() {
     for (const i of [this.you, this.foeIdx]) {
       const box = this.teamsEl[i === this.you ? 0 : 1];
-      box.innerHTML = `<div class="tname">${escapeHtml(this.sides[i].name)}</div>`;
+      box.innerHTML = `<div class="tname">${escapeHtml(tServer(this.sides[i].name))}</div>`;
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
         row.append(portrait(m.dex, 40, { shiny: !!m.shiny }));
-        row.append(el('div', 'tinfo', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>Nv.${m.level}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
+        row.append(el('div', 'tinfo', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>${t('Nv.{n}', { n: m.level })}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
         row.dataset.slot = slot;
         box.append(row);
       });
@@ -424,14 +471,14 @@ export class BattleClient {
     this.movesEl.innerHTML = '';
     this.movesOf(this.you).forEach((k, i) => {
       const m = MOVES[k];
-      const b = el('div', 'mv', `<kbd>${KEYS[i]}</kbd><b>${m.name}</b><small>${m.cost ? m.cost + ' ⚡' : 'básico'}</small><div class="cd"></div><span class="cdt"></span>`);
+      const b = el('div', 'mv', `<kbd>${t(KEYS[i])}</kbd><b>${m.name}</b><small>${m.cost ? m.cost + ' ⚡' : t('básico')}</small><div class="cd"></div><span class="cdt"></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[m.type]);
       b.title = describeMove(m);
       this.movesEl.append(b);
     });
-    const pr = el('div', 'mv protect', `<kbd>Espacio</kbd><b>Protección</b><small>parry ${Math.round(PROTECT.perfect * 1000)} ms</small><div class="cd"></div><span class="cdt"></span>`);
+    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><b>${t('Protección')}</b><small>parry ${Math.round(PROTECT.perfect * 1000)} ms</small><div class="cd"></div><span class="cdt"></span>`);
     pr.style.setProperty('--tc', '#70ffb0');
-    pr.title = 'Bloquea el 80 % del daño. Si el golpe llega justo al activarla, lo devuelves (parry).';
+    pr.title = t('Bloquea el 80 % del daño. Si el golpe llega justo al activarla, lo devuelves (parry).');
     this.movesEl.append(pr);
   }
 
@@ -505,16 +552,16 @@ export class BattleClient {
     plate.dataset.key = key;
     const icons = [];
     const f = st.f;
-    if (f & F.BURN) icons.push('<i class="st burn">QUE</i>');
-    if (f & F.POISON) icons.push('<i class="st poison">ENV</i>');
-    if (f & F.WET) icons.push('<i class="st wet">MOJ</i>');
-    if (f & F.STUN) icons.push('<i class="st stun">ATU</i>');
-    if (f & F.SLOW) icons.push('<i class="st slow">LEN</i>');
-    if (f & F.SEED) icons.push('<i class="st seed">DRE</i>');
-    if (f & F.HASTE) icons.push('<i class="st haste">VEL</i>');
-    if (f & F.POWER) icons.push('<i class="st power">ATQ</i>');
-    if (f & F.HIDDEN) icons.push('<i class="st hidden">OCULTO</i>');
-    plate.innerHTML = `<div class="pn">${SPECIES[mon.dex].name}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>Nv.${mon.level}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
+    if (f & F.BURN) icons.push(`<i class="st burn">${t('QUE')}</i>`);
+    if (f & F.POISON) icons.push(`<i class="st poison">${t('ENV')}</i>`);
+    if (f & F.WET) icons.push(`<i class="st wet">${t('MOJ')}</i>`);
+    if (f & F.STUN) icons.push(`<i class="st stun">${t('ATU')}</i>`);
+    if (f & F.SLOW) icons.push(`<i class="st slow">${t('LEN')}</i>`);
+    if (f & F.SEED) icons.push(`<i class="st seed">${t('DRE')}</i>`);
+    if (f & F.HASTE) icons.push(`<i class="st haste">${t('VEL')}</i>`);
+    if (f & F.POWER) icons.push(`<i class="st power">${t('ATQ')}</i>`);
+    if (f & F.HIDDEN) icons.push(`<i class="st hidden">${t('OCULTO')}</i>`);
+    plate.innerHTML = `<div class="pn">${SPECIES[mon.dex].name}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
   }
 
   floatText(x, y, text, cls = '', sub = '', big = false) {
@@ -558,15 +605,15 @@ export function escapeHtml(s) {
 export function describeMove(m) {
   const kinds = { proj: 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida', area: m.at === 'self' ? 'Área a tu alrededor' : 'Área en el cursor',
     blink: 'Teletransporte', heal: 'Curación', buff: 'Mejora', smoke: 'Nube que oculta', wall: 'Muro' };
-  const parts = [`${kinds[m.kind]} · ${Data.TYPE_LABEL[m.type]}`];
-  if (m.dmg) parts.push(`Daño ${m.dmg}${m.count > 1 ? ' ×' + m.count : ''}`);
-  parts.push(`Energía ${m.cost} · Recarga ${m.cd} s · Preparación ${m.wind} s`);
+  const parts = [`${t(kinds[m.kind])} · ${Data.TYPE_LABEL[m.type]}`];
+  if (m.dmg) parts.push(`${t('Daño {n}', { n: m.dmg })}${m.count > 1 ? ' ×' + m.count : ''}`);
+  parts.push(t('Energía {cost} · Recarga {cd} s · Preparación {wind} s', { cost: m.cost, cd: m.cd, wind: m.wind }));
   const fx = [];
-  if (m.burn) fx.push('quema'); if (m.poison) fx.push('envenena'); if (m.wet) fx.push('moja'); if (m.slow) fx.push('ralentiza');
-  if (m.stun) fx.push(`aturde ${m.stun} s`); if (m.knock) fx.push('empuja'); if (m.pull) fx.push('atrae'); if (m.drain) fx.push('drena PS');
-  if (m.terrain) fx.push(`deja ${m.terrain} en el suelo`); if (m.heal) fx.push(`cura ${Math.round(m.heal * 100)} %`);
-  if (m.haste) fx.push('más velocidad'); if (m.power) fx.push('más daño'); if (m.invuln) fx.push('invulnerable bajo tierra');
-  if (m.selfKO) fx.push('¡te debilita!'); if (m.rockWall) fx.push('deja una roca'); if (m.splash) fx.push('no hace nada');
+  if (m.burn) fx.push(t('quema')); if (m.poison) fx.push(t('envenena')); if (m.wet) fx.push(t('moja')); if (m.slow) fx.push(t('ralentiza'));
+  if (m.stun) fx.push(t('aturde {n} s', { n: m.stun })); if (m.knock) fx.push(t('empuja')); if (m.pull) fx.push(t('atrae')); if (m.drain) fx.push(t('drena PS'));
+  if (m.terrain) fx.push(t('deja {terrain} en el suelo', { terrain: t(m.terrain) })); if (m.heal) fx.push(t('cura {n} %', { n: Math.round(m.heal * 100) }));
+  if (m.haste) fx.push(t('más velocidad')); if (m.power) fx.push(t('más daño')); if (m.invuln) fx.push(t('invulnerable bajo tierra'));
+  if (m.selfKO) fx.push(t('¡te debilita!')); if (m.rockWall) fx.push(t('deja una roca')); if (m.splash) fx.push(t('no hace nada'));
   if (fx.length) parts.push(fx.join(', '));
   return parts.join('\n');
 }
