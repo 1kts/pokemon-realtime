@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': '技は元どおり、公式アイコンに',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': '弾は以前の光るものに戻った。',
+    'Cada movimiento lleva el icono oficial de su tipo.': 'それぞれの技にタイプの公式アイコンを表示。',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': 'ランクマッチでリーグを上げたり、実績を達成したりして、称号とフレームを増やそう。',
     'Logros': '実績',

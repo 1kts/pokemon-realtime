@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': 'Attacks as before and official icons',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': 'Projectiles are back to how they were, with their glow.',
+    'Cada movimiento lleva el icono oficial de su tipo.': 'Each move shows the official icon of its type.',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': 'Earn more titles and frames by climbing leagues in Ranked and completing achievements.',
     'Logros': 'Achievements',

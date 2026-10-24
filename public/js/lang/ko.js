@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': '기술은 예전대로, 공식 아이콘으로',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': '투사체가 예전처럼 빛나는 모습으로 돌아왔어.',
+    'Cada movimiento lleva el icono oficial de su tipo.': '각 기술에 타입의 공식 아이콘이 표시돼.',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': '랭크전에서 리그를 올리거나 업적을 달성해 칭호와 테두리를 더 얻자.',
     'Logros': '업적',

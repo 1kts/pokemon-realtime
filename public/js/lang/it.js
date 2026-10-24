@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': 'Mosse come prima e icone ufficiali',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': 'I proiettili tornano come prima, con il loro bagliore.',
+    'Cada movimiento lleva el icono oficial de su tipo.': 'Ogni mossa mostra l’icona ufficiale del suo tipo.',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': 'Ottieni più titoli e cornici salendo di lega in Classificata e completando obiettivi.',
     'Logros': 'Obiettivi',

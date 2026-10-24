@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': '招式恢复原样，采用官方图标',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': '弹射物恢复为原来带光晕的样子。',
+    'Cada movimiento lleva el icono oficial de su tipo.': '每个招式都显示其属性的官方图标。',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': '在排位赛中提升联赛或完成成就，获得更多称号和头像框。',
     'Logros': '成就',

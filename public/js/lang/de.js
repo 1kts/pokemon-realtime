@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    'Ataques como antes e iconos oficiales': 'Attacken wie vorher und offizielle Symbole',
+    'Los proyectiles vuelven a ser los de antes, con su brillo.': 'Die Projektile sind wieder wie vorher, mit ihrem Leuchten.',
+    'Cada movimiento lleva el icono oficial de su tipo.': 'Jede Attacke zeigt das offizielle Symbol ihres Typs.',
     // ---------- Logros ----------
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.': 'Verdiene mehr Titel und Rahmen, indem du in der Rangliste aufsteigst und Erfolge abschließt.',
     'Logros': 'Erfolge',

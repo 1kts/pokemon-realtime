@@ -6,7 +6,7 @@ import { toWorld } from './world.js';
 import { portrait, preload } from './sprites.js';
 import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
-import { icon } from './pixicons.js';
+import { icon, typeIcon } from './pixicons.js';
 
 const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
@@ -475,7 +475,7 @@ export class BattleClient {
     this.movesEl.innerHTML = '';
     this.movesOf(this.you).forEach((k, i) => {
       const m = MOVES[k];
-      const b = el('div', 'mv', `<kbd>${t(KEYS[i])}</kbd>${icon('move:' + k, 32, 'mv-ico')}<b>${m.name}</b><small>${m.cost ? m.cost + ' ⚡' : t('básico')}</small><div class="cd"></div><span class="cdt"></span>`);
+      const b = el('div', 'mv', `<kbd>${t(KEYS[i])}</kbd>${typeIcon(m.type, 30, 'mv-ico')}<b>${m.name}</b><small>${m.cost ? m.cost + ' ⚡' : t('básico')}</small><div class="cd"></div><span class="cdt"></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[m.type]);
       b.title = describeMove(m);
       this.movesEl.append(b);

@@ -9,7 +9,7 @@ import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
 import { storage } from './net.js';
-import { icon, item as itemImg, badgeImg } from './pixicons.js';
+import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 
@@ -558,7 +558,7 @@ export class UI {
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
       card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
-        <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${icon('move:' + k, 16)}${MOVES[k].name}</span>`).join('')}</div>
+        <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
         ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}`));
       const acts = el('div', 'acts');
@@ -680,7 +680,7 @@ export class UI {
     const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
     box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: sp.bst })}</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
-    box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${icon('move:' + k, 16)}${MOVES[k].name}</span>`).join('')));
+    box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')));
     const evo = sp.evo;
     if (evo) {
       const list = Array.isArray(evo[0]) ? evo : [evo];
@@ -717,7 +717,7 @@ export class UI {
         const i = chosen.indexOf(k);
         const row = el('button', 'move-row' + (i >= 0 ? ' sel' : ''));
         row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-        row.innerHTML = `<span class="slot">${icon('move:' + k, 32)}<i>${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
+        row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
         row.onclick = () => {
           if (i >= 0) { if (chosen.length > 1) chosen.splice(i, 1); }
           else if (chosen.length < 4) chosen.push(k);

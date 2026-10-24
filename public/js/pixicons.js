@@ -490,3 +490,6 @@ export function badgeImg(region, index, got, size = 28, cls = '') {
   if (!src) return '';
   return `<img class="badge-img${got ? ' got' : ''} ${cls}" src="${src}" width="${size}" height="${size}" alt="" draggable="false">`;
 }
+
+// Iconos oficiales de los tipos (PokeAPI sprites/types, Escarlata/Púrpura): se usan en los movimientos
+export const typeIcon = (type, size = 24, cls = '') => `<img class="type-ico ${cls}" src="types/${type}.png" width="${size}" height="${size}" alt="" draggable="false">`;

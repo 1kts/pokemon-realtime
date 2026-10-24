@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.9.1', date: '2026-10-25', title: 'Ataques como antes e iconos oficiales',
+      items: [
+        ['cambio', 'Los proyectiles vuelven a ser los de antes, con su brillo.'],
+        ['cambio', 'Cada movimiento lleva el icono oficial de su tipo.'],
+      ],
+    },
+    {
       v: '0.9.0', date: '2026-10-25', title: 'Logros e insignias',
       items: [
         ['nuevo', '18 logros de bronce, plata y oro con premios: títulos, dinero y marcos nuevos (Pokédex, Shiny, Campeón y Torre).'],

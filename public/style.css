@@ -1071,3 +1071,5 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .mon-filters { margin: -4px 0 12px; }
 .mon-card[hidden] { display: none; }
 .mon-card .acts button.look.on { border-color: rgba(255,203,5,.7); color: var(--yellow); }
+.type-ico { flex: none; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.mchip .type-ico { border-radius: 4px; }

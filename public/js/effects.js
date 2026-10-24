@@ -3,7 +3,6 @@
 import * as THREE from 'three';
 import { U, toWorld, softDisc } from './world.js';
 import { PALETTE, SMOKE, DUST } from './particles.js';
-import { texture as vfxTexture, lookOf, SHAPES as VFX_SHAPES } from './pixvfx.js';
 
 // Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve
 let BRIGHT = false;
@@ -270,41 +269,26 @@ export class Effects {
       g.add(tw);
       return { obj: g, h: 0.45, update: (_, pos, dt) => { tw.rotation.y += dt * 20; p.trickle(25, dt, pos.x, pos.y, pos.z, { colors: PALETTE.volador, layer: 'soft', speed: 1, life: 0.3, size: 0.12, alpha: 0.7 }); } };
     }
-    // Genérico: sprite pixel art de la forma del movimiento (PokéSurvivor) + halo + estela del tipo
-    const look = lookOf(pr.mk, ty);
-    const S = VFX_SHAPES[look.shape] || VFX_SHAPES.ball;
-    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: vfxTexture(look.shape, look.pal, 0), transparent: true, depthWrite: false, toneMapped: false }));
-    const px = 0.075 * look.scale * Math.max(1, r / 0.3);   // tamaño de un píxel de arte en unidades 3D
-    spr.scale.set(S.w * px, S.h * px, 1);
-    spr.renderOrder = 22;
-    g.add(spr);
-    const halo = BRIGHT ? null : glowSprite(bright(TYPE_COLOR[ty], 1.3), r * 3.5 + 0.25);
-    if (halo) g.add(halo);
+    // Genérico: núcleo brillante + halo + estela del tipo
+    const core = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.07, r * 0.7), 12, 10), new THREE.MeshBasicMaterial({ color: BRIGHT ? new THREE.Color(pal[Math.min(2, pal.length - 1)]) : bright(pal[1], 2.2), toneMapped: false }));
+    const halo = glowSprite(BRIGHT ? new THREE.Color(TYPE_COLOR[ty]).multiplyScalar(0.7) : bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
+    if (BRIGHT) { halo.material.blending = THREE.NormalBlending; halo.scale.multiplyScalar(0.6); }
+    g.add(core, halo);
+    if (ty === 'fantasma' || ty === 'veneno') core.material.color = bright(pal[2], 1.2);
     const big = (m.dmg || 0) >= 15;
     const extra = {};
     if (ty === 'fuego') Object.assign(extra, { grav: -2, speed: 0.8, life: big ? 0.5 : 0.3, size: r * (big ? 3.2 : 2.4) });
     if (ty === 'agua') Object.assign(extra, { layer: 'solid', grav: 6, speed: 1, life: 0.4, size: 0.09 });
     if (ty === 'electrico') Object.assign(extra, { speed: 2.5, life: 0.15, size: 0.12 });
     if (ty === 'hielo') Object.assign(extra, { layer: 'solid', speed: 0.6, life: 0.5, size: 0.08 });
-    const tr = trail(big ? 110 : 45, extra);
-    const cam = this.world.camera, v1 = new THREE.Vector3(), v2 = new THREE.Vector3();
-    let t = 0, frame = 0;
+    const tr = trail(big ? 140 : 60, extra);
     return {
       obj: g, h: 0.55,
       update: (pr2, pos, dt) => {
         tr(pr2, pos, dt);
-        t += dt;
-        // Animación por fotogramas
-        if ((S.frames || 1) > 1 && Math.floor(t / 0.09) !== frame) { frame = Math.floor(t / 0.09); spr.material.map = vfxTexture(look.shape, look.pal, frame); }
-        // Las formas con dirección miran hacia donde va el proyectil (en pantalla); otras giran
-        if (S.dir) {
-          v1.copy(pos).project(cam);
-          v2.set(pos.x + Math.cos(pr2.a), pos.y, pos.z + Math.sin(pr2.a)).project(cam);
-          spr.material.rotation = Math.atan2(v2.y - v1.y, (v2.x - v1.x) * cam.aspect);
-        } else if (S.spin) spr.material.rotation += dt * 9;
-        if (halo) halo.material.opacity = 0.55 + Math.sin(performance.now() / 40) * 0.15;
-        if (ty === 'electrico' && Math.random() < 0.4) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
-        if (big && ty === 'fuego') p.trickle(12, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
+        halo.material.opacity = 0.8 + Math.sin(performance.now() / 40) * 0.2;
+        if (ty === 'electrico' && Math.random() < 0.5) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
+        if (big && ty === 'fuego') p.trickle(15, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
       },
     };
   }
