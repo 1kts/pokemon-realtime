@@ -62,7 +62,7 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
   // ---------- Páginas legales ----------
   for (const [url, lang] of [['/legal', 'es'], ['/legal/en', 'en']]) {
     const lp = await get(url);
-    ok(/contacto@pokearenas\.com/.test(lp.body) && lp.body.includes(`lang="${lang}"`) && /CC BY-NC 4\.0/.test(lp.body) && /<tr><td>CHUNSOFT<\/td>/.test(lp.body)
+    ok(/contact@pokearenas\.com/.test(lp.body) && lp.body.includes(`lang="${lang}"`) && /CC BY-NC 4\.0/.test(lp.body) && /<tr><td>CHUNSOFT<\/td>/.test(lp.body)
       && /default-src 'self'/.test(lp.h['content-security-policy'] || ''), `${url}: aviso legal, privacidad y artistas, con CSP`);
   }
   ok(!/(src|href)="https?:\/\/(?!creativecommons|github|polyform|pokeapi|threejs|ko-fi|www\.aepd)/.test((await get('/legal')).body + (await get('/')).body),

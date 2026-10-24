@@ -144,7 +144,7 @@ export default {
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.': '精灵图来自<i>宝可梦不可思议的迷宫</i>社区（PMD Sprite Collab），使用时注明了各位画师。宝可梦数据来自 PokéAPI。地图图块为 CC0 授权。',
     'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': '每个精灵图的画师、各项授权许可以及完整的隐私政策，请见<a href="{url}" target="_blank" rel="noopener">法律声明</a>。',
     'Datos que guardamos': '我们保存的数据',
-    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.': '我们会保存你的训练家名字和游戏进度；如果你创建账号，还会保存你的用户名和加密后的密码（加盐 scrypt）；此外，安全记录会保存你的 IP 40 天。没有广告、Cookie 或任何跟踪。如需删除账号或有任何疑问：contacto@pokearenas.com。',
+    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.': '我们会保存你的训练家名字和游戏进度；如果你创建账号，还会保存你的用户名和加密后的密码（加盐 scrypt）；此外，安全记录会保存你的 IP 40 天。没有广告、Cookie 或任何跟踪。如需删除账号或有任何疑问：contact@pokearenas.com。',
     'Recargar': '重新加载',
     'Hay una versión nueva (v{v}): se cargará al terminar lo que estás haciendo.': '有新版本（v{v}）：会在你完成当前操作后加载。',
     'Hay una versión nueva (v{v}). Recargando en {n} s…': '有新版本（v{v}）。{n} 秒后重新加载…',
