@@ -792,6 +792,14 @@ export default {
     'Pokémon de las 9 generaciones, rutas temáticas y Pokémon misterioso del día.': 'Pokémon delle 9 generazioni, percorsi a tema e un Pokémon misterioso del giorno.',
     'Captura con Poké Balls y animación de 3 sacudidas.': 'Cattura con le Poké Ball e un\'animazione a 3 scosse.',
     'IA por utilidad que se adapta al combate.': 'Un\'IA basata sull\'utilità che si adatta alla lotta.',
+    // ---------- 0.8.0 ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Le icone degli strumenti vengono da PokeAPI e le icone in pixel art dell\'interfaccia da PokéSurvivor (JPTER78, licenza PolyForm Noncommercial).',
+    'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': 'Gli artisti di ogni sprite, le licenze e l\'informativa sulla privacy completa sono nelle <a href="{url}" target="_blank" rel="noopener">note legali</a>.',
+    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.': 'Conserviamo il tuo nome Allenatore e la tua partita; se crei un account, il tuo nome utente e la password cifrata (scrypt con sale); e, per 40 giorni, un registro di sicurezza con il tuo IP. Niente pubblicità, cookie né tracciamento. Per cancellare il tuo account o per qualsiasi dubbio: contacto@pokearenas.com.',
+    'Nuevo aspecto': 'Nuovo aspetto',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Interfaccia rinnovata: caratteri arrotondati, pulsanti e finestre a righe e schede del menu con icona.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Icone vere degli strumenti nel negozio, nella squadra e nei premi, e monete in pixel art.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Ogni mossa mostra un emblema con il suo tipo e la sua forma (proiettile, cono, raggio, carica…).',
   },
 
   patterns: [

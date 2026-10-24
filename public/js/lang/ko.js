@@ -792,6 +792,14 @@ export default {
     'Pokémon de las 9 generaciones, rutas temáticas y Pokémon misterioso del día.': '9세대의 포켓몬, 테마가 있는 도로, 오늘의 수수께끼 포켓몬.',
     'Captura con Poké Balls y animación de 3 sacudidas.': '몬스터볼로 포획, 3번 흔들리는 애니메이션.',
     'IA por utilidad que se adapta al combate.': '배틀 상황에 맞춰 판단하는 AI.',
+    // ---------- 0.8.0 ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '도구 아이콘은 PokeAPI, 화면의 도트 아이콘은 PokéSurvivor(JPTER78, PolyForm Noncommercial 라이선스)의 것입니다.',
+    'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': '스프라이트별 제작자, 라이선스, 개인정보 처리방침 전문은 <a href="{url}" target="_blank" rel="noopener">법적 고지</a>에 있습니다.',
+    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.': '트레이너 이름과 진행 상황, 계정을 만들면 아이디와 암호화된 비밀번호(솔트를 친 scrypt), 그리고 40일 동안 IP 가 담긴 보안 기록을 저장합니다. 광고, 쿠키, 추적은 없습니다. 계정 삭제나 문의: contacto@pokearenas.com.',
+    'Nuevo aspecto': '새로운 모습',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': '화면을 새로 단장: 둥근 글꼴, 줄무늬 버튼과 창, 아이콘이 있는 메뉴 카드.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': '상점·지닌 포켓몬·보상에 실제 도구 아이콘, 도트 코인.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': '기술마다 타입과 모양(투사체, 부채꼴, 빔, 돌진…)을 보여 주는 엠블럼.',
   },
 
   patterns: [
