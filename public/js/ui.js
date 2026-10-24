@@ -94,6 +94,7 @@ export class UI {
     // Dinero, tu perfil (avatar, nombre y liga) y Ajustes (idioma, novedades, créditos)
     const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span>`);
     if (this.view !== 'profile') stats.append(this.profileChip());
+    if (this.view === 'menu') stats.append(this.newsIcon());
     if (this.view !== 'settings') stats.append(this.settingsButton());
     bar.append(stats);
     return bar;

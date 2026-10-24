@@ -4,13 +4,14 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
-import { t, locale, LANGS, getLang, setLang } from './i18n.js';
+import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
 const GEAR_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm5.6 3.6.9.7-1.3 2.3-1.1-.4a5 5 0 0 1-1.4.8l-.2 1.2H7.9l-.2-1.2a5 5 0 0 1-1.4-.8l-1.1.4-1.3-2.3.9-.7a5 5 0 0 1 0-1.6l-.9-.7 1.3-2.3 1.1.4a5 5 0 0 1 1.4-.8l.2-1.2h2.6l.2 1.2a5 5 0 0 1 1.4.8l1.1-.4 1.3 2.3-.9.7a5 5 0 0 1 0 1.6Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.5a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2v-9Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 11.5a2 2 0 0 1 2-2h7.5M6 5h4M6 7h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
@@ -266,9 +267,18 @@ export const accountViews = {
     return b;
   },
 
-  // Botón de la barra superior que lleva a Ajustes (con aviso si hay novedades sin ver)
+  // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
+  newsIcon() {
+    const b = el('button', 'news-btn', `${BOOK_SVG}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
+    b.title = t('Novedades');
+    b.setAttribute('aria-label', t('Novedades'));
+    b.onclick = () => this.patchNotes();
+    return b;
+  },
+
+  // Botón de la barra superior que lleva a Ajustes
   settingsButton() {
-    const b = el('button', 'settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
+    const b = el('button', 'settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>`);
     b.title = t('Ajustes: idioma, perfil, novedades y créditos');
     b.onclick = () => this.show('settings');
     return b;
@@ -286,7 +296,7 @@ export const accountViews = {
     lang.append(el('h3', '', `${GLOBE_SVG} ${t('Idioma')}`), el('p', 'small', t('Cambia los textos del juego al momento. Se recuerda en este navegador.')));
     const langs = el('div', 'lang-list');
     for (const [id, name] of Object.entries(LANGS)) {
-      const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `<b>${name}</b><small>${id.toUpperCase()}</small>`);
+      const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `<b>${name}</b><small>${LANG_CODES[id] || id.toUpperCase()}</small>`);
       b.onclick = () => setLang(id).then(ok => { if (ok) { this.app.onLang(); this.show('settings'); } });
       langs.append(b);
     }

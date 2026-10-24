@@ -729,3 +729,7 @@ button.icon { padding: 4px 9px; font-size: 14px; }
   .pv-body { grid-template-columns: 1fr; }
   .settings-body { grid-template-columns: 1fr; }
 }
+/* Icono de novedades (diario) en el menú */
+.news-btn { position: relative; display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; }
+.news-btn svg { width: 19px; height: 19px; }
+.news-btn .ndot { position: absolute; top: 3px; right: 3px; }
