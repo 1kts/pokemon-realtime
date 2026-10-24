@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    'Vence a {who} para conseguirla': '{who}을(를) 이기면 얻을 수 있어',
+    'Tope Nv.{n}': '상한 Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': '노력치 최대',
+    'EV totales al máximo': '노력치 합계 최대',
+    'Mochila': '가방',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': '가방이 비어 있어. 상점에서 도구를 사거나 관장을 이겨서 얻어 보자.',
+    'Ir a la Tienda': '상점으로',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': '몬스터볼은 야생 포켓몬과의 배틀에서 사용해: <kbd>F</kbd>로 던지고 <kbd>R</kbd>로 볼을 바꿔.',
+    '¿En qué Pokémon?': '어떤 포켓몬에게 쓸까?',
+    'Elige un objeto de la lista.': '목록에서 도구를 골라.',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': '도구는 <b>가방</b>에서 사용해: 도구를 고른 다음 포켓몬을 골라.',
+    'Mochila y estilo propio': '가방과 고유 스타일',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': '상단 바에 새 가방: 모든 도구를 보고, 도구와 포켓몬을 골라 사용할 수 있어.',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'PokéArenas만의 금색 버튼과 파란 헤더.',
+    'Medallas y ataques nuevos': '새로운 배지와 기술',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': '배지는 게임 속 그대로: 지방 바, 획득할 때, 그리고 프로필의 새 배지 케이스에 표시돼.',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': '투사체는 각 기술 모양의 픽셀 아트: 불꽃, 물방울, 번개, 거품, 별……',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': '밝은 경기장(얼음, 수영장, 타일)에서는 효과와 경고가 잘 보이도록 어두워져.',
     // ---------- 공통 ----------
     '← Volver': '← 돌아가기',
     'Volver': '돌아가기',

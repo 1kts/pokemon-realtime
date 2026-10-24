@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    'Vence a {who} para conseguirla': 'Sconfiggi {who} per ottenerla',
+    'Tope Nv.{n}': 'Limite Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': 'EV al massimo',
+    'EV totales al máximo': 'EV totali al massimo',
+    'Mochila': 'Borsa',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': 'La borsa è vuota. Compra strumenti al Negozio o ottienili sconfiggendo i capipalestra.',
+    'Ir a la Tienda': 'Vai al Negozio',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': 'Le Poké Ball si usano in lotta contro i Pokémon selvatici: premi <kbd>F</kbd> per lanciarne una e <kbd>R</kbd> per cambiare Ball.',
+    '¿En qué Pokémon?': 'Su quale Pokémon?',
+    'Elige un objeto de la lista.': 'Scegli uno strumento dalla lista.',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': 'Usa gli strumenti dalla <b>Borsa</b>: scegli lo strumento e poi il Pokémon.',
+    'Mochila y estilo propio': 'Borsa e stile proprio',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': 'Nuova Borsa nella barra in alto: vedi tutti i tuoi strumenti e usali scegliendo lo strumento e poi il Pokémon.',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'Pulsanti dorati e intestazioni blu propri di PokéArenas.',
+    'Medallas y ataques nuevos': 'Nuove medaglie e mosse',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'Le medaglie sono quelle dei giochi: nella barra della regione, quando le vinci e nel nuovo portamedaglie del profilo.',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': 'I proiettili sono sprite in pixel art con la forma di ogni mossa: fiamme, gocce, fulmini, bolle, stelle…',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': 'Sui campi chiari (ghiaccio, piscina, piastrelle) effetti e avvisi diventano più scuri per vedersi bene.',
     // ---------- Generale ----------
     '← Volver': '← Indietro',
     'Volver': 'Indietro',
