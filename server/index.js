@@ -11,13 +11,31 @@ const story = require('./story.js');
 const rewards = require('./rewards.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
+const limits = require('./limits.js');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
+// Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: solo se
+// cargan scripts de aquí y de jsDelivr (Three.js) más los scripts en línea de la propia página
+// (su hash, así que un script inyectado no se ejecutaría), y solo se conecta a este servidor.
+const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
+function csp(html, host) {
+  const hashes = [...html.toString().matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(m => `'sha256-${crypto.createHash('sha256').update(m[1]).digest('base64')}'`);
+  const h = /^[A-Za-z0-9.:[\]-]+$/.test(host || '') ? host : '';
+  return [`default-src 'self'`, `script-src 'self' https://cdn.jsdelivr.net ${hashes.join(' ')}`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, `font-src https://fonts.gstatic.com`,
+    `img-src 'self' data: blob:`, `connect-src 'self'${h ? ` ws://${h} wss://${h}` : ''}`, `worker-src 'self' blob:`,
+    `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`].join('; ');
+}
+
 const server = http.createServer((req, res) => {
+  for (const [k, v] of Object.entries(SECURITY)) res.setHeader(k, v);
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
@@ -29,6 +47,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
+    if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : 'no-cache' });
     res.end(data);
   });
@@ -250,18 +269,28 @@ function startTower(c) {
 
 // ---------- Conexiones ----------
 const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
-wss.on('connection', ws => {
-  const c = { ws, profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
+wss.on('connection', (ws, req) => {
+  const ip = limits.clientIp(req);
+  if (!limits.connOpen(ip)) {
+    ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
+    return ws.close(1008);
+  }
+  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
   clients.add(c);
   send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
+    // Quien manda mensajes sin parar (un script) pierde los que sobran y, si insiste, la conexión
+    const { ok, kick } = limits.allow(c.limits, msg.t);
+    if (kick) return ws.terminate();
+    if (!ok) return;
     const fail = e => console.error('Error con el mensaje', msg.t, e);
     try { Promise.resolve(handle(c, msg)).catch(fail); } catch (e) { fail(e); }
   });
   ws.on('close', () => {
+    limits.connClose(ip);
     clients.delete(c);
     leaveQueue(c);
     if (c.draft) cancelDraft(c.draft, c);
@@ -276,7 +305,9 @@ function handle(c, msg) {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
     if (busy(c) || c.authing) return;
-    setProfile(c, store.get(typeof msg.token === 'string' ? msg.token : null, name));
+    const token = typeof msg.token === 'string' ? msg.token : null;
+    if (!store.has(token) && !limits.newProfile(c.ip)) return send(c, { t: 'error', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
+    setProfile(c, store.get(token, name));
     return sendProfile(c);
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
@@ -381,15 +412,19 @@ function setProfile(c, p) {
 // cambie el perfil de la conexión; si se ha desconectado entretanto, se suelta el perfil.
 async function auth(c, msg) {
   if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
+  // Además del tope por conexión, por IP (abrir conexiones nuevas no da más intentos) y por cuenta
+  if (!limits.authAttempt(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' });
   if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   const user = typeof msg.user === 'string' ? msg.user.trim() : '';
+  if (msg.t === 'login' && limits.userLocked(user)) return send(c, { t: 'autherr', msg: 'Demasiados intentos con esta cuenta: espera 15 minutos' });
+  if (msg.t === 'register' && !c.profile && !limits.newProfile(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
   c.authing = true;
   let r;
   try {
     r = msg.t === 'login' ? { p: await store.login(user, msg.pass) } : await store.register(c.profile, user, msg.pass);
   } finally { c.authing = false; }
   if (r.err) return send(c, { t: 'autherr', msg: r.err });
-  if (!r.p) return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
+  if (!r.p) { limits.userFailed(user); return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' }); }
   if (!clients.has(c)) return store.release(r.p);
   // Registrar el perfil actual (invitado) lo deja igual; entrar o registrar desde la portada lo cambia
   if (r.p !== c.profile) setProfile(c, r.p);

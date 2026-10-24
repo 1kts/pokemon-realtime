@@ -2,5 +2,11 @@
 # setup.sh cambia DOMINIO por el dominio real (o por <ip>.sslip.io si aún no hay dominio).
 DOMINIO {
 	encode zstd gzip
+	# Siempre por HTTPS (el navegador lo recuerda un año) y sin decir qué servidor web es.
+	# El resto de cabeceras de seguridad (CSP, nosniff…) las pone el servidor de Node.
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
 	reverse_proxy localhost:3000
 }

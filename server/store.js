@@ -107,6 +107,9 @@ function addProfile(name) {
   return p;
 }
 
+// ¿Existe un perfil con este token?
+const has = token => !!token && profiles.has(token);
+
 // Con token válido devuelve su perfil; si no, crea uno de invitado con ese nombre. La conexión
 // que lo pide lo tiene en uso hasta que llame a release().
 function get(token, name) {
@@ -244,4 +247,4 @@ function rankOf(p) {
   return rank;
 }
 
-module.exports = { get, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };
+module.exports = { get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };
