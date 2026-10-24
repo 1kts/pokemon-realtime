@@ -186,7 +186,7 @@ export class UI {
     map.style.backgroundImage = `url(${regionMapImage(region)})`;
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
     const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
-    const leaderCities = new Set(nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
+    const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
     for (const city of art.cities) {
       if (leaderCities.has(city)) continue;
       const [name, x, y] = city;
