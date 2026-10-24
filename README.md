@@ -1,4 +1,4 @@
-# Arena Pokémon
+# PokéArenas
 
 Combates Pokémon **en tiempo real** en el navegador, estilo HD-2D (arena 3D con Three.js y sprites de
 *Pokémon Mundo Misterioso*). Modo historia por Kanto, clasificatoria online con draft y ELO, partida
@@ -124,3 +124,7 @@ npm run test:sim 300   # más combates
 `node tools/fetch-dex.js <clon de PokéSurvivor>` descarga de PokeAPI los datos de las 966 especies con sprite
 (`public/dex.js`) y `node tools/import-sprites.js <clon de PokéSurvivor>` copia los sprites de todas las especies de
 `data.js` y regenera `public/sprites/meta.js` y la tabla de artistas de `CREDITS.md`.
+
+## Apoyar el proyecto
+
+PokéArenas es gratis y sin ánimo de lucro. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en [Ko-fi](https://ko-fi.com/1kts_). Donar no da ninguna ventaja en el juego.

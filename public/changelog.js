@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.7.1', date: '2026-10-24', title: 'Nuevo nombre: PokéArenas',
+      items: [
+        ['cambio', 'El juego pasa a llamarse PokéArenas.'],
+        ['nuevo', 'Botón de Ko-fi para quien quiera ayudar a pagar el servidor. El juego es y seguirá siendo gratis, y donar no da ventajas.'],
+      ],
+    },
+    {
       v: '0.7.0', date: '2026-10-24', title: 'Pokédex, guía y Pokémon del día',
       items: [
         ['nuevo', 'Pokédex con las 966 especies: filtra por generación, tipo y las que te faltan, y mira en qué rutas aparece cada una (y si sale hoy).'],
