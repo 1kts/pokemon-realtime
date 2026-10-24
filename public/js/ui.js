@@ -3,39 +3,13 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { Net } from './net.js';
+import { REGION_ART, regionMapImage } from './regionmap.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
-// Mapa aproximado de cada región (no es el oficial): ciudades, caminos, rutas marinas y relieve,
-// en las mismas coordenadas (%) que los nodos de regions-src.js.
-const REGION_ART = {
-  kanto: {
-    cities: [['Pueblo Paleta', 18, 86], ['Ciudad Verde', 18, 64], ['Ciudad Plateada', 18, 28], ['Ciudad Celeste', 64, 22], ['Ciudad Azafrán', 64, 44],
-      ['Ciudad Carmín', 64, 70], ['Pueblo Lavanda', 88, 46], ['Ciudad Azulona', 40, 46], ['Ciudad Fucsia', 48, 84], ['Isla Canela', 12, 96], ['Meseta Añil', 6, 10]],
-    roads: [[[18, 86], [18, 64], [18, 42], [18, 28]], [[18, 64], [8, 62], [6, 46], [6, 32], [6, 10]], [[18, 28], [30, 26], [42, 20], [52, 24], [64, 22]],
-      [[64, 22], [64, 10], [76, 8]], [[64, 22], [64, 44], [64, 70]], [[64, 22], [76, 22], [88, 28], [88, 46]], [[88, 46], [76, 46], [64, 44], [50, 46], [40, 46]],
-      [[64, 70], [76, 70], [88, 64], [88, 46]], [[88, 64], [82, 80], [72, 86], [60, 86], [48, 84]], [[40, 46], [30, 46], [26, 62], [34, 80], [48, 84]], [[18, 64], [44, 64], [64, 70]]],
-    sea: [[[48, 84], [48, 98], [36, 96], [26, 96], [12, 96]], [[12, 96], [14, 86], [18, 86]]],
-    mountains: [[42, 17], [38, 21], [46, 22], [6, 30], [10, 34], [88, 38], [92, 41], [4, 18]],
-    forests: [[18, 42], [14, 45], [22, 40], [48, 94], [52, 92]],
-    lakes: [[26, 96, 5, 3]],
-  },
-  johto: {
-    cities: [['Pueblo Primavera', 90, 74], ['Ciudad Cerezo', 74, 68], ['Ciudad Malva', 58, 42], ['Pueblo Azalea', 44, 78], ['Ciudad Trigal', 32, 52], ['Ciudad Iris', 42, 12],
-      ['Ciudad Olivo', 16, 32], ['Ciudad Orquídea', 4, 52], ['Pueblo Caoba', 72, 22], ['Ciudad Endrino', 92, 26], ['Liga Pokémon', 82, 92]],
-    roads: [[[90, 74], [82, 72], [74, 68], [72, 60], [66, 46], [58, 42]], [[58, 42], [58, 58], [56, 70], [50, 80], [44, 78]], [[44, 78], [32, 76], [32, 64], [32, 52]],
-      [[32, 52], [32, 40], [42, 34], [48, 28], [58, 42]], [[42, 34], [42, 22], [42, 12]], [[42, 12], [28, 14], [18, 20], [16, 32]], [[42, 12], [56, 14], [62, 20], [72, 22]],
-      [[72, 22], [72, 12], [74, 4]], [[72, 22], [80, 22], [88, 14], [92, 26]], [[92, 26], [92, 42], [88, 58], [82, 72]], [[90, 74], [96, 62], [96, 82], [82, 92]], [[58, 42], [48, 50], [32, 52]]],
-    sea: [[[16, 32], [12, 44], [8, 60], [4, 52]], [[8, 60], [16, 66]]],
-    mountains: [[62, 16], [58, 19], [66, 21], [86, 12], [90, 15], [96, 10], [98, 40], [92, 46]],
-    forests: [[32, 76], [28, 79], [36, 79], [42, 34], [46, 36]],
-    lakes: [[74, 4, 4, 3], [96, 13, 3, 2]],
-  },
-};
-
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
 export class UI {
@@ -103,7 +77,7 @@ export class UI {
       nav.append(b);
     }
     bar.append(nav);
-    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="badges">${Data.leadersOf(this.region || 'kanto').slice(0, 8).map((g, i) => `<i class="badge${i < Data.progOf(p, this.region || 'kanto') ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader} · ${g.badge}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
+    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`));
     return bar;
   }
 
@@ -197,13 +171,6 @@ export class UI {
   }
 
   // ---------- Historia ----------
-  // Siluetas aproximadas de cada región para el mapa
-  regionShape(region) {
-    return region === 'johto'
-      ? 'M3,12 Q4,3 16,4 L46,2 Q70,0 86,4 Q99,8 98,26 Q100,46 96,66 Q99,84 90,96 L60,98 Q40,96 28,92 Q12,90 4,74 Q-1,58 3,40 Z'
-      : 'M2,10 Q4,2 18,3 L60,2 Q80,1 92,8 Q99,18 97,40 Q99,62 94,78 Q88,92 70,94 L58,99 Q40,100 30,92 Q14,99 6,92 Q0,80 3,60 Q0,40 2,26 Z';
-  }
-
   view_story() {
     const p = this.profile;
     const region = this.region = this.region || 'kanto';
@@ -212,22 +179,18 @@ export class UI {
     const prog = Data.progOf(p, region);
     const wrap = el('div', 'story');
     const bar = this.topbar(R.name, 'menu');
-    bar.insertBefore(this.regionTabs(region, rid => { this.region = rid; this.show('story'); }), bar.children[2] || null);
-    wrap.append(bar);
+    wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
     const art = REGION_ART[region];
-    const pts = l => l.map(([x, y]) => `${x},${y}`).join(' ');
-    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="${this.regionShape(region)}" />
-      ${art.lakes.map(([x, y, rx, ry]) => `<ellipse class="lake" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"/>`).join('')}
-      ${art.forests.map(([x, y]) => `<circle class="forest" cx="${x}" cy="${y}" r="2.4"/>`).join('')}
-      ${art.mountains.map(([x, y]) => `<path class="mount" d="M${x - 3},${y + 2.5} L${x},${y - 3} L${x + 3},${y + 2.5} Z"/><path class="snow" d="M${x - 1},${y - 0.8} L${x},${y - 3} L${x + 1},${y - 0.8} Z"/>`).join('')}
-      ${art.sea.map(l => `<polyline class="searoute" points="${pts(l)}"/>`).join('')}
-      ${art.roads.map(l => `<polyline class="road-edge" points="${pts(l)}"/>`).join('')}
-      ${art.roads.map(l => `<polyline class="road" points="${pts(l)}"/>`).join('')}
-    </svg>`;
-    for (const [name, x, y] of art.cities) {
-      const c = el('div', 'city', `<i></i><span>${name}</span>`);
+    map.style.backgroundImage = `url(${regionMapImage(region)})`;
+    // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
+    const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
+    const leaderCities = new Set(nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
+    for (const city of art.cities) {
+      if (leaderCities.has(city)) continue;
+      const [name, x, y] = city;
+      const c = el('div', 'city', `<span>${name}</span>`);
       c.style.left = x + '%'; c.style.top = y + '%';
       map.append(c);
     }
@@ -245,7 +208,8 @@ export class UI {
       b.style.left = n.x + '%'; b.style.top = n.y + '%';
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
-      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}</label>`;
+      const city = isLeader && cityAt(n);
+      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${city[0]}</small>` : ''}</label>`;
       if (!isLeader && unlocked && n.wild.length) b.prepend(portrait(n.wild[0][0], 30));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       map.append(b);
@@ -320,8 +284,7 @@ export class UI {
     const R = Data.REGIONS[region];
     const wrap = el('div', 'starter');
     const bar = this.topbar(`Tu inicial de ${R.name}`, 'menu');
-    bar.insertBefore(this.regionTabs(region, rid => { this.region = rid; this.show('story'); }), bar.children[2] || null);
-    wrap.append(bar);
+    wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
     wrap.append(el('p', 'intro', `Cada región es un viaje nuevo: tus Pokémon de otras regiones no vienen contigo. Elige a tu compañero para ${R.name}.`));
     const row = el('div', 'starter-row');
     for (const dex of Data.REGION_STARTERS[region]) {
@@ -338,16 +301,27 @@ export class UI {
     this.root.append(wrap);
   }
 
-  // Pestañas de región (medallas de cada una)
-  regionTabs(current, onPick) {
+  // Barra propia de región (debajo de la barra global): elegir región y, en Historia, sus medallas
+  // y el siguiente objetivo.
+  regionBar(current, onPick, withBadges) {
     const p = this.profile;
-    const tabs = el('div', 'tools region-tabs');
+    const bar = el('div', 'subbar');
+    const tabs = el('div', 'region-tabs');
     for (const rid of Data.REGION_IDS) {
-      const t = el('button', rid === current ? 'sel' : '', `${Data.REGIONS[rid].name} <small>${Math.min(8, Data.progOf(p, rid))}/8</small>`);
+      const done = Math.min(8, Data.progOf(p, rid));
+      const t = el('button', rid === current ? 'sel' : '', `<b>${Data.REGIONS[rid].name}</b><small>${Data.progOf(p, rid) >= Data.leadersOf(rid).length ? '♛ Campeón' : done + '/8 medallas'}</small>`);
       t.onclick = () => onPick(rid);
       tabs.append(t);
     }
-    return tabs;
+    bar.append(tabs);
+    if (withBadges) {
+      const prog = Data.progOf(p, current);
+      const leaders = Data.leadersOf(current);
+      bar.append(el('div', 'badges', leaders.slice(0, 8).map((g, i) => `<i class="badge${i < prog ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.badge} · ${g.leader}"></i>`).join('')));
+      const next = leaders[prog];
+      bar.append(el('div', 'next-goal', next ? `Siguiente: <b>${next.leader}</b> · ${next.kind === 'gym' ? next.name : next.kind === 'champion' ? 'Campeón' : 'Alto Mando'} <span class="cap">tope Nv.${Data.levelCap(p, current)}</span>` : '♛ ¡Región completada!'));
+    }
+    return bar;
   }
 
   // ---------- Equipo ----------
@@ -356,8 +330,7 @@ export class UI {
     const wrap = el('div', 'teamview');
     const region = this.teamRegion = this.teamRegion || this.region || 'kanto';
     const bar = this.topbar('Mis Pokémon', this.returnTo || 'menu');
-    bar.insertBefore(this.regionTabs(region, rid => { this.teamRegion = rid; this.show('team'); }), bar.children[2] || null);
-    wrap.append(bar);
+    wrap.append(bar, this.regionBar(region, rid => { this.teamRegion = rid; this.show('team'); }, false));
     const cap = Data.levelCap(p, region);
     const next = Data.leadersOf(region)[Data.progOf(p, region)];
     const team = (p.teams && p.teams[region]) || [];
