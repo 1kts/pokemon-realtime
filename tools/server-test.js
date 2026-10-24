@@ -8,7 +8,7 @@ const fs = require('fs');
 const WebSocket = require('ws');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-test-'));
-process.env.PROFILES_FILE = path.join(tmp, 'profiles.json');
+process.env.DB_FILE = path.join(tmp, 'arena.db');
 const { start } = require('../server/index.js');
 const D = require('../public/data.js');
 
@@ -273,7 +273,7 @@ class Client {
   m = await ub.req({ t: 'passwd', old: 'mala', pass: 'raichu1' }, 'autherr');
   ok(/actual/.test(m.msg), 'cambiar contraseña pide la actual');
   await ub.req({ t: 'passwd', old: 'pikachu', pass: 'raichu1' });
-  ok(store.login('rojo_1', 'raichu1') && !store.login('rojo_1', 'pikachu'), 'contraseña cambiada');
+  ok(await store.login('rojo_1', 'raichu1') && !await store.login('rojo_1', 'pikachu'), 'contraseña cambiada');
   const uc = new Client(port); await uc.open();
   m = await uc.req({ t: 'register', user: 'Nuevo', pass: 'abcdef' });
   ok(m.p.name === 'Nuevo' && m.p.account.user === 'Nuevo' && m.p.coins === 500, 'registrarse desde la portada crea un perfil nuevo');

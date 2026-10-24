@@ -1,0 +1,8 @@
+[Unit]
+Description=Copia de la base de datos de Arena Pokémon
+
+[Service]
+Type=oneshot
+User=arena
+# .backup hace una copia coherente aunque el servidor esté escribiendo; se guardan 14 días
+ExecStart=/bin/sh -c 'sqlite3 /var/lib/arena/arena.db ".backup /var/backups/arena/arena-$(date +%%F).db" && find /var/backups/arena -name "arena-*.db" -mtime +14 -delete'
