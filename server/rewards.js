@@ -7,6 +7,7 @@ const D = require('../public/data.js');
 const LEAGUE_NAMES = D.LEAGUES.map(l => l[1]);
 const leagueIndex = name => LEAGUE_NAMES.indexOf(name);
 const HISTORY = 15;
+const MAX_COINS = 999999999;   // tope del dinero (el mismo que da el panel de admin)
 
 // Campos nuevos en perfiles antiguos y cambio de temporada
 function migrate(p) {
@@ -16,6 +17,24 @@ function migrate(p) {
   if (!p.season) p.season = { id: D.SEASON.id, peak: p.elo, claimed: [] };
   if (!p.inbox) p.inbox = [];
   if (p.season.id < D.SEASON.id) rollSeason(p);
+  if (!p.achievements) p.achievements = {};
+  if (!p.showcase) p.showcase = [];
+  checkAchievements(p);
+}
+
+// Logros: los que se acaban de cumplir se guardan con su fecha y dan su premio una sola vez
+function checkAchievements(p) {
+  const fresh = [];
+  for (const a of D.ACHIEVEMENTS) {
+    if (p.achievements[a.id] || a.progress(p) < a.goal) continue;
+    p.achievements[a.id] = Date.now();
+    const rw = a.reward || {};
+    if (rw.coins) p.coins = Math.min(MAX_COINS, p.coins + rw.coins);
+    if (rw.title) unlock(p, 'titles', rw.title);
+    if (rw.frame) unlock(p, 'frames', rw.frame);
+    fresh.push(a.id);
+  }
+  return fresh;
 }
 
 function rollSeason(p) {
@@ -76,6 +95,11 @@ function setLook(p, msg) {
     if (msg.frame !== null && !p.cosmetics.frames.includes(msg.frame)) return 'No tienes ese marco';
     p.frame = msg.frame;
   }
+  if (msg.showcase !== undefined) {
+    const list = Array.isArray(msg.showcase) ? [...new Set(msg.showcase.map(String))] : [];
+    if (list.length > D.SHOWCASE_MAX || !list.every(id => p.achievements[id])) return 'Solo puedes mostrar logros que hayas conseguido';
+    p.showcase = list;
+  }
   if (msg.avatar !== undefined) {
     if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     p.avatar = msg.avatar;
@@ -83,4 +107,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { migrate, afterRanked, claim, setLook };
+module.exports = { migrate, afterRanked, claim, setLook, checkAchievements };

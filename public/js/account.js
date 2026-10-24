@@ -7,6 +7,7 @@ import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
+import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -21,7 +22,7 @@ const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.
 const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
-const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro' };
+const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro', ...FRAME_LABEL_EXTRA };
 const itemName = id => (SHOP.find(i => i.id === id) || { name: id }).name;
 const fmtDate = ts => new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
 const daysLeft = () => Math.max(0, Math.ceil((new Date(SEASON.end + 'T23:59:59') - Date.now()) / 86400000));
@@ -131,13 +132,31 @@ export const accountViews = {
   },
 
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
+  // Al pasar el ratón, lo que cuesta de verdad mantener el juego
   supportButton() {
+    const wrap = el('span', 'support-wrap');
     const a = el('a', 'tb-btn support', `${icon('heart', 24)}<span>${t('Apoyar')}</span>`);
     a.href = KOFI_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
-    a.title = t('PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor');
-    return a;
+    a.setAttribute('aria-describedby', 'support-tip');
+    const tip = el('div', 'support-tip', `<b>${t('Lo que cuesta mantener PokéArenas')}</b>
+      <ul><li><span>${t('Servidor')}</span><b>${t('unos 10 € al mes')}</b></li><li><span>${t('Dominio')}</span><b>${t('12 € al año')}</b></li></ul>
+      <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`);
+    tip.id = 'support-tip';
+    tip.setAttribute('role', 'tooltip');
+    wrap.append(a, tip);
+    return wrap;
+  },
+
+  // Pie del menú principal: aviso legal, enlace a los créditos y versión
+  menuLegal() {
+    const f = el('div', 'menu-legal');
+    f.append(el('p', '', t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
+    const legal = el('button', 'link', t('Ver créditos y datos que guardamos'));
+    legal.onclick = () => this.legal();
+    f.append(legal, el('small', '', `PokéArenas v${VERSION}`));
+    return f;
   },
 
   footer() {
@@ -396,6 +415,7 @@ export const accountViews = {
     nameRow.append(edit);
     info.append(nameRow);
     if (p.title) info.append(el('span', 'title-chip', escapeHtml(t(p.title))));
+    if ((p.showcase || []).length) info.append(el('div', '', showcaseHtml(p.showcase, 44)));
     info.append(el('p', 'small', p.account
       ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(handle(p.account.user)), date: fmtDate(p.account.since) })
       : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
@@ -451,6 +471,7 @@ export const accountViews = {
       row.append(el('b', 'delta', `${h.delta >= 0 ? '+' : ''}${h.delta}`));
       hist.append(row);
     }
+    mid.append(this.achievementsPanel());
     mid.append(hist);
 
     // Personalizar
@@ -471,7 +492,7 @@ export const accountViews = {
       frames.append(b);
     }
     look.append(el('h4', '', t('Marco')), frames);
-    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria.')));
+    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.')));
     const avaBtn = el('button', '', t('Elegir Pokémon de avatar'));
     avaBtn.onclick = () => this.avatarPicker();
     look.append(el('h4', '', t('Avatar')), avaBtn);

@@ -1131,8 +1131,41 @@
   const leaderExtras = node => (node.kind === 'elite' || node.kind === 'champion')
     ? { iv: Object.fromEntries(STAT_KEYS.map(k => [k, IV_MAX])), ev: Object.fromEntries(STAT_KEYS.map(k => [k, ELITE_EV])) } : {};
 
+  // ---------- Logros ----------
+  // Cada logro mide un número del perfil (progress) contra una meta. Al cumplirse se queda para siempre
+  // y da su premio: título, marco del avatar y/o dinero. Se pueden fijar hasta 3 en el perfil como
+  // insignias. tier: 1 bronce · 2 plata · 3 oro. icon: sprite de objeto (public/items) o 'badge:<región>'.
+  const dexCount = p => (p.caught || []).length;
+  const shinyCount = p => Math.max((p.shinies || []).length, (p.mons || []).filter(m => m.shiny).length);
+  const perfectCount = p => (p.mons || []).filter(m => m.iv && STAT_KEYS.every(k => m.iv[k] === IV_MAX)).length;
+  const badgeCount = (p, r) => Math.min(8, progOf(p, r));
+  const champ = (p, r) => (progOf(p, r) >= leadersOf(r).length ? 1 : 0);
+  const towerBest = p => (p.tower && p.tower.best) || 0;
+  const ACHIEVEMENTS = [
+    { id: 'captura1', name: 'Primera captura', desc: 'Atrapa tu primer Pokémon salvaje.', icon: 'poke-ball', tier: 1, goal: 2,   /* el inicial cuenta como 1 */ progress: dexCount, reward: { coins: 300 } },
+    { id: 'dex25', name: 'Coleccionista', desc: 'Registra 25 especies en la Pokédex.', icon: 'great-ball', tier: 1, goal: 25, progress: dexCount, reward: { coins: 1000, title: 'Coleccionista' } },
+    { id: 'dex100', name: 'Investigador', desc: 'Registra 100 especies en la Pokédex.', icon: 'ultra-ball', tier: 2, goal: 100, progress: dexCount, reward: { coins: 3000, frame: 'pokedex', title: 'Investigador Pokémon' } },
+    { id: 'dex250', name: 'Enciclopedia andante', desc: 'Registra 250 especies en la Pokédex.', icon: 'master-ball', tier: 3, goal: 250, progress: dexCount, reward: { coins: 8000, title: 'Profesor Pokémon' } },
+    { id: 'shiny1', name: 'Destello', desc: 'Consigue tu primer Pokémon shiny.', icon: 'shiny-charm', tier: 2, goal: 1, progress: shinyCount, reward: { coins: 2000, frame: 'shiny', title: 'Cazador de shinies' } },
+    { id: 'shiny5', name: 'Coleccionista de destellos', desc: 'Consigue 5 Pokémon shiny.', icon: 'shiny-stone', tier: 3, goal: 5, progress: shinyCount, reward: { coins: 6000, title: 'Rey de los destellos' } },
+    { id: 'perfecto', name: 'Ejemplar perfecto', desc: 'Ten un Pokémon con IV perfectos.', icon: 'star-piece', tier: 2, goal: 1, progress: perfectCount, reward: { coins: 2000, title: 'Criador' } },
+    { id: 'medalla1', name: 'Primera medalla', desc: 'Gana tu primera medalla de gimnasio.', icon: 'badge:kanto', tier: 1, goal: 1, progress: p => badgeCount(p, 'kanto') + badgeCount(p, 'johto'), reward: { coins: 500 } },
+    { id: 'kanto8', name: 'Ocho medallas de Kanto', desc: 'Consigue las 8 medallas de Kanto.', icon: 'badge:kanto', tier: 2, goal: 8, progress: p => badgeCount(p, 'kanto'), reward: { coins: 3000, title: 'Entrenador de Kanto' } },
+    { id: 'kantoChamp', name: 'Campeón de Kanto', desc: 'Vence al Alto Mando y al Campeón de Kanto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'kanto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Kanto' } },
+    { id: 'johto8', name: 'Ocho medallas de Johto', desc: 'Consigue las 8 medallas de Johto.', icon: 'badge:johto', tier: 2, goal: 8, progress: p => badgeCount(p, 'johto'), reward: { coins: 3000, title: 'Entrenador de Johto' } },
+    { id: 'johtoChamp', name: 'Campeón de Johto', desc: 'Vence al Alto Mando y al Campeón de Johto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'johto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Johto' } },
+    { id: 'torre7', name: 'Escalador', desc: 'Gana 7 combates seguidos en la Torre Batalla.', icon: 'exp-share', tier: 1, goal: 7, progress: towerBest, reward: { coins: 1000 } },
+    { id: 'torre21', name: 'Cerebro vencido', desc: 'Llega a 21 victorias seguidas en la Torre Batalla.', icon: 'amulet-coin', tier: 2, goal: 21, progress: towerBest, reward: { coins: 4000, frame: 'torre', title: 'Desafiante de la Torre' } },
+    { id: 'torre49', name: 'Leyenda de la Torre', desc: 'Llega a 49 victorias seguidas en la Torre Batalla.', icon: 'nugget', tier: 3, goal: 49, progress: towerBest, reward: { coins: 10000, title: 'Leyenda de la Torre' } },
+    { id: 'ranked1', name: 'Primera victoria online', desc: 'Gana una clasificatoria.', icon: 'vs-seeker', tier: 1, goal: 1, progress: p => p.wins || 0, reward: { coins: 500 } },
+    { id: 'ranked25', name: 'Competidor', desc: 'Gana 25 clasificatorias.', icon: 'tm-normal', tier: 2, goal: 25, progress: p => p.wins || 0, reward: { coins: 3000, title: 'Competidor' } },
+    { id: 'equipo10', name: 'Equipo creciente', desc: 'Ten 10 Pokémon.', icon: 'lucky-egg', tier: 1, goal: 10, progress: p => (p.mons || []).length, reward: { coins: 800 } },
+  ];
+  const achievementProgress = (p, a) => Math.min(a.goal, a.progress(p));
+  const SHOWCASE_MAX = 3;
+
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

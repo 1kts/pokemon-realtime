@@ -4,6 +4,7 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { el, typeChips, coins, lv } from './ui.js';
+import { showcaseHtml } from './achievements.js';
 import { t, tServer, locale } from './i18n.js';
 
 const { SPECIES, RANKED_POOL, REGIONS, LEAGUES } = Data;
@@ -289,7 +290,7 @@ export const towerViews = {
     const since = u.created ? new Date(u.created).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' }) : null;
     head.append(el('div', '', `<h3>${escapeHtml(u.name)}${u.id === this.profile.id ? ` <span class="you">${t('tú')}</span>` : ''}</h3>
       <p class="small"><i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}</p>
-      <span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>`));
+      <span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>${showcaseHtml(u.showcase, 40)}`));
     box.append(head);
     const rank = r => r ? `#${r}` : '—';
     const regs = Data.REGION_IDS.map(r => `${REGIONS[r].name} ${Data.progOf(u, r) >= Data.leadersOf(r).length ? '♛' : Math.min(8, Data.progOf(u, r)) + '/8'}`).join(' · ');

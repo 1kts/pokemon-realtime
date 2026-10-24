@@ -7,6 +7,7 @@ import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
+import { achievementViews } from './achievements.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg } from './pixicons.js';
 import { accountViews } from './account.js';
@@ -51,6 +52,7 @@ export class UI {
 
   setProfile(p, board, rank) {
     const first = !this.profile;
+    if (!first) this.celebrateAchievements(this.profile.achievements, p.achievements);
     this.profile = p;
     this.board = board || this.board;
     this.rank = rank;
@@ -171,7 +173,7 @@ export class UI {
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     top.append(main, this.profilePanel(lead));
-    wrap.append(top, this.howTo());
+    wrap.append(top, this.howTo(), this.menuLegal());
     this.root.append(wrap);
   }
 
@@ -998,4 +1000,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews);
