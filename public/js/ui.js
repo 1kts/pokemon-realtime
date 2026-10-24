@@ -241,7 +241,7 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'teamview');
     wrap.append(this.topbar('Equipo', 'story'));
-    wrap.append(el('p', 'intro', 'Toca un Pokémon para meterlo o sacarlo del equipo (máximo 3). Los objetos se usan desde su ficha.'));
+    wrap.append(el('p', 'intro', 'Mete o saca Pokémon del equipo (máximo 3) con el botón de su ficha. Los objetos también se usan desde ahí.'));
     const grid = el('div', 'mon-grid scroll');
     const sorted = [...p.mons].sort((a, b) => (p.team.includes(b.uid) - p.team.includes(a.uid)) || b.level - a.level);
     for (const m of sorted) {
