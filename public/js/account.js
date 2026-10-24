@@ -10,6 +10,8 @@ const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_P
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
+// Cómo se enseña el usuario de la cuenta: @nombre, o el correo tal cual
+const handle = u => (u.includes('@') ? u : '@' + u);
 const GEAR_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm5.6 3.6.9.7-1.3 2.3-1.1-.4a5 5 0 0 1-1.4.8l-.2 1.2H7.9l-.2-1.2a5 5 0 0 1-1.4-.8l-1.1.4-1.3-2.3.9-.7a5 5 0 0 1 0-1.6l-.9-.7 1.3-2.3 1.1.4a5 5 0 0 1 1.4-.8l.2-1.2h2.6l.2 1.2a5 5 0 0 1 1.4.8l1.1-.4 1.3 2.3-.9.7a5 5 0 0 1 0 1.6Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
 const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.5a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2v-9Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 11.5a2 2 0 0 1 2-2h7.5M6 5h4M6 7h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
@@ -90,7 +92,7 @@ export const accountViews = {
         setTimeout(() => name.focus(), 50);
       } else {
         const reg = this.authTab === 'register';
-        const [fu, user] = field('Usuario', 'text', { maxLength: 16, autocomplete: 'username', spellcheck: false });
+        const [fu, user] = field('Usuario o correo', 'text', { maxLength: 64, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
         const [fp, pass] = field('Contraseña', 'password', { maxLength: 72, autocomplete: reg ? 'new-password' : 'current-password' });
         form.append(fu, fp);
         let pass2;
@@ -105,7 +107,7 @@ export const accountViews = {
         };
         go.onclick = submit;
         form.append(go);
-        if (reg) form.append(el('p', 'small', t('De 3 a 16 letras, números o _. Contraseña de al menos 6 caracteres.')));
+        if (reg) form.append(el('p', 'small', t('Usuario de 3 a 24 letras, números, _ . o -, o tu correo. Contraseña de al menos 6 caracteres.')));
         else if (Net.hasSession()) form.append(el('p', 'warn', t('Si entras con otra cuenta, este navegador dejará de recordar tu partida de invitado. Regístrala antes desde tu perfil.')));
         setTimeout(() => user.focus(), 50);
       }
@@ -262,7 +264,7 @@ export const accountViews = {
     b.append(this.avatar(30));
     b.append(el('span', '', escapeHtml(p.name)));
     if (this.claimable().length || !p.account) b.append(el('i', 'ndot'));
-    b.title = p.account ? t('Perfil de {user}', { user: p.account.user }) : t('Perfil (invitado: crea una cuenta para no perder tu partida)');
+    b.title = p.account ? t('Perfil de {user}', { user: handle(p.account.user) }) : t('Perfil (invitado: crea una cuenta para no perder tu partida)');
     b.onclick = () => this.show('profile');
     return b;
   },
@@ -306,7 +308,7 @@ export const accountViews = {
     const me = el('div', 'panel');
     me.append(el('h3', '', t('Perfil y cuenta')));
     const who = el('button', 'who settings-who');
-    who.append(this.avatar(64), el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${t(p.league)} · ${p.elo}</span><small>${p.account ? t('Cuenta <b>@{user}</b>', { user: escapeHtml(p.account.user) }) : t('Invitado')}</small>`));
+    who.append(this.avatar(64), el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${t(p.league)} · ${p.elo}</span><small>${p.account ? t('Cuenta <b>{user}</b>', { user: escapeHtml(handle(p.account.user)) }) : t('Invitado')}</small>`));
     who.onclick = () => this.show('profile');
     me.append(who);
     if (!p.account) me.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
@@ -368,7 +370,7 @@ export const accountViews = {
     info.append(nameRow);
     if (p.title) info.append(el('span', 'title-chip', escapeHtml(t(p.title))));
     info.append(el('p', 'small', p.account
-      ? t('Cuenta <b>@{user}</b> · desde {date}', { user: escapeHtml(p.account.user), date: fmtDate(p.account.since) })
+      ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(handle(p.account.user)), date: fmtDate(p.account.since) })
       : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
     info.append(el('div', 'tc-league', `<span class="league">${t(p.league)}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">${t('#{n} del ranking', { n: this.rank })}</span>` : ''}`));
     card.append(info);
@@ -463,7 +465,7 @@ export const accountViews = {
     if (!p.account) {
       box.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
       box.append(el('p', 'small', t('Crea una cuenta y conservarás todo lo que tienes.')));
-      const [fu, user] = field('Usuario', 'text', { maxLength: 16, autocomplete: 'username', spellcheck: false });
+      const [fu, user] = field('Usuario o correo', 'text', { maxLength: 64, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
       const [fp, pass] = field('Contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const [f2, pass2] = field('Repite la contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const go = el('button', 'primary', t('Crear cuenta'));
@@ -478,7 +480,7 @@ export const accountViews = {
       [user, pass, pass2].forEach(i => { i.onkeydown = e => { if (e.key === 'Enter') submit(); }; });
       box.append(fu, fp, f2, go, msg);
     } else {
-      box.append(el('p', '', t('Usuario <b>@{user}</b>. Entra con él desde cualquier dispositivo.', { user: escapeHtml(p.account.user) })));
+      box.append(el('p', '', t('Tu usuario: <b>{user}</b>. Entra con él desde cualquier dispositivo.', { user: escapeHtml(handle(p.account.user)) })));
       const d = el('details', 'pw');
       d.append(el('summary', '', t('Cambiar contraseña')));
       const [fo, old] = field('Contraseña actual', 'password', { maxLength: 72, autocomplete: 'current-password' });

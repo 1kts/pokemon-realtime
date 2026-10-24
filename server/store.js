@@ -118,12 +118,18 @@ function get(token, name) {
 
 // ---------- Cuentas ----------
 // scrypt asíncrono: calcularlo cuesta ~30 ms y no debe parar los combates mientras tanto
-const USER_RE = /^[A-Za-z0-9_]{3,16}$/;
+// Usuario: un nombre (3-24 letras, números, _ . o -) o un correo (hasta 64). Solo lo ve su dueño:
+// no sale en la ladder ni en las fichas públicas.
+const USER_RE = /^[A-Za-z0-9_.-]{3,24}$/;
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;
+const validUser = u => typeof u === 'string' && u.length <= 64 && (USER_RE.test(u) || EMAIL_RE.test(u));
+// Nombre de entrenador (público) para un perfil nuevo: si el usuario es un correo, solo lo de antes de la @
+const trainerName = u => u.split('@')[0].slice(0, 16) || 'Entrenador';
 const scrypt = promisify(crypto.scrypt);
 const hash = async (pass, salt) => (await scrypt(pass, salt, 32)).toString('hex');
 
 function checkCredentials(user, pass) {
-  if (typeof user !== 'string' || !USER_RE.test(user)) return 'El usuario debe tener de 3 a 16 letras, números o _';
+  if (!validUser(user)) return 'El usuario debe tener de 3 a 24 letras, números, _ . o -, o ser un correo';
   if (typeof pass !== 'string' || pass.length < 6 || pass.length > 72) return 'La contraseña debe tener de 6 a 72 caracteres';
   return null;
 }
@@ -140,7 +146,7 @@ async function register(p, user, pass) {
   // Mientras se calculaba el hash otro ha podido registrar el mismo usuario o este perfil
   if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
-  if (!p) p = use(addProfile(user));
+  if (!p) p = use(addProfile(trainerName(user)));
   p.account = { user, salt, hash: h, since: Date.now() };
   accounts.set(user.toLowerCase(), p.token);
   save();

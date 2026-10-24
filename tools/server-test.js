@@ -277,6 +277,13 @@ class Client {
   const uc = new Client(port); await uc.open();
   m = await uc.req({ t: 'register', user: 'Nuevo', pass: 'abcdef' });
   ok(m.p.name === 'Nuevo' && m.p.account.user === 'Nuevo' && m.p.coins === 500, 'registrarse desde la portada crea un perfil nuevo');
+  const ue = new Client(port); await ue.open();
+  m = await ue.req({ t: 'register', user: 'ash.ketchum@pueblo-paleta.com', pass: 'pikachu' });
+  ok(m.p.account.user === 'ash.ketchum@pueblo-paleta.com' && m.p.name === 'ash.ketchum', 'registrarse con un correo; el nombre de entrenador es lo de antes de la @');
+  ok(!!await store.login('ASH.KETCHUM@pueblo-paleta.com', 'pikachu'), 'entrar con el correo (sin distinguir mayúsculas)');
+  ok(!store.ladder('dex').rows.concat(store.ladder('ranked').rows).some(r => JSON.stringify(r).includes('@pueblo')) && !JSON.stringify(store.publicUser(m.p.id)).includes('@pueblo'), 'el correo no sale en la ladder ni en la ficha pública');
+  m = await ue.req({ t: 'register', user: 'no es un correo@', pass: 'pikachu' }, 'autherr');
+  ok(/usuario/i.test(m.msg), 'usuario no válido');
   const limited = uc.wait('autherr', x => /intentos/.test(x.msg));
   for (let i = 0; i < 8; i++) uc.send({ t: 'login', user: 'Nuevo', pass: 'x' });
   uc.send({ t: 'login', user: 'Nuevo', pass: 'abcdef' });
