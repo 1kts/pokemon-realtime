@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    'Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.': 'N’importe quel Pokémon capturé, aussi en chromatique si tu l’as. Par défaut, le premier de ton équipe.',
+    'Avatares shiny y buscador': 'Avatars chromatiques et recherche',
+    'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.': 'Tu peux choisir comme avatar la version chromatique des Pokémon que tu as en chromatique.',
+    'El selector de avatar tiene buscador por nombre o número.': 'Le choix d’avatar a une recherche par nom ou numéro.',
     'Ataques como antes e iconos oficiales': 'Attaques comme avant et icônes officielles',
     'Los proyectiles vuelven a ser los de antes, con su brillo.': 'Les projectiles redeviennent comme avant, avec leur éclat.',
     'Cada movimiento lleva el icono oficial de su tipo.': 'Chaque capacité affiche l’icône officielle de son type.',

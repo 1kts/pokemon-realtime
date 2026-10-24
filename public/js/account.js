@@ -286,20 +286,21 @@ export const accountViews = {
   },
 
   // ---------- Avatar con marco ----------
+  // { dex, shiny }: el elegido, o si no el primero del equipo tal como se ve
   avatarDex() {
     const p = this.profile;
-    if (p.avatar && SPECIES[p.avatar]) return p.avatar;
+    if (p.avatar && SPECIES[p.avatar]) return { dex: p.avatar, shiny: !!p.avatarShiny };
     const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0];
-    return lead ? lead.dex : 25;
+    return lead ? { dex: lead.dex, shiny: Data.looksShiny(lead) } : { dex: 25, shiny: false };
   },
 
   avatar(size, animated) {
     const p = this.profile;
     const a = el('div', 'ava frame-' + (p.frame || 'none'));
     a.style.setProperty('--s', size + 'px');
-    const dex = this.avatarDex();
-    a.append(animated ? animatedPortrait(dex, size, 'Idle') : portrait(dex, size));
+    const { dex, shiny } = this.avatarDex();
+    a.append(animated ? animatedPortrait(dex, size, 'Idle', shiny) : portrait(dex, size, { shiny }));
     return a;
   },
 
@@ -507,20 +508,39 @@ export const accountViews = {
   avatarPicker() {
     const p = this.profile;
     modal('avatar-pick', (box, close) => {
-      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado. Por defecto, el primero de tu equipo.')));
+      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.')));
+      const search = el('input');
+      search.type = 'search'; search.placeholder = t('Buscar por nombre o número');
       const grid = el('div', 'ava-grid scroll');
+      const empty = el('p', 'small', t('No hay ningún Pokémon con esos filtros.'));
+      empty.hidden = true;
       const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), `<small>${t('Automático')}</small>`);
       auto.onclick = () => { this.net.send({ t: 'look', avatar: null }); close(); };
       grid.append(auto);
+      const shinies = new Set(p.shinies || []);
+      const opts = [];
       for (const dex of [...p.caught].sort((a, b) => a - b)) {
         if (!SPECIES[dex]) continue;
-        const b = el('button', 'ava-opt' + (p.avatar === dex ? ' sel' : ''));
-        b.append(portrait(dex, 48));
-        b.title = SPECIES[dex].name;
-        b.onclick = () => { this.net.send({ t: 'look', avatar: dex }); close(); };
-        grid.append(b);
+        for (const shiny of shinies.has(dex) ? [false, true] : [false]) {
+          const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (p.avatar === dex && !!p.avatarShiny === shiny ? ' sel' : ''));
+          b.append(portrait(dex, 48, { shiny }));
+          if (shiny) b.append(el('i', 'shiny-star', '✦'));
+          b.title = SPECIES[dex].name + (shiny ? ' ✦' : '');
+          b.dataset.q = `${SPECIES[dex].name.toLowerCase()} ${dex}`;
+          b.onclick = () => { this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny }); close(); };
+          grid.append(b);
+          opts.push(b);
+        }
       }
-      box.append(grid);
+      search.oninput = () => {
+        const q = search.value.trim().toLowerCase().replace('#', '').replace(/^0+(?=\d)/, '');
+        let n = 0;
+        for (const b of opts) { b.hidden = !!q && !b.dataset.q.split(' ').some(w => w.startsWith(q)) && !b.dataset.q.includes(q); n += !b.hidden; }
+        auto.hidden = !!q;
+        empty.hidden = !q || n > 0;
+      };
+      box.append(search, empty, grid);
+      setTimeout(() => search.focus(), 0);
     });
   },
 

@@ -101,8 +101,11 @@ function setLook(p, msg) {
     p.showcase = list;
   }
   if (msg.avatar !== undefined) {
+    const shiny = !!msg.avatarShiny && msg.avatar !== null;
     if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
+    if (shiny && !(p.shinies || []).includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     p.avatar = msg.avatar;
+    p.avatarShiny = shiny;
   }
   return null;
 }

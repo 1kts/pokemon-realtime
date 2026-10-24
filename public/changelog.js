@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.9.2', date: '2026-10-25', title: 'Avatares shiny y buscador',
+      items: [
+        ['nuevo', 'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.'],
+        ['nuevo', 'El selector de avatar tiene buscador por nombre o número.'],
+      ],
+    },
+    {
       v: '0.9.1', date: '2026-10-25', title: 'Ataques como antes e iconos oficiales',
       items: [
         ['cambio', 'Los proyectiles vuelven a ser los de antes, con su brillo.'],
