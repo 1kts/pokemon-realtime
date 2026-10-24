@@ -235,3 +235,5 @@ body:not(.in-battle) #hud { display: none; }
   .help-hint { display: none; }
   .logo { font-size: 40px; } .logo span { font-size: 48px; }
 }
+.float.shake { font-size: 26px; color: #fff; }
+.banner.big2 { font-size: 44px; }

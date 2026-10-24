@@ -281,15 +281,15 @@
   // ---------- Modo historia ----------
   // Rutas: [dex, nivel min, nivel max, peso]. req = medallas necesarias.
   const ROUTES = [
-    { id: 'ruta1', name: 'Ruta 1', req: 0, map: 'pradera', ai: 0.08, wild: [[16, 2, 4, 5], [19, 2, 4, 5]], x: 8, y: 86 },
-    { id: 'bosque', name: 'Bosque Verde', req: 0, map: 'bosque', ai: 0.1, wild: [[16, 4, 7, 4], [19, 4, 6, 3], [25, 4, 6, 2], [69, 5, 7, 2]], x: 18, y: 70 },
-    { id: 'montemoon', name: 'Monte Moon', req: 1, map: 'cueva', ai: 0.14, wild: [[74, 8, 11, 4], [27, 8, 11, 3], [32, 8, 11, 3], [50, 9, 12, 1]], x: 40, y: 66 },
-    { id: 'ruta24', name: 'Puente Pepita', req: 2, map: 'lago', ai: 0.18, wild: [[63, 12, 15, 3], [43, 12, 15, 3], [54, 12, 15, 3], [69, 12, 15, 2], [129, 10, 14, 2]], x: 62, y: 62 },
-    { id: 'tunelroca', name: 'Túnel Roca', req: 3, map: 'cueva', ai: 0.22, wild: [[66, 17, 21, 3], [95, 18, 21, 2], [100, 17, 21, 3], [81, 17, 21, 3]], x: 88, y: 62 },
-    { id: 'torre', name: 'Torre Pokémon', req: 4, map: 'cueva', ai: 0.26, wild: [[92, 21, 25, 4], [93, 24, 26, 1], [109, 21, 25, 3], [88, 21, 25, 3]], x: 68, y: 38 },
-    { id: 'safari', name: 'Zona Safari', req: 5, map: 'bosque', ai: 0.3, wild: [[111, 26, 30, 3], [123, 26, 30, 2], [77, 26, 30, 3], [58, 26, 30, 3], [147, 24, 28, 1], [114, 26, 30, 2]], x: 44, y: 38 },
-    { id: 'islas', name: 'Islas Espuma', req: 6, map: 'lago', ai: 0.34, wild: [[120, 30, 34, 3], [55, 30, 34, 3], [124, 30, 34, 2], [131, 30, 34, 1], [129, 25, 30, 2]], x: 20, y: 40 },
-    { id: 'victoria', name: 'Calle Victoria', req: 8, map: 'cueva', ai: 0.4, wild: [[67, 38, 42, 3], [75, 38, 42, 3], [95, 40, 44, 2], [51, 38, 42, 2], [126, 38, 42, 2], [148, 38, 42, 1]], x: 32, y: 24 },
+    { id: 'ruta1', name: 'Ruta 1', req: 0, map: 'pradera', ai: 0.02, wild: [[16, 2, 4, 5], [19, 2, 4, 5]], x: 8, y: 86 },
+    { id: 'bosque', name: 'Bosque Verde', req: 0, map: 'bosque', ai: 0.03, wild: [[16, 4, 7, 4], [19, 4, 6, 3], [25, 4, 6, 2], [69, 5, 7, 2]], x: 18, y: 70 },
+    { id: 'montemoon', name: 'Monte Moon', req: 1, map: 'cueva', ai: 0.05, wild: [[74, 8, 11, 4], [27, 8, 11, 3], [32, 8, 11, 3], [50, 9, 12, 1]], x: 40, y: 66 },
+    { id: 'ruta24', name: 'Puente Pepita', req: 2, map: 'lago', ai: 0.07, wild: [[63, 12, 15, 3], [43, 12, 15, 3], [54, 12, 15, 3], [69, 12, 15, 2], [129, 10, 14, 2]], x: 62, y: 62 },
+    { id: 'tunelroca', name: 'Túnel Roca', req: 3, map: 'cueva', ai: 0.09, wild: [[66, 17, 21, 3], [95, 18, 21, 2], [100, 17, 21, 3], [81, 17, 21, 3]], x: 88, y: 62 },
+    { id: 'torre', name: 'Torre Pokémon', req: 4, map: 'cueva', ai: 0.11, wild: [[92, 21, 25, 4], [93, 24, 26, 1], [109, 21, 25, 3], [88, 21, 25, 3]], x: 68, y: 38 },
+    { id: 'safari', name: 'Zona Safari', req: 5, map: 'bosque', ai: 0.14, wild: [[111, 26, 30, 3], [123, 26, 30, 2], [77, 26, 30, 3], [58, 26, 30, 3], [147, 24, 28, 1], [114, 26, 30, 2]], x: 44, y: 38 },
+    { id: 'islas', name: 'Islas Espuma', req: 6, map: 'lago', ai: 0.17, wild: [[120, 30, 34, 3], [55, 30, 34, 3], [124, 30, 34, 2], [131, 30, 34, 1], [129, 25, 30, 2]], x: 20, y: 40 },
+    { id: 'victoria', name: 'Calle Victoria', req: 8, map: 'cueva', ai: 0.22, wild: [[67, 38, 42, 3], [75, 38, 42, 3], [95, 40, 44, 2], [51, 38, 42, 2], [126, 38, 42, 2], [148, 38, 42, 1]], x: 32, y: 24 },
   ];
   // Gimnasios en orden; la Liga va después de las 8 medallas. ai = habilidad de la IA (0-1).
   const GYMS = [
@@ -308,12 +308,19 @@
     { id: 'campeon', name: 'Campeón', leader: 'Azul', type: 'normal', map: 'pradera', ai: 0.88, reward: 8000, team: [[18, 61], [65, 63], [6, 65]], x: 92, y: 10, elite: true },
   ];
   const STARTERS = [1, 4, 7];
+  // Probabilidad de captura: sube cuantos menos PS le quedan y si tiene un estado alterado.
+  // Cada Ball hace 3 sacudidas; cada una sale bien con p^(1/3), así que las 3 juntas valen p.
+  function catchChance(hpFrac, ballId, hasStatus) {
+    const item = SHOP.find(s => s.id === ballId);
+    const base = 0.12 + 0.78 * (1 - hpFrac) * (1 - hpFrac * 0.35);
+    return Math.max(0.05, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1)));
+  }
   // Tienda: Poké Balls (capturan si los PS del salvaje están por debajo de 'cap'),
   // piedras evolutivas, Caramelo Raro y Pokémon raros a la venta.
   const SHOP = [
-    { id: 'pokeball', name: 'Poké Ball', price: 100, cap: 0.3, desc: 'Captura si le quedan menos del 30 % de PS' },
-    { id: 'superball', name: 'Super Ball', price: 350, cap: 0.5, desc: 'Captura por debajo del 50 % de PS', req: 2 },
-    { id: 'ultraball', name: 'Ultra Ball', price: 900, cap: 0.7, desc: 'Captura por debajo del 70 % de PS', req: 5 },
+    { id: 'pokeball', name: 'Poké Ball', price: 100, ball: 1, desc: 'La de siempre. Mejor con el salvaje debilitado' },
+    { id: 'superball', name: 'Super Ball', price: 350, ball: 1.5, desc: 'Captura con más facilidad que la Poké Ball', req: 2 },
+    { id: 'ultraball', name: 'Ultra Ball', price: 900, ball: 2.2, desc: 'Muy eficaz: casi siempre atrapa a un salvaje tocado', req: 5 },
     { id: 'caramelo', name: 'Caramelo Raro', price: 1200, desc: 'Sube un nivel a un Pokémon', req: 1 },
     { id: 'agua', name: 'Piedra Agua', price: 2000, stone: true, desc: 'Evoluciona a Eevee, Staryu…', req: 2 },
     { id: 'trueno', name: 'Piedra Trueno', price: 2000, stone: true, desc: 'Evoluciona a Pikachu, Eevee…', req: 3 },
@@ -334,7 +341,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

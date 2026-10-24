@@ -143,11 +143,18 @@ export class BattleClient {
       case 'buff': if (e.splash) this.floatText(pos.x, pos.y, '¡Pero no pasó nada!', 'info'); break;
       case 'blink': { const w = toWorld(e.x, e.y, 0.6); actor.ghost('#ff90d0'); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2, life: 0.5, size: 0.2 }); break; }
       case 'zap': this.fx.zap(e.cells); this.floatText(this.posOf(this.foeIdx).x, this.posOf(this.foeIdx).y - 30, '¡Descarga en el agua!', 'info'); break;
-      case 'capture':
-        this.fx.capture(e);
-        if (!e.ok) this.banner('¡Se ha escapado!', 'bad');
-        else this.actors[s].captured = true;
+      case 'capture': {
+        // El Pokémon entra en la Ball; las sacudidas se anuncian una a una
+        const seq = this.fx.capture(e, step => {
+          if (step === 'ok') { this.banner(`¡${this.monName(s)} atrapado!`, 'good big2'); }
+          else if (step === 'fail') { this.banner('¡Oh, no! ¡Se ha escapado!', 'bad'); }
+          else this.floatText(e.x, e.y - 10, step + '…', 'shake');
+        });
+        this.catchSeq = { s, t0: performance.now(), ok: !!e.ok, shakes: e.shakes, IN: seq.IN, SHAKE: seq.SHAKE };
+        this.banner(`Probabilidad: ${e.chance} %`, 'info');
         break;
+      }
+      case 'escape': this.catchSeq = null; break;
       case 'throw': if (s === this.you && this.balls) { this.balls[e.ball] = e.left; this.updateBallHud(); } break;
       case 'sudden': this.banner('¡Muerte súbita! Daño ×1,5 y sin curaciones', 'bad'); break;
     }
@@ -275,9 +282,15 @@ export class BattleClient {
       const hiddenFoe = i !== this.you && st.x === undefined;
       const f = st.f;
       // Invisible si el rival está escondido o capturado; semitransparente si me escondo yo
-      actor.alpha = actor.captured || hiddenFoe ? 0 : f & F.HIDDEN ? 0.45 : 1;
+      actor.alpha = hiddenFoe ? 0 : f & F.HIDDEN ? 0.45 : 1;
       const swapping = f & F.SWAP && !(f & F.FAINTED);
       actor.scale += ((swapping ? 0.05 : 1) - actor.scale) * Math.min(1, dt * 14);
+      const cs = this.catchSeq;
+      if (cs && cs.s === i) {   // dentro de la Ball: encogerse al entrar y reaparecer si se escapa
+        const t = (now - cs.t0) / 1000, out = cs.IN + cs.shakes * cs.SHAKE;
+        actor.scale = t < 0.35 ? Math.max(0.01, 1 - t / 0.35) : !cs.ok && t > out ? Math.min(1, (t - out) / 0.25) : 0.01;
+        actor.flashUntil = t < 0.35 ? now + 50 : actor.flashUntil;
+      }
       actor.update(now, x, y, a, moving);
       // Telegrafiado y Protección
       const m = st.w ? MOVES[SPECIES[this.dexOf(i)].moves[st.w.c]] : null;
@@ -285,7 +298,7 @@ export class BattleClient {
       this.fx.protectDome(i, { x, y }, !!(f & F.PROTECT) && !hiddenFoe, !!(f & F.PERFECT));
       if (!hiddenFoe) this.statusFx(i, x, y, f, dt);
       // Nameplate
-      this.placeNameplate(i, actor, hiddenFoe || (f & F.FAINTED && actor.anim.name === 'Faint' && now - actor.anim.t0 > 1500));
+      this.placeNameplate(i, actor, hiddenFoe || actor.scale < 0.2 || (f & F.FAINTED && actor.anim.name === 'Faint' && now - actor.anim.t0 > 1500));
     }
     // Estelas de las embestidas
     if ((this.ghostT += dt) > 0.04) {
@@ -376,7 +389,7 @@ export class BattleClient {
     if (!this.ballEl) return;
     this.ballEl.innerHTML = '<div class="bt">Poké Balls · <kbd>F</kbd> lanzar · <kbd>R</kbd> cambiar</div>' + BALLS.map(b => {
       const item = SHOP.find(s => s.id === b);
-      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}"><i class="${b}"></i>${item.name} ×${this.balls[b] || 0}<small>&lt;${Math.round(item.cap * 100)} % PS</small></div>`;
+      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}" data-ball="${b}"><i class="${b}"></i>${item.name} ×${this.balls[b] || 0}<small class="pct"></small></div>`;
     }).join('');
   }
 
@@ -418,6 +431,12 @@ export class BattleClient {
       pe.classList.toggle('on', !!(me.f & F.PROTECT));
     }
     this.energyEl.firstChild.style.width = (me.e / ENERGY.max * 100) + '%';
+    // Probabilidad de captura de cada Ball con la vida y el estado actuales del salvaje
+    if (this.ballEl) {
+      const fs = ps[this.foeIdx], fm = this.sides[this.foeIdx].team[fs.act];
+      const status = !!(fs.f & (F.BURN | F.POISON | F.STUN | F.SLOW | F.SEED));
+      for (const row of this.ballEl.querySelectorAll('.ball')) row.querySelector('.pct').textContent = Math.round(Data.catchChance(Math.max(0, fs.hp[fs.act] / fm.maxHp), row.dataset.ball, status) * 100) + ' %';
+    }
     this.energyEl.lastChild.textContent = `${me.e} ⚡`;
   }
 

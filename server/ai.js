@@ -10,6 +10,7 @@
 // controlador (áreas y aturdimientos) o tanque (mucha vida o curaciones).
 // La habilidad (skill 0-1) solo controla la ejecución: reflejos, puntería, esquivas, parry,
 // lectura de oportunidades, disciplina con la energía y cuántas dudas/errores comete.
+// Los salvajes son más simples: deambulan, atacan a ratos, apenas esquivan y nunca usan Protección.
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
 
@@ -140,6 +141,18 @@ function aiInput(b, side, dt) {
   const strafeAmt = mode === 'defender' ? 0.9 : 0.6;
   let mx = (dx / dist) * radial + (-dy / dist) * st.strafe * strafeAmt;
   let my = (dy / dist) * radial + (dx / dist) * st.strafe * strafeAmt;
+  // Salvaje: buena parte del tiempo va a su aire, a un punto al azar
+  if (side.wild) {
+    st.wanderT = (st.wanderT || 0) - dt;
+    if (st.wanderT <= 0) {
+      st.wanderT = 1 + rnd() * 2;
+      st.wander = rnd() < 0.55 ? { x: 120 + rnd() * (S.ARENA.w - 240), y: 100 + rnd() * (S.ARENA.h - 200) } : null;
+    }
+    if (st.wander) {
+      const wx = st.wander.x - side.x, wy = st.wander.y - side.y, wd = Math.hypot(wx, wy) || 1;
+      mx = wd > 20 ? wx / wd * 0.7 : 0; my = wd > 20 ? wy / wd * 0.7 : 0;
+    }
+  }
 
   // Defendiendo: buscar hierba alta cercana (lejos del rival) para esconderse
   if (mode === 'defender' && skill > 0.3) {
@@ -160,7 +173,7 @@ function aiInput(b, side, dt) {
 
   // Esquivar proyectiles que vienen hacia mí
   let threat = null;
-  const dodgeP = 0.08 + 0.72 * skill;
+  const dodgeP = (0.08 + 0.72 * skill) * (side.wild ? 0.4 : 1);
   for (const p of b.projectiles) {
     if (p.owner === side) continue;
     const th = threatOf(p, side);
@@ -206,7 +219,7 @@ function aiInput(b, side, dt) {
   inp.mx = Math.max(-1, Math.min(1, mx)); inp.my = Math.max(-1, Math.min(1, my));
 
   // ---------- Protección / parry ----------
-  if (side.pcd <= 0 && side.prot < 0) {
+  if (side.pcd <= 0 && side.prot < 0 && !side.wild) {
     const guard = mode === 'defender' ? 0.15 : 0;
     if (threat && threat.t < 0.1 && decide(st, 'p' + threat.id, Math.pow(skill, 1.5) * 0.55 + guard)) { inp.c = 4; return aim(inp, toFoe, skill); }
     if (f.wind && !f.hidden) {
@@ -236,7 +249,8 @@ function aiInput(b, side, dt) {
   if (st.pause <= 0 && rnd() < (1 - skill) * 0.012) st.pause = 0.3 + rnd() * 0.7;
   if (st.pause > 0 || !b.canAct(side) || (f.hidden && !st.lastSeen)) return aim(inp, toFoe, skill);
   // Cadencia: una IA torpe ataca a ratos; una experta, en cuanto tiene sentido
-  const cadence = 0.05 + 0.4 * Math.pow(skill, 1.2) + (mode === 'atacar' ? 0.1 : mode === 'defender' ? -0.03 : 0);
+  let cadence = 0.05 + 0.4 * Math.pow(skill, 1.2) + (mode === 'atacar' ? 0.1 : mode === 'defender' ? -0.03 : 0);
+  if (side.wild) cadence *= st.wander ? 0.25 : 0.6;   // los salvajes atacan poco, y menos mientras deambulan
   if (rnd() > cadence) return aim(inp, toFoe, skill);
 
   const opening = (foeFlags & (F.STUN | F.REC | F.WIND)) && rnd() < 0.3 + 0.7 * skill;   // ¿lo ve vendido?

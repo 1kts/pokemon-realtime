@@ -18,6 +18,8 @@ const BURN_DPS = 0.025, POISON_DPS = 0.022, SEED_DPS = 0.03, FIRE_DPS = 0.05;  /
 const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, SPREAD_T = 0.6;
 const FORCED_SWAP_T = 1.2, ENTRY_INVULN = 0.8;
 const WILD_HP = 0.6, WILD_DMG = 0.85;
+// Duración de la animación de captura (debe coincidir con la del cliente, effects.js)
+const CATCH_IN = 1.0, CATCH_SHAKE = 0.75, CATCH_CLICK = 0.9, CATCH_BREAK = 0.5;
 // A los SUDDEN s empieza la muerte súbita (más daño, sin curar); a los LIMIT s gana quien tenga más PS.
 const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
 
@@ -116,6 +118,8 @@ class Battle {
         const left = this.sides.map(s => s.team.reduce((a, m) => a + m.hp / m.maxHp, 0));
         this.finish(left[0] === left[1] ? -1 : left[0] > left[1] ? 0 : 1, { timeout: true });
       }
+    } else if (this.state === 'capture') {
+      this.updateCapture(dt);
     }
     this.broadcast();
   }
@@ -476,15 +480,33 @@ class Battle {
     if (!p.ball) this.ev({ k: 'pend', x: Math.round(p.x), y: Math.round(p.y), ty: p.m.type, imp: impact ? 1 : 0 });
   }
 
+  // La Ball acierta: el combate se pausa mientras dura la animación (entrar en la Ball, caer,
+  // hasta 3 sacudidas) y al final se decide. Cada sacudida pasa con p^(1/3).
   ballHit(p, f) {
     const mon = this.mon(f);
-    const cap = D.SHOP.find(s => s.id === p.ball).cap;
-    if (mon.hp / mon.maxHp <= cap) {
-      this.ev({ k: 'capture', s: f.idx, ok: 1, x: Math.round(f.x), y: Math.round(f.y), ball: p.ball });
-      this.finish(p.owner.idx, { captured: { dex: mon.dex, level: mon.level } });
-    } else {
-      this.ev({ k: 'capture', s: f.idx, ok: 0, x: Math.round(f.x), y: Math.round(f.y), ball: p.ball });
-    }
+    const status = f.burn > 0 || f.poison > 0 || f.stun > 0 || f.slow > 0 || f.seed > 0;
+    const chance = D.catchChance(mon.hp / mon.maxHp, p.ball, status);
+    const per = Math.cbrt(chance);
+    let shakes = 0;
+    while (shakes < 3 && Math.random() < per) shakes++;
+    const ok = shakes === 3;
+    const dur = CATCH_IN + shakes * CATCH_SHAKE + (ok ? CATCH_CLICK : CATCH_BREAK);
+    this.capturing = { thrower: p.owner, foe: f, ok, t: dur };
+    this.state = 'capture';
+    for (const x of this.projectiles) x.left = 0;   // la escena se congela durante la captura
+    f.wind = null; f.dash = null; f.kb = null;
+    this.ev({ k: 'capture', s: f.idx, x: Math.round(f.x), y: Math.round(f.y), ball: p.ball, shakes, ok: ok ? 1 : 0, chance: Math.round(chance * 100) });
+  }
+
+  updateCapture(dt) {
+    const c = this.capturing;
+    if ((c.t -= dt) > 0) return;
+    this.capturing = null;
+    const mon = this.mon(c.foe);
+    if (c.ok) return this.finish(c.thrower.idx, { captured: { dex: mon.dex, level: mon.level } });
+    this.state = 'fight';
+    c.foe.invuln = 0.8;
+    this.ev({ k: 'escape', s: c.foe.idx, x: Math.round(c.foe.x), y: Math.round(c.foe.y) });
   }
 
   // ---------- Áreas ----------

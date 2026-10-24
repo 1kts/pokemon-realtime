@@ -429,22 +429,61 @@ export class Effects {
     this.addTemp(beam, 350, f => { beam.material.opacity = 0.5 * (1 - f); beam.scale.x = beam.scale.z = 1 - f * 0.8; });
   }
 
-  // Captura: la Poké Ball se queda en el suelo y se agita; estrellas si sale bien
-  capture(e) {
-    const pos = toWorld(e.x, e.y, 0.2);
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), new THREE.MeshStandardMaterial({ map: ballTexture(BALL_COLORS[e.ball] || '#e83030'), roughness: 0.3 }));
+  // Captura (tiempos iguales a los del servidor): la Ball se abre y absorbe al Pokémon, cae
+  // botando, se agita hasta 3 veces y hace ¡clic! con estrellas, o se abre y el Pokémon escapa.
+  capture(e, onStep) {
+    const IN = 1.0, SHAKE = 0.75, CLICK = 0.9, BREAK = 0.5;
+    const pos = toWorld(e.x, e.y, 0);
+    const ball = new THREE.Group();
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 14), new THREE.MeshStandardMaterial({ map: ballTexture(BALL_COLORS[e.ball] || '#e83030'), roughness: 0.25, metalness: 0.1 }));
+    sphere.castShadow = true;
+    const button = new THREE.Mesh(new THREE.CircleGeometry(0.08, 16), new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }));
+    button.position.z = 0.301;
+    ball.add(sphere, button);
     ball.position.copy(pos);
-    ball.castShadow = true;
-    this.p.emit(pos.x, 0.6, pos.z, { n: 40, colors: ['#ffffff', '#ff8080'], speed: 4, life: 0.4, size: 0.2 });
-    this.addTemp(ball, e.ok ? 2200 : 900, f => {
-      const t = f * (e.ok ? 2.2 : 0.9);
-      ball.rotation.z = Math.sin(t * 14) * 0.5 * (t < 1.8 ? 1 : 0);
-      if (!e.ok && f > 0.6) { ball.scale.setScalar(Math.max(0.01, (1 - f) / 0.4)); }
-      if (e.ok && f > 0.82 && !ball.userData.done) {
-        ball.userData.done = true;
-        this.p.emit(pos.x, 0.5, pos.z, { n: 30, colors: ['#fff6a0', '#ffffff', '#ffd040'], speed: 3, life: 0.8, size: 0.25 });
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.55, 1.2, 16, 1, true), additive(new THREE.Color('#ff4040').multiplyScalar(2.5), 0.7));
+    beam.position.copy(pos).setY(0.75);
+    this.scene.add(beam);
+    const total = IN + e.shakes * SHAKE + (e.ok ? CLICK : BREAK);
+    let step = -1;
+    this.p.emit(pos.x, 0.9, pos.z, { n: 40, colors: ['#ffffff', '#ff9090', '#ff4040'], speed: 3, life: 0.5, size: 0.22 });
+    this.addTemp(ball, total * 1000 + 600, f => {
+      const t = f * (total + 0.6);
+      // Absorber y caer botando
+      if (t < 0.35) { ball.position.y = 0.95; beam.material.opacity = 0.7 * (1 - t / 0.35); }
+      else {
+        if (beam.parent) this.scene.remove(beam);
+        const k = Math.min(1, (t - 0.35) / (IN - 0.35));
+        ball.position.y = 0.3 + Math.abs(Math.cos(k * Math.PI * 2.5)) * 0.73 * (1 - k) * (1 - k);
       }
+      ball.rotation.set(0, 0, 0);
+      // Sacudidas
+      const st = t - IN;
+      const i = Math.floor(st / SHAKE);
+      if (st >= 0 && i < e.shakes) {
+        const u = (st - i * SHAKE) / SHAKE;
+        ball.rotation.z = u < 0.6 ? Math.sin(u / 0.6 * Math.PI * 2) * 0.55 : 0;
+        button.material.color.set(u < 0.6 ? '#ff6060' : '#ffffff');
+        if (i > step) { step = i; onStep && onStep(i + 1); this.p.emit(pos.x, 0.25, pos.z, { n: 8, colors: DUST, layer: 'soft', speed: 1, life: 0.4, size: 0.2, alpha: 0.6 }); }
+      }
+      const done = IN + e.shakes * SHAKE;
+      if (t >= done && step < 99) {
+        step = 99;
+        if (e.ok) {
+          onStep && onStep('ok');
+          button.material.color.set('#7dff9a');
+          for (let k = 0; k < 3; k++) this.p.emit(pos.x, 0.5, pos.z, { n: 12, colors: ['#fff6a0', '#ffffff', '#ffd040'], dir: [Math.cos(k * 2.1), 1.4, Math.sin(k * 2.1)], spread: 0.25, speed: 3, life: 0.9, size: 0.26 });
+          this.flashLight(pos, '#fff6a0', 6, 300);
+        } else {
+          onStep && onStep('fail');
+          this.p.emit(pos.x, 0.4, pos.z, { n: 50, colors: ['#ffffff', '#ff8080'], speed: 4, life: 0.5, size: 0.24 });
+          this.flashLight(pos, '#ffffff', 8, 250);
+          ball.visible = false;
+        }
+      }
+      if (e.ok && t > done) ball.scale.setScalar(1 + Math.max(0, 0.15 - (t - done) * 0.5));
     });
+    return { total, IN, SHAKE };
   }
 
   update(dt) {
