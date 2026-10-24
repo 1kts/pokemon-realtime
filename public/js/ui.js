@@ -47,7 +47,7 @@ export class UI {
       this.show('menu');
       // Primera vez en esta versión: enseñar las novedades
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'tower', 'profile'].includes(this.view)) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'tower', 'profile', 'settings'].includes(this.view)) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -90,10 +90,11 @@ export class UI {
       nav.append(b);
     }
     if (this.view !== 'ladder') { const b = el('button', '', t('Ladder')); b.onclick = () => this.openLadder(); nav.append(b); }
-    if (this.view === 'menu') nav.append(this.newsButton());
     bar.append(nav);
-    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${t(p.league)} · ${p.elo}</span>`);
+    // Dinero, tu perfil (avatar, nombre y liga) y Ajustes (idioma, novedades, créditos)
+    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span>`);
     if (this.view !== 'profile') stats.append(this.profileChip());
+    if (this.view !== 'settings') stats.append(this.settingsButton());
     bar.append(stats);
     return bar;
   }
@@ -104,8 +105,17 @@ export class UI {
     const wrap = el('div', 'menu');
     wrap.append(this.topbar(t('¡Hola, {name}!', { name: escapeHtml(p.name) })));
     const top = el('div', 'menu-top');
-    const grid = el('div', 'menu-grid');
-    const card = (title, desc, cls, art, onClick) => {
+    const main = el('div', 'menu-main');
+    // Cada sección: cabecera y su rejilla de tarjetas
+    const section = (title, sub) => {
+      const sec = el('section', 'menu-sec');
+      sec.append(el('div', 'sec-head', `<h3>${title}</h3><small>${sub}</small>`));
+      const grid = el('div', 'menu-grid');
+      sec.append(grid);
+      main.append(sec);
+      return grid;
+    };
+    const card = (grid, title, desc, cls, art, onClick) => {
       const c = el('button', 'menu-card ' + cls, `<b>${title}</b><span>${desc}</span>`);
       const a = animatedPortrait(art, 120, 'Idle');
       a.classList.add('art');
@@ -116,19 +126,23 @@ export class UI {
     const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0] || null;
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
-    card(t('Historia'), p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story', lead ? lead.dex : 25, () => this.show('story'));
-    const ready = this.claimable().length;
-    card(t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
-    card(t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
-    card(t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
-    if (p.admin) card(t('Escenarios'), t('Acceso total: combate en cualquier mapa o arena sin medallas ni nivel'), 'arenas', 137, () => this.show('arenas'));
     const tw = p.tower;
-    card(t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
-    card(t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
-    top.append(grid, this.profilePanel(lead));
-    wrap.append(top, this.howTo(), this.footer());
+    const adventure = section(t('Aventura'), t('Tu viaje por las regiones y los retos de la Torre'));
+    card(adventure, t('Historia'), p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
+    card(adventure, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
+    const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
+    const ready = this.claimable().length;
+    card(online, t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
+    card(online, t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
+    const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
+    card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
+    if (p.admin) card(training, t('Escenarios'), t('Acceso total: combate en cualquier mapa o arena sin medallas ni nivel'), 'arenas', 137, () => this.show('arenas'));
+    card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
+    top.append(main, this.profilePanel(lead));
+    wrap.append(top, this.howTo());
     this.root.append(wrap);
   }
+
 
   profilePanel(lead) {
     const p = this.profile;
@@ -356,9 +370,18 @@ export class UI {
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
     wrap.append(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
-    const grid = el('div', 'mon-grid scroll');
-    const sorted = [...mine].sort((a, b) => (team.includes(b.uid) - team.includes(a.uid)) || b.level - a.level);
-    for (const m of sorted) {
+    // Dos secciones: el equipo (máximo 3) y la caja con el resto
+    const scroll = el('div', 'team-sections scroll');
+    const inTeamList = team.map(u => mine.find(m => m.uid === u)).filter(Boolean);
+    const boxList = mine.filter(m => !team.includes(m.uid)).sort((a, b) => b.level - a.level);
+    const grids = {};
+    for (const [key, title, list] of [['team', t('Equipo ({n}/3)', { n: inTeamList.length }), inTeamList], ['box', t('Caja ({n})', { n: boxList.length }), boxList]]) {
+      if (!list.length) continue;
+      scroll.append(el('h3', 'sec-title', title));
+      scroll.append(grids[key] = el('div', 'mon-grid'));
+    }
+    for (const m of [...inTeamList, ...boxList]) {
+      const grid = grids[team.includes(m.uid) ? 'team' : 'box'];
       const inTeam = team.includes(m.uid);
       const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
       card.append(portrait(m.dex, 72, { shiny: !!m.shiny }));
@@ -410,7 +433,7 @@ export class UI {
       card.append(acts);
       grid.append(card);
     }
-    wrap.append(grid);
+    wrap.append(scroll);
     this.root.append(wrap);
   }
 
@@ -530,25 +553,45 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'shop');
     wrap.append(this.topbar(t('Tienda'), this.returnTo || 'menu'));
-    const grid = el('div', 'shop-grid scroll');
-    for (const item of SHOP) {
-      const locked = (item.req || 0) > p.badges;
-      const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
-      const icon = item.dex ? portrait(item.dex, 64) : el('i', 'item-icon ' + item.id);
-      c.append(icon);
-      c.append(el('div', 'si', `<b>${item.name}</b><small>${item.desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
-      const acts = el('div', 'acts');
-      if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
-      else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
-        const b = el('button', '', qty === 1 ? t('Comprar') : `×${qty}`);
-        b.disabled = p.coins < item.price * qty;
-        b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty, region: this.region || 'kanto' });
-        acts.append(b);
+    // Por categorías, con accesos rápidos arriba
+    const cats = [
+      ['balls', t('Poké Balls'), i => ['pokeball', 'superball', 'ultraball'].includes(i.id)],
+      ['items', t('Objetos'), i => !i.dex && !i.vit && !i.stone && !['pokeball', 'superball', 'ultraball'].includes(i.id)],
+      ['vit', t('Vitaminas'), i => i.vit],
+      ['stones', t('Piedras evolutivas'), i => i.stone],
+      ['mons', t('Pokémon'), i => i.dex],
+    ];
+    const jump = el('div', 'subbar shop-tabs');
+    const scroll = el('div', 'shop-sections scroll');
+    for (const [id, title, test] of cats) {
+      const items = SHOP.filter(test);
+      if (!items.length) continue;
+      const b = el('button', '', `${title} <small>${items.length}</small>`);
+      b.onclick = () => scroll.querySelector(`#shop-${id}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      jump.append(b);
+      scroll.append(el('h3', 'sec-title', title));
+      scroll.lastChild.id = 'shop-' + id;
+      const grid = el('div', 'shop-grid');
+      for (const item of items) {
+        const locked = (item.req || 0) > p.badges;
+        const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
+        const icon = item.dex ? portrait(item.dex, 64) : el('i', 'item-icon ' + item.id);
+        c.append(icon);
+        c.append(el('div', 'si', `<b>${item.name}</b><small>${item.desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
+        const acts = el('div', 'acts');
+        if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
+        else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
+          const b = el('button', '', qty === 1 ? t('Comprar') : `×${qty}`);
+          b.disabled = p.coins < item.price * qty;
+          b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty, region: this.region || 'kanto' });
+          acts.append(b);
+        }
+        c.append(acts);
+        grid.append(c);
       }
-      c.append(acts);
-      grid.append(c);
+      scroll.append(grid);
     }
-    wrap.append(grid);
+    wrap.append(jump, scroll);
     this.root.append(wrap);
   }
 
