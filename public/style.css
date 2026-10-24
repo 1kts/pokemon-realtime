@@ -646,3 +646,12 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .subbar .region-tabs button.soon:hover { opacity: .75; background: rgba(0,0,0,.2); }
 .subbar .region-tabs button.soon b { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); }
 .subbar .region-tabs button.soon svg { width: 12px; height: 12px; flex: none; }
+
+/* Arena de gimnasio: nombre y mecánica en el combate y en la ficha del líder */
+.arena-tag { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); max-width: min(560px, 80vw); text-align: center; padding: 6px 12px; border-radius: 10px; background: rgba(10,14,24,.62); border: 1px solid rgba(255,255,255,.12); pointer-events: auto; transition: opacity .4s; }
+.arena-tag b { display: block; font: 14px Bungee, sans-serif; color: var(--yellow); }
+.arena-tag span { display: block; font-size: 12px; color: #dfe6f2; margin-top: 2px; }
+.arena-tag.mini { padding: 3px 10px; opacity: .75; }
+.arena-tag.mini span { display: none; }
+.arena-info { margin: 8px 0; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: 13px; color: #d8e2f0; }
+.arena-info b { color: var(--yellow); }

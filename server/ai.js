@@ -204,10 +204,19 @@ function aiInput(b, side, dt) {
       if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; }
     }
   }
-  // Fuego, bordes y atascos
+  // Peligros de la arena avisados (rocas, erupciones, placas): salir de la zona
+  for (const d of (b.arena && b.arena.danger) || []) {
+    const dd = Math.hypot(side.x - d.x, side.y - d.y);
+    if (dd < d.r + r + 8 && decide(st, 'z' + Math.round(d.x) + ':' + Math.round(d.y), dodgeP)) {
+      mx += (side.x - d.x) / (dd || 1) * 2.5; my += (side.y - d.y) / (dd || 1) * 2.5;
+    }
+  }
+  // Fuego, lava, veneno, bordes y atascos (su propio tipo no lo nota)
+  const types = D.SPECIES[b.mon(side).dex].types;
+  const bad = t => t === T.FIRE || (t === T.LAVA && !types.includes('fuego')) || (t === T.POISON && skill > 0.3 && !types.includes('veneno') && !types.includes('acero'));
   const ahead = b.terrain[S.cellIndex(side.x + mx * 30, side.y + my * 30)];
-  if (ahead === T.FIRE && skill > 0.15) { const t = mx; mx = -my; my = t; }
-  if (b.terrain[S.cellIndex(side.x, side.y)] === T.FIRE) { mx += (S.ARENA.w / 2 - side.x) / 250; my += (S.ARENA.h / 2 - side.y) / 250; }
+  if (bad(ahead) && skill > 0.15) { const t = mx; mx = -my; my = t; }
+  if (bad(b.terrain[S.cellIndex(side.x, side.y)])) { mx += (S.ARENA.w / 2 - side.x) / 250; my += (S.ARENA.h / 2 - side.y) / 250; }
   const edge = 70;
   if (side.x < edge) mx += (edge - side.x) / edge * 1.5;
   if (side.x > S.ARENA.w - edge) mx -= (side.x - (S.ARENA.w - edge)) / edge * 1.5;

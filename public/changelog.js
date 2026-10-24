@@ -4,6 +4,18 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.4.0', date: '2026-10-24', title: 'Arenas de gimnasio',
+      items: [
+        ['nuevo', 'Cada líder, Alto Mando y Campeón pelea en una arena de su tipo, con su escenario y una mecánica propia.'],
+        ['nuevo', 'Rocas que caen en la cueva de Brock, marea en la piscina de Misty, placas eléctricas en la central de Lt. Surge y hierba que vuelve a crecer en el jardín de Erika.'],
+        ['nuevo', 'Charcos tóxicos y muros invisibles en el dojo de Koga, teletransportes en la sala de Sabrina, lava y erupciones en el volcán de Blaine y terremotos en la arena de Giovanni.'],
+        ['nuevo', 'En Johto: ráfagas de viento, telarañas, baldosas de curación, oscuridad, cascadas con corriente, el haz giratorio del faro y suelo helado en el que se resbala.'],
+        ['nuevo', 'Cada tipo aguanta el peligro de su propia arena: los de fuego la lava, los eléctricos las placas, los voladores el viento…'],
+        ['cambio', 'Las rutas tienen su propio escenario: bosque, cueva y lago.'],
+        ['cambio', 'Los ataques de hielo congelan el agua, el fuego derrite el hielo, y el agua y el hielo del mapa vuelven al pasar el efecto.'],
+      ],
+    },
+    {
       v: '0.3.0', date: '2026-10-24', title: 'Cuentas, perfil y Temporada 1',
       items: [
         ['nuevo', 'Cuentas con usuario y contraseña: regístrate sin perder tu partida de invitado y entra desde cualquier dispositivo.'],
