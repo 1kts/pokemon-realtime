@@ -1,6 +1,6 @@
-# Arena Monstruos
+# Arena Pokémon
 
-Prototipo de juego de combates de criaturas **en tiempo real** para navegador, inspirado en los combates tipo Pokémon. Las criaturas, nombres y gráficos son originales (dibujados con formas en canvas) para evitar problemas de copyright con Nintendo / The Pokémon Company.
+Prototipo de juego de combates Pokémon **en tiempo real** para navegador, en pixel art con sprites estilo *Pokémon Mundo Misterioso* (ver [CREDITS.md](CREDITS.md)). Proyecto de fans sin ánimo de lucro.
 
 ## Cómo jugar
 
@@ -14,13 +14,13 @@ npm start          # http://localhost:3000
 
 Controles: WASD para moverte, ratón para apuntar, clic izquierdo / clic derecho / Q / E para los cuatro movimientos (también 1‑4).
 
-## Criaturas
+## Pokémon
 
-| Criatura | Tipo | Movimientos |
+| Pokémon | Tipo | Movimientos |
 |---|---|---|
-| Brasilio | fuego | Ascuas, Llamarada, Embestida (carga), Escudo ígneo |
-| Marejo | agua | Burbuja, Hidrochorro, Maremoto (área), Manantial (curación) |
-| Hojarín | planta | Hoja afilada (abanico), Latigazo (corto alcance), Raíces (ralentiza), Corteza |
+| Charmander | fuego | Ascuas, Lanzallamas, Nitrocarga (carga), Protección |
+| Squirtle | agua | Pistola Agua, Hidrobomba, Surf (área), Acua Aro (curación) |
+| Bulbasaur | planta | Hoja Afilada (abanico), Látigo Cepa (corto alcance), Drenadoras (ralentiza), Protección |
 
 Tabla de tipos: fuego > planta > agua > fuego (×1,5 eficaz, ×0,67 poco eficaz). Los escudos reducen el daño un 80 %.
 

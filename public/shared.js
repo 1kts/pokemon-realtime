@@ -1,59 +1,81 @@
-// Reglas y datos compartidos entre servidor y cliente.
+// Reglas compartidas entre servidor y cliente: medidas de la arena, rejilla de terreno,
+// movimiento con colisiones y estadísticas según el nivel. Los datos están en data.js.
 (function (root) {
+  const Data = typeof module !== 'undefined' && module.exports ? require('./data.js') : root.Data;
+
   const TICK = 30;                 // ticks de simulación por segundo
   const DT = 1 / TICK;
   const ARENA = { w: 960, h: 600 };
-  const RADIUS = 24;
+  const RADIUS = 22;               // radio de colisión de un Pokémon
+  const CELL = 40;                 // celdas de terreno de 40x40
+  const COLS = ARENA.w / CELL, ROWS = ARENA.h / CELL;
+  const ROCK_R = 24;
 
-  // Tabla de tipos: atacante -> defensor -> multiplicador
-  const TYPES = {
-    fuego:  { fuego: 1, agua: 0.67, planta: 1.5 },
-    agua:   { fuego: 1.5, agua: 1, planta: 0.67 },
-    planta: { fuego: 0.67, agua: 1.5, planta: 1 },
-  };
-
-  // Criaturas originales (no son Pokémon reales).
-  const CREATURES = {
-    brasilio: {
-      name: 'Brasilio', type: 'fuego', hp: 100, speed: 210, color: '#ff7a3d',
-      moves: [
-        { name: 'Ascuas', kind: 'proj', cd: 0.45, dmg: 7, speed: 620, range: 520, radius: 7 },
-        { name: 'Llamarada', kind: 'proj', cd: 4, dmg: 20, speed: 360, range: 600, radius: 18 },
-        { name: 'Embestida', kind: 'dash', cd: 5, dmg: 14, dist: 260, dur: 0.22 },
-        { name: 'Escudo ígneo', kind: 'shield', cd: 8, dur: 1.5 },
-      ],
-    },
-    marejo: {
-      name: 'Marejo', type: 'agua', hp: 110, speed: 195, color: '#3da5ff',
-      moves: [
-        { name: 'Burbuja', kind: 'proj', cd: 0.5, dmg: 6, speed: 520, range: 480, radius: 9 },
-        { name: 'Hidrochorro', kind: 'proj', cd: 3.5, dmg: 16, speed: 900, range: 700, radius: 8 },
-        { name: 'Maremoto', kind: 'area', cd: 6, dmg: 18, radius: 130, delay: 0.5 },
-        { name: 'Manantial', kind: 'heal', cd: 10, amount: 22 },
-      ],
-    },
-    hojarin: {
-      name: 'Hojarín', type: 'planta', hp: 95, speed: 225, color: '#5cd65c',
-      moves: [
-        { name: 'Hoja afilada', kind: 'proj', cd: 0.6, dmg: 4, speed: 600, range: 420, radius: 6, count: 3, spread: 0.22 },
-        { name: 'Latigazo', kind: 'proj', cd: 2.5, dmg: 15, speed: 800, range: 170, radius: 14 },
-        { name: 'Raíces', kind: 'proj', cd: 6, dmg: 6, speed: 450, range: 560, radius: 11, slow: 2 },
-        { name: 'Corteza', kind: 'shield', cd: 8, dur: 1.5 },
-      ],
-    },
-  };
+  // Terreno: 0 nada · 1 hierba alta · 2 fuego · 3 agua · 4 vapor · 5 quemado
+  const T = { NONE: 0, GRASS: 1, FIRE: 2, WATER: 3, STEAM: 4, BURNT: 5 };
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  const cellIndex = (x, y) => clamp(Math.floor(y / CELL), 0, ROWS - 1) * COLS + clamp(Math.floor(x / CELL), 0, COLS - 1);
+  const cellCenter = i => ({ x: (i % COLS) * CELL + CELL / 2, y: Math.floor(i / COLS) * CELL + CELL / 2 });
 
-  // Movimiento determinista de un paso; lo usan el servidor y la predicción del cliente.
-  function stepMove(p, mx, my, speed, dt) {
-    const len = Math.hypot(mx, my);
-    if (len > 0) { mx /= len; my /= len; }
-    p.x = clamp(p.x + mx * speed * dt, RADIUS, ARENA.w - RADIUS);
-    p.y = clamp(p.y + my * speed * dt, RADIUS, ARENA.h - RADIUS);
+  // Mapa de texto -> terreno inicial y rocas fijas.
+  function parseMap(name) {
+    const rows = Data.MAPS[name] || Data.MAPS.pradera;
+    const terrain = new Array(COLS * ROWS).fill(T.NONE);
+    const rocks = [];
+    rows.forEach((row, y) => [...row].forEach((ch, x) => {
+      const i = y * COLS + x;
+      if (ch === '#') terrain[i] = T.GRASS;
+      else if (ch === '~') terrain[i] = T.WATER;
+      else if (ch === 'o') rocks.push({ x: x * CELL + CELL / 2, y: y * CELL + CELL / 2, r: ROCK_R });
+    }));
+    return { terrain, rocks };
   }
 
-  const api = { TICK, DT, ARENA, RADIUS, TYPES, CREATURES, clamp, stepMove };
+  // Empuja un círculo fuera de los obstáculos (también circulares).
+  function pushOut(p, r, obstacles) {
+    for (const o of obstacles) {
+      const dx = p.x - o.x, dy = p.y - o.y;
+      const d = Math.hypot(dx, dy), min = r + o.r;
+      if (d < min) {
+        if (d < 0.001) { p.x += min; continue; }
+        p.x = o.x + dx / d * min;
+        p.y = o.y + dy / d * min;
+      }
+    }
+    p.x = clamp(p.x, r, ARENA.w - r);
+    p.y = clamp(p.y, r, ARENA.h - r);
+  }
+
+  // Movimiento determinista de un paso; lo usan el servidor y la predicción del cliente.
+  function stepMove(p, mx, my, speed, dt, obstacles) {
+    const len = Math.hypot(mx, my);
+    if (len > 0) { mx /= len; my /= len; }
+    p.x += mx * speed * dt;
+    p.y += my * speed * dt;
+    pushOut(p, RADIUS, obstacles || []);
+  }
+
+  // Velocidad efectiva según estados. f = banderas del jugador (ver server/battle.js, flags()).
+  const F = { STUN: 1, SLOW: 2, BURN: 4, POISON: 8, WET: 16, PROTECT: 32, PERFECT: 64, HIDDEN: 128,
+    SWAP: 256, HASTE: 512, POWER: 1024, WIND: 2048, REC: 4096, DASH: 8192, INVULN: 16384, SEED: 32768, FAINTED: 65536 };
+  function speedOf(dex, f) {
+    if (f & (F.STUN | F.SWAP | F.DASH | F.FAINTED)) return 0;
+    let s = Data.SPECIES[dex].spd;
+    if (f & F.SLOW) s *= 0.55;
+    if (f & F.HASTE) s *= 1.3;
+    if (f & (F.WIND | F.REC)) s *= 0.45;
+    return s;
+  }
+
+  function monStats(dex, level) {
+    const sp = Data.SPECIES[dex];
+    const k = Data.levelMult(level);
+    return { maxHp: Math.round(sp.hp * k * 2), atk: sp.atk * k };
+  }
+
+  const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, clamp, cellIndex, cellCenter,
+    parseMap, pushOut, stepMove, speedOf, monStats };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Shared = api;
 })(this);

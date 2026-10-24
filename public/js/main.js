@@ -1,0 +1,128 @@
+// Arranque del cliente: renderer 3D con bloom, bucle principal, red y cambio entre menús y combate.
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { World } from './world.js';
+import { Particles } from './particles.js';
+import { Effects } from './effects.js';
+import { BattleClient } from './battle.js';
+import { UI } from './ui.js';
+import { Net } from './net.js';
+
+const canvas = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const world = new World(renderer);
+const particles = new Particles(world.scene);
+const effects = new Effects(world, particles);
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(world.scene, world.camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.6, 0.45, 1.1);  // umbral > 1: solo brillan los efectos, no los sprites
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+const app = {
+  world, particles, effects, canvas, net: new Net(), root: document.getElementById('hud'),
+  battle: null, ui: null,
+  connect(name) { this.net.connect(name); },
+};
+app.ui = new UI(app);
+window.__app = app;   // para depurar y para las pruebas automáticas
+world.loadMap('pradera', Shared.parseMap('pradera').terrain);
+
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  bloom.setSize(w, h);
+  world.placeCamera(w / h);
+  particles.setScale(h * renderer.getPixelRatio() / (2 * Math.tan(THREE.MathUtils.degToRad(world.camera.fov) / 2)));
+}
+addEventListener('resize', resize);
+resize();
+
+// ---------- Bucle ----------
+let last = performance.now();
+const basePos = new THREE.Vector3();
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  world.placeCamera(innerWidth / innerHeight);
+  if (app.battle) {
+    app.battle.frame(now, dt);
+    const sh = app.battle.camShake;
+    if (sh) world.camera.position.add(new THREE.Vector3(sh.x, sh.y * 0.5, sh.y));
+  } else {
+    // En los menús la cámara gira despacio alrededor de la arena
+    const t = now / 1000 * 0.06;
+    basePos.set(Shared.COLS / 2 + Math.sin(t) * 9, 13, Shared.ROWS / 2 + Math.cos(t) * 15);
+    world.camera.position.copy(basePos);
+    world.camera.lookAt(Shared.COLS / 2, 0, Shared.ROWS / 2);
+  }
+  world.update(dt, particles);
+  effects.update(dt);
+  particles.update(dt);
+  composer.render();
+}
+requestAnimationFrame(loop);
+
+// ---------- Red ----------
+const net = app.net;
+const ui = app.ui;
+const overlay = document.getElementById('conn');
+
+net.on('connected', () => { overlay.hidden = true; });
+net.on('disconnected', () => {
+  if (!ui.profile) return;
+  overlay.hidden = false;
+  if (app.battle) endBattle();
+  ui.show('menu');
+});
+net.on('profile', m => ui.setProfile(m.p, m.board));
+net.on('error', m => ui.toast(m.msg, 'bad'));
+net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
+net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'));
+net.on('cancelled', m => { ui.toast(m.reason, 'bad'); ui.show('menu'); });
+net.on('draft', m => ui.draft(m));
+net.on('draftwait', () => {});
+net.on('start', m => {
+  if (app.battle) endBattle();
+  ui.hide();
+  document.body.classList.add('in-battle');
+  app.battle = new BattleClient(app, m);
+});
+net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
+net.on('over', m => {
+  const b = app.battle;
+  // Dejar ver el final un momento antes de los resultados
+  setTimeout(() => {
+    if (app.battle !== b) return;
+    endBattle();
+    ui.results(m, b);
+  }, m.captured ? 2400 : 1400);
+});
+
+function endBattle() {
+  if (!app.battle) return;
+  app.battle.dispose();
+  app.battle = null;
+  document.body.classList.remove('in-battle');
+  world.loadMap('pradera', Shared.parseMap('pradera').terrain);
+}
+
+addEventListener('keydown', e => {
+  if (e.code === 'Escape' && app.battle && !app.battle.over) {
+    if (confirm('¿Rendirte y abandonar el combate?')) { app.battle.over = true; net.send({ t: 'forfeit' }); }
+  }
+});
+
+ui.show('title');

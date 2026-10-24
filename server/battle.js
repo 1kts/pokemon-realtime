@@ -1,0 +1,676 @@
+// Combate autoritativo: dos bandos con equipos de hasta 3 Pokémon, simulado a 30 Hz.
+//
+// Cada movimiento tiene preparación (wind, se ve venir), ejecución y recuperación (rec, vulnerable).
+// Protección (Espacio) bloquea; si el golpe llega en sus primeros PROTECT.perfect segundos es un
+// parry: el proyectil vuelve y el atacante cuerpo a cuerpo queda aturdido. La energía se gasta
+// en los movimientos y se recarga sola y al golpear. El terreno (hierba, fuego, agua, vapor)
+// cambia con los ataques y se combina: fuego + hierba = incendio, fuego + agua = vapor que
+// oculta, rayo + agua = descarga en todo el charco.
+const D = require('../public/data.js');
+const S = require('../public/shared.js');
+const { aiInput } = require('./ai.js');
+
+const { T, F, RADIUS, CELL, COLS, ROWS } = S;
+let nextId = 1;
+
+const STAB = 1.15;
+const BURN_DPS = 0.025, POISON_DPS = 0.022, SEED_DPS = 0.03, FIRE_DPS = 0.05;  // % de PS máx. por segundo
+const FIRE_TTL = 4, WATER_TTL = 7, STEAM_TTL = 4, SPREAD_T = 0.6;
+const FORCED_SWAP_T = 1.2, ENTRY_INVULN = 0.8;
+const WILD_HP = 0.6, WILD_DMG = 0.85;
+// A los SUDDEN s empieza la muerte súbita (más daño, sin curar); a los LIMIT s gana quien tenga más PS.
+const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
+
+function makeMon(dex, level, extra = {}) {
+  const st = S.monStats(dex, level);
+  return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, cds: [0, 0, 0, 0], fainted: false, ...extra };
+}
+
+class Battle {
+  // opts: { sides: [{ name, team: [{dex, level, uid?}], ws?, ai?: skill 0-1, wild?, balls? }],
+  //         map, mode: 'wild'|'trainer'|'ranked'|'casual'|'practice', onEnd(result) }
+  constructor(opts) {
+    this.mode = opts.mode;
+    this.mapName = opts.map || 'pradera';
+    this.onEnd = opts.onEnd || (() => {});
+    const { terrain, rocks } = S.parseMap(this.mapName);
+    this.terrain = terrain;
+    // El agua del mapa es permanente; la que crean los ataques se evapora (WATER_TTL)
+    this.ttl = terrain.map(t => t === T.WATER ? Infinity : 0);
+    this.spread = new Array(terrain.length).fill(0);
+    this.dirty = new Set();
+    this.obstacles = rocks.map(r => ({ id: nextId++, ...r, hp: Infinity, ttl: Infinity, kind: 'rock' }));
+    this.sides = opts.sides.map((s, i) => this.makeSide(s, i));
+    this.t = 0;
+    this.state = 'countdown';
+    this.countdown = 3;
+    this.projectiles = [];
+    this.areas = [];
+    this.events = [];
+    this.result = null;
+    this.timer = setInterval(() => this.tick(), 1000 / S.TICK);
+    for (const s of this.sides) this.send(s, this.startMsg(s));
+  }
+
+  makeSide(s, i) {
+    return {
+      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, balls: s.balls || null,
+      // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
+      team: s.team.map(m => {
+        const mon = makeMon(m.dex, m.level, { uid: m.uid });
+        if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
+        return mon;
+      }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,
+      x: i === 0 ? 140 : S.ARENA.w - 140, y: S.ARENA.h / 2, a: i === 0 ? 0 : Math.PI,
+      energy: D.ENERGY.max * 0.5, pcd: 0, prot: -1, wind: null, rec: 0, dash: null, kb: null,
+      stun: 0, slow: 0, burn: 0, poison: 0, wet: 0, seed: 0, seedBy: null, haste: 0, power: 0,
+      swapCd: 0, swapping: 0, swapTo: -1, swapIn: 0, invuln: 0, forced: 0, sinceAct: 9, hidden: false,
+      dot: 0, inputs: [], lastInput: { mx: 0, my: 0, a: 0, tx: 0, ty: 0 }, ack: 0, aiState: {}, connected: true,
+    };
+  }
+
+  startMsg(side) {
+    return {
+      t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp })) })),
+      terrain: this.terrain, balls: side.balls,
+    };
+  }
+
+  send(side, msg) {
+    if (side.ws && side.ws.readyState === 1) side.ws.send(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+
+  foe(side) { return this.sides[1 - side.idx]; }
+  mon(side) { return side.team[side.act]; }
+  ev(e) { this.events.push(e); }
+
+  // ---------- Bucle ----------
+  tick() {
+    const dt = S.DT;
+    this.t += dt;
+    if (this.state === 'countdown') {
+      this.countdown -= dt;
+      if (this.countdown <= 0) this.state = 'fight';
+    }
+    for (const side of this.sides) {
+      if (side.ai !== null) side.inputs.push(aiInput(this, side, dt));
+      let steps = side.inputs.length > 3 ? 2 : 1;   // si hay atraso, consumir dos para recuperar
+      while (steps-- > 0) {
+        const inp = side.inputs.shift();
+        if (inp) { side.lastInput = inp; side.ack = inp.s || side.ack; }
+        this.applyInput(side, inp || { ...side.lastInput, c: -1, sw: -1 }, dt);
+      }
+      if (side.inputs.length > 10) side.inputs.splice(0, side.inputs.length - 10);
+    }
+    if (this.state === 'fight') {
+      for (const side of this.sides) this.updateSide(side, dt);
+      this.updateProjectiles(dt);
+      this.updateAreas(dt);
+      this.updateTerrain(dt);
+      this.updateObstacles(dt);
+      this.checkFaints();
+      this.fightT = (this.fightT || 0) + dt;
+      if (this.fightT >= SUDDEN && !this.sudden) { this.sudden = true; this.ev({ k: 'sudden' }); }
+      if (this.fightT >= LIMIT && this.state === 'fight') {
+        const left = this.sides.map(s => s.team.reduce((a, m) => a + m.hp / m.maxHp, 0));
+        this.finish(left[0] === left[1] ? -1 : left[0] > left[1] ? 0 : 1, { timeout: true });
+      }
+    }
+    this.broadcast();
+  }
+
+  canAct(side) {
+    return this.state === 'fight' && side.stun <= 0 && !side.wind && side.rec <= 0 && !side.dash && !side.kb &&
+      side.swapping <= 0 && side.forced <= 0 && !this.mon(side).fainted;
+  }
+
+  flags(side) {
+    let f = 0;
+    if (side.stun > 0) f |= F.STUN;
+    if (side.slow > 0) f |= F.SLOW;
+    if (side.burn > 0) f |= F.BURN;
+    if (side.poison > 0) f |= F.POISON;
+    if (side.wet > 0) f |= F.WET;
+    if (side.seed > 0) f |= F.SEED;
+    if (side.prot >= 0) f |= F.PROTECT;
+    if (side.prot >= 0 && side.prot < D.PROTECT.perfect) f |= F.PERFECT;
+    if (side.hidden) f |= F.HIDDEN;
+    if (side.swapping > 0 || side.forced > 0) f |= F.SWAP;
+    if (side.haste > 0) f |= F.HASTE;
+    if (side.power > 0) f |= F.POWER;
+    if (side.wind) f |= F.WIND;
+    if (side.rec > 0) f |= F.REC;
+    if (side.dash || side.kb) f |= F.DASH;
+    if (side.invuln > 0) f |= F.INVULN;
+    if (this.mon(side).fainted) f |= F.FAINTED;
+    return f;
+  }
+
+  applyInput(side, inp, dt) {
+    if (typeof inp.a === 'number' && isFinite(inp.a)) side.a = inp.a;
+    if (this.state !== 'fight') return;
+    const mon = this.mon(side);
+    // Movimiento (el dash y el empuje se mueven en updateSide)
+    if (!side.dash && !side.kb) {
+      const speed = S.speedOf(mon.dex, this.flags(side));
+      if (speed > 0) S.stepMove(side, inp.mx || 0, inp.my || 0, speed, dt, this.obstacles);
+    }
+    // Cambio de Pokémon: voluntario (con recarga) o tras un debilitado (elige el jugador)
+    if (inp.sw >= 0 && inp.sw < side.team.length && inp.sw !== side.act && !side.team[inp.sw].fainted) {
+      if (side.forced > 0) { side.swapTo = inp.sw; side.forced = Math.min(side.forced, 0.25); }
+      else if (side.swapCd <= 0 && side.swapping <= 0 && side.stun <= 0 && !side.dash && !side.kb && !side.wind) {
+        side.swapping = D.SWAP.time; side.swapTo = inp.sw; side.swapCd = D.SWAP.cd;
+        side.prot = -1;
+      }
+    }
+    const c = inp.c;
+    if (c === 4 && side.pcd <= 0 && side.stun <= 0 && !side.wind && !side.dash && side.swapping <= 0 && side.forced <= 0) {
+      side.prot = 0; side.pcd = D.PROTECT.cd;
+      this.ev({ k: 'protect', s: side.idx });
+    } else if (c === 5 && this.canAct(side) && side.balls && this.foe(side).wild) {
+      this.throwBall(side, inp);
+    } else if (c >= 0 && c < 4 && this.canAct(side)) {
+      const m = D.MOVES[D.SPECIES[mon.dex].moves[c]];
+      if (mon.cds[c] <= 0 && side.energy >= m.cost) {
+        side.energy -= m.cost;
+        mon.cds[c] = m.cd;
+        let tx = +inp.tx || side.x, ty = +inp.ty || side.y;
+        if (m.maxRange) {   // apuntado al cursor, limitado al alcance
+          const d = Math.hypot(tx - side.x, ty - side.y);
+          if (d > m.maxRange) { tx = side.x + (tx - side.x) / d * m.maxRange; ty = side.y + (ty - side.y) / d * m.maxRange; }
+        }
+        side.wind = { c, m, t: 0, a: side.a, tx, ty };
+        side.prot = -1;
+        side.sinceAct = 0;
+        this.ev({ k: 'wind', s: side.idx, c, a: +side.a.toFixed(2), tx: Math.round(tx), ty: Math.round(ty), d: m.wind });
+      }
+    }
+  }
+
+  updateSide(side, dt) {
+    const mon = this.mon(side);
+    side.sinceAct += dt;
+    for (const m of side.team) for (let i = 0; i < 4; i++) m.cds[i] = Math.max(0, m.cds[i] - dt);
+    side.pcd = Math.max(0, side.pcd - dt);
+    side.swapCd = Math.max(0, side.swapCd - dt);
+    side.energy = Math.min(D.ENERGY.max, side.energy + D.ENERGY.regen * dt);
+    for (const k of ['stun', 'slow', 'burn', 'poison', 'wet', 'seed', 'haste', 'power', 'invuln', 'swapIn', 'rec'])
+      side[k] = Math.max(0, side[k] - dt);
+    if (side.prot >= 0) { side.prot += dt; if (side.prot > D.PROTECT.dur) side.prot = -1; }
+
+    // Preparación -> ejecución
+    if (side.wind) {
+      if (side.stun > 0) side.wind = null;   // aturdir cancela el ataque
+      else if ((side.wind.t += dt) >= side.wind.m.wind) {
+        const w = side.wind;
+        side.wind = null;
+        side.rec = w.m.rec;
+        this.execute(side, w);
+      }
+    }
+    // Embestida y empuje
+    for (const key of ['dash', 'kb']) {
+      const d = side[key];
+      if (!d) continue;
+      const before = { x: side.x, y: side.y };
+      S.stepMove(side, d.vx, d.vy, d.speed, dt, key === 'dash' && d.m.invuln ? [] : this.obstacles);
+      if (key === 'dash') {
+        const f = this.foe(side);
+        if (!d.hit && !this.mon(f).fainted && Math.hypot(f.x - side.x, f.y - side.y) < RADIUS * 2.3) {
+          d.hit = true;
+          this.hit(side, f, d.m, side.x, side.y, { a: Math.atan2(d.vy, d.vx) });
+        }
+      }
+      if ((d.t -= dt) <= 0 || (Math.hypot(side.x - before.x, side.y - before.y) < 0.5 && key === 'kb')) {
+        side[key] = null;
+        if (key === 'dash' && d.m.invuln) S.pushOut(side, RADIUS, this.obstacles);
+      }
+    }
+    // Cambio en curso
+    if (side.swapping > 0 && (side.swapping -= dt) <= 0) this.doSwap(side, side.swapTo, false);
+    if (side.forced > 0 && (side.forced -= dt) <= 0) {
+      let to = side.swapTo;
+      if (to < 0 || side.team[to].fainted) to = side.team.findIndex(m => !m.fainted);
+      if (to >= 0) this.doSwap(side, to, true);
+    }
+    // Daño por estados y terreno, acumulado y aplicado cada segundo para que el número se lea
+    if (!mon.fainted) {
+      const cell = this.terrain[S.cellIndex(side.x, side.y)];
+      let rate = 0;
+      if (side.burn > 0) rate += BURN_DPS;
+      if (side.poison > 0) rate += POISON_DPS;
+      if (side.seed > 0) rate += SEED_DPS;
+      if (cell === T.FIRE && side.invuln <= 0 && !(side.dash && side.dash.m.invuln)) { rate += FIRE_DPS; side.burn = Math.max(side.burn, 1.5); }
+      if (cell === T.WATER) side.wet = Math.max(side.wet, 1.5);
+      side.dot += rate * mon.maxHp * dt;
+      if (side.dot >= 1 && (this.t % 1) < dt) {
+        const n = Math.floor(side.dot);
+        side.dot -= n;
+        mon.hp = Math.max(0, mon.hp - n);
+        this.ev({ k: 'dot', s: side.idx, n });
+        if (side.seed > 0 && side.seedBy) {   // Drenadoras: lo que pierde el sembrado lo gana quien sembró
+          const src = this.mon(side.seedBy);
+          if (!src.fainted && !this.sudden) src.hp = Math.min(src.maxHp, src.hp + Math.round(SEED_DPS * mon.maxHp));
+        }
+      }
+    }
+    // Oculto en hierba alta o vapor, si no ataca y el rival no está pegado
+    const cell = this.terrain[S.cellIndex(side.x, side.y)];
+    const f = this.foe(side);
+    const dist = Math.hypot(f.x - side.x, f.y - side.y);
+    side.hidden = (cell === T.GRASS || cell === T.STEAM) && side.sinceAct > 0.8 && dist > (cell === T.STEAM ? 70 : 120);
+  }
+
+  doSwap(side, to, forced) {
+    side.act = to;
+    side.swapping = 0; side.forced = 0; side.swapTo = -1;
+    side.swapIn = forced ? 0 : D.SWAP.perfect;
+    side.invuln = forced ? ENTRY_INVULN : 0;
+    side.wind = null; side.rec = 0; side.prot = -1;
+    side.slow = side.stun = side.burn = side.poison = side.seed = side.haste = side.power = 0;
+    this.ev({ k: 'swap', s: side.idx, to });
+  }
+
+  // ---------- Ejecución de movimientos ----------
+  execute(side, w) {
+    const m = w.m, a = w.a;
+    const ax = Math.cos(a), ay = Math.sin(a);
+    this.ev({ k: 'cast', s: side.idx, c: w.c, a: +a.toFixed(2), x: Math.round(side.x), y: Math.round(side.y) });
+    if (m.kind === 'proj') {
+      const n = m.count || 1;
+      for (let j = 0; j < n; j++) {
+        const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
+        this.projectiles.push({ id: nextId++, owner: side, m, mk: D.SPECIES[this.mon(side).dex].moves[w.c],
+          x: side.x + ax * RADIUS, y: side.y + ay * RADIUS, vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: m.range, r: m.radius });
+      }
+    } else if (m.kind === 'beam') {
+      this.beam(side, m, a);
+    } else if (m.kind === 'melee') {
+      const f = this.foe(side);
+      const dx = f.x - side.x, dy = f.y - side.y;
+      let diff = Math.atan2(dy, dx) - a;
+      while (diff > Math.PI) diff -= 2 * Math.PI;
+      while (diff < -Math.PI) diff += 2 * Math.PI;
+      this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
+      if (Math.hypot(dx, dy) < m.range + RADIUS && Math.abs(diff) < m.arc / 2) this.hit(side, f, m, f.x, f.y, { a });
+    } else if (m.kind === 'dash') {
+      side.dash = { m, vx: ax, vy: ay, speed: m.dist / m.dur, t: m.dur, hit: false };
+      if (m.invuln) side.invuln = m.dur;
+      if (m.haste) side.haste = m.haste;
+    } else if (m.kind === 'area') {
+      const at = m.at === 'self' ? { x: side.x, y: side.y } : { x: w.tx, y: w.ty };
+      this.areas.push({ owner: side, m, x: at.x, y: at.y, t: m.delay });
+      this.ev({ k: 'warn', s: side.idx, x: Math.round(at.x), y: Math.round(at.y), r: m.radius, d: m.delay, ty: m.type });
+    } else if (m.kind === 'blink') {
+      const from = { x: side.x, y: side.y };
+      side.x += ax * m.dist; side.y += ay * m.dist;
+      S.pushOut(side, RADIUS, this.obstacles);
+      this.ev({ k: 'blink', s: side.idx, x: Math.round(from.x), y: Math.round(from.y) });
+    } else if (m.kind === 'heal') {
+      const mon = this.mon(side);
+      const before = mon.hp;
+      if (!this.sudden) mon.hp = Math.min(mon.maxHp, mon.hp + Math.round(mon.maxHp * m.heal));
+      side.burn = side.poison = side.seed = 0;
+      this.ev({ k: 'heal', s: side.idx, n: Math.round(mon.hp - before) });
+    } else if (m.kind === 'buff') {
+      if (m.haste) side.haste = m.haste;
+      if (m.power) side.power = m.power;
+      this.ev({ k: 'buff', s: side.idx, splash: m.splash ? 1 : 0 });
+    } else if (m.kind === 'smoke') {
+      const c0 = S.cellIndex(side.x, side.y), cx = c0 % COLS, cy = Math.floor(c0 / COLS);
+      for (let y = cy - m.radius; y <= cy + m.radius; y++)
+        for (let x = cx - m.radius; x <= cx + m.radius; x++)
+          if (x >= 0 && y >= 0 && x < COLS && y < ROWS && Math.abs(x - cx) + Math.abs(y - cy) <= m.radius) this.setCell(y * COLS + x, T.STEAM, STEAM_TTL + 1);
+      side.sinceAct = 9;   // la nube oculta al instante
+    } else if (m.kind === 'wall') {
+      const d = Math.min(m.maxRange, Math.max(60, Math.hypot(w.tx - side.x, w.ty - side.y)));
+      const cx = side.x + ax * d, cy = side.y + ay * d;
+      const px = -ay, py = ax, n = 4, step = m.wallLen / (n - 1);
+      const group = nextId++;
+      for (let i = 0; i < n; i++) {
+        const o = { id: nextId++, group, kind: 'barrier', x: cx + px * (i * step - m.wallLen / 2), y: cy + py * (i * step - m.wallLen / 2), r: 16, hp: m.wallHp, ttl: m.wallDur };
+        this.obstacles.push(o);
+      }
+    }
+  }
+
+  beam(side, m, a) {
+    const ax = Math.cos(a), ay = Math.sin(a);
+    const x1 = side.x + ax * RADIUS, y1 = side.y + ay * RADIUS;
+    // El rayo se corta en el primer obstáculo
+    let len = m.len, blocker = null;
+    for (const o of this.obstacles) {
+      const t = (o.x - x1) * ax + (o.y - y1) * ay;
+      if (t < 0 || t > len) continue;
+      const px = x1 + ax * t, py = y1 + ay * t;
+      if (Math.hypot(o.x - px, o.y - py) < o.r + m.width / 2 * 0.5) { len = t; blocker = o; }
+    }
+    if (blocker) this.damageObstacle(blocker, m.dmg);
+    const x2 = x1 + ax * len, y2 = y1 + ay * len;
+    this.ev({ k: 'beam', s: side.idx, x1: Math.round(x1), y1: Math.round(y1), x2: Math.round(x2), y2: Math.round(y2), w: m.width, ty: m.type });
+    // Terreno a lo largo del rayo
+    for (let t = 0; t <= len; t += CELL / 2) {
+      const i = S.cellIndex(x1 + ax * t, y1 + ay * t);
+      if (m.terrain) this.paint(i, m.terrain);
+      if (m.type === 'electrico' && this.terrain[i] === T.WATER) { this.electrify(i, side, m); break; }
+      if (m.type === 'fuego' && this.terrain[i] === T.WATER) this.setCell(i, T.STEAM, STEAM_TTL);
+    }
+    const f = this.foe(side);
+    const t = Math.max(0, Math.min(len, (f.x - x1) * ax + (f.y - y1) * ay));
+    if (Math.hypot(f.x - (x1 + ax * t), f.y - (y1 + ay * t)) < m.width / 2 + RADIUS) this.hit(side, f, m, f.x, f.y, { a });
+  }
+
+  throwBall(side, inp) {
+    const kind = ['ultraball', 'superball', 'pokeball'].find(k => (side.balls[k] || 0) > 0 && (inp.ball ? k === inp.ball : true));
+    if (!kind) return;
+    side.balls[kind]--;
+    side.rec = 0.3;
+    const a = side.a;
+    this.projectiles.push({ id: nextId++, owner: side, ball: kind, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 0 }, mk: 'ball',
+      x: side.x + Math.cos(a) * RADIUS, y: side.y + Math.sin(a) * RADIUS, vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 });
+    this.ev({ k: 'throw', s: side.idx, ball: kind, left: side.balls[kind] });
+  }
+
+  // ---------- Golpes ----------
+  // Aplica un movimiento de 'src' a 'dst'. Devuelve false si fue devuelto por un parry.
+  hit(src, dst, m, x, y, o = {}) {
+    if (this.mon(dst).fainted || dst.invuln > 0 || dst.forced > 0) return true;
+    const am = this.mon(src), dm = this.mon(dst);
+    // Protección
+    if (dst.prot >= 0 && m.kind !== 'area' && !o.dot) {
+      if (dst.prot < D.PROTECT.perfect) {
+        dst.energy = Math.min(D.ENERGY.max, dst.energy + 20);
+        dst.prot = -1;
+        if (o.proj) {      // el proyectil vuelve a quien lo lanzó
+          const p = o.proj;
+          p.owner = dst;
+          const ang = Math.atan2(src.y - p.y, src.x - p.x);
+          const sp = Math.hypot(p.vx, p.vy);
+          p.vx = Math.cos(ang) * sp; p.vy = Math.sin(ang) * sp; p.left = m.range || 500; p.reflected = true;
+        } else {           // cuerpo a cuerpo o rayo: el atacante queda aturdido
+          src.stun = Math.max(src.stun, 0.9);
+          src.dash = null;
+        }
+        this.ev({ k: 'parry', s: dst.idx, x: Math.round(x), y: Math.round(y) });
+        return false;
+      }
+    }
+    let mult = D.typeMult(m.type, D.SPECIES[dm.dex].types);
+    // Cambio perfecto: el que entra resiste el tipo -> no recibe daño y gana energía
+    if (dst.swapIn > 0 && mult < 1) {
+      dst.swapIn = 0;
+      dst.energy = Math.min(D.ENERGY.max, dst.energy + 30);
+      this.ev({ k: 'perfectswap', s: dst.idx, x: Math.round(x), y: Math.round(y) });
+      return true;
+    }
+    if (m.dmg > 0) {
+      let dmg = m.dmg * am.atk * mult;
+      if (D.SPECIES[am.dex].types.includes(m.type)) dmg *= STAB;
+      if (src.power > 0) dmg *= 1.25;
+      dmg *= src.dmgMult;
+      if (dst.wet > 0 && (m.type === 'electrico' || m.type === 'hielo')) dmg *= 1.3;
+      if (this.sudden) dmg *= SUDDEN_MULT;
+      const blocked = dst.prot >= 0 && m.kind !== 'area';
+      if (blocked) dmg *= 1 - D.PROTECT.block;
+      dmg = Math.max(1, Math.round(dmg));
+      dm.hp = Math.max(0, dm.hp - dmg);
+      src.energy = Math.min(D.ENERGY.max, src.energy + D.ENERGY.onHit);
+      this.ev({ k: 'hit', s: dst.idx, x: Math.round(x), y: Math.round(y), n: dmg, e: mult > 1 ? 1 : mult < 1 ? -1 : 0, b: blocked ? 1 : 0, ty: m.type, big: dmg >= dm.maxHp * 0.12 ? 1 : 0 });
+      if (blocked) return true;
+    }
+    // Estados
+    if (m.burn) dst.burn = Math.max(dst.burn, m.burn);
+    if (m.poison) dst.poison = Math.max(dst.poison, m.poison);
+    if (m.wet) dst.wet = Math.max(dst.wet, m.wet);
+    if (m.slow) dst.slow = Math.max(dst.slow, m.slow);
+    if (m.stun) { dst.stun = Math.max(dst.stun, m.stun); dst.wind = null; }
+    if (m.drain) { dst.seed = Math.max(dst.seed, 4); dst.seedBy = src; }
+    const ang = o.a ?? Math.atan2(dst.y - src.y, dst.x - src.x);
+    if (m.knock) {
+      const ka = m.kind === 'area' ? Math.atan2(dst.y - y, dst.x - x) : ang;
+      dst.kb = { vx: Math.cos(ka), vy: Math.sin(ka), speed: m.knock / 0.18, t: 0.18 };
+      dst.wind = null;
+    }
+    if (m.pull) {
+      const pa = Math.atan2(src.y - dst.y, src.x - dst.x);
+      const d = Math.min(m.pull, Math.hypot(src.x - dst.x, src.y - dst.y) - RADIUS * 2.2);
+      if (d > 0) dst.kb = { vx: Math.cos(pa), vy: Math.sin(pa), speed: d / 0.18, t: 0.18 };
+    }
+    return true;
+  }
+
+  // ---------- Proyectiles ----------
+  updateProjectiles(dt) {
+    for (const p of this.projectiles) {
+      const steps = 2;   // dos subpasos para que los rápidos no atraviesen nada
+      for (let k = 0; k < steps && p.left > 0; k++) {
+        p.x += p.vx * dt / steps; p.y += p.vy * dt / steps;
+        p.left -= Math.hypot(p.vx, p.vy) * dt / steps;
+        // Obstáculos
+        const o = this.obstacles.find(o => Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
+        if (o) { this.damageObstacle(o, p.m.dmg || 1); this.projectileEnd(p, true); break; }
+        // Interacciones con el terreno al pasar
+        const i = S.cellIndex(p.x, p.y);
+        if (p.m.type === 'fuego' && this.terrain[i] === T.WATER && p.m.dmg >= 10) { this.setCell(i, T.STEAM, STEAM_TTL); }
+        if (p.m.type === 'fuego' && this.terrain[i] === T.GRASS && p.m.terrain === 'fuego') this.paint(i, 'fuego');
+        // Rival
+        const f = this.foe(p.owner);
+        if (Math.hypot(f.x - p.x, f.y - p.y) < RADIUS + p.r && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
+          if (p.ball) { this.ballHit(p, f); p.left = 0; break; }
+          if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) this.projectileEnd(p, true);
+          break;
+        }
+        if (p.x < -40 || p.y < -40 || p.x > S.ARENA.w + 40 || p.y > S.ARENA.h + 40) p.left = 0;
+        else if (p.left <= 0) this.projectileEnd(p, false);
+      }
+    }
+    this.projectiles = this.projectiles.filter(p => p.left > 0);
+  }
+
+  projectileEnd(p, impact) {
+    p.left = 0;
+    const i = S.cellIndex(p.x, p.y);
+    if (p.m.terrain) this.paint(i, p.m.terrain);
+    if (p.m.type === 'electrico' && this.terrain[i] === T.WATER) this.electrify(i, p.owner, p.m);
+    if (!p.ball) this.ev({ k: 'pend', x: Math.round(p.x), y: Math.round(p.y), ty: p.m.type, imp: impact ? 1 : 0 });
+  }
+
+  ballHit(p, f) {
+    const mon = this.mon(f);
+    const cap = D.SHOP.find(s => s.id === p.ball).cap;
+    if (mon.hp / mon.maxHp <= cap) {
+      this.ev({ k: 'capture', s: f.idx, ok: 1, x: Math.round(f.x), y: Math.round(f.y), ball: p.ball });
+      this.finish(p.owner.idx, { captured: { dex: mon.dex, level: mon.level } });
+    } else {
+      this.ev({ k: 'capture', s: f.idx, ok: 0, x: Math.round(f.x), y: Math.round(f.y), ball: p.ball });
+    }
+  }
+
+  // ---------- Áreas ----------
+  updateAreas(dt) {
+    for (const ar of this.areas) {
+      if ((ar.t -= dt) > 0) continue;
+      const m = ar.m, src = ar.owner, f = this.foe(src);
+      this.ev({ k: 'boom', s: src.idx, x: Math.round(ar.x), y: Math.round(ar.y), r: m.radius, ty: m.type });
+      if (Math.hypot(f.x - ar.x, f.y - ar.y) < m.radius + RADIUS) this.hit(src, f, m, f.x, f.y);
+      // Terreno en el área
+      const r = Math.ceil(m.radius / CELL);
+      const c0 = S.cellIndex(ar.x, ar.y), cx = c0 % COLS, cy = Math.floor(c0 / COLS);
+      for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) {
+        if (x < 0 || y < 0 || x >= COLS || y >= ROWS) continue;
+        const cc = S.cellCenter(y * COLS + x);
+        if (Math.hypot(cc.x - ar.x, cc.y - ar.y) > m.radius) continue;
+        const i = y * COLS + x;
+        if (m.terrain) this.paint(i, m.terrain);
+        if (m.type === 'fuego' && this.terrain[i] === T.WATER) this.setCell(i, T.STEAM, STEAM_TTL);
+      }
+      if (m.type === 'electrico') {
+        const wi = this.findWaterNear(ar.x, ar.y, m.radius);
+        if (wi >= 0) this.electrify(wi, src, m);
+      }
+      // Los obstáculos dentro del área reciben daño
+      for (const o of this.obstacles) if (Math.hypot(o.x - ar.x, o.y - ar.y) < m.radius + o.r) this.damageObstacle(o, m.dmg);
+      if (m.rockWall) {
+        this.obstacles.push({ id: nextId++, kind: 'rockwall', x: ar.x, y: ar.y, r: 26, hp: 60, ttl: 6 });
+        for (const s of this.sides) S.pushOut(s, RADIUS, this.obstacles);
+      }
+      if (m.selfKO) { const mon = this.mon(src); mon.hp = 0; }
+    }
+    this.areas = this.areas.filter(a => a.t > 0);
+  }
+
+  // ---------- Terreno ----------
+  setCell(i, type, ttl) {
+    if (this.terrain[i] === type && this.ttl[i] >= ttl) return;
+    this.terrain[i] = type;
+    this.ttl[i] = ttl;
+    this.spread[i] = 0;
+    this.dirty.add(i);
+  }
+
+  // Pinta fuego o agua respetando las combinaciones.
+  paint(i, kind) {
+    const cur = this.terrain[i];
+    if (kind === 'fuego') {
+      if (cur === T.WATER) this.setCell(i, T.STEAM, STEAM_TTL);
+      else if (cur !== T.STEAM) this.setCell(i, T.FIRE, FIRE_TTL);
+    } else if (kind === 'agua') {
+      if (cur === T.FIRE) this.setCell(i, T.STEAM, STEAM_TTL);
+      else if (cur !== T.GRASS) this.setCell(i, T.WATER, WATER_TTL);
+    }
+  }
+
+  findWaterNear(x, y, r) {
+    for (let i = 0; i < this.terrain.length; i++) {
+      if (this.terrain[i] !== T.WATER) continue;
+      const c = S.cellCenter(i);
+      if (Math.hypot(c.x - x, c.y - y) <= r + CELL / 2) return i;
+    }
+    return -1;
+  }
+
+  // Descarga eléctrica en todo el charco conectado: daña y aturde a quien esté dentro.
+  electrify(start, src, m) {
+    const seen = new Set([start]), queue = [start];
+    while (queue.length) {
+      const i = queue.pop();
+      const x = i % COLS, y = Math.floor(i / COLS);
+      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) continue;
+        const n = ny * COLS + nx;
+        if (!seen.has(n) && this.terrain[n] === T.WATER) { seen.add(n); queue.push(n); }
+      }
+    }
+    this.ev({ k: 'zap', cells: [...seen] });
+    const f = this.foe(src);
+    if (seen.has(S.cellIndex(f.x, f.y))) {
+      this.hit(src, f, { ...m, kind: 'area', dmg: Math.max(8, (m.dmg || 0) * 0.7), stun: 0.5, knock: 0 }, f.x, f.y);
+    }
+  }
+
+  updateTerrain(dt) {
+    for (let i = 0; i < this.terrain.length; i++) {
+      const t = this.terrain[i];
+      if (t !== T.FIRE && t !== T.WATER && t !== T.STEAM) continue;
+      if (t === T.FIRE && (this.spread[i] += dt) >= SPREAD_T) {   // el fuego se propaga por la hierba alta
+        this.spread[i] = -99;
+        const x = i % COLS, y = Math.floor(i / COLS);
+        for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+          const n = ny * COLS + nx;
+          if (nx >= 0 && ny >= 0 && nx < COLS && ny < ROWS && this.terrain[n] === T.GRASS) this.setCell(n, T.FIRE, FIRE_TTL);
+        }
+      }
+      if ((this.ttl[i] -= dt) <= 0) {
+        this.terrain[i] = t === T.FIRE ? T.BURNT : T.NONE;
+        this.ttl[i] = 0;
+        this.dirty.add(i);
+      }
+    }
+  }
+
+  damageObstacle(o, n) {
+    if (o.hp === Infinity) return;
+    if (o.group) {
+      for (const g of this.obstacles) if (g.group === o.group) g.hp -= n;
+    } else o.hp -= n;
+  }
+
+  updateObstacles(dt) {
+    const before = this.obstacles.length;
+    for (const o of this.obstacles) if (o.ttl !== Infinity) o.ttl -= dt;
+    this.obstacles = this.obstacles.filter(o => o.hp > 0 && o.ttl > 0);
+    if (this.obstacles.length !== before) this.ev({ k: 'obs' });
+  }
+
+  // ---------- Debilitados y final ----------
+  checkFaints() {
+    for (const side of this.sides) {
+      const mon = this.mon(side);
+      if (mon.fainted || mon.hp > 0) continue;
+      mon.fainted = true;
+      side.wind = null; side.dash = null; side.kb = null; side.prot = -1; side.swapping = 0;
+      this.ev({ k: 'faint', s: side.idx, slot: side.act });
+      if (side.team.some(m => !m.fainted)) { side.forced = FORCED_SWAP_T; side.swapTo = -1; }
+    }
+    if (this.state !== 'fight') return;
+    const out = this.sides.map(s => s.team.every(m => m.fainted));
+    if (out[0] || out[1]) this.finish(out[0] && out[1] ? -1 : out[0] ? 1 : 0, {});
+  }
+
+  finish(winner, extra) {
+    if (this.state === 'over') return;
+    this.state = 'over';
+    this.result = { winner, ...extra };
+    this.broadcast();
+    clearInterval(this.timer);
+    // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd)
+    const rewards = this.onEnd(this.result, this) || [];
+    for (const s of this.sides) this.send(s, { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null });
+  }
+
+  // Un jugador se rinde o se desconecta: pierde. Si solo se rinde, sigue recibiendo el resultado.
+  leave(side, disconnected = false) {
+    if (disconnected) { side.connected = false; side.ws = null; }
+    if (this.state !== 'over') this.finish(1 - side.idx, { forfeit: side.idx });
+  }
+
+  stop() { clearInterval(this.timer); this.state = 'over'; }
+
+  // ---------- Red ----------
+  sideSnap(s, viewer) {
+    const mon = this.mon(s);
+    const hide = s.hidden && viewer !== s.idx && this.state === 'fight';
+    const o = {
+      f: this.flags(s), act: s.act, hp: s.team.map(m => m.hp), a: +s.a.toFixed(2),
+      e: Math.round(s.energy), w: s.wind ? { c: s.wind.c, p: +(s.wind.t / s.wind.m.wind).toFixed(2), a: +s.wind.a.toFixed(2), tx: Math.round(s.wind.tx), ty: Math.round(s.wind.ty) } : 0,
+    };
+    if (!hide) { o.x = +s.x.toFixed(1); o.y = +s.y.toFixed(1); }
+    if (viewer === s.idx) {
+      o.cds = mon.cds.map(c => +c.toFixed(2)); o.pcd = +s.pcd.toFixed(2); o.swcd = +s.swapCd.toFixed(2); o.ack = s.ack;
+      o.allcds = s.team.map(m => m.cds.map(c => +c.toFixed(1)));
+    }
+    return o;
+  }
+
+  broadcast() {
+    const terrainDiff = [...this.dirty].map(i => [i, this.terrain[i]]);
+    this.dirty.clear();
+    const common = {
+      t: 'snap', st: Math.round(this.t * 1000), state: this.state, cd: Math.ceil(this.countdown),
+      tl: Math.max(0, Math.ceil(LIMIT - (this.fightT || 0))), sd: this.sudden ? 1 : 0,
+      pr: this.projectiles.map(p => ({ id: p.id, x: Math.round(p.x), y: Math.round(p.y), r: p.r, o: p.owner.idx, mk: p.mk, ball: p.ball || undefined, a: +Math.atan2(p.vy, p.vx).toFixed(2) })),
+      ob: this.obstacles.filter(o => o.kind !== 'rock').map(o => ({ id: o.id, x: Math.round(o.x), y: Math.round(o.y), r: o.r, k: o.kind })),
+      tr: terrainDiff, ev: this.events,
+    };
+    if (!terrainDiff.length) delete common.tr;
+    this.events = [];
+    for (const s of this.sides) {
+      if (!s.ws) continue;
+      const msg = { ...common, ps: this.sides.map(x => this.sideSnap(x, s.idx)) };
+      this.send(s, JSON.stringify(msg));
+    }
+  }
+}
+
+module.exports = { Battle, makeMon };
