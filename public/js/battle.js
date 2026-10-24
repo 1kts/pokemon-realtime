@@ -50,6 +50,7 @@ export class BattleClient {
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
     if (foe.rare) setTimeout(() => this.banner(t('¡Un {m} salvaje muy raro!', { m: foe.team[0] && Data.SPECIES[foe.team[0].dex].name }), 'rare'), 300);
+    if (foe.perfect) setTimeout(() => this.banner(t('¡Y tiene IV perfectos!'), 'rare'), 1300);
   }
 
   // Un shiny entra en combate: destellos y aviso

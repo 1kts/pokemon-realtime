@@ -118,14 +118,21 @@ function action(p, msg) {
     p.teams[region] = uids;
     p.team = p.teams.kanto || [];
   } else if (a === 'buy') {
-    const item = D.SHOP.find(s => s.id === msg.id);
+    const item = D.SHOP.find(s => s.id === msg.id) || D.shopMons().find(s => s.id === msg.id);
     const qty = Math.max(1, Math.min(99, msg.qty | 0 || 1));
     if (!item) return 'Ese objeto no existe';
     if ((item.req || 0) > p.badges) return `Necesitas ${item.req} medallas`;
     if (item.dex && qty > 1) return 'Solo uno a la vez';
+    // Pokémon del día: uno de cada por día y jugador
+    const today = D.dayKey();
+    if (!p.shopBought || p.shopBought.day !== today) p.shopBought = { day: today, ids: [] };
+    if (item.daily && p.shopBought.ids.includes(item.id)) return 'Ya lo has comprado hoy: mañana habrá otros';
     if (p.coins < item.price * qty) return 'No tienes suficiente dinero';
     p.coins -= item.price * qty;
-    if (item.dex) addMon(p, item.dex, item.level, { region });
+    if (item.daily) {
+      p.shopBought.ids.push(item.id);
+      addMon(p, item.dex, Math.min(MAX_LEVEL, D.levelCap(p, region)), { region, iv: { ...D.PERFECT_IVS } });
+    } else if (item.dex) addMon(p, item.dex, item.level, { region });
     else p.items[item.id] = (p.items[item.id] || 0) + qty;
   } else if (a === 'use') {
     const mon = monByUid(p, msg.uid);
@@ -184,10 +191,11 @@ function battleSetup(p, msg) {
     if (route.req > D.progOf(p, route.region)) return { error: `Necesitas ${route.req} medallas de ${D.REGIONS[route.region].name}` };
     const wild = D.rollWild(route);
     const shiny = Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);
+    const perfect = !!wild.rare && Math.random() < D.RARE_PERFECT;
     const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
     return {
       kind: 'route', route,
-      opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
+      opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny, iv: perfect ? { ...D.PERFECT_IVS } : undefined }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare, perfect }] },
     };
   }
   if (msg.a === 'gym') {
@@ -217,8 +225,8 @@ function applyResult(p, setup, result, battle) {
     const foeLevels = foes.reduce((s, m) => s + m.level, 0);
     if (result.captured) {
       const region = setup.route ? setup.route.region : 'kanto';
-      const mon = addMon(p, result.captured.dex, result.captured.level, { region, shiny: !!result.captured.shiny, met: setup.route ? setup.route.id : null });
-      reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, inTeam: p.teams[region].includes(mon.uid) };
+      const mon = addMon(p, result.captured.dex, result.captured.level, { region, shiny: !!result.captured.shiny, iv: result.captured.iv, met: setup.route ? setup.route.id : null });
+      reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, perfect: D.STAT_KEYS.every(k => mon.iv[k] === D.IV_MAX), inTeam: p.teams[region].includes(mon.uid) };
       reward.coins = 10;
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;

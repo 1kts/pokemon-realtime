@@ -64,7 +64,7 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
+      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny });
@@ -82,7 +82,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, spdMult: m.spdMult, r: m.r })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }
@@ -607,7 +607,7 @@ class Battle {
     if ((c.t -= dt) > 0) return;
     this.capturing = null;
     const mon = this.mon(c.foe);
-    if (c.ok) return this.finish(c.thrower.idx, { captured: { dex: mon.dex, level: mon.level, shiny: mon.shiny } });
+    if (c.ok) return this.finish(c.thrower.idx, { captured: { dex: mon.dex, level: mon.level, shiny: mon.shiny, iv: mon.iv } });
     this.state = 'fight';
     c.foe.invuln = 0.8;
     this.ev({ k: 'escape', s: c.foe.idx, x: Math.round(c.foe.x), y: Math.round(c.foe.y) });

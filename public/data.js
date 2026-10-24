@@ -938,6 +938,8 @@
     return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
   }
   const dayKey = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+  // Momento (ms) en que cambian las rutas: la próxima medianoche UTC
+  const nextDay = (t = Date.now()) => { const d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1); };
   // Encuentros de una ruta: cada día salen 4 especies al azar de las que aparecen de verdad en ese
   // tramo (las comunes, más a menudo) y 1 especial: un legendario o muy raro de la región que
   // comparta tipo con la zona si es posible. Igual en servidor y cliente.
@@ -975,6 +977,27 @@
     const e = w.list[0];
     return { dex: e.dex, level: e.min };
   }
+
+  // Pokémon de la tienda: 4 al día (cambian con las rutas), uno por franja de fuerza, sin legendarios.
+  // Llegan con IV perfectos al tope de nivel de tu región y son muy caros; cada uno, una vez al día.
+  const SHOP_TIERS = [[300, 430, 1, 15000], [430, 500, 3, 25000], [500, 560, 5, 40000], [560, 620, 7, 65000]];
+  const shopCache = new Map();
+  function shopMons(day = dayKey()) {
+    if (shopCache.has(day)) return shopCache.get(day);
+    const r = seeded('tienda:' + day);
+    const all = Object.values(SPECIES).filter(sp => !sp.leg && sp.dex < 1000);
+    const list = SHOP_TIERS.map(([lo, hi, req, base]) => {
+      const pool = all.filter(sp => sp.bst >= lo && sp.bst < hi);
+      const sp = pool[Math.floor(r() * pool.length)];
+      return { id: 'daily' + sp.dex, name: sp.name, dex: sp.dex, daily: true, perfect: true, req,
+        price: Math.round((base + (sp.bst - lo) * 120) / 500) * 500, desc: 'IV perfectos · llega a tu tope de nivel' };
+    });
+    shopCache.set(day, list);
+    return list;
+  }
+  // El Pokémon misterioso de cada ruta sale con IV perfectos 1 de cada 3 veces
+  const RARE_PERFECT = 1 / 3;
+  const PERFECT_IVS = { hp: 31, atk: 31, def: 31, spe: 31 };
 
   // Progreso por región: prog = { kanto: medallas/combates ganados, johto: ... }
   const progOf = (p, region) => (p && p.prog && p.prog[region]) || 0;
@@ -1074,10 +1097,6 @@
     { id: 'noche', name: 'Piedra Noche', price: 2500, stone: true, desc: 'Evoluciona a Murkrow, Misdreavus…', req: 5 },
     { id: 'alba', name: 'Piedra Alba', price: 2500, stone: true, desc: 'Evoluciona a Kirlia (macho), Snorunt (hembra)…', req: 6 },
     { id: 'dia', name: 'Piedra Día', price: 2500, stone: true, desc: 'Evoluciona a Togetic, Roselia, Minccino…', req: 6 },
-    { id: 'poke133', name: 'Eevee', price: 3000, dex: 133, level: 20, desc: 'Pokémon de la tienda (nivel 20)', req: 2 },
-    { id: 'poke143', name: 'Snorlax', price: 7000, dex: 143, level: 30, desc: 'Pokémon de la tienda (nivel 30)', req: 4 },
-    { id: 'poke131', name: 'Lapras', price: 9000, dex: 131, level: 32, desc: 'Pokémon de la tienda (nivel 32)', req: 5 },
-    { id: 'poke147', name: 'Dratini', price: 6000, dex: 147, level: 25, desc: 'Pokémon de la tienda (nivel 25)', req: 6 },
   ];
 
   // ---------- Clasificatoria ----------
@@ -1111,7 +1130,7 @@
     ? { iv: Object.fromEntries(STAT_KEYS.map(k => [k, IV_MAX])), ev: Object.fromEntries(STAT_KEYS.map(k => [k, ELITE_EV])) } : {};
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);
