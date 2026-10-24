@@ -74,16 +74,18 @@
     return s;
   }
 
-  // Estadísticas de un Pokémon a un nivel, con sus vitaminas: { maxHp, atk, def, spdMult }
-  function monStats(dex, level, vit) {
+  // Estadísticas de un Pokémon a un nivel con sus EV, IV y naturaleza: { maxHp, atk, def, spdMult }
+  // m = { ev, iv, nat } (todo opcional)
+  function monStats(dex, level, m = {}) {
     const sp = Data.SPECIES[dex];
     const k = Data.levelMult(level);
-    const v = s => 1 + Data.VIT_STEP * ((vit && vit[s]) || 0);
+    const nat = Data.natureMult(dex, m.nat);
+    const b = s => (1 + 0.25 * ((m.ev && m.ev[s]) || 0) / Data.EV_MAX) * (1 + 0.1 * ((m.iv && m.iv[s]) || 0) / Data.IV_MAX) * nat[s];
     return {
-      maxHp: Math.round(sp.hp * k * 2 * v('hp')),
-      atk: +(sp.atk * k * v('atk')).toFixed(3),
-      def: +((sp.def || 1) * v('def')).toFixed(3),
-      spdMult: +v('spe').toFixed(3),
+      maxHp: Math.round(sp.hp * k * 2 * b('hp')),
+      atk: +(sp.atk * k * b('atk')).toFixed(3),
+      def: +((sp.def || 1) * b('def')).toFixed(3),
+      spdMult: +b('spe').toFixed(3),
     };
   }
 

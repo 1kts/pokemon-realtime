@@ -356,18 +356,23 @@ export class UI {
   statsModal(mon) {
     const p = this.profile;
     const sp = SPECIES[mon.dex];
-    const vit = mon.vit || { hp: 0, atk: 0, def: 0, spe: 0 };
-    const st = Shared.monStats(mon.dex, mon.level, vit);
+    const ev = mon.ev || { hp: 0, atk: 0, def: 0, spe: 0 }, iv = mon.iv || { hp: 0, atk: 0, def: 0, spe: 0 };
+    const st = Shared.monStats(mon.dex, mon.level, mon);
     const back = el('div', 'modal');
     const box = el('div', 'panel modal-box ficha');
     const head = el('div', 'ficha-head');
     head.append(animatedPortrait(mon.dex, 120, 'Idle', !!mon.shiny));
     const route = mon.met ? ROUTES.find(r => r.id === mon.met) : null;
+    const nat = Data.NATURES[mon.nat] || ['—', null, null];
+    const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (neutra)`;
     head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>Nv.${mon.level}</small></h3><div class="types">${typeChips(mon.dex)}</div>
-      <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ' · <b>legendario</b>' : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · Capturado en ${route.name}` : ''}</p>`));
+      <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ' · <b>legendario</b>' : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · Capturado en ${route.name}` : ''}</p>
+      <p class="small">Naturaleza: ${natTxt}</p>`));
     box.append(head);
-    // Estadísticas de combate: valor actual, barra relativa y dosis de vitaminas
+    // Estadísticas de combate: valor actual, barra, IV, EV y vitaminas
     const rows = el('div', 'stat-rows');
+    const total = Data.evTotal(ev);
+    rows.append(el('div', 'small vit-total', `EV: <b>${total}/${Data.EV_TOTAL}</b> en total (máx. ${Data.EV_MAX} por stat; las vitaminas dan +${Data.EV_VIT}, los combates ganados también suman) · IV fijos de nacimiento (0-${Data.IV_MAX})`));
     const bars = [
       ['hp', 'PS', st.maxHp, 400, `${st.maxHp}`],
       ['atk', 'Ataque', st.atk, 2, `×${st.atk.toFixed(2)}`],
@@ -379,11 +384,13 @@ export class UI {
       const row = el('div', 'stat-row');
       const item = vitItems.find(i => i.vit === key);
       const have = p.items[item.id] || 0;
+      const ivq = iv[key] >= 31 ? 'perfecto' : iv[key] >= 26 ? 'muy bueno' : iv[key] >= 16 ? 'bueno' : iv[key] >= 8 ? 'normal' : 'flojo';
       row.innerHTML = `<span class="sl">${label}</span><div class="sbar"><div style="width:${Math.min(100, val / max * 100)}%"></div></div><b>${text}</b>
-        <span class="vdots" title="Vitaminas: ${vit[key]}/${Data.VIT_MAX}">${'●'.repeat(vit[key])}${'○'.repeat(Data.VIT_MAX - vit[key])}</span>`;
-      const use = el('button', have && vit[key] < Data.VIT_MAX ? 'evo' : 'dim', `${item.name}${have ? ` (${have})` : ''}`);
-      use.disabled = !have || vit[key] >= Data.VIT_MAX;
-      use.title = have ? `+2,5 % de ${label}` : `Cómpralo en la tienda: ${item.name}`;
+        <span class="vdots" title="IV ${iv[key]}/31 (${ivq}) · EV ${ev[key]}/${Data.EV_MAX}">IV <b class="${iv[key] >= 31 ? 'iv-top' : ''}">${iv[key]}</b> · EV <b>${ev[key]}</b></span>`;
+      const canUse = have && ev[key] < Data.EV_MAX && total < Data.EV_TOTAL;
+      const use = el('button', canUse ? 'evo' : 'dim', `${item.name}${have ? ` (${have})` : ''}`);
+      use.disabled = !canUse;
+      use.title = have ? `+${Data.EV_VIT} EV de ${label}` : `Cómpralo en la tienda: ${item.name}`;
       use.onclick = () => { this.net.send({ t: 'story', a: 'use', item: item.id, uid: mon.uid }); back.remove(); this.pendingFicha = mon.uid; };
       row.append(use);
       rows.append(row);
@@ -648,7 +655,7 @@ export class UI {
         row.append(portrait(x.dex, 48, { shiny: !!(pm && pm.shiny) }));
         const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <span class="lvup">Nv.${x.level} ¡sube de nivel!</span>` : `Nv.${x.level}`;
         const learned = (x.learned || []).map(k => MOVES[k].name);
-        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? '<span class="cap">en el tope de nivel</span>' : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}${learned.length ? `<br><span class="lvup">Nuevo movimiento: ${learned.join(', ')}</span> <small>(elígelo en Equipo)</small>` : ''}`));
+        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? '<span class="cap">en el tope de nivel</span>' : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}${learned.length ? `<br><span class="lvup">Nuevo movimiento: ${learned.join(', ')}</span> <small>(elígelo en Equipo)</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
         list.append(row);
       }
       box.append(list);

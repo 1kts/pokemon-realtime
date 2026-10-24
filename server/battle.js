@@ -24,9 +24,9 @@ const CATCH_IN = 1.0, CATCH_SHAKE = 0.75, CATCH_CLICK = 0.9, CATCH_BREAK = 0.5;
 const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
 
 // moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie.
-// vit: vitaminas · shiny · r: radio de colisión según el tamaño de la especie.
+// ev, iv, nat (naturaleza) · shiny · r: radio de colisión según el tamaño de la especie.
 function makeMon(dex, level, extra = {}) {
-  const st = S.monStats(dex, level, extra.vit);
+  const st = S.monStats(dex, level, extra);
   const moves = (extra.moves && extra.moves.length ? extra.moves : D.SPECIES[dex].moves).filter(m => D.MOVES[m]).slice(0, 4);
   return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, def: st.def, spdMult: st.spdMult, r: S.hitboxOf(dex),
     shiny: !!extra.shiny, cds: [0, 0, 0, 0], fainted: false, ...extra, moves };
@@ -63,7 +63,7 @@ class Battle {
       idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
-        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, vit: m.vit, shiny: m.shiny });
+        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
         return mon;
       }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,

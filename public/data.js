@@ -498,9 +498,42 @@
     const hard = Math.min(1, Math.sqrt(rate / 45));
     return Math.max(0.02, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1) * hard));
   }
-  // Vitaminas: cada dosis sube un 2,5 % la estadística (máximo 10 dosis = +25 %).
-  const VIT_STEP = 0.025, VIT_MAX = 10;
+  // EV: 0-252 por estadística y 510 en total (cada 252 = +25 %). Las vitaminas dan +10 EV;
+  // los combates ganados dan EV según el rival. IV: 0-31 por estadística, fijos al capturar (hasta +10 %).
+  const EV_MAX = 252, EV_TOTAL = 510, EV_VIT = 10, IV_MAX = 31;
+  const evTotal = ev => ev ? Object.values(ev).reduce((a, b) => a + (b || 0), 0) : 0;
   const VIT_STATS = { hp: 'PS', atk: 'Ataque', def: 'Defensa', spe: 'Velocidad' };
+  const STAT_KEYS = ['hp', 'atk', 'def', 'spe'];
+  // Naturalezas reales: [nombre, sube, baja] sobre Atq/Def/At.Esp/Df.Esp/Vel. Para el combate:
+  // Atq o At.Esp cuentan si es el ataque que usa la especie (física o especial), Def y Df.Esp
+  // valen la mitad cada una (nuestra Defensa es la media) y Velocidad ±10 %.
+  const NATURES = {
+    fuerte: ['Fuerte', null, null], huraña: ['Huraña', 'atk', 'def'], audaz: ['Audaz', 'atk', 'spe'], firme: ['Firme', 'atk', 'spa'], pícara: ['Pícara', 'atk', 'spd'],
+    osada: ['Osada', 'def', 'atk'], dócil: ['Dócil', null, null], plácida: ['Plácida', 'def', 'spe'], agitada: ['Agitada', 'def', 'spa'], floja: ['Floja', 'def', 'spd'],
+    miedosa: ['Miedosa', 'spe', 'atk'], activa: ['Activa', 'spe', 'def'], seria: ['Seria', null, null], alegre: ['Alegre', 'spe', 'spa'], ingenua: ['Ingenua', 'spe', 'spd'],
+    modesta: ['Modesta', 'spa', 'atk'], afable: ['Afable', 'spa', 'def'], mansa: ['Mansa', 'spa', 'spe'], tímida: ['Tímida', null, null], alocada: ['Alocada', 'spa', 'spd'],
+    serena: ['Serena', 'spd', 'atk'], amable: ['Amable', 'spd', 'def'], grosera: ['Grosera', 'spd', 'spe'], cauta: ['Cauta', 'spd', 'spa'], rara: ['Rara', null, null],
+  };
+  const NATURE_IDS = Object.keys(NATURES);
+  const STAT6 = { atk: 'Ataque', def: 'Defensa', spa: 'At. Especial', spd: 'Def. Especial', spe: 'Velocidad' };
+  const randomNature = () => NATURE_IDS[Math.floor(Math.random() * NATURE_IDS.length)];
+  const randomIv = () => ({ hp: Math.floor(Math.random() * 32), atk: Math.floor(Math.random() * 32), def: Math.floor(Math.random() * 32), spe: Math.floor(Math.random() * 32) });
+  // Multiplicadores de la naturaleza para nuestras 4 estadísticas
+  function natureMult(dex, nat) {
+    const n = NATURES[nat];
+    const out = { hp: 1, atk: 1, def: 1, spe: 1 };
+    if (!n || !n[1]) return out;
+    const sp = SPECIES[dex];
+    const physical = !sp.base || sp.base[1] >= sp.base[3];
+    const apply = (stat, sign) => {
+      if (stat === 'atk' && physical) out.atk += 0.1 * sign;
+      if (stat === 'spa' && !physical) out.atk += 0.1 * sign;
+      if (stat === 'def' || stat === 'spd') out.def += 0.05 * sign;
+      if (stat === 'spe') out.spe += 0.1 * sign;
+    };
+    apply(n[1], 1); apply(n[2], -1);
+    return out;
+  }
   // Probabilidad de que un salvaje sea shiny (los misteriosos, el triple; los huevos, mucho más)
   const SHINY_RATE = 1 / 300;
   // Precio al vender un Pokémon: por fuerza de la especie y nivel; los shiny valen mucho más
@@ -516,10 +549,10 @@
     { id: 'superball', name: 'Super Ball', price: 350, ball: 1.5, desc: 'Captura con más facilidad que la Poké Ball', req: 2 },
     { id: 'ultraball', name: 'Ultra Ball', price: 900, ball: 2.2, desc: 'Muy eficaz: casi siempre atrapa a un salvaje tocado', req: 5 },
     { id: 'caramelo', name: 'Caramelo Raro', price: 1200, desc: 'Sube un nivel a un Pokémon', req: 1 },
-    { id: 'maspsps', name: 'Más PS', price: 2500, vit: 'hp', desc: '+2,5 % de PS máximos (hasta 10 dosis)', req: 1 },
-    { id: 'proteina', name: 'Proteína', price: 2500, vit: 'atk', desc: '+2,5 % de Ataque (hasta 10 dosis)', req: 1 },
-    { id: 'hierro', name: 'Hierro', price: 2500, vit: 'def', desc: '+2,5 % de Defensa (hasta 10 dosis)', req: 1 },
-    { id: 'carburante', name: 'Carburante', price: 2500, vit: 'spe', desc: '+2,5 % de Velocidad (hasta 10 dosis)', req: 1 },
+    { id: 'maspsps', name: 'Más PS', price: 2500, vit: 'hp', desc: '+10 EV de PS (máx. 252 por stat, 510 en total)', req: 1 },
+    { id: 'proteina', name: 'Proteína', price: 2500, vit: 'atk', desc: '+10 EV de Ataque (máx. 252 por stat, 510 en total)', req: 1 },
+    { id: 'hierro', name: 'Hierro', price: 2500, vit: 'def', desc: '+10 EV de Defensa (máx. 252 por stat, 510 en total)', req: 1 },
+    { id: 'carburante', name: 'Carburante', price: 2500, vit: 'spe', desc: '+10 EV de Velocidad (máx. 252 por stat, 510 en total)', req: 1 },
     { id: 'agua', name: 'Piedra Agua', price: 2000, stone: true, desc: 'Evoluciona a Eevee, Staryu…', req: 2 },
     { id: 'trueno', name: 'Piedra Trueno', price: 2000, stone: true, desc: 'Evoluciona a Pikachu, Eevee…', req: 3 },
     { id: 'fuego', name: 'Piedra Fuego', price: 2000, stone: true, desc: 'Evoluciona a Vulpix, Growlithe, Eevee', req: 3 },
@@ -544,7 +577,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, VIT_STEP, VIT_MAX, VIT_STATS, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

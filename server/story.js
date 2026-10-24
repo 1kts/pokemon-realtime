@@ -5,10 +5,10 @@ const store = require('./store.js');
 
 const MAX_LEVEL = 100;
 
-const newVit = () => ({ hp: 0, atk: 0, def: 0, spe: 0 });
-// extra: { shiny, met (dónde se consiguió) }
+const newEv = () => ({ hp: 0, atk: 0, def: 0, spe: 0 });
+// extra: { shiny, met (dónde se consiguió), iv, nat }
 function addMon(p, dex, level, extra = {}) {
-  const mon = { uid: p.nextUid++, dex, level, xp: 0, moves: D.defaultMoves(dex, level), vit: newVit(), shiny: !!extra.shiny, met: extra.met || null };
+  const mon = { uid: p.nextUid++, dex, level, xp: 0, moves: D.defaultMoves(dex, level), ev: newEv(), iv: extra.iv || D.randomIv(), nat: extra.nat || D.randomNature(), shiny: !!extra.shiny, met: extra.met || null };
   p.mons.push(mon);
   if (p.team.length < 3) p.team.push(mon.uid);
   if (!p.caught.includes(dex)) p.caught.push(dex);
@@ -21,7 +21,9 @@ const monByUid = (p, uid) => p.mons.find(m => m.uid === uid);
 function migrate(p) {
   for (const m of p.mons) {
     if (!Array.isArray(m.moves) || !m.moves.length) m.moves = D.defaultMoves(m.dex, m.level);
-    if (!m.vit) m.vit = newVit();
+    if (!m.ev) { m.ev = newEv(); if (m.vit) { for (const k of D.STAT_KEYS) m.ev[k] = Math.min(D.EV_MAX, (m.vit[k] || 0) * D.EV_VIT); delete m.vit; } }
+    if (!m.iv) m.iv = D.randomIv();
+    if (!m.nat) m.nat = D.randomNature();
     if (m.shiny === undefined) m.shiny = false;
   }
   if (!p.shinies) p.shinies = [];
@@ -71,6 +73,28 @@ function giveXp(mon, xp, cap) {
   return out;
 }
 
+// EV que dan los rivales vencidos: sus dos stats base más altas (At. Esp. cuenta como Ataque,
+// Def. Esp. como Defensa), n puntos cada una.
+function evYield(foes, n) {
+  const gain = { hp: 0, atk: 0, def: 0, spe: 0 };
+  for (const f of foes) {
+    const b = (D.SPECIES[f.dex] && D.SPECIES[f.dex].base) || [0, 0, 0, 0, 0, 0];
+    const four = { hp: b[0], atk: Math.max(b[1], b[3]), def: (b[2] + b[4]) / 2, spe: b[5] };
+    Object.entries(four).sort((a, c) => c[1] - a[1]).slice(0, 2).forEach(([k]) => { gain[k] += n; });
+  }
+  return gain;
+}
+function addEv(mon, gain) {
+  if (!mon.ev) mon.ev = newEv();
+  const got = {};
+  for (const k of D.STAT_KEYS) {
+    const room = Math.min(D.EV_MAX - mon.ev[k], D.EV_TOTAL - D.evTotal(mon.ev));
+    const add = Math.max(0, Math.min(gain[k] || 0, room));
+    if (add) { mon.ev[k] += add; got[k] = add; }
+  }
+  return got;
+}
+
 // Acciones fuera de combate. Devuelve un mensaje de error o null.
 function action(p, msg) {
   const a = msg.a;
@@ -104,9 +128,10 @@ function action(p, msg) {
     } else if (item.stone) {
       if (!tryEvolve(mon, item.id)) return 'No tiene efecto';
     } else if (item.vit) {
-      if (!mon.vit) mon.vit = newVit();
-      if (mon.vit[item.vit] >= D.VIT_MAX) return `Ya tiene el máximo de ${D.VIT_STATS[item.vit]} (${D.VIT_MAX} dosis)`;
-      mon.vit[item.vit]++;
+      if (!mon.ev) mon.ev = newEv();
+      if (mon.ev[item.vit] >= D.EV_MAX) return `Ya tiene el máximo de EV de ${D.VIT_STATS[item.vit]} (${D.EV_MAX})`;
+      if (D.evTotal(mon.ev) >= D.EV_TOTAL) return `Ya tiene el máximo de EV en total (${D.EV_TOTAL}): no se pueden maxear todas las estadísticas`;
+      mon.ev[item.vit] = Math.min(D.EV_MAX, mon.ev[item.vit] + Math.min(D.EV_VIT, D.EV_TOTAL - D.evTotal(mon.ev)));
     } else return 'No puedes usar eso';
     p.items[item.id]--;
   } else if (a === 'moves') {
@@ -139,7 +164,7 @@ function battleSetup(p, msg) {
   const team = teamMons(p);
   if (!team.length) return { error: 'Primero elige tu Pokémon inicial' };
   migrate(p);
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, vit: m.vit, shiny: m.shiny })) };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny })) };
   if (msg.a === 'route') {
     const route = D.ROUTES.find(r => r.id === msg.id);
     if (!route) return { error: 'Ruta desconocida' };
@@ -194,9 +219,13 @@ function applyResult(p, setup, result, battle) {
     const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);
     const cap = Math.min(MAX_LEVEL, D.levelCap(p.badges));
     reward.cap = cap;
+    const evGain = evYield(foes, setup.kind === 'gym' ? 8 : 4);
     side.team.forEach(bm => {
       const mon = monByUid(p, bm.uid);
-      if (mon) reward.xp.push(giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap));
+      if (!mon) return;
+      const x = giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap);
+      if (!bm.fainted) x.ev = addEv(mon, evGain);
+      reward.xp.push(x);
     });
     p.coins += reward.coins;
   }

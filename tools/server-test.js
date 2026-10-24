@@ -143,13 +143,13 @@ class Client {
   // Vitaminas: suben la estadística y tienen tope; venta: da dinero y quita el Pokémon
   m = await a2.req({ t: 'story', a: 'buy', id: 'proteina', qty: 3 });
   const vitMon = m.p.mons[0];
-  const atkBefore = require('../public/shared.js').monStats(vitMon.dex, vitMon.level, vitMon.vit).atk;
+  const atkBefore = require('../public/shared.js').monStats(vitMon.dex, vitMon.level, vitMon).atk;
   m = await a2.req({ t: 'story', a: 'use', item: 'proteina', uid: vitMon.uid });
   const vm = m.p.mons.find(x => x.uid === vitMon.uid);
-  ok(vm.vit.atk === 1 && require('../public/shared.js').monStats(vm.dex, vm.level, vm.vit).atk > atkBefore && m.p.items.proteina === 2, 'Proteína: +1 dosis y sube el Ataque');
-  require('../server/store.js').get(token).mons.find(x => x.uid === vitMon.uid).vit.atk = D.VIT_MAX;
+  ok(vm.ev.atk === (vitMon.ev ? vitMon.ev.atk : 0) + D.EV_VIT && require('../public/shared.js').monStats(vm.dex, vm.level, vm).atk > atkBefore && m.p.items.proteina === 2 && vm.nat && vm.iv, 'Proteína: +10 EV de Ataque y sube el Ataque (con IV y naturaleza)');
+  require('../server/store.js').get(token).mons.find(x => x.uid === vitMon.uid).ev.atk = D.EV_MAX;
   err = a2.wait('error'); a2.send({ t: 'story', a: 'use', item: 'proteina', uid: vitMon.uid });
-  ok((await err).msg.includes('máximo'), 'las vitaminas tienen tope de dosis');
+  ok((await err).msg.includes('máximo'), 'los EV tienen tope por estadística');
   const sellMon = m.p.mons.find(x => x.uid !== vitMon.uid);
   const coinsBefore = m.p.coins;
   m = await a2.req({ t: 'story', a: 'sell', uid: sellMon.uid });
@@ -158,7 +158,7 @@ class Client {
   ok(!!(await err), 'vender un Pokémon inexistente da error');
   // Shiny y vitaminas llegan al combate (hitbox, velocidad y stats por Pokémon)
   const { Battle } = require('../server/battle.js');
-  const tb = new Battle({ mode: 'practice', map: 'pradera', sides: [{ name: 'a', team: [{ dex: 25, level: 50, shiny: true, vit: { hp: 10, atk: 0, def: 0, spe: 4 } }] }, { name: 'b', team: [{ dex: 95, level: 50 }] }] });
+  const tb = new Battle({ mode: 'practice', map: 'pradera', sides: [{ name: 'a', team: [{ dex: 25, level: 50, shiny: true, ev: { hp: 252, atk: 0, def: 0, spe: 100 }, nat: 'alegre' }] }, { name: 'b', team: [{ dex: 95, level: 50 }] }] });
   tb.stop();
   const pika = tb.sides[0].team[0], onix = tb.sides[1].team[0];
   ok(pika.shiny && pika.spdMult > 1 && pika.maxHp > require('../public/shared.js').monStats(25, 50).maxHp && pika.r < onix.r, 'shiny, vitaminas e hitbox por tamaño en el combate');
