@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    'Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.': '잡은 포켓몬이라면 누구든, 이로치가 있다면 이로치도. 기본값은 팀의 첫 번째.',
+    'Avatares shiny y buscador': '이로치 아바타와 검색',
+    'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.': '이로치로 가진 포켓몬은 이로치 모습을 아바타로 고를 수 있어.',
+    'El selector de avatar tiene buscador por nombre o número.': '아바타 선택에서 이름이나 번호로 검색할 수 있어.',
     'Ataques como antes e iconos oficiales': '기술은 예전대로, 공식 아이콘으로',
     'Los proyectiles vuelven a ser los de antes, con su brillo.': '투사체가 예전처럼 빛나는 모습으로 돌아왔어.',
     'Cada movimiento lleva el icono oficial de su tipo.': '각 기술에 타입의 공식 아이콘이 표시돼.',

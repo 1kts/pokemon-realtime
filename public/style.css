@@ -1088,3 +1088,10 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .mon-card .acts button.look.on { border-color: rgba(255,203,5,.7); color: var(--yellow); }
 .type-ico { flex: none; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .mchip .type-ico { border-radius: 4px; }
+
+/* Avatar: buscador y opciones shiny */
+.avatar-pick input[type=search] { width: 100%; margin: 4px 0 10px; }
+.ava-opt { position: relative; }
+.ava-opt[hidden] { display: none; }
+.ava-opt.is-shiny { background: linear-gradient(160deg, rgba(255,203,5,.14), transparent 70%); }
+.ava-opt .shiny-star { position: absolute; top: 3px; right: 5px; font-size: 12px; font-style: normal; }

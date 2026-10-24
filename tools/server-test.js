@@ -250,6 +250,17 @@ class Client {
   ok(m.p.title === 'Estratega', 'no se puede equipar un título bloqueado');
   m = await b.req({ t: 'look', avatar: 1 });
   ok(!m.p.avatar, 'el avatar tiene que ser un Pokémon atrapado');
+  {
+    const dex = 25;
+    bp.caught = [...new Set([...bp.caught, dex])];
+    m = await b.req({ t: 'look', avatar: dex, avatarShiny: true });
+    ok(!m.p.avatar, 'el avatar shiny tiene que ser un shiny atrapado');
+    bp.shinies = [...(bp.shinies || []), dex];
+    m = await b.req({ t: 'look', avatar: dex, avatarShiny: true });
+    ok(m.p.avatar === dex && m.p.avatarShiny === true, 'avatar shiny si lo tienes');
+    m = await b.req({ t: 'look', avatar: null });
+    ok(!m.p.avatar && !m.p.avatarShiny, 'volver al avatar automático');
+  }
   // Fin de temporada (simulado subiendo el id)
   const sid = D.SEASON.id, coins1 = bp.coins;
   D.SEASON.id = sid + 1;

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    'Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.': '任何捕获过的宝可梦，有异色的话也可选异色。默认是队伍中的第一只。',
+    'Avatares shiny y buscador': '异色头像与搜索',
+    'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.': '拥有异色的宝可梦可以选择异色形态作为头像。',
+    'El selector de avatar tiene buscador por nombre o número.': '头像选择支持按名称或编号搜索。',
     'Ataques como antes e iconos oficiales': '招式恢复原样，采用官方图标',
     'Los proyectiles vuelven a ser los de antes, con su brillo.': '弹射物恢复为原来带光晕的样子。',
     'Cada movimiento lleva el icono oficial de su tipo.': '每个招式都显示其属性的官方图标。',

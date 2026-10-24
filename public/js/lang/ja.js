@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    'Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.': '捕まえたポケモンならどれでも。色違いを持っていれば色違いも。初期設定はチームの先頭。',
+    'Avatares shiny y buscador': '色違いアバターと検索',
+    'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.': '色違いを持っているポケモンは、色違いの姿をアバターにできる。',
+    'El selector de avatar tiene buscador por nombre o número.': 'アバター選択で名前や番号から検索できる。',
     'Ataques como antes e iconos oficiales': '技は元どおり、公式アイコンに',
     'Los proyectiles vuelven a ser los de antes, con su brillo.': '弾は以前の光るものに戻った。',
     'Cada movimiento lleva el icono oficial de su tipo.': 'それぞれの技にタイプの公式アイコンを表示。',
