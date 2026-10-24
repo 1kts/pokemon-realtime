@@ -1164,8 +1164,23 @@
   const achievementProgress = (p, a) => Math.min(a.goal, a.progress(p));
   const SHOWCASE_MAX = 3;
 
+  // ---------- Maestría por línea evolutiva ----------
+  // Cada combate ganado (historia, Torre, clasificatoria o rápida; la práctica no) suma una victoria a
+  // la línea evolutiva de cada Pokémon de tu equipo: Charmander, Charmeleon y Charizard suman a la misma.
+  // Premios por línea: estrella de bronce a 10, la ilustración oficial como avatar a 50, y a 100 el
+  // marco animado de su tipo (el primero de la especie base: fuego para la línea de Charmander).
+  const PRE = {};
+  for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
+  const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
+  const lineMembers = root => Object.values(SPECIES).filter(s => lineOf(s.dex) === root).map(s => s.dex).sort((a, b) => a - b);
+  const MASTERY = [10, 50, 100];
+  const MASTERY_ART = 50, MASTERY_FRAME = 100;
+  const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
+  const masteryTier = wins => MASTERY.filter(n => wins >= n).length;
+  const typeFrameOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];
+
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_ART, MASTERY_FRAME, masteryWins, masteryTier, typeFrameOf, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

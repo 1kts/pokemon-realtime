@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.10.0', date: '2026-10-25', title: 'Marcos animados y maestría de Pokémon',
+      items: [
+        ['nuevo', 'Los marcos de liga y de logros tienen efectos: brillos, laureles, gemas, órbitas y la corona del Maestro.'],
+        ['nuevo', 'Maestría: cada victoria suma a la línea evolutiva de tus Pokémon. A 10, estrella; a 50, su ilustración oficial como avatar; a 100, el marco animado de su tipo.'],
+      ],
+    },
+    {
       v: '0.9.2', date: '2026-10-25', title: 'Avatares shiny y buscador',
       items: [
         ['nuevo', 'Puedes elegir de avatar la versión shiny de los Pokémon que tengas en shiny.'],

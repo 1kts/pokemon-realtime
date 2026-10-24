@@ -8,6 +8,7 @@ import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
+import { frameFx, frameRing } from './frames.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -23,6 +24,8 @@ const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circ
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
 const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro', ...FRAME_LABEL_EXTRA };
+const frameLabel = f => f.startsWith('tipo-') ? t('Maestría {type}', { type: Data.TYPE_LABEL[f.slice(5)] }) : t(FRAME_LABEL[f] || f);
+const swatch = f => `<i class="sw frame-${f || 'none'}"${frameRing(f) ? ` style="--ring:${frameRing(f)}"` : ''}></i>`;
 const itemName = id => (SHOP.find(i => i.id === id) || { name: id }).name;
 const fmtDate = ts => new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
 const daysLeft = () => Math.max(0, Math.ceil((new Date(SEASON.end + 'T23:59:59') - Date.now()) / 86400000));
@@ -301,12 +304,24 @@ export const accountViews = {
     return lead ? { dex: lead.dex, shiny: Data.looksShiny(lead) } : { dex: 25, shiny: false };
   },
 
-  avatar(size, animated) {
+  // frame: para previsualizar otro marco (undefined = el del perfil)
+  avatar(size, animated, frame) {
     const p = this.profile;
-    const a = el('div', 'ava frame-' + (p.frame || 'none'));
+    const f = frame === undefined ? p.frame || null : frame;
+    const a = el('div', 'ava frame-' + (f || 'none'));
     a.style.setProperty('--s', size + 'px');
+    if (frameRing(f)) a.style.setProperty('--ring', frameRing(f));
     const { dex, shiny } = this.avatarDex();
-    a.append(animated ? animatedPortrait(dex, size, 'Idle', shiny) : portrait(dex, size, { shiny }));
+    const pic = el('span', 'ava-pic');
+    const sprite = () => animated ? animatedPortrait(dex, size, 'Idle', shiny) : portrait(dex, size, { shiny });
+    if (p.avatar && p.avatarArt) {
+      const img = el('img', 'ava-art');
+      img.src = `art/${shiny ? 'shiny/' : ''}${dex}.png`; img.alt = ''; img.draggable = false;
+      img.onerror = () => img.replaceWith(sprite());   // sin conexión con PokeAPI: el sprite de siempre
+      pic.append(img);
+    } else pic.append(sprite());
+    a.append(pic);
+    a.insertAdjacentHTML('beforeend', frameFx(f));
     return a;
   },
 
@@ -496,14 +511,15 @@ export const accountViews = {
       titles.append(b);
     }
     look.append(el('h4', '', t('Título')), titles);
-    const frames = el('div', 'chips');
+    const frames = el('div', 'frame-grid');
     for (const f of [null, ...cos.frames]) {
-      const b = el('button', 'chip frame-swatch' + ((p.frame || null) === f ? ' sel' : ''), `<i class="sw frame-${f || 'none'}"></i>${f ? t(FRAME_LABEL[f] || f) : t('Ninguno')}`);
+      const b = el('button', 'frame-opt' + ((p.frame || null) === f ? ' sel' : ''));
+      b.append(this.avatar(44, false, f), el('small', '', f ? frameLabel(f) : t('Ninguno')));
       b.onclick = () => this.net.send({ t: 'look', frame: f });
       frames.append(b);
     }
     look.append(el('h4', '', t('Marco')), frames);
-    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros.')));
+    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.', { n: Data.MASTERY_FRAME })));
     const avaBtn = el('button', '', t('Elegir Pokémon de avatar'));
     avaBtn.onclick = () => this.avatarPicker();
     look.append(el('h4', '', t('Avatar')), avaBtn);
@@ -518,7 +534,7 @@ export const accountViews = {
   avatarPicker() {
     const p = this.profile;
     modal('avatar-pick', (box, close) => {
-      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Por defecto, el primero de tu equipo.')));
+      box.append(el('h3', '', t('Pokémon de avatar')), el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.', { n: Data.MASTERY_ART })));
       const search = el('input');
       search.type = 'search'; search.placeholder = t('Buscar por nombre o número');
       const grid = el('div', 'ava-grid scroll');
@@ -531,13 +547,16 @@ export const accountViews = {
       const opts = [];
       for (const dex of [...p.caught].sort((a, b) => a - b)) {
         if (!SPECIES[dex]) continue;
-        for (const shiny of shinies.has(dex) ? [false, true] : [false]) {
-          const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (p.avatar === dex && !!p.avatarShiny === shiny ? ' sel' : ''));
-          b.append(portrait(dex, 48, { shiny }));
+        // Con la maestría de su línea, también la ilustración oficial
+        const arts = Data.masteryWins(p, dex) >= Data.MASTERY_ART ? [false, true] : [false];
+        for (const [shiny, art] of (shinies.has(dex) ? [false, true] : [false]).flatMap(s => arts.map(a => [s, a]))) {
+          const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (art ? ' is-art' : '') + (p.avatar === dex && !!p.avatarShiny === shiny && !!p.avatarArt === art ? ' sel' : ''));
+          if (art) b.innerHTML = `<img class="ava-art" src="art/${shiny ? 'shiny/' : ''}${dex}.png" alt="" loading="lazy" draggable="false"><i class="art-tag">${t('Arte')}</i>`;
+          else b.append(portrait(dex, 48, { shiny }));
           if (shiny) b.append(el('i', 'shiny-star', '✦'));
-          b.title = SPECIES[dex].name + (shiny ? ' ✦' : '');
+          b.title = SPECIES[dex].name + (shiny ? ' ✦' : '') + (art ? ' · ' + t('Ilustración oficial') : '');
           b.dataset.q = `${SPECIES[dex].name.toLowerCase()} ${dex}`;
-          b.onclick = () => { this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny }); close(); };
+          b.onclick = () => { this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny, avatarArt: art }); close(); };
           grid.append(b);
           opts.push(b);
         }
@@ -663,7 +682,7 @@ export const accountViews = {
     this.board.forEach((b, i) => {
       const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
       li.onclick = () => this.userModal(b.id);
-      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who"><i class="sw frame-${b.frame || 'none'}"></i><b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
       ol.append(li);
     });
     board.append(ol);

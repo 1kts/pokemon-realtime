@@ -19,6 +19,7 @@ function migrate(p) {
   if (p.season.id < D.SEASON.id) rollSeason(p);
   if (!p.achievements) p.achievements = {};
   if (!p.showcase) p.showcase = [];
+  if (!p.mastery) p.mastery = {};
   checkAchievements(p);
 }
 
@@ -35,6 +36,20 @@ function checkAchievements(p) {
     fresh.push(a.id);
   }
   return fresh;
+}
+
+// Maestría: una victoria más para la línea evolutiva de cada Pokémon del equipo (una vez por línea).
+// Al llegar a MASTERY_FRAME se desbloquea el marco de su tipo. Devuelve las líneas que suben de nivel.
+function addMastery(p, dexes) {
+  migrate(p);
+  const ups = [];
+  for (const root of new Set(dexes.filter(d => D.SPECIES[d]).map(D.lineOf))) {
+    const before = p.mastery[root] || 0;
+    p.mastery[root] = before + 1;
+    if (D.masteryTier(before + 1) > D.masteryTier(before)) ups.push({ dex: root, tier: D.masteryTier(before + 1) });
+    if (before + 1 >= D.MASTERY_FRAME) unlock(p, 'frames', D.typeFrameOf(root));
+  }
+  return ups;
 }
 
 function rollSeason(p) {
@@ -104,10 +119,13 @@ function setLook(p, msg) {
     const shiny = !!msg.avatarShiny && msg.avatar !== null;
     if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     if (shiny && !(p.shinies || []).includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
+    const art = !!msg.avatarArt && msg.avatar !== null;
+    if (art && D.masteryWins(p, msg.avatar) < D.MASTERY_ART) return 'Esa ilustración aún no está desbloqueada';
     p.avatar = msg.avatar;
     p.avatarShiny = shiny;
+    p.avatarArt = art;
   }
   return null;
 }
 
-module.exports = { migrate, afterRanked, claim, setLook, checkAchievements };
+module.exports = { migrate, afterRanked, claim, setLook, checkAchievements, addMastery };

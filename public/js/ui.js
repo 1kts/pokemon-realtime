@@ -10,6 +10,7 @@ import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
+import { masteryHtml } from './frames.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 
@@ -566,7 +567,8 @@ export class UI {
       card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
         <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
-        ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}`));
+        ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}
+        ${masteryHtml(p, m.dex, t)}`));
       const acts = el('div', 'acts');
       const toggle = el('button', inTeam ? 'on' : '', inTeam ? t('En el equipo') : t('Al equipo'));
       toggle.onclick = () => {
@@ -975,6 +977,11 @@ export class UI {
         list.append(row);
       }
       box.append(list);
+    }
+    if (r.mastery && r.mastery.length) {
+      const PRIZE = { 1: t('Estrella de bronce'), 2: t('Ilustración oficial como avatar'), 3: t('Marco animado de su tipo') };
+      box.append(el('div', 'mastery-up', r.mastery.map(u => `<div>${portrait(u.dex, 40).outerHTML}<span>${t('Maestría de la línea de <b>{m}</b>', { m: SPECIES[u.dex].name })} <i class="mstars">${'★'.repeat(u.tier)}${'☆'.repeat(3 - u.tier)}</i><small>${PRIZE[u.tier]}</small></span></div>`).join('')));
+      box.querySelectorAll('.mastery-up canvas').forEach((c, i) => c.replaceWith(portrait(r.mastery[i].dex, 40)));
     }
     if (r.tower) this.towerResults(box, r);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
