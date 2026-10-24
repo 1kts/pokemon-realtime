@@ -11,6 +11,7 @@ const CLASSES = {
 
 export default {
   text: {
+    'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
     'Nuevo nombre: PokéArenas': 'New name: PokéArenas',
     'El juego pasa a llamarse PokéArenas.': 'The game is now called PokéArenas.',
@@ -69,7 +70,6 @@ export default {
     '¡hoy!': 'today!',
     'Cada ruta saca 4 especies al día de su lista; las rutas cambian cada día.': 'Each route shows 4 species a day from its list; routes change every day.',
     'No aparece en las rutas de Kanto ni Johto: puede salir como Pokémon misterioso, en la tienda o en futuras regiones.': 'It doesn\'t appear on Kanto or Johto routes: it may show up as a mystery Pokémon, in the shop or in future regions.',
-    '{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas': '{a} of {b} species caught: see which ones you\'re missing and where to find them',
     'Abrir la Pokédex': 'Open the Pokédex',
     'Pokémon de las rutas nuevos en': 'New route Pokémon in',
     'Estos Pokémon cambian en': 'These Pokémon change in',

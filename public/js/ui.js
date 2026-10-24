@@ -114,6 +114,7 @@ export class UI {
     right.append(nav);
     // Dinero, tu perfil, novedades (en el menú) y Ajustes
     const me = el('div', 'tb-me');
+    me.append(this.supportButton());
     me.append(el('span', 'pill coins', coins(p.coins)));
     if (this.view !== 'profile') me.append(this.profileChip());
     if (this.view === 'menu') me.append(this.newsIcon());
@@ -154,7 +155,6 @@ export class UI {
     const tw = p.tower;
     const adventure = section(t('Aventura'), t('Tu viaje por las regiones y los retos de la Torre'));
     card(adventure, t('Historia'), p.mons.length ? `${regs} · ${t('{n} Pokémon', { n: p.mons.length })}` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
-    card(adventure, t('Pokédex'), t('{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas', { a: p.caught.length, b: Object.keys(SPECIES).length }), 'dex', 479, () => this.openFrom('dex'));
     card(adventure, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
     const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
     const ready = this.claimable().length;

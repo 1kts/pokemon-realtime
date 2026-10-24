@@ -259,6 +259,7 @@ export default {
     'Ríos de lava, erupciones y el viento de las alas de los dragones.': '熔岩河、火山喷发，还有龙振翅掀起的风。',
 
     // ---------- 场景（完全权限） ----------
+    'Apoyar': '支持',
     // ---------- Novedades 0.5 a 0.7 ----------
     'Nuevo nombre: PokéArenas': '新名字：PokéArenas',
     'El juego pasa a llamarse PokéArenas.': '游戏更名为PokéArenas。',
@@ -317,7 +318,6 @@ export default {
     '¡hoy!': '今天！',
     'Cada ruta saca 4 especies al día de su lista; las rutas cambian cada día.': '每条道路每天从其名单中出现4种宝可梦；道路每天都会变化。',
     'No aparece en las rutas de Kanto ni Johto: puede salir como Pokémon misterioso, en la tienda o en futuras regiones.': '它不会出现在关都或城都的道路上：可能作为神秘宝可梦出现、在商店里出售，或在以后的地区登场。',
-    '{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas': '已捕捉{a}/{b}种：看看还缺哪些、在哪里能找到',
     'Abrir la Pokédex': '打开图鉴',
     'Pokémon de las rutas nuevos en': '道路宝可梦刷新倒计时',
     'Estos Pokémon cambian en': '这些宝可梦刷新倒计时',

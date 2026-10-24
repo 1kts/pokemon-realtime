@@ -797,7 +797,6 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .dex-where ul { margin: 0; padding-left: 18px; max-height: 180px; overflow: auto; }
 .dex-where li { margin: 3px 0; } .dex-where li small { color: var(--muted); }
 .dex-where .today { font-style: normal; color: var(--yellow); font-weight: 700; }
-.menu-card.dex { --c: #e8403a; }
 button.stat.dexlink { display: block; width: 100%; text-align: left; padding: 8px 10px; }
 
 /* Rotación diaria de las rutas y guía del modo historia */
@@ -824,3 +823,11 @@ b.perfect { color: var(--yellow); }
 .kofi svg { width: 20px; height: 20px; flex: none; }
 .kofi.small { padding: 3px 10px; font-size: 12px; box-shadow: none; } .kofi.small svg { width: 16px; height: 16px; }
 .kofi.wide { justify-content: center; margin-top: 4px; }
+
+/* Botón de apoyo (Ko-fi) en la barra superior */
+.tb-btn.support { color: #ff6b8a; text-decoration: none; border-color: rgba(255,107,138,.35); }
+.tb-btn.support span { color: var(--fg); }
+.tb-btn.support:hover { border-color: rgba(255,107,138,.8); background: rgba(255,107,138,.12); }
+.tb-btn.support svg { animation: beat 2.4s ease-in-out infinite; }
+@keyframes beat { 0%, 70%, 100% { transform: scale(1); } 78% { transform: scale(1.18); } 86% { transform: scale(1); } 92% { transform: scale(1.12); } }
+@container (max-width: 1180px) { .tb-me .support span { display: none; } .tb-me .support { width: 40px; padding: 0; justify-content: center; } }
