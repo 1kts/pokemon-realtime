@@ -93,12 +93,16 @@ vez, el dominio, las copias de seguridad y cómo volver a una versión anterior:
 
 ## Idiomas
 
-Inglés por defecto y español; cada jugador elige el suyo en la portada, el menú o el perfil (se recuerda en
-el navegador). Los textos se escriben en español dentro de `t('…')` (`public/js/i18n.js`) y esa frase es la
-clave en cada diccionario (`public/js/lang/en.js`); lo que no está traducido sale en español. Los nombres de
-tipos, movimientos, objetos y naturalezas se traducen en las tablas del diccionario, y los mensajes que llegan
-ya montados del servidor, con `patterns`. `npm run i18n` lista lo que falta (y `npm test` falla si falta algo).
-Para añadir un idioma: copia `en.js`, tradúcelo y añádelo a `LANGS` y `DICTS` en `i18n.js`.
+Inglés (por defecto), español y chino simplificado. Cada jugador elige el suyo en Ajustes o en la portada
+(se recuerda en el navegador). Los textos se escriben en español dentro de `t('…')` (`public/js/i18n.js`) y
+esa frase es la clave en cada diccionario (`public/js/lang/<idioma>.js`); lo que no está traducido sale en
+español. Los nombres oficiales de Pokémon, movimientos, tipos, objetos, naturalezas y estadísticas salen de
+PokeAPI con `node tools/fetch-names.js <idioma>` (genera `lang/names-<idioma>.js`), y los mensajes que llegan
+ya montados del servidor se traducen con `patterns`. Cada idioma se descarga solo cuando se elige.
+`npm run i18n` lista lo que falta (el inglés es la referencia) y `npm test` falla si falta algo.
+
+Para añadir un idioma: copia `en.js`, tradúcelo, genera sus nombres si PokeAPI los tiene y añádelo a `LANGS`,
+`LOCALES` y, si tiene nombres, `HAS_NAMES` en `i18n.js`.
 
 ## Pruebas
 

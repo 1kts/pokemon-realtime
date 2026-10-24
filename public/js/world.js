@@ -42,6 +42,7 @@ const LIGHT = {
   sky: { bg: '#8cc4ff', fog: [32, 75], hemi: ['#ffffff', '#9cc0e8', 1.3], sun: ['#fff4e0', 2.4] },
   volcano: { bg: '#2a1310', fog: [20, 46], hemi: ['#ffb890', '#3a1010', 0.85], sun: ['#ffa070', 1.9] },
   snow: { bg: '#bcd6ee', fog: [24, 56], hemi: ['#f0f6ff', '#7a98b8', 0.95], sun: ['#eef6ff', 1.7] },
+  glacier: { bg: '#7fa8d4', fog: [22, 52], hemi: ['#e0eeff', '#5a7898', 0.9], sun: ['#dfeaff', 1.5] },
   dusk: { bg: '#3a2a48', fog: [20, 48], hemi: ['#d0b0ff', '#2a2038', 0.75], sun: ['#ffc8a0', 1.5] },
 };
 
@@ -71,7 +72,37 @@ const THEMES = {
   'g-hielo': { ground: 'snow', palette: ['#eef6fc', '#d8e8f4'], emblem: '#7ac8ff', outside: '#dce8f2', decor: 'snow', rock: ['ice', '#bfe6ff'], curb: ['#ffffff', '#c4d8e8'], light: 'snow' },
   'g-dragon': { ground: 'volcanic', palette: ['#2e2638', '#221c2a'], emblem: '#8a60ff', outside: '#140f1a', decor: 'volcano', rock: ['boulder', '#3e3448'], curb: ['#3e3448', '#241e2c'], light: 'volcano' },
 };
-const themeOf = name => THEMES[name] || THEMES.pradera;
+Object.assign(THEMES, {
+  'e-lorelei': { ground: 'snow', palette: ['#dceaf6', '#c4d8ea'], emblem: '#4aa8ff', outside: '#b8d0e6', decor: 'snow', rock: ['ice', '#9fd4ff'], curb: ['#e8f2fa', '#a8c4dc'], light: 'glacier' },
+  'e-bruno': { ground: 'stone', palette: ['#8e8272', '#746a5c'], emblem: '#e05030', outside: '#3a322a', decor: 'rocks', rock: ['boulder', '#7e7262'], curb: ['#6a5e50', '#4a4238'], light: 'cave' },
+  'e-agatha': { ground: 'rock', palette: ['#3e3650', '#30293e'], emblem: '#a070ff', outside: '#15111e', decor: 'graves', rock: ['grave', '#5e5670'], curb: ['#4a4458', '#2e2a3a'], light: 'night', dark: true },
+  'e-lance': { ground: 'volcanic', palette: ['#2a2036', '#1c1626'], emblem: '#7a50ff', outside: '#120c18', decor: 'volcano', rock: ['boulder', '#3a3046'], curb: ['#3a3046', '#201a2a'], light: 'volcano' },
+  'e-azul': { ground: 'marble', palette: ['#efe4c8', '#d8c8a0'], emblem: '#ffc020', outside: '#3a2e1a', decor: 'stands', standColors: ['#ffc020', '#ffffff'], rock: ['pillar', '#f4ecd8'], curb: ['#ffe080', '#c8a040'], light: 'indoor' },
+  'e-will': { ground: 'marble', palette: ['#e4c8ec', '#c8a4d8'], emblem: '#ff4ab0', outside: '#24142e', decor: 'crystals', crystal: '#ff4ad0', rock: ['pillar', '#f0e0f8'], curb: ['#e8d0f4', '#a080c0'], light: 'dusk' },
+  'e-kogaj': { ground: 'tatami', palette: ['#3a3040', '#2c2434'], emblem: '#c060ff', outside: '#140f18', decor: 'lanterns', rock: ['grave', '#4a3e54'], curb: ['#4a2e1a', '#2a1a10'], light: 'night', dark: true },
+  'e-brunoj': { ground: 'stone', palette: ['#9c9888', '#827e70'], emblem: '#ff7030', outside: '#2e4a30', decor: 'cliffs', rock: ['boulder', '#8a8474'], curb: ['#9a9484', '#726c5e'], light: 'forest' },
+  'e-karen': { ground: 'marble', palette: ['#2a2830', '#1e1c24'], emblem: '#8070c0', outside: '#0e0d12', decor: 'lanterns', rock: ['pillar', '#34323e'], curb: ['#34323e', '#1e1c24'], light: 'night', dark: true },
+  'e-lancej': { ground: 'volcanic', palette: ['#3a2220', '#28161a'], emblem: '#ff4020', outside: '#180c0c', decor: 'volcano', rock: ['boulder', '#4a3030'], curb: ['#4a3030', '#2a1818'], light: 'volcano' },
+});
+// Las rutas usan el tema de su tipo de lugar con el toque de su región (Johto, en otoño)
+const REGION_LOOK = {
+  johto: {
+    pradera: { palette: ['#86a84a', '#76973e'], leaves: ['#c8742a', '#d89a3a', '#a85a24', '#7a9a38'] },
+    bosque: { palette: ['#6f8f38', '#5f7e30'], leaves: ['#b8642a', '#d08a30', '#8a4a22', '#5a7a2e'] },
+    lago: { leaves: ['#c8742a', '#d89a3a', '#7a9a38', '#5a8a3a'] },
+    cueva: {},
+  },
+};
+const themeOf = name => {
+  if (name.startsWith('r:')) {
+    const node = Data.NODES[name.slice(2)];
+    const base = THEMES[(node && node.map) || 'pradera'] || THEMES.pradera;
+    const look = node && REGION_LOOK[node.region] && REGION_LOOK[node.region][node.map];
+    return look ? { ...base, ...look } : base;
+  }
+  return THEMES[name] || THEMES.pradera;
+};
+const seedOf = (name, salt) => Shared.hashStr(name + ':' + salt) % 2147483646 + 1;
 
 // ---------- Pintores del suelo (lienzo de 1024x640: una casilla = 42,7 x 42,7 px) ----------
 const GW = 1024, GH = 640, CW = GW / COLS, CH = GH / ROWS;
@@ -249,7 +280,7 @@ function emblem(g, w, h, color) {
 function groundTexture(name) {
   const th = themeOf(name);
   return canvasTexture(GW, GH, (g, w, h) => {
-    const r = rng(name.length * 131 + 7);
+    const r = rng(seedOf(name, 'suelo'));
     const grad = g.createLinearGradient(0, 0, 0, h);
     grad.addColorStop(0, th.palette[0]); grad.addColorStop(1, th.palette[1]);
     g.fillStyle = grad; g.fillRect(0, 0, w, h);
@@ -431,11 +462,11 @@ export class World {
   buildDecor(name, th) {
     this.clearGroup(this.decorGroup);
     this.animated = [];
-    const r = rng(name.length * 53 + 42);
+    const r = rng(seedOf(name, 'decorado'));
     const add = (o, x, z) => { o.position.set(x, o.position.y, z); o.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); this.decorGroup.add(o); return o; };
     const free = (x, z) => !(x > -1.2 && x < COLS + 1.2 && z > -1.2 && z < ROWS + 1.2);
     const spots = n => { const out = []; let k = 0; while (out.length < n && k++ < n * 6) { const x = -14 + r() * (COLS + 28), z = -12 + r() * (ROWS + 24); if (free(x, z)) out.push([x, z]); } return out; };
-    const leaves = ['#3f7f35', '#4a8f3a', '#356f2c', '#5a9a40'].map(c => mat(c, { roughness: 0.9, flatShading: true }));
+    const leaves = (th.leaves || ['#3f7f35', '#4a8f3a', '#356f2c', '#5a9a40']).map(c => mat(c, { roughness: 0.9, flatShading: true }));
     const trunk = mat('#6a4a30', { roughness: 1 });
     const tree = (scale = 1, cols = leaves) => {
       const g = new THREE.Group(), h = (1.2 + r() * 1.2) * scale;
@@ -474,7 +505,9 @@ export class World {
       }
       if (kind === 'cliffs') {   // acantilado al fondo de donde caen las cascadas
         for (let x = -6; x < COLS + 6; x += 1.6) { const c = new THREE.Mesh(new THREE.BoxGeometry(1.8, 3 + r() * 2.5, 2.2), mat(shade(rc, 0.9 + r() * 0.2), { flatShading: true })); c.position.y = 1.5; add(c, x, -2.4 - r()); }
-        for (const x of [7.5, 15.5]) {
+        const fcols = [...new Set([...Shared.parseMap(name).flow.keys()].map(i => i % COLS))].sort((a, b) => a - b);
+        const falls = fcols.filter((c, k) => k === 0 || fcols[k - 1] !== c - 1).map(c => c + (fcols.includes(c + 1) ? 0.5 : 0));
+        for (const x of falls) {
           const fall = new THREE.Mesh(new THREE.PlaneGeometry(2, 4.5), new THREE.MeshBasicMaterial({ map: this.flowTex, color: '#cfeeff', transparent: true, opacity: 0.85, depthWrite: false }));
           fall.position.set(x + 0.5, 2.2, -1.1);
           this.decorGroup.add(fall);
@@ -485,7 +518,7 @@ export class World {
       for (const [x, z] of spots(60)) { const b = new THREE.Mesh(new THREE.BoxGeometry(1 + r(), 0.5, 1 + r()), mat('#f0f4f8')); b.position.y = 0.25; add(b, x, z); }
       this.stands('#3a8fe0', '#ffffff');
     } else if (kind === 'stands') {
-      this.stands('#ff70a0', '#ffd0e0');
+      this.stands(...(th.standColors || ['#ff70a0', '#ffd0e0']));
     } else if (kind === 'machines') {
       const stripe = mat('#e8c030'), dark = mat('#2c3036', { metalness: 0.4, roughness: 0.5 });
       for (const [x, z] of spots(110)) {
@@ -651,17 +684,27 @@ export class World {
       }
       this.flowMats = [down, up];
     } else this.flowMats = null;
-    if (mech.beam) {   // faro en el centro y su haz doble
+    if (mech.beam) {   // en el centro, el faro (acero) o un obelisco del tipo del haz, y su haz doble
+      const ty = mech.beam.ty || 'acero';
+      const beamColor = ty === 'acero' ? '#fff4b0' : Data.TYPE_COLOR[ty];
       const g = new THREE.Group();
-      const white = mat('#f4f4f4'), red = mat('#d83a3a');
-      for (let k = 0; k < 5; k++) { const s = new THREE.Mesh(new THREE.CylinderGeometry(0.7 - k * 0.06, 0.76 - k * 0.06, 0.6, 16), k % 2 ? red : white); s.position.y = 0.3 + k * 0.6; g.add(s); }
-      const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.5, 12), glowMat('#fff2a0', 3)); lamp.position.y = 3.25; g.add(lamp);
-      const roof = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.5, 12), red); roof.position.y = 3.75; g.add(roof);
+      if (ty === 'acero') {
+        const white = mat('#f4f4f4'), red = mat('#d83a3a');
+        for (let k = 0; k < 5; k++) { const s = new THREE.Mesh(new THREE.CylinderGeometry(0.7 - k * 0.06, 0.76 - k * 0.06, 0.6, 16), k % 2 ? red : white); s.position.y = 0.3 + k * 0.6; g.add(s); }
+        const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.5, 12), glowMat('#fff2a0', 3)); lamp.position.y = 3.25; g.add(lamp);
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.5, 12), red); roof.position.y = 3.75; g.add(roof);
+      } else {
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1, 0.5, 8), mat('#3a3448', { flatShading: true })); base.position.y = 0.25; g.add(base);
+        const obel = new THREE.Mesh(new THREE.OctahedronGeometry(0.7, 0), mat(beamColor, { emissive: beamColor, emissiveIntensity: 0.6, roughness: 0.3, flatShading: true }));
+        obel.scale.set(0.8, 2.2, 0.8); obel.position.y = 2; g.add(obel);
+        this.animated = this.animated || [];
+        this.animated.push(() => { obel.rotation.y = this.time * 0.8; obel.position.y = 2 + Math.sin(this.time * 2) * 0.12; });
+      }
       g.traverse(m => { if (m.isMesh) m.castShadow = true; });
       g.position.set(COLS / 2, 0, ROWS / 2);
       this.props.add(g);
       const len = mech.beam.len * U, w = mech.beam.width * 2 * U;
-      const beamMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#fff4b0').multiplyScalar(1.6), transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, side: THREE.DoubleSide });
+      const beamMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(beamColor).multiplyScalar(1.6), transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, side: THREE.DoubleSide });
       const pivot = new THREE.Group();
       pivot.position.set(COLS / 2, 0.06, ROWS / 2);
       for (const s of [1, -1]) {
@@ -798,7 +841,7 @@ export class World {
     const { rocks } = Shared.parseMap(mapName);
     this.mapRocks = rocks;
     const [style, color] = this.theme.rock;
-    const r = rng(mapName.length * 77);
+    const r = rng(seedOf(mapName, 'rocas'));
     const beam = !!Shared.mechOf(mapName).beam;
     for (const rk of rocks) {
       // en el faro, las rocas del centro son la base de la torre

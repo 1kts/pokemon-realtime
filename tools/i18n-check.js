@@ -24,17 +24,24 @@ for (const f of fs.readdirSync(path.join(ROOT, 'js')).filter(f => f.endsWith('.j
 }
 
 const vars = s => [...s.matchAll(/\{(\w+)\}/g)].map(x => x[1]).sort().join(',');
-let bad = 0;
-for (const f of fs.readdirSync(path.join(ROOT, 'js', 'lang')).filter(f => f.endsWith('.js'))) {
-  const lang = f.replace('.js', '');
-  // Los diccionarios son módulos ES: se evalúan quitando el export
+// Los diccionarios son módulos ES: se evalúan quitando el export
+function loadDict(f) {
   const src = fs.readFileSync(path.join(ROOT, 'js', 'lang', f), 'utf8').replace(/export default/, 'module.exports =');
   const mod = { exports: {} };
   new Function('module', src)(mod);
-  const dict = mod.exports.text;
+  return mod.exports.text;
+}
+// El inglés es la referencia: además de los textos del código tiene los dinámicos (ligas, títulos,
+// novedades, nombres de arenas…), y los demás idiomas tienen que traducir todo lo que tiene él
+const en = loadDict('en.js');
+for (const k of Object.keys(en)) if (!keys.has(k)) keys.set(k, 'en.js');
+let bad = 0;
+for (const f of fs.readdirSync(path.join(ROOT, 'js', 'lang')).filter(f => f.endsWith('.js') && !f.startsWith('names-'))) {
+  const lang = f.replace('.js', '');
+  const dict = loadDict(f);
   const missing = [...keys.keys()].filter(k => dict[k] === undefined);
   const wrongVars = Object.entries(dict).filter(([k, v]) => vars(k) !== vars(v));
-  console.log(`${lang}: ${keys.size - missing.length}/${keys.size} textos del código traducidos · ${Object.keys(dict).length} en el diccionario`);
+  console.log(`${lang}: ${keys.size - missing.length}/${keys.size} textos traducidos · ${Object.keys(dict).length} en el diccionario`);
   for (const k of missing) console.log(`  falta (${keys.get(k)}): ${JSON.stringify(k)}`);
   for (const [k] of wrongVars) console.log(`  variables distintas: ${JSON.stringify(k)}`);
   bad += missing.length + wrongVars.length;

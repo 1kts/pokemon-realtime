@@ -434,8 +434,8 @@ export class BattleClient {
     this.bannerEl = el('div', 'banners');
     // Nombre y mecánica de la arena (la descripción se esconde a los pocos segundos)
     if (this.arena) {
-      const tag = el('div', 'arena-tag', `<b>${escapeHtml(this.arena.name)}</b><span>${escapeHtml(this.arena.desc)}</span>`);
-      tag.title = this.arena.desc;
+      const tag = el('div', 'arena-tag', `<b>${escapeHtml(t(this.arena.name))}</b><span>${escapeHtml(t(this.arena.desc))}</span>`);
+      tag.title = t(this.arena.desc);
       root.append(tag);
       setTimeout(() => tag.classList.add('mini'), 9000);
     }
@@ -476,7 +476,7 @@ export class BattleClient {
       b.title = describeMove(m);
       this.movesEl.append(b);
     });
-    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><b>${t('Protección')}</b><small>parry ${Math.round(PROTECT.perfect * 1000)} ms</small><div class="cd"></div><span class="cdt"></span>`);
+    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><b>${t('Protección')}</b><small>${t('parry {n} ms', { n: Math.round(PROTECT.perfect * 1000) })}</small><div class="cd"></div><span class="cdt"></span>`);
     pr.style.setProperty('--tc', '#70ffb0');
     pr.title = t('Bloquea el 80 % del daño. Si el golpe llega justo al activarla, lo devuelves (parry).');
     this.movesEl.append(pr);

@@ -4,12 +4,15 @@
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
-import { t, locale, LANGS, getLang, setLang } from './i18n.js';
+import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
+const GEAR_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm5.6 3.6.9.7-1.3 2.3-1.1-.4a5 5 0 0 1-1.4.8l-.2 1.2H7.9l-.2-1.2a5 5 0 0 1-1.4-.8l-1.1.4-1.3-2.3.9-.7a5 5 0 0 1 0-1.6l-.9-.7 1.3-2.3 1.1.4a5 5 0 0 1 1.4-.8l.2-1.2h2.6l.2 1.2a5 5 0 0 1 1.4.8l1.1-.4 1.3 2.3-.9.7a5 5 0 0 1 0 1.6Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.5a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2v-9Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 11.5a2 2 0 0 1 2-2h7.5M6 5h4M6 7h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
 const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro' };
@@ -110,7 +113,9 @@ export const accountViews = {
       form.querySelectorAll('input').forEach(i => { i.onkeydown = e => { if (e.key === 'Enter') submit(); }; });
     };
     render();
-    box.append(this.footer());
+    const lang = this.langPicker();
+    lang.classList.add('corner');
+    box.append(lang, this.footer());
     this.root.append(box);
   },
 
@@ -125,22 +130,25 @@ export const accountViews = {
     v.onclick = () => this.patchNotes();
     const legal = el('button', 'link', t('Créditos y aviso legal'));
     legal.onclick = () => this.legal();
-    f.append(v, legal, this.langPicker());
+    f.append(v, legal);
     return f;
   },
 
   // Selector de idioma: cambia los textos y vuelve a pintar la pantalla actual
   langPicker() {
+    const wrap = el('label', 'lang-pick', GLOBE_SVG);
+    wrap.title = 'Idioma / Language';
     const sel = el('select', 'lang-select');
     sel.setAttribute('aria-label', 'Idioma / Language');
+    wrap.append(sel);
     for (const [id, name] of Object.entries(LANGS)) {
       const o = el('option', '', name);
       o.value = id;
       o.selected = id === getLang();
       sel.append(o);
     }
-    sel.onchange = () => { if (setLang(sel.value)) { this.app.onLang(); this.show(this.view); } };
-    return sel;
+    sel.onchange = () => setLang(sel.value).then(ok => { if (ok) { this.app.onLang(); this.show(this.view); } });
+    return wrap;
   },
 
   // ---------- Novedades ----------
@@ -259,10 +267,73 @@ export const accountViews = {
     return b;
   },
 
-  newsButton() {
-    const b = el('button', '', t('Novedades') + (this.hasNews() ? ' <i class="ndot news"></i>' : ''));
+  // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
+  newsIcon() {
+    const b = el('button', 'news-btn', `${BOOK_SVG}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
+    b.title = t('Novedades');
+    b.setAttribute('aria-label', t('Novedades'));
     b.onclick = () => this.patchNotes();
     return b;
+  },
+
+  // Botón de la barra superior que lleva a Ajustes
+  settingsButton() {
+    const b = el('button', 'settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>`);
+    b.title = t('Ajustes: idioma, perfil, novedades y créditos');
+    b.onclick = () => this.show('settings');
+    return b;
+  },
+
+  // ---------- Ajustes ----------
+  view_settings() {
+    const p = this.profile;
+    const wrap = el('div', 'settings-view');
+    wrap.append(this.topbar(t('Ajustes'), 'menu'));
+    const body = el('div', 'settings-body scroll');
+
+    // Idioma: un botón por idioma
+    const lang = el('div', 'panel');
+    lang.append(el('h3', '', `${GLOBE_SVG} ${t('Idioma')}`), el('p', 'small', t('Cambia los textos del juego al momento. Se recuerda en este navegador.')));
+    const langs = el('div', 'lang-list');
+    for (const [id, name] of Object.entries(LANGS)) {
+      const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `<b>${name}</b><small>${LANG_CODES[id] || id.toUpperCase()}</small>`);
+      b.onclick = () => setLang(id).then(ok => { if (ok) { this.app.onLang(); this.show('settings'); } });
+      langs.append(b);
+    }
+    lang.append(langs);
+
+    // Perfil y cuenta
+    const me = el('div', 'panel');
+    me.append(el('h3', '', t('Perfil y cuenta')));
+    const who = el('button', 'who settings-who');
+    who.append(this.avatar(64), el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${t(p.league)} · ${p.elo}</span><small>${p.account ? t('Cuenta <b>@{user}</b>', { user: escapeHtml(p.account.user) }) : t('Invitado')}</small>`));
+    who.onclick = () => this.show('profile');
+    me.append(who);
+    if (!p.account) me.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
+    const open = el('button', 'primary', t('Abrir perfil'));
+    open.onclick = () => this.show('profile');
+    me.append(el('p', 'small', t('Nombre, título, marco, avatar, historial y contraseña.')), open);
+
+    // Novedades
+    const news = el('div', 'panel');
+    const cur = CHANGELOG[0];
+    news.append(el('h3', '', `${t('Novedades')}${this.hasNews() ? ' <i class="ndot news"></i>' : ''}`),
+      el('p', 'small', `<b>v${cur.v}</b> · ${escapeHtml(t(cur.title))} · ${fmtDate(cur.date)}`),
+      el('ul', 'news-peek', cur.items.slice(0, 4).map(([tag, text]) => `<li><span class="ntag ${tag}">${t(TAG_LABEL[tag])}</span>${escapeHtml(t(text))}</li>`).join('')));
+    const all = el('button', '', t('Ver todas las novedades'));
+    all.onclick = () => this.patchNotes();
+    news.append(all);
+
+    // Créditos
+    const about = el('div', 'panel');
+    about.append(el('h3', '', t('Créditos y aviso legal')), el('p', 'small', t('Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
+    const legal = el('button', '', t('Ver créditos y datos que guardamos'));
+    legal.onclick = () => this.legal();
+    about.append(legal, el('p', 'small', `Arena Pokémon v${VERSION}`));
+
+    body.append(lang, me, news, about);
+    wrap.append(body);
+    this.root.append(wrap);
   },
 
   // ---------- Perfil ----------
@@ -272,6 +343,7 @@ export const accountViews = {
     wrap.append(this.topbar(t('Perfil'), 'menu'));
     const body = el('div', 'pv-body scroll');
     const left = el('div', 'pv-col');
+    const mid = el('div', 'pv-col');
     const right = el('div', 'pv-col');
 
     // Tarjeta de entrenador
@@ -330,7 +402,7 @@ export const accountViews = {
       row.append(el('b', 'delta', `${h.delta >= 0 ? '+' : ''}${h.delta}`));
       hist.append(row);
     }
-    right.append(hist);
+    mid.append(hist);
 
     // Personalizar
     const look = el('div', 'panel look');
@@ -354,11 +426,10 @@ export const accountViews = {
     const avaBtn = el('button', '', t('Elegir Pokémon de avatar'));
     avaBtn.onclick = () => this.avatarPicker();
     look.append(el('h4', '', t('Avatar')), avaBtn);
-    look.append(el('h4', '', t('Idioma')), this.langPicker());
     right.append(look);
 
     right.append(this.accountPanel());
-    body.append(left, right);
+    body.append(left, mid, right);
     wrap.append(body);
     this.root.append(wrap);
   },

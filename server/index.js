@@ -211,7 +211,8 @@ function startPractice(c, msg) {
 // Quien abre el juego con ?fullaccess puede combatir en cualquier mapa o arena sin medallas ni
 // nivel. Son combates de práctica (sin premios ni progreso), así que no hace falta clave.
 function startArenaView(c, msg) {
-  const map = typeof msg.map === 'string' && (D.MAPS[msg.map] || D.ARENAS[msg.map]) ? msg.map : null;
+  const routeId = typeof msg.map === 'string' && msg.map.startsWith('r:') ? msg.map.slice(2) : null;
+  const map = typeof msg.map === 'string' && (D.MAPS[msg.map] || D.ARENAS[msg.map] || (routeId && D.NODES[routeId] && D.NODES[routeId].kind === 'route')) ? msg.map : null;
   if (!map) return send(c, { t: 'error', msg: 'Escenario desconocido' });
   const leader = Object.values(D.NODES).find(n => n.kind !== 'route' && n.map === map);
   const pool = shuffle(D.RANKED_POOL);
@@ -220,7 +221,7 @@ function startArenaView(c, msg) {
     mode: 'practice', map,
     sides: [
       { name: c.profile.name, team: pool.slice(0, 3).map(dex => ({ dex, level: D.RANKED_LEVEL })) },
-      { name: leader ? leader.leader : 'Bot', team: foe.map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: leader ? leader.ai : 0.28, passive: !!msg.passive },
+      { name: leader ? leader.leader : 'Bot', team: foe.map(dex => ({ dex, level: D.RANKED_LEVEL, ...(leader ? D.leaderExtras(leader) : {}) })), ai: leader ? leader.ai : 0.28, passive: !!msg.passive },
     ],
   }, () => []);
 }
