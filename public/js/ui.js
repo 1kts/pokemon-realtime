@@ -286,7 +286,9 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'teamview');
     wrap.append(this.topbar('Equipo', 'story'));
-    wrap.append(el('p', 'intro', 'Mete o saca Pokémon del equipo (máximo 3) con el botón de su ficha. Los objetos también se usan desde ahí.'));
+    const cap = Data.levelCap(p.badges);
+    const next = GYMS[p.badges];
+    wrap.append(el('p', 'intro', `Mete o saca Pokémon del equipo (máximo 3) y elige sus movimientos desde su ficha. <span class="cap">Tope de nivel: <b>${cap}</b>${next ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
     const grid = el('div', 'mon-grid scroll');
     const sorted = [...p.mons].sort((a, b) => (p.team.includes(b.uid) - p.team.includes(a.uid)) || b.level - a.level);
     for (const m of sorted) {
@@ -294,7 +296,13 @@ export class UI {
       const card = el('div', 'mon-card' + (inTeam ? ' in' : ''));
       card.append(portrait(m.dex, 72));
       const need = xpToNext(m.level);
-      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}</b> <small>Nv.${m.level}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${Math.min(100, m.xp / need * 100)}%"></div></div><small class="moves">${SPECIES[m.dex].moves.map(k => MOVES[k].name).join(' · ')}</small>`));
+      const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
+      const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
+      const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
+      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}</b> <small>Nv.${m.level}${m.level >= cap ? ' · <span class="cap">tope</span>' : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
+        <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')}</div>
+        ${known.length ? `<small class="newmoves">${known.length} movimiento${known.length > 1 ? 's' : ''} más para elegir</small>` : ''}
+        ${upcoming ? `<small class="moves">Aprende ${MOVES[upcoming[1]].name} al Nv.${upcoming[0]}</small>` : ''}`));
       const acts = el('div', 'acts');
       const toggle = el('button', inTeam ? 'on' : '', inTeam ? 'En el equipo' : 'Al equipo');
       toggle.onclick = () => {
@@ -304,6 +312,9 @@ export class UI {
         this.net.send({ t: 'story', a: 'team', uids: team });
       };
       acts.append(toggle);
+      const mv = el('button', known.length ? 'evo' : '', 'Movimientos');
+      mv.onclick = () => this.moveManager(m);
+      acts.append(mv);
       if ((p.items.caramelo || 0) > 0) {
         const b = el('button', '', `Caramelo Raro (${p.items.caramelo})`);
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.uid });
@@ -331,6 +342,48 @@ export class UI {
     }
     wrap.append(grid);
     this.root.append(wrap);
+  }
+
+  // Gestor de movimientos: elegir hasta 4 de los aprendidos
+  moveManager(mon) {
+    const current = (mon.moves && mon.moves.length ? mon.moves : SPECIES[mon.dex].moves).filter(k => MOVES[k]);
+    const levels = new Map(Data.learnset(mon.dex).map(([l, k]) => [k, l]));
+    const options = [...new Set([...Data.learnedAt(mon.dex, mon.level), ...current])];
+    const chosen = [...current];
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box');
+    box.append(el('h3', '', `Movimientos de ${SPECIES[mon.dex].name} <small>Nv.${mon.level}</small>`), el('p', 'small', 'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.'));
+    const list = el('div', 'move-list');
+    const render = () => {
+      list.innerHTML = '';
+      for (const k of options) {
+        const m = MOVES[k];
+        const i = chosen.indexOf(k);
+        const row = el('button', 'move-row' + (i >= 0 ? ' sel' : ''));
+        row.style.setProperty('--tc', TYPE_COLOR[m.type]);
+        row.innerHTML = `<span class="slot">${i >= 0 ? ['Clic', 'Dcho', 'Q', 'E'][i] : ''}</span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? 'Nv.' + levels.get(k) : 'aprendido'}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
+        row.onclick = () => {
+          if (i >= 0) { if (chosen.length > 1) chosen.splice(i, 1); }
+          else if (chosen.length < 4) chosen.push(k);
+          else this.toast('Ya lleva 4: quita uno antes', 'bad');
+          render();
+        };
+        list.append(row);
+      }
+      const upcoming = Data.learnset(mon.dex).filter(([l]) => l > mon.level);
+      if (upcoming.length) list.append(el('p', 'small', 'Próximamente: ' + upcoming.map(([l, k]) => `${MOVES[k].name} (Nv.${l})`).join(' · ')));
+    };
+    render();
+    const acts = el('div', 'acts');
+    const cancel = el('button', '', 'Cancelar');
+    const save = el('button', 'primary', 'Guardar');
+    cancel.onclick = () => back.remove();
+    save.onclick = () => { this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: chosen }); back.remove(); };
+    acts.append(cancel, save);
+    box.append(list, acts);
+    back.append(box);
+    back.onclick = e => { if (e.target === back) back.remove(); };
+    document.body.append(back);
   }
 
   // ---------- Tienda ----------
@@ -516,13 +569,15 @@ export class UI {
     }
     if (r.badge) box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[GYMS[r.badge.index].type]}"></i><p>¡Has vencido a <b>${r.badge.leader}</b>!${r.badge.index < 8 ? ' Medalla conseguida.' : ''}</p>`));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
+    if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', `Tope de nivel ${r.cap}: vence al siguiente gimnasio para que sigan subiendo.`));
     if (r.xp && r.xp.length) {
       const list = el('div', 'xp-list');
       for (const x of r.xp) {
         const row = el('div', 'xp-row');
         row.append(portrait(x.dex, 48));
         const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <span class="lvup">Nv.${x.level} ¡sube de nivel!</span>` : `Nv.${x.level}`;
-        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> +${x.xp} EXP · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}`));
+        const learned = (x.learned || []).map(k => MOVES[k].name);
+        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? '<span class="cap">en el tope de nivel</span>' : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}${learned.length ? `<br><span class="lvup">Nuevo movimiento: ${learned.join(', ')}</span> <small>(elígelo en Equipo)</small>` : ''}`));
         list.append(row);
       }
       box.append(list);

@@ -294,6 +294,38 @@
     base.evo = list.length === 1 ? list[0] : list;
   }
 
+  // ---------- Movimientos por nivel ----------
+  // Cada especie aprende sus movimientos al subir de nivel, como en los juegos: primero los
+  // básicos de sus tipos, luego habilidades y apoyo, y los definitivos a partir del nivel 32.
+  // El jugador elige qué 4 lleva (de los que ya ha aprendido).
+  const LEARN_LEVELS = [1, 1, 8, 14, 20, 26, 32, 40, 48];
+  const learnCache = new Map();
+  function learnset(dex) {
+    if (learnCache.has(dex)) return learnCache.get(dex);
+    const sp = SPECIES[dex];
+    const k1 = KIT[sp.types[0]], k2 = KIT[sp.types[1]] || {};
+    const order = [];
+    const add = m => { if (m && MOVES[m] && !order.includes(m)) order.push(m); };
+    // Los 4 de siempre de la especie van primero (en su orden), intercalados con los del kit
+    const base = sp.moves.filter(m => MOVES[m]);
+    add(base[0]); add(k2.basic || 'placaje'); add(base[1]); add(base[2]);
+    add(k1.dash || k2.dash); add(k2.skill); add(k1.heal || k2.heal || k1.util || k2.util); add(base[3]);
+    add(k1.big); add(k2.big); add(k1.skill);
+    const list = order.slice(0, LEARN_LEVELS.length).map((m, i) => {
+      // Los movimientos caros no se aprenden antes del nivel 32
+      const lvl = MOVES[m].cost >= 45 ? Math.max(32, LEARN_LEVELS[i]) : LEARN_LEVELS[i];
+      return [lvl, m];
+    }).sort((a, b) => a[0] - b[0]);
+    learnCache.set(dex, list);
+    return list;
+  }
+  const learnedAt = (dex, level) => learnset(dex).filter(([l]) => l <= level).map(([, m]) => m);
+  // El básico y los 3 más recientes que ya sabe (lo que llevan los salvajes y los líderes)
+  function defaultMoves(dex, level) {
+    const l = learnedAt(dex, level);
+    return l.length <= 4 ? l : [l[0], ...l.slice(-3)];
+  }
+
   // Nivel -> multiplicador de PS y daño. A nivel 50 vale 1.
   const levelMult = lvl => 0.55 + lvl * 0.009;
   const xpToNext = lvl => 20 + lvl * 12;
@@ -448,6 +480,11 @@
     { id: 'campeon', name: 'Campeón', leader: 'Azul', type: 'normal', map: 'pradera', ai: 0.88, reward: 8000, team: [[18, 61], [65, 63], [6, 65]], x: 92, y: 10, elite: true },
   ];
   // Iniciales de las 9 generaciones (solo los que tienen sprites)
+  // Los Pokémon no pasan de la media de niveles del siguiente gimnasio (sin tope tras el Campeón)
+  function levelCap(badges) {
+    const g = GYMS[badges];
+    return g ? Math.round(g.team.reduce((a, [, l]) => a + l, 0) / g.team.length) : 100;
+  }
   const STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912].filter(d => SPECIES[d]);
   // Probabilidad de captura: sube cuantos menos PS le quedan y si tiene un estado alterado.
   // Cada Ball hace 3 sacudidas; cada una sale bien con p^(1/3), así que las 3 juntas valen p.
@@ -490,7 +527,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

@@ -301,3 +301,19 @@ body:not(.in-battle) #hud { display: none; }
   .help-hint { display: none; }
   .logo { font-size: 40px; } .logo span { font-size: 48px; }
 }
+
+/* Movimientos y tope de nivel */
+.cap { color: #ffb070; font-weight: 700; }
+.movechips { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0 2px; }
+.mchip { font-size: 11px; padding: 2px 7px; border-radius: 7px; background: rgba(0,0,0,.3); border: 1px solid var(--tc); color: #eef3fb; }
+.newmoves { color: #c8a8ff; font-weight: 700; display: block; }
+.modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(4,8,16,.6); backdrop-filter: blur(4px); animation: fadein .15s; padding: 16px; }
+.modal-box { width: min(620px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; gap: 6px; }
+.modal-box h3 { margin: 0; font: 22px Bungee, sans-serif; }
+.modal-box .acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.move-list { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+.move-row { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 2px 10px; align-items: center; text-align: left; padding: 8px 10px; border-left: 4px solid var(--tc); }
+.move-row small { grid-column: 2 / -1; color: var(--muted); font-size: 12px; }
+.move-row em { font-style: normal; color: var(--muted); font-size: 12px; }
+.move-row .slot { grid-row: span 2; font: 12px Bungee, sans-serif; color: var(--yellow); text-align: center; }
+.move-row.sel { background: linear-gradient(90deg, rgba(255,203,5,.2), rgba(255,203,5,.04)); border-color: var(--yellow); border-left-color: var(--tc); }

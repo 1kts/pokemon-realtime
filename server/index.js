@@ -30,7 +30,7 @@ const server = http.createServer((req, res) => {
 // ---------- Clientes ----------
 const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
-function sendProfile(c) { send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard() }); }
+function sendProfile(c) { story.migrate(c.profile); send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard() }); }
 function publicProfile(p) {
   const { token, ...rest } = p;
   return { ...rest, token, league: D.leagueOf(p.elo) };
@@ -243,7 +243,7 @@ function handle(c, msg) {
     store.save();
     return sendProfile(c);
   }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves'].includes(msg.a)) {
     if (c.battle) return;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });

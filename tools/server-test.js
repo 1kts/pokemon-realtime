@@ -50,6 +50,19 @@ class Client {
   ok((await err).msg.includes('inicial'), 'no se puede explorar sin inicial');
   m = await a.req({ t: 'story', a: 'starter', dex: 4 });
   ok(m.p.mons.length === 1 && m.p.mons[0].dex === 4 && m.p.team.length === 1, 'elige Charmander de inicial');
+  ok(JSON.stringify(m.p.mons[0].moves) === JSON.stringify(D.defaultMoves(4, 5)) && m.p.mons[0].moves.length === 2, 'a Nv.5 sabe sus 2 primeros movimientos');
+  err = a.wait('error'); a.send({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['ascuas', 'llamarada'] });
+  ok((await err).msg.includes('no sabe'), 'no puede llevar un movimiento que no ha aprendido');
+  m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['placaje', 'ascuas'] });
+  ok(m.p.mons[0].moves[0] === 'placaje', 'reordenar sus movimientos');
+  // Tope de nivel: sin medallas, la media del equipo de Brock
+  const st0 = require('../server/store.js').get(m.p.token);
+  st0.mons[0].level = D.levelCap(0); st0.items.caramelo = 1;
+  err = a.wait('error'); a.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.p.mons[0].uid });
+  ok((await err).msg.includes('Tope'), `Caramelo Raro bloqueado en el tope (Nv.${D.levelCap(0)})`);
+  const capRes = require('../server/story.js').applyResult(st0, { kind: 'route' }, { winner: 0 }, { sides: [{ team: [{ uid: st0.mons[0].uid, fainted: false }] }, { team: [{ level: 30 }] }] });
+  ok(st0.mons[0].level === D.levelCap(0) && capRes.xp[0].capped, 'la experiencia no pasa del tope');
+  st0.mons[0].level = 5; st0.items.caramelo = 0; st0.coins = 500;
   err = a.wait('error'); a.send({ t: 'story', a: 'starter', dex: 1 });
   ok((await err).msg.includes('Ya tienes'), 'no se puede elegir dos iniciales');
   err = a.wait('error'); a.send({ t: 'story', a: 'buy', id: 'superball' });

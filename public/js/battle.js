@@ -83,6 +83,8 @@ export class BattleClient {
   }
 
   dexOf(i) { return this.sides[i].team[this.act[i]].dex; }
+  movesOf(i) { const m = this.sides[i].team[this.act[i]]; return m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves; }
+  moveOf(i, c) { return MOVES[this.movesOf(i)[c]]; }
   monName(i) { return SPECIES[this.dexOf(i)].name; }
   posOf(i) { return i === this.you && this.renderPos ? this.renderPos[i] : this.lastPos[i]; }
 
@@ -92,13 +94,15 @@ export class BattleClient {
     const pos = s !== undefined ? this.posOf(s) : null;
     switch (e.k) {
       case 'wind': {
-        const m = MOVES[SPECIES[this.dexOf(s)].moves[e.c]];
+        const m = this.moveOf(s, e.c);
+        if (!m) break;
         if (m.wind >= 0.2 && ['proj', 'beam', 'area'].includes(m.kind)) actor.play('Charge');
         if (m.wind >= 0.3) this.p.emit(toWorld(pos.x, pos.y).x, 0.2, toWorld(pos.x, pos.y).z, { n: 14, colors: PALETTE[m.type], up: 1, speed: 1.2, life: m.wind, size: 0.18, jitter: 0.8 });
         break;
       }
       case 'cast': {
-        const m = MOVES[SPECIES[this.dexOf(s)].moves[e.c]];
+        const m = this.moveOf(s, e.c);
+        if (!m) break;
         actor.play(m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : m.kind === 'proj' || m.kind === 'beam' ? 'Shoot' : 'Charge');
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
@@ -295,7 +299,7 @@ export class BattleClient {
       }
       actor.update(now, x, y, a, moving);
       // Telegrafiado y Protección
-      const m = st.w ? MOVES[SPECIES[this.dexOf(i)].moves[st.w.c]] : null;
+      const m = st.w ? this.moveOf(i, st.w.c) || null : null;
       this.fx.telegraph(i, { x, y }, hiddenFoe ? null : st.w, m, i === this.you);
       this.fx.protectDome(i, { x, y }, !!(f & F.PROTECT) && !hiddenFoe, !!(f & F.PERFECT));
       if (!hiddenFoe) this.statusFx(i, x, y, f, dt);
@@ -372,9 +376,8 @@ export class BattleClient {
   }
 
   buildMoves() {
-    const dex = this.dexOf(this.you);
     this.movesEl.innerHTML = '';
-    SPECIES[dex].moves.forEach((k, i) => {
+    this.movesOf(this.you).forEach((k, i) => {
       const m = MOVES[k];
       const b = el('div', 'mv', `<kbd>${KEYS[i]}</kbd><b>${m.name}</b><small>${m.cost ? m.cost + ' ⚡' : 'básico'}</small><div class="cd"></div><span class="cdt"></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[m.type]);
@@ -416,9 +419,9 @@ export class BattleClient {
     }
     const me = ps[this.you];
     if (!me || !me.cds) return;
-    const dex = this.dexOf(this.you);
     const mvEls = this.movesEl.children;
-    SPECIES[dex].moves.forEach((k, i) => {
+    const mine = this.movesOf(this.you);
+    mine.forEach((k, i) => {
       const m = MOVES[k], e = mvEls[i];
       if (!e) return;
       const cd = me.cds[i];
@@ -426,7 +429,7 @@ export class BattleClient {
       e.querySelector('.cdt').textContent = cd > 0.05 ? cd.toFixed(cd < 1 ? 1 : 0) : '';
       e.classList.toggle('noenergy', me.e < m.cost);
     });
-    const pe = mvEls[4];
+    const pe = mvEls[mine.length];
     if (pe) {
       pe.querySelector('.cd').style.setProperty('--p', me.pcd > 0 ? me.pcd / PROTECT.cd : 0);
       pe.querySelector('.cdt').textContent = me.pcd > 0.05 ? me.pcd.toFixed(me.pcd < 1 ? 1 : 0) : '';

@@ -61,7 +61,7 @@ function worstThreat(fmon, mon) {
 }
 function myBestEdge(mon, fmon) {
   const foeTypes = D.SPECIES[fmon.dex].types;
-  return Math.max(...D.SPECIES[mon.dex].moves.map(k => D.MOVES[k]).filter(m => m.dmg).map(m => D.typeMult(m.type, foeTypes)), 1);
+  return Math.max(...(mon.moves || D.SPECIES[mon.dex].moves).map(k => D.MOVES[k]).filter(m => m.dmg).map(m => D.typeMult(m.type, foeTypes)), 1);
 }
 
 function bestSwap(side, fmon, except) {
@@ -129,7 +129,7 @@ function aiInput(b, side, dt) {
   st.mode = mode;
 
   // ---------- Movimiento ----------
-  const moves = D.SPECIES[mon.dex].moves.map(k => D.MOVES[k]);
+  const moves = mon.moves.map(k => D.MOVES[k]);
   const want = mode === 'atacar' ? pers.range : mode === 'tantear' ? pers.range + 50 : Math.max(330, pers.range + 120);
   st.strafeT = (st.strafeT || 0) - dt;
   if (st.strafeT <= 0) { st.strafe = rnd() < 0.5 ? -1 : 1; st.strafeT = 0.7 + rnd() * 1.5; }

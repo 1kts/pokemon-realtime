@@ -23,9 +23,11 @@ const CATCH_IN = 1.0, CATCH_SHAKE = 0.75, CATCH_CLICK = 0.9, CATCH_BREAK = 0.5;
 // A los SUDDEN s empieza la muerte súbita (más daño, sin curar); a los LIMIT s gana quien tenga más PS.
 const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
 
+// moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie
 function makeMon(dex, level, extra = {}) {
   const st = S.monStats(dex, level);
-  return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, cds: [0, 0, 0, 0], fainted: false, ...extra };
+  const moves = (extra.moves && extra.moves.length ? extra.moves : D.SPECIES[dex].moves).filter(m => D.MOVES[m]).slice(0, 4);
+  return { dex, level, hp: st.maxHp, maxHp: st.maxHp, atk: st.atk, cds: [0, 0, 0, 0], fainted: false, ...extra, moves };
 }
 
 class Battle {
@@ -59,7 +61,7 @@ class Battle {
       idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
-        const mon = makeMon(m.dex, m.level, { uid: m.uid });
+        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
         return mon;
       }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,
@@ -74,7 +76,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }
@@ -174,8 +176,8 @@ class Battle {
       this.ev({ k: 'protect', s: side.idx });
     } else if (c === 5 && this.canAct(side) && side.balls && this.foe(side).wild) {
       this.throwBall(side, inp);
-    } else if (c >= 0 && c < 4 && this.canAct(side)) {
-      const m = D.MOVES[D.SPECIES[mon.dex].moves[c]];
+    } else if (c >= 0 && c < mon.moves.length && this.canAct(side)) {
+      const m = D.MOVES[mon.moves[c]];
       if (mon.cds[c] <= 0 && side.energy >= m.cost) {
         side.energy -= m.cost;
         mon.cds[c] = m.cd;
@@ -285,7 +287,7 @@ class Battle {
       const n = m.count || 1;
       for (let j = 0; j < n; j++) {
         const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
-        this.projectiles.push({ id: nextId++, owner: side, m, mk: D.SPECIES[this.mon(side).dex].moves[w.c],
+        this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c],
           x: side.x + ax * RADIUS, y: side.y + ay * RADIUS, vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: m.range, r: m.radius });
       }
     } else if (m.kind === 'beam') {

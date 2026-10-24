@@ -6,7 +6,7 @@ const store = require('./store.js');
 const MAX_LEVEL = 100;
 
 function addMon(p, dex, level) {
-  const mon = { uid: p.nextUid++, dex, level, xp: 0 };
+  const mon = { uid: p.nextUid++, dex, level, xp: 0, moves: D.defaultMoves(dex, level) };
   p.mons.push(mon);
   if (p.team.length < 3) p.team.push(mon.uid);
   if (!p.caught.includes(dex)) p.caught.push(dex);
@@ -14,6 +14,12 @@ function addMon(p, dex, level) {
 }
 
 const monByUid = (p, uid) => p.mons.find(m => m.uid === uid);
+// Perfiles anteriores a los movimientos por nivel: darles los que tocan por su nivel
+function migrate(p) {
+  for (const m of p.mons) if (!Array.isArray(m.moves) || !m.moves.length) m.moves = D.defaultMoves(m.dex, m.level);
+}
+// Lo que puede llevar: lo aprendido por nivel en su especie actual más lo que ya llevaba
+const learnable = mon => [...new Set([...D.learnedAt(mon.dex, mon.level), ...mon.moves])];
 const teamMons = p => p.team.map(uid => monByUid(p, uid)).filter(Boolean);
 
 // Evoluciona si toca por nivel (o con la piedra indicada). Devuelve el dex nuevo o null.
@@ -30,16 +36,29 @@ function tryEvolve(mon, stone) {
   return null;
 }
 
-function giveXp(mon, xp) {
-  const out = { uid: mon.uid, from: mon.dex, fromLevel: mon.level, xp };
+// Sube de nivel hasta el tope (media del siguiente gimnasio). Los movimientos nuevos se añaden
+// solos si quedan huecos; si no, quedan disponibles para elegirlos en el equipo.
+function levelUp(mon, cap) {
+  const before = new Set(D.learnedAt(mon.dex, mon.level));
+  mon.level++;
+  const evolved = tryEvolve(mon, null);
+  const learned = D.learnedAt(mon.dex, mon.level).filter(m => !before.has(m) && !mon.moves.includes(m));
+  for (const m of learned) if (mon.moves.length < 4) mon.moves.push(m);
+  return { evolved, learned };
+}
+
+function giveXp(mon, xp, cap) {
+  const out = { uid: mon.uid, from: mon.dex, fromLevel: mon.level, xp, learned: [], evolved: null, cap };
+  if (mon.level >= cap) { out.capped = true; out.xp = 0; out.level = mon.level; out.dex = mon.dex; return out; }
   mon.xp += xp;
-  while (mon.level < MAX_LEVEL && mon.xp >= D.xpToNext(mon.level)) {
+  while (mon.level < cap && mon.xp >= D.xpToNext(mon.level)) {
     mon.xp -= D.xpToNext(mon.level);
-    mon.level++;
+    const r = levelUp(mon, cap);
+    out.learned.push(...r.learned);
+    out.evolved = r.evolved || out.evolved;
   }
-  if (mon.level >= MAX_LEVEL) mon.xp = 0;
+  if (mon.level >= cap) { mon.xp = 0; out.capped = true; }
   out.level = mon.level;
-  out.evolved = tryEvolve(mon, null);
   out.dex = mon.dex;
   return out;
 }
@@ -70,13 +89,21 @@ function action(p, msg) {
     const item = D.SHOP.find(s => s.id === msg.item);
     if (!mon || !item || !(p.items[item.id] > 0)) return 'No puedes usar eso';
     if (item.id === 'caramelo') {
-      if (mon.level >= MAX_LEVEL) return 'Ya está al nivel máximo';
-      mon.level++; mon.xp = 0;
-      tryEvolve(mon, null);
+      const cap = Math.min(MAX_LEVEL, D.levelCap(p.badges));
+      if (mon.level >= cap) return `Tope de nivel ${cap}: vence al siguiente gimnasio para subir más`;
+      mon.xp = 0;
+      levelUp(mon, cap);
     } else if (item.stone) {
       if (!tryEvolve(mon, item.id)) return 'No tiene efecto';
     } else return 'No puedes usar eso';
     p.items[item.id]--;
+  } else if (a === 'moves') {
+    const mon = monByUid(p, msg.uid);
+    const list = Array.isArray(msg.moves) ? [...new Set(msg.moves.map(String))] : [];
+    if (!mon || list.length < 1 || list.length > 4) return 'Elige entre 1 y 4 movimientos';
+    const ok = learnable(mon);
+    if (!list.every(m => ok.includes(m))) return 'Ese Pokémon no sabe ese movimiento';
+    mon.moves = list;
   } else if (a === 'release') {
     const mon = monByUid(p, msg.uid);
     if (!mon || p.mons.length <= 1) return 'No puedes liberarlo';
@@ -92,7 +119,8 @@ function action(p, msg) {
 function battleSetup(p, msg) {
   const team = teamMons(p);
   if (!team.length) return { error: 'Primero elige tu Pokémon inicial' };
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid })) };
+  migrate(p);
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves })) };
   if (msg.a === 'route') {
     const route = D.ROUTES.find(r => r.id === msg.id);
     if (!route) return { error: 'Ruta desconocida' };
@@ -101,7 +129,7 @@ function battleSetup(p, msg) {
     const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
     return {
       kind: 'route', route,
-      opts: { mode: 'wild', map: route.map, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
+      opts: { mode: 'wild', map: route.map, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level) }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
     };
   }
   if (msg.a === 'gym') {
@@ -111,7 +139,7 @@ function battleSetup(p, msg) {
     const g = D.GYMS[i];
     return {
       kind: 'gym', gym: g, index: i,
-      opts: { mode: 'trainer', map: g.map, sides: [mine, { name: g.leader, team: g.team.map(([dex, level]) => ({ dex, level })), ai: g.ai }] },
+      opts: { mode: 'trainer', map: g.map, sides: [mine, { name: g.leader, team: g.team.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: g.ai }] },
     };
   }
   return { error: 'Combate desconocido' };
@@ -137,16 +165,19 @@ function applyResult(p, setup, result, battle) {
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;
     }
-    // Experiencia para los que han combatido sin debilitarse; la mitad para los debilitados
-    const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);
-    side.team.forEach(bm => {
-      const mon = monByUid(p, bm.uid);
-      if (mon) reward.xp.push(giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1))));
-    });
     if (setup.kind === 'gym' && setup.index === p.badges) {
       p.badges++;
       reward.badge = { index: setup.index, leader: setup.gym.leader, name: setup.gym.name };
     }
+    // Experiencia para los que han combatido sin debilitarse; la mitad para los debilitados.
+    // Nadie pasa del tope de nivel (media del siguiente gimnasio).
+    const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);
+    const cap = Math.min(MAX_LEVEL, D.levelCap(p.badges));
+    reward.cap = cap;
+    side.team.forEach(bm => {
+      const mon = monByUid(p, bm.uid);
+      if (mon) reward.xp.push(giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap));
+    });
     p.coins += reward.coins;
   }
   reward.won = won;
@@ -154,4 +185,4 @@ function applyResult(p, setup, result, battle) {
   return reward;
 }
 
-module.exports = { action, battleSetup, applyResult, teamMons };
+module.exports = { action, battleSetup, applyResult, teamMons, migrate, learnable };
