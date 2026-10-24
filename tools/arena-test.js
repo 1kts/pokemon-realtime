@@ -215,4 +215,22 @@ check('Ida y Vuelta vuelve a su sitio', () => {
   assert(Math.hypot(r.me.x - 200, r.me.y - 300) < 40, `vuelve (${Math.round(r.me.x)},${Math.round(r.me.y)})`);
 });
 
+check('el Pokémon misterioso sale con IV perfectos más o menos 1 de cada 3 veces', () => {
+  const story = require('../server/story.js');
+  const prof = { name: 'T', coins: 0, items: {}, mons: [], team: [], badges: 0, prog: { kanto: 13, johto: 0 }, nextUid: 1, caught: [] };
+  story.migrate(prof);
+  story.devAddMon(prof, 25, 50, false, 'kanto');
+  const orig = D.rollWild;
+  let n = 0, perfect = 0;
+  D.rollWild = route => ({ dex: 151, level: 50, rare: true });
+  try {
+    for (let i = 0; i < 3000; i++) {
+      const st = story.battleSetup(prof, { a: 'route', id: 'k-ruta1' });
+      const foe = st.opts.sides[1];
+      n++; if (foe.perfect && D.STAT_KEYS.every(k => foe.team[0].iv[k] === D.IV_MAX)) perfect++;
+    }
+  } finally { D.rollWild = orig; }
+  assert(perfect / n > 0.28 && perfect / n < 0.39, `${perfect}/${n}`);
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

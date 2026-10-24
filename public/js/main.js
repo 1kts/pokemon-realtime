@@ -15,7 +15,7 @@ import { t, tServer } from './i18n.js';
 const canvas = document.getElementById('view');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) {
-  document.body.insertAdjacentHTML('beforeend', `<div class="nojs">${t('Tu navegador o tu tarjeta gráfica no admiten WebGL, que Arena Pokémon necesita. Prueba con Chrome, Firefox o Edge actualizados y la aceleración por hardware activada.')}</div>`);
+  document.body.insertAdjacentHTML('beforeend', `<div class="nojs">${t('Tu navegador o tu tarjeta gráfica no admiten WebGL, que PokéArenas necesita. Prueba con Chrome, Firefox o Edge actualizados y la aceleración por hardware activada.')}</div>`);
   throw e;
 }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -95,18 +95,7 @@ net.on('disconnected', () => {
   if (app.battle) endBattle();
   ui.show('menu');
 });
-// Acceso total: ?fullaccess (o /fullaccess) activa en este perfil el menú Escenarios. La marca se
-// guarda en el navegador hasta que el servidor la confirma, para que no se pierda si la página se
-// recarga antes de entrar (pantalla de inicio, aviso de versión nueva...).
-const FULL_KEY = 'arena.fullaccess';
-if (/fullaccess/i.test(location.search)) { storage.set(FULL_KEY, '1'); history.replaceState(null, '', location.pathname); }
-net.on('profile', m => {
-  if (storage.get(FULL_KEY)) {
-    if (m.p.admin) { storage.del(FULL_KEY); ui.toast(t('Acceso total activado: tienes el menú Escenarios')); }
-    else net.send({ t: 'admin' });
-  }
-  ui.setProfile(m.p, m.board, m.rank);
-});
+net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
 net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });

@@ -52,6 +52,16 @@ systemctl enable --now arena-backup.timer
 sed "s/^DOMINIO /$DOMAIN /" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
 systemctl reload-or-restart caddy
 
+echo "== SSH"
+# Solo con clave: sin contraseñas no hay fuerza bruta posible. Solo si root ya tiene una clave
+# autorizada, para no dejar a nadie fuera. 00- para que gane a lo que ponga cloud-init en 50-.
+if [ -s /root/.ssh/authorized_keys ]; then
+  printf '%s\n' 'PasswordAuthentication no' 'KbdInteractiveAuthentication no' 'PermitRootLogin prohibit-password' > /etc/ssh/sshd_config.d/00-arena.conf
+  sshd -t && systemctl reload ssh
+else
+  echo "AVISO: root no tiene clave SSH; se deja el acceso con contraseña. Añade tu clave y repite." >&2
+fi
+
 echo "== Cortafuegos"
 ufw allow 22/tcp   # SSH (si lo cambias de puerto, ábrelo antes de ejecutar esto)
 ufw allow 80/tcp

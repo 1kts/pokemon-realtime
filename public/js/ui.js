@@ -5,6 +5,8 @@ import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
+import { pokedexViews } from './pokedex.js';
+import { storage } from './net.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 
@@ -21,6 +23,8 @@ const UPCOMING_REGIONS = ['Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar
 // Iconos de la barra superior
 const svg = body => `<svg viewBox="0 0 20 20" aria-hidden="true">${body}</svg>`;
 const ICON = {
+  dex: svg('<rect x="4" y="3" width="12" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="8" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 13h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'),
+  help: svg('<circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.9 7.8a2.2 2.2 0 1 1 3 2c-.6.3-.9.8-.9 1.4v.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="14.3" r="1" fill="currentColor"/>'),
   back: svg('<path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   ball: svg('<circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.8 10h4.6M12.6 10h4.6" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.3 8.6a7.2 7.2 0 0 1 13.4 0" fill="currentColor" opacity=".35"/>'),
   bag: svg('<path d="M4.5 7.5h11l-.9 9h-9.2l-.9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 7.5V6a2.7 2.7 0 0 1 5.4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>'),
@@ -78,7 +82,7 @@ export class UI {
 
   // Abre Mis Pokémon o la Tienda recordando de dónde se viene para que "Volver" regrese allí
   openFrom(view) {
-    if (!['team', 'shop'].includes(this.view)) this.returnTo = this.view;
+    if (!['team', 'shop', 'dex'].includes(this.view)) this.returnTo = this.view;
     this.show(view);
   }
 
@@ -105,6 +109,7 @@ export class UI {
       if (this.view !== 'team') nav.append(btn(ICON.ball, t('Mis Pokémon'), () => this.openFrom('team')));
       if (this.view !== 'shop') nav.append(btn(ICON.bag, t('Tienda'), () => this.openFrom('shop')));
     }
+    if (this.view !== 'dex') nav.append(btn(ICON.dex, t('Pokédex'), () => this.openFrom('dex')));
     if (this.view !== 'ladder') nav.append(btn(ICON.trophy, t('Ladder'), () => this.openLadder()));
     right.append(nav);
     // Dinero, tu perfil, novedades (en el menú) y Ajustes
@@ -149,6 +154,7 @@ export class UI {
     const tw = p.tower;
     const adventure = section(t('Aventura'), t('Tu viaje por las regiones y los retos de la Torre'));
     card(adventure, t('Historia'), p.mons.length ? `${regs} · ${t('{n} Pokémon', { n: p.mons.length })}` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
+    card(adventure, t('Pokédex'), t('{a} de {b} especies capturadas: mira cuáles te faltan y dónde encontrarlas', { a: p.caught.length, b: Object.keys(SPECIES).length }), 'dex', 479, () => this.openFrom('dex'));
     card(adventure, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
     const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
     const ready = this.claimable().length;
@@ -156,7 +162,6 @@ export class UI {
     card(online, t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
-    if (p.admin) card(training, t('Escenarios'), t('Acceso total: combate en cualquier mapa o arena sin medallas ni nivel'), 'arenas', 137, () => this.show('arenas'));
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     top.append(main, this.profilePanel(lead));
     wrap.append(top, this.howTo());
@@ -184,7 +189,11 @@ export class UI {
       <div class="stat"><small>${t('Pokémon')}</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
       <div class="stat"><small>${t('Clasificatoria')}</small><b>${wl(p.wins, p.losses)}</b></div>
       <div class="stat"><small>${t('Torre: récord')}</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">${t('racha {n}', { n: p.tower.streak })}</small>` : ''}</b></div>`));
-    box.append(el('div', 'stat', `<small>${t('Pokédex')}</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
+    const dexBtn = el('button', 'stat dexlink', `<small>${t('Pokédex')}</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`);
+    dexBtn.title = t('Abrir la Pokédex');
+    dexBtn.onclick = () => this.openFrom('dex');
+    box.append(dexBtn);
+    box.append(this.kofi('wide'));
     return box;
   }
 
@@ -221,7 +230,15 @@ export class UI {
     const prog = Data.progOf(p, region);
     const wrap = el('div', 'story');
     const bar = this.topbar(R.name, 'menu');
-    wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
+    const sb = this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true);
+    const tools = el('div', 'story-tools');
+    tools.append(this.rotationTimer('long'));
+    const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
+    help.onclick = () => this.storyGuide();
+    tools.append(help);
+    sb.append(tools);
+    wrap.append(bar, sb);
+    if (!storage.get('arena.storyGuide')) { storage.set('arena.storyGuide', '1'); setTimeout(() => this.storyGuide(), 400); }
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
     // Lienzo con la proporción del mapa (16:10), centrado; el mar del SVG rellena lo que sobre
@@ -290,6 +307,7 @@ export class UI {
     } else {
       const w = Data.routeWild(n);
       box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
+      box.append(this.rotationTimer('short'));
       const list = el('div', 'mini-team');
       const total = w.list.reduce((a, x) => a + x.weight, 0) / (1 - w.rare.chance);
       for (const { dex, weight, min, max } of w.list) {
@@ -304,7 +322,7 @@ export class UI {
       const rare = el('div', 'mini rare' + (known ? ' caught' : ''));
       rare.append(portrait(w.rare.dex, 56, { silhouette: !known }));
       rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · ${lv(n.lvl[1] + 3)}`));
-      rare.title = t('Pokémon misterioso del día: aparece muy de vez en cuando y cuesta mucho atraparlo');
+      rare.title = t('Pokémon misterioso del día: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
       list.append(rare);
       box.append(list);
       const balls = (p.items.pokeball || 0) + (p.items.superball || 0) + (p.items.ultraball || 0);
@@ -350,6 +368,85 @@ export class UI {
 
   // Barra propia de región (debajo de la barra global): elegir región y, en Historia, sus medallas
   // y el siguiente objetivo.
+  // Cuenta atrás hasta que cambian los Pokémon de las rutas (medianoche UTC). Al llegar a cero,
+  // si estás en el mapa, se vuelve a dibujar con los nuevos.
+  rotationTimer(kind) {
+    const box = el('div', 'rotation ' + kind);
+    const at = Data.nextDay();
+    const hour = new Date(at).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
+    const label = kind === 'long' ? t('Pokémon de las rutas nuevos en') : kind === 'instore' ? t('Pokémon nuevos en la tienda en') : t('Estos Pokémon cambian en');
+    box.title = t('Cada día a las {h} (tu hora) cambian los 4 Pokémon y el misterioso de cada ruta', { h: hour });
+    const tick = () => {
+      if (!box.isConnected && box.dataset.started) return;
+      box.dataset.started = '1';
+      const left = Math.max(0, at - Date.now());
+      const hh = Math.floor(left / 3600e3), mm = Math.floor(left / 60e3) % 60, ss = Math.floor(left / 1e3) % 60;
+      box.innerHTML = `<span>${label}</span> <b>${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}</b>`;
+      if (left <= 0) { if (['story', 'shop'].includes(this.view) && !this.root.hidden) this.show(this.view); return; }
+      setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
+    };
+    tick();
+    return box;
+  }
+
+  // Cómo se juega al modo historia (se abre sola la primera vez)
+  storyGuide() {
+    const hour = new Date(Data.nextDay()).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box story-guide');
+    const close = () => back.remove();
+    back.onclick = e => { if (e.target === back) close(); };
+    const sec = (title, items) => `<section><h4>${title}</h4><ul>${items.map(x => `<li>${x}</li>`).join('')}</ul></section>`;
+    box.append(el('h3', '', t('Cómo se juega al modo historia')));
+    box.append(el('div', 'guide-body scroll', [
+      sec(t('El viaje'), [
+        t('Cada región (Kanto y Johto) es un viaje propio: eliges un inicial y tus Pokémon <b>no viajan</b> a otras regiones.'),
+        t('Llevas un equipo de <b>hasta 3 Pokémon</b> de esa región. Elígelos y ordénalos en <b>Mis Pokémon</b>.'),
+      ]),
+      sec(t('El mapa'), [
+        t('Los círculos con número son los <b>líderes</b>, en orden: 8 gimnasios, el Alto Mando (★) y el Campeón (♛). Vence a cada uno para poder retar al siguiente.'),
+        t('Cada <b>medalla</b> abre nuevas rutas. Los candados indican lo que aún no puedes visitar.'),
+      ]),
+      sec(t('Rutas y Pokémon salvajes'), [
+        t('En las rutas luchas contra Pokémon salvajes. Cada día salen <b>4 especies</b> de las que viven en esa ruta en los juegos, más un <b>Pokémon misterioso</b> muy raro.'),
+        t('Cambian cada día a las <b>{h}</b> (tu hora). El contador de arriba indica cuánto falta.', { h: hour }),
+        t('Ganar da dinero y experiencia.'),
+      ]),
+      sec(t('Capturar'), [
+        t('Lanza una Poké Ball con <kbd>F</kbd> y cambia de Ball con <kbd>R</kbd>. La Ball tiene que darle.'),
+        t('Es más fácil cuanta <b>menos vida</b> le quede y si tiene un <b>estado</b> (quemado, envenenado, aturdido…). La Súper Ball y la Ultra Ball ayudan mucho.'),
+        t('Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (el misterioso, el triple).'),
+        t('El Pokémon misterioso tiene <b>IV perfectos</b> 1 de cada 3 veces.'),
+      ]),
+      sec(t('Subir de nivel'), [
+        t('Los Pokémon que combaten ganan experiencia (la mitad si se debilitan).'),
+        t('Hay un <b>tope de nivel</b>: la media del equipo del siguiente líder. Sube cada vez que ganas una medalla.'),
+        t('Aprenden movimientos al subir de nivel: elige sus 4 movimientos en <b>Mis Pokémon</b>. Evolucionan por nivel o con piedras de la tienda.'),
+      ]),
+      sec(t('Líderes, Alto Mando y Campeón'), [
+        t('Cada líder pelea en una <b>arena de su tipo</b> con su propia mecánica: lee su ficha en el mapa antes de entrar.'),
+        t('Sacan sus 3 mejores Pokémon. La primera victoria da dinero, la medalla, un Caramelo Raro y una vitamina; la revancha, la mitad del dinero.'),
+        t('El Alto Mando y el Campeón tienen salas más duras y Pokémon con IV perfectos y entrenados.'),
+      ]),
+      sec(t('Si pierdes'), [
+        t('No pierdes nada: tus Pokémon se recuperan y puedes volver a intentarlo cuando quieras.'),
+      ]),
+      sec(t('Mejorar tu equipo'), [
+        t('En la <b>tienda</b>: Balls, Caramelos Raros (suben un nivel hasta el tope), vitaminas (EV) y piedras evolutivas.'),
+        t('También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian a la vez que las rutas.'),
+        t('En la ficha de cada Pokémon ves su naturaleza, IV y EV, y puedes venderlo.'),
+        t('La <b>Pokédex</b> muestra todas las especies, las que te faltan y en qué rutas aparecen.'),
+      ]),
+    ].join('')));
+    const acts = el('div', 'acts');
+    const ok = el('button', 'primary', t('¡A jugar!'));
+    ok.onclick = close;
+    acts.append(ok);
+    box.append(acts);
+    back.append(box);
+    document.body.append(back);
+  }
+
   regionBar(current, onPick, withBadges) {
     const p = this.profile;
     const bar = el('div', 'subbar');
@@ -581,27 +678,34 @@ export class UI {
       ['items', t('Objetos'), i => !i.dex && !i.vit && !i.stone && !['pokeball', 'superball', 'ultraball'].includes(i.id)],
       ['vit', t('Vitaminas'), i => i.vit],
       ['stones', t('Piedras evolutivas'), i => i.stone],
-      ['mons', t('Pokémon'), i => i.dex],
+      ['mons', t('Pokémon del día'), i => i.dex],
     ];
+    const bought = p.shopBought && p.shopBought.day === Data.dayKey() ? p.shopBought.ids : [];
     const jump = el('div', 'subbar shop-tabs');
     const scroll = el('div', 'shop-sections scroll');
     for (const [id, title, test] of cats) {
-      const items = SHOP.filter(test);
+      const items = id === 'mons' ? Data.shopMons() : SHOP.filter(test);
       if (!items.length) continue;
       const b = el('button', '', `${title} <small>${items.length}</small>`);
       b.onclick = () => scroll.querySelector(`#shop-${id}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
       jump.append(b);
       scroll.append(el('h3', 'sec-title', title));
       scroll.lastChild.id = 'shop-' + id;
+      if (id === 'mons') {
+        scroll.append(el('p', 'small', t('Con IV perfectos y al tope de nivel de tu región. Cada uno se puede comprar una vez; cambian cada día.')));
+        scroll.append(this.rotationTimer('instore'));
+      }
       const grid = el('div', 'shop-grid');
       for (const item of items) {
         const locked = (item.req || 0) > p.badges;
         const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
         const icon = item.dex ? portrait(item.dex, 64) : el('i', 'item-icon ' + item.id);
         c.append(icon);
-        c.append(el('div', 'si', `<b>${item.name}</b><small>${item.desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
+        const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.levelCap(p, this.region || 'kanto') }) : item.desc;
+        c.append(el('div', 'si', `<b>${item.name}</b><small>${desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
         const acts = el('div', 'acts');
         if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
+        else if (bought.includes(item.id)) acts.append(el('small', 'ok', t('Comprado hoy')));
         else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
           const b = el('button', '', qty === 1 ? t('Comprar') : `×${qty}`);
           b.disabled = p.coins < item.price * qty;
@@ -704,38 +808,6 @@ export class UI {
   }
 
   // ---------- Práctica ----------
-  // Escenarios (acceso total, ?fullaccess): todos los mapas y arenas, sin requisitos ni premios
-  view_arenas() {
-    const wrap = el('div', 'draft');
-    wrap.append(this.topbar(t('Escenarios'), 'menu'));
-    const opts = el('div', 'arena-opts');
-    let passive = this.arenaPassive ?? true;
-    const toggle = el('label', 'arena-toggle', `<input type="checkbox" ${passive ? 'checked' : ''}> ${t('Rival quieto (para mirar el escenario y sus mecánicas)')}`);
-    toggle.querySelector('input').onchange = e => { passive = this.arenaPassive = e.target.checked; };
-    const off = el('button', '', t('Quitar acceso total'));
-    off.onclick = () => this.net.send({ t: 'admin', off: true });
-    opts.append(toggle, off);
-    const grid = el('div', 'arena-grid scroll');
-    const ROUTE_COLOR = { pradera: '#6aa847', bosque: '#3c7a30', cueva: '#8a7a66', lago: '#3f7fc0' };
-    const ROUTE_MAPS = { pradera: ['Pradera', 'Mapa de ruta: hierba alta para esconderse.'], bosque: ['Bosque', 'Mapa de ruta: mucha hierba alta.'], cueva: ['Cueva', 'Mapa de ruta: rocas y charcos.'], lago: ['Lago', 'Mapa de ruta: agua y orilla de arena.'] };
-    const entries = [
-      ...Object.entries(ROUTE_MAPS).map(([id, [name, desc]]) => ({ id, name: t(name), desc: t(desc), color: '#6aa847', who: t('Práctica, clasificatoria y Torre') })),
-      ...Object.entries(Data.ARENAS).map(([id, a]) => ({ id, name: t(a.name), desc: t(a.desc), color: TYPE_COLOR[id.slice(2)],
-        who: [...new Set(Object.values(Data.NODES).filter(n => n.kind !== 'route' && n.map === id).map(n => n.leader))].join(', ') })),
-      // Cada ruta tiene su propio mapa generado
-      ...Data.REGION_IDS.flatMap(rid => Data.REGIONS[rid].nodes.filter(n => n.kind === 'route').map(n => ({
-        id: 'r:' + n.id, name: n.name, color: ROUTE_COLOR[n.map] || '#6aa847',
-        who: `${Data.REGIONS[rid].name} · ${t(ROUTE_MAPS[n.map] ? ROUTE_MAPS[n.map][0] : 'Pradera')}`, desc: t('Mapa propio de esta ruta, siempre el mismo.') }))),
-    ];
-    for (const e of entries) {
-      const c = el('button', 'arena-card', `<i style="--tc:${e.color}"></i><b>${e.name}</b><small>${e.who}</small><span>${e.desc}</span>`);
-      c.onclick = () => { this.lastMode = { kind: 'arena', map: e.id, passive }; this.net.send({ t: 'arena', map: e.id, passive }); };
-      grid.append(c);
-    }
-    wrap.append(opts, grid);
-    this.root.append(wrap);
-  }
-
   view_practice() {
     const wrap = el('div', 'draft');
     wrap.append(this.topbar(t('Práctica contra la IA'), 'menu'));
@@ -800,7 +872,7 @@ export class UI {
     if (msg.captured) {
       const c = el('div', 'caught');
       c.append(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
-      c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
+      c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && r.captured.perfect ? `<br><b class="perfect">${t('¡Con IV perfectos!')}</b>` : ''}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
       box.append(c);
     }
     if (r.badge) {
@@ -831,16 +903,11 @@ export class UI {
     const acts = el('div', 'acts');
     const back = el('button', 'primary', t('Continuar'));
     const lm = this.lastMode;
-    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : lm && lm.kind === 'arena' ? 'arenas' : 'menu');
+    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
-      acts.append(again);
-    }
-    if (lm && lm.kind === 'arena') {
-      const again = el('button', '', t('Otra vez'));
-      again.onclick = () => this.net.send({ t: 'arena', map: lm.map, passive: lm.passive });
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
@@ -858,4 +925,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews);

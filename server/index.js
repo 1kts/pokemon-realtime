@@ -11,24 +11,43 @@ const story = require('./story.js');
 const rewards = require('./rewards.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
+const limits = require('./limits.js');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
+// En producción 127.0.0.1: solo se llega a través de Caddy (HTTPS y la IP real para los límites)
+const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
+// Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: solo se
+// cargan scripts de aquí y de jsDelivr (Three.js) más los scripts en línea de la propia página
+// (su hash, así que un script inyectado no se ejecutaría), y solo se conecta a este servidor.
+const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
+function csp(html, host) {
+  const hashes = [...html.toString().matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(m => `'sha256-${crypto.createHash('sha256').update(m[1]).digest('base64')}'`);
+  const h = /^[A-Za-z0-9.:[\]-]+$/.test(host || '') ? host : '';
+  return [`default-src 'self'`, `script-src 'self' https://cdn.jsdelivr.net ${hashes.join(' ')}`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, `font-src https://fonts.gstatic.com`,
+    `img-src 'self' data: blob:`, `connect-src 'self'${h ? ` ws://${h} wss://${h}` : ''}`, `worker-src 'self' blob:`,
+    `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`].join('; ');
+}
+
 const server = http.createServer((req, res) => {
+  for (const [k, v] of Object.entries(SECURITY)) res.setHeader(k, v);
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
-  // Acceso total (ver escenarios): /fullaccess lleva al juego con ?fullaccess
-  if (url === '/fullaccess') { res.writeHead(302, { Location: '/?fullaccess' }); return res.end(); }
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
+    if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : 'no-cache' });
     res.end(data);
   });
@@ -38,6 +57,7 @@ const server = http.createServer((req, res) => {
 const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
 function sendProfile(c) {
+  delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
   send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
@@ -207,25 +227,6 @@ function startPractice(c, msg) {
   }, () => []);
 }
 
-// ---------- Acceso total: ver cualquier escenario ----------
-// Quien abre el juego con ?fullaccess puede combatir en cualquier mapa o arena sin medallas ni
-// nivel. Son combates de práctica (sin premios ni progreso), así que no hace falta clave.
-function startArenaView(c, msg) {
-  const routeId = typeof msg.map === 'string' && msg.map.startsWith('r:') ? msg.map.slice(2) : null;
-  const map = typeof msg.map === 'string' && (D.MAPS[msg.map] || D.ARENAS[msg.map] || (routeId && D.NODES[routeId] && D.NODES[routeId].kind === 'route')) ? msg.map : null;
-  if (!map) return send(c, { t: 'error', msg: 'Escenario desconocido' });
-  const leader = Object.values(D.NODES).find(n => n.kind !== 'route' && n.map === map);
-  const pool = shuffle(D.RANKED_POOL);
-  const foe = leader ? D.leaderTeam(leader, 1).map(([dex]) => dex) : pool.slice(3, 6);
-  startBattle([c, null], {
-    mode: 'practice', map,
-    sides: [
-      { name: c.profile.name, team: pool.slice(0, 3).map(dex => ({ dex, level: D.RANKED_LEVEL })) },
-      { name: leader ? leader.leader : 'Bot', team: foe.map(dex => ({ dex, level: D.RANKED_LEVEL, ...(leader ? D.leaderExtras(leader) : {}) })), ai: leader ? leader.ai : 0.28, passive: !!msg.passive },
-    ],
-  }, () => []);
-}
-
 // ---------- Historia ----------
 function startStory(c, msg) {
   const setup = story.battleSetup(c.profile, msg);
@@ -250,18 +251,28 @@ function startTower(c) {
 
 // ---------- Conexiones ----------
 const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
-wss.on('connection', ws => {
-  const c = { ws, profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
+wss.on('connection', (ws, req) => {
+  const ip = limits.clientIp(req);
+  if (!limits.connOpen(ip)) {
+    ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
+    return ws.close(1008);
+  }
+  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
   clients.add(c);
   send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
+    // Quien manda mensajes sin parar (un script) pierde los que sobran y, si insiste, la conexión
+    const { ok, kick } = limits.allow(c.limits, msg.t);
+    if (kick) return ws.terminate();
+    if (!ok) return;
     const fail = e => console.error('Error con el mensaje', msg.t, e);
     try { Promise.resolve(handle(c, msg)).catch(fail); } catch (e) { fail(e); }
   });
   ws.on('close', () => {
+    limits.connClose(ip);
     clients.delete(c);
     leaveQueue(c);
     if (c.draft) cancelDraft(c.draft, c);
@@ -276,7 +287,9 @@ function handle(c, msg) {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
     if (busy(c) || c.authing) return;
-    setProfile(c, store.get(typeof msg.token === 'string' ? msg.token : null, name));
+    const token = typeof msg.token === 'string' ? msg.token : null;
+    if (!store.has(token) && !limits.newProfile(c.ip)) return send(c, { t: 'error', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
+    setProfile(c, store.get(token, name));
     return sendProfile(c);
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
@@ -334,16 +347,6 @@ function handle(c, msg) {
   if (draining && starts(msg)) return send(c, { t: 'error', msg: DRAIN_MSG });
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
-  if (msg.t === 'admin') {
-    c.profile.admin = !msg.off;
-    store.save();
-    return sendProfile(c);
-  }
-  if (msg.t === 'arena') {
-    if (!c.profile.admin) return send(c, { t: 'error', msg: 'Abre el juego con ?fullaccess para entrar en los escenarios' });
-    if (!busy(c)) startArenaView(c, msg);
-    return;
-  }
   if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
   if (msg.t === 'tower') {
     if (c.battle) return;
@@ -381,15 +384,19 @@ function setProfile(c, p) {
 // cambie el perfil de la conexión; si se ha desconectado entretanto, se suelta el perfil.
 async function auth(c, msg) {
   if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
+  // Además del tope por conexión, por IP (abrir conexiones nuevas no da más intentos) y por cuenta
+  if (!limits.authAttempt(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' });
   if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   const user = typeof msg.user === 'string' ? msg.user.trim() : '';
+  if (msg.t === 'login' && limits.userLocked(user)) return send(c, { t: 'autherr', msg: 'Demasiados intentos con esta cuenta: espera 15 minutos' });
+  if (msg.t === 'register' && !c.profile && !limits.newProfile(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
   c.authing = true;
   let r;
   try {
     r = msg.t === 'login' ? { p: await store.login(user, msg.pass) } : await store.register(c.profile, user, msg.pass);
   } finally { c.authing = false; }
   if (r.err) return send(c, { t: 'autherr', msg: r.err });
-  if (!r.p) return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
+  if (!r.p) { limits.userFailed(user); return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' }); }
   if (!clients.has(c)) return store.release(r.p);
   // Registrar el perfil actual (invitado) lo deja igual; entrar o registrar desde la portada lo cambia
   if (r.p !== c.profile) setProfile(c, r.p);
@@ -404,7 +411,7 @@ async function auth(c, msg) {
 // proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
 const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
-const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice' || msg.t === 'arena'
+const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
   || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
 let draining = false;
 
@@ -426,7 +433,7 @@ function shutdown() {
 function start(port = PORT) {
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
-  return new Promise(resolve => server.listen(port, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
+  return new Promise(resolve => server.listen(port, HOST, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }
 
 module.exports = { start };

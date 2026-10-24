@@ -133,10 +133,19 @@ class Client {
   m = await a2.req({ t: 'story', a: 'buy', id: 'caramelo' });
   m = await a2.req({ t: 'story', a: 'use', item: 'caramelo', uid: m.p.mons[0].uid });
   ok(m.p.mons[0].level === 16 && m.p.mons[0].dex === 5, 'Caramelo Raro: Nv.16 y evoluciona a Charmeleon');
-  m = await a2.req({ t: 'story', a: 'buy', id: 'poke133' });
-  const eevee = m.p.mons.find(x => x.dex === 133);
-  ok(eevee && m.p.team.includes(eevee.uid), 'comprar Eevee lo mete en el equipo');
+  // Pokémon del día de la tienda: IV perfectos, al tope de nivel y solo uno por día
+  const daily = D.shopMons()[0];
+  prof.coins = 200000;
+  m = await a2.req({ t: 'story', a: 'buy', id: daily.id });
+  const bought = m.p.mons.find(x => x.dex === daily.dex);
+  ok(bought && D.STAT_KEYS.every(k => bought.iv[k] === D.IV_MAX) && bought.level === D.levelCap(prof, 'kanto'), 'Pokémon del día: IV perfectos y al tope de nivel');
+  err = a2.wait('error'); a2.send({ t: 'story', a: 'buy', id: daily.id });
+  ok(!!(await err), 'el Pokémon del día solo se compra una vez al día');
+  ok(D.shopMons('2030-01-01').map(i => i.dex).join() !== D.shopMons('2030-01-02').map(i => i.dex).join(), 'los Pokémon de la tienda cambian cada día');
+  require('../server/story.js').devAddMon(prof, 133, 20, false, 'kanto');
   m = await a2.req({ t: 'story', a: 'buy', id: 'trueno' });
+  const eevee = m.p.mons.find(x => x.dex === 133);
+  ok(!!eevee, 'Eevee añadido para probar las piedras');
   m = await a2.req({ t: 'story', a: 'use', item: 'trueno', uid: eevee.uid });
   ok(m.p.mons.find(x => x.uid === eevee.uid).dex === 135 && m.p.items.trueno === 0, 'Piedra Trueno: Eevee -> Jolteon');
   err = a2.wait('error'); a2.send({ t: 'story', a: 'use', item: 'caramelo', uid: 999 });

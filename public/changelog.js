@@ -4,6 +4,23 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.7.1', date: '2026-10-24', title: 'Nuevo nombre: PokéArenas',
+      items: [
+        ['cambio', 'El juego pasa a llamarse PokéArenas.'],
+        ['nuevo', 'Botón de Ko-fi para quien quiera ayudar a pagar el servidor. El juego es y seguirá siendo gratis, y donar no da ventajas.'],
+      ],
+    },
+    {
+      v: '0.7.0', date: '2026-10-24', title: 'Pokédex, guía y Pokémon del día',
+      items: [
+        ['nuevo', 'Pokédex con las 966 especies: filtra por generación, tipo y las que te faltan, y mira en qué rutas aparece cada una (y si sale hoy).'],
+        ['nuevo', 'Guía del modo historia: cómo funcionan las regiones, las rutas, las capturas, el tope de nivel y los líderes.'],
+        ['nuevo', 'Cuenta atrás hasta que cambian los Pokémon de las rutas y de la tienda.'],
+        ['nuevo', 'La tienda vende 4 Pokémon al día con IV perfectos, muy caros y de uno en uno; cambian a la vez que las rutas.'],
+        ['nuevo', 'El Pokémon misterioso de cada ruta tiene IV perfectos 1 de cada 3 veces.'],
+      ],
+    },
+    {
       v: '0.6.0', date: '2026-10-24', title: 'Movimientos con forma propia',
       items: [
         ['cambio', 'Lanzallamas, Ventisca, Zumbido, Nieve Polvo, Viento Feérico y Bofetón Lodo salen en cono delante de ti.'],
@@ -21,7 +38,6 @@
         ['cambio', 'El Alto Mando y los Campeones llevan Pokémon con IV perfectos y entrenamiento en todas las estadísticas.'],
         ['nuevo', 'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.'],
         ['cambio', 'Las rutas de Johto tienen colores de otoño.'],
-        ['nuevo', 'Escenarios (con ?fullaccess) incluye todas las rutas.'],
       ],
     },
     {
