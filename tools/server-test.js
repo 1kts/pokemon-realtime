@@ -46,7 +46,7 @@ class Client {
   let m = await a.req({ t: 'hello', name: 'Rojo' });
   ok(m.p.name === 'Rojo' && m.p.coins === 500 && m.p.items.pokeball === 5, 'perfil nuevo con 500 ₽ y 5 Poké Balls');
   const token = m.p.token;
-  let err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'ruta1' });
+  let err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'k-ruta1' });
   ok((await err).msg.includes('inicial'), 'no se puede explorar sin inicial');
   m = await a.req({ t: 'story', a: 'starter', dex: 4 });
   ok(m.p.mons.length === 1 && m.p.mons[0].dex === 4 && m.p.team.length === 1, 'elige Charmander de inicial');
@@ -71,13 +71,13 @@ class Client {
   ok(m.p.coins === 200 && m.p.items.pokeball === 8, 'comprar 3 Poké Balls');
   err = a.wait('error'); a.send({ t: 'story', a: 'buy', id: 'pokeball', qty: 5 });
   ok((await err).msg.includes('dinero'), 'no se puede comprar sin dinero');
-  err = a.wait('error'); a.send({ t: 'story', a: 'gym', id: 'celeste' });
+  err = a.wait('error'); a.send({ t: 'story', a: 'gym', id: 'misty' });
   ok((await err).msg.includes('anterior'), 'los gimnasios van en orden');
-  err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'montemoon' });
+  err = a.wait('error'); a.send({ t: 'story', a: 'route', id: 'k-montemoon' });
   ok((await err).msg.includes('medallas'), 'ruta bloqueada sin medallas');
 
   // Combate en ruta y rendición
-  let start1 = a.wait('start'); a.send({ t: 'story', a: 'route', id: 'ruta1' });
+  let start1 = a.wait('start'); a.send({ t: 'story', a: 'route', id: 'k-ruta1' });
   let s = await start1;
   ok(s.mode === 'wild' && s.sides[1].wild && s.balls.pokeball === 8, 'empieza un combate salvaje con las Balls del perfil');
   await new Promise(r => setTimeout(r, 300));
@@ -100,7 +100,7 @@ class Client {
   require('../server/store.js').get(token).items.pokeball = 30;
   let captured = null;
   for (let attempt = 0; attempt < 6 && !captured; attempt++) {
-    const st = a2.wait('start'); a2.send({ t: 'story', a: 'route', id: 'ruta1' });
+    const st = a2.wait('start'); a2.send({ t: 'story', a: 'route', id: 'k-ruta1' });
     const sm = await st;
     const foeMax = sm.sides[1].team[0].maxHp;
     let seq = 0;
@@ -128,7 +128,7 @@ class Client {
   // Objetos: Caramelo Raro y evolución por nivel (manipulando el perfil en memoria)
   const store = require('../server/store.js');
   const prof = store.get(token);
-  prof.coins = 50000; prof.badges = 4; prof.mons[0].level = 15;
+  prof.coins = 50000; prof.prog = { kanto: 4, johto: 0 }; prof.badges = 4; prof.mons[0].level = 15;
   m = await a2.req({ t: 'story', a: 'buy', id: 'caramelo' });
   m = await a2.req({ t: 'story', a: 'use', item: 'caramelo', uid: m.p.mons[0].uid });
   ok(m.p.mons[0].level === 16 && m.p.mons[0].dex === 5, 'Caramelo Raro: Nv.16 y evoluciona a Charmeleon');
@@ -168,13 +168,22 @@ class Client {
 
   // Resultado de victoria en gimnasio (aplicado directamente para no depender de jugar)
   const story = require('../server/story.js');
-  const setup = story.battleSetup(prof, { a: 'gym', id: 'azulona' });
+  const setup = story.battleSetup(prof, { a: 'gym', id: 'erika' });
   ok(!setup.error && setup.index === 3, 'con 4 medallas se puede desafiar a Erika (4º gimnasio)');
   const fakeBattle = { sides: [{ team: setup.opts.sides[0].team.map(t => ({ ...t, fainted: false })), balls: null }, { team: setup.opts.sides[1].team.map(t => ({ level: t.level })) }] };
-  const before = prof.badges;
+  const before = prof.prog.kanto;
   const reward = story.applyResult(prof, setup, { winner: 0 }, fakeBattle);
-  ok(reward.won && reward.coins === D.GYMS[3].reward && reward.xp.length === prof.team.length, 'victoria en gimnasio da dinero y experiencia');
-  ok(prof.badges === before, 'revancha de un gimnasio ya ganado no suma medalla');
+  ok(reward.won && reward.coins === Math.round(D.NODES.erika.reward / 2) && reward.xp.length === prof.team.length, 'revancha en gimnasio: la mitad del dinero y experiencia');
+  ok(prof.prog.kanto === before, 'revancha de un gimnasio ya ganado no suma medalla');
+  // Primera victoria contra un líder de Johto: medalla de Johto y premio
+  const jset = story.battleSetup(prof, { a: 'gym', id: 'falkner' });
+  ok(!jset.error && jset.region === 'johto' && jset.opts.sides[1].team.length === 2, 'Pegaso (Johto) con su equipo real');
+  const jfake = { sides: [{ team: jset.opts.sides[0].team.map(t => ({ ...t, fainted: false })), balls: null }, { team: jset.opts.sides[1].team.map(t => ({ dex: t.dex, level: t.level })) }] };
+  const items0 = prof.items.caramelo || 0;
+  const jr = story.applyResult(prof, jset, { winner: 0 }, jfake);
+  ok(prof.prog.johto === 1 && jr.badge && jr.badge.region === 'johto' && (prof.items.caramelo || 0) === items0 + 1, 'vencer a Pegaso da la Medalla Céfiro y premios');
+  const jroute = story.battleSetup(prof, { a: 'route', id: 'j-ruta32' });
+  ok(!jroute.error && D.NODES['j-ruta32'].wild.some(w => w[0] === jroute.opts.sides[1].team[0].dex || D.routeWild(D.NODES['j-ruta32']).rare.dex === jroute.opts.sides[1].team[0].dex), 'la Ruta 32 saca un Pokémon de sus encuentros reales');
 
   // ---------- Clasificatoria con draft ----------
   const b = new Client(port), c = new Client(port);

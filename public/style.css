@@ -358,3 +358,12 @@ body.in-battle, body.in-battle #view, body.in-battle #hud { cursor: none; }
 
 .topbar .nav { display: flex; gap: 8px; }
 .menu-card.mons { --c: #c070e0; }
+
+.region-tabs button.sel { border-color: var(--yellow); background: linear-gradient(180deg, rgba(255,203,5,.3), rgba(255,203,5,.1)); }
+.region-tabs small { color: var(--muted); }
+.map.region-johto { background: repeating-radial-gradient(circle at 70% 60%, rgba(255,255,255,.04) 0 2px, transparent 2px 22px), linear-gradient(160deg, #2f6fb0, #1a4580); }
+.node.route { width: 24px; height: 24px; }
+.node.route label { display: none; }
+.node.route:hover label, .node.route.sel label { display: block; z-index: 3; }
+.node.route .portrait { bottom: 2px; }
+.reward-items { color: #c8a8ff; font-weight: 700; }

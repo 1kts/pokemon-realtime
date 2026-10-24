@@ -242,7 +242,7 @@ function handle(c, msg) {
   if (msg.t === 'dev' && process.env.ARENA_DEV) {
     const p = c.profile;
     if (Number.isFinite(msg.coins)) p.coins += msg.coins;
-    if (Number.isInteger(msg.badges)) p.badges = msg.badges;
+    if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny);
     store.save();

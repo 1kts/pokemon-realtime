@@ -27,7 +27,13 @@ function migrate(p) {
     if (m.shiny === undefined) m.shiny = false;
   }
   if (!p.shinies) p.shinies = [];
+  // Progreso por región (antes: un solo contador de medallas de Kanto)
+  if (!p.prog) p.prog = { kanto: p.badges || 0 };
+  for (const r of D.REGION_IDS) if (p.prog[r] === undefined) p.prog[r] = 0;
+  syncBadges(p);
 }
+// p.badges = medallas de la región más avanzada (para los requisitos de la tienda)
+function syncBadges(p) { p.badges = Math.max(0, ...D.REGION_IDS.map(r => Math.min(8, p.prog[r] || 0))); }
 // Lo que puede llevar: lo aprendido por nivel en su especie actual más lo que ya llevaba
 const learnable = mon => [...new Set([...D.learnedAt(mon.dex, mon.level), ...mon.moves])];
 const teamMons = p => p.team.map(uid => monByUid(p, uid)).filter(Boolean);
@@ -73,28 +79,6 @@ function giveXp(mon, xp, cap) {
   return out;
 }
 
-// EV que dan los rivales vencidos: sus dos stats base más altas (At. Esp. cuenta como Ataque,
-// Def. Esp. como Defensa), n puntos cada una.
-function evYield(foes, n) {
-  const gain = { hp: 0, atk: 0, def: 0, spe: 0 };
-  for (const f of foes) {
-    const b = (D.SPECIES[f.dex] && D.SPECIES[f.dex].base) || [0, 0, 0, 0, 0, 0];
-    const four = { hp: b[0], atk: Math.max(b[1], b[3]), def: (b[2] + b[4]) / 2, spe: b[5] };
-    Object.entries(four).sort((a, c) => c[1] - a[1]).slice(0, 2).forEach(([k]) => { gain[k] += n; });
-  }
-  return gain;
-}
-function addEv(mon, gain) {
-  if (!mon.ev) mon.ev = newEv();
-  const got = {};
-  for (const k of D.STAT_KEYS) {
-    const room = Math.min(D.EV_MAX - mon.ev[k], D.EV_TOTAL - D.evTotal(mon.ev));
-    const add = Math.max(0, Math.min(gain[k] || 0, room));
-    if (add) { mon.ev[k] += add; got[k] = add; }
-  }
-  return got;
-}
-
 // Acciones fuera de combate. Devuelve un mensaje de error o null.
 function action(p, msg) {
   const a = msg.a;
@@ -102,6 +86,7 @@ function action(p, msg) {
     if (p.mons.length) return 'Ya tienes inicial';
     if (!D.STARTERS.includes(msg.dex)) return 'Inicial no válido';
     addMon(p, msg.dex, 5);
+    p.starter = msg.dex;
   } else if (a === 'team') {
     const uids = Array.isArray(msg.uids) ? [...new Set(msg.uids.map(Number))] : [];
     if (uids.length < 1 || uids.length > 3 || !uids.every(u => monByUid(p, u))) return 'Equipo no válido';
@@ -121,7 +106,8 @@ function action(p, msg) {
     const item = D.SHOP.find(s => s.id === msg.item);
     if (!mon || !item || !(p.items[item.id] > 0)) return 'No puedes usar eso';
     if (item.id === 'caramelo') {
-      const cap = Math.min(MAX_LEVEL, D.levelCap(p.badges));
+      migrate(p);
+      const cap = Math.min(MAX_LEVEL, D.levelCap(p));
       if (mon.level >= cap) return `Tope de nivel ${cap}: vence al siguiente gimnasio para subir más`;
       mon.xp = 0;
       levelUp(mon, cap);
@@ -165,10 +151,11 @@ function battleSetup(p, msg) {
   if (!team.length) return { error: 'Primero elige tu Pokémon inicial' };
   migrate(p);
   const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny })) };
+  const node = D.NODES[msg.id];
   if (msg.a === 'route') {
-    const route = D.ROUTES.find(r => r.id === msg.id);
+    const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };
-    if (route.req > p.badges) return { error: `Necesitas ${route.req} medallas` };
+    if (route.req > D.progOf(p, route.region)) return { error: `Necesitas ${route.req} medallas de ${D.REGIONS[route.region].name}` };
     const wild = D.rollWild(route);
     const shiny = Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);
     const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
@@ -178,13 +165,12 @@ function battleSetup(p, msg) {
     };
   }
   if (msg.a === 'gym') {
-    const i = D.GYMS.findIndex(g => g.id === msg.id);
-    if (i < 0) return { error: 'Gimnasio desconocido' };
-    if (i > p.badges) return { error: 'Antes tienes que vencer al anterior' };
-    const g = D.GYMS[i];
+    if (!node || node.kind === 'route') return { error: 'Gimnasio desconocido' };
+    if (node.index > D.progOf(p, node.region)) return { error: 'Antes tienes que vencer al anterior' };
+    const team = D.leaderTeam(node, p.starter || (p.mons[0] && p.mons[0].dex));
     return {
-      kind: 'gym', gym: g, index: i,
-      opts: { mode: 'trainer', map: g.map, sides: [mine, { name: g.leader, team: g.team.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: g.ai }] },
+      kind: 'gym', gym: node, index: node.index, region: node.region,
+      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: team.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: node.ai }] },
     };
   }
   return { error: 'Combate desconocido' };
@@ -210,22 +196,27 @@ function applyResult(p, setup, result, battle) {
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;
     }
-    if (setup.kind === 'gym' && setup.index === p.badges) {
-      p.badges++;
-      reward.badge = { index: setup.index, leader: setup.gym.leader, name: setup.gym.name };
+    if (setup.kind === 'gym') {
+      migrate(p);
+      const first = setup.index === p.prog[setup.region];
+      if (first) {
+        p.prog[setup.region]++;
+        syncBadges(p);
+        reward.badge = { region: setup.region, index: setup.index, leader: setup.gym.leader, name: setup.gym.badge || setup.gym.name, kind: setup.gym.kind };
+        // Premio del líder la primera vez: Caramelo Raro y una vitamina (el Campeón, más)
+        const vit = D.SHOP.filter(i => i.vit)[Math.floor(Math.random() * 4)].id;
+        reward.items = setup.gym.kind === 'champion' ? { caramelo: 3, [vit]: 2, ultraball: 5 } : { caramelo: 1, [vit]: 1 };
+        for (const [k, n] of Object.entries(reward.items)) p.items[k] = (p.items[k] || 0) + n;
+      } else reward.coins = Math.round(reward.coins / 2);   // revancha: la mitad del dinero
     }
     // Experiencia para los que han combatido sin debilitarse; la mitad para los debilitados.
     // Nadie pasa del tope de nivel (media del siguiente gimnasio).
     const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);
-    const cap = Math.min(MAX_LEVEL, D.levelCap(p.badges));
+    const cap = Math.min(MAX_LEVEL, D.levelCap(p));
     reward.cap = cap;
-    const evGain = evYield(foes, setup.kind === 'gym' ? 8 : 4);
     side.team.forEach(bm => {
       const mon = monByUid(p, bm.uid);
-      if (!mon) return;
-      const x = giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap);
-      if (!bm.fainted) x.ev = addEv(mon, evGain);
-      reward.xp.push(x);
+      if (mon) reward.xp.push(giveXp(mon, Math.round(base * (bm.fainted ? 0.5 : 1)), cap));
     });
     p.coins += reward.coins;
   }

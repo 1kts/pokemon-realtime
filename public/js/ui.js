@@ -9,7 +9,6 @@ const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls)
 const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
-const PATH = ['ruta1', 'bosque', 'plateada', 'montemoon', 'celeste', 'ruta24', 'carmin', 'tunelroca', 'azulona', 'torre', 'fucsia', 'safari', 'azafran', 'islas', 'canela', 'verde', 'victoria', 'lorelei', 'bruno', 'agatha', 'lance', 'campeon'];
 const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
 export class UI {
@@ -77,7 +76,7 @@ export class UI {
       nav.append(b);
     }
     bar.append(nav);
-    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="badges">${GYMS.slice(0, 8).map((g, i) => `<i class="badge${i < p.badges ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
+    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="badges">${Data.leadersOf(this.region || 'kanto').slice(0, 8).map((g, i) => `<i class="badge${i < Data.progOf(p, this.region || 'kanto') ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader} · ${g.badge}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
     return bar;
   }
 
@@ -118,7 +117,8 @@ export class UI {
       grid.append(c);
     };
     const lead = p.mons.length ? p.mons.find(m => m.uid === p.team[0]) : null;
-    card('Historia', p.mons.length ? `${p.badges >= 13 ? '¡Campeón de Kanto!' : p.badges >= 8 ? 'La Liga Pokémon te espera' : `Medallas: ${p.badges}/8`} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y conquista Kanto', 'story', lead ? lead.dex : 25, () => this.show('story'));
+    const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
+    card('Historia', p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y viaja por Kanto y Johto', 'story', lead ? lead.dex : 25, () => this.show('story'));
     card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
@@ -139,7 +139,7 @@ export class UI {
     box.append(who);
     box.append(el('div', 'rows', `
       <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
-      <div class="stat"><small>Medallas</small><b>${Math.min(8, p.badges)}/8</b></div>
+      <div class="stat"><small>Medallas</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
       <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
       <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>`));
     box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
@@ -170,43 +170,58 @@ export class UI {
   }
 
   // ---------- Historia ----------
+  // Siluetas aproximadas de cada región para el mapa
+  regionShape(region) {
+    return region === 'johto'
+      ? 'M3,12 Q4,3 16,4 L46,2 Q70,0 86,4 Q99,8 98,26 Q100,46 96,66 Q99,84 90,96 L60,98 Q40,96 28,92 Q12,90 4,74 Q-1,58 3,40 Z'
+      : 'M2,10 Q4,2 18,3 L60,2 Q80,1 92,8 Q99,18 97,40 Q99,62 94,78 Q88,92 70,94 L58,99 Q40,100 30,92 Q14,99 6,92 Q0,80 3,60 Q0,40 2,26 Z';
+  }
+
   view_story() {
     const p = this.profile;
     if (!p.mons.length) return this.view_starter();
+    const region = this.region = this.region || 'kanto';
+    const R = Data.REGIONS[region];
+    const prog = Data.progOf(p, region);
     const wrap = el('div', 'story');
-    const bar = this.topbar('Kanto', 'menu');
-    const tools = el('div', 'tools');
-    bar.append(tools);
+    const bar = this.topbar(R.name, 'menu');
+    const tabs = el('div', 'tools region-tabs');
+    for (const rid of Data.REGION_IDS) {
+      const t = el('button', rid === region ? 'sel' : '', `${Data.REGIONS[rid].name} <small>${Math.min(8, Data.progOf(p, rid))}/8</small>`);
+      t.onclick = () => { this.region = rid; this.show('story'); };
+      tabs.append(t);
+    }
+    bar.insertBefore(tabs, bar.children[2] || null);
     wrap.append(bar);
     const body = el('div', 'story-body');
-    const map = el('div', 'map');
-    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="M4,20 Q2,6 20,4 L60,3 Q78,2 90,10 Q99,20 96,40 Q98,60 90,78 Q84,96 60,97 L30,98 Q8,98 4,80 Q0,60 6,46 Z" /></svg>`;
-    const nodes = PATH.map(id => ROUTES.find(r => r.id === id) || GYMS.find(g => g.id === id));
+    const map = el('div', 'map region-' + region);
+    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="${this.regionShape(region)}" /></svg>`;
+    const nodes = R.nodes;
+    // Camino: une cada líder con el anterior pasando por sus rutas (en orden)
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
+    const leaders = nodes.filter(n => n.kind !== 'route');
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    line.setAttribute('points', nodes.map(n => `${n.x},${n.y}`).join(' '));
+    line.setAttribute('points', leaders.map(n => `${n.x},${n.y}`).join(' '));
     svg.append(line);
     map.append(svg);
     const info = el('div', 'node-info');
     nodes.forEach(n => {
-      const isGym = !!n.leader;
-      const gi = isGym ? GYMS.indexOf(n) : -1;
-      const unlocked = isGym ? gi <= p.badges : n.req <= p.badges;
-      const done = isGym && gi < p.badges;
-      const b = el('button', `node ${isGym ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isGym && gi === p.badges ? ' next' : ''}`);
+      const isLeader = n.kind !== 'route';
+      const unlocked = isLeader ? n.index <= prog : n.req <= prog;
+      const done = isLeader && n.index < prog;
+      const b = el('button', `node ${isLeader ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isLeader && n.index === prog ? ' next' : ''}`);
       b.style.left = n.x + '%'; b.style.top = n.y + '%';
-      if (isGym) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
-      b.title = isGym ? `${n.name} · ${n.leader}` : n.name;
-      b.innerHTML = `<span>${isGym ? (n.elite ? '★' : gi + 1) : ''}</span><label>${isGym ? n.leader : n.name}</label>`;
-      if (!isGym && unlocked) b.prepend(portrait(Data.routeWild(n).list[0].dex, 34));
+      if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
+      b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
+      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}</label>`;
+      if (!isLeader && unlocked && n.wild.length) b.prepend(portrait(n.wild[0][0], 30));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       map.append(b);
     });
     body.append(map, info);
     wrap.append(body);
     this.root.append(wrap);
-    // Seleccionar el siguiente objetivo
     const next = map.querySelector('.node.next') || map.querySelector('.node.route:not(.locked)');
     if (next) next.click();
   }
@@ -214,13 +229,17 @@ export class UI {
   nodeInfo(box, n, unlocked, done) {
     box.innerHTML = '';
     const p = this.profile;
-    if (n.leader) {
-      box.append(el('h3', '', `${n.name}`), el('p', 'leader', `Líder: <b>${n.leader}</b> · tipo <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span>`));
+    const R = Data.REGIONS[n.region];
+    if (n.kind !== 'route') {
+      const title = n.kind === 'gym' ? n.name : n.kind === 'champion' ? `Campeón de ${R.name}` : `Alto Mando de ${R.name}`;
+      box.append(el('h3', '', title), el('p', 'leader', `${n.kind === 'gym' ? 'Líder' : n.kind === 'champion' ? 'Campeón' : 'Miembro'}: <b>${n.leader}</b> · tipo <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span>`));
+      const used = Data.leaderTeam(n, p.starter || (p.mons[0] && p.mons[0].dex));
       const team = el('div', 'mini-team');
-      for (const [dex, lvl] of n.team) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>Nv.${lvl}`)); team.append(c); }
+      for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>Nv.${lvl}`)); team.append(c); }
       box.append(team);
-      box.append(el('p', 'small', `Dificultad de la IA: ${Math.round(n.ai * 100)} % · Premio ${coins(n.reward)}${n.elite ? '' : ' y medalla'}`));
-      if (!unlocked) box.append(el('p', 'warn', GYMS.indexOf(n) >= 8 ? 'Consigue las 8 medallas y vence a los anteriores.' : 'Vence antes al gimnasio anterior.'));
+      if (n.team.length > 3) box.append(el('p', 'small', `Equipo real completo: ${n.team.map(([d, l]) => `${d === 'rival' ? 'tu rival' : SPECIES[d].name} ${l}`).join(', ')}. En combate saca sus 3 más fuertes.`));
+      box.append(el('p', 'small', `Dificultad de la IA: ${Math.round(n.ai * 100)} % · Premio ${coins(n.reward)}${n.badge ? ` y ${n.badge}` : ''} · la primera vez también Caramelo Raro y una vitamina`));
+      if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? 'Consigue las 8 medallas de la región y vence a los anteriores.' : 'Vence antes al anterior.'));
       else {
         const go = el('button', 'primary', done ? 'Revancha' : '¡Desafiar!');
         go.onclick = () => this.startStory('gym', n.id);
@@ -228,34 +247,33 @@ export class UI {
       }
     } else {
       const w = Data.routeWild(n);
-      box.append(el('h3', '', n.name), el('p', 'small', `Hoy pueden salir (cambian cada día) · Nv.${n.lvl[0]}-${n.lvl[1]} · ${n.types.map(t => TYPE_LABEL[t]).join(', ')}`));
+      box.append(el('h3', '', n.name), el('p', 'small', `${R.name} · Nv.${n.lvl[0]}-${n.lvl[1]} · encuentros reales del juego`));
       const list = el('div', 'mini-team');
       const total = w.list.reduce((a, x) => a + x.weight, 0) / (1 - w.rare.chance);
-      for (const { dex, weight } of w.list) {
+      for (const { dex, weight, min, max } of w.list) {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
         c.append(portrait(dex, 56));
-        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.round(weight / total * 100)} %`));
+        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.max(1, Math.round(weight / total * 100))} % · Nv.${min === max ? min : min + '-' + max}`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
         list.append(c);
       }
-      // El misterioso: silueta hasta que lo atrapas
+      // El misterioso del día: silueta hasta que lo atrapas
       const known = p.caught.includes(w.rare.dex);
       const rare = el('div', 'mini rare' + (known ? ' caught' : ''));
       rare.append(portrait(w.rare.dex, 56, { silhouette: !known }));
       rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · Nv.${n.lvl[1] + 3}`));
-      rare.title = 'Pokémon misterioso: aparece muy de vez en cuando y cuesta mucho atraparlo';
+      rare.title = 'Pokémon misterioso del día: aparece muy de vez en cuando y cuesta mucho atraparlo';
       list.append(rare);
       box.append(list);
       const balls = (p.items.pokeball || 0) + (p.items.superball || 0) + (p.items.ultraball || 0);
-      box.append(el('p', 'small', `Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>) para capturarlo. Tienes ${balls} Balls.`));
-      if (!unlocked) box.append(el('p', 'warn', `Necesitas ${n.req} medallas.`));
+      box.append(el('p', 'small', `Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes ${balls} Balls. Shiny: 1 de ${Math.round(1 / Data.SHINY_RATE)}.`));
+      if (!unlocked) box.append(el('p', 'warn', `Necesitas ${n.req} medallas de ${R.name}.`));
       else {
         const go = el('button', 'primary', 'Explorar');
         go.onclick = () => this.startStory('route', n.id);
         box.append(go);
       }
     }
-    // Equipo actual
     box.append(el('h4', '', 'Tu equipo'));
     const team = el('div', 'mini-team');
     for (const uid of p.team) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>Nv.${m.level}`)); team.append(c); }
@@ -304,8 +322,10 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'teamview');
     wrap.append(this.topbar('Mis Pokémon', this.returnTo || 'menu'));
-    const cap = Data.levelCap(p.badges);
-    const next = GYMS[p.badges];
+    const cap = Data.levelCap(p);
+    const nextReg = Data.REGION_IDS.map(r => Data.leadersOf(r)[Data.progOf(p, r)]).filter(Boolean)
+      .sort((x, y) => y.team.reduce((a, [, l]) => a + l, 0) / y.team.length - x.team.reduce((a, [, l]) => a + l, 0) / x.team.length);
+    const next = cap < 100 ? nextReg[0] : null;
     wrap.append(el('p', 'intro', `Mete o saca Pokémon del equipo (máximo 3) y elige sus movimientos desde su ficha. <span class="cap">Tope de nivel: <b>${cap}</b>${next ? ` · vence a ${next.leader} para subir más` : ''}</span>`));
     const grid = el('div', 'mon-grid scroll');
     const sorted = [...p.mons].sort((a, b) => (p.team.includes(b.uid) - p.team.includes(a.uid)) || b.level - a.level);
@@ -375,7 +395,7 @@ export class UI {
     const box = el('div', 'panel modal-box ficha');
     const head = el('div', 'ficha-head');
     head.append(animatedPortrait(mon.dex, 120, 'Idle', !!mon.shiny));
-    const route = mon.met ? ROUTES.find(r => r.id === mon.met) : null;
+    const route = mon.met ? Data.NODES[mon.met] || null : null;
     const nat = Data.NATURES[mon.nat] || ['—', null, null];
     const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (neutra)`;
     head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>Nv.${mon.level}</small></h3><div class="types">${typeChips(mon.dex)}</div>
@@ -385,7 +405,7 @@ export class UI {
     // Estadísticas de combate: valor actual, barra, IV, EV y vitaminas
     const rows = el('div', 'stat-rows');
     const total = Data.evTotal(ev);
-    rows.append(el('div', 'small vit-total', `EV: <b>${total}/${Data.EV_TOTAL}</b> en total (máx. ${Data.EV_MAX} por stat; las vitaminas dan +${Data.EV_VIT}, los combates ganados también suman) · IV fijos de nacimiento (0-${Data.IV_MAX})`));
+    rows.append(el('div', 'small vit-total', `EV: <b>${total}/${Data.EV_TOTAL}</b> en total (máx. ${Data.EV_MAX} por stat; solo con vitaminas: +${Data.EV_VIT} cada una) · IV fijos de nacimiento (0-${Data.IV_MAX})`));
     const bars = [
       ['hp', 'PS', st.maxHp, 400, `${st.maxHp}`],
       ['atk', 'Ataque', st.atk, 2, `×${st.atk.toFixed(2)}`],
@@ -657,7 +677,11 @@ export class UI {
       c.append(el('p', '', `¡Has atrapado a <b>${SPECIES[msg.captured.dex].name}</b>${msg.captured.shiny ? ' <i class="shiny-star">✦ ¡SHINY!</i>' : ''} (Nv.${msg.captured.level})!${r.captured && !r.captured.inTeam ? '<br><small>Tu equipo está lleno: lo encontrarás en Equipo.</small>' : ''}`));
       box.append(c);
     }
-    if (r.badge) box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[GYMS[r.badge.index].type]}"></i><p>¡Has vencido a <b>${r.badge.leader}</b>!${r.badge.index < 8 ? ' Medalla conseguida.' : ''}</p>`));
+    if (r.badge) {
+      const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
+      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>¡Has vencido a <b>${r.badge.leader}</b>!${r.badge.kind === 'gym' ? ` ${r.badge.name} conseguida.` : r.badge.kind === 'champion' ? ' ¡Eres el nuevo Campeón!' : ''}</p>`));
+    }
+    if (r.items) box.append(el('p', 'reward-items', 'Premio: ' + Object.entries(r.items).map(([k, n]) => `${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`).join(' · ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
     if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', `Tope de nivel ${r.cap}: vence al siguiente gimnasio para que sigan subiendo.`));
     if (r.xp && r.xp.length) {

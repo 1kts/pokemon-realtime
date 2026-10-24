@@ -23,7 +23,7 @@ function save() {
 function newProfile(name) {
   return {
     token: crypto.randomBytes(16).toString('hex'), name,
-    coins: 500, items: { pokeball: 5 }, mons: [], team: [], badges: 0, nextUid: 1,
+    coins: 500, items: { pokeball: 5 }, mons: [], team: [], badges: 0, prog: { kanto: 0, johto: 0 }, nextUid: 1,
     elo: 1000, wins: 0, losses: 0, ranked: 0, caught: [], created: Date.now(),
   };
 }

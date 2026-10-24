@@ -405,88 +405,79 @@
     ],
   };
 
-  // ---------- Modo historia ----------
-  // Rutas temáticas: cada día salen 5 especies (de cualquier generación) de sus tipos y con
-  // fuerza (suma de stats base) acorde a la ruta, iguales para todos los jugadores.
-  // Además hay un Pokémon misterioso (legendario o muy fuerte) con una probabilidad pequeña.
-  // req = medallas necesarias.
-  const ROUTES = [
-    { id: 'ruta1', name: 'Ruta 1', req: 0, map: 'pradera', ai: 0.02, types: ['normal', 'volador', 'bicho'], lvl: [2, 5], bst: [180, 330], rare: 0.02, x: 8, y: 86 },
-    { id: 'bosque', name: 'Bosque Verde', req: 0, map: 'bosque', ai: 0.03, types: ['bicho', 'planta', 'electrico'], lvl: [4, 8], bst: [190, 360], rare: 0.02, x: 18, y: 70 },
-    { id: 'montemoon', name: 'Monte Moon', req: 1, map: 'cueva', ai: 0.05, types: ['roca', 'tierra', 'hada', 'veneno'], lvl: [8, 12], bst: [200, 380], rare: 0.025, x: 40, y: 66 },
-    { id: 'ruta24', name: 'Puente Pepita', req: 2, map: 'lago', ai: 0.07, types: ['agua', 'psiquico', 'planta', 'hada'], lvl: [12, 16], bst: [220, 400], rare: 0.025, x: 62, y: 62 },
-    { id: 'tunelroca', name: 'Túnel Roca', req: 3, map: 'cueva', ai: 0.09, types: ['roca', 'electrico', 'lucha', 'acero'], lvl: [17, 21], bst: [240, 420], rare: 0.03, x: 88, y: 62 },
-    { id: 'torre', name: 'Torre Pokémon', req: 4, map: 'cueva', ai: 0.11, types: ['fantasma', 'veneno', 'siniestro', 'psiquico'], lvl: [21, 26], bst: [250, 440], rare: 0.03, x: 68, y: 38 },
-    { id: 'safari', name: 'Zona Safari', req: 5, map: 'bosque', ai: 0.14, types: ['normal', 'planta', 'bicho', 'tierra', 'dragon'], lvl: [26, 31], bst: [270, 470], rare: 0.035, x: 44, y: 38 },
-    { id: 'islas', name: 'Islas Espuma', req: 6, map: 'lago', ai: 0.17, types: ['agua', 'hielo'], lvl: [30, 35], bst: [290, 490], rare: 0.035, x: 20, y: 40 },
-    { id: 'victoria', name: 'Calle Victoria', req: 8, map: 'cueva', ai: 0.22, types: ['lucha', 'roca', 'acero', 'dragon', 'siniestro'], lvl: [38, 44], bst: [330, 530], rare: 0.04, x: 32, y: 24 },
-  ];
-  const WILD_WEIGHTS = [30, 25, 20, 15, 10];
+  // ---------- Modo historia: regiones reales ----------
+  // public/regions.js (generado por tools/fetch-regions.js): rutas en el orden real con sus
+  // encuentros reales, y líderes, Alto Mando y Campeón con sus equipos reales.
+  const REGIONS = typeof module !== 'undefined' && module.exports ? require('./regions.js') : root.REGIONS;
+  const REGION_IDS = Object.keys(REGIONS);
+  const NODES = {};          // id -> nodo (con .region)
+  for (const r of Object.values(REGIONS)) {
+    let gi = 0;
+    for (const n of r.nodes) {
+      n.region = r.id;
+      if (n.kind !== 'route') n.index = gi++;   // orden de los combates de líder (= medallas necesarias)
+      else {
+        n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
+        n.ai = Math.min(0.25, 0.02 + n.req * 0.025);
+        n.rare = 0.015 + n.req * 0.003;
+      }
+      NODES[n.id] = n;
+    }
+  }
+  const leadersOf = region => REGIONS[region].nodes.filter(n => n.kind !== 'route');
+  // Compatibilidad: listas planas (Kanto primero)
+  const ROUTES = REGION_IDS.flatMap(r => REGIONS[r].nodes.filter(n => n.kind === 'route'));
+  const GYMS = leadersOf('kanto');
 
-  // Generador con semilla: la misma ruta y el mismo día dan las mismas especies en servidor y cliente
+  // Generador con semilla: la misma ruta y el mismo día dan lo mismo en servidor y cliente
   function seeded(str) {
     let h = 2166136261;
     for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
     return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
   }
   const dayKey = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
-  const routeCache = new Map();
-  // Las 5 especies del día y el misterioso de una ruta
+  // Encuentros de una ruta: los reales del juego más el Pokémon misterioso del día (legendario o
+  // muy raro de la región, cambia cada día). Igual en servidor y cliente.
   function routeWild(route, day = dayKey()) {
-    const key = route.id + day;
-    if (routeCache.has(key)) return routeCache.get(key);
-    const r = seeded(key);
-    const fits = sp => sp.types.some(t => route.types.includes(t));
-    const all = Object.values(SPECIES);
-    let cands = all.filter(sp => !sp.leg && fits(sp) && sp.bst >= route.bst[0] && sp.bst <= route.bst[1]);
-    const picks = [];
-    while (picks.length < 5 && cands.length) {
-      const i = Math.floor(r() * cands.length);
-      const sp = cands.splice(i, 1)[0];
-      if (picks.some(p => p.types[0] === sp.types[0]) && cands.some(c => !picks.some(p => p.types[0] === c.types[0])) && r() < 0.6) { cands.push(sp); continue; }
-      picks.push(sp);
-    }
-    picks.sort((a, b) => a.bst - b.bst);   // los más fuertes, más raros
-    const rarePool = all.filter(sp => (sp.leg || sp.bst >= 580) && fits(sp));
-    const pool = rarePool.length ? rarePool : all.filter(sp => sp.leg);
-    const rare = pool[Math.floor(r() * pool.length)];
-    const out = { day, list: picks.map((sp, i) => ({ dex: sp.dex, weight: WILD_WEIGHTS[i] })), rare: { dex: rare.dex, chance: route.rare } };
-    routeCache.set(key, out);
-    if (routeCache.size > 200) routeCache.delete(routeCache.keys().next().value);
-    return out;
+    const legends = REGIONS[route.region].legends;
+    const r = seeded(route.id + day);
+    const rare = legends[Math.floor(r() * legends.length)];
+    return { day, list: route.wild.map(([dex, min, max, weight]) => ({ dex, min, max, weight })), rare: { dex: rare, chance: route.rare } };
   }
-  // Un encuentro: misterioso con su probabilidad; si no, una de las 5 por peso
   function rollWild(route, rand = Math.random, day = dayKey()) {
     const w = routeWild(route, day);
-    const [lo, hi] = route.lvl;
-    if (rand() < w.rare.chance) return { dex: w.rare.dex, level: hi + 3, rare: true };
+    if (rand() < w.rare.chance) return { dex: w.rare.dex, level: route.lvl[1] + 3, rare: true };
     const total = w.list.reduce((a, x) => a + x.weight, 0);
     let x = rand() * total;
-    for (const e of w.list) if ((x -= e.weight) <= 0) return { dex: e.dex, level: lo + Math.floor(rand() * (hi - lo + 1)) };
-    return { dex: w.list[0].dex, level: lo };
+    for (const e of w.list) if ((x -= e.weight) <= 0) return { dex: e.dex, level: e.min + Math.floor(rand() * (e.max - e.min + 1)) };
+    const e = w.list[0];
+    return { dex: e.dex, level: e.min };
   }
-  // Gimnasios en orden; la Liga va después de las 8 medallas. ai = habilidad de la IA (0-1).
-  const GYMS = [
-    { id: 'plateada', name: 'Gimnasio Plateada', leader: 'Brock', type: 'roca', map: 'cueva', ai: 0.2, reward: 600, team: [[74, 12], [95, 14]], x: 30, y: 82 },
-    { id: 'celeste', name: 'Gimnasio Celeste', leader: 'Misty', type: 'agua', map: 'lago', ai: 0.28, reward: 900, team: [[120, 18], [54, 18], [121, 21]], x: 52, y: 78 },
-    { id: 'carmin', name: 'Gimnasio Carmín', leader: 'Lt. Surge', type: 'electrico', map: 'pradera', ai: 0.35, reward: 1200, team: [[100, 21], [25, 22], [26, 24]], x: 74, y: 74 },
-    { id: 'azulona', name: 'Gimnasio Azulona', leader: 'Erika', type: 'planta', map: 'bosque', ai: 0.42, reward: 1500, team: [[71, 29], [114, 27], [45, 29]], x: 80, y: 46 },
-    { id: 'fucsia', name: 'Gimnasio Fucsia', leader: 'Koga', type: 'veneno', map: 'cueva', ai: 0.48, reward: 1800, team: [[109, 37], [89, 39], [110, 43]], x: 56, y: 48 },
-    { id: 'azafran', name: 'Gimnasio Azafrán', leader: 'Sabrina', type: 'psiquico', map: 'pradera', ai: 0.55, reward: 2100, team: [[64, 38], [122, 37], [65, 43]], x: 32, y: 48 },
-    { id: 'canela', name: 'Gimnasio Canela', leader: 'Blaine', type: 'fuego', map: 'pradera', ai: 0.6, reward: 2400, team: [[78, 42], [126, 44], [59, 47]], x: 9, y: 28 },
-    { id: 'verde', name: 'Gimnasio Verde', leader: 'Giovanni', type: 'tierra', map: 'cueva', ai: 0.66, reward: 3000, team: [[51, 45], [34, 47], [112, 50]], x: 20, y: 16 },
-    { id: 'lorelei', name: 'Alto Mando', leader: 'Lorelei', type: 'hielo', map: 'lago', ai: 0.7, reward: 3500, team: [[124, 52], [131, 54], [130, 53]], x: 46, y: 14, elite: true },
-    { id: 'bruno', name: 'Alto Mando', leader: 'Bruno', type: 'lucha', map: 'cueva', ai: 0.74, reward: 3500, team: [[95, 53], [68, 56], [76, 55]], x: 58, y: 22, elite: true },
-    { id: 'agatha', name: 'Alto Mando', leader: 'Agatha', type: 'fantasma', map: 'cueva', ai: 0.78, reward: 3500, team: [[93, 54], [94, 58], [110, 55]], x: 70, y: 13, elite: true },
-    { id: 'lance', name: 'Alto Mando', leader: 'Lance', type: 'dragon', map: 'lago', ai: 0.82, reward: 4000, team: [[130, 58], [148, 56], [149, 62]], x: 82, y: 22, elite: true },
-    { id: 'campeon', name: 'Campeón', leader: 'Azul', type: 'normal', map: 'pradera', ai: 0.88, reward: 8000, team: [[18, 61], [65, 63], [6, 65]], x: 92, y: 10, elite: true },
-  ];
+
+  // Progreso por región: prog = { kanto: medallas/combates ganados, johto: ... }
+  const progOf = (p, region) => (p && p.prog && p.prog[region]) || 0;
+  // Equipo de combate de un líder: los 3 más fuertes de su equipo real, con el as al final.
+  // 'rival' = el inicial del rival según el tuyo (ventaja de tipo sobre ti).
+  function leaderTeam(node, playerStarter) {
+    const rivalAce = { planta: 6, fuego: 9, agua: 3 };
+    const st = playerStarter && SPECIES[playerStarter] ? SPECIES[playerStarter].types[0] : 'planta';
+    const team = node.team.map(([d, l]) => [d === 'rival' ? (rivalAce[st] || 6) : d, l]);
+    const idx = team.map((t, i) => i).sort((i, j) => team[j][1] - team[i][1] || j - i).slice(0, 3).sort((i, j) => i - j);
+    return idx.map(i => team[i]);
+  }
+  // Los Pokémon no pasan de la media de niveles del siguiente líder de la región más avanzada
+  // (sin tope cuando alguna región está completada). Acepta un perfil o, por compatibilidad, un número de medallas de Kanto.
+  function levelCap(p) {
+    const prog = typeof p === 'number' ? { kanto: p } : (p && p.prog) || {};
+    let cap = 0;
+    for (const r of REGION_IDS) {
+      const next = leadersOf(r)[prog[r] || 0];
+      if (!next) return 100;
+      cap = Math.max(cap, Math.round(next.team.reduce((a, [, l]) => a + l, 0) / next.team.length));
+    }
+    return cap;
+  }
   // Iniciales de las 9 generaciones (solo los que tienen sprites)
-  // Los Pokémon no pasan de la media de niveles del siguiente gimnasio (sin tope tras el Campeón)
-  function levelCap(badges) {
-    const g = GYMS[badges];
-    return g ? Math.round(g.team.reduce((a, [, l]) => a + l, 0) / g.team.length) : 100;
-  }
   const STARTERS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912].filter(d => SPECIES[d]);
   // Probabilidad de captura: sube cuantos menos PS le quedan y si tiene un estado alterado.
   // Cada Ball hace 3 sacudidas; cada una sale bien con p^(1/3), así que las 3 juntas valen p.
@@ -498,8 +489,8 @@
     const hard = Math.min(1, Math.sqrt(rate / 45));
     return Math.max(0.02, Math.min(1, base * item.ball * (hasStatus ? 1.3 : 1) * hard));
   }
-  // EV: 0-252 por estadística y 510 en total (cada 252 = +25 %). Las vitaminas dan +10 EV;
-  // los combates ganados dan EV según el rival. IV: 0-31 por estadística, fijos al capturar (hasta +10 %).
+  // EV: 0-252 por estadística y 510 en total (cada 252 = +25 %). Solo se consiguen con vitaminas
+  // (+10 EV cada una). IV: 0-31 por estadística, fijos al capturar (hasta +10 %).
   const EV_MAX = 252, EV_TOTAL = 510, EV_VIT = 10, IV_MAX = 31;
   const evTotal = ev => ev ? Object.values(ev).reduce((a, b) => a + (b || 0), 0) : 0;
   const VIT_STATS = { hp: 'PS', atk: 'Ataque', def: 'Defensa', spe: 'Velocidad' };
@@ -577,7 +568,7 @@
   const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ROUTES, GYMS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
+    levelMult, xpToNext, MAPS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);
