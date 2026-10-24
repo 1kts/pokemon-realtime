@@ -694,6 +694,7 @@ export default {
     '{n} con «{q}»': '{n} con «{q}»',
     'Tu puesto: <b>#{n}</b>': 'La tua posizione: <b>#{n}</b>',
     'Aún no apareces en esta tabla': 'Non compari ancora in questa classifica',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': 'Gli ospiti non compaiono nelle classifiche: crea un account dal tuo profilo e mantieni i tuoi progressi.',
     'Nadie con ese nombre.': 'Nessuno con quel nome.',
     'Esta tabla todavía está vacía.': 'Questa classifica è ancora vuota.',
     '← Anterior': '← Precedente',

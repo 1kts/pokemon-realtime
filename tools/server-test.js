@@ -207,6 +207,8 @@ class Client {
   const b = new Client(port), c = new Client(port);
   await b.open(); await c.open();
   await b.req({ t: 'hello', name: 'Azul' }); await c.req({ t: 'hello', name: 'Verde' });
+  // Solo las cuentas registradas salen en los rankings: Azul y Verde se registran (conservan el perfil)
+  await b.req({ t: 'register', user: 'azul', pass: 'clave-azul' }); await c.req({ t: 'register', user: 'verde', pass: 'clave-verde' });
   const db = b.wait('draft'), dc = c.wait('draft');
   b.send({ t: 'queue', mode: 'ranked' }); c.send({ t: 'queue', mode: 'ranked' });
   const [d1] = await Promise.all([db, dc]);
@@ -316,6 +318,7 @@ class Client {
   const tower = require('../server/tower.js');
   const tw = new Client(port); await tw.open();
   m = await tw.req({ t: 'hello', name: 'Torre' });
+  m = await tw.req({ t: 'register', user: 'torre', pass: 'clave-torre' });
   const twProf = store.get(m.p.token);
   ok(m.p.tower && m.p.tower.streak === 0 && m.p.tower.best === 0 && !m.p.tower.team, 'perfil con Torre vacía');
   err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ dex: 6 }, { dex: 9 }] });
@@ -368,6 +371,13 @@ class Client {
   ok(!m.p.tower.team && m.p.tower.best === 21 && m.p.tower.runs === 3, 'retirarse termina la racha sin tocar el récord');
 
   // ---------- Ladder ----------
+  // Rojo es un invitado: no sale en los rankings hasta que se registra
+  tower.action(store.get(token), { a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+  tower.applyResult(store.get(token), tower.battleSetup(store.get(token)), { winner: 0 });
+  ok(!store.ladder('tower').rows.some(r => r.name === 'Rojo') && !store.ladder('dex').rows.some(r => r.name === 'Rojo'), 'un invitado no sale en los rankings');
+  tower.endRun ? tower.endRun(store.get(token)) : null;
+  store.get(token).tower.team = null; store.get(token).tower.streak = 0;
+  await store.register(store.get(token), 'rojo_ladder', 'clave-rojo');
   tower.action(store.get(token), { a: 'start', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
   for (let i = 0; i < 3; i++) tower.applyResult(store.get(token), tower.battleSetup(store.get(token)), { winner: 0 });
   let lad = await tw.req({ t: 'ladder', board: 'tower' }, 'ladder');

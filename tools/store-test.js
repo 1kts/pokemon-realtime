@@ -22,7 +22,7 @@ function run(code) {
 
 // ---------- Importar profiles.json ----------
 fs.writeFileSync(path.join(tmp, 'profiles.json'), JSON.stringify({
-  aaa: { token: 'aaa', id: 'id1', name: 'Viejo', coins: 123, elo: 1100, ranked: 3, wins: 2, losses: 1, mons: [], caught: [] },
+  aaa: { token: 'aaa', id: 'id1', name: 'Viejo', coins: 123, elo: 1100, ranked: 3, wins: 2, losses: 1, mons: [], caught: [], account: { user: 'viejo', salt: '00', hash: '00', since: 1 } },
   bbb: { token: 'bbb', name: 'SinId', coins: 5, elo: 1000, ranked: 0, mons: [], caught: [] },
 }));
 let r = run(`const a = store.get('aaa'), b = store.get('bbb'); return { a: a.coins, id: a.id, bid: b.id, rank: store.rankOf(a) };`);
@@ -59,6 +59,23 @@ ok(r === 7, 'release() guarda el perfil al desconectarse y deja de vigilarlo');
 r = run(`const p = store.get('aaa'); store.get('aaa'); store.release(p); p.coins = 55; store.save(); return null;`);
 r = run(`return store.get('aaa').coins;`);
 ok(r === 55, 'con dos conexiones, soltar una sigue guardando la otra');
+
+// ---------- Rankings e invitados abandonados ----------
+r = run(`const g = store.get(null, 'Fantasma'); g.ranked = 3; g.elo = 1500; g.caught = [1, 2, 3];
+  const reg = store.get('aaa');
+  const inBoards = () => ['ranked', 'dex'].map(b => store.ladder(b).rows.map(x => x.name));
+  return { guest: g.token, boards: inBoards(), lead: store.leaderboard().map(x => x.name), rank: store.rankOf(g) };`);
+ok(!r.boards.flat().includes('Fantasma') && !r.lead.includes('Fantasma') && r.rank === null, 'un invitado no sale en ningún ranking');
+const guestTok = r.guest;
+// Hace 61 días que no se conecta (se toca la base de datos como si hubiera pasado el tiempo)
+run(`const { DatabaseSync } = require('node:sqlite'); const db = new DatabaseSync(process.env.DB_FILE);
+  const row = db.prepare('SELECT data FROM profiles WHERE token = ?').get(${JSON.stringify(guestTok)});
+  const p = JSON.parse(row.data); p.seen = Date.now() - 61 * 864e5;
+  db.prepare('UPDATE profiles SET data = ? WHERE token = ?').run(JSON.stringify(p), ${JSON.stringify(guestTok)}); return null;`);
+r = run(`const before = store.has(${JSON.stringify(guestTok)}); const n = store.purgeGuests(); return { before, n, after: store.has(${JSON.stringify(guestTok)}), reg: store.has('aaa') };`);
+ok(r.before && r.n === 1 && !r.after && r.reg, 'un invitado con 60 días sin conectarse se borra; las cuentas registradas no');
+r = run(`const g = store.get(null, 'Activo'); g.seen = Date.now() - 90 * 864e5; return store.purgeGuests();`);
+ok(r === 0, 'nunca se borra a un invitado conectado');
 
 // ---------- Cuentas ----------
 r = run(`const p = store.get('bbb'); const x = await store.register(p, 'Azul', 'secreto1'); return !!x.p;`);

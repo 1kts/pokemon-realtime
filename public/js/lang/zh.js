@@ -695,6 +695,7 @@ export default {
     '{n} con «{q}»': '{n} 位包含“{q}”',
     'Tu puesto: <b>#{n}</b>': '你的排名：<b>第 {n} 名</b>',
     'Aún no apareces en esta tabla': '你还没有出现在这个榜单上',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': '游客不会出现在排行榜上：在个人资料中创建账号即可保留你的游戏进度。',
     'Nadie con ese nombre.': '没有叫这个名字的训练家。',
     'Esta tabla todavía está vacía.': '这个榜单还是空的。',
     '← Anterior': '← 上一页',

@@ -694,6 +694,7 @@ export default {
     '{n} con «{q}»': '“{q}” {n}명',
     'Tu puesto: <b>#{n}</b>': '내 순위: <b>{n}위</b>',
     'Aún no apareces en esta tabla': '아직 이 랭킹에 없어요',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': '게스트는 랭킹에 표시되지 않습니다. 프로필에서 계정을 만들면 진행 상황이 그대로 유지됩니다.',
     'Nadie con ese nombre.': '그 이름의 트레이너는 없어요.',
     'Esta tabla todavía está vacía.': '이 랭킹은 아직 비어 있어요.',
     '← Anterior': '← 이전',

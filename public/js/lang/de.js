@@ -693,6 +693,7 @@ export default {
     '{n} con «{q}»': '{n} mit „{q}“',
     'Tu puesto: <b>#{n}</b>': 'Dein Platz: <b>#{n}</b>',
     'Aún no apareces en esta tabla': 'Du stehst noch nicht in dieser Liste',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': 'Gäste erscheinen nicht in den Ranglisten: Erstelle in deinem Profil ein Konto und behalte deinen Spielstand.',
     'Nadie con ese nombre.': 'Niemand mit diesem Namen.',
     'Esta tabla todavía está vacía.': 'Diese Liste ist noch leer.',
     '← Anterior': '← Zurück',

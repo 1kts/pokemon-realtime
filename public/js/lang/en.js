@@ -696,6 +696,7 @@ export default {
     '{n} con «{q}»': '{n} matching "{q}"',
     'Tu puesto: <b>#{n}</b>': 'Your rank: <b>#{n}</b>',
     'Aún no apareces en esta tabla': 'You\'re not on this board yet',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': 'Guests don\'t appear in the rankings: create an account from your profile and keep your progress.',
     'Nadie con ese nombre.': 'Nobody with that name.',
     'Esta tabla todavía está vacía.': 'This board is still empty.',
     '← Anterior': '← Previous',

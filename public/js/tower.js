@@ -248,7 +248,7 @@ export const towerViews = {
     const head = `<tr><th>#</th><th>${t('Entrenador')}</th>${cols.map(c => `<th>${t(c[0])}</th>`).join('')}</tr>`;
     const row = r => `<tr data-id="${r.id}" class="${r.id === me ? 'me' : ''}"><td class="rank r${r.rank}">${r.rank}</td><td class="who"><i class="dot${r.online ? ' on' : ''}" title="${r.online ? t('En línea') : t('Desconectado')}"></i>${escapeHtml(r.name)}${r.id === me ? ` <span class="you">${t('tú')}</span>` : ''}</td>${cols.map(c => `<td>${c[1](r)}</td>`).join('')}</tr>`;
     const info = el('div', 'ladder-info');
-    info.innerHTML = `<span>${msg.total === 1 ? t('1 entrenador') : t('{n} entrenadores', { n: msg.total })}${msg.q ? ` · ${t('{n} con «{q}»', { n: msg.found, q: escapeHtml(msg.q) })}` : ''}</span>` + (msg.me ? `<span class="pill">${t('Tu puesto: <b>#{n}</b>', { n: msg.me.rank })}</span>` : `<span class="small">${t('Aún no apareces en esta tabla')}</span>`);
+    info.innerHTML = `<span>${msg.total === 1 ? t('1 entrenador') : t('{n} entrenadores', { n: msg.total })}${msg.q ? ` · ${t('{n} con «{q}»', { n: msg.found, q: escapeHtml(msg.q) })}` : ''}</span>` + (msg.me ? `<span class="pill">${t('Tu puesto: <b>#{n}</b>', { n: msg.me.rank })}</span>` : `<span class="small">${this.profile.account ? t('Aún no apareces en esta tabla') : t('Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.')}</span>`);
     box.append(info);
     if (!msg.rows.length) box.append(el('p', 'small', msg.q ? t('Nadie con ese nombre.') : t('Esta tabla todavía está vacía.')));
     else {

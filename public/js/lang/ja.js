@@ -694,6 +694,7 @@ export default {
     '{n} con «{q}»': '「{q}」で {n}人',
     'Tu puesto: <b>#{n}</b>': 'あなたの 順位：<b>{n}位</b>',
     'Aún no apareces en esta tabla': 'まだ この ランキングに のっていない',
+    'Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.': 'ゲストはランキングに表示されません。プロフィールからアカウントを作成すれば、進行状況はそのまま引き継がれます。',
     'Nadie con ese nombre.': 'その なまえの トレーナーは いません。',
     'Esta tabla todavía está vacía.': 'この ランキングは まだ からっぽ。',
     '← Anterior': '← 前へ',

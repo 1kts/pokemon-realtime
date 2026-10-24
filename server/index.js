@@ -489,6 +489,10 @@ function start(port = PORT) {
   process.on('SIGTERM', shutdown);
   process.on('SIGINT', shutdown);
   audit.log('servidor.arranca', { version: VERSION });
+  // Limpieza de invitados abandonados: al arrancar y cada 6 h
+  const purge = () => { const n = store.purgeGuests(); if (n) audit.log('sistema.invitados', { borrados: n, dias: store.GUEST_DAYS }); };
+  purge();
+  setInterval(purge, 6 * 3600e3).unref();
   return new Promise(resolve => server.listen(port, HOST, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }
 

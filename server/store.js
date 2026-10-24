@@ -56,6 +56,7 @@ for (const p of profiles.values()) if (p.account) accounts.set(p.account.user.to
 // Perfiles en uso: perfil -> { json: lo último escrito, refs: conexiones que lo usan }
 const inUse = new Map();
 function use(p) {
+  p.seen = Date.now();   // última conexión (para borrar invitados abandonados)
   const u = inUse.get(p);
   if (u) u.refs++; else inUse.set(p, { json: JSON.stringify(p), refs: 1 });
   return p;
@@ -212,6 +213,19 @@ function remove(p) {
   inUse.delete(p);
   db.prepare('DELETE FROM profiles WHERE token = ?').run(p.token);
 }
+// Invitados (sin usuario ni contraseña) que llevan GUEST_DAYS sin conectarse: se borran con su partida,
+// como dice la política de privacidad. Nunca uno conectado. Devuelve cuántos.
+const GUEST_DAYS = 60;
+function purgeGuests(now = Date.now()) {
+  const limit = now - GUEST_DAYS * 864e5;
+  let n = 0;
+  for (const p of [...profiles.values()]) {
+    if (p.account || inUse.has(p) || (p.seen || p.created || now) >= limit) continue;
+    remove(p);
+    n++;
+  }
+  return n;
+}
 const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase())) || null;
 // Busca por nombre de entrenador, usuario o id (los registrados primero)
 function search(q, limit = 50) {
@@ -262,8 +276,10 @@ const BOARDS = {
   dex: { has: p => (p.caught || []).length > 0, cmp: (a, b) => b.caught.length - a.caught.length || (b.shinies || []).length - (a.shinies || []).length || badgesOf(b) - badgesOf(a),
     row: p => ({ caught: p.caught.length, shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
 };
-// Fuera de los rankings: los suspendidos y las cuentas del equipo con todo desbloqueado (staff)
-for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !banned(p) && !p.staff && has(p); }
+// En los rankings solo salen cuentas registradas (un invitado se puede crear y tirar sin más, y con
+// varios se podría inflar el ELO de otro): ni invitados, ni suspendidos, ni cuentas del equipo con
+// todo desbloqueado (staff). Al registrarse, el invitado entra con lo que ya tenía.
+for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !!p.account && !banned(p) && !p.staff && has(p); }
 const PAGE = 20;
 const sorted = board => [...profiles.values()].filter(BOARDS[board].has).sort(BOARDS[board].cmp);
 
@@ -308,4 +324,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, byId, byUser, search, stats };
+  check, setPassword, banned, persist, remove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats };
