@@ -10,7 +10,7 @@ const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString('es-ES')}`;
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
 const PATH = ['ruta1', 'bosque', 'plateada', 'montemoon', 'celeste', 'ruta24', 'carmin', 'tunelroca', 'azulona', 'torre', 'fucsia', 'safari', 'azafran', 'islas', 'canela', 'verde', 'victoria', 'lorelei', 'bruno', 'agatha', 'lance', 'campeon'];
-const DIFFICULTIES = [['Fácil', 0.25], ['Normal', 0.5], ['Difícil', 0.75], ['Maestro', 1]];
+const DIFFICULTIES = [['Fácil', 0.1], ['Normal', 0.28], ['Difícil', 0.5], ['Maestro', 0.85]];
 
 export class UI {
   constructor(app) {
@@ -406,7 +406,7 @@ export class UI {
     const wrap = el('div', 'draft');
     wrap.append(this.topbar('Práctica contra la IA', 'menu'));
     const chosen = [];
-    let skill = 0.5;
+    let skill = 0.28;
     const grid = el('div', 'pool scroll');
     const start = el('button', 'primary', 'Empezar');
     start.disabled = true;

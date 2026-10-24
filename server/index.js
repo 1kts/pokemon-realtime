@@ -53,7 +53,7 @@ function startBattle(clientsBySide, opts, onEnd) {
 
 // ---------- Colas y draft ----------
 const queues = { ranked: [], casual: [] };
-const DRAFT_BAN_T = 15, DRAFT_PICK_T = 25;
+const DRAFT_BAN_T = 20, DRAFT_PICK_T = 30;
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
@@ -177,7 +177,7 @@ function shuffle(arr) {
 function startPractice(c, msg) {
   const list = Array.isArray(msg.dexes) ? [...new Set(msg.dexes.map(Number))].filter(d => D.RANKED_POOL.includes(d)).slice(0, 3) : [];
   if (!list.length) return send(c, { t: 'error', msg: 'Elige al menos un Pokémon' });
-  const skill = Math.max(0, Math.min(1, +msg.skill || 0.5));
+  const skill = Math.max(0, Math.min(1, +msg.skill || 0.28));
   const maps = Object.keys(D.MAPS);
   startBattle([c, null], {
     mode: 'practice', map: maps[Math.floor(Math.random() * maps.length)],
