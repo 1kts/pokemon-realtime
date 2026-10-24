@@ -1,5 +1,16 @@
 # Créditos
 
+## Mapas de región
+
+El mapa de cada región se monta con tiles pixel art de dos packs con licencia
+[CC0](https://creativecommons.org/publicdomain/zero/1.0/) (dominio público):
+
+- `public/maptiles/overworld.png`: suelo, agua y costa de
+  [Zelda-like tilesets and sprites](https://opengameart.org/content/zelda-like-tilesets-and-sprites), de ArMM1998.
+- `public/maptiles/tinytown.png`: árboles y casas de [Tiny Town](https://kenney.nl/assets/tiny-town), de Kenney.
+
+Caminos, montes y rutas marinas se dibujan por código. No se usa ningún mapa oficial.
+
 ## Sprites
 
 Los sprites de todos los Pokémon (`public/sprites/{nº de Pokédex}`) son estilo

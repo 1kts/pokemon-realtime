@@ -183,7 +183,7 @@ export class UI {
     const body = el('div', 'story-body');
     const map = el('div', 'map region-' + region);
     const art = REGION_ART[region];
-    map.style.backgroundImage = `url(${regionMapImage(region)})`;
+    regionMapImage(region).then(url => { map.style.backgroundImage = `url(${url})`; map.classList.add('ready'); }).catch(e => console.warn('mapa', e));
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
     const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
     const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));

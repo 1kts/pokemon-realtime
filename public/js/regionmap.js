@@ -1,6 +1,7 @@
-// Mapa de región pintado por código (arte propio, no el mapa oficial): mar con oleaje, costa con
-// playa, tierra con vegetación, montañas, bosques, lagos, caminos, rutas marinas y ciudades.
-// Se dibuja una vez por región en un canvas y se usa como fondo; los nombres van en HTML.
+// Mapa de región montado con tiles pixel art (arte propio a partir de packs CC0, no el mapa oficial).
+// Suelo, agua, costa y acantilados: "Zelda-like tilesets" de ArMM1998 (public/maptiles/overworld.png).
+// Árboles, bosques y casas: "Tiny Town" de Kenney (public/maptiles/tinytown.png). Caminos y rutas
+// marinas se pintan píxel a píxel con la paleta de los packs. Los nombres van en HTML.
 // Coordenadas en % (las mismas que los nodos de tools/regions-src.js).
 
 export const REGION_ART = {
@@ -18,7 +19,7 @@ export const REGION_ART = {
     lakes: [[48, 94, 2.5, 1.8], [72, 60, 2, 1.4]],
   },
   johto: {
-    shape: 'M3,12 Q4,3 16,4 L46,2 Q70,0 86,4 Q99,8 98,26 Q100,46 96,66 Q99,84 90,96 L60,98 Q40,96 28,92 Q12,90 4,74 Q-1,58 3,40 Z',
+    shape: 'M6,10 Q8,3 18,4 L46,2 Q70,0 86,4 Q99,8 98,26 Q100,46 96,66 Q99,84 90,96 L60,98 Q40,96 30,92 Q24,86 25,76 Q22,62 24,52 Q20,42 19,36 Q12,34 8,26 Q4,18 6,10 Z',
     islands: [[4, 52, 4, 5], [16, 66, 3, 2.5]],
     cities: [['Pueblo Primavera', 90, 74, 3], ['Ciudad Cerezo', 74, 68, 3], ['Ciudad Malva', 58, 42, 5], ['Pueblo Azalea', 44, 78, 3], ['Ciudad Trigal', 32, 52, 8], ['Ciudad Iris', 42, 12, 5],
       ['Ciudad Olivo', 16, 32, 5], ['Ciudad Orquídea', 4, 52, 3], ['Pueblo Caoba', 72, 22, 3], ['Ciudad Endrino', 92, 26, 4], ['Liga Pokémon', 82, 92, 3]],
@@ -26,130 +27,255 @@ export const REGION_ART = {
       [[32, 52], [32, 40], [42, 34], [48, 28], [58, 42]], [[42, 34], [42, 22], [42, 12]], [[42, 12], [28, 14], [18, 20], [16, 32]], [[42, 12], [56, 14], [62, 20], [72, 22]],
       [[72, 22], [72, 12], [74, 6]], [[72, 22], [80, 22], [88, 14], [92, 26]], [[92, 26], [92, 42], [88, 58], [82, 72]], [[90, 74], [96, 62], [96, 82], [82, 92]], [[58, 42], [48, 50], [32, 52]]],
     sea: [[[16, 32], [12, 44], [8, 60], [4, 52]], [[8, 60], [16, 66]]],
-    mountains: [[62, 16, 1.1], [57, 19, 0.8], [67, 21, 0.8], [86, 12, 1], [91, 15, 0.9], [96, 9, 1], [98, 40, 0.8], [93, 46, 0.7], [24, 8, 0.8], [6, 18, 0.9]],
-    forests: [[32, 76, 5], [42, 34, 3], [70, 50, 3], [20, 46, 3], [84, 84, 3]],
+    mountains: [[62, 16, 1.1], [57, 19, 0.8], [67, 21, 0.8], [86, 12, 1], [91, 15, 0.9], [96, 9, 1], [98, 40, 0.8], [93, 46, 0.7], [24, 8, 0.8], [12, 14, 0.9]],
+    forests: [[32, 76, 5], [42, 34, 3], [70, 50, 3], [28, 40, 3], [84, 84, 3]],
     lakes: [[74, 6, 4, 2.6], [96, 13, 2.2, 1.6], [48, 50, 1.6, 1.1]],
   },
 };
 
+const TILE = 16, COLS = 64, ROWS = 40, OUT = 2;   // rejilla de 64x40 tiles; se exporta a 2x
+const W = COLS * TILE, H = ROWS * TILE;
+const SHEETS = { ow: ['/maptiles/overworld.png', 40], tt: ['/maptiles/tinytown.png', 12] };
+
+// Tiles (índice dentro de su hoja)
+const OW = {
+  water: 283, ripples: [123, 124, 125, 163, 164, 165], waves: [41, 42, 81, 82],
+  grass: [0, 0, 0, 405, 365], flowers: [320, 321, 443, 483],
+  // Costa por esquinas (tl,tr,bl,br; 1 = tierra): orilla de estanque y esquinas de isla
+  coast: { 12: 243, 3: 323, 10: 282, 5: 284, 14: 242, 13: 244, 11: 322, 7: 324, 1: 362, 2: 363, 4: 402, 8: 403 },
+};
+const TT = {
+  forest: { nw: 6, n: 7, ne: 8, w: 18, c: 19, e: 20, sw: 30, s: 31, se: 32 },
+  trees: [16, 16, 28, 4, 5, 15, 27],
+  big: [[[48, 51, 50], [60, 63, 62], [84, 85, 75]], [[52, 51, 54], [64, 63, 66], [84, 85, 75]]],   // casas con buhardilla
+  small: [[[52, 54], [64, 66], [86, 75]], [[48, 50], [60, 62], [86, 75]]],
+  center: [[52, 55, 54], [64, 67, 66], [88, 89, 79]],   // edificio grande con tejado rojo (Centro Pokémon)
+};
+const PATH = { fill: [232, 196, 132], light: [246, 218, 160], dark: [196, 150, 96], edge: [98, 140, 52] };
+
+// Monte pixel art de w x h: ladera izquierda iluminada, derecha en sombra, nieve opcional y contorno.
+const MCOL = { out: [61, 42, 50], light: [204, 168, 120], mid: [168, 128, 88], shade: [124, 90, 64], snow: [248, 250, 255], snowShade: [192, 206, 226] };
+function mountainSprite(w, h, snow, r) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d'), img = g.createImageData(w, h), d = img.data;
+  const peak = w * (0.42 + r() * 0.16);
+  const jag = Array.from({ length: h }, () => (r() - 0.5) * 2);
+  const inShape = (x, y) => {
+    if (y < 1 || y >= h) return false;
+    const t = y / h, half = t * w / 2 + jag[y] * t;
+    return x >= peak - half * (peak / (w / 2)) && x <= peak + half * ((w - peak) / (w / 2)) && x >= 0 && x < w;
+  };
+  const snowLine = h * (0.28 + r() * 0.08);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!inShape(x, y)) continue;
+    const edge = !inShape(x - 1, y) || !inShape(x + 1, y) || !inShape(x, y - 1) || y === h - 1;
+    const ridge = peak + (y / h) * w * 0.08;
+    const left = x < ridge;
+    let col = edge ? MCOL.out : left ? (x < ridge - w * 0.18 * (y / h) - 2 ? MCOL.light : MCOL.mid) : MCOL.shade;
+    if (!edge && snow && y < snowLine + Math.sin(x * 1.3) * 2) col = left ? MCOL.snow : MCOL.snowShade;
+    if (!edge && !snow && y > h * 0.55 && (x * 7 + y * 13) % 29 === 0) col = MCOL.shade;
+    const o = (y * w + x) * 4;
+    d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  return c;
+}
+
 function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const imgs = {};
+const loadImg = src => imgs[src] || (imgs[src] = new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; }));
 const cache = new Map();
 
-// Devuelve un dataURL con el mapa pintado de la región (se cachea).
-export function regionMapImage(region, W = 1600, H = 1000) {
-  const key = region + W + 'x' + H;
-  if (cache.has(key)) return cache.get(key);
+// Devuelve (promesa) una URL con el mapa de la región. Se genera una vez y se cachea.
+export function regionMapImage(region) {
+  if (!cache.has(region)) cache.set(region, build(region));
+  return cache.get(region);
+}
+
+async function build(region) {
+  const [ow, tt] = await Promise.all([loadImg(SHEETS.ow[0]), loadImg(SHEETS.tt[0])]);
   const art = REGION_ART[region];
+  const r = rng(region.length * 977 + 13);
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const g = c.getContext('2d');
-  const r = rng(region.length * 977 + 13);
-  const X = x => x / 100 * W, Y = y => y / 100 * H, S = W / 100;
-  const shapeOf = d => { const p = new Path2D(); p.addPath(new Path2D(d), new DOMMatrix().scale(W / 100, H / 100)); return p; };
-  const land = shapeOf(art.shape);
+  g.imageSmoothingEnabled = false;
+  const put = (sheet, idx, cx, cy) => {
+    const [img, cols] = sheet === 'ow' ? [ow, SHEETS.ow[1]] : [tt, SHEETS.tt[1]];
+    g.drawImage(img, (idx % cols) * TILE, Math.floor(idx / cols) * TILE, TILE, TILE, cx * TILE, cy * TILE, TILE, TILE);
+  };
+  const pick = a => a[(r() * a.length) | 0];
+  const at = (x, y) => [Math.round(x / 100 * COLS), Math.round(y / 100 * ROWS)];   // % -> celda
+  const inside = (cx, cy) => cx >= 0 && cy >= 0 && cx < COLS && cy < ROWS;
+  const key = (cx, cy) => cy * COLS + cx;
 
-  // Mar: profundidad y oleaje
-  const sea = g.createLinearGradient(0, 0, W, H);
-  sea.addColorStop(0, '#2f7cc8'); sea.addColorStop(1, '#1b4f92');
-  g.fillStyle = sea; g.fillRect(0, 0, W, H);
-  g.strokeStyle = 'rgba(255,255,255,0.08)'; g.lineWidth = 2;
-  for (let i = 0; i < 420; i++) {
-    const x = r() * W, y = r() * H, w = 10 + r() * 22;
-    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + w / 2, y - 4, x + w, y); g.stroke();
+  // 1) Tierra en los vértices de la rejilla: forma de la región + islas, menos lagos
+  const land = new Path2D();
+  land.addPath(new Path2D(art.shape), new DOMMatrix().scale(W / 100, H / 100));
+  const inEll = (px, py, [x, y, rx, ry], grow = 0) => ((px - x) / (rx + grow)) ** 2 + ((py - y) / (ry * 2.24 + grow * 1.6)) ** 2 < 1;
+  const V = new Uint8Array((COLS + 1) * (ROWS + 1));
+  const vk = (vx, vy) => vy * (COLS + 1) + vx;
+  for (let vy = 0; vy <= ROWS; vy++) for (let vx = 0; vx <= COLS; vx++) {
+    const px = vx / COLS * 100, py = vy / ROWS * 100;
+    let l = g.isPointInPath(land, vx * TILE, vy * TILE) || art.islands.some(i => inEll(px, py, i, 0.6));
+    if (l && art.lakes.some(k => inEll(px, py, k, 0.8))) l = false;
+    V[vk(vx, vy)] = l ? 1 : 0;
   }
-  // Islas
-  const islands = new Path2D();
-  for (const [x, y, rx, ry] of art.islands) islands.ellipse(X(x), Y(y), rx * S, ry * S * 1.4, 0, 0, Math.PI * 2);
-  // Agua poco profunda alrededor de la costa
-  g.save();
-  g.strokeStyle = 'rgba(120,210,255,0.35)'; g.lineWidth = 34; g.lineJoin = 'round';
-  g.stroke(land); g.stroke(islands);
-  g.strokeStyle = 'rgba(160,230,255,0.35)'; g.lineWidth = 16; g.stroke(land); g.stroke(islands);
-  g.restore();
-  // Playa
-  g.strokeStyle = '#e9d9a0'; g.lineWidth = 12; g.lineJoin = 'round';
-  g.stroke(land); g.stroke(islands);
-  // Tierra
-  const grad = g.createRadialGradient(W * 0.5, H * 0.45, 50, W * 0.5, H * 0.5, W * 0.65);
-  grad.addColorStop(0, '#86c862'); grad.addColorStop(0.7, '#62a847'); grad.addColorStop(1, '#4d8f3a');
-  g.fillStyle = grad; g.fill(land); g.fill(islands);
-  // Vegetación: manchas claras y oscuras + briznas, recortadas a la tierra
-  g.save(); g.clip(land);
-  for (let i = 0; i < 260; i++) {
-    g.fillStyle = r() < 0.5 ? 'rgba(160,215,110,0.18)' : 'rgba(40,100,40,0.16)';
-    g.beginPath(); g.ellipse(r() * W, r() * H, 20 + r() * 70, 12 + r() * 40, r() * 3, 0, Math.PI * 2); g.fill();
+  // Sin diagonales (no hay tile para ellas): se rellenan con tierra
+  for (let pass = 0; pass < 4; pass++) for (let cy = 0; cy < ROWS; cy++) for (let cx = 0; cx < COLS; cx++) {
+    const a = vk(cx, cy), b = vk(cx + 1, cy), d = vk(cx, cy + 1), e = vk(cx + 1, cy + 1);
+    if (V[a] === V[e] && V[b] === V[d] && V[a] !== V[b]) V[a] = V[b] = V[d] = V[e] = 1;
   }
-  g.strokeStyle = 'rgba(40,90,30,0.25)'; g.lineWidth = 1.2;
-  for (let i = 0; i < 2600; i++) { const x = r() * W, y = r() * H; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * 3, y - 4 - r() * 4); g.stroke(); }
-  // Tierras altas alrededor de las montañas
+  const corners = (cx, cy) => V[vk(cx, cy)] << 3 | V[vk(cx + 1, cy)] << 2 | V[vk(cx, cy + 1)] << 1 | V[vk(cx + 1, cy + 1)];
+  const K = new Uint8Array(COLS * ROWS);
+  for (let cy = 0; cy < ROWS; cy++) for (let cx = 0; cx < COLS; cx++) K[key(cx, cy)] = corners(cx, cy);
+  const solid = (cx, cy) => inside(cx, cy) && K[key(cx, cy)] === 15;
+  const used = new Uint8Array(COLS * ROWS);   // celdas ocupadas (camino, ciudad, monte, bosque...)
+
+  // 2) Suelo: agua, costa y hierba
+  for (let cy = 0; cy < ROWS; cy++) for (let cx = 0; cx < COLS; cx++) {
+    const k = K[key(cx, cy)];
+    if (k === 15) put('ow', pick(OW.grass), cx, cy);
+    else if (k === 0) put('ow', r() < 0.06 ? pick(OW.ripples) : OW.water, cx, cy);
+    else { put('ow', OW.water, cx, cy); put('ow', OW.coast[k], cx, cy); }
+  }
+  // Mar profundo: más oscuro cuanto más lejos de la costa (bandas, como en los mapas de GBA)
+  const dist = new Int16Array(COLS * ROWS).fill(-1);
+  const queue = [];
+  for (let i = 0; i < COLS * ROWS; i++) if (K[i]) { dist[i] = 0; queue.push(i); }
+  for (let qi = 0; qi < queue.length; qi++) {
+    const i = queue[qi], cx = i % COLS, cy = (i / COLS) | 0;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = cx + dx, ny = cy + dy;
+      if (inside(nx, ny) && dist[key(nx, ny)] < 0) { dist[key(nx, ny)] = dist[i] + 1; queue.push(key(nx, ny)); }
+    }
+  }
+  for (let i = 0; i < COLS * ROWS; i++) {
+    const d = dist[i];
+    if (d < 2) continue;
+    g.fillStyle = `rgba(8,30,90,${Math.min(0.32, (d - 1) * 0.08)})`;
+    g.fillRect((i % COLS) * TILE, ((i / COLS) | 0) * TILE, TILE, TILE);
+    if (d >= 3 && r() < 0.035) put('ow', pick(OW.waves), i % COLS, (i / COLS) | 0);
+  }
+
+  // 3) Caminos (píxel a píxel): tierra con borde y motas, solo sobre tierra
+  const segs = [];
+  for (const l of art.roads) for (let i = 1; i < l.length; i++) segs.push([l[i - 1][0] / 100 * W, l[i - 1][1] / 100 * H, l[i][0] / 100 * W, l[i][1] / 100 * H]);
+  const img = g.getImageData(0, 0, W, H), px = img.data;
+  const RW = 3.2;   // medio ancho del camino en píxeles
+  const mask = new Uint8Array(W * H);   // 2 = camino, 1 = borde
+  for (const [ax, ay, bx, by] of segs) {
+    const x0 = Math.max(0, Math.floor(Math.min(ax, bx) - 6)), x1 = Math.min(W - 1, Math.ceil(Math.max(ax, bx) + 6));
+    const y0 = Math.max(0, Math.floor(Math.min(ay, by) - 6)), y1 = Math.min(H - 1, Math.ceil(Math.max(ay, by) + 6));
+    const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy || 1;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const k = K[key((x / TILE) | 0, (y / TILE) | 0)];
+      if (k !== 15) continue;
+      const t = Math.max(0, Math.min(1, ((x + 0.5 - ax) * dx + (y + 0.5 - ay) * dy) / L));
+      const d = Math.hypot(ax + t * dx - x - 0.5, ay + t * dy - y - 0.5);
+      const o = (y * W + x) * 4;
+      if (d < RW) {
+        mask[y * W + x] = 2;
+        const h = (x * 73856093 ^ y * 19349663) >>> 0;
+        const col = h % 23 === 0 ? PATH.dark : h % 17 === 0 ? PATH.light : PATH.fill;
+        px[o] = col[0]; px[o + 1] = col[1]; px[o + 2] = col[2];
+        used[key((x / TILE) | 0, (y / TILE) | 0)] = 1;
+      } else if (d < RW + 1.2 && !mask[y * W + x]) {
+        mask[y * W + x] = 1;
+        px[o] = PATH.edge[0]; px[o + 1] = PATH.edge[1]; px[o + 2] = PATH.edge[2];
+      }
+    }
+  }
+  g.putImageData(img, 0, 0);
+
+  // 4) Ciudades: plaza de tierra clara y una fila (o dos) de casas pegadas, como una calle
+  const towns = art.cities.map(([name, x, y, size]) => {
+    const rows = size >= 7 ? [[TT.center, TT.big[0]], [TT.big[1], TT.small[0]]]
+      : size >= 5 ? [[TT.center, TT.big[0], TT.small[1]]]
+      : size >= 4 ? [[TT.big[1], TT.small[0]]] : [[pick(TT.small)]];
+    const w = Math.max(...rows.map(rw => rw.reduce((s2, hs) => s2 + hs[0].length, 0))), h = rows.length * 3;
+    const [cx, cy] = at(x, y);
+    return { rows, x0: cx - (w >> 1), y0: cy - (h >> 1), w, h };
+  });
+  for (const t of towns) {
+    for (let y = t.y0 - 1; y <= t.y0 + t.h; y++) for (let x = t.x0 - 1; x <= t.x0 + t.w; x++) if (inside(x, y)) used[key(x, y)] = 1;
+    const bx = t.x0 * TILE - 7, by = t.y0 * TILE - 5, bw = t.w * TILE + 14, bh = t.h * TILE + 12;
+    g.fillStyle = `rgb(${PATH.edge})`; g.fillRect(bx - 1, by, bw + 2, bh); g.fillRect(bx, by - 1, bw, bh + 2);
+    g.fillStyle = `rgb(${PATH.fill})`; g.fillRect(bx, by, bw, bh);
+    g.fillStyle = `rgb(${PATH.light})`;
+    for (let i = 0; i < bw * bh / 50; i++) g.fillRect(bx + ((r() * bw) | 0), by + ((r() * bh) | 0), 1, 1);
+  }
+
+  // 5) Montes: sprites pixel art (cara iluminada, cara en sombra, nieve y contorno oscuro)
+  const peaks = [];
   for (const [x, y, k] of art.mountains) {
-    const hg = g.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), 9 * S * k);
-    hg.addColorStop(0, 'rgba(150,130,90,0.55)'); hg.addColorStop(1, 'rgba(150,130,90,0)');
-    g.fillStyle = hg; g.fillRect(X(x) - 10 * S * k, Y(y) - 10 * S * k, 20 * S * k, 20 * S * k);
+    const n = 2 + Math.round(k * 2);
+    for (let i = 0; i < n; i++) {
+      const s2 = i === 0 ? 1 : 0.55 + r() * 0.3;
+      const pw = Math.round(66 * k * s2), ph = Math.round(50 * k * s2);
+      const bx = x / 100 * W + (i === 0 ? 0 : (r() - 0.5) * 80 * k), by = y / 100 * H + 14 * k + (i === 0 ? 0 : (r() - 0.3) * 14 * k);
+      const cx = (bx / TILE) | 0, cy = ((by - 2) / TILE) | 0;
+      if (!solid(cx, cy)) continue;
+      peaks.push({ x: Math.round(bx - pw / 2), y: Math.round(by - ph), w: pw, h: ph, snow: s2 > 0.7 && k >= 0.8 });
+    }
   }
-  g.restore();
-  // Lagos
-  for (const [x, y, rx, ry] of art.lakes) {
-    g.fillStyle = '#e9d9a0'; g.beginPath(); g.ellipse(X(x), Y(y), rx * S + 5, ry * S * 1.4 + 5, 0, 0, Math.PI * 2); g.fill();
-    const lg = g.createRadialGradient(X(x), Y(y), 0, X(x), Y(y), rx * S);
-    lg.addColorStop(0, '#2a6cc0'); lg.addColorStop(1, '#4a9be8');
-    g.fillStyle = lg; g.beginPath(); g.ellipse(X(x), Y(y), rx * S, ry * S * 1.4, 0, 0, Math.PI * 2); g.fill();
-  }
-  // Rutas marinas
-  g.setLineDash([10, 9]); g.lineCap = 'round'; g.strokeStyle = 'rgba(220,245,255,0.85)'; g.lineWidth = 4;
-  for (const l of art.sea) { g.beginPath(); l.forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))); g.stroke(); }
-  g.setLineDash([]);
-  // Caminos: borde oscuro, tierra y una línea central clara
-  const roadPath = () => { g.beginPath(); for (const l of art.roads) l.forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))); };
-  g.lineJoin = 'round'; g.lineCap = 'round';
-  roadPath(); g.strokeStyle = 'rgba(70,50,25,0.55)'; g.lineWidth = 15; g.stroke();
-  roadPath(); g.strokeStyle = '#d8bf86'; g.lineWidth = 10; g.stroke();
-  roadPath(); g.strokeStyle = 'rgba(255,245,210,0.6)'; g.lineWidth = 3; g.stroke();
-  // Bosques: árboles con sombra, copa y brillo
+  for (const pk of peaks) for (let y = Math.floor(pk.y / TILE); y <= Math.floor((pk.y + pk.h) / TILE); y++)
+    for (let x = Math.floor((pk.x + pk.w * 0.15) / TILE); x <= Math.floor((pk.x + pk.w * 0.85) / TILE); x++) if (inside(x, y)) used[key(x, y)] = 1;
+
+  // 6) Bosques: árboles densos y solapados; árboles sueltos y flores por el resto
+  const trees = [];
   for (const [x, y, n] of art.forests) {
-    const trees = [];
-    for (let i = 0; i < n * 6; i++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * n * S * 0.9; trees.push([X(x) + Math.cos(a) * d, Y(y) + Math.sin(a) * d * 0.8]); }
-    trees.sort((a, b) => a[1] - b[1]);
-    for (const [tx, ty] of trees) {
-      const s = 7 + r() * 5;
-      g.fillStyle = 'rgba(0,0,0,0.22)'; g.beginPath(); g.ellipse(tx + 3, ty + s * 0.8, s * 0.9, s * 0.35, 0, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#5a3e24'; g.fillRect(tx - 1.5, ty, 3, s * 0.7);
-      g.fillStyle = r() < 0.5 ? '#2f7a2c' : '#286a26'; g.beginPath(); g.arc(tx, ty - s * 0.2, s, 0, Math.PI * 2); g.fill();
-      g.fillStyle = 'rgba(160,230,110,0.45)'; g.beginPath(); g.arc(tx - s * 0.35, ty - s * 0.55, s * 0.45, 0, Math.PI * 2); g.fill();
+    const fx = x / 100 * W, fy = y / 100 * H, ra = n * 0.9 / 100 * W + 6, rb = n * 0.75 / 100 * W + 4;
+    for (let ty = fy - rb; ty <= fy + rb; ty += 8) for (let tx = fx - ra; tx <= fx + ra; tx += 9) {
+      const jx = tx + (r() - 0.5) * 6 + ((ty / 8) & 1) * 4, jy = ty + (r() - 0.5) * 4;
+      if (((jx - fx) / ra) ** 2 + ((jy - fy) / rb) ** 2 > 1 - r() * 0.25) continue;
+      const cx = (jx / TILE) | 0, cy = (jy / TILE) | 0;
+      if (!solid(cx, cy) || used[key(cx, cy)] === 1) continue;
+      trees.push([Math.round(jx), Math.round(jy), r() < 0.75 ? 16 : pick([4, 28])]);
+      used[key(cx, cy)] = 2;
     }
   }
-  // Montañas: cara iluminada, cara en sombra y nieve
-  const mounts = [...art.mountains].sort((a, b) => a[1] - b[1]);
-  for (const [x, y, k] of mounts) {
-    const cx = X(x), by = Y(y) + 3 * S * k, h = 7 * S * k, w = 5.5 * S * k;
-    g.fillStyle = 'rgba(0,0,0,0.22)'; g.beginPath(); g.ellipse(cx + w * 0.3, by, w * 1.1, w * 0.3, 0, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#a8916c'; g.beginPath(); g.moveTo(cx - w, by); g.lineTo(cx, by - h); g.lineTo(cx, by); g.fill();
-    g.fillStyle = '#7c6648'; g.beginPath(); g.moveTo(cx, by - h); g.lineTo(cx + w, by); g.lineTo(cx, by); g.fill();
-    g.fillStyle = '#f4f6fb'; g.beginPath(); g.moveTo(cx - w * 0.3, by - h * 0.7); g.lineTo(cx, by - h); g.lineTo(cx + w * 0.3, by - h * 0.7); g.lineTo(cx + w * 0.1, by - h * 0.62); g.lineTo(cx - w * 0.08, by - h * 0.72); g.fill();
+  for (let cy = 0; cy < ROWS; cy++) for (let cx = 0; cx < COLS; cx++) {
+    if (!solid(cx, cy) || used[key(cx, cy)]) continue;
+    const v = r();
+    if (v < 0.07) trees.push([cx * TILE + 8, cx * 0 + cy * TILE + 12, pick(TT.trees)]);
+    else if (v < 0.11) put('ow', pick(OW.flowers), cx, cy);
   }
-  // Ciudades: plaza y casitas con tejados de colores
-  const roofs = ['#d8483a', '#3b78d8', '#e8a020', '#7a4ab8', '#2f9a5a'];
-  for (const [, x, y, size] of art.cities) {
-    const cx = X(x), cy = Y(y);
-    g.fillStyle = 'rgba(0,0,0,0.25)'; g.beginPath(); g.ellipse(cx + 3, cy + 4, size * 6 + 10, size * 3 + 6, 0, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#d9cfb4'; g.beginPath(); g.ellipse(cx, cy, size * 6 + 8, size * 3 + 5, 0, 0, Math.PI * 2); g.fill();
-    const houses = [];
-    for (let i = 0; i < size * 2 + 2; i++) houses.push([cx + (r() - 0.5) * size * 10, cy + (r() - 0.5) * size * 5]);
-    houses.sort((a, b) => a[1] - b[1]);
-    for (const [hx, hy] of houses) {
-      const w = 9 + r() * 5, h = 7 + r() * 4;
-      g.fillStyle = '#f2ead8'; g.fillRect(hx - w / 2, hy - h / 2, w, h);
-      g.fillStyle = roofs[(r() * roofs.length) | 0];
-      g.beginPath(); g.moveTo(hx - w / 2 - 2, hy - h / 2 + 1); g.lineTo(hx, hy - h / 2 - 6); g.lineTo(hx + w / 2 + 2, hy - h / 2 + 1); g.fill();
-      g.fillStyle = '#4a3a2a'; g.fillRect(hx - 1.5, hy + h / 2 - 4, 3, 4);
+  // Se dibujan montes y árboles juntos, de arriba abajo, para que se solapen bien
+  const sprites = [...peaks.map(pk => ({ y: pk.y + pk.h, draw: () => g.drawImage(mountainSprite(pk.w, pk.h, pk.snow, r), pk.x, pk.y) })),
+    ...trees.map(([tx, ty, idx]) => ({ y: ty + 2, draw: () => g.drawImage(tt, (idx % 12) * TILE, Math.floor(idx / 12) * TILE, TILE, TILE, tx - 8, ty - 13, TILE, TILE) }))];
+  sprites.sort((m, n) => m.y - n.y).forEach(sp => sp.draw());
+
+  // 7) Casas (encima de la plaza)
+  for (const t of towns) t.rows.forEach((row, ri) => {
+    const rw = row.reduce((s2, hs) => s2 + hs[0].length, 0);
+    let hx = t.x0 + ((t.w - rw) >> 1);
+    const hy = t.y0 + ri * 3;
+    for (const house of row) {
+      house.forEach((line, dy) => line.forEach((idx, dx) => { if (inside(hx + dx, hy + dy)) put('tt', idx, hx + dx, hy + dy); }));
+      g.fillStyle = '#3d2a32'; g.fillRect(hx * TILE, hy * TILE, 1, 3 * TILE);   // contorno izquierdo
+      hx += house[0].length;
     }
+  });
+
+  // 8) Rutas marinas: puntos blancos sobre el agua
+  g.fillStyle = '#eaf6ff';
+  for (const l of art.sea) for (let i = 1; i < l.length; i++) {
+    const [ax, ay] = [l[i - 1][0] / 100 * W, l[i - 1][1] / 100 * H], [bx, by] = [l[i][0] / 100 * W, l[i][1] / 100 * H];
+    const n = Math.ceil(Math.hypot(bx - ax, by - ay) / 7);
+    for (let j = 0; j <= n; j++) g.fillRect(Math.round(ax + (bx - ax) * j / n) - 1, Math.round(ay + (by - ay) * j / n) - 1, 3, 3);
   }
-  // Viñeta y textura de papel
-  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, W * 0.7);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.35)');
-  g.fillStyle = vg; g.fillRect(0, 0, W, H);
-  for (let i = 0; i < 9000; i++) { g.fillStyle = `rgba(255,255,255,${r() * 0.03})`; g.fillRect(r() * W, r() * H, 2, 2); }
-  const url = c.toDataURL('image/jpeg', 0.9);
-  cache.set(key, url);
-  return url;
+
+  // Exporta a 2x sin suavizado (píxeles nítidos) con una viñeta suave
+  const o = document.createElement('canvas');
+  o.width = W * OUT; o.height = H * OUT;
+  const og = o.getContext('2d');
+  og.imageSmoothingEnabled = false;
+  og.drawImage(c, 0, 0, o.width, o.height);
+  const vg = og.createRadialGradient(o.width / 2, o.height / 2, o.height * 0.4, o.width / 2, o.height / 2, o.width * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.3)');
+  og.fillStyle = vg; og.fillRect(0, 0, o.width, o.height);
+  const blob = await new Promise(ok => o.toBlob(ok, 'image/png'));
+  return URL.createObjectURL(blob);
 }
