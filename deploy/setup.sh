@@ -2,12 +2,15 @@
 # Prepara un servidor Ubuntu 24.04 recién creado (Hetzner Cloud) para Arena Pokémon. Se ejecuta
 # como root desde una copia de esta carpeta, y se puede repetir (por ejemplo, para poner el dominio):
 #   DEPLOY_KEY="ssh-ed25519 AAAA… github-actions" bash setup.sh [dominio]
-# Sin dominio usa <ip>.sslip.io, que ya tiene HTTPS mientras no haya dominio propio.
+# Sin dominio usa <ip>.sslip.io, que ya tiene HTTPS mientras no haya dominio propio. El dominio se
+# recuerda (/etc/arena-domain): repetir setup.sh sin él no vuelve a la dirección provisional.
 # Ver deploy/README.md.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 IP=$(hostname -I | awk '{print $1}')
-DOMAIN=${1:-$(echo "$IP" | tr . -).sslip.io}
+SSLIP=$(echo "$IP" | tr . -).sslip.io
+[ -n "${1:-}" ] && echo "$1" > /etc/arena-domain
+DOMAIN=$(cat /etc/arena-domain 2>/dev/null || echo "$SSLIP")
 
 echo "== Paquetes"
 export DEBIAN_FRONTEND=noninteractive
@@ -52,7 +55,14 @@ systemctl enable --now arena-backup.timer
 # arena-admin alta|baja|lista: administradores del panel (como el usuario arena, con su base de datos)
 printf '%s\n' '#!/bin/sh' 'exec sudo -u arena DB_FILE=/var/lib/arena/arena.db /usr/bin/node /srv/arena/current/tools/admin.js "$@"' > /usr/local/bin/arena-admin
 chmod 755 /usr/local/bin/arena-admin
-sed "s/^DOMINIO /$DOMAIN /" "$HERE/Caddyfile" > /etc/caddy/Caddyfile
+{
+  sed "s/^DOMINIO /$DOMAIN /" "$HERE/Caddyfile"
+  # Con dominio propio, www y la dirección provisional llevan al dominio (con la misma ruta)
+  if [ "$DOMAIN" != "$SSLIP" ]; then
+    printf '\nwww.%s, %s {\n\tredir https://%s{uri} permanent\n}\n' "$DOMAIN" "$SSLIP" "$DOMAIN"
+  fi
+} > /etc/caddy/Caddyfile
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 systemctl reload-or-restart caddy
 
 echo "== SSH"
