@@ -1,0 +1,8 @@
+{
+  "name": "arena-monstruos",
+  "version": "0.1.0",
+  "description": "Juego de combates de criaturas en tiempo real para navegador",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "ws": "^8.18.0" }
+}

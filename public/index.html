@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arena Monstruos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="menu" class="panel">
+  <h1>Arena Monstruos</h1>
+  <p class="sub">Combates en tiempo real</p>
+  <input id="name" maxlength="16" placeholder="Tu nombre">
+  <div id="picker"></div>
+  <div class="row">
+    <button id="online">Combate online</button>
+    <button id="vsbot" class="alt">Contra bot</button>
+  </div>
+  <p class="help">WASD para moverte · Ratón para apuntar · Clic izq / 1, clic der / 2, Q / 3, E / 4</p>
+</div>
+<div id="game" hidden>
+  <canvas id="cv" width="960" height="600"></canvas>
+  <div id="hud"></div>
+  <div id="overlay" hidden></div>
+  <div id="net"></div>
+</div>
+<script src="shared.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
