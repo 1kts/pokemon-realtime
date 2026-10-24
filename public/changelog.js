@@ -11,7 +11,7 @@
         ['nuevo', 'Temporada 1 de clasificatoria: premio por cada liga alcanzada (dinero, objetos, título y marco) y premio de fin de temporada.'],
         ['nuevo', 'Dinero por cada clasificatoria y extra por la primera victoria del día.'],
         ['nuevo', 'Ranking con tu puesto, títulos y marcos.'],
-        ['nuevo', 'Esta pantalla de novedades y aviso cuando hay una versión nueva.'],
+        ['nuevo', 'Esta pantalla de novedades. Cuando sale una versión nueva, el juego se actualiza solo al volver a los menús, sin cortar tu combate.'],
       ],
     },
     {

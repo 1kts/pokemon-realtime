@@ -306,6 +306,7 @@ function handle(c, msg) {
     if (err) send(c, { t: 'error', msg: err });
     return sendProfile(c);
   }
+  if (draining && starts(msg)) return send(c, { t: 'error', msg: DRAIN_MSG });
   if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
   if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
   if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
@@ -353,7 +354,34 @@ function auth(c, msg) {
   sendProfile(c);
 }
 
+// ---------- Apagado ----------
+// Al desplegar llega SIGTERM: se dejan de aceptar colas y combates nuevos, se esperan los combates
+// y drafts en curso (como mucho DRAIN_MS; el hosting tiene que dar ese margen antes de matar el
+// proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
+const DRAIN_MS = 5 * 60 * 1000;
+const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
+const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
+  || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
+let draining = false;
+
+function shutdown() {
+  if (draining) { store.flush(); process.exit(0); }
+  draining = true;
+  console.log('Apagando: esperando a los combates en curso…');
+  for (const c of clients) {
+    if (c.queue) { leaveQueue(c); send(c, { t: 'cancelled', reason: DRAIN_MSG }); } else send(c, { t: 'error', msg: DRAIN_MSG });
+  }
+  const until = Date.now() + DRAIN_MS;
+  (function wait() {
+    if ([...clients].some(c => c.battle || c.draft) && Date.now() < until) return setTimeout(wait, 1000);
+    store.flush();
+    process.exit(0);
+  })();
+}
+
 function start(port = PORT) {
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
   return new Promise(resolve => server.listen(port, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }
 

@@ -18,15 +18,21 @@ const accounts = new Map();
 for (const p of Object.values(profiles)) if (p.account) accounts.set(p.account.user.toLowerCase(), p.token);
 
 let timer = null;
+function write() {
+  timer = null;
+  fs.mkdirSync(path.dirname(FILE), { recursive: true });
+  const tmp = FILE + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(profiles));
+  fs.renameSync(tmp, FILE);   // escritura atómica: nunca queda un JSON a medias
+}
 function save() {
-  if (timer) return;
-  timer = setTimeout(() => {
-    timer = null;
-    fs.mkdirSync(path.dirname(FILE), { recursive: true });
-    const tmp = FILE + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(profiles));
-    fs.renameSync(tmp, FILE);   // escritura atómica: nunca queda un JSON a medias
-  }, 1000);
+  if (!timer) timer = setTimeout(write, 1000);
+}
+// Escribe ya lo pendiente (al apagar el servidor)
+function flush() {
+  if (!timer) return;
+  clearTimeout(timer);
+  write();
 }
 // Perfiles de antes del id público
 if (Object.values(profiles).filter(p => !p.id).map(p => { p.id = newId(); }).length) save();
@@ -151,4 +157,4 @@ function rankOf(p) {
   return i < 0 ? null : i + 1;
 }
 
-module.exports = { get, save, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };
+module.exports = { get, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword };

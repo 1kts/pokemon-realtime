@@ -171,15 +171,28 @@ export const accountViews = {
     });
   },
 
-  // Aviso cuando el servidor ya va por otra versión (se ha desplegado mientras jugabas)
+  // El servidor ya va por otra versión (se ha desplegado mientras jugabas). La partida está en el
+  // servidor, así que recargar no pierde nada: en los menús se recarga sola tras 5 s de aviso; en
+  // cola, draft, combate, resultados, con una ventana abierta o escribiendo, espera a que acabe.
   versionCheck(serverVersion) {
     if (!serverVersion || serverVersion === VERSION || document.getElementById('update-bar')) return;
-    const bar = el('div', '', `Hay una versión nueva (v${escapeHtml(serverVersion)}). `);
+    const bar = el('div');
     bar.id = 'update-bar';
+    const text = el('span');
     const b = el('button', 'primary', 'Recargar');
     b.onclick = () => location.reload();
-    bar.append(b);
+    bar.append(text, b);
     document.body.append(bar);
+    const idle = () => !this.app.battle && !['queue', 'draft', 'results'].includes(this.view) && !document.querySelector('.modal')
+      && !document.activeElement?.matches('input, textarea, select');
+    let left = 5;
+    const tick = () => {
+      if (!idle()) { left = 5; text.textContent = `Hay una versión nueva (v${serverVersion}): se cargará al terminar lo que estás haciendo.`; }
+      else if (left === 0) return location.reload();
+      else text.textContent = `Hay una versión nueva (v${serverVersion}). Recargando en ${left--} s…`;
+      setTimeout(tick, 1000);
+    };
+    tick();
   },
 
   // Premios de fin de temporada pendientes de ver

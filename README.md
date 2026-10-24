@@ -88,6 +88,13 @@ PORT=8080 PROFILES_FILE=/ruta/persistente/profiles.json npm start
 - **Cliente** (`public/js/`): predicción del propio movimiento con reconciliación e interpolación del
   rival; Three.js con sombras, bloom y partículas; sprites como billboards con sombra de silueta.
 
+## Publicar
+
+Al desplegar, el servidor recibe `SIGTERM`: deja de aceptar colas y combates nuevos, espera a que acaben los
+que están en curso (como mucho 5 min) y guarda los perfiles antes de salir. El hosting tiene que dar ese margen
+antes de matar el proceso (systemd: `TimeoutStopSec=330`; Docker: `--stop-timeout 330`). Al volver a conectar,
+el cliente ve la versión nueva y se recarga solo en cuanto el jugador está en los menús.
+
 ## Pruebas
 
 ```bash
