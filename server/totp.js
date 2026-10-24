@@ -47,6 +47,6 @@ function verify(secret, input, now = Date.now()) {
 }
 
 // Para dar de alta la cuenta en la app (o escribir el secreto a mano)
-const uri = (secret, label) => `otpauth://totp/${encodeURIComponent(`Arena Pokémon:${label}`)}?secret=${secret}&issuer=${encodeURIComponent('Arena Pokémon')}`;
+const uri = (secret, label) => `otpauth://totp/${encodeURIComponent(`PokéArenas:${label}`)}?secret=${secret}&issuer=${encodeURIComponent('PokéArenas')}`;
 
 module.exports = { newSecret, code, verify, uri, base32, STEP };

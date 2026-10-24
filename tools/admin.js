@@ -14,7 +14,7 @@ try {
     console.log(`\n${p.account.user} (${p.name}) ya es admin. Ahora, en el móvil:\n`);
     console.log('  1. Abre Google Authenticator (o Authy, Microsoft Authenticator, 1Password…)');
     console.log('  2. Añadir código → "Introducir clave de configuración"');
-    console.log(`  3. Nombre: Arena Pokémon · Clave: ${secret.match(/.{1,4}/g).join(' ')} · Basado en el tiempo\n`);
+    console.log(`  3. Nombre: PokéArenas · Clave: ${secret.match(/.{1,4}/g).join(' ')} · Basado en el tiempo\n`);
     console.log(`  (O, si tu app lo admite, este enlace: ${uri})\n`);
     console.log('Luego entra en /admin con tu usuario, tu contraseña y el código de 6 cifras de la app.');
     console.log('Guarda la clave en un sitio seguro: si pierdes el móvil, vuelve a ejecutar "alta" para tener otra.\n');
