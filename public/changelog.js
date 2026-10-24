@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.8.2', date: '2026-10-25', title: 'Mochila y estilo propio',
+      items: [
+        ['nuevo', 'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.'],
+        ['cambio', 'Botones dorados y cabeceras azules propias de PokéArenas.'],
+      ],
+    },
+    {
       v: '0.8.1', date: '2026-10-25', title: 'Medallas y ataques nuevos',
       items: [
         ['nuevo', 'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.'],

@@ -11,6 +11,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Mochila y estilo propio': 'Sac et style maison',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': 'Nouveau Sac dans la barre du haut : vois tous tes objets et utilise-les en choisissant l’objet, puis le Pokémon.',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'Boutons dorés et en-têtes bleus propres à PokéArenas.',
+    'Tope Nv.{n}': 'Plafond N.{n}',
+    'Nv.{a} → {b}': 'N.{a} → {b}',
+    'EV al máximo': 'EV au maximum',
+    'EV totales al máximo': 'Total d’EV au maximum',
+    'Mochila': 'Sac',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': 'Ton sac est vide. Achète des objets à la Boutique ou gagne-les en battant des champions.',
+    'Ir a la Tienda': 'Aller à la Boutique',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': 'Les Poké Balls s’utilisent en combat contre les Pokémon sauvages : appuie sur <kbd>F</kbd> pour en lancer une et sur <kbd>R</kbd> pour changer de Ball.',
+    '¿En qué Pokémon?': 'Sur quel Pokémon ?',
+    'Elige un objeto de la lista.': 'Choisis un objet dans la liste.',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': 'Utilise les objets depuis le <b>Sac</b> : choisis l’objet, puis le Pokémon.',
     'Medallas y ataques nuevos': 'Nouveaux badges et attaques',
     'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'Les badges sont ceux des jeux : dans la barre de région, quand tu les gagnes et dans le nouvel étui à badges du profil.',
     'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': 'Les projectiles sont des sprites pixel art à la forme de chaque attaque : flammes, gouttes, éclairs, bulles, étoiles…',
@@ -717,7 +731,6 @@ export default {
     'Cuenta atrás hasta que cambian los Pokémon de las rutas y de la tienda.': 'Un compte à rebours jusqu\'au changement des Pokémon des routes et de la boutique.',
     'La tienda vende 4 Pokémon al día con IV perfectos, muy caros y de uno en uno; cambian a la vez que las rutas.': 'La boutique vend 4 Pokémon par jour aux IV parfaits, très chers et un seul de chaque ; ils changent en même temps que les routes.',
     'El Pokémon misterioso de cada ruta tiene IV perfectos 1 de cada 3 veces.': 'Le Pokémon mystère de chaque route a des IV parfaits 1 fois sur 3.',
-    'Invítame a un café': 'Offre-moi un café',
     'PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor': 'PokéArenas est gratuit et à but non lucratif : les dons aident à payer le serveur',
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.': 'Les sprites viennent de la communauté de <i>Pokémon Donjon Mystère</i> (PMD Sprite Collab) et sont utilisés en créditant leurs artistes. Les données des espèces viennent de PokéAPI. Les cartes des régions sont des dessins originaux.',
     'El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.': 'Le jeu est gratuit et le restera. Si tu veux aider à payer le serveur, tu peux m\'offrir un café sur <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Faire un don ne donne aucun avantage dans le jeu.',

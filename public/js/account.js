@@ -9,7 +9,6 @@ import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
-const KOFI_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h13v6.2A5.3 5.3 0 0 1 11.2 18H8.8a5.3 5.3 0 0 1-5.3-5.3Z" fill="#fff"/><path d="M16.5 8h1.6a2.9 2.9 0 0 1 0 5.8h-1.9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M10 14.4s-3.1-1.9-3.1-3.8a1.6 1.6 0 0 1 3.1-.6 1.6 1.6 0 0 1 3.1.6c0 1.9-3.1 3.8-3.1 3.8Z" fill="#ff5e5b"/></svg>';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -131,17 +130,6 @@ export const accountViews = {
     if (this.authBtn) this.authBtn.disabled = false;
   },
 
-  // Botón de Ko-fi (donaciones voluntarias para el servidor; no da ventajas en el juego). Enlace normal:
-  // no se carga nada de Ko-fi (la CSP solo permite recursos propios), el icono va dibujado aquí.
-  kofi(kind = '') {
-    const a = el('a', 'kofi ' + kind, `${KOFI_SVG}<span>${t('Invítame a un café')}</span>`);
-    a.href = KOFI_URL;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.title = t('PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor');
-    return a;
-  },
-
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
   supportButton() {
     const a = el('a', 'tb-btn support', `${icon('heart', 24)}<span>${t('Apoyar')}</span>`);
@@ -158,7 +146,7 @@ export const accountViews = {
     v.onclick = () => this.patchNotes();
     const legal = el('button', 'link', t('Créditos y aviso legal'));
     legal.onclick = () => this.legal();
-    f.append(v, legal, this.kofi('small'));
+    f.append(v, legal);
     return f;
   },
 

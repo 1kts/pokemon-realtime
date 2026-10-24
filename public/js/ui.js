@@ -6,6 +6,7 @@ import { escapeHtml, describeMove } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
+import { bagViews } from './bag.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg } from './pixicons.js';
 import { accountViews } from './account.js';
@@ -60,7 +61,7 @@ export class UI {
       this.show('menu');
       // Primera vez en esta versión: enseñar las novedades
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'tower', 'profile', 'settings'].includes(this.view)) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings'].includes(this.view)) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -83,7 +84,7 @@ export class UI {
 
   // Abre Mis Pokémon o la Tienda recordando de dónde se viene para que "Volver" regrese allí
   openFrom(view) {
-    if (!['team', 'shop', 'dex'].includes(this.view)) this.returnTo = this.view;
+    if (!['team', 'shop', 'dex', 'bag'].includes(this.view)) this.returnTo = this.view;
     this.show(view);
   }
 
@@ -108,6 +109,7 @@ export class UI {
     const nav = el('nav', 'tb-nav');
     if (p.mons.length) {
       if (this.view !== 'team') nav.append(btn(itemImg('pokeball', 26), t('Mis Pokémon'), () => this.openFrom('team')));
+      if (this.view !== 'bag') nav.append(btn(itemImg('seal-bag', 26), t('Mochila'), () => this.openFrom('bag')));
       if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop')));
     }
     if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex')));
@@ -196,7 +198,6 @@ export class UI {
     dexBtn.title = t('Abrir la Pokédex');
     dexBtn.onclick = () => this.openFrom('dex');
     box.append(dexBtn);
-    box.append(this.kofi('wide'));
     return box;
   }
 
@@ -437,6 +438,7 @@ export class UI {
       sec(t('Mejorar tu equipo'), [
         t('En la <b>tienda</b>: Balls, Caramelos Raros (suben un nivel hasta el tope), vitaminas (EV) y piedras evolutivas.'),
         t('También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian a la vez que las rutas.'),
+        t('Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.'),
         t('En la ficha de cada Pokémon ves su naturaleza, IV y EV, y puedes venderlo.'),
         t('La <b>Pokédex</b> muestra todas las especies, las que te faltan y en qué rutas aparecen.'),
       ]),
@@ -928,4 +930,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews);

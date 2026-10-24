@@ -11,6 +11,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Mochila y estilo propio': 'Bag and our own style',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': 'New Bag in the top bar: see all your items and use them by picking the item, then the Pokémon.',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'PokéArenas\' own gold buttons and blue headers.',
+    'Tope Nv.{n}': 'Cap Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': 'EVs maxed',
+    'EV totales al máximo': 'Total EVs maxed',
+    'Mochila': 'Bag',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': 'Your bag is empty. Buy items in the Shop or earn them by beating leaders.',
+    'Ir a la Tienda': 'Go to the Shop',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': 'Poké Balls are used in battle against wild Pokémon: press <kbd>F</kbd> to throw one and <kbd>R</kbd> to switch Ball.',
+    '¿En qué Pokémon?': 'On which Pokémon?',
+    'Elige un objeto de la lista.': 'Pick an item from the list.',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': 'Use items from the <b>Bag</b>: pick the item, then the Pokémon.',
     'Medallas y ataques nuevos': 'New badges and attacks',
     'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'Badges are the ones from the games: in the region bar, when you win them and in the new badge case on your profile.',
     'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': 'Projectiles are pixel art sprites shaped like each attack: flames, drops, bolts, bubbles, stars…',
@@ -46,7 +60,6 @@ export default {
     'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.': 'Every route has its own map, always the same, depending on whether it\'s a meadow, forest, cave or lake.',
     'Las rutas de Johto tienen colores de otoño.': 'Johto routes have autumn colors.',
     // ---------- Pokédex, guía del modo historia y tienda diaria ----------
-    'Invítame a un café': 'Buy me a coffee',
     'PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor': 'PokéArenas is free and non-profit: donations help pay for the server',
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.': 'The sprites come from the <i>Pokémon Mystery Dungeon</i> community (PMD Sprite Collab) and are used with credit to their artists. Species data comes from PokéAPI. The region maps are original drawings.',
     'El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.': 'The game is free and will stay free. If you\'d like to help pay for the server, you can buy me a coffee on <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donating gives no advantage in the game.',

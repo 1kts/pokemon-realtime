@@ -11,6 +11,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Mochila y estilo propio': '背包与专属风格',
+    'Nueva Mochila en la barra superior: ves todos tus objetos y los usas eligiendo el objeto y luego el Pokémon.': '顶部栏新增背包：查看所有道具，先选道具再选宝可梦即可使用。',
+    'Botones dorados y cabeceras azules propias de PokéArenas.': 'PokéArenas专属的金色按钮与蓝色标题栏。',
+    'Tope Nv.{n}': '上限Lv.{n}',
+    'Nv.{a} → {b}': 'Lv.{a} → {b}',
+    'EV al máximo': '努力值已满',
+    'EV totales al máximo': '努力值总和已满',
+    'Mochila': '背包',
+    'La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.': '背包是空的。可以在商店购买道具，或打败馆主获得。',
+    'Ir a la Tienda': '前往商店',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.': '精灵球在与野生宝可梦战斗时使用：按<kbd>F</kbd>投掷，按<kbd>R</kbd>切换球的种类。',
+    '¿En qué Pokémon?': '给哪只宝可梦使用？',
+    'Elige un objeto de la lista.': '从列表中选择一个道具。',
+    'Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.': '在<b>背包</b>中使用道具：先选道具，再选宝可梦。',
     'Medallas y ataques nuevos': '全新徽章与招式',
     'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': '徽章采用游戏原版：显示在地区栏、获得时以及个人资料中新增的徽章盒里。',
     'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': '弹射物变为像素风精灵图，形状对应各招式：火焰、水滴、闪电、泡泡、星星……',
@@ -294,7 +308,6 @@ export default {
     'Cada ruta tiene su propio mapa, siempre el mismo, según sea pradera, bosque, cueva o lago.': '每条道路都有自己的地图，始终不变，分为草原、森林、洞窟或湖泊。',
     'Las rutas de Johto tienen colores de otoño.': '城都的道路呈现秋天的色彩。',
     // ---------- Pokédex, guía del modo historia y tienda diaria ----------
-    'Invítame a un café': '请我喝杯咖啡',
     'PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor': 'PokéArenas免费且非营利：捐赠用于支付服务器费用',
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.': '精灵图来自<i>宝可梦不可思议的迷宫</i>社区（PMD Sprite Collab），使用时注明了作者。宝可梦数据来自PokéAPI。地区地图为原创绘制。',
     'El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.': '游戏免费，并将一直免费。如果你想帮忙支付服务器费用，可以在<a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>上请我喝杯咖啡。捐赠不会在游戏中带来任何优势。',
