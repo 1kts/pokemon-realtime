@@ -12,6 +12,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Escenarios (acceso total) ----------
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Earthquakes: a wave sweeps the arena from the epicentre. Hide behind a rock (the green zone) or use Protect; Flying types aren\'t affected.',
+    '¡Terremoto! Ponte detrás de una roca': 'Earthquake! Get behind a rock',
+    '¡A cubierto!': 'Covered!',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'Their team is carefully raised: perfect IVs and training in every stat.',
     'Práctica, clasificatoria y Torre': 'Practice, ranked and Tower',
     'Mapa propio de esta ruta, siempre el mismo.': 'This route\'s own map, always the same.',
@@ -279,7 +282,6 @@ export default {
     'Volcán Canela': 'Cinnabar Volcano',
     'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': 'Lava burns. When a lava pool gets marked, it\'s about to erupt: get away.',
     'Arena Verde': 'Viridian Arena',
-    'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': 'Earthquakes: a wave sweeps the arena from the epicentre. Protect stops it and Flying types aren\'t affected.',
     'Torre Malva': 'Violet Tower',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Gusts of wind that drag you sideways. Flying types aren\'t affected.',
     'Invernadero Azalea': 'Azalea Greenhouse',

@@ -238,7 +238,6 @@ export default {
     'Volcán Canela': '红莲火山',
     'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': '熔岩会灼伤。熔岩池被标记时即将喷发：快离开。',
     'Arena Verde': '常青竞技场',
-    'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': '地震：冲击波从震中扩散到整个场地。守住可以挡住，飞行属性不受影响。',
     'Torre Malva': '桔梗塔',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '把你吹向一侧的狂风。飞行属性不受影响。',
     'Invernadero Azalea': '桧皮温室',
@@ -261,6 +260,9 @@ export default {
     // ---------- 场景（完全权限） ----------
     'Acceso total activado: tienes el menú Escenarios': '已开启完全权限：可以使用“场景”菜单了',
     'Escenarios': '场景',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': '地震：冲击波从震中扫过整个场地。躲到岩石后面（绿色区域）或使用守住；飞行属性不受影响。',
+    '¡Terremoto! Ponte detrás de una roca': '地震！快躲到岩石后面',
+    '¡A cubierto!': '躲过了！',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': '其队伍经过精心培育：个体值完美，所有能力都经过训练。',
     'Práctica, clasificatoria y Torre': '练习、排位赛和对战塔',
     'Mapa propio de esta ruta, siempre el mismo.': '这条道路专属的地图，始终不变。',

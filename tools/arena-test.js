@@ -123,6 +123,21 @@ check('en la oscuridad no se ve al rival de lejos', () => {
   assert(bt.sides[1].hidden, 'oculto');
 });
 
+check('detrás de una roca no llega la onda del terremoto', () => {
+  const bt = battle('g-tierra', [{ dex: 74, level: 30 }], [{ dex: 74, level: 30 }]);
+  const rock = bt.obstacles.find(o => o.kind === 'rock');
+  const E = { x: rock.x - 160, y: rock.y };               // epicentro a la izquierda de la roca
+  const [hid, open] = bt.sides;
+  hid.x = rock.x + rock.r + 30; hid.y = rock.y;           // a la derecha: a cubierto
+  open.x = rock.x + rock.r + 30; open.y = rock.y + 140;   // más abajo: al descubierto
+  bt.arena.timers.quake = 99;
+  bt.arena.quakes.push({ x: E.x, y: E.y, t: 0, hit: new Set() });
+  const hp = [bt.mon(hid).hp, bt.mon(open).hp];
+  run(bt, 1.5);
+  assert.strictEqual(bt.mon(hid).hp, hp[0], 'a cubierto no pierde PS');
+  assert(bt.mon(open).hp < hp[1], 'al descubierto sí');
+});
+
 check('el Alto Mando lleva IV perfectos y EV', () => {
   const x = D.leaderExtras(D.NODES.lance);
   assert.strictEqual(x.iv.atk, D.IV_MAX);

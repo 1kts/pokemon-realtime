@@ -346,6 +346,7 @@ export class Effects {
   // Terremoto: aviso en el epicentro y luego un anillo de polvo que se expande por la arena
   quake(e) {
     this.warn({ x: e.x, y: e.y, r: 70, d: e.d, ty: 'tierra' });
+    this.quakeCover(e);
     setTimeout(() => {
       const pos = toWorld(e.x, e.y, 0.15);
       const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.12, 6, 64), new THREE.MeshStandardMaterial({ color: '#a07a4a', roughness: 1, transparent: true, opacity: 0.9 }));
@@ -363,6 +364,32 @@ export class Effects {
         }
       });
     }, e.d * 1000);
+  }
+
+  // Zonas a cubierto del terremoto: la sombra de cada roca vista desde el epicentro (mismo
+  // criterio que el servidor, server/arena.js shielded). Duran el aviso y lo que tarda la onda.
+  quakeCover(e) {
+    const W = Shared.ARENA.w, H = Shared.ARENA.h;
+    const toEdge = (x, y, dx, dy) => Math.min(dx > 0 ? (W - x) / dx : dx < 0 ? -x / dx : Infinity, dy > 0 ? (H - y) / dy : dy < 0 ? -y / dy : Infinity);
+    const mat = new THREE.MeshBasicMaterial({ color: '#7cf0a0', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });
+    const group = new THREE.Group();
+    for (const o of this.world.collisionList()) {
+      if (o.k === 'ghost') continue;
+      const dx = o.x - e.x, dy = o.y - e.y, d = Math.hypot(dx, dy), R = o.r + 6;
+      if (d < R + 10) continue;
+      const th = Math.atan2(dy, dx), al = Math.asin(Math.min(0.95, R / d));
+      const nx = -Math.sin(th), ny = Math.cos(th);
+      const far = a => { const ux = Math.cos(a), uy = Math.sin(a), t = toEdge(e.x, e.y, ux, uy); return [e.x + ux * t, e.y + uy * t]; };
+      const pts = [[o.x + nx * R, o.y + ny * R], far(th + al), far(th - al), [o.x - nx * R, o.y - ny * R]];
+      const shape = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x * U, -y * U)));
+      const m = new THREE.Mesh(new THREE.ShapeGeometry(shape), mat);
+      m.rotation.x = -Math.PI / 2;
+      m.position.y = 0.035;
+      group.add(m);
+    }
+    if (!group.children.length) return;
+    const life = (e.d + 1200 / e.sp) * 1000;
+    this.addTemp(group, life, f => { mat.opacity = f < 0.08 ? f / 0.08 * 0.32 : f > 0.85 ? (1 - f) / 0.15 * 0.32 : 0.32 + Math.sin(f * 40) * 0.05; });
   }
 
   // Descarga de las placas eléctricas de un grupo

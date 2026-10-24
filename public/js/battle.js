@@ -192,7 +192,8 @@ export class BattleClient {
       // Mecánicas de las arenas de gimnasio
       case 'arena': this.banner(tServer(e.msg), 'info'); break;
       case 'panel': this.world.panelFlash(e.g, e.ph, e.d); if (e.ph === 'zap') this.fx.panelZap(e.g); break;
-      case 'quake': this.fx.quake(e); this.banner(t('¡Terremoto!'), 'bad'); break;
+      case 'quake': this.fx.quake(e); this.banner(t('¡Terremoto! Ponte detrás de una roca'), 'bad'); break;
+      case 'covered': this.floatText(pos.x, pos.y, t('¡A cubierto!'), 'info'); break;
       case 'gust': {
         const arrow = ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'][((Math.round(e.a / (Math.PI / 4)) % 8) + 8) % 8];
         this.banner(t('¡Ráfaga de viento! {arrow}', { arrow }), 'info');

@@ -537,7 +537,7 @@
         '...LL..............LL...',
         '........................',
       ] },
-    'g-tierra': { name: 'Arena Verde', desc: 'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.', mech: { quake: { every: 8, warn: 1, speed: 340, dmg: 0.09, slow: 1.2 } },
+    'g-tierra': { name: 'Arena Verde', desc: 'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.', mech: { quake: { every: 8, warn: 1, speed: 340, dmg: 0.09, slow: 1.2 } },
       rows: [
         '........................',
         '........................',

@@ -206,7 +206,12 @@ class Arena {
       const R = q.t * m.quake.speed;
       for (const s of b.sides) {
         if (q.hit.has(s.idx) || typesOf(b.mon(s)).includes('volador')) continue;
-        if (Math.abs(Math.hypot(s.x - q.x, s.y - q.y) - R) < 22 + b.rad(s)) { q.hit.add(s.idx); b.hazard(s, m.quake.dmg, 'tierra', { slow: m.quake.slow }); }
+        if (Math.abs(Math.hypot(s.x - q.x, s.y - q.y) - R) < 22 + b.rad(s)) {
+          q.hit.add(s.idx);
+          // Detrás de una roca (vista desde el epicentro) la onda no llega
+          if (this.shielded(q, s)) b.ev({ k: 'covered', s: s.idx });
+          else b.hazard(s, m.quake.dmg, 'tierra', { slow: m.quake.slow });
+        }
       }
     }
     this.quakes = this.quakes.filter(q => q.t * m.quake.speed < 1200);
@@ -254,6 +259,19 @@ class Arena {
         if (along > 40 && along < o.len && across < o.width + b.rad(s)) { this.beamCd[s.idx] = 1.1; b.hazard(s, o.dmg, ty, extra); }
       }
     }
+  }
+
+  // ¿Hay un obstáculo sólido entre el epicentro y el Pokémon? (su centro, en la sombra de la roca)
+  shielded(q, s) {
+    const dx = s.x - q.x, dy = s.y - q.y, d = Math.hypot(dx, dy);
+    if (d < 1) return false;
+    const ux = dx / d, uy = dy / d;
+    return this.b.obstacles.some(o => {
+      if (o.kind === 'ghost') return false;
+      const t = (o.x - q.x) * ux + (o.y - q.y) * uy;
+      if (t <= 0 || t >= d) return false;
+      return Math.abs(-(o.x - q.x) * uy + (o.y - q.y) * ux) < o.r + this.b.rad(s) * 0.25;
+    });
   }
 
   // Lo que el cliente necesita cada snapshot (solo si cambia algo continuo)

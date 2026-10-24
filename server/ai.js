@@ -204,6 +204,19 @@ function aiInput(b, side, dt) {
       if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; }
     }
   }
+  // Terremoto de la arena en camino: ponerse detrás de la roca más cercana (vista desde el epicentro)
+  const quake = b.arena && b.arena.quakes && b.arena.quakes.find(q => !q.hit.has(side.idx) && q.t * ((b.arena.m.quake || {}).speed || 0) < Math.hypot(side.x - q.x, side.y - q.y));
+  if (quake && skill > 0.35 && !D.SPECIES[b.mon(side).dex].types.includes('volador') && decide(st, 'q' + Math.round(quake.x), dodgeP)) {
+    let best = null, bd = 280;
+    for (const o of b.obstacles) {
+      if (o.kind === 'ghost') continue;
+      const ox = o.x - quake.x, oy = o.y - quake.y, od = Math.hypot(ox, oy) || 1;
+      const cx = o.x + ox / od * (o.r + r + 6), cy = o.y + oy / od * (o.r + r + 6);
+      const d = Math.hypot(cx - side.x, cy - side.y);
+      if (d < bd) { bd = d; best = { x: cx, y: cy }; }
+    }
+    if (best && bd > 4) { mx += (best.x - side.x) / bd * 2.5; my += (best.y - side.y) / bd * 2.5; }
+  }
   // Peligros de la arena avisados (rocas, erupciones, placas): salir de la zona
   for (const d of (b.arena && b.arena.danger) || []) {
     const dd = Math.hypot(side.x - d.x, side.y - d.y);
