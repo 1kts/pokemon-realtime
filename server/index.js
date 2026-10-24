@@ -8,6 +8,8 @@ const D = require('../public/data.js');
 const { Battle } = require('./battle.js');
 const store = require('./store.js');
 const story = require('./story.js');
+const rewards = require('./rewards.js');
+const VERSION = require('../package.json').version;
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -17,6 +19,8 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 const server = http.createServer((req, res) => {
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
+  // Para el hosting: comprobación de vida y versión desplegada
+  if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {
@@ -30,10 +34,14 @@ const server = http.createServer((req, res) => {
 // ---------- Clientes ----------
 const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
-function sendProfile(c) { story.migrate(c.profile); send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard() }); }
+function sendProfile(c) {
+  story.migrate(c.profile);
+  rewards.migrate(c.profile);
+  send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
+}
 function publicProfile(p) {
-  const { token, ...rest } = p;
-  return { ...rest, token, league: D.leagueOf(p.elo) };
+  const { account, ...rest } = p;
+  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo) };
 }
 const busy = c => c.battle || c.queue || c.draft;
 
@@ -155,15 +163,22 @@ function finishDraft(draft) {
     if (draft.mode !== 'ranked' || result.winner < 0) return [];
     // ELO con K=32
     const [pa, pb] = [a.profile, b.profile];
+    const [ea0, eb0] = [pa.elo, pb.elo];
     const ea = 1 / (1 + Math.pow(10, (pb.elo - pa.elo) / 400));
     const sa = result.winner === 0 ? 1 : 0;
     const da = Math.round(32 * (sa - ea));
     pa.elo += da; pb.elo -= da;
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
+    const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
+    const pay = [
+      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: pb.name, foeElo: eb0, team: draft.picks[0], foeTeam: draft.picks[1] }),
+      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: pa.name, foeElo: ea0, team: draft.picks[1], foeTeam: draft.picks[0] }),
+    ];
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
-    return [{ elo: da, total: pa.elo }, { elo: -da, total: pb.elo }];
+    return [pa, pb].map((p, i) => ({ elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin,
+      league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
 
@@ -202,8 +217,9 @@ function startStory(c, msg) {
 // ---------- Conexiones ----------
 const wss = new WebSocketServer({ server, maxPayload: 16 * 1024 });
 wss.on('connection', ws => {
-  const c = { ws, profile: null, battle: null, side: 0, queue: null, draft: null };
+  const c = { ws, profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
   clients.add(c);
+  send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
@@ -221,10 +237,12 @@ wss.on('connection', ws => {
 function handle(c, msg) {
   if (msg.t === 'ping') return send(c, { t: 'pong', ts: msg.ts });
   if (msg.t === 'hello') {
+    // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
     c.profile = store.get(typeof msg.token === 'string' ? msg.token : null, name);
     return sendProfile(c);
   }
+  if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
   if (!c.profile) return;
   if (msg.t === 'in') {
     if (!c.battle) return;
@@ -238,10 +256,11 @@ function handle(c, msg) {
     });
     return;
   }
-  // Gancho de desarrollo (solo con ARENA_DEV=1): dinero, medallas, objetos y Pokémon para probar
+  // Gancho de desarrollo (solo con ARENA_DEV=1): dinero, ELO, medallas, objetos y Pokémon para probar
   if (msg.t === 'dev' && process.env.ARENA_DEV) {
     const p = c.profile;
     if (Number.isFinite(msg.coins)) p.coins += msg.coins;
+    if (Number.isFinite(msg.elo)) { rewards.migrate(p); p.elo = msg.elo; p.peakElo = Math.max(p.peakElo, p.elo); p.season.peak = Math.max(p.season.peak, p.elo); }
     if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
@@ -253,6 +272,20 @@ function handle(c, msg) {
     store.save();
     return sendProfile(c);
   }
+  if (msg.t === 'passwd') {
+    if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
+    const err = store.changePassword(c.profile, msg.old, msg.pass);
+    if (err) return send(c, { t: 'autherr', msg: err });
+    send(c, { t: 'authok', msg: 'Contraseña cambiada' });
+    return sendProfile(c);
+  }
+  if (msg.t === 'claim' || msg.t === 'look') {
+    const err = msg.t === 'claim' ? rewards.claim(c.profile, String(msg.league)) : rewards.setLook(c.profile, msg);
+    if (err) send(c, { t: 'error', msg: err });
+    store.save();
+    return sendProfile(c);
+  }
+  if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
   if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell'].includes(msg.a)) {
     if (c.battle) return;
     const err = story.action(c.profile, msg);
@@ -265,6 +298,33 @@ function handle(c, msg) {
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'ban' || msg.t === 'pick') return draftAction(c, msg);
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);
+}
+
+// ---------- Cuentas ----------
+// Como mucho 8 intentos de contraseña por conexión y minuto
+function tooManyTries(c) {
+  const now = Date.now();
+  c.authTries = c.authTries.filter(t => now - t < 60000);
+  c.authTries.push(now);
+  return c.authTries.length > 8;
+}
+
+function auth(c, msg) {
+  if (busy(c)) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
+  if (tooManyTries(c)) return send(c, { t: 'autherr', msg: 'Demasiados intentos: espera un minuto' });
+  const user = typeof msg.user === 'string' ? msg.user.trim() : '';
+  if (msg.t === 'login') {
+    const p = store.login(user, msg.pass);
+    if (!p) return send(c, { t: 'autherr', msg: 'Usuario o contraseña incorrectos' });
+    c.profile = p;
+  } else {
+    // Registrar el perfil actual (invitado) o, desde la portada, uno nuevo
+    const r = store.register(c.profile, user, msg.pass);
+    if (r.err) return send(c, { t: 'autherr', msg: r.err });
+    c.profile = r.p;
+  }
+  send(c, { t: 'authok', msg: msg.t === 'login' ? `¡Hola de nuevo, ${c.profile.name}!` : 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' });
+  sendProfile(c);
 }
 
 function start(port = PORT) {

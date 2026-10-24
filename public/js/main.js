@@ -12,7 +12,11 @@ import { UI } from './ui.js';
 import { Net } from './net.js';
 
 const canvas = document.getElementById('view');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) {
+  document.body.insertAdjacentHTML('beforeend', '<div class="nojs">Tu navegador o tu tarjeta gráfica no admiten WebGL, que Arena Pokémon necesita. Prueba con Chrome, Firefox o Edge actualizados y la aceleración por hardware activada.</div>');
+  throw e;
+}
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -87,8 +91,11 @@ net.on('disconnected', () => {
   if (app.battle) endBattle();
   ui.show('menu');
 });
-net.on('profile', m => ui.setProfile(m.p, m.board));
+net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
 net.on('error', m => ui.toast(m.msg, 'bad'));
+net.on('welcome', m => ui.versionCheck(m.version));
+net.on('autherr', m => { ui.authError(m.msg); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(m.msg, 'bad'); });
+net.on('authok', m => { ui.authError(''); ui.toast(m.msg); });
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'));
 net.on('cancelled', m => { ui.toast(m.reason, 'bad'); ui.show('menu'); });
@@ -97,6 +104,7 @@ net.on('draftwait', () => {});
 net.on('start', m => {
   if (app.battle) endBattle();
   ui.hide();
+  document.querySelectorAll('.modal').forEach(m => m.remove());
   document.body.classList.add('in-battle');
   app.battle = new BattleClient(app, m);
 });

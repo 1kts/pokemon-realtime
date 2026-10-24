@@ -1,9 +1,10 @@
-// Pantallas fuera de combate: inicio, menú, historia (inicial, mapa, equipo, tienda),
-// clasificatoria (cola, draft, ranking), práctica y resultados.
+// Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
+// clasificatoria (cola, draft, ranking), práctica y resultados. La portada, el perfil,
+// las recompensas y las novedades están en account.js.
 import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
-import { Net } from './net.js';
 import { REGION_ART, regionMapImage } from './regionmap.js';
+import { accountViews } from './account.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -25,17 +26,22 @@ export class UI {
 
   get net() { return this.app.net; }
 
-  setProfile(p, board) {
+  setProfile(p, board, rank) {
     const first = !this.profile;
     this.profile = p;
     this.board = board || this.board;
+    this.rank = rank;
     if (this.pendingFicha) {
       const mon = p.mons.find(m => m.uid === this.pendingFicha);
       this.pendingFicha = null;
       if (mon && !this.root.hidden) setTimeout(() => this.statsModal(mon), 0);
     }
-    if (first) this.show('menu');
-    else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online'].includes(this.view)) this.show(this.view, true);
+    if (first) {
+      this.show('menu');
+      // Primera vez en esta versión: enseñar las novedades
+      if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'online', 'profile'].includes(this.view)) this.show(this.view, true);
+    if (!this.root.hidden) this.showInbox();
   }
 
   toast(text, cls = '') {
@@ -76,30 +82,12 @@ export class UI {
       b.onclick = () => this.openFrom(view);
       nav.append(b);
     }
+    if (this.view === 'menu') nav.append(this.newsButton());
     bar.append(nav);
-    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`));
+    const stats = el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="elo">${p.league} · ${p.elo}</span>`);
+    if (this.view !== 'profile') stats.append(this.profileChip());
+    bar.append(stats);
     return bar;
-  }
-
-  // ---------- Inicio ----------
-  view_title() {
-    const box = el('div', 'panel title-panel');
-    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones</p>`;
-    const mons = el('div', 'title-mons');
-    const pool = [...STARTERS].sort(() => Math.random() - 0.5).slice(0, 3);
-    for (const d of pool) mons.append(animatedPortrait(d, 96, 'Idle'));
-    box.append(mons);
-    const input = el('input');
-    input.placeholder = 'Tu nombre de entrenador';
-    input.maxLength = 16;
-    input.value = Net.savedName();
-    const go = el('button', 'primary', 'Jugar');
-    const start = () => { const name = input.value.trim() || 'Entrenador'; go.disabled = true; go.textContent = 'Conectando…'; this.app.connect(name); };
-    go.onclick = start;
-    input.onkeydown = e => { if (e.key === 'Enter') start(); };
-    box.append(input, go, el('p', 'small', 'Tu partida se guarda en este navegador.'));
-    this.root.append(box);
-    setTimeout(() => input.focus(), 50);
   }
 
   // ---------- Menú ----------
@@ -121,11 +109,12 @@ export class UI {
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0] || null;
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
     card('Historia', p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y viaja por Kanto y Johto', 'story', lead ? lead.dex : 25, () => this.show('story'));
-    card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
+    const ready = this.claimable().length;
+    card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D${ready ? ` · <em class="ready">¡${ready} premio${ready > 1 ? 's' : ''} por reclamar!</em>` : ''}`, 'ranked', 149, () => this.show('online'));
     card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
     top.append(grid, this.profilePanel(lead));
-    wrap.append(top, this.howTo());
+    wrap.append(top, this.howTo(), this.footer());
     this.root.append(wrap);
   }
 
@@ -133,11 +122,16 @@ export class UI {
     const p = this.profile;
     const total = Object.keys(SPECIES).length;
     const box = el('div', 'panel profile');
-    const who = el('div', 'who');
-    const ava = el('div', 'ava');
-    if (lead) ava.append(animatedPortrait(lead.dex, 84, 'Idle', !!lead.shiny));
-    who.append(ava, el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${p.league} · ${p.elo}</span>`));
+    const who = el('button', 'who');
+    who.title = 'Ver perfil';
+    who.onclick = () => this.show('profile');
+    who.append(this.avatar(84, true), el('div', '', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(p.title)}</span> ` : ''}<span class="elo">${p.league} · ${p.elo}</span>`));
     box.append(who);
+    if (!p.account) {
+      const reg = el('button', 'guest-cta', '<b>Juegas como invitado</b><small>Crea una cuenta para no perder tu partida</small>');
+      reg.onclick = () => this.show('profile');
+      box.append(reg);
+    }
     box.append(el('div', 'rows', `
       <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
       <div class="stat"><small>Medallas</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
@@ -547,9 +541,9 @@ export class UI {
     const go = el('button', 'primary', 'Buscar partida clasificatoria');
     go.onclick = () => { this.lastMode = 'ranked'; this.net.send({ t: 'queue', mode: 'ranked' }); };
     me.append(go);
-    const board = el('div', 'panel board');
-    board.innerHTML = `<h3>Mejores entrenadores</h3>` + (this.board.length ? `<ol>${this.board.map(b => `<li><b>${escapeHtml(b.name)}</b><span>${b.elo}</span><small>${b.wins}V ${b.losses}D</small></li>`).join('')}</ol>` : '<p class="small">Todavía nadie ha jugado una clasificatoria.</p>');
-    body.append(me, board);
+    const col = el('div', 'online-col');
+    col.append(me, this.boardPanel());
+    body.append(col, this.seasonPanel());
     wrap.append(body);
     this.root.append(wrap);
   }
@@ -708,6 +702,8 @@ export class UI {
       box.append(list);
     }
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
+    if (r.promoted) box.append(el('div', 'promoted', `<i class="sw frame-${Data.RANKED_REWARDS[r.promoted].frame}"></i><p>¡Has subido a <b>${r.promoted}</b>! Reclama tu premio en Clasificatoria.</p>`));
+    if (r.firstWin) box.append(el('p', 'small', `Incluye ${coins(Data.RANKED_PAY.firstWin)} extra por la primera victoria del día.`));
     if (!won && !draw && battle && battle.mode === 'wild') box.append(el('p', 'small', 'Tus Pokémon se recuperan después de cada combate. ¡Inténtalo otra vez!'));
     const acts = el('div', 'acts');
     const back = el('button', 'primary', 'Continuar');
@@ -728,3 +724,5 @@ export class UI {
     this.root.append(box);
   }
 }
+
+Object.assign(UI.prototype, accountViews);
