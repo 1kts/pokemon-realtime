@@ -817,3 +817,10 @@ button.stat.dexlink { display: block; width: 100%; text-align: left; padding: 8p
 .rotation.instore { margin: -4px 0 10px; }
 .shop-item .acts .ok { color: var(--green); font-weight: 700; }
 b.perfect { color: var(--yellow); }
+
+/* Ko-fi */
+.kofi { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 11px; background: #29abe0; color: #fff; font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: 0 3px 0 #1b7ea8; transition: transform .12s, filter .15s; }
+.kofi:hover { filter: brightness(1.08); } .kofi:active { transform: translateY(2px); box-shadow: 0 1px 0 #1b7ea8; }
+.kofi svg { width: 20px; height: 20px; flex: none; }
+.kofi.small { padding: 3px 10px; font-size: 12px; box-shadow: none; } .kofi.small svg { width: 16px; height: 16px; }
+.kofi.wide { justify-content: center; margin-top: 4px; }

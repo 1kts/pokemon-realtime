@@ -193,6 +193,7 @@ export class UI {
     dexBtn.title = t('Abrir la Pokédex');
     dexBtn.onclick = () => this.openFrom('dex');
     box.append(dexBtn);
+    box.append(this.kofi('wide'));
     return box;
   }
 

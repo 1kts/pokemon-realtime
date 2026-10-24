@@ -6,6 +6,9 @@ import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 
+const KOFI_URL = 'https://ko-fi.com/1kts_';
+const KOFI_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h13v6.2A5.3 5.3 0 0 1 11.2 18H8.8a5.3 5.3 0 0 1-5.3-5.3Z" fill="#fff"/><path d="M16.5 8h1.6a2.9 2.9 0 0 1 0 5.8h-1.9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M10 14.4s-3.1-1.9-3.1-3.8a1.6 1.6 0 0 1 3.1-.6 1.6 1.6 0 0 1 3.1.6c0 1.9-3.1 3.8-3.1 3.8Z" fill="#ff5e5b"/></svg>';
+
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
@@ -54,7 +57,7 @@ export const accountViews = {
   // ---------- Portada ----------
   view_title() {
     const box = el('div', 'panel title-panel');
-    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">${t('Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones')}</p>`;
+    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Poké<br><span>Arenas</span></h1><p class="tag">${t('Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones')}</p>`;
     const mons = el('div', 'title-mons');
     for (const d of [...STARTERS].sort(() => Math.random() - 0.5).slice(0, 3)) mons.append(animatedPortrait(d, 96, 'Idle'));
     box.append(mons);
@@ -126,13 +129,24 @@ export const accountViews = {
     if (this.authBtn) this.authBtn.disabled = false;
   },
 
+  // Botón de Ko-fi (donaciones voluntarias para el servidor; no da ventajas en el juego). Enlace normal:
+  // no se carga nada de Ko-fi (la CSP solo permite recursos propios), el icono va dibujado aquí.
+  kofi(kind = '') {
+    const a = el('a', 'kofi ' + kind, `${KOFI_SVG}<span>${t('Invítame a un café')}</span>`);
+    a.href = KOFI_URL;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.title = t('PokéArenas es gratis y sin ánimo de lucro: las donaciones ayudan a pagar el servidor');
+    return a;
+  },
+
   footer() {
     const f = el('div', 'footer');
     const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · ${t('Novedades')}`);
     v.onclick = () => this.patchNotes();
     const legal = el('button', 'link', t('Créditos y aviso legal'));
     legal.onclick = () => this.legal();
-    f.append(v, legal);
+    f.append(v, legal, this.kofi('small'));
     return f;
   },
 
@@ -180,9 +194,10 @@ export const accountViews = {
     modal('legal', (box, close) => {
       box.append(el('h3', '', t('Créditos y aviso legal')));
       box.append(el('div', 'scroll', `
-        <p>${t('Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
-        <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.')}</p>
+        <p>${t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
+        <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.')}</p>
         <p>${t('La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.')}</p>
+        <p>${t('El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.', { url: KOFI_URL })}</p>
         <h4>${t('Datos que guardamos')}</h4>
         <p class="small">${t('Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.')}</p>`));
       const acts = el('div', 'acts');
@@ -328,10 +343,10 @@ export const accountViews = {
 
     // Créditos
     const about = el('div', 'panel');
-    about.append(el('h3', '', t('Créditos y aviso legal')), el('p', 'small', t('Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
+    about.append(el('h3', '', t('Créditos y aviso legal')), el('p', 'small', t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
     const legal = el('button', '', t('Ver créditos y datos que guardamos'));
     legal.onclick = () => this.legal();
-    about.append(legal, el('p', 'small', `Arena Pokémon v${VERSION}`));
+    about.append(legal, el('p', 'small', `PokéArenas v${VERSION}`));
 
     body.append(lang, me, news, about);
     wrap.append(body);
