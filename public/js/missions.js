@@ -23,8 +23,8 @@ const CHEST_SVG = `<svg class="chest-svg" viewBox="0 0 32 28" aria-hidden="true"
 // Avatar de colección: medalla ('badge:<región>:<n>') u objeto ('item:<sprite>')
 export function avatarArt(id, size) {
   const [kind, a, b] = String(id).split(':');
-  if (kind === 'badge') return badgeImg(a, +b, true, Math.round(size * 0.8), 'ava-art');
-  if (kind === 'item') return itemImg(a, Math.round(size * 0.8), 'ava-art');
+  if (kind === 'badge') return badgeImg(a, +b, true, Math.round(size * 0.8), 'col-art');
+  if (kind === 'item') return itemImg(a, Math.round(size * 0.8), 'col-art');
   return '';
 }
 // Nombre de un avatar de colección

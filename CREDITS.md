@@ -15,6 +15,8 @@ de los juegos. No se usa ningún mapa oficial.
   [PokeAPI/sprites](https://github.com/PokeAPI/sprites) (© Nintendo / Creatures Inc. / GAME FREAK inc.).
 - Los iconos de los tipos de los movimientos (`public/types/`) son los de Pokémon Escarlata y Púrpura, también de
   [PokeAPI/sprites](https://github.com/PokeAPI/sprites) (© Nintendo / Creatures Inc. / GAME FREAK inc.).
+- Las ilustraciones oficiales del avatar de maestría (`/art/`, `server/art.js`) se descargan de
+  [PokeAPI/sprites](https://github.com/PokeAPI/sprites) la primera vez que se piden (© Nintendo / Creatures Inc. / GAME FREAK inc.).
 - Los iconos pixel art de la interfaz y los emblemas de los movimientos (`public/js/pixicons.js`) son de
   [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js`), de JPTER78 y colaboradores, con
   licencia [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)

@@ -260,6 +260,18 @@ class Client {
     ok(m.p.avatar === dex && m.p.avatarShiny === true, 'avatar shiny si lo tienes');
     m = await b.req({ t: 'look', avatar: null });
     ok(!m.p.avatar && !m.p.avatarShiny, 'volver al avatar automático');
+    // Maestría: victorias por línea evolutiva (Charmeleon suma a la de Charmander)
+    m = await b.req({ t: 'look', avatar: dex, avatarArt: true });
+    ok(!m.p.avatarArt, 'la ilustración necesita la maestría de la línea');
+    const ups = [];
+    seasonMod.migrate(bp);
+    bp.mastery[4] = 0; bp.mastery[172] = 0;
+    for (let i = 0; i < D.MASTERY_FRAME; i++) ups.push(...seasonMod.addMastery(bp, [5, 4, 25]));
+    ok(bp.mastery[4] === D.MASTERY_FRAME && bp.mastery[172] === D.MASTERY_FRAME && ups.filter(u => u.dex === 4).length === 3, 'maestría: una victoria por línea y combate, con sus 3 niveles');
+    ok(bp.cosmetics.frames.includes('tipo-fuego') && bp.cosmetics.frames.includes('tipo-electrico'), 'maestría 100: marco del tipo de la línea');
+    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, frame: 'tipo-fuego' });
+    ok(m.p.avatarArt === true && m.p.frame === 'tipo-fuego', 'con maestría: ilustración de avatar y marco de tipo');
+    await b.req({ t: 'look', avatar: null, frame: null });
   }
   // Fin de temporada (simulado subiendo el id)
   const sid = D.SEASON.id, coins1 = bp.coins;

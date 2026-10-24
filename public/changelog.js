@@ -4,12 +4,19 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.10.0', date: '2026-10-25', title: 'Misiones y premios para recoger',
+      v: '0.11.0', date: '2026-10-25', title: 'Misiones y premios para recoger',
       items: [
         ['nuevo', 'Misiones diarias y semanales: cúmplelas jugando y recoge su premio. Si una no te convence, cámbiala por otra.'],
         ['nuevo', 'Recoge las 3 misiones del día o de la semana para abrir su cofre.'],
         ['nuevo', 'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.'],
         ['cambio', 'Los premios de los logros ya no llegan solos: se recogen en Misiones.'],
+      ],
+    },
+    {
+      v: '0.10.0', date: '2026-10-25', title: 'Marcos animados y maestría de Pokémon',
+      items: [
+        ['nuevo', 'Los marcos de liga y de logros tienen efectos: brillos, laureles, gemas, órbitas y la corona del Maestro.'],
+        ['nuevo', 'Maestría: cada victoria suma a la línea evolutiva de tus Pokémon. A 10, estrella; a 50, su ilustración oficial como avatar; a 100, el marco animado de su tipo.'],
       ],
     },
     {

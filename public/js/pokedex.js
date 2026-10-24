@@ -3,6 +3,7 @@
 // (marcando las que salen hoy). Los retratos se dibujan solo al entrar en pantalla.
 import { portrait } from './sprites.js';
 import { t } from './i18n.js';
+import { masteryHtml } from './frames.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, TYPE_NAMES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -111,6 +112,7 @@ export const pokedexViews = {
       <div>${s.types.map(ty => `<span class="type" style="--tc:${TYPE_COLOR[ty]}">${TYPE_LABEL[ty]}</span>`).join('')}</div>
       <p class="${got ? 'ok' : 'small'}">${got ? (shiny ? t('✦ Capturado, también shiny') : t('✓ Capturado')) : t('Todavía no lo has capturado')}</p>`));
     box.append(top);
+    if (got) box.append(el('div', 'dex-mastery', masteryHtml(p, dex, t)));
     if (s.base) {
       const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
       box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: s.bst })}</small><div class="bs">${s.base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));

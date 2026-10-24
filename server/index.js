@@ -15,6 +15,7 @@ const missions = require('./missions.js');
 const limits = require('./limits.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
+const art = require('./art.js');
 const STARTED = Date.now();
 const crypto = require('crypto');
 
@@ -47,6 +48,7 @@ const server = http.createServer((req, res) => {
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
+  if (art.handle(url, res)) return;
   if (url === '/admin' || url === '/admin/') url = '/admin/index.html';
   if (url === '/legal' || url === '/legal/') url = '/legal/index.html';
   if (url === '/legal/en') url = '/legal/en.html';
@@ -200,6 +202,8 @@ function finishDraft(draft) {
     sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl })) })),
   }, (result) => {
     if (result.winner < 0) return [];
+    // Maestría para el ganador, en clasificatoria y en rápida
+    const mastery = rewards.addMastery(draft.players[result.winner].profile, draft.picks[result.winner]);
     // Misiones de los dos: combate online jugado, victoria (con los tipos de su equipo) y clasificatoria ganada
     const before = draft.players.map(c => missions.snapshot(c.profile));
     draft.players.forEach((c, i) => {
@@ -213,7 +217,7 @@ function finishDraft(draft) {
     if (draft.mode !== 'ranked') {
       store.save();
       setTimeout(() => draft.players.forEach(sendProfile), 50);
-      return progress.map(m => ({ missions: m }));
+      return progress.map((m, i) => ({ missions: m, ...(i === result.winner ? { mastery } : {}) }));
     }
     // ELO con K=32
     const [pa, pb] = [a.profile, b.profile];
@@ -233,7 +237,7 @@ function finishDraft(draft) {
     ];
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
-    return [pa, pb].map((p, i) => ({ elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, missions: progress[i],
+    return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, missions: progress[i],
       league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
@@ -266,6 +270,7 @@ function startStory(c, msg) {
   startBattle([c, null], setup.opts, (result, b) => {
     const before = missions.snapshot(c.profile);
     const reward = story.applyResult(c.profile, setup, result, b);
+    if (result.winner === 0) reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
     reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
@@ -276,9 +281,10 @@ function startStory(c, msg) {
 function startTower(c) {
   const setup = tower.battleSetup(c.profile);
   if (setup.error) { send(c, { t: 'error', msg: setup.error }); return sendProfile(c); }
-  startBattle([c, null], setup.opts, result => {
+  startBattle([c, null], setup.opts, (result, b) => {
     const before = missions.snapshot(c.profile);
     const reward = tower.applyResult(c.profile, setup, result);
+    if (result.winner === 0) reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
     reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
