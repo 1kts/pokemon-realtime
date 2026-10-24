@@ -261,6 +261,11 @@ export default {
     // ---------- 场景（完全权限） ----------
     'Apoyar': '支持',
     // ---------- Novedades 0.5 a 0.7 ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '道具图标来自PokeAPI，界面像素图标来自PokéSurvivor（JPTER78，PolyForm Noncommercial许可）。',
+    'Nuevo aspecto': '全新外观',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': '界面焕新：圆润字体、条纹按钮与窗口，菜单卡片配有图标。',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': '商店、队伍和奖励中显示真实道具图标，金币改为像素风。',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': '每个招式都显示其属性与形态（弹射、扇形、光束、冲刺……）的徽记。',
     'Nuevo nombre: PokéArenas': '新名字：PokéArenas',
     'El juego pasa a llamarse PokéArenas.': '游戏更名为PokéArenas。',
     'Apoya el proyecto': '支持本项目',

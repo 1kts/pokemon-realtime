@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Nuevo aspecto (0.8.0) ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Les icônes d\'objets viennent de PokeAPI et les icônes pixel art de l\'interface, de PokéSurvivor (JPTER78, licence PolyForm Noncommercial).',
+    'Nuevo aspecto': 'Nouveau look',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Interface repensée : police arrondie, boutons et fenêtres à rayures, et cartes du menu avec icône.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Vraies icônes d\'objets dans la boutique, l\'équipe et les récompenses, et pièces en pixel art.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Chaque capacité affiche un emblème avec son type et sa forme (projectile, cône, rayon, charge…).',
     // ---------- Général ----------
     '← Volver': '← Retour',
     'Volver': 'Retour',

@@ -13,6 +13,11 @@ export default {
   text: {
     'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Item icons come from PokeAPI and the interface\'s pixel art icons from PokéSurvivor (JPTER78, PolyForm Noncommercial license).',
+    'Nuevo aspecto': 'New look',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Revamped interface: rounded fonts, striped buttons and windows, and menu cards with icons.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Real item icons in the shop, your team and rewards, plus pixel art coins.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Each move shows an emblem with its type and shape (projectile, cone, beam, dash…).',
     'Nuevo nombre: PokéArenas': 'New name: PokéArenas',
     'El juego pasa a llamarse PokéArenas.': 'The game is now called PokéArenas.',
     'Apoya el proyecto': 'Support the project',

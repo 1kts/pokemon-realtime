@@ -5,6 +5,19 @@
 Los mapas de región son dibujos propios en SVG (`public/js/regionmap.js`), aproximados a la geografía
 de los juegos. No se usa ningún mapa oficial.
 
+## Iconos e imágenes de objetos
+
+- Los sprites de los objetos (`public/items/`: Poké Balls, Caramelo Raro, vitaminas, piedras evolutivas y
+  algunos objetos clave usados como iconos) vienen de [PokeAPI/sprites](https://github.com/PokeAPI/sprites).
+  Son material de los juegos de Pokémon (© Nintendo / Creatures Inc. / GAME FREAK inc.), usado en un proyecto
+  de fans sin ánimo de lucro.
+- Los iconos pixel art de la interfaz y los emblemas de los movimientos (`public/js/pixicons.js`) son de
+  [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js`), de JPTER78 y colaboradores, con
+  licencia [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
+  (texto completo en `LICENSES/PolyForm-Noncommercial-1.0.0.md`). Uso no comercial.
+
+  Required Notice: Copyright 2026 JPTER78 (https://github.com/JPTER78/pokesurvivor)
+
 ## Sprites
 
 Los sprites de todos los Pokémon (`public/sprites/{nº de Pokédex}`) son estilo

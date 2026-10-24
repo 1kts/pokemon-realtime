@@ -7,13 +7,14 @@ import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
 import { storage } from './net.js';
+import { icon, item as itemImg } from './pixicons.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
-export const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
+export const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
 export const lv = n => t('Nv.{n}', { n });
 export const wl = (w, l) => t('{w}V {l}D', { w, l });
 // Orden del recorrido por el mapa (rutas y gimnasios intercalados)
@@ -106,11 +107,11 @@ export class UI {
     // Accesos fijos a Mis Pokémon, Tienda y Ladder desde cualquier pantalla fuera de combate
     const nav = el('nav', 'tb-nav');
     if (p.mons.length) {
-      if (this.view !== 'team') nav.append(btn(ICON.ball, t('Mis Pokémon'), () => this.openFrom('team')));
-      if (this.view !== 'shop') nav.append(btn(ICON.bag, t('Tienda'), () => this.openFrom('shop')));
+      if (this.view !== 'team') nav.append(btn(itemImg('pokeball', 26), t('Mis Pokémon'), () => this.openFrom('team')));
+      if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop')));
     }
-    if (this.view !== 'dex') nav.append(btn(ICON.dex, t('Pokédex'), () => this.openFrom('dex')));
-    if (this.view !== 'ladder') nav.append(btn(ICON.trophy, t('Ladder'), () => this.openLadder()));
+    if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex')));
+    if (this.view !== 'ladder') nav.append(btn(itemImg('medal-box', 26), t('Ladder'), () => this.openLadder()));
     right.append(nav);
     // Dinero, tu perfil, novedades (en el menú) y Ajustes
     const me = el('div', 'tb-me');
@@ -141,8 +142,10 @@ export class UI {
       main.append(sec);
       return grid;
     };
+    const CARD_ICON = { story: 'town-map', tower: 'relic-crown', ranked: 'master-ball', casual: 'vs-seeker', practice: 'tm-normal', ladder: 'medal-box' };
     const card = (grid, title, desc, cls, art, onClick) => {
-      const c = el('button', 'menu-card ' + cls, `<b>${title}</b><span>${desc}</span>`);
+      const ic = CARD_ICON[cls.split(' ')[0]];
+      const c = el('button', 'menu-card ' + cls, `<b>${ic ? itemImg(ic, 40, 'card-ico') : ''}${title}</b><span>${desc}</span><i class="go">${t('Jugar')} ›</i>`);
       const a = animatedPortrait(art, 120, 'Idle');
       a.classList.add('art');
       c.prepend(a);
@@ -509,7 +512,7 @@ export class UI {
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
       card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
-        <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')}</div>
+        <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${icon('move:' + k, 16)}${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
         ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}`));
       const acts = el('div', 'acts');
@@ -528,7 +531,7 @@ export class UI {
       mv.onclick = () => this.moveManager(m);
       acts.append(mv);
       if ((p.items.caramelo || 0) > 0) {
-        const b = el('button', '', `${SHOP.find(i => i.id === 'caramelo').name} (${p.items.caramelo})`);
+        const b = el('button', 'with-ico', `${itemImg('caramelo', 24)}${SHOP.find(i => i.id === 'caramelo').name} (${p.items.caramelo})`);
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.uid });
         acts.append(b);
       }
@@ -537,7 +540,7 @@ export class UI {
       for (const [to, stone] of stones) {
         const item = SHOP.find(s => s.id === stone);
         const have = p.items[stone] || 0;
-        const b = el('button', have ? 'evo' : 'evo dim', `${item.name} → ${SPECIES[to].name}`);
+        const b = el('button', (have ? 'evo' : 'evo dim') + ' with-ico', `${itemImg(item.id, 24)}${item.name} → ${SPECIES[to].name}`);
         b.disabled = !have;
         b.title = have ? '' : t('Cómprala en la tienda');
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: stone, uid: m.uid });
@@ -605,7 +608,7 @@ export class UI {
     const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
     box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: sp.bst })}</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
-    box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')));
+    box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${icon('move:' + k, 16)}${MOVES[k].name}</span>`).join('')));
     const evo = sp.evo;
     if (evo) {
       const list = Array.isArray(evo[0]) ? evo : [evo];
@@ -642,7 +645,7 @@ export class UI {
         const i = chosen.indexOf(k);
         const row = el('button', 'move-row' + (i >= 0 ? ' sel' : ''));
         row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-        row.innerHTML = `<span class="slot">${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
+        row.innerHTML = `<span class="slot">${icon('move:' + k, 32)}<i>${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
         row.onclick = () => {
           if (i >= 0) { if (chosen.length > 1) chosen.splice(i, 1); }
           else if (chosen.length < 4) chosen.push(k);
@@ -699,15 +702,15 @@ export class UI {
       for (const item of items) {
         const locked = (item.req || 0) > p.badges;
         const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
-        const icon = item.dex ? portrait(item.dex, 64) : el('i', 'item-icon ' + item.id);
-        c.append(icon);
+        const pic = item.dex ? portrait(item.dex, 64) : el('span', 'item-pic', itemImg(item.id, 48));
+        c.append(pic);
         const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.levelCap(p, this.region || 'kanto') }) : item.desc;
         c.append(el('div', 'si', `<b>${item.name}</b><small>${desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
         const acts = el('div', 'acts');
         if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
         else if (bought.includes(item.id)) acts.append(el('small', 'ok', t('Comprado hoy')));
         else for (const qty of item.dex ? [1] : item.cap ? [1, 5, 10] : [1]) {
-          const b = el('button', '', qty === 1 ? t('Comprar') : `×${qty}`);
+          const b = el('button', 'buy', qty === 1 ? t('Comprar') : `×${qty}`);
           b.disabled = p.coins < item.price * qty;
           b.onclick = () => this.net.send({ t: 'story', a: 'buy', id: item.id, qty, region: this.region || 'kanto' });
           acts.append(b);
@@ -879,7 +882,7 @@ export class UI {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
       box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>${t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
     }
-    if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`).join(' · ')));
+    if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `<span class="ri">${itemImg(k, 28)}${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}</span>`).join(' ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
     if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', t('Tope de nivel {n}: vence al siguiente gimnasio para que sigan subiendo.', { n: r.cap })));
     if (r.xp && r.xp.length) {
