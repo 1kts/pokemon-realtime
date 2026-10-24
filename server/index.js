@@ -21,6 +21,8 @@ const server = http.createServer((req, res) => {
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
+  // Acceso total (ver escenarios): /fullaccess lleva al juego con ?fullaccess
+  if (url === '/fullaccess') { res.writeHead(302, { Location: '/?fullaccess' }); return res.end(); }
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }

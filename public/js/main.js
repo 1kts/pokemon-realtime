@@ -9,7 +9,7 @@ import { Particles } from './particles.js';
 import { Effects } from './effects.js';
 import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
-import { Net } from './net.js';
+import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
 
 const canvas = document.getElementById('view');
@@ -95,11 +95,16 @@ net.on('disconnected', () => {
   if (app.battle) endBattle();
   ui.show('menu');
 });
-// Acceso total: ?fullaccess activa en este perfil el menú Escenarios (y se quita de la barra)
-let fullAccess = new URLSearchParams(location.search).has('fullaccess');
-if (fullAccess) history.replaceState(null, '', location.pathname);
+// Acceso total: ?fullaccess (o /fullaccess) activa en este perfil el menú Escenarios. La marca se
+// guarda en el navegador hasta que el servidor la confirma, para que no se pierda si la página se
+// recarga antes de entrar (pantalla de inicio, aviso de versión nueva...).
+const FULL_KEY = 'arena.fullaccess';
+if (/fullaccess/i.test(location.search)) { storage.set(FULL_KEY, '1'); history.replaceState(null, '', location.pathname); }
 net.on('profile', m => {
-  if (fullAccess) { net.send({ t: 'admin' }); fullAccess = false; }
+  if (storage.get(FULL_KEY)) {
+    if (m.p.admin) { storage.del(FULL_KEY); ui.toast(t('Acceso total activado: tienes el menú Escenarios')); }
+    else net.send({ t: 'admin' });
+  }
   ui.setProfile(m.p, m.board, m.rank);
 });
 net.on('error', m => ui.toast(tServer(m.msg), 'bad'));

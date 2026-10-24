@@ -12,6 +12,7 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Escenarios (acceso total) ----------
+    'Acceso total activado: tienes el menú Escenarios': 'Full access enabled: you now have the Stages menu',
     'Escenarios': 'Stages',
     'Acceso total: combate en cualquier mapa o arena sin medallas ni nivel': 'Full access: battle on any map or arena with no badges or level needed',
     'Rival quieto (para mirar el escenario y sus mecánicas)': 'Idle rival (to look around the stage and its mechanics)',
