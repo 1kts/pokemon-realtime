@@ -780,6 +780,15 @@ export default {
     'Demasiados perfiles nuevos desde tu red: espera un rato': 'Trop de nouveaux profils depuis ton réseau : attends un moment',
     'Demasiados intentos desde tu red: espera unos minutos': 'Trop de tentatives depuis ton réseau : attends quelques minutes',
     'Demasiados intentos con esta cuenta: espera 15 minutos': 'Trop de tentatives sur ce compte : attends 15 minutes',
+    'Apoyar': 'Soutenir',
+    'Aviso': 'Avis',
+    'Tu cuenta está suspendida': 'Ton compte est suspendu',
+    'Motivo: {reason}': 'Motif : {reason}',
+    'Hasta: {date}': 'Jusqu\'au : {date}',
+    'La suspensión no tiene fecha de fin.': 'La suspension n\'a pas de date de fin.',
+    'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.': 'Le serveur est en maintenance : impossible de commencer de nouveaux combats pour le moment.',
+    'Mantenimiento: termina tu combate; durante un rato no se podrán empezar otros.': 'Maintenance : termine ton combat ; pendant un moment, on ne pourra pas en commencer d\'autres.',
+    'Un administrador te ha desconectado': 'Un administrateur t\'a déconnecté',
   },
 
   patterns: [
