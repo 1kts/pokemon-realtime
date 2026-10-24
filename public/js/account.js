@@ -5,6 +5,7 @@ import { portrait, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
+import { flag } from './flags.js';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -137,21 +138,32 @@ export const accountViews = {
   },
 
   // Selector de idioma: cambia los textos y vuelve a pintar la pantalla actual
+  // Selector de idioma de la portada: botón con la bandera y el código que abre la lista de idiomas
   langPicker() {
-    const wrap = el('label', 'lang-pick', GLOBE_SVG);
-    wrap.title = 'Idioma / Language';
-    const sel = el('select', 'lang-select');
-    sel.setAttribute('aria-label', 'Idioma / Language');
-    wrap.append(sel);
+    const wrap = el('div', 'lang-pick');
+    const cur = getLang();
+    const btn = el('button', 'lang-cur', `${flag(cur)}<b>${LANG_CODES[cur] || cur.toUpperCase()}</b><i class="chev"></i>`);
+    btn.title = 'Idioma / Language';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    const menu = el('div', 'lang-menu');
+    menu.setAttribute('role', 'listbox');
+    menu.hidden = true;
     for (const [id, name] of Object.entries(LANGS)) {
-      const o = el('option', '', name);
-      o.value = id;
-      o.selected = id === getLang();
-      sel.append(o);
+      const o = el('button', 'lang-item' + (id === cur ? ' sel' : ''), `${flag(id)}<span>${name}</span><small>${LANG_CODES[id] || id.toUpperCase()}</small>`);
+      o.setAttribute('role', 'option');
+      o.onclick = () => { menu.hidden = true; setLang(id).then(ok => { if (ok) { this.app.onLang(); this.show(this.view); } }); };
+      menu.append(o);
     }
-    sel.onchange = () => setLang(sel.value).then(ok => { if (ok) { this.app.onLang(); this.show(this.view); } });
+    // Se cierra al pulsar fuera
+    const outside = e => { if (!wrap.contains(e.target)) { menu.hidden = true; document.removeEventListener('pointerdown', outside); } };
+    btn.onclick = () => {
+      menu.hidden = !menu.hidden;
+      if (!menu.hidden) document.addEventListener('pointerdown', outside);
+    };
+    wrap.append(btn, menu);
     return wrap;
   },
+
 
   // ---------- Novedades ----------
   hasNews() { return storage.get(SEEN_KEY) !== VERSION; },
@@ -298,7 +310,7 @@ export const accountViews = {
     lang.append(el('h3', '', `${GLOBE_SVG} ${t('Idioma')}`), el('p', 'small', t('Cambia los textos del juego al momento. Se recuerda en este navegador.')));
     const langs = el('div', 'lang-list');
     for (const [id, name] of Object.entries(LANGS)) {
-      const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `<b>${name}</b><small>${LANG_CODES[id] || id.toUpperCase()}</small>`);
+      const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `${flag(id)}<span><b>${name}</b><small>${LANG_CODES[id] || id.toUpperCase()}</small></span>`);
       b.onclick = () => setLang(id).then(ok => { if (ok) { this.app.onLang(); this.show('settings'); } });
       langs.append(b);
     }
