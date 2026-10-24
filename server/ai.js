@@ -154,7 +154,8 @@ function aiInput(b, side, dt) {
 
   // ---------- Ataque ----------
   if (!b.canAct(side) || f.hidden && !st.lastSeen) return aim(inp, side, toFoe, skill);
-  if (rnd() > 0.2 + 0.65 * skill) return aim(inp, side, toFoe, skill);
+  // Cadencia: una IA torpe ataca a ratos (~2 veces/s); una experta, en cuanto puede
+  if (rnd() > 0.06 + 0.5 * Math.pow(skill, 1.2)) return aim(inp, side, toFoe, skill);
   const foeFlags = b.flags(f);
   const disabled = foeFlags & (S.F.STUN | S.F.SLOW);
   let best = null, bestU = 0;

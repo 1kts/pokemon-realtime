@@ -1,8 +1,13 @@
 {
-  "name": "arena-monstruos",
-  "version": "0.1.0",
-  "description": "Juego de combates de criaturas en tiempo real para navegador",
+  "name": "arena-pokemon",
+  "version": "0.2.0",
+  "description": "Combates Pokémon en tiempo real en el navegador: historia, clasificatoria y práctica (HD-2D con Three.js)",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tools/server-test.js && node tools/sim-test.js 60",
+    "test:sim": "node tools/sim-test.js",
+    "test:server": "node tools/server-test.js"
+  },
   "dependencies": { "ws": "^8.18.0" }
 }
