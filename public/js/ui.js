@@ -128,7 +128,7 @@ export class UI {
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
     const tw = p.tower;
     const adventure = section(t('Aventura'), t('Tu viaje por las regiones y los retos de la Torre'));
-    card(adventure, t('Historia'), p.mons.length ? `${regs} · ${p.mons.length} Pokémon` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
+    card(adventure, t('Historia'), p.mons.length ? `${regs} · ${t('{n} Pokémon', { n: p.mons.length })}` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
     card(adventure, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
     const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
     const ready = this.claimable().length;
@@ -161,10 +161,10 @@ export class UI {
     box.append(el('div', 'rows', `
       <div class="stat"><small>${t('Dinero')}</small><b>${coins(p.coins)}</b></div>
       <div class="stat"><small>${t('Medallas')}</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
-      <div class="stat"><small>Pokémon</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
+      <div class="stat"><small>${t('Pokémon')}</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
       <div class="stat"><small>${t('Clasificatoria')}</small><b>${wl(p.wins, p.losses)}</b></div>
       <div class="stat"><small>${t('Torre: récord')}</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">${t('racha {n}', { n: p.tower.streak })}</small>` : ''}</b></div>`));
-    box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
+    box.append(el('div', 'stat', `<small>${t('Pokédex')}</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
     return box;
   }
 
@@ -340,10 +340,11 @@ export class UI {
       tabs.append(tab);
     }
     for (const name of UPCOMING_REGIONS) {
-      const tab = el('button', 'soon', `<b>${LOCK_SVG}${name}</b><small>${t('Próximamente')}</small>`);
+      const rname = t(name);
+      const tab = el('button', 'soon', `<b>${LOCK_SVG}${rname}</b><small>${t('Próximamente')}</small>`);
       tab.setAttribute('aria-disabled', 'true');
-      tab.title = t('{r} llegará en una próxima actualización', { r: name });
-      tab.onclick = () => this.toast(t('{r} todavía no está disponible: ¡llegará pronto!', { r: name }));
+      tab.title = t('{r} llegará en una próxima actualización', { r: rname });
+      tab.onclick = () => this.toast(t('{r} todavía no está disponible: ¡llegará pronto!', { r: rname }));
       tabs.append(tab);
     }
     bar.append(tabs);
@@ -389,7 +390,7 @@ export class UI {
       const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
-      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
+      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
         <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
         ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}`));
@@ -450,7 +451,7 @@ export class UI {
     const route = mon.met ? Data.NODES[mon.met] || null : null;
     const nat = Data.NATURES[mon.nat] || ['—', null, null];
     const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (${t('neutra')})`;
-    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ' <i class="shiny-star">✦ shiny</i>' : ''} <small>${lv(mon.level)}</small></h3><div class="types">${typeChips(mon.dex)}</div>
+    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''} <small>${lv(mon.level)}</small></h3><div class="types">${typeChips(mon.dex)}</div>
       <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ` · <b>${t('legendario')}</b>` : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · ${t('Capturado en {r}', { r: route.name })}` : ''}</p>
       <p class="small">${t('Naturaleza')}: ${natTxt}</p>`));
     box.append(head);

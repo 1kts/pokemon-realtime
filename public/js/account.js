@@ -146,7 +146,7 @@ export const accountViews = {
       o.selected = id === getLang();
       sel.append(o);
     }
-    sel.onchange = () => { if (setLang(sel.value)) { this.app.onLang(); this.show(this.view); } };
+    sel.onchange = () => setLang(sel.value).then(ok => { if (ok) { this.app.onLang(); this.show(this.view); } });
     return wrap;
   },
 
@@ -287,7 +287,7 @@ export const accountViews = {
     const langs = el('div', 'lang-list');
     for (const [id, name] of Object.entries(LANGS)) {
       const b = el('button', 'lang-opt' + (id === getLang() ? ' sel' : ''), `<b>${name}</b><small>${id.toUpperCase()}</small>`);
-      b.onclick = () => { if (setLang(id)) { this.app.onLang(); this.show('settings'); } };
+      b.onclick = () => setLang(id).then(ok => { if (ok) { this.app.onLang(); this.show('settings'); } });
       langs.append(b);
     }
     lang.append(langs);

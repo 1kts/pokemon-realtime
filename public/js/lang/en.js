@@ -277,6 +277,9 @@ export default {
     'Ríos de lava, erupciones y el viento de las alas de los dragones.': 'Rivers of lava, eruptions and the wind from the dragons\' wings.',
 
     // ---------- Menú ----------
+    '{n} Pokémon': '{n} Pokémon',
+    '✦ shiny': '✦ shiny',
+    'parry {n} ms': 'parry {n} ms',
     'Aventura': 'Adventure',
     'Tu viaje por las regiones y los retos de la Torre': 'Your journey through the regions and the Tower challenges',
     'Online': 'Online',
@@ -366,6 +369,13 @@ export default {
     '♛ Campeón': '♛ Champion',
     '{n}/8 medallas': '{n}/8 badges',
     'Próximamente': 'Coming soon',
+    'Hoenn': 'Hoenn',
+    'Sinnoh': 'Sinnoh',
+    'Teselia': 'Unova',
+    'Kalos': 'Kalos',
+    'Alola': 'Alola',
+    'Galar': 'Galar',
+    'Paldea': 'Paldea',
     '{r} llegará en una próxima actualización': '{r} is coming in a future update',
     '{r} todavía no está disponible: ¡llegará pronto!': '{r} isn\'t available yet: coming soon!',
     'Siguiente: <b>{who}</b>': 'Next: <b>{who}</b>',

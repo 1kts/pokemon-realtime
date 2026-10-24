@@ -476,7 +476,7 @@ export class BattleClient {
       b.title = describeMove(m);
       this.movesEl.append(b);
     });
-    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><b>${t('Protección')}</b><small>parry ${Math.round(PROTECT.perfect * 1000)} ms</small><div class="cd"></div><span class="cdt"></span>`);
+    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><b>${t('Protección')}</b><small>${t('parry {n} ms', { n: Math.round(PROTECT.perfect * 1000) })}</small><div class="cd"></div><span class="cdt"></span>`);
     pr.style.setProperty('--tc', '#70ffb0');
     pr.title = t('Bloquea el 80 % del daño. Si el golpe llega justo al activarla, lo devuelves (parry).');
     this.movesEl.append(pr);
