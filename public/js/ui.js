@@ -259,6 +259,7 @@ export class UI {
       if (n.team.length > 3) box.append(el('p', 'small', t('Equipo real completo: {list}. En combate saca sus 3 más fuertes.', { list: n.team.map(([d, l]) => `${d === 'rival' ? t('tu rival') : SPECIES[d].name} ${l}`).join(', ') })));
       const arena = Data.ARENAS[n.map];
       if (arena) box.append(el('div', 'arena-info', `<b>${t(arena.name)}</b> · ${t(arena.desc)}`));
+      if (n.kind === 'elite' || n.kind === 'champion') box.append(el('p', 'small', t('Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.')));
       box.append(el('p', 'small', t('Dificultad de la IA: {ai} % · Premio {prize} · la primera vez también Caramelo Raro y una vitamina', { ai: Math.round(n.ai * 100), prize: coins(n.reward) + (n.badge ? t(' y {b}', { b: n.badge }) : '') })));
       if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? t('Consigue las 8 medallas de la región y vence a los anteriores.') : t('Vence antes al anterior.')));
       else {
@@ -695,11 +696,16 @@ export class UI {
     off.onclick = () => this.net.send({ t: 'admin', off: true });
     opts.append(toggle, off);
     const grid = el('div', 'arena-grid scroll');
+    const ROUTE_COLOR = { pradera: '#6aa847', bosque: '#3c7a30', cueva: '#8a7a66', lago: '#3f7fc0' };
     const ROUTE_MAPS = { pradera: ['Pradera', 'Mapa de ruta: hierba alta para esconderse.'], bosque: ['Bosque', 'Mapa de ruta: mucha hierba alta.'], cueva: ['Cueva', 'Mapa de ruta: rocas y charcos.'], lago: ['Lago', 'Mapa de ruta: agua y orilla de arena.'] };
     const entries = [
-      ...Object.entries(ROUTE_MAPS).map(([id, [name, desc]]) => ({ id, name: t(name), desc: t(desc), color: '#6aa847', who: t('Rutas, práctica, clasificatoria y Torre') })),
+      ...Object.entries(ROUTE_MAPS).map(([id, [name, desc]]) => ({ id, name: t(name), desc: t(desc), color: '#6aa847', who: t('Práctica, clasificatoria y Torre') })),
       ...Object.entries(Data.ARENAS).map(([id, a]) => ({ id, name: t(a.name), desc: t(a.desc), color: TYPE_COLOR[id.slice(2)],
         who: [...new Set(Object.values(Data.NODES).filter(n => n.kind !== 'route' && n.map === id).map(n => n.leader))].join(', ') })),
+      // Cada ruta tiene su propio mapa generado
+      ...Data.REGION_IDS.flatMap(rid => Data.REGIONS[rid].nodes.filter(n => n.kind === 'route').map(n => ({
+        id: 'r:' + n.id, name: n.name, color: ROUTE_COLOR[n.map] || '#6aa847',
+        who: `${Data.REGIONS[rid].name} · ${t(ROUTE_MAPS[n.map] ? ROUTE_MAPS[n.map][0] : 'Pradera')}`, desc: t('Mapa propio de esta ruta, siempre el mismo.') }))),
     ];
     for (const e of entries) {
       const c = el('button', 'arena-card', `<i style="--tc:${e.color}"></i><b>${e.name}</b><small>${e.who}</small><span>${e.desc}</span>`);

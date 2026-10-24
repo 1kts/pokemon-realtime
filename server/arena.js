@@ -13,7 +13,7 @@
 //   heal      baldosas que curan mientras les quede carga
 //   dark      oscuridad: el rival no se ve de lejos
 //   flow      corriente en el agua (se aplica en Shared.arenaStep)
-//   beam      haz giratorio del faro desde el centro
+//   beam      haz giratorio desde el centro (faro, aliento de dragón, haz psíquico)
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
 
@@ -101,8 +101,10 @@ class Arena {
       for (const s of b.sides) {
         const a = Math.random() * Math.PI * 2, d = 30 + Math.random() * 80;
         const x = S.clamp(s.x + Math.cos(a) * d, 40, S.ARENA.w - 40), y = S.clamp(s.y + Math.sin(a) * d, 40, S.ARENA.h - 40);
-        this.warnAt(x, y, o.r, o.warn, 'roca', p => {
-          for (const t of b.sides) if (Math.hypot(t.x - p.x, t.y - p.y) < p.r + b.rad(t)) b.hazard(t, o.dmg, 'roca', { stun: 0.35 });
+        // ty: tipo de lo que cae (rocas, carámbanos que ralentizan, emboscadas de las sombras...)
+        const ty = o.ty || 'roca';
+        this.warnAt(x, y, o.r, o.warn, ty, p => {
+          for (const t of b.sides) if (Math.hypot(t.x - p.x, t.y - p.y) < p.r + b.rad(t)) b.hazard(t, o.dmg, ty, o.slow ? { slow: o.slow } : { stun: 0.35 });
           b.obstacles.push({ id: b.newId(), kind: 'rockwall', x: p.x, y: p.y, r: 24, hp: 60, ttl: o.ttl });
           for (const t of b.sides) S.pushOut(t, b.rad(t), b.obstacles);
         });
@@ -241,12 +243,15 @@ class Arena {
       const o = m.beam;
       this.beamA = (this.beamA + o.speed * dt) % (Math.PI * 2);
       const ax = Math.cos(this.beamA), ay = Math.sin(this.beamA);
+      // ty: tipo del haz (faro de acero que quema, aliento de dragón que ralentiza, psíquico que aturde)
+      const ty = o.ty || 'acero';
+      const extra = ty === 'psiquico' ? { stun: 0.4 } : ty === 'dragon' ? { slow: 1 } : { burn: 1.5 };
       for (const s of b.sides) {
         this.beamCd[s.idx] = Math.max(0, this.beamCd[s.idx] - dt);
-        if (this.beamCd[s.idx] > 0 || typesOf(b.mon(s)).includes('acero')) continue;
+        if (this.beamCd[s.idx] > 0 || typesOf(b.mon(s)).includes(ty)) continue;
         const dx = s.x - CX, dy = s.y - CY;
         const along = Math.abs(dx * ax + dy * ay), across = Math.abs(-dx * ay + dy * ax);
-        if (along > 40 && along < o.len && across < o.width + b.rad(s)) { this.beamCd[s.idx] = 1.1; b.hazard(s, o.dmg, 'acero', { burn: 1.5 }); }
+        if (along > 40 && along < o.len && across < o.width + b.rad(s)) { this.beamCd[s.idx] = 1.1; b.hazard(s, o.dmg, ty, extra); }
       }
     }
   }

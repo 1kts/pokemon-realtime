@@ -434,8 +434,8 @@ export class BattleClient {
     this.bannerEl = el('div', 'banners');
     // Nombre y mecánica de la arena (la descripción se esconde a los pocos segundos)
     if (this.arena) {
-      const tag = el('div', 'arena-tag', `<b>${escapeHtml(this.arena.name)}</b><span>${escapeHtml(this.arena.desc)}</span>`);
-      tag.title = this.arena.desc;
+      const tag = el('div', 'arena-tag', `<b>${escapeHtml(t(this.arena.name))}</b><span>${escapeHtml(t(this.arena.desc))}</span>`);
+      tag.title = t(this.arena.desc);
       root.append(tag);
       setTimeout(() => tag.classList.add('mini'), 9000);
     }

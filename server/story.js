@@ -187,7 +187,7 @@ function battleSetup(p, msg) {
     const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
     return {
       kind: 'route', route,
-      opts: { mode: 'wild', map: route.map, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
+      opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare }] },
     };
   }
   if (msg.a === 'gym') {
@@ -196,7 +196,7 @@ function battleSetup(p, msg) {
     const lt = D.leaderTeam(node, p.starters[node.region] || (team[0] && team[0].dex));
     return {
       kind: 'gym', gym: node, index: node.index, region: node.region,
-      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level) })), ai: node.ai }] },
+      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(node) })), ai: node.ai }] },
     };
   }
   return { error: 'Combate desconocido' };

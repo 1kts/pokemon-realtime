@@ -406,7 +406,7 @@
   };
 
   // ---------- Arenas de gimnasio ----------
-  // Una por tipo (los líderes del mismo tipo comparten arena). rows: como MAPS, más
+  // Una por tipo para los líderes de gimnasio (g-) y una por miembro del Alto Mando o Campeón (e-). rows: como MAPS, más
   // 'i' hielo · 'p' veneno · 'w' telaraña · 'L' lava · 'x' muro invisible · 'H' baldosa de curación
   // 'A'/'a' 'B'/'b' 'C'/'c' teletransportes por parejas · 'v' / '^' agua con corriente · 'E' placa eléctrica.
   // mech: mecánicas del entorno (server/arena.js).
@@ -717,6 +717,187 @@
         'LLLL................LLLL',
         'LLLLLLL..........LLLLLLL',
       ] },
+    // Salas propias del Alto Mando y los Campeones: varias mecánicas a la vez y más intensas
+    'e-lorelei': { name: 'Cámara Glacial', desc: 'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.', mech: { ice: true, rockfall: { every: 2.6, warn: 1, r: 46, dmg: 0.09, ttl: 6, ty: 'hielo', slow: 1.5 }, wind: { every: 8, warn: 1.1, dur: 2.4, force: 85 } },
+      rows: [
+        '..iiiiiiiiiiiiiiiiiiii..',
+        '.iiiiiiiiiiiiiiiiiiiiii.',
+        '.iiio..iiiiiiiiii..oiii.',
+        '.iiiiiiiii~~~~iiiiiiiii.',
+        '.iiiiiiii~~~~~~iiiiiiii.',
+        '..iiiiiii~~~~~~iiiiiii..',
+        '...iiiiiiiiooiiiiiiii...',
+        '...iiiiiiiiiiiiiiiiii...',
+        '...iiiiiiiiooiiiiiiii...',
+        '..iiiiiii~~~~~~iiiiiii..',
+        '.iiiiiiii~~~~~~iiiiiiii.',
+        '.iiiiiiiii~~~~iiiiiiiii.',
+        '.iiio..iiiiiiiiii..oiii.',
+        '.iiiiiiiiiiiiiiiiiiiiii.',
+        '..iiiiiiiiiiiiiiiiiiii..',
+      ] },
+    'e-bruno': { name: 'Dojo de Roca', desc: 'Alto Mando. Terremotos seguidos y rocas que caen del techo.', mech: { quake: { every: 6.5, warn: 0.9, speed: 380, dmg: 0.1, slow: 1.4 }, rockfall: { every: 3.2, warn: 1, r: 48, dmg: 0.08, ttl: 6 } },
+      rows: [
+        '........................',
+        '..o..................o..',
+        '......o..........o......',
+        '..........o..o..........',
+        '....o..............o....',
+        '........................',
+        '..........o..o..........',
+        '........................',
+        '..........o..o..........',
+        '........................',
+        '....o..............o....',
+        '..........o..o..........',
+        '......o..........o......',
+        '..o..................o..',
+        '........................',
+      ] },
+    'e-agatha': { name: 'Cripta Espectral', desc: 'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.', mech: { dark: 200, warp: { cd: 1.5 }, toxic: { every: 6, ttl: 6 } },
+      rows: [
+        '........................',
+        '...o................o...',
+        '.....A............B.....',
+        '.........o....o.........',
+        '........................',
+        '..##......pppp......##..',
+        '..##................##..',
+        '........................',
+        '..##................##..',
+        '..##......pppp......##..',
+        '........................',
+        '.........o....o.........',
+        '.....b............a.....',
+        '...o................o...',
+        '........................',
+      ] },
+    'e-lance': { name: 'Guarida del Dragón', desc: 'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.', mech: { beam: { speed: 0.7, len: 560, width: 16, dmg: 0.08, ty: 'dragon' }, eruption: { every: 6, warn: 1.1, r: 70, dmg: 0.08 }, wind: { every: 9, warn: 1.1, dur: 2.2, force: 90 } },
+      rows: [
+        'LLL..................LLL',
+        'LL....................LL',
+        '........................',
+        '.....o............o.....',
+        '........................',
+        '.........LLLLLL.........',
+        '........LL....LL........',
+        '........L..oo..L........',
+        '........LL....LL........',
+        '.........LLLLLL.........',
+        '........................',
+        '.....o............o.....',
+        '........................',
+        'LL....................LL',
+        'LLL..................LLL',
+      ] },
+    'e-azul': { name: 'Sala del Campeón', desc: 'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.', mech: { shock: { every: 2.8, warn: 0.9, dmg: 0.08, stun: 0.6 }, quake: { every: 9, warn: 1, speed: 360, dmg: 0.09, slow: 1.2 }, heal: { rate: 0.04, drain: 0.3, cd: 15 } },
+      rows: [
+        '........................',
+        '..H..................H..',
+        '........................',
+        '....o..............o....',
+        '.........EEEEEE.........',
+        '.........EEEEEE.........',
+        '.........EEEEEE.........',
+        '.........EEooEE.........',
+        '.........EEEEEE.........',
+        '.........EEEEEE.........',
+        '.........EEEEEE.........',
+        '....o..............o....',
+        '........................',
+        '..H..................H..',
+        '........................',
+      ] },
+    'e-will': { name: 'Sala Psíquica', desc: 'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.', mech: { warp: { cd: 1.4 }, beam: { speed: 0.8, len: 560, width: 14, dmg: 0.07, ty: 'psiquico' } },
+      rows: [
+        '........................',
+        '....A..............B....',
+        '........................',
+        '.......o........o.......',
+        '........................',
+        '........................',
+        '........................',
+        '...........oo...........',
+        '........................',
+        '........................',
+        '........................',
+        '.......o........o.......',
+        '........................',
+        '....b..............a....',
+        '........................',
+      ] },
+    'e-kogaj': { name: 'Dojo Ninja', desc: 'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.', mech: { dark: 270, toxic: { every: 3.5, ttl: 9 } },
+      rows: [
+        '........................',
+        '..pp....x......x....pp..',
+        '..pp....x......x....pp..',
+        '........x......x........',
+        '.....pp..........pp.....',
+        '..........xxxx..........',
+        '.....x..pp....pp..x.....',
+        '.....x............x.....',
+        '.....x..pp....pp..x.....',
+        '..........xxxx..........',
+        '.....pp..........pp.....',
+        '........x......x........',
+        '..pp....x......x....pp..',
+        '..pp....x......x....pp..',
+        '........................',
+      ] },
+    'e-brunoj': { name: 'Templo de las Cascadas', desc: 'Alto Mando. Cascadas con mucha corriente y terremotos.', mech: { flow: 140, quake: { every: 7, warn: 0.9, speed: 380, dmg: 0.1, slow: 1.4 } },
+      rows: [
+        '......vv........^^......',
+        '......vv........^^......',
+        '......vv........^^......',
+        '........................',
+        '......vv........^^......',
+        '..o...vv........^^...o..',
+        '......vv........^^......',
+        '........................',
+        '......vv........^^......',
+        '..o...vv........^^...o..',
+        '......vv........^^......',
+        '........................',
+        '......vv........^^......',
+        '......vv........^^......',
+        '......vv........^^......',
+      ] },
+    'e-karen': { name: 'Sala de las Sombras', desc: 'Alto Mando. Oscuridad y emboscadas desde las sombras.', mech: { dark: 200, rockfall: { every: 3, warn: 0.9, r: 46, dmg: 0.08, ttl: 5, ty: 'siniestro' } },
+      rows: [
+        '........................',
+        '...##..............##...',
+        '...##....o....o....##...',
+        '........................',
+        '.......##......##.......',
+        '..........#..#..........',
+        '........................',
+        '...........oo...........',
+        '........................',
+        '..........#..#..........',
+        '.......##......##.......',
+        '........................',
+        '...##....o....o....##...',
+        '...##..............##...',
+        '........................',
+      ] },
+    'e-lancej': { name: 'Cumbre del Dragón', desc: 'Campeón. Lava, erupciones continuas, vendavales y terremotos.', mech: { eruption: { every: 4.5, warn: 1.1, r: 72, dmg: 0.09 }, wind: { every: 8, warn: 1.1, dur: 2.4, force: 95 }, quake: { every: 9, warn: 1, speed: 380, dmg: 0.09, slow: 1.2 } },
+      rows: [
+        'LLLL................LLLL',
+        'LL....................LL',
+        '........................',
+        '......L..........L......',
+        '.....LL....oo....LL.....',
+        '......L..........L......',
+        '........................',
+        '..........LLLL..........',
+        '........................',
+        '......L..........L......',
+        '.....LL....oo....LL.....',
+        '......L..........L......',
+        '........................',
+        'LL....................LL',
+        'LLLL................LLLL',
+      ] },
   };
 
   // ---------- Modo historia: regiones reales ----------
@@ -731,7 +912,9 @@
       n.region = r.id;
       if (n.kind !== 'route') {
         n.index = gi++;   // orden de los combates de líder (= medallas necesarias)
-        if (ARENAS['g-' + n.type]) n.map = 'g-' + n.type;   // cada líder pelea en la arena de su tipo
+        // El Alto Mando y los Campeones tienen sala propia; los líderes, la arena de su tipo
+        if (ARENAS['e-' + n.id]) n.map = 'e-' + n.id;
+        else if (ARENAS['g-' + n.type]) n.map = 'g-' + n.type;
       }
       else {
         n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
@@ -920,8 +1103,13 @@
   // Dinero por combate de clasificatoria y extra por la primera victoria del día
   const RANKED_PAY = { win: 120, loss: 40, firstWin: 400 };
 
+  // El Alto Mando y los Campeones llevan Pokémon criados a conciencia: IV perfectos y 120 EV por stat
+  const ELITE_EV = 120;
+  const leaderExtras = node => (node.kind === 'elite' || node.kind === 'champion')
+    ? { iv: Object.fromEntries(STAT_KEYS.map(k => [k, IV_MAX])), ev: Object.fromEntries(STAT_KEYS.map(k => [k, ELITE_EV])) } : {};
+
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, seasonTitle, RANKED_PAY };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);

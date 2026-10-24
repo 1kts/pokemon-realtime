@@ -125,7 +125,7 @@ export class Particles {
       }
       const sp = (o.speed ?? 2) * (0.4 + Math.random() * 0.6);
       const j = o.jitter || 0;
-      const colors = o.colors;
+      const colors = o.colors && o.colors.length ? o.colors : ['#ffffff'];   // tipo sin paleta: blanco
       layer.add({
         x: x + (Math.random() - 0.5) * j, y: y + (Math.random() - 0.5) * j * 0.5, z: z + (Math.random() - 0.5) * j,
         vx: vx * sp, vy: vy * sp, vz: vz * sp, t: 0, life: (o.life ?? 0.6) * (0.6 + Math.random() * 0.4),
@@ -157,6 +157,9 @@ export const PALETTE = {
   psiquico: ['#ffe0f0', '#ff90c0', '#ff5890', '#d03070'], bicho: ['#f0ffb0', '#c8e050', '#90b020'],
   roca: ['#e8dcc0', '#b8a070', '#8a7850', '#605038'], fantasma: ['#e0d0ff', '#a080f0', '#7058c0', '#402880'],
   dragon: ['#e0d0ff', '#a070ff', '#7038f8', '#4818c0'],
+  acero: ['#ffffff', '#dfe6ee', '#aab6c4', '#7a8898'],
+  siniestro: ['#a898b8', '#6a5a7a', '#3e324a', '#221a2a'],
+  hada: ['#fff0f8', '#ffc0e0', '#ff90c8', '#e868a8'],
 };
 export const SMOKE = ['#6a6a6a', '#808080', '#959595'];
 export const DUST = ['#c8b088', '#a89070', '#8a7458'];
