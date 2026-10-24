@@ -54,6 +54,10 @@ const ipsOf = id => db.prepare(`SELECT ip, COUNT(*) AS n, MAX(at) AS last FROM a
 const playersOnIp = ip => db.prepare(`SELECT actor AS id, MAX(at) AS last FROM audit
   WHERE ip = ? AND actor IS NOT NULL AND type NOT LIKE 'admin.%' GROUP BY actor ORDER BY last DESC LIMIT 20`).all(ip);
 
+// Al borrar a un jugador (derecho de supresión) se va también su registro; solo quedan las acciones de
+// admin, que guardan el id pero ningún dato personal
+const forget = id => Number(db.prepare("DELETE FROM audit WHERE (actor = ? OR target = ?) AND type NOT LIKE 'admin.%'").run(id, id).changes);
+
 // Borra lo que tiene más de 40 días, menos las acciones de los admins
 function prune(now = Date.now()) {
   return Number(db.prepare("DELETE FROM audit WHERE at < ? AND type NOT LIKE 'admin.%'").run(now - KEEP_MS).changes);
@@ -61,4 +65,4 @@ function prune(now = Date.now()) {
 prune();
 setInterval(prune, 6 * 3600e3).unref();
 
-module.exports = { log, logNoisy, query, countsSince, ipsOf, playersOnIp, prune, KEEP_MS };
+module.exports = { log, logNoisy, query, countsSince, ipsOf, playersOnIp, prune, forget, KEEP_MS };

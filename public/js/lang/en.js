@@ -13,6 +13,11 @@ export default {
   text: {
     'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Item icons come from PokeAPI and the interface\'s pixel art icons from PokéSurvivor (JPTER78, PolyForm Noncommercial license).',
+    'Nuevo aspecto': 'New look',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Revamped interface: rounded fonts, striped buttons and windows, and menu cards with icons.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Real item icons in the shop, your team and rewards, plus pixel art coins.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Each move shows an emblem with its type and shape (projectile, cone, beam, dash…).',
     'Nuevo nombre: PokéArenas': 'New name: PokéArenas',
     'El juego pasa a llamarse PokéArenas.': 'The game is now called PokéArenas.',
     'Apoya el proyecto': 'Support the project',
@@ -190,9 +195,9 @@ export default {
     'Arreglo': 'Fix',
     'PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.': 'PokéArenas is a <b>non-profit fan project</b>. It is not affiliated with, sponsored or endorsed by Nintendo, Game Freak, Creatures Inc. or The Pokémon Company. Pokémon and their names are trademarks of their respective owners.',
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.': 'The sprites come from the <i>Pokémon Mystery Dungeon</i> community (PMD Sprite Collab) and are used with credit to their artists. Species data comes from PokéAPI. The map tiles are CC0.',
-    'La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.': 'The full list of authors is in <code>CREDITS.md</code>, in the project repository.',
+    'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': 'The artists of each sprite, the licences and the full privacy policy are in the <a href="{url}" target="_blank" rel="noopener">legal notice</a>.',
     'Datos que guardamos': 'Data we keep',
-    'Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.': 'Your trainer name, your game and, if you create an account, your username and your hashed password (salted scrypt). We don\'t ask for an email or personal data. This browser remembers your session with a key in local storage.',
+    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.': 'We store your trainer name and your progress; if you create an account, your username and your encrypted password (salted scrypt); and, for 40 days, a security log with your IP. No ads, cookies or tracking. To delete your account or for any question: contacto@pokearenas.com.',
     'Recargar': 'Reload',
     'Hay una versión nueva (v{v}): se cargará al terminar lo que estás haciendo.': 'There\'s a new version (v{v}): it will load when you finish what you\'re doing.',
     'Hay una versión nueva (v{v}). Recargando en {n} s…': 'There\'s a new version (v{v}). Reloading in {n} s…',

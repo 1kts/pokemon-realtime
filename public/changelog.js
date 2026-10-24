@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.8.0', date: '2026-10-25', title: 'Nuevo aspecto',
+      items: [
+        ['cambio', 'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.'],
+        ['nuevo', 'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.'],
+        ['nuevo', 'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).'],
+      ],
+    },
+    {
       v: '0.7.1', date: '2026-10-24', title: 'Nuevo nombre: PokéArenas',
       items: [
         ['cambio', 'El juego pasa a llamarse PokéArenas.'],

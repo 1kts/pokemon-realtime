@@ -22,19 +22,20 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+  '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8' };
 
-// Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: solo se
-// cargan scripts de aquí y de jsDelivr (Three.js) más los scripts en línea de la propia página
-// (su hash, así que un script inyectado no se ejecutaría), y solo se conecta a este servidor.
+// Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: todo
+// (scripts, Three.js y fuentes en public/vendor) se carga de este servidor, más los scripts en línea
+// de la propia página (por su hash: uno inyectado no se ejecutaría), y solo se conecta a él.
 const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Cross-Origin-Opener-Policy': 'same-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
 function csp(html, host) {
   const hashes = [...html.toString().matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)]
     .map(m => `'sha256-${crypto.createHash('sha256').update(m[1]).digest('base64')}'`);
   const h = /^[A-Za-z0-9.:[\]-]+$/.test(host || '') ? host : '';
-  return [`default-src 'self'`, `script-src 'self' https://cdn.jsdelivr.net ${hashes.join(' ')}`,
-    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, `font-src https://fonts.gstatic.com`,
+  return [`default-src 'self'`, `script-src 'self' ${hashes.join(' ')}`,
+    `style-src 'self' 'unsafe-inline'`, `font-src 'self'`,
     `img-src 'self' data: blob:`, `connect-src 'self'${h ? ` ws://${h} wss://${h}` : ''}`, `worker-src 'self' blob:`,
     `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`].join('; ');
 }
@@ -46,6 +47,8 @@ const server = http.createServer((req, res) => {
   // Para el hosting: comprobación de vida y versión desplegada
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   if (url === '/admin' || url === '/admin/') url = '/admin/index.html';
+  if (url === '/legal' || url === '/legal/') url = '/legal/index.html';
+  if (url === '/legal/en') url = '/legal/en.html';
   if (url.startsWith('/admin/')) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
@@ -53,7 +56,7 @@ const server = http.createServer((req, res) => {
     if (err) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
     if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : 'no-cache' });
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : 'no-cache' });
     res.end(data);
   });
 });

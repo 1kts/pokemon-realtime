@@ -6,13 +6,14 @@ import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
+import { icon } from './pixicons.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 const KOFI_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h13v6.2A5.3 5.3 0 0 1 11.2 18H8.8a5.3 5.3 0 0 1-5.3-5.3Z" fill="#fff"/><path d="M16.5 8h1.6a2.9 2.9 0 0 1 0 5.8h-1.9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M10 14.4s-3.1-1.9-3.1-3.8a1.6 1.6 0 0 1 3.1-.6 1.6 1.6 0 0 1 3.1.6c0 1.9-3.1 3.8-3.1 3.8Z" fill="#ff5e5b"/></svg>';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const coins = n => `<span class="coin">₽</span>${n.toLocaleString(locale())}`;
+const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
 // Cómo se enseña el usuario de la cuenta: @nombre, o el correo tal cual
 const handle = u => (u.includes('@') ? u : '@' + u);
@@ -143,7 +144,7 @@ export const accountViews = {
 
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
   supportButton() {
-    const a = el('a', 'tb-btn support', `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17.2S2.8 12.8 2.8 7.6A3.9 3.9 0 0 1 10 5.4a3.9 3.9 0 0 1 7.2 2.2c0 5.2-7.2 9.6-7.2 9.6Z" fill="currentColor"/></svg><span>${t('Apoyar')}</span>`);
+    const a = el('a', 'tb-btn support', `${icon('heart', 24)}<span>${t('Apoyar')}</span>`);
     a.href = KOFI_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
@@ -218,10 +219,11 @@ export const accountViews = {
       box.append(el('div', 'scroll', `
         <p>${t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
         <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.')}</p>
-        <p>${t('La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.')}</p>
+        <p>${t('Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).')}</p>
+        <p>${t('Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.', { url: getLang() === 'es' ? '/legal' : '/legal/en' })}</p>
         <p>${t('El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.', { url: KOFI_URL })}</p>
         <h4>${t('Datos que guardamos')}</h4>
-        <p class="small">${t('Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.')}</p>`));
+        <p class="small">${t('Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.')}</p>`));
       const acts = el('div', 'acts');
       const ok = el('button', 'primary', t('Cerrar'));
       ok.onclick = close;
@@ -308,7 +310,7 @@ export const accountViews = {
 
   // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
   newsIcon() {
-    const b = el('button', 'tb-btn icon news-btn', `${BOOK_SVG}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
+    const b = el('button', 'tb-btn icon news-btn', `${icon('book', 24)}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);
     b.title = t('Novedades');
     b.setAttribute('aria-label', t('Novedades'));
     b.onclick = () => this.patchNotes();
@@ -317,7 +319,7 @@ export const accountViews = {
 
   // Botón de la barra superior que lleva a Ajustes
   settingsButton() {
-    const b = el('button', 'tb-btn settings-btn', `${GEAR_SVG}<span>${t('Ajustes')}</span>`);
+    const b = el('button', 'tb-btn settings-btn', `${icon('gear', 24)}<span>${t('Ajustes')}</span>`);
     b.title = t('Ajustes: idioma, perfil, novedades y créditos');
     b.onclick = () => this.show('settings');
     return b;

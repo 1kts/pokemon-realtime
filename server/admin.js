@@ -137,6 +137,18 @@ function createAdmin(ctx) {
       audit.log('admin.rename', { actor: c.admin.id, target: p.id, ip: c.ip, old, name });
       return `${old} ahora se llama ${name}`;
     },
+    // Derecho de supresión: perfil, partida, cuenta y su registro de seguridad. Hay que escribir su
+    // nombre para confirmar; queda constancia (solo el id) de que se borró y quién lo hizo.
+    remove(c, msg, p) {
+      if (adminRow(p.id)) return 'No se puede borrar a un admin (dale antes de baja)';
+      if (sanitize(msg.confirm, 16) !== p.name) return 'Para borrar, escribe exactamente su nombre de entrenador';
+      kick(p.id, { t: 'error', msg: 'Tu cuenta se ha borrado' });
+      for (const x of conns(p.id)) x.profile = null;
+      const events = audit.forget(p.id);
+      store.remove(p);
+      audit.log('admin.borrar', { actor: c.admin.id, target: p.id, ip: c.ip, events });
+      return `Perfil borrado (y ${events} eventos de su registro)`;
+    },
     async resetpass(c, msg, p) {
       if (!p.account) return 'Es un invitado: no tiene contraseña';
       // Se enseña una vez al admin para que se la pase al jugador; no se guarda en ningún sitio

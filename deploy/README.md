@@ -45,7 +45,12 @@ preparación con el dominio:
 ```bash
 ssh root@IP "bash /root/arena-deploy/setup.sh tudominio.com"
 ```
-Si usas Cloudflare, deja el registro en "solo DNS" (nube gris) hasta que Caddy haya sacado el certificado.
+`www.` y la dirección provisional `<ip>.sslip.io` pasan a redirigir al dominio. El dominio queda guardado en
+`/etc/arena-domain`, así que volver a ejecutar `setup.sh` sin él no lo cambia.
+
+Con Cloudflare, los registros tienen que ir en **"solo DNS" (nube gris)**: con el proxy (nube naranja) el
+servidor vería las IPs de Cloudflare en vez de las de los jugadores, y los límites por IP y la auditoría
+dejarían de servir.
 
 ## Panel de administración
 

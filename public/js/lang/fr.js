@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Nuevo aspecto (0.8.0) ----------
+    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Les icônes d\'objets viennent de PokeAPI et les icônes pixel art de l\'interface, de PokéSurvivor (JPTER78, licence PolyForm Noncommercial).',
+    'Nuevo aspecto': 'Nouveau look',
+    'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Interface repensée : police arrondie, boutons et fenêtres à rayures, et cartes du menu avec icône.',
+    'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Vraies icônes d\'objets dans la boutique, l\'équipe et les récompenses, et pièces en pixel art.',
+    'Cada movimiento muestra un emblema con su tipo y su forma (proyectil, cono, rayo, embestida…).': 'Chaque capacité affiche un emblème avec son type et sa forme (projectile, cône, rayon, charge…).',
     // ---------- Général ----------
     '← Volver': '← Retour',
     'Volver': 'Retour',
@@ -62,9 +68,9 @@ export default {
     'Arreglo': 'Correctif',
     'Arena Pokémon es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.': 'Arena Pokémon est un <b>projet de fans à but non lucratif</b>. Il n\'est ni affilié à, ni sponsorisé, ni approuvé par Nintendo, Game Freak, Creatures Inc. ou The Pokémon Company. Pokémon et leurs noms sont des marques de leurs propriétaires respectifs.',
     'Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los tiles del mapa son CC0.': 'Les sprites viennent de la communauté de <i>Pokémon Donjon Mystère</i> (PMD Sprite Collab) et sont utilisés en créditant leurs artistes. Les données des espèces viennent de PokéAPI. Les tuiles de la carte sont sous CC0.',
-    'La lista completa de autores está en <code>CREDITS.md</code>, en el repositorio del proyecto.': 'La liste complète des auteurs se trouve dans <code>CREDITS.md</code>, dans le dépôt du projet.',
+    'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': 'Les artistes de chaque sprite, les licences et la politique de confidentialité complète se trouvent dans les <a href="{url}" target="_blank" rel="noopener">mentions légales</a>.',
     'Datos que guardamos': 'Données que nous conservons',
-    'Tu nombre de entrenador, tu partida y, si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal). No pedimos correo ni datos personales. Este navegador recuerda tu sesión con una clave en el almacenamiento local.': 'Ton nom de Dresseur, ta partie et, si tu crées un compte, ton identifiant et ton mot de passe chiffré (scrypt salé). Nous ne demandons ni e-mail ni données personnelles. Ce navigateur se souvient de ta session grâce à une clé dans le stockage local.',
+    'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contacto@pokearenas.com.': 'Nous conservons ton nom de dresseur et ta partie ; si tu crées un compte, ton identifiant et ton mot de passe chiffré (scrypt avec sel) ; et, pendant 40 jours, un journal de sécurité avec ton adresse IP. Pas de publicité, de cookies ni de suivi. Pour supprimer ton compte ou pour toute question : contacto@pokearenas.com.',
     'Recargar': 'Recharger',
     'Hay una versión nueva (v{v}): se cargará al terminar lo que estás haciendo.': 'Une nouvelle version est disponible (v{v}) : elle se chargera quand tu auras fini ce que tu fais.',
     'Hay una versión nueva (v{v}). Recargando en {n} s…': 'Une nouvelle version est disponible (v{v}). Rechargement dans {n} s…',

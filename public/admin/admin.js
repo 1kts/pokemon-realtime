@@ -166,6 +166,10 @@ async function openPlayer(id) {
       h('button', { onclick: () => act('kick', { reason: reason.value })() }, 'Desconectar')),
     h('div', { class: 'actions' },
       h('label', {}, 'Nombre de entrenador', newName), h('button', { onclick: () => act('rename', { name: newName.value })() }, 'Renombrar'),
+      h('button', { class: 'danger', onclick: () => {
+        const name = prompt(`Borrar a ${p.name} del todo (perfil, partida, cuenta y su registro). No se puede deshacer.\n\nEscribe su nombre de entrenador para confirmar:`);
+        if (name !== null) act('remove', { confirm: name })();
+      } }, 'Borrar perfil'),
       p.account && h('button', { onclick: () => confirm(`¿Poner una contraseña nueva a ${p.account.user}? La actual dejará de valer.`) && act('resetpass')() }, 'Resetear contraseña')),
     player.connections.length ? h('div', {}, h('h3', {}, 'Conexiones abiertas'), table(['IP', 'Haciendo'], player.connections.map(x => h('tr', {}, h('td', {}, x.ip), h('td', {}, x.doing))))) : null,
     h('h3', {}, 'IPs usadas'),
