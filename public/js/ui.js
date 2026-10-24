@@ -57,14 +57,18 @@ export class UI {
     const bar = el('div', 'topbar');
     if (back) { const b = el('button', 'back', '← Volver'); b.onclick = () => this.show(back); bar.append(b); }
     bar.append(el('h2', '', title));
-    bar.append(el('div', 'stats', `${coins(p.coins)}<span class="badges">${GYMS.slice(0, 8).map((g, i) => `<i class="badge${i < p.badges ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
+    bar.append(el('div', 'stats', `<span class="pill">${coins(p.coins)}</span><span class="badges">${GYMS.slice(0, 8).map((g, i) => `<i class="badge${i < p.badges ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.leader}"></i>`).join('')}</span><span class="elo">${p.league} · ${p.elo}</span>`));
     return bar;
   }
 
   // ---------- Inicio ----------
   view_title() {
     const box = el('div', 'panel title-panel');
-    box.innerHTML = `<h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">Combates Pokémon en tiempo real</p>`;
+    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Arena<br><span>Pokémon</span></h1><p class="tag">Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones</p>`;
+    const mons = el('div', 'title-mons');
+    const pool = [...STARTERS].sort(() => Math.random() - 0.5).slice(0, 3);
+    for (const d of pool) mons.append(animatedPortrait(d, 96, 'Idle'));
+    box.append(mons);
     const input = el('input');
     input.placeholder = 'Tu nombre de entrenador';
     input.maxLength = 16;
@@ -83,25 +87,42 @@ export class UI {
     const p = this.profile;
     const wrap = el('div', 'menu');
     wrap.append(this.topbar(`¡Hola, ${escapeHtml(p.name)}!`));
+    const top = el('div', 'menu-top');
     const grid = el('div', 'menu-grid');
-    const card = (title, desc, cls, onClick, extra = '') => {
-      const c = el('button', 'menu-card ' + cls, `<b>${title}</b><span>${desc}</span>${extra}`);
+    const card = (title, desc, cls, art, onClick) => {
+      const c = el('button', 'menu-card ' + cls, `<b>${title}</b><span>${desc}</span>`);
+      const a = animatedPortrait(art, 120, 'Idle');
+      a.classList.add('art');
+      c.prepend(a);
       c.onclick = onClick;
       grid.append(c);
     };
     const lead = p.mons.length ? p.mons.find(m => m.uid === p.team[0]) : null;
-    card('Historia', p.mons.length ? `${p.badges >= 13 ? '¡Campeón de Kanto!' : p.badges >= 8 ? 'La Liga Pokémon te espera' : `Medallas: ${p.badges}/8`} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y conquista Kanto', 'story', () => this.show('story'));
-    card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', () => this.show('online'));
-    card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
-    card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', () => this.show('practice'));
-    wrap.append(grid);
-    if (lead) {
-      const hero = el('div', 'hero');
-      hero.append(animatedPortrait(lead.dex, 140, 'Idle'));
-      wrap.append(hero);
-    }
-    wrap.append(this.howTo());
+    card('Historia', p.mons.length ? `${p.badges >= 13 ? '¡Campeón de Kanto!' : p.badges >= 8 ? 'La Liga Pokémon te espera' : `Medallas: ${p.badges}/8`} · ${p.mons.length} Pokémon` : 'Elige tu primer Pokémon y conquista Kanto', 'story', lead ? lead.dex : 25, () => this.show('story'));
+    card('Clasificatoria', `${p.league} · ${p.elo} ELO · ${p.wins}V ${p.losses}D`, 'ranked', 149, () => this.show('online'));
+    card('Partida rápida', 'Online sin ELO: elige 3 y a combatir', 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
+    card('Práctica', 'Contra la IA, con la dificultad que quieras', 'practice', 68, () => this.show('practice'));
+    top.append(grid, this.profilePanel(lead));
+    wrap.append(top, this.howTo());
     this.root.append(wrap);
+  }
+
+  profilePanel(lead) {
+    const p = this.profile;
+    const total = Object.keys(SPECIES).length;
+    const box = el('div', 'panel profile');
+    const who = el('div', 'who');
+    const ava = el('div', 'ava');
+    if (lead) ava.append(animatedPortrait(lead.dex, 84, 'Idle'));
+    who.append(ava, el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${p.league} · ${p.elo}</span>`));
+    box.append(who);
+    box.append(el('div', 'rows', `
+      <div class="stat"><small>Dinero</small><b>${coins(p.coins)}</b></div>
+      <div class="stat"><small>Medallas</small><b>${Math.min(8, p.badges)}/8</b></div>
+      <div class="stat"><small>Pokémon</small><b>${p.mons.length}</b></div>
+      <div class="stat"><small>Clasificatoria</small><b>${p.wins}V ${p.losses}D</b></div>`));
+    box.append(el('div', 'stat', `<small>Pokédex</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`));
+    return box;
   }
 
   howTo() {
@@ -141,7 +162,7 @@ export class UI {
     wrap.append(bar);
     const body = el('div', 'story-body');
     const map = el('div', 'map');
-    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><path d="M4,20 Q2,6 20,4 L60,3 Q78,2 90,10 Q99,20 96,40 Q98,60 90,78 Q84,96 60,97 L30,98 Q8,98 4,80 Q0,60 6,46 Z" /></svg>`;
+    map.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="land"><defs><radialGradient id="landGrad" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#8fd06a"/><stop offset=".7" stop-color="#5fa848"/><stop offset="1" stop-color="#4a8a3a"/></radialGradient></defs><path d="M4,20 Q2,6 20,4 L60,3 Q78,2 90,10 Q99,20 96,40 Q98,60 90,78 Q84,96 60,97 L30,98 Q8,98 4,80 Q0,60 6,46 Z" /></svg>`;
     const nodes = PATH.map(id => ROUTES.find(r => r.id === id) || GYMS.find(g => g.id === id));
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
@@ -160,6 +181,7 @@ export class UI {
       if (isGym) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isGym ? `${n.name} · ${n.leader}` : n.name;
       b.innerHTML = `<span>${isGym ? (n.elite ? '★' : gi + 1) : ''}</span><label>${isGym ? n.leader : n.name}</label>`;
+      if (!isGym && unlocked) b.prepend(portrait(Data.routeWild(n).list[0].dex, 34));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       map.append(b);
     });
@@ -472,6 +494,19 @@ export class UI {
     const won = msg.winner === msg.you, draw = msg.winner === -1;
     const box = el('div', 'panel results');
     const title = msg.captured ? '¡Capturado!' : draw ? 'Empate' : won ? '¡Victoria!' : 'Derrota';
+    if (won || msg.captured) {
+      const conf = el('div', 'confetti');
+      const colors = ['#ffcb05', '#3b78d8', '#e8403a', '#4fd06a', '#ff9ee0', '#ffffff'];
+      for (let i = 0; i < 70; i++) {
+        const c = el('i');
+        c.style.left = Math.random() * 100 + '%';
+        c.style.background = colors[i % colors.length];
+        c.style.animationDuration = (1.6 + Math.random() * 1.8) + 's';
+        c.style.animationDelay = Math.random() * 0.6 + 's';
+        conf.append(c);
+      }
+      box.append(conf);
+    }
     box.append(el('h1', won || msg.captured ? 'win' : draw ? '' : 'lose', title));
     if (msg.captured) {
       const c = el('div', 'caught');
@@ -486,7 +521,7 @@ export class UI {
       for (const x of r.xp) {
         const row = el('div', 'xp-row');
         row.append(portrait(x.dex, 48));
-        const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <b>Nv.${x.level}</b>` : `Nv.${x.level}`;
+        const lvl = x.level > x.fromLevel ? `Nv.${x.fromLevel} → <span class="lvup">Nv.${x.level} ¡sube de nivel!</span>` : `Nv.${x.level}`;
         row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> +${x.xp} EXP · ${lvl}${x.evolved ? `<br><span class="evo">¡Ha evolucionado a ${SPECIES[x.evolved].name}!</span>` : ''}`));
         list.append(row);
       }

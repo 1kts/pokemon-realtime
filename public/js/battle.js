@@ -422,13 +422,13 @@ export class BattleClient {
       const m = MOVES[k], e = mvEls[i];
       if (!e) return;
       const cd = me.cds[i];
-      e.querySelector('.cd').style.height = cd > 0 ? (cd / m.cd * 100) + '%' : '0';
+      e.querySelector('.cd').style.setProperty('--p', cd > 0 ? cd / m.cd : 0);
       e.querySelector('.cdt').textContent = cd > 0.05 ? cd.toFixed(cd < 1 ? 1 : 0) : '';
       e.classList.toggle('noenergy', me.e < m.cost);
     });
     const pe = mvEls[4];
     if (pe) {
-      pe.querySelector('.cd').style.height = me.pcd > 0 ? (me.pcd / PROTECT.cd * 100) + '%' : '0';
+      pe.querySelector('.cd').style.setProperty('--p', me.pcd > 0 ? me.pcd / PROTECT.cd : 0);
       pe.querySelector('.cdt').textContent = me.pcd > 0.05 ? me.pcd.toFixed(me.pcd < 1 ? 1 : 0) : '';
       pe.classList.toggle('on', !!(me.f & F.PROTECT));
     }
