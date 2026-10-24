@@ -6,7 +6,7 @@ import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
-import { icon } from './pixicons.js';
+import { icon, badgeImg } from './pixicons.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 const KOFI_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h13v6.2A5.3 5.3 0 0 1 11.2 18H8.8a5.3 5.3 0 0 1-5.3-5.3Z" fill="#fff"/><path d="M16.5 8h1.6a2.9 2.9 0 0 1 0 5.8h-1.9" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M10 14.4s-3.1-1.9-3.1-3.8a1.6 1.6 0 0 1 3.1-.6 1.6 1.6 0 0 1 3.1.6c0 1.9-3.1 3.8-3.1 3.8Z" fill="#ff5e5b"/></svg>';
@@ -415,6 +415,25 @@ export const accountViews = {
     card.append(info);
     left.append(card);
 
+    // Estuche de medallas: las 8 de cada región, a color las ganadas
+    const caseBox = el('div', 'panel badge-case');
+    caseBox.append(el('h3', '', t('Medallas')));
+    for (const rid of Data.REGION_IDS) {
+      const prog = Data.progOf(p, rid), leaders = Data.leadersOf(rid).slice(0, 8);
+      const row = el('div', 'case-row');
+      row.append(el('b', 'case-region', `${Data.REGIONS[rid].name}<small>${Math.min(8, prog)}/8</small>`));
+      const slots = el('div', 'case-slots');
+      leaders.forEach((g, i) => {
+        const got = i < prog;
+        const slot = el('span', 'case-slot' + (got ? ' got' : ''), badgeImg(rid, i, got, 44));
+        slot.title = got ? `${g.badge} · ${g.leader}` : t('Vence a {who} para conseguirla', { who: g.leader });
+        slots.append(slot);
+      });
+      row.append(slots);
+      caseBox.append(row);
+    }
+    left.append(caseBox);
+
     // Estadísticas
     const total = Object.keys(SPECIES).length;
     const games = p.wins + p.losses;
@@ -426,6 +445,7 @@ export const accountViews = {
     left.append(el('div', 'panel', `<h3>${t('Historia')}</h3><div class="stat-grid">
       ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${p.caught.length}/${total}`)}${stat('Pokémon', p.mons.length)}
       ${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—')}</div>`));
+
 
     // Historial
     const hist = el('div', 'panel history');

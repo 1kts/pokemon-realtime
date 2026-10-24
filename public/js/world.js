@@ -429,6 +429,10 @@ export class World {
   applyTheme(name) {
     const th = themeOf(name);
     this.theme = th;
+    // Suelo claro (hielo, baldosas, mármol, arena): los efectos cambian para verse bien sobre él
+    const fl = new THREE.Color(th.palette[0]);
+    this.bright = 0.2126 * fl.r + 0.7152 * fl.g + 0.0722 * fl.b > 0.5;
+    if (this.onTheme) this.onTheme(this.bright);
     const L = LIGHT[th.light] || LIGHT.day;
     this.scene.background = new THREE.Color(L.bg);
     this.scene.fog.color.set(L.bg); this.scene.fog.near = L.fog[0]; this.scene.fog.far = L.fog[1];

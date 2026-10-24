@@ -7,7 +7,7 @@ import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
 import { storage } from './net.js';
-import { icon, item as itemImg } from './pixicons.js';
+import { icon, item as itemImg, badgeImg } from './pixicons.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 
@@ -472,7 +472,7 @@ export class UI {
     if (withBadges) {
       const prog = Data.progOf(p, current);
       const leaders = Data.leadersOf(current);
-      bar.append(el('div', 'badges', leaders.slice(0, 8).map((g, i) => `<i class="badge${i < prog ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.badge} · ${g.leader}"></i>`).join('')));
+      bar.append(el('div', 'badges', leaders.slice(0, 8).map((g, i) => `<span class="badge-slot${i < prog ? ' got' : ''}" title="${g.badge} · ${g.leader}">${badgeImg(current, i, i < prog, 26)}</span><i hidden class="badge${i < prog ? ' got' : ''}" style="--tc:${TYPE_COLOR[g.type]}" title="${g.badge} · ${g.leader}"></i>`).join('')));
       const next = leaders[prog];
       bar.append(el('div', 'next-goal', next ? `${t('Siguiente: <b>{who}</b>', { who: next.leader })} · ${next.kind === 'gym' ? next.name : next.kind === 'champion' ? t('Campeón') : t('Alto Mando')} <span class="cap">${t('tope Nv.{n}', { n: Data.levelCap(p, current) })}</span>` : t('♛ ¡Región completada!')));
     }
@@ -880,7 +880,7 @@ export class UI {
     }
     if (r.badge) {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
-      box.append(el('div', 'badge-won', `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i><p>${t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
+      box.append(el('div', 'badge-won', `${r.badge.kind === 'gym' ? `<span class="badge-shine">${badgeImg(r.badge.region || 'kanto', r.badge.index, true, 96, 'big')}</span>` : `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i>`}<p>${t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
     }
     if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `<span class="ri">${itemImg(k, 28)}${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}</span>`).join(' ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));

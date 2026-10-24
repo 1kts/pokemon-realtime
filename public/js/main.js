@@ -28,6 +28,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 const world = new World(renderer);
 const particles = new Particles(world.scene);
 const effects = new Effects(world, particles);
+world.onTheme = bright => { particles.setBright(bright); effects.setBright(bright); };
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(world.scene, world.camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.6, 0.45, 1.1);  // umbral > 1: solo brillan los efectos, no los sprites

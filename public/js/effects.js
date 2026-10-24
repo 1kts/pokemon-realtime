@@ -3,11 +3,21 @@
 import * as THREE from 'three';
 import { U, toWorld, softDisc } from './world.js';
 import { PALETTE, SMOKE, DUST } from './particles.js';
+import { texture as vfxTexture, lookOf, SHAPES as VFX_SHAPES } from './pixvfx.js';
+
+// Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve
+let BRIGHT = false;
+const INK = '#1b2a52';   // color de los avisos propios sobre suelo claro
 
 const { MOVES, TYPE_COLOR } = Data;
 const glowTex = softDisc('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
 
 function additive(color, opacity = 1) {
+  if (BRIGHT) {
+    const c = new THREE.Color(color), mx = Math.max(c.r, c.g, c.b, 1);
+    c.multiplyScalar(0.85 / mx);
+    return new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: Math.min(1, opacity * 1.1), depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
+  }
   return new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
 }
 function glowSprite(color, size) {
@@ -50,6 +60,8 @@ export class Effects {
     });
   }
 
+  setBright(on) { BRIGHT = !!on; }
+
   addTemp(obj, life, update) {
     this.scene.add(obj);
     this.temp.push({ obj, t0: performance.now(), life, update });
@@ -84,7 +96,7 @@ export class Effects {
   }
 
   makeTelegraph(m, w, mine) {
-    const col = mine ? '#ffffff' : TYPE_COLOR[m.type];
+    const col = mine ? (BRIGHT ? INK : '#ffffff') : TYPE_COLOR[m.type];
     const g = new THREE.Group();
     const base = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false });
     const strong = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.45, depthWrite: false });
@@ -258,25 +270,41 @@ export class Effects {
       g.add(tw);
       return { obj: g, h: 0.45, update: (_, pos, dt) => { tw.rotation.y += dt * 20; p.trickle(25, dt, pos.x, pos.y, pos.z, { colors: PALETTE.volador, layer: 'soft', speed: 1, life: 0.3, size: 0.12, alpha: 0.7 }); } };
     }
-    // Genérico: núcleo brillante + halo + estela del tipo
-    const core = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.07, r * 0.7), 12, 10), new THREE.MeshBasicMaterial({ color: bright(pal[1], 2.2), toneMapped: false }));
-    const halo = glowSprite(bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
-    g.add(core, halo);
-    if (ty === 'fantasma' || ty === 'veneno') core.material.color = bright(pal[2], 1.2);
+    // Genérico: sprite pixel art de la forma del movimiento (PokéSurvivor) + halo + estela del tipo
+    const look = lookOf(pr.mk, ty);
+    const S = VFX_SHAPES[look.shape] || VFX_SHAPES.ball;
+    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: vfxTexture(look.shape, look.pal, 0), transparent: true, depthWrite: false, toneMapped: false }));
+    const px = 0.075 * look.scale * Math.max(1, r / 0.3);   // tamaño de un píxel de arte en unidades 3D
+    spr.scale.set(S.w * px, S.h * px, 1);
+    spr.renderOrder = 22;
+    g.add(spr);
+    const halo = BRIGHT ? null : glowSprite(bright(TYPE_COLOR[ty], 1.3), r * 3.5 + 0.25);
+    if (halo) g.add(halo);
     const big = (m.dmg || 0) >= 15;
     const extra = {};
     if (ty === 'fuego') Object.assign(extra, { grav: -2, speed: 0.8, life: big ? 0.5 : 0.3, size: r * (big ? 3.2 : 2.4) });
     if (ty === 'agua') Object.assign(extra, { layer: 'solid', grav: 6, speed: 1, life: 0.4, size: 0.09 });
     if (ty === 'electrico') Object.assign(extra, { speed: 2.5, life: 0.15, size: 0.12 });
     if (ty === 'hielo') Object.assign(extra, { layer: 'solid', speed: 0.6, life: 0.5, size: 0.08 });
-    const tr = trail(big ? 140 : 60, extra);
+    const tr = trail(big ? 110 : 45, extra);
+    const cam = this.world.camera, v1 = new THREE.Vector3(), v2 = new THREE.Vector3();
+    let t = 0, frame = 0;
     return {
       obj: g, h: 0.55,
       update: (pr2, pos, dt) => {
         tr(pr2, pos, dt);
-        halo.material.opacity = 0.8 + Math.sin(performance.now() / 40) * 0.2;
-        if (ty === 'electrico' && Math.random() < 0.5) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
-        if (big && ty === 'fuego') p.trickle(15, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
+        t += dt;
+        // Animación por fotogramas
+        if ((S.frames || 1) > 1 && Math.floor(t / 0.09) !== frame) { frame = Math.floor(t / 0.09); spr.material.map = vfxTexture(look.shape, look.pal, frame); }
+        // Las formas con dirección miran hacia donde va el proyectil (en pantalla); otras giran
+        if (S.dir) {
+          v1.copy(pos).project(cam);
+          v2.set(pos.x + Math.cos(pr2.a), pos.y, pos.z + Math.sin(pr2.a)).project(cam);
+          spr.material.rotation = Math.atan2(v2.y - v1.y, (v2.x - v1.x) * cam.aspect);
+        } else if (S.spin) spr.material.rotation += dt * 9;
+        if (halo) halo.material.opacity = 0.55 + Math.sin(performance.now() / 40) * 0.15;
+        if (ty === 'electrico' && Math.random() < 0.4) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
+        if (big && ty === 'fuego') p.trickle(12, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
       },
     };
   }
@@ -328,7 +356,7 @@ export class Effects {
     const r = e.r * U;
     const g = new THREE.Group();
     const disc = new THREE.Mesh(new THREE.CircleGeometry(r, 48), new THREE.MeshBasicMaterial({ color: TYPE_COLOR[e.ty], transparent: true, opacity: 0.22, depthWrite: false }));
-    const ring = new THREE.Mesh(new THREE.RingGeometry(r * 0.94, r, 48), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8, depthWrite: false }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(r * 0.94, r, 48), new THREE.MeshBasicMaterial({ color: BRIGHT ? INK : '#ffffff', transparent: true, opacity: 0.8, depthWrite: false }));
     const grow = new THREE.Mesh(new THREE.RingGeometry(r * 0.9, r, 48), additive(bright(TYPE_COLOR[e.ty], 2), 0.9));
     for (const m of [disc, ring, grow]) { m.rotation.x = -Math.PI / 2; g.add(m); }
     g.position.copy(toWorld(e.x, e.y, 0.05));

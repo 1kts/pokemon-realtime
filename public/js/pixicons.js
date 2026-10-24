@@ -481,3 +481,12 @@ const ITEM_FILE = { pokeball: 'poke-ball', superball: 'great-ball', ultraball: '
   alba: 'dawn-stone', dia: 'shiny-stone' };
 export const itemSrc = id => `items/${ITEM_FILE[id] || id}.png`;
 export const item = (id, size = 32, cls = '') => `<img class="item-img ${cls}" src="${itemSrc(id)}" width="${size}" height="${size}" alt="" draggable="false">`;
+
+// Medallas de gimnasio (PokeAPI sprites/badges: Kanto 1-8, Johto 9-16, en orden de líder)
+const BADGE_BASE = { kanto: 1, johto: 9 };
+export const badgeSrc = (region, index) => BADGE_BASE[region] && index < 8 ? `badges/${BADGE_BASE[region] + index}.png` : null;
+export function badgeImg(region, index, got, size = 28, cls = '') {
+  const src = badgeSrc(region, index);
+  if (!src) return '';
+  return `<img class="badge-img${got ? ' got' : ''} ${cls}" src="${src}" width="${size}" height="${size}" alt="" draggable="false">`;
+}

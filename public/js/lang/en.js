@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'Medallas y ataques nuevos': 'New badges and attacks',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': 'Badges are the ones from the games: in the region bar, when you win them and in the new badge case on your profile.',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': 'Projectiles are pixel art sprites shaped like each attack: flames, drops, bolts, bubbles, stars…',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': 'On bright stages (ice, pool, tiles) effects and warnings turn darker so you can see them.',
+    'Vence a {who} para conseguirla': 'Beat {who} to earn it',
     'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
     'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Item icons come from PokeAPI and the interface\'s pixel art icons from PokéSurvivor (JPTER78, PolyForm Noncommercial license).',

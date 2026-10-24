@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'Medallas y ataques nuevos': '全新徽章与招式',
+    'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.': '徽章采用游戏原版：显示在地区栏、获得时以及个人资料中新增的徽章盒里。',
+    'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…': '弹射物变为像素风精灵图，形状对应各招式：火焰、水滴、闪电、泡泡、星星……',
+    'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': '在明亮的场地（冰面、泳池、地砖）上，特效和预警会变暗以便看清。',
+    'Vence a {who} para conseguirla': '打败{who}即可获得',
     // ---------- 通用 ----------
     '← Volver': '← 返回',
     'Volver': '返回',

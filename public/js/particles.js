@@ -22,12 +22,16 @@ const FRAG = `
   varying float vAlpha;
   varying vec3 vTint;
   uniform float hard;
+  uniform float rim;
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c) * 2.0;
     if (d > 1.0) discard;
     float a = mix(1.0 - d * d, 1.0 - smoothstep(0.75, 1.0, d), hard);
-    gl_FragColor = vec4(vTint, a * vAlpha);
+    vec3 col = vTint;
+    // Suelo claro: núcleo sólido con borde oscuro para que se vea sobre blanco
+    if (rim > 0.5) { a = 1.0 - smoothstep(0.82, 1.0, d); col = mix(vTint * 0.9, vTint * 0.28, smoothstep(0.55, 0.78, d)); }
+    gl_FragColor = vec4(col, a * vAlpha);
   }`;
 
 class Layer {
@@ -45,11 +49,12 @@ class Layer {
     this.mat = new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false,
       blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
-      uniforms: { scale: { value: 300 }, hard: { value: hard ? 1 : 0 } },
+      uniforms: { scale: { value: 300 }, hard: { value: hard ? 1 : 0 }, rim: { value: 0 } },
     });
     this.points = new THREE.Points(g, this.mat);
     this.points.frustumCulled = false;
     this.points.renderOrder = additive ? 20 : 19;
+    this.additive = additive;
     scene.add(this.points);
     this.geo = g;
   }
@@ -88,10 +93,21 @@ class Layer {
   clear() { this.p = []; }
 }
 
-const colorCache = new Map();
+const colorCache = new Map(), inkCache = new Map();
 function col(hex) {
   let c = colorCache.get(hex);
   if (!c) { c = new THREE.Color(hex); colorCache.set(hex, c); }
+  return c;
+}
+// Suelo claro: los colores muy claros bajan a un tono medio (mismo matiz) para verse sobre blanco
+function ink(hex) {
+  let c = inkCache.get(hex);
+  if (!c) {
+    c = new THREE.Color(hex);
+    const l = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+    if (l > 0.42) c.multiplyScalar(0.42 / l);
+    inkCache.set(hex, c);
+  }
   return c;
 }
 
@@ -100,6 +116,14 @@ export class Particles {
     this.glow = new Layer(scene, true, false);
     this.solid = new Layer(scene, false, true);
     this.soft = new Layer(scene, false, false);
+  }
+
+  // Suelos claros: la capa aditiva pasa a mezcla normal y las partículas llevan borde oscuro
+  setBright(on) {
+    this.bright = !!on;
+    for (const l of [this.glow, this.solid]) l.mat.uniforms.rim.value = on ? 1 : 0;
+    this.glow.mat.blending = on ? THREE.NormalBlending : THREE.AdditiveBlending;
+    this.glow.mat.needsUpdate = true;
   }
 
   setScale(px) { for (const l of [this.glow, this.solid, this.soft]) l.mat.uniforms.scale.value = px; }
@@ -130,7 +154,7 @@ export class Particles {
         x: x + (Math.random() - 0.5) * j, y: y + (Math.random() - 0.5) * j * 0.5, z: z + (Math.random() - 0.5) * j,
         vx: vx * sp, vy: vy * sp, vz: vz * sp, t: 0, life: (o.life ?? 0.6) * (0.6 + Math.random() * 0.4),
         size: (o.size ?? 0.3) * (0.7 + Math.random() * 0.6), grav: o.grav ?? 0, drag: o.drag ?? 0.94,
-        c1: col(colors[(Math.random() * colors.length) | 0]), c2: o.fade ? col(o.fade) : null,
+        c1: (this.bright ? ink : col)(colors[(Math.random() * colors.length) | 0]), c2: o.fade ? (this.bright ? ink : col)(o.fade) : null,
         grow: o.grow || 0, floor: !!o.floor, alpha: o.alpha ?? 1,
       });
     }

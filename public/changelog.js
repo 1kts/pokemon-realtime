@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.8.1', date: '2026-10-25', title: 'Medallas y ataques nuevos',
+      items: [
+        ['nuevo', 'Las medallas son las de los juegos: en la barra de la región, al ganarlas y en el nuevo estuche de medallas del perfil.'],
+        ['cambio', 'Los proyectiles son sprites pixel art con la forma de cada ataque: llamas, gotas, rayos, burbujas, estrellas…'],
+        ['arreglo', 'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.'],
+      ],
+    },
+    {
       v: '0.8.0', date: '2026-10-25', title: 'Nuevo aspecto',
       items: [
         ['cambio', 'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.'],
