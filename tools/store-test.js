@@ -29,8 +29,15 @@ let r = run(`const a = store.get('aaa'), b = store.get('bbb'); return { a: a.coi
 ok(r.a === 123 && r.id === 'id1', 'importa los perfiles del antiguo profiles.json');
 ok(typeof r.bid === 'string' && r.bid.length === 10, 'da id público a los perfiles que no lo tenían');
 ok(r.rank === 1, 'el ranking cuenta los perfiles importados');
-ok(!fs.existsSync(path.join(tmp, 'profiles.json')) && fs.existsSync(path.join(tmp, 'profiles.json.importado')),
-  'el JSON se queda como copia y no se vuelve a importar');
+const jsonBefore = fs.readFileSync(path.join(tmp, 'profiles.json'), 'utf8');
+ok(jsonBefore.includes('"Viejo"') && !fs.existsSync(path.join(tmp, 'profiles.json.importado')), 'el JSON importado no se toca');
+run(`store.get('aaa').coins = 321; store.save(); return null;`);
+r = run(`return store.get('aaa').coins;`);
+ok(r === 321, 'con datos en la base de datos no se vuelve a importar el JSON');
+let threw = '';
+try { execFileSync(process.execPath, ['-e', `require(${JSON.stringify(path.join(__dirname, '..', 'server', 'store.js'))})`], { env: { ...process.env, DB_FILE: '', PROFILES_FILE: path.join(tmp, 'x.json') }, encoding: 'utf8', stdio: 'pipe' }); }
+catch (e) { threw = String(e.stderr); }
+ok(/PROFILES_FILE ya no se usa/.test(threw), 'con la variable antigua PROFILES_FILE se niega a arrancar (no usa data/ real)');
 
 // ---------- Guardar y reiniciar ----------
 r = run(`const a = store.get('aaa'); a.coins = 999; store.save(); return null;`);

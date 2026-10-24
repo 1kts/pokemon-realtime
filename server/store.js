@@ -10,6 +10,11 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const { DatabaseSync } = require('node:sqlite');
 
+// PROFILES_FILE era el JSON de antes: si alguien la sigue usando (p. ej. un servidor de pruebas)
+// no se ignora en silencio, porque acabaría usando los datos reales de data/
+if (process.env.PROFILES_FILE && !process.env.DB_FILE) {
+  throw new Error('PROFILES_FILE ya no se usa: los perfiles van en SQLite. Usa DB_FILE=/ruta/arena.db');
+}
 const FILE = process.env.DB_FILE || path.join(__dirname, '..', 'data', 'arena.db');
 fs.mkdirSync(path.dirname(FILE), { recursive: true });
 const db = new DatabaseSync(FILE);
@@ -30,12 +35,12 @@ function writeRows(list) {
   } catch (e) { db.exec('ROLLBACK'); throw e; }
 }
 
-// La primera vez se importa el antiguo profiles.json de la misma carpeta (se queda como copia)
+// La primera vez (base de datos vacía) se importa el antiguo profiles.json de la misma carpeta.
+// Solo se lee: otro servidor con la versión anterior puede estar usándolo.
 const OLD_JSON = path.join(path.dirname(FILE), 'profiles.json');
 if (!profiles.size && fs.existsSync(OLD_JSON)) {
   for (const p of Object.values(JSON.parse(fs.readFileSync(OLD_JSON, 'utf8')))) profiles.set(p.token, p);
   writeRows([...profiles.values()].map(p => [p, JSON.stringify(p)]));
-  fs.renameSync(OLD_JSON, OLD_JSON + '.importado');
   console.log(`Importados ${profiles.size} perfiles de ${OLD_JSON}`);
 }
 
