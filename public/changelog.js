@@ -4,10 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.22.0', date: '2026-10-25', title: 'Mira quién está en línea',
+      v: '0.22.0', date: '2026-10-25', title: 'En línea y nueva derrota',
       items: [
         ['nuevo', 'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.'],
         ['cambio', 'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.'],
+        ['cambio', 'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.'],
+        ['cambio', 'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.'],
+        ['arreglo', 'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.'],
       ],
     },
     {

@@ -12,6 +12,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': '撞击等近身攻击更容易命中：会计算对手的体型，撞击的距离也稍远一些。',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '从对战结果进入成就后，按返回会回到开始的地方。在我的宝可梦中，队伍按钮改为「移出队伍」。',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': '移出队伍',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': '在线人数与全新失败画面',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '失败后会显示对战情况（伤害、击倒、命中和你的最佳招式）以及一条提示；对战馆主时可以立即重试。',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': '命中',
+    'Consejo': '提示',
+    'Contra {who} van bien los ataques de tipo {types}.': '对付{who}，{types}属性的招式很有效。',
+    'Daño hecho': '造成伤害',
+    'Daño recibido': '受到伤害',
+    'Has vencido a {who}': '你击败了{who}',
+    'KOs': '击倒',
+    'Mejor movimiento': '最佳招式',
+    'Mejorar equipo': '强化队伍',
+    'Nadie se lleva este combate': '本场无人获胜',
+    'Reintentar': '重试',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': '在道路上或用神奇糖果把队伍升到等级上限（Lv.{n}）。',
+    'Tú': '你',
+    '{who} gana esta vez': '这次{who}获胜',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '瞄准对手前方一点：飞行道具需要时间才能飞到。',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '在攻击命中前一刻防守：时机准确就能把飞行道具弹回去。',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': '看看谁在线',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '排位赛和快速对战卡片会显示在线人数，有人在该模式寻找对手时会亮起。',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '成就顶部的「全部领取」按钮可一次领取进化系列挑战和成就奖励。',

@@ -145,14 +145,16 @@ class Client {
     const st = a2.wait('start'); a2.send({ t: 'story', a: 'route', id: 'k-ruta1' });
     const sm = await st;
     const foeMax = sm.sides[1].team[0].maxHp;
-    let seq = 0;
+    let seq = 0, lowT = 0;
     const loop = setInterval(() => {
       const sn = a2.lastSnap;
       if (!sn || sn.state !== 'fight') return;
       const me = sn.ps[0], foe = sn.ps[1];
       if (foe.x === undefined) return;
       const dx = foe.x - me.x, dy = foe.y - me.y, d = Math.hypot(dx, dy);
-      const low = foe.hp[0] / foeMax < 0.28;
+      // Si tras 20 s de Balls no cae, se vuelve a atacar para acabar el combate y probar con otro
+      // (si no, con mala suerte el combate no acaba nunca y el test se cuelga)
+      const low = foe.hp[0] / foeMax < 0.28 && ++lowT < 600;
       seq++;
       // Atacar a ritmo normal; con poca vida, acercarse y lanzar una Ball cada 0,8 s
       const want = low ? 120 : 220;

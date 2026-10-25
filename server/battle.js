@@ -361,7 +361,9 @@ class Battle {
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
       this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
-      if (Math.hypot(dx, dy) < m.range + this.rad(f) && Math.abs(diff) < m.arc / 2) this.hit(side, f, m, f.x, f.y, { a });
+      // El arco cuenta el tamaño del rival: si su borde entra en el arco, le da (no solo si entra su centro)
+      const dist = Math.hypot(dx, dy);
+      if (dist < m.range + this.rad(f) && Math.abs(diff) < m.arc / 2 + Math.atan2(this.rad(f), Math.max(1, dist))) this.hit(side, f, m, f.x, f.y, { a });
     } else if (m.kind === 'dash') {
       side.dash = { m, vx: ax, vy: ay, speed: m.dist / m.dur, t: m.dur, hit: false, cast: this.curCast };
       if (m.invuln) side.invuln = m.dur;
@@ -813,7 +815,18 @@ class Battle {
     clearInterval(this.timer);
     // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd)
     const rewards = this.onEnd(this.result, this) || [];
-    for (const s of this.sides) this.send(s, { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null });
+    const sum = this.sides.map(s => this.sideSummary(s));
+    for (const s of this.sides) this.send(s, { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null, sum });
+  }
+
+  // Resumen de un lado para la pantalla de resultados: daño hecho y recibido, KOs, aciertos, su mejor
+  // movimiento y cómo acabó cada Pokémon
+  sideSummary(side) {
+    const mons = Object.values(this.stats.mons[side.idx]), moves = Object.entries(this.stats.moves[side.idx]);
+    const best = moves.reduce((b, [k, mv]) => (mv.dmg > (b ? b[1].dmg : 0) ? [k, mv] : b), null);
+    const sum = f => mons.reduce((n, m) => n + m[f], 0), sumM = f => moves.reduce((n, [, mv]) => n + mv[f], 0);
+    return { name: side.name, dmg: sum('dmg'), taken: sum('taken'), kos: sum('kos'), casts: sumM('casts'), landed: sumM('landed'),
+      best: best ? { key: best[0], dmg: best[1].dmg } : null, team: side.team.map(m => ({ dex: m.dex, fainted: !!m.fainted, shiny: !!m.shiny })) };
   }
 
   // Un jugador se rinde o se desconecta: pierde. Si solo se rinde, sigue recibiendo el resultado.

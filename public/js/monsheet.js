@@ -69,7 +69,7 @@ export const monSheetViews = {
     side.append(el('div', 'ms-facts', `<span>${t('Naturaleza')}<b>${nat[0]}</b><small>${nat[1] ? `+${Data.STAT6[nat[1]]} −${Data.STAT6[nat[2]]}` : t('neutra')}</small></span>
       <span>${t('Origen')}<b>${route ? route.name : '—'}</b><small>${sp.leg ? t('legendario') : `Gen ${sp.gen}`}</small></span>`));
     const acts = el('div', 'ms-acts');
-    const tg = el('button', inTeam ? 'on' : '', inTeam ? `★ ${t('En el equipo')}` : t('Al equipo'));
+    const tg = el('button', inTeam ? 'on' : '', inTeam ? t('Quitar del equipo') : t('Al equipo'));
     tg.onclick = () => {
       let next = team.filter(u => u !== mon.uid);
       if (!inTeam) { if (team.length >= 3) return this.toast(t('El equipo ya tiene 3 Pokémon: saca uno antes'), 'bad'); next = [...team, mon.uid]; }

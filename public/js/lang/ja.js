@@ -13,6 +13,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'たいあたりなどの近接攻撃が当たりやすくなりました：相手の大きさを考慮し、たいあたりの射程も少し伸びています。',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'バトル結果から実績に移動しても、戻るで元の画面に戻れます。マイポケモンのチームボタンは「チームから外す」になりました。',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': 'チームから外す',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': 'オンライン表示と新しい敗北画面',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '負けるとバトルの内容（ダメージ、KO、命中、ベストわざ）とアドバイスが表示され、ジムリーダー戦ならすぐに再挑戦できます。',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': '命中',
+    'Consejo': 'アドバイス',
+    'Contra {who} van bien los ataques de tipo {types}.': '{who}には{types}タイプの攻撃が効果的です。',
+    'Daño hecho': '与えたダメージ',
+    'Daño recibido': '受けたダメージ',
+    'Has vencido a {who}': '{who}に勝利',
+    'KOs': 'KO',
+    'Mejor movimiento': 'ベストわざ',
+    'Mejorar equipo': 'チームを強化',
+    'Nadie se lleva este combate': 'この勝負は引き分け',
+    'Reintentar': '再挑戦',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': '道路やふしぎなアメでチームをレベル上限（Lv.{n}）まで上げよう。',
+    'Tú': 'あなた',
+    '{who} gana esta vez': '今回は{who}の勝ち',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '相手の少し先を狙おう：飛び道具は届くまで時間がかかります。',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '攻撃が当たる直前にまもろう：タイミングが合えば飛び道具を跳ね返せます。',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'オンラインの人を確認',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'ランクマッチとクイック対戦のカードにオンライン人数が表示され、そのモードで誰かが対戦相手を探していると光ります。',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '実績の上部にある「すべて受け取る」で、進化系統のチャレンジと実績をまとめて受け取れます。',

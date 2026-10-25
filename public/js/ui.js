@@ -106,6 +106,9 @@ export class UI {
   }
 
   show(view, keepScroll) {
+    // La pantalla de resultados no se puede volver a pintar: quien vuelve a ella (p. ej. «Volver» en Logros
+    // tras «Recoger en Logros») va adonde lleva su «Continuar»
+    if (view === 'results') view = this.afterBattleView();
     const scroll = keepScroll ? (this.root.querySelector('.scroll') || {}).scrollTop : 0;
     this.view = view;
     // Durante un combate (y el momento final antes de los resultados) la música la pone el combate:
@@ -197,7 +200,7 @@ export class UI {
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
-    card(training, t('Tutorial'), p.tutorial ? t('Repasa los controles en 1 minuto') : t('Aprende a jugar en 1 minuto y llévate un premio'), 'tutorial' + (p.tutorial ? '' : ' ready'), 6, () => this.startTutorial());
+    card(training, t('Tutorial'), p.tutorial ? t('Repasa los controles en 1 minuto') : t('Aprende a jugar en 1 minuto y llévate un premio'), 'tutorial' + (p.tutorial ? '' : ' ready'), 52, () => this.startTutorial());
     // Lateral: accesos a lo tuyo y misiones (el perfil se abre desde el avatar de arriba)
     const side = el('div', 'menu-side');
     side.append(this.collectionTiles());
@@ -744,7 +747,7 @@ export class UI {
         ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}
         ${masteryHtml(p, m.dex, t)}`));
       const acts = el('div', 'acts');
-      const toggle = el('button', inTeam ? 'on' : '', inTeam ? t('En el equipo') : t('Al equipo'));
+      const toggle = el('button', inTeam ? 'on' : '', inTeam ? t('Quitar del equipo') : t('Al equipo'));
       toggle.onclick = () => {
         let next = team.filter(u => u !== m.uid);
         if (!inTeam) { if (team.length >= 3) return this.toast(t('El equipo ya tiene 3 Pokémon: saca uno antes'), 'bad'); next = [...team, m.uid]; }
@@ -1171,7 +1174,15 @@ export class UI {
       }
       box.append(conf);
     }
-    box.append(el('h1', won || msg.captured ? 'win' : draw ? '' : 'lose', title));
+    // Cabecera: tu Pokémon y el rival con su cara (contento el que gana) y el resultado en medio; debajo,
+    // cómo ha ido el combate y, si pierdes, un consejo para la próxima
+    const sum = msg.sum || null, mine = sum && sum[msg.you], foe = sum && sum[1 - msg.you];
+    if (msg.captured || !mine) box.append(el('h1', won || msg.captured ? 'win' : draw ? '' : 'lose', title));
+    else {
+      box.classList.add(won ? 'is-win' : draw ? 'is-draw' : 'is-lose');
+      box.append(this.resultsHero(title, won, draw, mine, foe), this.resultsSummary(mine, foe));
+      if (!won && !draw) { const tip = this.defeatTip(mine, foe, battle); if (tip) box.append(tip); }
+    }
     if (msg.captured) {
       const c = el('div', 'caught');
       // Render 3D de HOME (si no carga, el sprite animado de siempre)
@@ -1225,9 +1236,18 @@ export class UI {
     if (r.firstWin) box.append(el('p', 'small', t('Incluye {n} extra por la primera victoria del día.', { n: coins(Data.RANKED_PAY.firstWin) })));
     if (!won && !draw && battle && battle.mode === 'wild') box.append(el('p', 'small', t('Tus Pokémon se recuperan después de cada combate. ¡Inténtalo otra vez!')));
     const acts = el('div', 'acts');
-    const back = el('button', 'primary', t('Continuar'));
     const lm = this.lastMode;
-    back.onclick = () => this.show(lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu');
+    const lost = !won && !draw && !msg.captured;
+    // Si pierdes contra un líder: reintentar a la primera o ir a mejorar el equipo
+    if (lost && lm && lm.kind === 'story' && lm.a !== 'route') {
+      const retry = el('button', 'primary', t('Reintentar'));
+      retry.onclick = () => this.startStory(lm.a, lm.id);
+      const team = el('button', '', t('Mejorar equipo'));
+      team.onclick = () => this.show('team');
+      acts.append(retry, team);
+    }
+    const back = el('button', acts.children.length ? '' : 'primary', t('Continuar'));
+    back.onclick = () => this.show(this.afterBattleView());
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
@@ -1246,6 +1266,70 @@ export class UI {
     }
     box.append(acts);
     this.root.append(box);
+  }
+
+  // Adónde se va tras un combate: la pantalla desde la que se empezó
+  afterBattleView() {
+    const lm = this.lastMode;
+    return lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu';
+  }
+
+  resultsHero(title, won, draw, mine, foe) {
+    const lm = this.lastMode;
+    const mood = me => draw ? 'Normal' : me === won ? 'Joyous' : 'Sad';
+    const side = (s, me) => {
+      const lead = s.team.find(m => !m.fainted) || s.team[0];
+      const box = el('div', 'rh-side' + (me ? ' me' : ' foe'));
+      // Contra un líder de la historia, su retrato; si no, la cara de su Pokémon
+      if (!me && lm && lm.kind === 'story' && lm.a !== 'route' && lm.id) box.innerHTML = trainerImg(lm.id, 'rh-trainer');
+      else box.append(face(lead.dex, 96, mood(me), lead.shiny) || portrait(lead.dex, 96, { shiny: lead.shiny }));
+      box.append(el('small', '', escapeHtml(me ? t('Tú') : s.name || '')));
+      return box;
+    };
+    const mid = el('div', 'rh-mid', `<h1 class="${won ? 'win' : draw ? '' : 'lose'}">${title}</h1><p>${draw ? t('Nadie se lleva este combate') : won ? t('Has vencido a {who}', { who: escapeHtml(foe.name) }) : t('{who} gana esta vez', { who: escapeHtml(foe.name) })}</p>`);
+    const hero = el('div', 'res-hero');
+    hero.append(side(mine, true), mid, side(foe, false));
+    return hero;
+  }
+
+  resultsSummary(mine, foe) {
+    const wrap = el('div', 'res-sum');
+    const row = (s, me) => {
+      const r = el('div', 'rs-team' + (me ? ' me' : ''));
+      for (const m of s.team) {
+        const f = face(m.dex, 40, m.fainted ? 'Pain' : 'Normal', m.shiny) || portrait(m.dex, 40, { shiny: m.shiny });
+        const cell = el('span', 'rs-mon' + (m.fainted ? ' out' : ''));
+        cell.append(f);
+        r.append(cell);
+      }
+      return r;
+    };
+    const vs = el('div', 'rs-vs');
+    vs.append(row(mine, true), el('b', '', 'VS'), row(foe, false));
+    const acc = mine.casts ? Math.round(mine.landed / mine.casts * 100) : 0;
+    const chip = (label, value, cls = '') => `<div class="rs-stat ${cls}"><b>${value}</b><small>${label}</small></div>`;
+    const stats = el('div', 'rs-stats', chip(t('Daño hecho'), mine.dmg.toLocaleString()) + chip(t('Daño recibido'), mine.taken.toLocaleString())
+      + chip(t('KOs'), `${mine.kos}<i>/${foe.team.length}</i>`) + chip(t('Aciertos'), mine.casts ? acc + ' %' : '—')
+      + (mine.best && MOVES[mine.best.key] ? chip(t('Mejor movimiento'), `${typeIcon(MOVES[mine.best.key].type, 18)}${MOVES[mine.best.key].name}`, 'best') : ''));
+    wrap.append(vs, stats);
+    return wrap;
+  }
+
+  // Un consejo tras perder: tipos que le van bien contra el rival, el tope de nivel o apuntar mejor
+  defeatTip(mine, foe, battle) {
+    const tips = [];
+    const score = ty => foe.team.reduce((n, m) => n + Data.typeMult(ty, SPECIES[m.dex].types), 0) / foe.team.length;
+    const good = Data.TYPE_NAMES.map(ty => [ty, score(ty)]).filter(([, v]) => v >= 1.5).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([ty]) => ty);
+    if (good.length) tips.push(t('Contra {who} van bien los ataques de tipo {types}.', { who: escapeHtml(foe.name), types: good.map(ty => `<span class="rt-type" style="--tc:${TYPE_COLOR[ty]}">${typeIcon(ty, 16)}${TYPE_LABEL[ty]}</span>`).join(' ') }));
+    const lm = this.lastMode, p = this.profile;
+    if (lm && lm.kind === 'story' && p) {
+      const region = this.region || 'kanto', cap = Data.levelCap(p, region), team = (p.teams && p.teams[region]) || [];
+      const low = (p.mons || []).filter(m => team.includes(m.uid) && m.level < cap);
+      if (low.length) tips.push(t('Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.', { n: cap }));
+    }
+    if (mine.casts >= 6 && mine.landed / mine.casts < 0.4) tips.push(t('Apunta un poco por delante del rival: los proyectiles tardan en llegar.'));
+    if (!tips.length) tips.push(t('Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.'));
+    return el('div', 'res-tip', `<b>${icon('star', 18)}${t('Consejo')}</b><ul>${tips.slice(0, 2).map(x => `<li>${x}</li>`).join('')}</ul>`);
   }
 }
 

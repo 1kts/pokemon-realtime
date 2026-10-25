@@ -13,6 +13,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': '몸통박치기와 근접 공격이 더 잘 맞습니다: 상대의 크기를 반영하고 몸통박치기의 사거리가 조금 늘었습니다.',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '배틀 결과에서 업적으로 가도 뒤로 가기로 처음 화면에 돌아갑니다. 내 포켓몬의 팀 버튼은 이제 \'팀에서 빼기\'입니다.',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': '팀에서 빼기',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': '온라인 표시와 새 패배 화면',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '패배하면 배틀 내용(피해, KO, 명중, 최고의 기술)과 팁이 나오고, 체육관 관장전이라면 바로 다시 도전할 수 있습니다.',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': '명중',
+    'Consejo': '팁',
+    'Contra {who} van bien los ataques de tipo {types}.': '{who}에게는 {types} 타입 공격이 잘 통합니다.',
+    'Daño hecho': '준 피해',
+    'Daño recibido': '받은 피해',
+    'Has vencido a {who}': '{who}에게 승리',
+    'KOs': 'KO',
+    'Mejor movimiento': '최고의 기술',
+    'Mejorar equipo': '팀 강화',
+    'Nadie se lleva este combate': '이 배틀은 무승부',
+    'Reintentar': '다시 도전',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': '도로나 이상한사탕으로 팀을 레벨 상한(Lv.{n})까지 올리세요.',
+    'Tú': '나',
+    '{who} gana esta vez': '이번엔 {who}의 승리',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '상대보다 조금 앞을 노리세요: 투사체는 도달하는 데 시간이 걸립니다.',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '공격이 닿기 직전에 방어하세요: 타이밍이 맞으면 투사체를 되돌려 보냅니다.',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': '누가 온라인인지 보세요',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '랭크전과 빠른 대전 카드에 온라인 인원이 표시되고, 그 모드에서 누군가 상대를 찾으면 빛납니다.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '업적 위쪽의 모두 받기 버튼으로 진화 계열 도전과 업적을 한 번에 받습니다.',

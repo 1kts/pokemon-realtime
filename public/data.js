@@ -57,7 +57,7 @@
     pistolaAgua: { name: 'Pistola Agua', type: 'agua', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 6, speed: 580, range: 480, radius: 8, wet: 2 },
     hojaAfilada: { name: 'Hoja Afilada', type: 'planta', kind: 'proj', cost: 0, cd: 0.6, wind: 0.08, rec: 0.12, dmg: 4, speed: 620, range: 420, radius: 6, count: 3, spread: 0.2 },
     impactrueno: { name: 'Impactrueno', type: 'electrico', kind: 'proj', cost: 0, cd: 0.45, wind: 0.08, rec: 0.1, dmg: 7, speed: 780, range: 470, radius: 6 },
-    placaje: { name: 'Placaje', type: 'normal', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 10, range: 64, arc: 1.7, knock: 60 },
+    placaje: { name: 'Placaje', type: 'normal', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 10, range: 70, arc: 1.9, knock: 60 },
     tornado: { name: 'Tornado', type: 'volador', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 6, speed: 520, range: 460, radius: 11 },
     lanzarrocas: { name: 'Lanzarrocas', type: 'roca', kind: 'proj', cost: 0, cd: 0.6, wind: 0.12, rec: 0.12, dmg: 10, speed: 520, range: 420, radius: 9 },
     confusion: { name: 'Confusión', type: 'psiquico', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, speed: 600, range: 520, radius: 7 },

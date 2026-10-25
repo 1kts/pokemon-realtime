@@ -13,6 +13,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'Azione e i colpi corpo a corpo vanno a segno più facilmente: conta la stazza dell\'avversario e Azione arriva un po\' più lontano.',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'Se vai in Traguardi dai risultati di una lotta, Indietro ti riporta dove avevi iniziato. In I miei Pokémon, il pulsante della squadra dice Togli dalla squadra.',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': 'Togli dalla squadra',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': 'Online e nuova sconfitta',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': 'Quando perdi vedi com\'è andata la lotta (danni, KO, colpi a segno e la tua mossa migliore) e un consiglio; contro un capopalestra puoi riprovare subito.',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': 'Colpi a segno',
+    'Consejo': 'Consiglio',
+    'Contra {who} van bien los ataques de tipo {types}.': 'Contro {who} funzionano bene gli attacchi di tipo {types}.',
+    'Daño hecho': 'Danni inflitti',
+    'Daño recibido': 'Danni subiti',
+    'Has vencido a {who}': 'Hai sconfitto {who}',
+    'KOs': 'KO',
+    'Mejor movimiento': 'Mossa migliore',
+    'Mejorar equipo': 'Migliora la squadra',
+    'Nadie se lleva este combate': 'Nessuno vince questa lotta',
+    'Reintentar': 'Riprova',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': 'Porta la squadra al livello massimo (Lv.{n}) sui percorsi o con le Caramelle Rare.',
+    'Tú': 'Tu',
+    '{who} gana esta vez': '{who} vince stavolta',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': 'Mira un po\' davanti all\'avversario: i proiettili impiegano tempo ad arrivare.',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': 'Proteggiti appena prima di un colpo: col tempismo giusto rimandi indietro i proiettili.',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'Guarda chi è online',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'Le carte Classificata e Partita rapida mostrano quante persone sono online e si illuminano quando qualcuno cerca un avversario in quella modalità.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'In Traguardi c\'è un pulsante Riscatta tutto in alto che riscuote in un colpo le sfide delle tue linee evolutive e i traguardi.',

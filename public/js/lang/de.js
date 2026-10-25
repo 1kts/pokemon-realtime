@@ -12,6 +12,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'Tackle und andere Nahkampftreffer landen leichter: Die Größe des Gegners zählt und Tackle reicht etwas weiter.',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'Gehst du von den Kampfergebnissen zu Erfolge, bringt dich Zurück dorthin, wo du angefangen hast. In Meine Pokémon heißt der Team-Knopf jetzt Aus dem Team nehmen.',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': 'Aus dem Team nehmen',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': 'Online und neue Niederlage',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': 'Nach einer Niederlage siehst du, wie der Kampf lief (Schaden, K.O.s, Treffer und deine beste Attacke), und einen Tipp; gegen Arenaleiter kannst du sofort nochmal antreten.',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': 'Treffer',
+    'Consejo': 'Tipp',
+    'Contra {who} van bien los ataques de tipo {types}.': 'Gegen {who} wirken Attacken vom Typ {types} gut.',
+    'Daño hecho': 'Schaden verursacht',
+    'Daño recibido': 'Schaden erhalten',
+    'Has vencido a {who}': 'Du hast {who} besiegt',
+    'KOs': 'K.O.s',
+    'Mejor movimiento': 'Beste Attacke',
+    'Mejorar equipo': 'Team verbessern',
+    'Nadie se lleva este combate': 'Niemand gewinnt diesen Kampf',
+    'Reintentar': 'Nochmal',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': 'Bring dein Team auf Routen oder mit Sonderbonbons bis zur Levelgrenze (Lv.{n}).',
+    'Tú': 'Du',
+    '{who} gana esta vez': '{who} gewinnt diesmal',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': 'Ziel etwas vor deinen Gegner: Geschosse brauchen Zeit.',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': 'Schütze dich kurz bevor ein Treffer kommt: mit gutem Timing wirfst du Geschosse zurück.',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'Sieh, wer online ist',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'Die Karten Ranglistenkampf und Schnelles Spiel zeigen, wie viele online sind, und leuchten, wenn jemand in diesem Modus einen Gegner sucht.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'In Erfolge holst du dir oben mit Alles einsammeln die Herausforderungen deiner Entwicklungslinien und deine Erfolge auf einmal.',

@@ -12,6 +12,31 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.22.0 ----------
+    'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'Tackle and other close-range hits land more easily: the rival\'s size counts and Tackle reaches a bit further.',
+    'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'If you go to Achievements from a battle\'s results, Back takes you where you started. In My Pokémon, the team button now says Remove from team.',
+    // ---------- Quitar del equipo ----------
+    'Quitar del equipo': 'Remove from team',
+    // ---------- Novedades v0.22.0 ----------
+    'En línea y nueva derrota': 'Online now and a new defeat screen',
+    'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': 'When you lose you see how the battle went (damage, KOs, hits and your best move) and a tip; against a leader you can retry right away.',
+    // ---------- Pantalla de resultados ----------
+    'Aciertos': 'Hits',
+    'Consejo': 'Tip',
+    'Contra {who} van bien los ataques de tipo {types}.': 'Against {who}, {types} attacks work well.',
+    'Daño hecho': 'Damage dealt',
+    'Daño recibido': 'Damage taken',
+    'Has vencido a {who}': 'You beat {who}',
+    'KOs': 'KOs',
+    'Mejor movimiento': 'Best move',
+    'Mejorar equipo': 'Improve team',
+    'Nadie se lleva este combate': 'Nobody wins this battle',
+    'Reintentar': 'Retry',
+    'Sube a tu equipo hasta el tope de nivel (Nv.{n}) en las rutas o con Caramelos Raros.': 'Level your team up to the level cap (Lv.{n}) on routes or with Rare Candies.',
+    'Tú': 'You',
+    '{who} gana esta vez': '{who} wins this time',
+    'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': 'Aim a little ahead of your rival: projectiles take time to arrive.',
+    'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': 'Protect right before a hit lands: time it well and you send projectiles back.',
+    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'See who\'s online',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'The Ranked and Quick match cards show how many people are online and light up when someone is looking for a match in that mode.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'Achievements has a Collect all button at the top that claims your evolution line challenges and achievements in one go.',
