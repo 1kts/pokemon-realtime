@@ -4,6 +4,7 @@
 import { portrait } from './sprites.js';
 import { t } from './i18n.js';
 import { masteryHtml } from './frames.js';
+import { typeDropdown } from './dropdown.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, TYPE_NAMES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -47,9 +48,7 @@ export const pokedexViews = {
       b.onclick = () => { f.gen = g; this.show('dex'); };
       gens.append(b);
     }
-    const type = el('select');
-    type.innerHTML = `<option value="">${t('Todos los tipos')}</option>` + TYPE_NAMES.map(ty => `<option value="${ty}"${f.type === ty ? ' selected' : ''}>${TYPE_LABEL[ty]}</option>`).join('');
-    type.onchange = () => { f.type = type.value; render(); };
+    const type = typeDropdown(TYPE_NAMES, f.type, v => { f.type = v; render(); });
     const status = el('div', 'seg');
     for (const [k, label] of [['all', t('Todos')], ['caught', t('Capturados')], ['missing', t('Por capturar')]]) {
       const b = el('button', f.status === k ? 'sel' : '', label);

@@ -1015,6 +1015,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': 'その日またはその週の3つのミッションを受け取ると、宝箱が開けられます。',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'ジムバッジと実績ごとに、プロフィール用の新しいアバターがもらえます。',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '実績の報酬は自動では届かなくなりました：ミッションで受け取ってください。',
+    'Orden': '並び順',
   },
 
   patterns: [

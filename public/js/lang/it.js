@@ -1015,6 +1015,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': 'Riscatta le 3 missioni del giorno o della settimana per aprire il loro scrigno.',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Ogni medaglia di palestra e ogni obiettivo ti danno un nuovo avatar per il profilo.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'I premi degli obiettivi non arrivano più da soli: riscattali in Missioni.',
+    'Orden': 'Ordine',
   },
 
   patterns: [

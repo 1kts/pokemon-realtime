@@ -1015,6 +1015,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': '그날 또는 그 주의 미션 3개를 받으면 상자를 열 수 있어요.',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': '체육관 배지와 업적마다 프로필용 새 아바타를 받을 수 있어요.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '업적 보상이 더 이상 자동으로 지급되지 않아요: 미션에서 받으세요.',
+    'Orden': '정렬',
   },
 
   patterns: [

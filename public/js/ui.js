@@ -9,6 +9,7 @@ import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
 import { missionViews } from './missions.js';
+import { dropdown, typeDropdown } from './dropdown.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { masteryHtml } from './frames.js';
@@ -83,6 +84,7 @@ export class UI {
     this.view = view;
     this.root.hidden = false;
     this.root.innerHTML = '';
+    document.querySelectorAll('body > .dd-menu').forEach(m => m.remove());   // desplegables que quedaran abiertos
     const fn = this['view_' + view];
     if (fn) fn.call(this);
     const sc = this.root.querySelector('.scroll');
@@ -535,9 +537,7 @@ export class UI {
     const search = el('input');
     search.type = 'search'; search.placeholder = t('Buscar por nombre o número'); search.value = f.q;
     search.oninput = () => { f.q = search.value; apply(); };
-    const type = el('select');
-    type.innerHTML = `<option value="">${t('Todos los tipos')}</option>` + Object.keys(TYPE_LABEL).map(ty => `<option value="${ty}"${f.type === ty ? ' selected' : ''}>${TYPE_LABEL[ty]}</option>`).join('');
-    type.onchange = () => { f.type = type.value; apply(); };
+    const type = typeDropdown(Object.keys(TYPE_LABEL), f.type, v => { f.type = v; apply(); });
     const seg = (key, opts) => {
       const s = el('div', 'seg');
       for (const [k, label] of opts) {
@@ -547,10 +547,9 @@ export class UI {
       }
       return s;
     };
-    const sort = el('select');
-    sort.innerHTML = [['level', t('Orden: nivel')], ['dex', t('Orden: nº de Pokédex')], ['name', t('Orden: nombre')], ['new', t('Orden: más recientes')]]
-      .map(([k, l]) => `<option value="${k}"${f.sort === k ? ' selected' : ''}>${l}</option>`).join('');
-    sort.onchange = () => { f.sort = sort.value; this.show('team', true); };
+    const SORT_ICON = '<svg class="dd-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10M1.8 10.8 4 13l2.2-2.2M9 4h6M9 8h4.5M9 12h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const sort = dropdown({ cls: 'dd-sort', value: f.sort, label: t('Orden'), onChange: v => { f.sort = v; this.show('team', true); },
+      options: [['level', t('Orden: nivel')], ['dex', t('Orden: nº de Pokédex')], ['name', t('Orden: nombre')], ['new', t('Orden: más recientes')]].map(([value, label]) => ({ value, label, icon: SORT_ICON })) });
     filters.append(search, type, seg('shiny', [['all', t('Todos')], ['shiny', '✦ ' + t('Shiny')], ['plain', t('Sin shiny')]]),
       seg('leg', [['all', t('Todos')], ['leg', t('Legendarios')], ['noleg', t('Sin legendarios')]]), sort);
     if (mine.length > 1) wrap.append(filters);

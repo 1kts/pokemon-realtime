@@ -783,7 +783,7 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .dex-count .dexbar { height: 8px; margin-top: 6px; }
 .dex-filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .dex-filters input { flex: 1 1 220px; min-width: 0; }
-.dex-filters select { flex: 0 1 180px; }
+.dex-filters .dd { flex: 0 1 auto; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
 .seg button { border: 0; border-radius: 0; padding: 7px 12px; background: transparent; }
 .seg button.sel { background: rgba(255,203,5,.18); color: var(--yellow); }
@@ -1215,3 +1215,23 @@ button.case-slot { padding: 0; border: 0; border-radius: 50%; }
 .ava-opt.is-art { background: linear-gradient(160deg, rgba(120,180,255,.18), transparent 70%); }
 .ava-opt .ava-art { width: 48px; height: 48px; }
 .ava-opt .art-tag { position: absolute; bottom: 2px; left: 4px; font-size: 9px; font-style: normal; color: #9fd0ff; text-transform: uppercase; letter-spacing: .5px; }
+
+/* ---------- Desplegables (en lugar del <select> del sistema) ---------- */
+.dd { position: relative; display: inline-flex; min-width: 0; }
+.dd-btn { display: inline-flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 7px 12px 7px 10px; border-radius: 11px; font-weight: 700; white-space: nowrap; }
+.dd-btn span { overflow: hidden; text-overflow: ellipsis; }
+.dd-btn .chev { width: 7px; height: 7px; margin-left: auto; padding-left: 0; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); opacity: .7; flex: none; transition: transform .15s; }
+.dd.open .dd-btn { border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(255,203,5,.15); }
+.dd.open .dd-btn .chev { transform: translateY(2px) rotate(225deg); }
+.dd-btn img, .dd-item img { flex: none; }
+.dd-ico { width: 16px; height: 16px; flex: none; color: var(--muted); }
+.dd-all { display: inline-flex; flex: none; }
+.dd-all img + img { margin-left: -5px; }
+.dd-menu { position: fixed; z-index: 90; display: flex; flex-direction: column; gap: 2px; max-height: min(420px, calc(100vh - 24px)); overflow: auto; padding: 6px; border-radius: 14px; background: #17213a; border: 1px solid var(--line-hi); box-shadow: var(--shadow); animation: fadein .12s; }
+.dd-menu.grid { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(120px, 1fr)); }
+.dd-menu.grid .dd-item:first-child { grid-column: 1 / -1; }
+.dd-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; text-align: left; font-weight: 600; white-space: nowrap; }
+.dd-item:hover:not(:disabled), .dd-item:focus-visible { background: rgba(255,255,255,.08); outline: none; }
+.dd-item.sel { background: rgba(255,203,5,.18); color: var(--yellow); }
+.dd-item.sel .dd-ico { color: var(--yellow); }
+@media (max-width: 520px) { .dd-menu.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

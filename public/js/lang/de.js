@@ -1014,6 +1014,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': 'Hol die 3 Missionen des Tages oder der Woche ab, um ihre Truhe zu öffnen.',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Jeder Arena-Orden und jeder Erfolg gibt dir einen neuen Avatar für dein Profil.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'Erfolgsbelohnungen kommen nicht mehr von selbst: hol sie in Missionen ab.',
+    'Orden': 'Sortierung',
   },
 
   patterns: [

@@ -1004,6 +1004,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': '领取当天或本周的3个任务即可开启对应宝箱。',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': '每枚道馆徽章和每个成就都会给你一个新的个人头像。',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '成就奖励不再自动发放：请在任务中领取。',
+    'Orden': '排序',
   },
 
   patterns: [

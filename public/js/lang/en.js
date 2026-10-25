@@ -1005,6 +1005,7 @@ export default {
     'Recoge las 3 misiones del día o de la semana para abrir su cofre.': 'Collect the 3 daily or weekly missions to open their chest.',
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Every gym badge and every achievement gives you a new avatar for your profile.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'Achievement rewards no longer arrive on their own: collect them in Missions.',
+    'Orden': 'Sort',
   },
 
   patterns: [
