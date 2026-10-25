@@ -1020,6 +1020,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In Settings you can choose the cursor colour; it also tints the battle reticle.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'The type and sort filters in My Pokémon and the Pokédex now match the game\'s style, with each type\'s icon.',
     'Cursor a tu gusto': 'Your own cursor',
+    'Gestionar equipo': 'Manage team',
+    'Añadir': 'Add',
+    'Añadir al equipo': 'Add to team',
   },
 
   patterns: [

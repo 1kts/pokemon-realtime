@@ -1029,6 +1029,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In den Einstellungen kannst du die Farbe des Mauszeigers wählen; sie färbt auch das Fadenkreuz im Kampf.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'Die Typ- und Sortierfilter in Meine Pokémon und im Pokédex haben jetzt den Stil des Spiels, mit dem Symbol jedes Typs.',
     'Cursor a tu gusto': 'Dein eigener Mauszeiger',
+    'Gestionar equipo': 'Team verwalten',
+    'Añadir': 'Hinzufügen',
+    'Añadir al equipo': 'Zum Team hinzufügen',
   },
 
   patterns: [

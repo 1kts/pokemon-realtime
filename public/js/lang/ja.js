@@ -1030,6 +1030,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '設定でカーソルの色を選べるようになりました。バトルの照準の色も変わります。',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '「マイポケモン」と図鑑のタイプ・並び順フィルターがゲームのデザインになり、各タイプのアイコンが付きました。',
     'Cursor a tu gusto': '好きな色のカーソル',
+    'Gestionar equipo': 'チームを編集',
+    'Añadir': '追加',
+    'Añadir al equipo': 'チームに追加',
   },
 
   patterns: [

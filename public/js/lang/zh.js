@@ -1019,6 +1019,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '现在可以在设置中选择光标颜色，对战中的瞄准圈也会随之变色。',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '“我的宝可梦”和图鉴中的属性与排序筛选改为游戏风格，并带有各属性图标。',
     'Cursor a tu gusto': '自定义光标',
+    'Gestionar equipo': '管理队伍',
+    'Añadir': '添加',
+    'Añadir al equipo': '加入队伍',
   },
 
   patterns: [

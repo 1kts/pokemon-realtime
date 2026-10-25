@@ -374,9 +374,34 @@ export class UI {
         box.append(go);
       }
     }
-    box.append(el('h4', '', t('Tu equipo')));
+    // Tu equipo de la región: se gestiona desde aquí (botón, cada Pokémon o un hueco libre abren Mis Pokémon en esta región)
+    const manage = () => { this.teamRegion = n.region; this.openFrom('team'); };
+    const mb = el('button', 'manage-team', `${itemImg('pokeball', 22)}<span>${t('Gestionar equipo')}</span>`);
+    mb.onclick = manage;
+    if (unlocked) box.append(mb);
+    const head = el('div', 'team-head', `<h4>${t('Tu equipo')}</h4>`);
+    const edit = el('button', 'link', t('Cambiar'));
+    edit.onclick = manage;
+    head.append(edit);
+    box.append(head);
     const team = el('div', 'mini-team');
-    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); team.append(c); }
+    const uids = ((p.teams && p.teams[n.region]) || []).filter(uid => p.mons.some(x => x.uid === uid));
+    for (const uid of uids) {
+      const m = p.mons.find(x => x.uid === uid);
+      const c = el('button', 'mini pick');
+      c.title = t('Gestionar equipo');
+      c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }), el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`));
+      c.onclick = manage;
+      team.append(c);
+    }
+    // Huecos libres (máximo 3): invitan a completar el equipo
+    for (let i = uids.length; i < 3; i++) {
+      const c = el('button', 'mini pick empty', `<span class="plus">+</span><small>${t('Añadir')}</small>`);
+      c.title = t('Añadir al equipo');
+      c.onclick = manage;
+      team.append(c);
+    }
+    if (!unlocked) box.append(mb);
     box.append(team);
   }
 

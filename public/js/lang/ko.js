@@ -1030,6 +1030,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '설정에서 커서 색을 고를 수 있어요. 배틀의 조준선 색도 바뀝니다.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '내 포켓몬과 도감의 타입·정렬 필터가 게임 스타일로 바뀌고 타입마다 아이콘이 붙었어요.',
     'Cursor a tu gusto': '나만의 커서',
+    'Gestionar equipo': '팀 관리',
+    'Añadir': '추가',
+    'Añadir al equipo': '팀에 추가',
   },
 
   patterns: [

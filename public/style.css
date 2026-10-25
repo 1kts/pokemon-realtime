@@ -1270,3 +1270,15 @@ label.cursor-opt.sel { border-color: var(--yellow); }
 .dex-card .tys .type-ico { border-radius: 4px; box-shadow: none; }
 .dex-sheet-top .type { display: inline-flex; align-items: center; gap: 4px; }
 .dex-sheet-top .type .type-ico { border-radius: 3px; box-shadow: none; }
+
+/* ---------- Gestionar el equipo desde el mapa ---------- */
+.node-info button.manage-team { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 8px; padding: 10px 14px; font-weight: 700; border-color: rgba(255,203,5,.4); }
+.node-info button.manage-team:hover:not(:disabled) { border-color: var(--yellow); color: var(--yellow); }
+.manage-team img { image-rendering: pixelated; }
+.node-info .team-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 6px; }
+.node-info .team-head h4 { margin: 0; }
+.node-info .team-head .link { font-size: 12px; }
+button.mini.pick { font: inherit; font-size: 12px; color: inherit; }
+button.mini.pick:hover:not(:disabled) { border-color: var(--yellow); transform: translateY(-2px); }
+button.mini.pick.empty { justify-content: center; min-height: 82px; border-style: dashed; background: rgba(0,0,0,.15); color: var(--muted); }
+.mini.pick.empty .plus { font: 800 24px/1 var(--display); color: var(--yellow); }

@@ -1030,6 +1030,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In Impostazioni puoi scegliere il colore del cursore; colora anche il mirino in lotta.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'I filtri di tipo e ordine di I miei Pokémon e del Pokédex hanno lo stile del gioco, con l\'icona di ogni tipo.',
     'Cursor a tu gusto': 'Il cursore che vuoi',
+    'Gestionar equipo': 'Gestisci squadra',
+    'Añadir': 'Aggiungi',
+    'Añadir al equipo': 'Aggiungi alla squadra',
   },
 
   patterns: [
