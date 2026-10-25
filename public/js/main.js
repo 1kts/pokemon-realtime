@@ -12,6 +12,7 @@ import { UI } from './ui.js';
 import { applyCursor } from './cursor.js';
 import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
+import { Music, trackForBattle } from './music.js';
 
 const canvas = document.getElementById('view');
 let renderer;
@@ -39,6 +40,8 @@ composer.addPass(new OutputPass());
 const app = {
   world, particles, effects, canvas, net: new Net(), root: document.getElementById('hud'),
   battle: null, ui: null,
+  // Música (music.js): cada pantalla pone su tema desde ui.show y cada combate el suyo
+  music: new Music(),
   connect(name) { this.net.connect(name); },
   // Al cambiar de idioma: los textos fijos de index.html (las pantallas se vuelven a pintar solas)
   onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
@@ -134,10 +137,12 @@ net.on('start', m => {
   document.querySelectorAll('.modal').forEach(m => m.remove());
   document.body.classList.add('in-battle');
   app.battle = new BattleClient(app, m);
+  app.music.play(trackForBattle(m, Data));
 });
 net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
+  app.music.play(m.winner === m.you ? 'victory' : 'defeat');
   // Dejar ver el final un momento antes de los resultados
   setTimeout(() => {
     if (app.battle !== b) return;

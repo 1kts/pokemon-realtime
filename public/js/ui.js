@@ -15,6 +15,7 @@ import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { masteryHtml } from './frames.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
+import { trackForView } from './music.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -82,6 +83,8 @@ export class UI {
   show(view, keepScroll) {
     const scroll = keepScroll ? (this.root.querySelector('.scroll') || {}).scrollTop : 0;
     this.view = view;
+    const track = trackForView(view, this.region);
+    if (track) this.app.music.play(track);
     this.root.hidden = false;
     this.root.innerHTML = '';
     document.querySelectorAll('body > .dd-menu').forEach(m => m.remove());   // desplegables que quedaran abiertos

@@ -1357,3 +1357,8 @@ button.mini.pick.empty { justify-content: center; min-height: 82px; border-style
 @keyframes liIn { from { transform: translate(60vw, -55%); } }
 @keyframes liText { from { transform: translate(-40vw, -50%); opacity: 0; } }
 .node.elite.locked, .node.champion.locked { filter: grayscale(1) brightness(.8); }
+
+/* Ajustes: música */
+.music-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.music-row input[type=range] { flex: 1 1 200px; accent-color: var(--yellow); height: 6px; }
+.music-row .music-pct { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }

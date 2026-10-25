@@ -11,6 +11,7 @@ import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 import { avatarArt, avatarName } from './missions.js';
 import { frameFx, frameRing } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
+import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -385,6 +386,21 @@ export const accountViews = {
     }
     lang.append(langs);
 
+    // Música: volumen (se guarda en este navegador) y silenciar
+    const music = this.app.music;
+    const mus = el('div', 'panel music-panel');
+    mus.append(el('h3', '', `♫ ${t('Música')}`), el('p', 'small', t('Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.')));
+    const row = el('div', 'music-row');
+    const range = el('input');
+    Object.assign(range, { type: 'range', min: 0, max: 100, step: 5, value: Math.round(music.volume * 100) });
+    range.setAttribute('aria-label', t('Volumen de la música'));
+    const pct = el('b', 'music-pct', `${range.value} %`);
+    const mute = el('button', music.volume ? '' : 'sel', music.volume ? t('Silenciar') : t('Sin música'));
+    range.oninput = () => { music.setVolume(range.value / 100); pct.textContent = `${range.value} %`; mute.textContent = +range.value ? t('Silenciar') : t('Sin música'); mute.classList.toggle('sel', !+range.value); };
+    mute.onclick = () => { range.value = +range.value ? 0 : Math.round(DEFAULT_MUSIC * 100); range.oninput(); };
+    row.append(range, pct, mute);
+    mus.append(row);
+
     // Color del cursor: paleta, color libre y vista previa (normal y al pasar por algo pulsable)
     const cursorBox = el('div', 'panel cursor-panel');
     cursorBox.append(el('h3', '', t('Cursor')), el('p', 'small', t('Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.')));
@@ -441,7 +457,7 @@ export const accountViews = {
     legal.onclick = () => this.legal();
     about.append(legal, el('p', 'small', `PokéArenas v${VERSION}`));
 
-    body.append(lang, cursorBox, me, news, about);
+    body.append(lang, mus, cursorBox, me, news, about);
     wrap.append(body);
     this.root.append(wrap);
   },

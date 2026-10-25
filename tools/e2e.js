@@ -49,7 +49,8 @@ async function setup(name) {
   const chromePath = findChrome();
   if (!chromePath) throw new Error('No encuentro Chrome/Chromium: instala uno o pon su ruta en CHROME');
   const chrome = spawn(chromePath, ['--headless=new', '--no-sandbox', '--disable-gpu', '--enable-unsafe-swiftshader', '--use-angle=swiftshader',
-    `--remote-debugging-port=${dbg}`, `--user-data-dir=${path.join(tmp, 'chrome')}`, '--window-size=1280,860', 'about:blank'], { stdio: 'ignore' });
+    `--remote-debugging-port=${dbg}`, `--user-data-dir=${path.join(tmp, 'chrome')}`, '--window-size=1280,860',
+    '--autoplay-policy=no-user-gesture-required', '--mute-audio', 'about:blank'], { stdio: 'ignore' });
   let target;
   for (let i = 0; i < 100 && !target; i++) { try { target = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find(x => x.type === 'page'); } catch {} if (!target) await sleep(100); }
   if (!target) throw new Error('Chrome no abre la página de depuración');
@@ -91,6 +92,15 @@ async function setup(name) {
         if (!e) e = [...document.querySelectorAll('button, a, summary, [role=button]')].find(x => x.offsetParent !== null && x.textContent.trim().toLowerCase().includes(s.toLowerCase()));
         if (!e) return false; e.scrollIntoView({ block: 'center' }); e.click(); return true; })()`);
       if (!ok) throw new Error('No encuentro qué pulsar: ' + textOrSel);
+      await sleep(150);
+    },
+    // Pulsación de ratón de verdad (eventos de puntero del navegador, no .click()): hace falta para lo que
+    // solo se permite tras tocar la página, como el sonido
+    async realClick(sel) {
+      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'center' });
+        const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; })()`);
+      if (!r) throw new Error('No encuentro qué pulsar: ' + sel);
+      for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
       await sleep(150);
     },
     // Escribe en un campo (como si tecleara: dispara input y change)
