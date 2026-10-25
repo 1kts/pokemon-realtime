@@ -10,6 +10,7 @@ import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 import { avatarArt, avatarName } from './missions.js';
 import { frameFx, frameRing } from './frames.js';
+import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -384,6 +385,33 @@ export const accountViews = {
     }
     lang.append(langs);
 
+    // Color del cursor: paleta, color libre y vista previa (normal y al pasar por algo pulsable)
+    const cursorBox = el('div', 'panel cursor-panel');
+    cursorBox.append(el('h3', '', t('Cursor')), el('p', 'small', t('Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.')));
+    const chosen = getCursor();
+    const sw = el('div', 'cursor-list');
+    const pick = c => { setCursor(c); this.show('settings', true); };
+    for (const c of CURSOR_COLORS) {
+      const b = el('button', 'cursor-opt' + (chosen === c ? ' sel' : ''), `<img src="data:image/svg+xml,${encodeURIComponent(cursorSvg(c))}" width="28" height="28" alt="">${c === 'classic' ? `<small>${t('Clásico')}</small>` : ''}`);
+      b.title = c === 'classic' ? t('Clásico') : c;
+      if (c !== 'classic') b.style.setProperty('--sw', c);
+      b.onclick = () => pick(c);
+      sw.append(b);
+    }
+    // Color libre: el selector del sistema detrás de un botón con el estilo del juego
+    const custom = !CURSOR_COLORS.includes(chosen);
+    const free = el('label', 'cursor-opt custom' + (custom ? ' sel' : ''), `<img src="data:image/svg+xml,${encodeURIComponent(cursorSvg(custom ? chosen : '#ffffff'))}" width="28" height="28" alt=""><small>${t('Otro color')}</small>`);
+    const input = el('input');
+    input.type = 'color';
+    input.value = custom ? chosen : '#4fd6ff';
+    input.onchange = () => pick(input.value);
+    free.append(input);
+    sw.append(free);
+    cursorBox.append(sw);
+    const prev = el('div', 'cursor-preview', `<span><img src="data:image/svg+xml,${encodeURIComponent(cursorSvg(chosen))}" width="42" height="42" alt=""><small>${t('Normal')}</small></span>
+      <span><img src="data:image/svg+xml,${encodeURIComponent(cursorSvg(chosen, true))}" width="42" height="42" alt=""><small>${t('Al pasar por un botón')}</small></span>`);
+    cursorBox.append(prev);
+
     // Perfil y cuenta
     const me = el('div', 'panel');
     me.append(el('h3', '', t('Perfil y cuenta')));
@@ -413,7 +441,7 @@ export const accountViews = {
     legal.onclick = () => this.legal();
     about.append(legal, el('p', 'small', `PokéArenas v${VERSION}`));
 
-    body.append(lang, me, news, about);
+    body.append(lang, cursorBox, me, news, about);
     wrap.append(body);
     this.root.append(wrap);
   },

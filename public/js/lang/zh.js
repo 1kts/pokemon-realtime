@@ -1005,6 +1005,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': '每枚道馆徽章和每个成就都会给你一个新的个人头像。',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '成就奖励不再自动发放：请在任务中领取。',
     'Orden': '排序',
+    'Al pasar por un botón': '悬停在按钮上',
+    'Clásico': '经典',
+    'Cursor': '光标',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': '选择鼠标颜色。对战中的瞄准圈也会变成这个颜色。会保存在此浏览器中。',
+    'Otro color': '其他颜色',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '现在可以在设置中选择光标颜色，对战中的瞄准圈也会随之变色。',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '“我的宝可梦”和图鉴中的属性与排序筛选改为游戏风格，并带有各属性图标。',
   },
 
   patterns: [

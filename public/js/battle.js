@@ -7,6 +7,7 @@ import { portrait, preload } from './sprites.js';
 import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
 import { icon, typeIcon } from './pixicons.js';
+import { reticleColor } from './cursor.js';
 
 const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
@@ -255,6 +256,8 @@ export class BattleClient {
     this.ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     // Retícula: anillo con cuatro marcas que gira despacio y late, siempre bajo el ratón
     const ret = this.reticle = new THREE.Group();
+    this.reticleColor = reticleColor();   // el color de cursor elegido en Ajustes
+    this.reticleHit = this.reticleColor.toLowerCase() === '#ffd23f' ? '#ff5a5a' : '#ffd23a';   // apuntando al rival: que se note el cambio
     const mat = () => new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.85, depthWrite: false, toneMapped: false });
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.36, 40), mat());
     ring.rotation.x = -Math.PI / 2;
@@ -369,7 +372,7 @@ export class BattleClient {
     const foe = pos[this.foeIdx];
     const onFoe = foe.st.x !== undefined && Math.hypot(this.aim.x - foe.x, this.aim.y - foe.y) < (this.monOf(this.foeIdx).r || 22);
     ret.scale.setScalar((onFoe ? 1.25 : 1) * (1 + Math.sin(now / 180) * 0.05));
-    for (const c of ret.children) c.material.color.set(onFoe ? '#ffd23a' : '#ffffff');
+    for (const c of ret.children) c.material.color.set(onFoe ? this.reticleHit : this.reticleColor);
     for (let i = 0; i < 2; i++) {
       const { x, y, a, st, moving } = pos[i];
       const actor = this.actors[i];

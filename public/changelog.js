@@ -10,6 +10,8 @@
         ['nuevo', 'Recoge las 3 misiones del día o de la semana para abrir su cofre.'],
         ['nuevo', 'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.'],
         ['cambio', 'Los premios de los logros ya no llegan solos: se recogen en Misiones.'],
+        ['nuevo', 'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.'],
+        ['cambio', 'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.'],
       ],
     },
     {

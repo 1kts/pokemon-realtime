@@ -1015,6 +1015,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Jeder Arena-Orden und jeder Erfolg gibt dir einen neuen Avatar für dein Profil.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'Erfolgsbelohnungen kommen nicht mehr von selbst: hol sie in Missionen ab.',
     'Orden': 'Sortierung',
+    'Al pasar por un botón': 'Über einem Button',
+    'Clásico': 'Klassisch',
+    'Cursor': 'Mauszeiger',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': 'Wähle die Farbe des Mauszeigers. Sie färbt auch das Fadenkreuz im Kampf. Wird in diesem Browser gespeichert.',
+    'Otro color': 'Andere Farbe',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In den Einstellungen kannst du die Farbe des Mauszeigers wählen; sie färbt auch das Fadenkreuz im Kampf.',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'Die Typ- und Sortierfilter in Meine Pokémon und im Pokédex haben jetzt den Stil des Spiels, mit dem Symbol jedes Typs.',
   },
 
   patterns: [

@@ -1006,6 +1006,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Every gym badge and every achievement gives you a new avatar for your profile.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'Achievement rewards no longer arrive on their own: collect them in Missions.',
     'Orden': 'Sort',
+    'Al pasar por un botón': 'On a button',
+    'Clásico': 'Classic',
+    'Cursor': 'Cursor',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': 'Choose your mouse colour. It also tints the aiming reticle in battle. Remembered in this browser.',
+    'Otro color': 'Other colour',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In Settings you can choose the cursor colour; it also tints the battle reticle.',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'The type and sort filters in My Pokémon and the Pokédex now match the game\'s style, with each type\'s icon.',
   },
 
   patterns: [

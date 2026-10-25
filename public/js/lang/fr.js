@@ -1010,6 +1010,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'Chaque badge d\'arène et chaque succès te donnent un nouvel avatar pour ton profil.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': 'Les récompenses des succès n\'arrivent plus toutes seules : récupère-les dans Missions.',
     'Orden': 'Tri',
+    'Al pasar por un botón': 'Sur un bouton',
+    'Clásico': 'Classique',
+    'Cursor': 'Curseur',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': 'Choisis la couleur de la souris. Elle teinte aussi le réticule de visée en combat. Mémorisé dans ce navigateur.',
+    'Otro color': 'Autre couleur',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'Dans Paramètres, tu peux choisir la couleur du curseur ; elle teinte aussi le réticule en combat.',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'Les filtres de type et de tri de Mes Pokémon et du Pokédex ont le style du jeu, avec l\'icône de chaque type.',
   },
 
   patterns: [

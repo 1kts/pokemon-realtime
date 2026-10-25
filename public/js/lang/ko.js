@@ -1016,6 +1016,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': '체육관 배지와 업적마다 프로필용 새 아바타를 받을 수 있어요.',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '업적 보상이 더 이상 자동으로 지급되지 않아요: 미션에서 받으세요.',
     'Orden': '정렬',
+    'Al pasar por un botón': '버튼 위',
+    'Clásico': '클래식',
+    'Cursor': '커서',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': '마우스 커서 색을 고르세요. 배틀의 조준선 색도 바뀝니다. 이 브라우저에 저장돼요.',
+    'Otro color': '다른 색',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '설정에서 커서 색을 고를 수 있어요. 배틀의 조준선 색도 바뀝니다.',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '내 포켓몬과 도감의 타입·정렬 필터가 게임 스타일로 바뀌고 타입마다 아이콘이 붙었어요.',
   },
 
   patterns: [

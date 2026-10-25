@@ -9,6 +9,7 @@ import { Particles } from './particles.js';
 import { Effects } from './effects.js';
 import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
+import { applyCursor } from './cursor.js';
 import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
 
@@ -159,4 +160,5 @@ addEventListener('keydown', e => {
   }
 });
 
+applyCursor();   // el color de cursor elegido en Ajustes
 ui.show('title');

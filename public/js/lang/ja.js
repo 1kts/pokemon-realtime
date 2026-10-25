@@ -1016,6 +1016,13 @@ export default {
     'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.': 'ジムバッジと実績ごとに、プロフィール用の新しいアバターがもらえます。',
     'Los premios de los logros ya no llegan solos: se recogen en Misiones.': '実績の報酬は自動では届かなくなりました：ミッションで受け取ってください。',
     'Orden': '並び順',
+    'Al pasar por un botón': 'ボタンの上',
+    'Clásico': 'クラシック',
+    'Cursor': 'カーソル',
+    'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': 'マウスカーソルの色を選べます。バトルの照準の色も変わります。このブラウザに保存されます。',
+    'Otro color': 'ほかの色',
+    'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '設定でカーソルの色を選べるようになりました。バトルの照準の色も変わります。',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '「マイポケモン」と図鑑のタイプ・並び順フィルターがゲームのデザインになり、各タイプのアイコンが付きました。',
   },
 
   patterns: [
