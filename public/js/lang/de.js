@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': 'Schätze: Edelstein-Räder',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': 'In Schätze drehst du mit Edelsteinen Glücksräder: Element-Skins, Glows, Porträts, Geld und Sonderbonbons. Es gibt 3 Räder, die alle 2 Wochen wechseln.',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': 'Edelsteine gibt es für Missionen und Truhen, deinen ersten Online-Sieg des Tages, Arenaleiter, alle 7 Siege im Turm, Ligaaufstiege und seltene oder schillernde wilde Pokémon.',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': 'Porträts aus Schätze kannst du als Avatar nutzen: das Gesicht des Pokémon in Nahaufnahme mit einem animierten Effekt seines Typs.',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': 'Der Element-Skin wandert von der Meisterschaft zu den Rädern in Schätze; wenn du ihn schon hast, behältst du ihn.',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': 'Missionssymbole zeigen jetzt, was verlangt wird, statt eines Items, und die Belohnungen sind vielfältiger: Bälle, Sonderbonbons und bei Wochenmissionen Vitamine.',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': 'Das Tutorial und Bildschirme wie der Turm oder Missionen sehen aus wie das Menü: glänzende Karten und zentrierter Inhalt mit Platz unter der Leiste.',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': 'Karten in voller Farbe',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': 'Die Karten in Deine Sammlung, Missionen, Erfolgen, Ligen, Profil, Beutel und Pokédex sehen jetzt aus wie die im Menü: mit Farbverlauf, Streifen und einem Lichtstreifen.',

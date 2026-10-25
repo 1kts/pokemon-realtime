@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': 'Tesori: ruote di gemme',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': 'In Tesori giri le ruote con le gemme: skin Elementali, glow, ritratti, soldi e Caramelle Rare. Ci sono 3 ruote e cambiano ogni 2 settimane.',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': 'Ottieni gemme con missioni e forzieri, la prima vittoria online del giorno, i capipalestra, ogni 7 vittorie nella Torre, salendo di lega e con selvatici rari o cromatici.',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': 'I ritratti di Tesori si usano come avatar: il volto del Pokémon da vicino, con un effetto animato del suo tipo.',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': 'La skin Elementale passa dalla maestria alle ruote di Tesori; se l\'avevi già, la tieni.',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': 'Le icone delle missioni mostrano cosa chiedono, non un oggetto, e i premi sono più vari: Ball, Caramelle Rare e vitamine nelle settimanali.',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': 'Il tutorial e schermate come la Torre o Missioni sembrano il menu: carte brillanti e contenuto centrato, con spazio sotto la barra in alto.',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': 'Carte a tutto colore',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': 'Le carte de La tua collezione, Missioni, obiettivi, leghe, profilo, Borsa e Pokédex ora sembrano quelle del menu, con sfumatura, righe e una striscia di luce.',

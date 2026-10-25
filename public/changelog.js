@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.20.0', date: '2026-10-25', title: 'Tesoros: ruletas de gemas',
+      items: [
+        ['nuevo', 'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.'],
+        ['nuevo', 'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.'],
+        ['nuevo', 'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.'],
+        ['cambio', 'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.'],
+        ['cambio', 'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.'],
+        ['cambio', 'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.'],
+      ],
+    },
+    {
       v: '0.19.1', date: '2026-10-25', title: 'Tarjetas a todo color',
       items: [
         ['cambio', 'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.'],

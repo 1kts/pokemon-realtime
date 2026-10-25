@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': '宝物：ジェムのルーレット',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': '「宝物」ではジェムでルーレットを回せます。エレメンタルのスキン、グロウ、顔アイコン、おこづかい、ふしぎなアメが当たります。ルーレットは3つで、2週間ごとに入れ替わります。',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': 'ジェムはミッションと宝箱、その日はじめてのオンライン勝利、ジムリーダー、タワーでの7勝ごと、リーグ昇格、珍しい野生や色違いのポケモンでもらえます。',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': '「宝物」の顔アイコンはアバターにできます。ポケモンの顔のアップに、タイプのアニメーション効果がつきます。',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': 'エレメンタルのスキンはマスタリーから「宝物」のルーレットに移りました。すでに持っている人はそのまま使えます。',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': 'ミッションのアイコンは道具ではなく内容を表すようになり、報酬もボール、ふしぎなアメ、ウィークリーではドーピングアイテムと多彩になりました。',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': 'チュートリアルやタワー、ミッションなどの画面もメニューと同じデザインに。光るカードと中央寄せの内容で、上のバーの下にゆとりがあります。',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': 'カードがカラフルに',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': '「コレクション」「ミッション」、実績、リーグ、プロフィール、「バッグ」、ポケモン図鑑のカードが、メニューと同じグラデーション・ストライプ・光のラインのデザインになりました。',

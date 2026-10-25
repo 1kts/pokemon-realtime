@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': '보물: 젬 룰렛',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': '보물에서 젬으로 룰렛을 돌려요. 엘리멘탈 스킨, 글로우, 초상, 돈, 이상한사탕이 나와요. 룰렛은 3개이고 2주마다 바뀌어요.',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': '젬은 미션과 상자, 그날 첫 온라인 승리, 체육관 관장, 타워 7승마다, 리그 승급, 희귀하거나 색이 다른 야생 포켓몬에서 얻어요.',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': '보물의 초상은 아바타로 쓸 수 있어요. 포켓몬 얼굴을 가까이에서 보여 주고 타입의 애니메이션 효과가 붙어요.',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': '엘리멘탈 스킨은 마스터리에서 보물 룰렛으로 옮겨졌어요. 이미 가지고 있다면 그대로 유지돼요.',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': '미션 아이콘이 도구가 아니라 해야 할 일을 보여 줘요. 보상도 볼, 이상한사탕, 주간 미션의 영양제로 더 다양해졌어요.',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': '튜토리얼과 타워, 미션 같은 화면도 메뉴처럼 바뀌었어요. 빛나는 카드와 가운데 정렬된 내용, 상단 바 아래 여백이 생겼어요.',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': '화려해진 카드',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': '내 컬렉션, 미션, 업적, 리그, 프로필, 가방, 포켓몬 도감의 카드가 메뉴 카드처럼 그라데이션과 줄무늬, 빛줄기를 입었어요.',

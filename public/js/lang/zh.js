@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': '宝藏：宝石转盘',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': '在“宝藏”中用宝石转动转盘：元素皮肤、光晕、头像、金钱和神奇糖果。共有 3 个转盘，每 2 周更换一次。',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': '完成任务和宝箱、每天首次在线胜利、击败道馆馆主、在对战塔每赢 7 场、升段以及遇到稀有或异色的野生宝可梦都能获得宝石。',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': '宝藏中的头像可以设为你的头像：宝可梦的脸部特写，带有其属性的动态效果。',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': '元素皮肤从精通奖励改为宝藏转盘的奖品；已经拥有的玩家会保留。',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': '任务图标现在显示任务要求，而不是道具；奖励也更丰富：精灵球、神奇糖果，每周任务还有营养剂。',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': '教程以及对战塔、任务等界面与菜单风格一致：卡片会发光，内容居中，顶栏下方留有空间。',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': '卡片焕然一新',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': '“我的收藏”、任务、成就、段位、个人资料、背包和图鉴中的卡片现在和菜单卡片一样，带有渐变、条纹和一道高光。',

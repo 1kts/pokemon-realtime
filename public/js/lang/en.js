@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': 'Treasures: gem wheels',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': 'In Treasures you spin wheels with gems: Elemental skins, glows, portraits, money and candies. There are 3 wheels and they change every 2 weeks.',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': 'You earn gems from missions and chests, your first online win of the day, leaders, every 7 wins in the Tower, moving up a league and rare or shiny wild Pokémon.',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': 'Treasures portraits can be your avatar: a close-up of the Pokémon\'s face with an animated effect of its type.',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': 'The Elemental skin moves from mastery to the Treasures wheels; if you already had it, you keep it.',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': 'Mission icons now show what they ask for, not an item, and their rewards are more varied: Balls, Rare Candies and vitamins in the weekly ones.',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': 'The tutorial and screens like the Tower or Missions look like the menu: shiny cards and centred content, with room under the top bar.',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': 'Cards in full colour',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': 'The cards in Your collection, Missions, achievements, leagues, profile, Bag and Pokédex now look like the menu\'s, with a gradient, stripes and a band of light.',

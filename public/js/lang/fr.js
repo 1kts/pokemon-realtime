@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.20.0 ----------
+    'Tesoros: ruletas de gemas': 'Trésors : roues de gemmes',
+    'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.': 'Dans Trésors, tu fais tourner des roues avec des gemmes : skins Élémentaires, auras, portraits, argent et bonbons. Il y a 3 roues, renouvelées toutes les 2 semaines.',
+    'Ganas gemas con misiones y cofres, la primera victoria online del día, líderes, cada 7 victorias en la Torre, al subir de liga y con salvajes raros o shiny.': 'Tu gagnes des gemmes avec les missions et coffres, ta 1re victoire en ligne du jour, les champions, chaque 7 victoires à la Tour, en montant de ligue et avec les sauvages rares ou chromatiques.',
+    'Los retratos de Tesoros se ponen de avatar: la cara del Pokémon de cerca, con un efecto animado de su tipo.': 'Les portraits de Trésors peuvent servir d\'avatar : le visage du Pokémon en gros plan, avec un effet animé de son type.',
+    'La skin Elemental pasa de la maestría a las ruletas de Tesoros; si ya la tenías, la conservas.': 'Le skin Élémentaire passe de la maîtrise aux roues de Trésors ; si tu l\'avais déjà, tu le gardes.',
+    'Los iconos de las misiones enseñan lo que piden, no un objeto, y sus premios son más variados: Balls, Caramelos Raros y vitaminas en las semanales.': 'Les icônes des missions montrent ce qu\'elles demandent, pas un objet, et leurs récompenses sont plus variées : Balls, Super Bonbons et vitamines pour les hebdomadaires.',
+    'El tutorial y pantallas como la Torre o Misiones lucen como el menú: tarjetas con brillo y el contenido centrado, con aire bajo la cabecera.': 'Le tutoriel et des écrans comme la Tour ou les Missions ressemblent au menu : cartes brillantes et contenu centré, avec de l\'espace sous la barre du haut.',
     // ---------- Novedades v0.19.1 ----------
     'Tarjetas a todo color': 'Des cartes haute en couleur',
     'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': 'Les cartes de Ta collection, des Missions, des succès, des ligues, du profil, du Sac et du Pokédex ressemblent à celles du menu, avec dégradé, rayures et un filet de lumière.',
