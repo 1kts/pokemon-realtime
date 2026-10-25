@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.19.0', date: '2026-10-25', title: 'Premio diario y tutorial',
+      items: [
+        ['nuevo', 'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.'],
+        ['nuevo', 'Tutorial de 1 minuto en Entrenamiento: aprende a moverte, atacar, protegerte y cambiar de Pokémon contra un muñeco, con premio al acabar.'],
+        ['nuevo', 'Las capturas suenan: la Ball se sacude, hace clic al cerrarse y suena una fanfarria si lo atrapas. También suenan subir de nivel y recoger premios.'],
+      ],
+    },
+    {
       v: '0.18.3', date: '2026-10-25', title: 'Menú centrado y más brillo',
       items: [
         ['cambio', 'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.'],
