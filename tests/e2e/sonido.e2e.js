@@ -39,7 +39,7 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.sfx.volume === 0`);
   ok(await page.eval(`localStorage.getItem('arena.sfx')`) === '0' && /Sin efectos/.test(await page.eval(`document.querySelector('.music-panel .sfx-vol button').textContent`))
     && await page.eval(`window.__app.music.volume`) === music0, 'los efectos se pueden quitar sin tocar la música');
-  await page.click('.music-panel .sfx-vol button');
+  await page.realClick('.music-panel .sfx-vol button');
   await page.waitFor(`window.__app.sfx.volume > 0`);
   await page.reload();
   ok(await page.eval(`window.__app.sfx.volume`) > 0 && await page.eval(`window.__app.sfx.volume`) === await page.eval(`+localStorage.getItem('arena.sfx')`), 'el volumen de los efectos se mantiene al recargar');

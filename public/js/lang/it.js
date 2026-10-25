@@ -13,6 +13,7 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Se togli la musica in Impostazioni e poi la rialzi, ora riparte sempre.',
     'Ataques con sonido': 'Attacchi con suono',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Attacchi e colpi hanno un suono discreto, che cambia un po\' con il tipo e la forma della mossa; i colpi superefficaci si sentono un po\' di più.',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'In Impostazioni puoi alzare, abbassare o togliere gli effetti sonori, separatamente dal volume della musica.',

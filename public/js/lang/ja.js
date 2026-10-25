@@ -13,6 +13,7 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '設定で音楽を消してから音量を戻すと、必ずまた流れるようになりました。',
     'Ataques con sonido': 'わざに効果音',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'わざと命中にひかえめな効果音がつきました。わざのタイプと形で少しだけ変わり、こうかばつぐんの一撃は少し目立ちます。',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '設定で、音楽の音量とは別に効果音を大きく・小さく・オフにできます。',

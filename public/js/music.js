@@ -336,9 +336,10 @@ export class Music {
     this.volume = Math.max(0, Math.min(1, v));
     storage.set(KEY, String(this.volume));
     if (!this.ctx) return;
+    // A 0 solo se baja el volumen, sin suspender el audio: en Chrome, reanudarlo después a veces se queda
+    // colgado y la música no volvía al subirla
     this.master.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
-    if (this.volume === 0) this.ctx.suspend();
-    else this.start();
+    if (this.volume > 0) this.start();
   }
 
   // Programa lo que toca en los próximos 150 ms

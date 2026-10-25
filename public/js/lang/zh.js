@@ -12,6 +12,7 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '在设置中关闭音乐后再调高音量，音乐现在总能重新响起。',
     'Ataques con sonido': '招式有声音了',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '招式和命中现在有轻柔的音效，会随招式的属性和形态略有变化；效果绝佳的攻击会更明显一些。',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '在设置中可以调高、调低或关闭音效，与音乐音量分开调节。',

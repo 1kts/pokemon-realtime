@@ -11,6 +11,7 @@
         ['cambio', 'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.'],
         ['cambio', 'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.'],
         ['cambio', 'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.'],
+        ['arreglo', 'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.'],
       ],
     },
     {

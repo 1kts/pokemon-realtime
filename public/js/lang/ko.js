@@ -13,6 +13,7 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '설정에서 음악을 껐다가 다시 키우면 이제 항상 다시 나와요.',
     'Ataques con sonido': '기술에 효과음',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '기술과 명중에 은은한 소리가 나요. 기술의 타입과 형태에 따라 조금씩 달라지고, 효과가 굉장한 공격은 조금 더 잘 들려요.',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '설정에서 음악 볼륨과 따로 효과음을 키우거나 줄이거나 끌 수 있어요.',
