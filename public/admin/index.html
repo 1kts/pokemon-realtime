@@ -38,7 +38,8 @@
 
   <section id="jugadores" class="tab" hidden>
     <form id="search" class="row">
-      <input name="q" placeholder="Nombre, usuario o id" autocomplete="off">
+      <input name="q" placeholder="Nombre, usuario o id (vacío: todos)" autocomplete="off">
+      <select name="kind"><option value="">Todos</option><option value="cuentas">Cuentas</option><option value="invitados">Invitados</option></select>
       <button type="submit">Buscar</button>
     </form>
     <div class="split">

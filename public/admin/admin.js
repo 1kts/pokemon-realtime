@@ -78,6 +78,7 @@ function show(tab) {
   for (const s of document.querySelectorAll('.tab')) s.hidden = s.id !== tab;
   if (tab === 'resumen') overview();
   if (tab === 'auditoria' && !$('#audit tbody').children.length) loadAudit();
+  if (tab === 'jugadores' && !$('#results').children.length) loadPlayers();
   if (tab === 'servidor') overview(true);
   if (tab === 'metricas') loadMetrics();
 }
@@ -150,14 +151,21 @@ function typeTag(type) {
 }
 
 // ---------- Jugadores ----------
-$('#search').addEventListener('submit', async e => {
-  e.preventDefault();
-  const r = await ask('admin.search', { q: new FormData(e.target).get('q') });
-  $('#results').replaceChildren(r.rows.length ? table(['Nombre', 'Usuario', 'ELO', 'Alta', ''], r.rows.map(p => h('tr', { class: 'click', onclick: () => openPlayer(p.id) },
-    h('td', {}, p.name), h('td', {}, p.user || 'invitado'), h('td', {}, p.ranked ? p.elo : '—'), h('td', {}, fmtDate(p.created)),
-    h('td', {}, p.online && h('span', { class: 'tag on' }, 'en línea'), p.banned && h('span', { class: 'tag ban' }, 'suspendido')))))
-    : h('p', { class: 'small' }, 'Nadie con ese nombre, usuario o id.'));
-});
+// Sin texto sale la lista entera (cuentas primero, por última conexión); el desplegable filtra
+// cuentas o invitados
+async function loadPlayers() {
+  const f = new FormData($('#search'));
+  const r = await ask('admin.search', { q: f.get('q'), kind: f.get('kind') });
+  const t = r.total;
+  $('#results').replaceChildren(
+    h('p', { class: 'small' }, `${r.rows.length} en la lista · ${t.profiles} perfiles en total: ${t.accounts} cuentas y ${t.profiles - t.accounts} invitados`),
+    r.rows.length ? table(['Nombre', 'Usuario', 'ELO', 'Alta', 'Última vez', ''], r.rows.map(p => h('tr', { class: 'click', onclick: () => openPlayer(p.id) },
+      h('td', {}, p.name), h('td', {}, p.user || 'invitado'), h('td', {}, p.ranked ? p.elo : '—'), h('td', {}, fmtDate(p.created)), h('td', {}, p.seen ? fmtDate(p.seen) : '—'),
+      h('td', {}, p.online && h('span', { class: 'tag on' }, 'en línea'), p.banned && h('span', { class: 'tag ban' }, 'suspendido')))))
+      : h('p', { class: 'small' }, 'Nadie con ese nombre, usuario o id.'));
+}
+$('#search').addEventListener('submit', e => { e.preventDefault(); loadPlayers(); });
+$('#search [name=kind]').addEventListener('change', loadPlayers);
 
 async function openPlayer(id) {
   if (current !== 'jugadores') show('jugadores');

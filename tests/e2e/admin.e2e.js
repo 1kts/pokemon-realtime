@@ -34,6 +34,8 @@ module.exports = async ({ page, player, env, ok }) => {
     `Métricas: los últimos 14 días con los jugadores y los nuevos de hoy (${todayRow.slice(1, 3).join(' / ')}) y cuántos vuelven`);
 
   await page.click('[data-tab=jugadores]');
+  await page.waitFor(`document.querySelectorAll('#results tr.click').length >= 2`);
+  ok(await page.eval(`/perfiles en total/.test(document.querySelector('#results').textContent)`), 'Jugadores: al entrar sale la lista de todos, con cuántas cuentas e invitados hay');
   await page.type('#search [name=q]', 'gamber');
   await page.eval(`document.querySelector('#search').requestSubmit(); true`);
   await page.waitFor(`document.querySelector('#results tr.click')`);

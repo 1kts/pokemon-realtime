@@ -228,14 +228,17 @@ function purgeGuests(now = Date.now()) {
 }
 const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase())) || null;
 // Busca por nombre de entrenador, usuario o id (los registrados primero)
-function search(q, limit = 50) {
+// kind: 'cuentas' (solo registradas), 'invitados' o cualquier otra cosa para todos
+function search(q, limit = 50, kind = '') {
   const needle = String(q || '').trim().toLowerCase().slice(0, 64);
   const list = [];
   for (const p of profiles.values()) {
+    if (kind === 'cuentas' && !p.account) continue;
+    if (kind === 'invitados' && p.account) continue;
     if (needle && !(p.name.toLowerCase().includes(needle) || p.id === needle || (p.account && p.account.user.toLowerCase().includes(needle)))) continue;
     list.push(p);
   }
-  return list.sort((a, b) => !!b.account - !!a.account || (b.created || 0) - (a.created || 0)).slice(0, limit);
+  return list.sort((a, b) => !!b.account - !!a.account || (b.seen || b.created || 0) - (a.seen || a.created || 0)).slice(0, limit);
 }
 function stats() {
   const day = new Date(); day.setHours(0, 0, 0, 0);

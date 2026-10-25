@@ -197,8 +197,12 @@ function createAdmin(ctx) {
     switch (msg.t) {
       case 'admin.overview': return reply(overview());
       case 'admin.metrics': return reply(metrics.compute(store.all()));
-      case 'admin.search': return reply({ rows: store.search(msg.q).map(p => ({ id: p.id, name: p.name, user: p.account ? p.account.user : null,
-        created: p.created, elo: p.elo, ranked: p.ranked, banned: store.banned(p), online: conns(p.id).length > 0 })) });
+      // Jugadores: con texto busca; sin texto, la lista entera (cuentas primero, por última conexión)
+      case 'admin.search': {
+        const rows = store.search(msg.q, msg.q ? 50 : 5000, String(msg.kind || ''));
+        return reply({ total: store.stats(), rows: rows.map(p => ({ id: p.id, name: p.name, user: p.account ? p.account.user : null,
+          created: p.created, seen: p.seen || null, elo: p.elo, ranked: p.ranked, banned: store.banned(p), online: conns(p.id).length > 0 })) });
+      }
       case 'admin.player': return reply({ player: player(String(msg.id)) });
       case 'admin.audit': {
         const rows = audit.query(msg).map(withNames);
