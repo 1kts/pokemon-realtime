@@ -115,9 +115,21 @@ Para añadir un idioma: copia `en.js`, tradúcelo, genera sus nombres si PokeAPI
 ## Pruebas
 
 ```bash
-npm test               # integración del servidor + 60 combates IA contra IA
+npm test               # servidor, base de datos, seguridad, admin, arenas, traducciones, notas de parche y 60 combates IA
+npm run test:e2e       # el juego en un navegador de verdad (tests/e2e/, ver tests/e2e/README.md)
 npm run test:sim 300   # más combates
 ```
+
+**Antes de cada push** (hook `.githooks/pre-push`, se activa solo con `npm ci`) y otra vez en el CI:
+- cada novedad para el jugador (un punto `nuevo` en las notas de parche) lleva su **test e2e** en `tests/e2e/`;
+- cada cambio de código del juego lleva algún test (e2e o `tools/*-test.js`);
+- pasan `npm test` y los e2e.
+
+Si algo de verdad no se puede probar, se explica en el mensaje de un commit con `Sin-e2e: motivo` o
+`Sin-tests: motivo`. Sin tests, el CI no despliega.
+
+**Notas de parche:** con la skill `.claude/skills/patch-notes` (formato, versión y traducciones);
+`node tools/changelog-check.js` comprueba que se cumple.
 
 ## Sprites
 
