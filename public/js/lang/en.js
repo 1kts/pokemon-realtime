@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.13.0 ----------
+    'Buscador y shiny a tu gusto': 'Search and shinies your way',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In My Pokémon you can search by name or number, filter your box by type, shiny or legendary, and sort it however you like.',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'Your shinies have a button to show them in their normal colours, in battle too; they still count as shiny.',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'Only registered accounts appear in the rankings: create an account from your profile and you join with everything you already have.',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': 'Guest profiles that go 60 days without logging in are deleted; create an account so you don\'t lose yours.',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'The menu\'s "How to play" help now explains each attack\'s shape and the arena mechanics.',
     'Sprite': 'Sprite',
     'Animación': 'Animation',
     'Renders 3D, iconos y animaciones': '3D renders, icons and animations',
