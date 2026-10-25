@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.2 ----------
+    'Tarjetas con más chispa': '더 화끈해진 카드',
+    'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': '메뉴 카드는 모드별 색을, 포켓몬 카드는 타입 색을 입었어요. 마우스를 올리면 떠오르며 빛나요.',
+    'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.': '내 포켓몬에서 팀 포켓몬은 별이 달린 금색 테두리를, 색이 다른 포켓몬은 색이 바뀌는 테두리를 둘러요.',
+    'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.': '배틀타워, 연습, 랭크 배틀에서 포켓몬을 고르면 선택한 포켓몬은 금색과 ✓로, 금지된 포켓몬은 빨간 줄로 표시돼요.',
     // ---------- Novedades v0.18.1 ----------
     'Menús sin mareos': '어지럽지 않은 메뉴',
     'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '메뉴 배경이 더 이상 아레나 주위를 돌지 않아요. 제자리에서 살짝 흔들리기만 하고, 동작 줄이기를 켜 두면 완전히 멈춰 있어요.',

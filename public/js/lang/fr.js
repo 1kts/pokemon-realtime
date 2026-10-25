@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.2 ----------
+    'Tarjetas con más chispa': 'Des cartes qui claquent',
+    'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Les cartes du menu prennent la couleur de chaque mode et celles de tes Pokémon la couleur de leurs types ; survole-les et elles se soulèvent en brillant.',
+    'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.': 'Dans Mes Pokémon, ceux de ton équipe ont un cadre doré avec une étoile, et les chromatiques une bordure aux couleurs changeantes.',
+    'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.': 'Quand tu choisis tes Pokémon à la Tour de Combat, en Entraînement ou en Classé, ton choix est marqué en doré avec un ✓ et les Pokémon bannis sont barrés en rouge.',
     // ---------- Novedades v0.18.1 ----------
     'Menús sin mareos': 'Des menus sans tournis',
     'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Le fond des menus ne tourne plus autour de l\'arène : il reste en place et se balance à peine, et ne bouge plus du tout si tu as activé la réduction des animations.',
