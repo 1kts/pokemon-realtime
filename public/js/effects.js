@@ -26,14 +26,6 @@ function glowSprite(color, size) {
   return s;
 }
 const bright = (hex, k = 1.8) => new THREE.Color(hex).multiplyScalar(k);
-// Sombra suave y oscura detrás de los proyectiles: los recorta sobre suelos claros y oscuros por igual
-const shadeTex = (() => {
-  const cv = document.createElement('canvas'); cv.width = cv.height = 64;
-  const g = cv.getContext('2d'), grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grad.addColorStop(0, 'rgba(8,12,30,0.95)'); grad.addColorStop(0.55, 'rgba(8,12,30,0.75)'); grad.addColorStop(1, 'rgba(8,12,30,0)');
-  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
-  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
-})();
 
 // Textura de Poké Ball
 function ballTexture(top) {
@@ -278,20 +270,15 @@ export class Effects {
       g.add(tw);
       return { obj: g, h: 0.45, update: (_, pos, dt) => { tw.rotation.y += dt * 20; p.trickle(25, dt, pos.x, pos.y, pos.z, { colors: PALETTE.volador, layer: 'soft', speed: 1, life: 0.3, size: 0.12, alpha: 0.7 }); } };
     }
-    // Genérico, igual en todas las arenas: sombra oscura detrás, núcleo del color intenso del tipo con un
-    // punto blanco caliente, y halo del mismo color (mezcla normal: se ve también sobre blanco)
-    const vc = vivid(TYPE_COLOR[ty]);
-    const cr = Math.max(0.13, r * 1.1);
-    const shade = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadeTex, transparent: true, depthWrite: false, opacity: 0.7 }));
-    shade.scale.setScalar(cr * 2.9);
-    shade.renderOrder = 2;   // encima del halo: hace de contorno oscuro del núcleo
-    const halo = glowSprite(vc, r * 4.2 + 0.35);
-    halo.material.blending = THREE.NormalBlending;
-    halo.renderOrder = 1;
-    const core = new THREE.Mesh(new THREE.SphereGeometry(cr, 14, 12), new THREE.MeshBasicMaterial({ color: vc, toneMapped: false }));
-    const hot = new THREE.Mesh(new THREE.SphereGeometry(cr * 0.26, 8, 6), new THREE.MeshBasicMaterial({ color: ty === 'siniestro' ? '#c8a8ff' : '#ffffff', toneMapped: false, transparent: true, opacity: 0.85 }));
-    hot.position.set(-cr * 0.35, cr * 0.55, cr * 0.6);   // asoma hacia la cámara: brillo arriba a la izquierda
-    g.add(shade, halo, core, hot);
+    // Genérico: núcleo brillante + halo + estela del tipo. El mismo diseño en todas las arenas (núcleo casi
+    // blanco y halo del color del tipo); sobre suelo claro el halo, que no puede ser aditivo, usa el color
+    // intenso del tipo con mezcla normal y se ve igual de saturado que el aditivo sobre hierba
+    const core = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.07, r * 0.7), 12, 10), new THREE.MeshBasicMaterial({ color: bright(pal[1], 2.2), toneMapped: false }));
+    const halo = glowSprite(BRIGHT ? vivid(TYPE_COLOR[ty]) : bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
+    if (BRIGHT) { halo.material.blending = THREE.NormalBlending; halo.scale.multiplyScalar(1.4); }   // el aditivo se ve más ancho: se compensa
+    if (BRIGHT) core.material.color.lerp(vivid(TYPE_COLOR[ty]), 0.4);   // un blanco puro se perdería sobre blanco
+    g.add(core, halo);
+    if (ty === 'fantasma' || ty === 'veneno') core.material.color = bright(pal[2], 1.2);
     const big = (m.dmg || 0) >= 15;
     const extra = {};
     if (ty === 'fuego') Object.assign(extra, { grav: -2, speed: 0.8, life: big ? 0.5 : 0.3, size: r * (big ? 3.2 : 2.4) });
@@ -303,7 +290,7 @@ export class Effects {
       obj: g, h: 0.55,
       update: (pr2, pos, dt) => {
         tr(pr2, pos, dt);
-        halo.material.opacity = 0.75 + Math.sin(performance.now() / 40) * 0.12;
+        halo.material.opacity = 0.8 + Math.sin(performance.now() / 40) * 0.2;
         if (ty === 'electrico' && Math.random() < 0.5) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
         if (big && ty === 'fuego') p.trickle(15, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
       },

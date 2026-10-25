@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.1 ----------
+    'Proyectiles como siempre': '예전 그대로의 투사체',
+    'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '투사체가 얼음과 눈 아레나에서도 다르게 보이지 않고, 빛나는 중심과 색이 있는 빛무리라는 평소 모습으로 돌아왔어.',
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': '모든 순간에 음악을',
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '게임에 음악이 생겼습니다. 메뉴와 지도는 같은 테마, 배틀·관장·챔피언은 각각의 테마가 있고 이기면 팡파르가 울립니다.',

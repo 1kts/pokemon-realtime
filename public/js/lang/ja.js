@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.1 ----------
+    'Proyectiles como siempre': 'いつもの弾に戻った',
+    'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弾はいつもの見た目、光る芯と色つきのハローに戻った。氷や雪のアリーナでも違って見えなくなった。',
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': 'あらゆる場面に音楽を',
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'ゲームに音楽が付きました。メニューとマップは共通のテーマ、バトル・ジムリーダー・チャンピオンにはそれぞれのテーマがあり、勝つとファンファーレが鳴ります。',

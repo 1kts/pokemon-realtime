@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.1 ----------
+    'Proyectiles como siempre': '弹射物恢复原样',
+    'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弹射物恢复为一贯的样子：发光的核心加彩色光晕，在冰雪场地中也不再显得不同。',
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': '每个时刻都有音乐',
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '游戏有音乐了：菜单和地图共用一首主题曲，对战、馆主和冠军各有主题曲，获胜时还有凯歌。',

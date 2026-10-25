@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.16.1', date: '2026-10-25', title: 'Proyectiles como siempre',
+      items: [
+        ['cambio', 'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.'],
+      ],
+    },
+    {
       v: '0.16.0', date: '2026-10-25', title: 'Música para cada momento',
       items: [
         ['nuevo', 'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.'],

@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.1 ----------
+    'Proyectiles como siempre': 'Proiettili come sempre',
+    'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'I proiettili tornano al loro aspetto di sempre, un nucleo luminoso con un alone colorato, anche nelle arene di ghiaccio e neve, invece di apparire diversi.',
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': 'Musica per ogni momento',
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Il gioco ha la musica: un tema per i menu e la mappa, e altri per le lotte, i capipalestra e il Campione, con una fanfara quando vinci.',
