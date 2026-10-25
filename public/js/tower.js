@@ -3,12 +3,15 @@
 // Se añaden como métodos de UI (ver ui.js).
 import { portrait, monIcon, animatedPortrait, typeTint } from './sprites.js';
 import { escapeHtml, monLabel } from './battle.js';
-import { el, typeChips, coins, lv } from './ui.js';
+import { el, typeChips, coins, lv, ICON } from './ui.js';
 import { showcaseHtml } from './achievements.js';
 import { t, tServer, locale } from './i18n.js';
+import { prizeHtml } from './missions.js';
+import { confirmBox } from './dialog.js';
+import { icon } from './pixicons.js';
 
 const { SPECIES, RANKED_POOL, REGIONS, LEAGUES } = Data;
-const LEVEL = 50, BLOCK = 7;
+const { level: LEVEL, block: BLOCK, brainEvery: BRAIN_EVERY } = Data.TOWER;
 const BOARDS = [
   ['ranked', 'Clasificatoria', 'ELO'],
   ['tower', 'Torre Batalla', 'Mejor racha'],
@@ -151,7 +154,7 @@ export const towerViews = {
     const retire = el('button', 'danger', t('Retirarse'));
     retire.onclick = () => {
       const msg = !tw.streak ? t('¿Retirarte? Podrás elegir otro equipo.') : tw.streak >= tw.best ? t('¿Retirarte? Tu racha de {n} queda guardada como tu récord y podrás empezar otra con otro equipo.', { n: tw.streak }) : t('¿Retirarte? Tu racha de {n} queda guardada y podrás empezar otra con otro equipo.', { n: tw.streak });
-      if (confirm(msg)) this.net.send({ t: 'tower', a: 'retire' });
+      confirmBox({ title: t('Retirarse'), text: msg, ok: t('Retirarse'), danger: true }).then(yes => yes && this.net.send({ t: 'tower', a: 'retire' }));
     };
     const fight = el('button', 'primary', tw.streak ? t('Combate {n}', { n: tw.n }) : t('¡Primer combate!'));
     fight.onclick = () => this.towerBattle();
@@ -171,14 +174,74 @@ export const towerViews = {
     const me = el('div', 'panel');
     me.append(el('h3', '', t('Tu récord')), el('div', 'big-elo', String(tw.best)), el('p', 'small', tw.runs === 1 ? t('Mejor racha · {w} victorias en 1 desafío', { w: tw.wins }) : t('Mejor racha · {w} victorias en {n} desafíos', { w: tw.wins, n: tw.runs })));
     if (tw.bestTeam && tw.bestTeam.length) { const row = el('div', 'mini-team'); for (const m of tw.bestTeam) row.append(portrait(m.dex, 44, { shiny: !!m.shiny })); me.append(row); }
-    me.append(el('div', 'symbols', ['Símbolo Plata', 'Símbolo Oro'].map(s => `<span class="symbol ${s.includes('Oro') ? 'oro' : 'plata'}${tw.symbols.includes(s) ? ' got' : ''}" title="${symbolName(s)}${tw.symbols.includes(s) ? '' : ' ' + t('(aún no)')}"></span>`).join('') + `<small class="small">${t('Símbolos de la Frontera')}</small>`));
-    me.append(el('p', 'small', t('Premios: dinero en cada victoria (más por bloque), Caramelo Raro y una vitamina cada {n} victorias, y el símbolo la primera vez que vences al Cerebro.', { n: BLOCK })));
+    // Símbolos: el tooltip dice cómo se gana cada uno
+    const howSym = s => s.includes('Oro') ? t('Vence al Cerebro de la Frontera en el combate {n} o más', { n: BRAIN_EVERY * 2 }) : t('Vence al Cerebro de la Frontera en el combate {n}', { n: BRAIN_EVERY });
+    me.append(el('div', 'symbols', ['Símbolo Plata', 'Símbolo Oro'].map(s => `<span class="symbol ${s.includes('Oro') ? 'oro' : 'plata'}${tw.symbols.includes(s) ? ' got' : ''}" title="${symbolName(s)}${tw.symbols.includes(s) ? '' : ' ' + t('(aún no)')}\n${howSym(s)}"></span>`).join('') + `<small class="small">${t('Símbolos de la Frontera')}</small>`));
+    const tools = el('div', 'tower-tools');
+    const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
+    help.onclick = () => this.towerGuide();
+    const prizes = el('button', 'tb-btn', `${icon('trophy', 18)}<span>${t('Premios')}</span>`);
+    prizes.onclick = () => this.towerRewards();
+    tools.append(help, prizes);
+    me.append(tools);
     const board = el('div', 'panel board tower-board');
     board.innerHTML = `<h3>${t('Ranking de la Torre')}</h3><p class="small">${t('Cargando…')}</p>`;
     const all = el('button', '', t('Ver la ladder completa'));
     all.onclick = () => { this.ladderBoard = 'tower'; this.openLadder(); };
     side.append(me, board, all);
     return side;
+  },
+
+  // Ventana de la Torre con título, secciones y botón de cerrar (guía y premios)
+  towerModal(title, body, cls) {
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box ' + cls);
+    const close = () => back.remove();
+    back.onclick = e => { if (e.target === back) close(); };
+    box.append(el('h3', '', title), body);
+    const acts = el('div', 'acts');
+    const ok = el('button', 'primary', t('Entendido'));
+    ok.onclick = close;
+    acts.append(ok);
+    box.append(acts);
+    back.append(box);
+    document.body.append(back);
+  },
+
+  towerGuide() {
+    const sec = (title, items) => `<section><h4>${title}</h4><ul>${items.map(x => `<li>${x}</li>`).join('')}</ul></section>`;
+    this.towerModal(t('Cómo se juega a la Torre Batalla'), el('div', 'guide-body scroll', [
+      sec(t('El desafío'), [
+        t('Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.', { n: LEVEL }),
+        t('Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.'),
+        t('Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.'),
+      ]),
+      sec(t('La racha'), [
+        t('Cada {n} victorias subes de bloque: rivales más fuertes y una IA más lista.', { n: BLOCK }),
+        t('Cada {n} combates te espera el <b>Cerebro de la Frontera</b>, con IV perfectos. Vencerlo da un Símbolo de la Frontera.', { n: BRAIN_EVERY }),
+        t('Si pierdes, la racha se acaba. Si te retiras, la guardas como récord.'),
+      ]),
+      sec(t('Premios'), [
+        t('Dinero en cada victoria, y Caramelos Raros, vitaminas y gemas al subir de bloque. Los tienes todos en «Premios».'),
+        t('La Torre no da experiencia, así que no se salta el tope de nivel de la historia.'),
+      ]),
+    ].join('')), 'story-guide tower-guide');
+  },
+
+  towerRewards() {
+    const T = Data.TOWER;
+    const gems = n => `<span class="mp gems">${icon('gem', 16)}${n}</span>`;
+    const coinsOnly = n => prizeHtml({ coins: n });
+    const prize = ({ gems: g, ...items }) => prizeHtml({ gems: g, items });   // premios de Data.TOWER: objetos y gemas
+    const row = (title, sub, prize) => `<div class="tr-row"><div><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</div><div class="m-prize">${prize}</div></div>`;
+    const symbol = s => `<span class="mp"><i class="symbol got ${s}"></i>${t(s === 'oro' ? 'Símbolo Oro' : 'Símbolo Plata')}</span>`;
+    this.towerModal(t('Premios de la Torre Batalla'), el('div', 'tr-list scroll', [
+      row(t('Cada victoria'), t('Y {n} más en cada bloque', { n: T.coins.perBlock }), coinsOnly(T.coins.base)),
+      row(t('Cada {n} victorias', { n: BLOCK }), t('Al subir de bloque, con una vitamina al azar'), prizeHtml({ items: T.blockPrize }) + `<span class="mp">${t('Vitamina')}</span>` + gems(Data.GEMS.towerBlock)),
+      row(t('Cerebro de la Frontera'), t('Cada {n} combates, además de lo de su victoria', { n: BRAIN_EVERY }), coinsOnly(T.coins.brain) + prize(T.brainAgain)),
+      row(t('Primera vez en el combate {n}', { n: BRAIN_EVERY }), t('En vez del premio normal del Cerebro'), symbol('plata') + prize(T.symbolPrize)),
+      row(t('Primera vez en el combate {n} o más', { n: BRAIN_EVERY * 2 }), t('En vez del premio normal del Cerebro'), symbol('oro') + prize(T.symbolPrize)),
+    ].join('')), 'tower-rewards');
   },
 
   // ---------- Ladder ----------

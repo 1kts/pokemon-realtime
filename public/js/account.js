@@ -1,6 +1,7 @@
 // Pantallas de cuenta y publicación: portada con invitado / inicio de sesión / registro, perfil
 // (estadísticas, historial, títulos, marcos, avatar, contraseña), recompensas de clasificatoria,
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
+import { confirmBox } from './dialog.js';
 import { portrait, animatedPortrait, monIcon } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
@@ -8,8 +9,8 @@ import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
-import { avatarArt, avatarName } from './missions.js';
-import { frameFx, frameRing, frameBadge, auraHtml, applySkin, applyGlow } from './frames.js';
+import { avatarArt, avatarName, effectHtml, effectName } from './missions.js';
+import { frameFx, frameRing, frameBadge, auraHtml, applySkin, auraName } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
 import { DEFAULT_SFX } from './sfx.js';
@@ -28,7 +29,7 @@ const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circ
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
 const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro', ...FRAME_LABEL_EXTRA };
-const frameLabel = f => f.startsWith('tipo-') ? t('Maestría {type}', { type: Data.TYPE_LABEL[f.slice(5)] }) : t(FRAME_LABEL[f] || f);
+const frameLabel = f => f.startsWith('tipo-') ? t('Marco {type}', { type: Data.TYPE_LABEL[f.slice(5)] }) : t(FRAME_LABEL[f] || f);
 const swatch = f => `<i class="sw frame-${f || 'none'}"${frameRing(f) ? ` style="--ring:${frameRing(f)}"` : ''}></i>`;
 const itemName = id => (SHOP.find(i => i.id === id) || { name: id }).name;
 const fmtDate = ts => new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
@@ -290,10 +291,12 @@ export const accountViews = {
   },
 
   // frame / aura: para previsualizar otro marco o brillo (undefined = el del perfil)
-  avatar(size, animated, frame, aura) {
+  // Avatar: la imagen (Pokémon, retrato, medalla…), su efecto por encima, el marco alrededor y el brillo
+  avatar(size, animated, frame, aura, effect) {
     const p = this.profile;
     const f = frame === undefined ? p.frame || null : frame;
     const au = aura === undefined ? p.aura || null : aura;
+    const fx = effect === undefined ? ((p.cosmetics && p.cosmetics.effects || []).includes(p.effect) ? p.effect : null) : effect;
     const a = el('div', 'ava frame-' + (f || 'none'));
     a.style.setProperty('--s', size + 'px');
     if (frameRing(f)) a.style.setProperty('--ring', frameRing(f));
@@ -301,7 +304,7 @@ export const accountViews = {
     // Avatar de colección (medalla o icono de logro)
     if (typeof p.avatar === 'string' && avatarArt(p.avatar, size)) {
       a.classList.add('ava-icon');
-      a.append(el('span', 'ava-pic', avatarArt(p.avatar, size)));
+      a.append(el('span', 'ava-pic', avatarArt(p.avatar, size) + effectHtml(fx)));
       a.insertAdjacentHTML('beforeend', frameFx(f));
       return a;
     }
@@ -315,8 +318,9 @@ export const accountViews = {
       pic.append(img);
     } else {
       pic.append(sprite());
-      applyGlow(applySkin(pic, Data.skinOf(p, dex), dex), Data.glowOf(p, dex));
+      applySkin(pic, Data.skinOf(p, dex), dex, Data.particlesOf(p, dex));
     }
+    pic.insertAdjacentHTML('beforeend', effectHtml(fx));
     a.append(pic);
     a.insertAdjacentHTML('beforeend', frameFx(f));
     return a;
@@ -552,17 +556,27 @@ export const accountViews = {
       frames.append(b);
     }
     look.append(el('h4', '', t('Marco')), frames);
-    // Brillo de burbuja: los conseguidos con la maestría
+    // Glow: la luz de alrededor del avatar (maestría, retos, Lucky Spin y cofre semanal)
     const auras = el('div', 'frame-grid');
     for (const au of [null, ...(cos.auras || [])]) {
       const b = el('button', 'frame-opt' + ((p.aura || null) === au ? ' sel' : ''));
-      b.append(this.avatar(44, false, undefined, au), el('small', '', !au ? t('Ninguno') : au === 'prisma' ? t('Prismático') : Data.TYPE_LABEL[au.slice(5)]));
+      b.append(this.avatar(44, false, undefined, au), el('small', '', !au ? t('Ninguno') : auraName(au, t)));
       b.onclick = () => this.net.send({ t: 'look', aura: au });
       auras.append(b);
     }
-    look.append(el('h4', '', t('Brillo de burbuja')), auras);
-    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Ganando combates con una línea evolutiva consigues su ilustración, brillos, el marco de su tipo y skins.')));
-    const collBtn = el('button', '', t('Ver colección y maestría'));
+    look.append(el('h4', '', t('Glow')), auras);
+    // Efecto: una capa animada por encima de la imagen del avatar (se consigue aparte, en Lucky Spin)
+    const effects = el('div', 'frame-grid');
+    for (const fx of [null, ...(cos.effects || [])]) {
+      const b = el('button', 'frame-opt' + ((p.effect || null) === fx ? ' sel' : ''));
+      b.append(this.avatar(44, false, undefined, undefined, fx), el('small', '', fx ? effectName(fx) : t('Ninguno')));
+      b.onclick = () => this.net.send({ t: 'look', effect: fx });
+      effects.append(b);
+    }
+    if (!(cos.effects || []).length) effects.append(el('small', 'small', t('Sin efectos todavía: salen en Lucky Spin.')));
+    look.append(el('h4', '', t('Efecto')), effects);
+    look.append(el('p', 'small', t('Consigue más títulos, marcos y glows subiendo de liga y completando retos. En Logros ves todo lo que hay y cómo se consigue cada cosa.')));
+    const collBtn = el('button', '', t('Ver logros y colección'));
     collBtn.onclick = () => this.openCollection('mastery');
     look.append(collBtn);
     const avaBtn = el('button', '', t('Elegir avatar'));
@@ -673,8 +687,9 @@ export const accountViews = {
     }
     const out = el('button', 'danger', t('Cerrar sesión'));
     out.onclick = () => {
-      if (!p.account && !confirm(t('Eres invitado: si cierras sesión sin crear una cuenta, perderás esta partida para siempre. ¿Seguro?'))) return;
-      this.logout();
+      if (p.account) return this.logout();
+      confirmBox({ title: t('Cerrar sesión'), text: t('Eres invitado: si cierras sesión sin crear una cuenta, perderás esta partida para siempre. ¿Seguro?'), ok: t('Cerrar sesión'), danger: true })
+        .then(yes => yes && this.logout());
     };
     box.append(out);
     return box;

@@ -251,6 +251,9 @@
     linear-gradient(135deg, color-mix(in srgb, var(--cc) 26%, #1b2254) 0%, #1f2147 55%, #171a3a 100%);
   border-color: color-mix(in srgb, var(--cc) 65%, transparent);
 }
+/* El Pokémon misterioso de las rutas sigue en dorado y morado, con su brillo */
+.mini-team .mini.rare { background: linear-gradient(160deg, rgba(255,203,5,.3), rgba(160,80,255,.3)); border-color: rgba(255,203,5,.7);
+  box-shadow: inset 0 2px 0 rgba(255,230,140,.7), 0 0 16px rgba(255,203,5,.35); }
 /* Iconos de las tarjetas sobre un disco con luz */
 .m-ico, .coll-tile img, .bag-item img { filter: drop-shadow(0 3px 4px rgba(0,0,0,.45)); }
 .m-ico { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--cc) 45%, rgba(255,255,255,.18)), rgba(255,255,255,.04) 75%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
@@ -310,6 +313,547 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 6px rgba(0,0,0,
 .tutorial-card p { text-shadow: 0 2px 0 rgba(0,0,0,.4); }
 .tutorial-card .tut-dots i { width: 22px; height: 6px; border-radius: 3px; transform: skewX(-14deg); }
 
+/* Historia: bajo las regiones, «Tu objetivo» (receta de las tarjetas en dorado) y un bloque con el siguiente
+   la rotación de rutas y la guía; debajo el mapa a todo el ancho y la ficha entera. Más ancha que el resto */
+.story > .inner-bar ~ :not(button) { width: min(1560px, 100%); }
+.story-head { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.story-head .map-goal { position: static; max-width: none; align-content: center; padding: 12px 16px; border-radius: 22px; }
+.story-info { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding: 12px 16px 12px 20px; }
+.story-info .rotation { flex: 1; font-size: 14px; }
+.story-info .rotation b { font-size: 18px; }
+.story-info .help { margin-left: auto; }
+.story-body { flex: none; }                    /* la fila mide lo que el mapa: todo el ancho a 16:10 */
+.story .map { max-height: none; }
+.story-side .node-info { overflow: visible; flex: 1 0 auto; }  /* alta como el mapa como mínimo; si no cabe, crece */
+.story-side .node-info { padding: 14px 16px; }
+.story-side .node-info h3 { font-size: 20px; }
+.story-side .node-info h4, .story-side .node-info .team-head { margin-top: 12px; }
+.story-side .leader-head .leader-sprite { width: 76px; height: 76px; }
+.story-side .node-info .mini-team { gap: 6px; }
+.story-side .node-info .mini { min-width: 62px; padding: 2px 6px 4px; font-size: 11px; }
+.story-side .node-info .mini canvas, .story-side .node-info .mini img.portrait { width: 44px !important; height: 44px !important; }
+.story-side .node-info .arena-info { font-size: 13px; padding: 8px 10px; }
+.story-side .node-info p.small { font-size: 12.5px; margin: 8px 0 0; }
+.story-side .node-info button.primary { padding: 10px 20px; margin-top: 10px; }
+.story-side .node-info button.mini.pick.empty { min-height: 0; }
+.story-head .map-goal {
+  --cc: #ffc531; border: 1px solid color-mix(in srgb, var(--cc) 60%, transparent);
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 12px),
+    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--cc) 28%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in srgb, var(--cc) 24%, #1b2254) 0%, #1f2147 55%, #171a3a 100%);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--cc) 80%, #fff), inset 0 1px 0 rgba(255,255,255,.2), 0 10px 26px rgba(0,0,0,.35);
+}
+
+/* Tooltips: los del juego (.ui-tip, en vez de los blancos del navegador) y las tarjetas de ayuda de la
+   cabecera (.tb-tip), con el acabado de las tarjetas: índigo, franja de luz dorada arriba y halo */
+.ui-tip, .tb-tip {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(111,125,255,.28), transparent 60%),
+    linear-gradient(160deg, #262f66, #1a2048 60%, #141a3c);
+  border: 1px solid rgba(170,190,255,.3); color: var(--fg);
+  box-shadow: inset 0 2px 0 rgba(255,215,90,.75), inset 0 1px 0 rgba(255,255,255,.18), 0 0 24px rgba(111,125,255,.22), 0 14px 34px rgba(0,0,0,.55);
+}
+.ui-tip { position: fixed; z-index: 90; left: 0; top: 0; max-width: min(320px, calc(100vw - 16px)); padding: 8px 12px; border-radius: 12px;
+  font: 700 13px/1.4 var(--text); white-space: pre-line; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s; }
+.ui-tip.below { transform: translateY(-4px); }
+.ui-tip.on { opacity: 1; transform: none; }
+
+/* Torre Batalla: botones de guía y premios en «Tu récord» y la ventana de premios */
+.tower-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tower-tools .tb-btn img { image-rendering: pixelated; }
+.tower-rewards { width: min(560px, 100%); }
+.tr-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.tr-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 14px;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 12px),
+    linear-gradient(135deg, color-mix(in srgb, var(--cc) 30%, #1b2254), #1a2048 55%, #141a3c);
+  border: 1px solid color-mix(in srgb, var(--cc) 45%, transparent); box-shadow: inset 0 2px 0 color-mix(in srgb, var(--cc) 70%, #fff); }
+.tr-row > div:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tr-row b { font: 800 14px var(--display); }
+.tr-row small { color: #c4d0e4; font-size: 12px; }
+.tr-row .m-prize { justify-content: flex-end; flex: none; max-width: 55%; }
+.tr-row .mp .symbol { flex: none; width: 13px; height: 13px; margin: 0 7px 0 3px; border-width: 2px; }
+
+/* Mis Pokémon: los de la caja duermen, un poco apagados y con «z» */
+.mon-card:not(.in) > canvas:first-child { filter: drop-shadow(0 6px 6px rgba(0,0,0,.5)) saturate(.85) brightness(.92); }
+
+/* Caras con emoción (retratos de SpriteCollab): pixeladas, con marco; en combate, la del activo brilla */
+img.face { image-rendering: pixelated; border-radius: 10px; flex: none; box-shadow: 0 0 0 1.5px rgba(255,255,255,.18), 0 3px 8px rgba(0,0,0,.4); background: #1a2048; }
+.tm.active img.face { box-shadow: 0 0 0 2px var(--gold), 0 0 12px rgba(255,210,63,.45); }
+.tm.fainted img.face { filter: grayscale(1); }
+
+/* Cabecera: módulos rectangulares y lisos; botones y chapas de esquinas suaves, todo con la misma forma */
+.hub-mod { border-radius: 14px; border: 1px solid rgba(170,190,255,.22);
+  background: radial-gradient(120% 160% at 100% 0%, rgba(111,125,255,.2), transparent 60%), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 24px rgba(0,0,0,.4); }
+/* Los botones de la cabecera sí llevan rayas y filo de luz; Novedades con algo nuevo late con borde amarillo */
+.hub-mod .tb-btn { background: repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 9px), linear-gradient(180deg, #343e7c, #232a5c);
+  border: 1px solid rgba(170,190,255,.25); box-shadow: inset 0 2px 0 rgba(255,255,255,.18), 0 3px 0 rgba(0,0,0,.3); }
+.hub-mod .tb-btn:hover:not(:disabled) { border-color: rgba(255,210,63,.6); box-shadow: inset 0 2px 0 rgba(255,255,255,.22), 0 3px 0 rgba(0,0,0,.3), 0 0 14px rgba(255,210,63,.3); }
+.hub-mod .news-btn:has(.ndot.news) { border: 2px solid var(--gold); animation: newsBlink 1.1s ease-in-out infinite; }
+@keyframes newsBlink { 50% { border-color: rgba(255,210,63,.15); box-shadow: inset 0 2px 0 rgba(255,255,255,.18), 0 0 16px rgba(255,210,63,.75); } }
+.hub-mod .tb-btn, .hub-mod .lang-cur, .hub-me .pill.coins, .hub-me .pill.gems, .inner-bar .tb-left .back { border-radius: 10px; }
+.hub-ava { border-radius: 50%; }
+.hub-me > .tip-wrap:first-child { margin: 0 4px 0 -2px; }
+.hub-ava .ava { --s: 60px !important; }
+/* El avatar sobresale de la barra a propósito (por arriba y por abajo), sin hacerla más alta */
+.hub-bar { margin-top: 10px; }   /* bajada un poco para que el avatar que sobresale no toque el borde */
+.hub-bar .hub-ava { padding: 0; margin: -10px 4px -10px -4px; position: relative; z-index: 2; }
+.hub-tz { border-radius: 14px; }
+
+/* Pantalla de entrada con el aspecto del resto: panel rectangular con marco dorado (como el tablero de Lucky
+   Spin), rayos detrás de los Pokémon, pestañas y campos de esquinas suaves y el botón dorado con rayas */
+.title-panel { border-radius: 20px !important; border: 0 !important; padding-top: 34px;
+  background: radial-gradient(120% 70% at 50% 0%, rgba(255,210,63,.14), transparent 60%), linear-gradient(170deg, #252d62, #171d44 60%, #12173a) !important;
+  box-shadow: 0 0 0 3px #ffd23f, 0 0 0 6px #8a5a00, 0 0 50px rgba(255,190,40,.25), 0 30px 80px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.4) !important; }
+.title-panel .emblem { margin-top: -74px; }
+.title-mons { position: relative; isolation: isolate; padding: 10px 0; margin: 0 -8px 6px; border-radius: 14px; overflow: clip;
+  background: radial-gradient(circle at 50% 55%, rgba(255,140,80,.35), transparent 70%), linear-gradient(180deg, rgba(90,30,60,.55), rgba(20,22,60,.3)); box-shadow: inset 0 0 0 1px rgba(255,210,63,.35); }
+.title-mons::before { content: ''; position: absolute; left: 50%; top: 55%; width: 140%; aspect-ratio: 1; transform: translate(-50%, -50%); z-index: -1;
+  background: repeating-conic-gradient(rgba(255,230,140,.22) 0 6deg, transparent 6deg 16deg); animation: tzBurst 30s linear infinite; }
+.title-mons canvas { filter: drop-shadow(0 6px 6px rgba(0,0,0,.5)); }
+.auth-tabs { border-radius: 12px; padding: 4px; background: rgba(8,12,32,.55); border-color: rgba(170,190,255,.18); }
+.auth-tabs button { border-radius: 9px; }
+.auth-tabs button.sel { color: #2a1c00; text-shadow: 0 1px 0 rgba(255,255,255,.4);
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.2) 0 4px, transparent 4px 10px), linear-gradient(180deg, #ffe066, #ffd23f 55%, #ffb21a); box-shadow: 0 3px 0 #b97a00; }
+.title-panel input { border-radius: 10px; }
+.title-panel button.primary { border-radius: 14px;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.18) 0 6px, transparent 6px 16px), linear-gradient(180deg, #ffe066, #ffd23f 55%, #ffb21a); }
+.title-panel .lang-pick.corner .lang-cur { border-radius: 10px; }
+
+/* Algo que recoger o ver (como Lucky Spin): borde amarillo que parpadea. Misiones por recoger, la Tienda con
+   Pokémon nuevos del día, Maestría con premios */
+.missions-widget.has-ready, .coll-tile.ready { border: 2px solid var(--gold) !important; animation: readyBlink 1.1s ease-in-out infinite; }
+@keyframes readyBlink { 50% { border-color: rgba(255,210,63,.15); box-shadow: 0 0 20px rgba(255,210,63,.6); } }
+
+/* Recoger todo: botón dorado compacto en la cabecera de Misiones y junto al título del panel de la portada */
+button.claim-all { display: inline-flex; align-items: center; gap: 6px; width: auto; height: 44px; padding: 0 18px; font-size: 16px; border-radius: 12px; animation: none;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.18) 0 6px, transparent 6px 16px), linear-gradient(180deg, #ffe066, #ffd23f 55%, #ffb21a);
+  box-shadow: 0 4px 0 #b97a00, 0 0 18px rgba(255,190,40,.35); }
+button.claim-all small { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; font: 900 12px var(--display); color: #ffe066; background: #2a1c00; opacity: 1; }
+.mw-head button.claim-all { height: 22px; padding: 0 9px; font: 800 11px var(--display); border-radius: 9px; box-shadow: 0 2px 0 #b97a00; margin-left: 4px; gap: 4px; }
+.mw-head button.claim-all small { min-width: 16px; height: 16px; padding: 0 4px; font-size: 9px; }
+.mw-head .go { margin-left: auto; }
+/* Recoger de cada misión, logro o premio: más pequeño */
+.missions-view button.claim-btn:not(.claim-all), .missions-widget button.claim-btn:not(.claim-all), .mission button.claim-btn { padding: 5px 10px; font-size: 12px; min-height: 0; line-height: 1.2; border-radius: 10px; box-shadow: 0 3px 0 #b97a00; animation: none; }
+
+/* Pantallas interiores: cabecera mínima (Volver, el cartel de la pantalla y a la derecha lo de esa pantalla)
+   y el contenido más ancho */
+.inner-bar { grid-template-columns: auto auto 1fr; }
+.inner-bar .tb-left { padding: 0 7px; }
+.tb-ctx { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.tb-ctx .pill { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px 0 12px; border-radius: 12px; font: 900 18px var(--display); color: #fff;
+  background: linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c); border: 1px solid rgba(255,210,63,.45); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 8px 20px rgba(0,0,0,.35); }
+.tb-ctx .pill.gems { border-color: var(--gold); }
+.tb-ctx .pill img { image-rendering: pixelated; }
+.inner-bar ~ :not(button) { width: min(1600px, 100%); }
+/* Cartel de la pantalla, con la estética de la casa: tarjeta índigo rectangular con el filo de luz del color
+   de la sección, nombre en blanco y su descripción al lado */
+.feature-sign { justify-self: start; display: flex; align-items: center; min-height: 60px; padding: 8px 28px 9px; border-radius: 14px;
+  background: radial-gradient(120% 160% at 0% 50%, color-mix(in srgb, var(--fc) 26%, transparent), transparent 60%), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
+  border: 1px solid color-mix(in srgb, var(--fc) 45%, rgba(170,190,255,.2));
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--fc) 75%, #fff), inset 0 1px 0 rgba(255,255,255,.12), 0 10px 24px rgba(0,0,0,.4); }
+.feature-sign > div { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; line-height: 1.15; }
+.feature-sign h2 { margin: 0; font: 900 30px/1 var(--display); color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.35); white-space: nowrap; letter-spacing: .3px; }
+.feature-sign small { font: 800 14px var(--display); color: #c4d0e4; }
+/* Lucky Spin: cartel y tablero con acabado dorado */
+.feature-sign.sign-treasure { border: 2px solid var(--gold);
+  background: radial-gradient(120% 180% at 0% 50%, rgba(255,210,63,.28), transparent 60%), linear-gradient(135deg, #3a2f5e, #1f2048 60%, #171a3c);
+  box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 3px rgba(138,90,0,.6), 0 0 34px rgba(255,190,40,.35), 0 12px 28px rgba(0,0,0,.45); }
+.feature-sign.sign-treasure h2 { background: linear-gradient(180deg, #fff8cc, #ffd23f 55%, #ffb21a); -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none; filter: drop-shadow(0 3px 0 rgba(90,50,0,.7)) drop-shadow(0 0 14px rgba(255,200,60,.4)); }
+.feature-sign.sign-treasure small { color: #ffe9a8; }
+.treasure .tz-board { border: 2px solid var(--gold);
+  box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 4px rgba(138,90,0,.55), 0 0 44px rgba(255,190,40,.3), inset 0 0 50px rgba(0,0,0,.35), 0 14px 34px rgba(0,0,0,.45); }
+@media (max-width: 760px) { .inner-bar { grid-template-columns: auto 1fr; } .feature-sign small { display: none; } .feature-sign h2 { font-size: 22px; } .feature-sign { min-height: 48px; padding: 6px 16px; } .tb-ctx { grid-column: 1 / -1; } }
+
+/* Gemas de la cabecera: chapa con la receta de las cards en rosa (como Lucky Spin) */
+.hub-me .pill.gems { --cc: #ffc531; position: relative; overflow: clip; isolation: isolate; color: #fff;
+  border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent);
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 10px),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--cc) 40%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in srgb, var(--cc) 38%, #1b2254), #241c4e 60%, #171a3a);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--cc) 80%, #fff), inset 0 1px 0 rgba(255,255,255,.2), 0 4px 12px rgba(0,0,0,.3);
+  transition: transform .18s, border-color .18s, box-shadow .18s; }
+.hub-me .pill.gems:hover { transform: translateY(-1px); border-color: var(--cc); background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 10px),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--cc) 55%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in srgb, var(--cc) 45%, #1b2254), #2a1f58 60%, #171a3a);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--cc) 80%, #fff), 0 0 16px color-mix(in srgb, var(--cc) 40%, transparent), 0 6px 14px rgba(0,0,0,.35); }
+.hub-me .pill.gems img { filter: drop-shadow(0 1px 3px rgba(255,210,63,.6)); }
+
+/* Lucky Spin en la portada: dorado, como su pantalla */
+/* Sin !important: los !important ganan a las animaciones y el aviso dejaría de parpadear */
+.hub-left .hub-tz { border: 2px solid var(--gold); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 2px rgba(138,90,0,.5), 0 0 20px rgba(255,190,40,.3), 0 8px 20px rgba(0,0,0,.35); }
+.hub-tz b { background: linear-gradient(180deg, #fff8cc, #ffd23f 55%, #ffb21a); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 0 rgba(90,50,0,.7)); }
+.hub-tz small { color: #ffe9a8 !important; }
+.hub-left .hub-tz.ready { animation: tzReady 1.1s ease-in-out infinite; }
+@keyframes tzReady { 50% { border-color: rgba(255,210,63,.15); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 30px rgba(255,210,63,.85), 0 8px 20px rgba(0,0,0,.35); } }
+
+/* Gemas de la cabecera: también doradas, a juego con Lucky Spin */
+.hub-bar .hub-me .pill.gems { --cc: #ffc531; border: 2px solid var(--gold); color: #fff3c4;
+  box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 14px rgba(255,190,40,.3), 0 4px 12px rgba(0,0,0,.3); }
+.hub-me .pill.gems img { filter: drop-shadow(0 1px 3px rgba(255,210,63,.6)); }
+
+/* Portada: Lucky Spin (las ruletas de gemas) en su burbuja, al lado de la de idioma y pantalla completa */
+.hub-left { justify-self: start; display: flex; align-items: center; gap: 10px; }
+.hub-tz { --cc: #ffc531; position: relative; overflow: clip; isolation: isolate; gap: 9px; padding: 0 16px 0 10px; color: var(--fg); cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent);
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 12px),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--cc) 40%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in srgb, var(--cc) 38%, #1b2254) 0%, #241c4e 55%, #171a3a 100%);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--cc) 80%, #fff), inset 0 1px 0 rgba(255,255,255,.2), 0 8px 20px rgba(0,0,0,.35);
+  transition: transform .18s, border-color .18s, box-shadow .18s; }
+.hub-tz::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.18) 48%, rgba(255,255,255,.05) 54%, transparent 62%) no-repeat; background-size: 250% 100%; background-position: 130% 0; opacity: 0; }
+.hub-tz:hover::after { opacity: 1; animation: cardSheen .75s ease-out forwards; }
+.hub-tz .wheel-ico { flex: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.45)); transition: transform .6s cubic-bezier(.2,.9,.3,1); }
+.hub-tz:hover .wheel-ico { transform: rotate(225deg); }
+.hub-tz span { display: flex; flex-direction: column; line-height: 1.15; text-align: left; }
+.hub-tz b { font: 800 15px var(--display); }
+.hub-tz small { font-weight: 800; font-size: 12px; }
+.hub-tz:hover { transform: translateY(-2px); }
+@media (max-width: 760px) { .hub-left { grid-row: 1; grid-column: 1; gap: 6px; } .hub-tz { padding: 0 8px; } .hub-tz span { display: none; } }
+
+/* ===================================================================================
+   Lucky Spin con el estilo de PokéArenas: tablero índigo con filo dorado, el gran premio en el centro con
+   rayos del color de la ruleta, cartas con la receta de la casa (rayas, tinte de su rareza y chapa con su
+   nombre) y el panel de tirar a la derecha.
+   =================================================================================== */
+.treasure { display: flex; flex-direction: column; gap: 12px; }
+.treasure .tz-tabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.treasure .tz-tab { display: flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 12px; text-align: left; font: inherit;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 12px), linear-gradient(135deg, color-mix(in srgb, var(--tc) 20%, #262d5c), #1a2048);
+  border: 1px solid color-mix(in srgb, var(--tc) 35%, rgba(170,190,255,.2)); box-shadow: inset 0 2px 0 color-mix(in srgb, var(--tc) 60%, #fff); transition: transform .15s, box-shadow .15s; }
+.tz-tab-ico { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--tc) 30%, #141a3c); }
+.treasure .tz-tab span:last-child { display: flex; flex-direction: column; line-height: 1.15; }
+.treasure .tz-tab b { font: 800 15px var(--display); }
+.treasure .tz-tab small { padding: 0; background: none; color: var(--muted); font: 700 12px var(--text); }
+.treasure .tz-tab:hover:not(:disabled) { transform: translateY(-2px); }
+.treasure .tz-tab.sel { border-color: var(--gold); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 1px rgba(255,210,63,.4), 0 0 20px rgba(255,210,63,.3); }
+.treasure .tz-tab.sel small { color: #ffd76a; }
+.treasure .tz-when { flex: none; flex-direction: row; min-width: 0; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; font-weight: 800; font-size: 13px; color: #d6def0;
+  background: rgba(13,18,42,.75); border: 1px solid rgba(170,190,255,.18); }
+/* Gran premio con contorno dorado (no del color de su rareza), como el resto de Lucky Spin */
+.treasure .tz-card.big { border: 2px solid var(--gold); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 2px rgba(138,90,0,.45), 0 0 30px rgba(255,190,40,.3); }
+
+/* Pestañas de ruleta: tarjeta con el icono del tipo grande en su medallón, nombre, barrita de progreso y,
+   la elegida, marco dorado con brillo */
+.treasure .tz-tab { position: relative; overflow: clip; min-width: 210px; gap: 12px; padding: 8px 18px 10px 8px; border-radius: 14px;
+  background: radial-gradient(120% 160% at 0% 50%, color-mix(in srgb, var(--tc) 32%, transparent), transparent 60%),
+    repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 12px), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
+  border: 1px solid color-mix(in srgb, var(--tc) 45%, rgba(170,190,255,.2)); box-shadow: inset 0 2px 0 color-mix(in srgb, var(--tc) 70%, #fff), 0 8px 18px rgba(0,0,0,.35); }
+.treasure .tz-tab-ico { width: 46px; height: 46px; border-radius: 12px; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--tc) 70%, #fff), var(--tc) 55%, color-mix(in srgb, var(--tc) 50%, #000));
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.4), inset 0 -3px 0 rgba(0,0,0,.25), 0 0 14px color-mix(in srgb, var(--tc) 50%, transparent); }
+.treasure .tz-tab-ico img { width: 30px; height: 30px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.4)); }
+.treasure .tz-tab-ico img.tz-face { width: 46px; height: 46px; border-radius: 12px; image-rendering: pixelated; filter: none; }
+.treasure .tz-tab b { font: 900 17px var(--display); text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.treasure .tz-tab::after { content: ''; position: absolute; left: 66px; right: 18px; bottom: 7px; height: 4px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--tc) var(--tp, 0%), rgba(255,255,255,.1) var(--tp, 0%)); }
+.treasure .tz-tab.sel { border: 2px solid var(--gold); background: radial-gradient(120% 160% at 0% 50%, color-mix(in srgb, var(--tc) 40%, transparent), transparent 60%),
+    radial-gradient(120% 160% at 100% 50%, rgba(255,210,63,.18), transparent 55%), linear-gradient(135deg, #2f3678, #1d2350 60%, #161b40);
+  box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 2px rgba(138,90,0,.45), 0 0 24px rgba(255,190,40,.35); }
+.treasure .tz-tab.sel b { color: #fff3c4; }
+
+/* Tablero a todo el ancho y alto que quede de pantalla, y la barra de tirar debajo */
+.treasure { min-height: 100%; }
+#screen > .treasure { height: calc(100vh - 36px - var(--legal-h, 0px)); min-height: 620px; }
+.treasure .tz-body { flex: 1; display: flex; min-height: 0; }
+.tz-left { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.tz-board { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, minmax(130px, 1fr)); gap: 12px; padding: 14px; border-radius: 20px;
+  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--tc) 14%, transparent), transparent 60%), linear-gradient(170deg, #232a58, #161b3e);
+  border: 1px solid rgba(170,190,255,.18); box-shadow: inset 0 2px 0 rgba(255,215,90,.6), 0 14px 34px rgba(0,0,0,.45); }
+.tz-card { --cc: var(--rc); position: relative; overflow: clip; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px 8px 30px; border-radius: 14px; text-align: center;
+  background: radial-gradient(90% 70% at 50% 35%, color-mix(in srgb, var(--rc) 28%, transparent), transparent 70%),
+    linear-gradient(160deg, color-mix(in srgb, var(--rc) 18%, #232a58), #161b3e);
+  border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 6px 14px rgba(0,0,0,.35);
+  transition: transform .15s, box-shadow .15s, filter .15s; }
+.tz-card:nth-child(1) { grid-column: 2 / 5; grid-row: 1 / 3; }
+.tz-card:hover:not(.big) { transform: translateY(-3px); border-color: var(--rc); box-shadow: 0 0 18px color-mix(in srgb, var(--rc) 40%, transparent), 0 10px 22px rgba(0,0,0,.45); }
+.tz-card .tz-art { width: clamp(56px, 6vw, 88px); height: clamp(56px, 6vw, 88px); filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+.tz-name { font: 800 13px/1.2 var(--display); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+.tz-card .tz-rar { position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%) skewX(-10deg); padding: 1px 10px; border-radius: 6px; font: 900 10px var(--display); letter-spacing: .6px; text-transform: uppercase; color: #fff; background: var(--rc); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.tz-card .tz-check { top: 8px; right: 8px; }
+.tz-card.got { filter: grayscale(.7) brightness(.6); }
+.tz-card.sel { border-color: #fff; box-shadow: 0 0 0 1px #fff, 0 0 22px var(--rc); }
+.tz-card.hot { transform: scale(1.04); filter: brightness(1.35); box-shadow: 0 0 0 3px var(--gold), 0 0 30px var(--rc), 0 0 60px var(--rc); z-index: 2; }
+.tz-card.win { animation: tzWin .45s ease-in-out 3; z-index: 2; box-shadow: 0 0 0 3px var(--gold), 0 0 40px var(--rc), 0 0 80px var(--rc); }
+@keyframes tzWin { 50% { transform: scale(1.08); filter: brightness(1.5); } }
+.tz-card.big { padding-bottom: 18px; border: 1px solid color-mix(in srgb, var(--rc) 70%, #fff);
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--tc) 45%, transparent), transparent 70%), linear-gradient(160deg, color-mix(in srgb, var(--rc) 28%, #2a2f66), #161b3e);
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--rc) 80%, #fff), 0 0 28px color-mix(in srgb, var(--rc) 30%, transparent); }
+.tz-burst { position: absolute; left: 50%; top: 45%; width: 160%; aspect-ratio: 1; transform: translate(-50%, -50%); z-index: -1; border-radius: 50%;
+  background: repeating-conic-gradient(color-mix(in srgb, var(--tc) 30%, transparent) 0 6deg, transparent 6deg 16deg); animation: tzBurst 30s linear infinite;
+  mask: radial-gradient(circle, #000 15%, transparent 65%); -webkit-mask: radial-gradient(circle, #000 15%, transparent 65%); }
+@keyframes tzBurst { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.tz-corners { display: none; }
+.tz-card.big .tz-art { width: min(220px, 55%); height: auto; aspect-ratio: 1; filter: drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 24px color-mix(in srgb, var(--rc) 60%, transparent)); }
+.tz-jackpot { display: flex; flex-direction: column; align-items: center; padding: 4px 22px 6px; border-radius: 8px; transform: skewX(-10deg); color: #2a1c00;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.2) 0 4px, transparent 4px 10px), linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #ffb21a); box-shadow: 0 3px 0 #b97a00, 0 6px 16px rgba(255,190,40,.3); }
+.tz-jackpot > * { transform: skewX(10deg); }
+.tz-jackpot small { font: 900 10px var(--display); letter-spacing: 2px; text-transform: uppercase; }
+.tz-jackpot b { font: 900 16px var(--display); }
+/* Barra de tirar: progreso · lo elegido · probabilidades · precio y botón */
+.tz-bar { display: flex; align-items: center; gap: 16px; padding: 12px 14px 12px 20px; border-radius: 18px;
+  background: radial-gradient(120% 160% at 100% 50%, rgba(255,210,63,.12), transparent 55%), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
+  border: 1px solid rgba(170,190,255,.2); box-shadow: inset 0 2px 0 rgba(255,215,90,.6), 0 12px 30px rgba(0,0,0,.45); }
+.tz-prog { flex: none; width: 170px; display: flex; flex-direction: column; gap: 6px; }
+.tz-progress { display: flex; align-items: baseline; gap: 8px; }
+.tz-progress b { font: 900 28px/1 var(--display); color: #fff; }
+.tz-progress span { font-weight: 800; color: #c4d0e4; font-size: 13px; }
+.treasure .tz-seg { display: flex; gap: 4px; }
+.treasure .tz-seg i { flex: 1; height: 8px; border-radius: 2px; transform: skewX(-14deg); background: rgba(255,255,255,.08); }
+.treasure .tz-seg i.on { background: linear-gradient(180deg, #ffe066, #ffb21a); box-shadow: 0 0 8px rgba(255,190,40,.6); }
+.tz-bar .tz-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 0 16px; border: 0; border-left: 1px solid rgba(170,190,255,.18); background: none; font-size: 14px; font-weight: 700; color: #fff; }
+.tz-bar .tz-info small { display: flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px; color: var(--muted); }
+.tz-bar .tz-info img { image-rendering: pixelated; flex: none; }
+.tz-odds-btn { flex: none; height: 44px; }
+.tz-odds-btn img { image-rendering: pixelated; }
+.tz-buy { flex: none; display: flex; align-items: center; gap: 10px; margin: 0; }
+.tz-price { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; height: 60px; padding: 0 14px; border-radius: 14px; border: 2px solid var(--gold); background: radial-gradient(120% 160% at 50% 0%, rgba(255,210,63,.22), transparent 60%), linear-gradient(135deg, #2f3678, #1a2048); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 14px rgba(255,190,40,.25); }
+.tz-price b { display: inline-flex; align-items: center; gap: 6px; font: 900 24px/1 var(--display); color: #fff; }
+.tz-price b img { width: 22px; height: 22px; }
+.tz-price small { font-weight: 800; font-size: 11px; color: #ffe9a8; white-space: nowrap; }
+.tz-price.short { border-color: #ff5a6a; background: linear-gradient(135deg, rgba(255,90,106,.2), rgba(20,26,60,.6)); }
+.tz-price.short small { color: #ffb0b8; }
+.treasure .tz-go { height: 60px; min-width: 200px; padding: 0 28px; border: 0; border-radius: 14px; font: 900 26px var(--display); color: #2a1c00; text-shadow: 0 2px 0 rgba(255,255,255,.4);
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.18) 0 6px, transparent 6px 16px), linear-gradient(180deg, #ffe066, #ffd23f 55%, #ffb21a);
+  box-shadow: 0 6px 0 #b97a00, 0 12px 30px rgba(255,190,40,.4); animation: tzPulse 1.6s ease-in-out infinite; }
+.treasure .tz-go:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.treasure .tz-go:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 1px 0 #b97a00; }
+.treasure .tz-go:disabled { animation: none; color: #c4ccdc; text-shadow: none; background: linear-gradient(180deg, #5a6084, #3e4462); box-shadow: 0 6px 0 #262b40; opacity: 1; }
+@keyframes tzPulse { 50% { box-shadow: 0 6px 0 #b97a00, 0 12px 44px rgba(255,190,40,.7); } }
+.tz-buy .tz-done { display: flex; flex-direction: column; padding: 0 10px; }
+.tz-buy .tz-done b { font: 900 18px var(--display); color: var(--yellow); }
+.tz-odds-modal { width: min(480px, 100%); }
+.tz-odds-modal .tz-odds { display: flex; flex-direction: column; gap: 4px; max-height: 50vh; }
+@media (max-width: 1000px) { .tz-bar { flex-wrap: wrap; } .tz-bar .tz-info { order: 5; flex-basis: 100%; border-left: 0; padding: 0; } .tz-buy { margin-left: auto; } }
+@media (max-width: 640px) {
+  .tz-board { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; grid-auto-rows: minmax(130px, auto); padding: 10px; gap: 8px; }
+  .tz-name { font-size: 12px; }
+  .treasure .tz-tabs { flex-direction: row; flex-wrap: wrap; } .treasure .tz-tab { padding-right: 10px; } .treasure .tz-tab small { display: none; }
+  .tz-card:nth-child(1) { grid-column: 1 / -1; grid-row: auto; min-height: 240px; }
+  .tz-when { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .tz-burst, .treasure .tz-go { animation: none; } }
+
+/* ===================================================================================
+   Ficha completa de un Pokémon (Mis Pokémon): a pantalla casi completa, el Pokémon a la izquierda sobre un
+   escenario de su tipo y las pestañas a la derecha
+   =================================================================================== */
+.mon-card { cursor: pointer; }
+.mon-sheet-back { padding: 20px; }
+.mon-sheet { display: grid; grid-template-columns: 380px minmax(0, 1fr); width: min(1480px, 100%); height: calc(100vh - 32px); border-radius: 22px; overflow: hidden;
+  background: linear-gradient(170deg, #232a58, #141a3c); border: 1px solid color-mix(in srgb, var(--tc) 50%, rgba(170,190,255,.2));
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--tc) 75%, #fff), 0 0 60px color-mix(in srgb, var(--tc) 25%, transparent), 0 30px 80px rgba(0,0,0,.6); }
+.mon-sheet.opening { animation: lootIn .25s cubic-bezier(.2,1.3,.4,1); }
+.mon-sheet-back.modal { animation: none; padding: 16px; }
+.mon-sheet.is-shiny { border-color: #ffd84a; }
+.ms-side { display: flex; flex-direction: column; gap: 12px; padding: 18px; overflow: auto;
+  background: radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--tc) 30%, transparent), transparent 70%), linear-gradient(180deg, color-mix(in srgb, var(--tc) 16%, #1d2452), #161b3e);
+  border-right: 1px solid rgba(170,190,255,.14); }
+.ms-stage { position: relative; display: grid; place-items: center; height: 280px; border-radius: 18px;
+  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--tc) 50%, transparent), transparent 62%), radial-gradient(ellipse 50% 12% at 50% 84%, rgba(0,0,0,.45), transparent 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc) 30%, transparent); }
+.ms-stage canvas { filter: drop-shadow(0 10px 10px rgba(0,0,0,.5)); }
+.ms-name h2 { margin: 0; font: 900 30px/1.05 var(--display); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+.ms-name small { color: var(--muted); font-weight: 700; }
+.ms-side .types { display: flex; gap: 6px; }
+.ms-side .types .type { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; font-size: 12px; }
+.ms-level { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 2px 10px; }
+.ms-level b { font: 900 22px var(--display); }
+.ms-level small { justify-self: end; color: var(--muted); font-weight: 700; }
+.ms-level .cap { justify-self: end; }
+.ms-level .xp { grid-column: 1 / -1; height: 8px; }
+.ms-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ms-facts span { display: flex; flex-direction: column; padding: 8px 10px; border-radius: 12px; background: rgba(8,12,32,.4); border: 1px solid rgba(170,190,255,.12); color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+.ms-facts b { font: 900 15px var(--display); color: #fff; text-transform: none; letter-spacing: 0; }
+.ms-facts small { color: #c4d0e4; text-transform: none; letter-spacing: 0; font-weight: 700; }
+.ms-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+.ms-acts button { flex: 1; border-radius: 12px; }
+.ms-acts button.on { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); border-color: transparent; box-shadow: 0 3px 0 #b97a00; }
+.ms-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.ms-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 0; }
+.ms-tabs { display: flex; gap: 6px; flex: 1; flex-wrap: wrap; }
+.ms-tab { padding: 10px 18px; border-radius: 12px; font: 800 15px var(--display); background: rgba(255,255,255,.05); border: 1px solid rgba(170,190,255,.16); }
+.ms-tab.sel { color: #2a1c00; background: repeating-linear-gradient(115deg, rgba(255,255,255,.2) 0 4px, transparent 4px 10px), linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #ffb21a); border-color: transparent; box-shadow: 0 3px 0 #b97a00; }
+.ms-nav { display: flex; align-items: center; gap: 6px; }
+.ms-nav small { color: var(--muted); font-weight: 800; margin-right: 4px; }
+.ms-nav .tb-btn { width: 40px; height: 40px; padding: 0; justify-content: center; font-size: 22px; border-radius: 10px; }
+.ms-body { flex: 1; min-height: 0; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.ms-body h4 { margin: 6px 0 0; font: 800 13px var(--display); text-transform: uppercase; letter-spacing: .8px; color: #ffd76a; }
+.ms-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid rgba(170,190,255,.12); }
+/* Interruptor Normal / Shiny */
+.ms-seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: rgba(8,12,32,.55); border: 1px solid rgba(170,190,255,.18); }
+.ms-seg button { padding: 7px 14px; border: 0; border-radius: 9px; background: none; font-weight: 800; color: var(--muted); }
+.ms-seg button.sel { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; }
+.ms-seg button:not(.sel):hover { color: #fff; background: rgba(255,255,255,.06); }
+.ms-side > .ms-seg { width: 100%; }
+
+/* Estadísticas */
+.ms-evtotal { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; font-weight: 800; color: #c4d0e4; }
+.ms-evtotal b { font: 900 18px var(--display); color: #fff; }
+.ms-evtotal .xp { height: 8px; margin: 0; }
+.ms-stats { display: flex; flex-direction: column; gap: 8px; }
+.ms-stat { display: grid; grid-template-columns: 90px 70px minmax(0, 1fr) 140px 190px; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(130,155,255,.1), rgba(10,14,34,.3)); border: 1px solid rgba(170,190,255,.14); }
+.ms-stat .sl { font-weight: 800; color: #c4d0e4; }
+.ms-stat .sv { font: 900 18px var(--display); }
+.ms-stat .sbar { height: 10px; border-radius: 5px; background: rgba(255,255,255,.08); overflow: hidden; }
+.ms-stat .sbar > div { height: 100%; background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 70%, #fff), var(--tc)); box-shadow: 0 0 8px color-mix(in srgb, var(--tc) 60%, transparent); }
+.ms-ivev { display: flex; gap: 10px; font-size: 12px; color: var(--muted); font-style: normal; }
+.ms-ivev i { font-style: normal; } .ms-ivev b { color: #fff; } .ms-ivev b.iv-top { color: #ffd84a; }
+.ms-vit { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; text-align: left; }
+.ms-vit span { display: flex; flex-direction: column; line-height: 1.15; font-size: 13px; }
+.ms-vit small { color: var(--muted); font-size: 11px; }
+.ms-vit.ok { border-color: rgba(143,240,168,.5); box-shadow: 0 0 12px rgba(143,240,168,.18); }
+.ms-vit img, .ms-item img { image-rendering: pixelated; }
+/* Movimientos */
+.ms-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ms-slot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 8px; border-radius: 14px; text-align: center;
+  background: radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--tc, #6f7dff) 35%, transparent), transparent 70%), linear-gradient(160deg, #262d5c, #161b3e);
+  border: 1px solid color-mix(in srgb, var(--tc, #6f7dff) 55%, transparent); box-shadow: inset 0 2px 0 var(--tc, #6f7dff); }
+.ms-slot kbd { position: absolute; top: 6px; left: 6px; }
+.ms-slot b { font: 800 14px var(--display); }
+.ms-slot small { color: var(--muted); font-size: 11px; }
+.ms-slot.empty { opacity: .45; border-style: dashed; box-shadow: none; }
+.ms-movebar { display: flex; align-items: center; gap: 8px; }
+.ms-movebar small { flex: 1; color: var(--muted); }
+.ms-movelist { overflow: visible; }
+/* Objetos */
+.ms-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.ms-item { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; text-align: left; }
+.ms-item span { display: flex; flex-direction: column; line-height: 1.2; }
+.ms-item b { font: 800 14px var(--display); }
+.ms-item small { color: var(--muted); font-size: 12px; }
+.ms-item > i { font: 900 16px var(--display); font-style: normal; color: #ffd76a; }
+.ms-item.ok { border-color: rgba(143,240,168,.5); box-shadow: 0 0 12px rgba(143,240,168,.18); }
+/* Aspecto */
+.ms-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; }
+.ms-chip.sel { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 14px rgba(255,210,63,.3); color: #ffe9a8; }
+.ms-chip.locked { opacity: .45; }
+@media (max-width: 900px) {
+  .mon-sheet { grid-template-columns: 1fr; height: calc(100vh - 20px); overflow: auto; }
+  .ms-side { border-right: 0; overflow: visible; } .ms-stage { height: 180px; }
+  .ms-stat { grid-template-columns: 70px 60px 1fr; } .ms-ivev, .ms-vit { grid-column: span 3; }
+  .ms-slots { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Barra de regiones: cada región disponible es una tarjeta con su color, su nombre, sus medallas y 8
+   pastillas de progreso; la elegida, con marco dorado. Las que llegarán van juntas y pequeñas al final */
+.subbar .region-tabs { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; flex: 1; }
+.subbar .region-tabs button.rg { position: relative; overflow: clip; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 160px; padding: 8px 16px 10px; border-radius: 12px; text-align: left;
+  background: radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--rc) 30%, transparent), transparent 60%), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
+  border: 1px solid color-mix(in srgb, var(--rc) 45%, rgba(170,190,255,.2)); box-shadow: inset 0 2px 0 color-mix(in srgb, var(--rc) 75%, #fff), 0 6px 14px rgba(0,0,0,.3); }
+.subbar .region-tabs button.rg b { font: 900 17px var(--display); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.subbar .region-tabs button.rg small { font-weight: 800; font-size: 11px; color: #c4d0e4; }
+.subbar .region-tabs button.rg.champ small { color: #ffd76a; }
+.rg-pips { display: flex; gap: 3px; margin-top: 4px; }
+.rg-pips i { width: 14px; height: 5px; border-radius: 2px; transform: skewX(-14deg); background: rgba(255,255,255,.1); }
+.rg-pips i.on { background: var(--rc); box-shadow: 0 0 6px var(--rc); }
+.subbar .region-tabs button.rg.sel { border: 2px solid var(--gold); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 0 2px rgba(138,90,0,.45), 0 0 22px rgba(255,190,40,.3); }
+.subbar .region-tabs button.rg:hover:not(.sel) { transform: translateY(-2px); border-color: var(--rc); }
+.rg-soon { flex: none; max-width: 420px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-left: 6px; padding: 6px 10px; border-radius: 12px; background: rgba(8,12,32,.4); border: 1px dashed rgba(170,190,255,.18); }
+.rg-soon > small { width: 100%; font: 800 10px var(--display); text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.subbar .rg-soon button.soon { display: inline-flex; flex-direction: row; align-items: center; gap: 4px; min-width: 0; padding: 3px 8px; border-radius: 8px; border: 0; background: rgba(255,255,255,.05); opacity: .7; }
+.subbar .rg-soon button.soon b { font: 700 12px var(--text); color: var(--muted); }
+.subbar .rg-soon button.soon svg { width: 10px; height: 10px; color: var(--muted); }
+
+/* ===================================================================================
+   Historia: objetivo con el líder, contador de rutas, mapa con marco, nodos y etiquetas más legibles
+   =================================================================================== */
+.story-head .map-goal.has-leader { position: relative; left: auto; top: auto; padding-right: 150px; overflow: clip; }   /* relative respetaría el left/top de .map-goal */
+.goal-leader { position: absolute; right: 0; top: 0; bottom: 0; width: 150px; display: grid; place-items: end end; padding-right: 14px;
+  background: radial-gradient(circle at 50% 75%, color-mix(in srgb, var(--tc) 55%, transparent), transparent 65%); }
+.goal-leader .goal-face { height: 94%; width: auto; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(0,0,0,.5)); }
+.goal-badge { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(8,12,32,.6); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--tc) 70%, transparent), 0 0 14px color-mix(in srgb, var(--tc) 40%, transparent); }
+.goal-badge img { filter: brightness(0) invert(1) opacity(.75); }
+.story-head .map-goal b { font-size: 19px; }
+.story-head .map-goal > small:first-child { font: 900 11px var(--display); letter-spacing: 1.2px; color: #ffd76a; }
+.story-info .rotation { display: flex; flex-direction: column; gap: 2px; font-weight: 800; color: #c4d0e4; }
+.story-info .rotation b { font: 900 30px/1 var(--display); color: #fff; letter-spacing: 1px; text-shadow: 0 0 16px rgba(255,210,63,.35); font-variant-numeric: tabular-nums; }
+/* Mapa: marco de luz, viñeta y leyenda en tarjeta */
+.story .map { border-radius: 20px; border: 2px solid rgba(255,230,160,.5); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3), 0 0 0 4px rgba(20,26,60,.6), 0 18px 40px rgba(0,0,0,.5); }
+.story .map::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 4; border-radius: inherit; box-shadow: inset 0 0 70px rgba(0,20,60,.45); }
+.story .map-legend { z-index: 6; gap: 6px 14px; padding: 7px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #e2e9f8;
+  background: linear-gradient(135deg, rgba(39,48,106,.92), rgba(20,26,60,.92)); border: 1px solid rgba(170,190,255,.25); box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+/* Nodos */
+.story .node label { padding: 1px 7px; border-radius: 7px; background: rgba(14,18,40,.82); text-shadow: none; box-shadow: 0 2px 4px rgba(0,0,0,.4); line-height: 1.25; }
+.story .node label small { color: #ffe9a8; }
+.story .node.gym { width: 46px; height: 46px; border-width: 3px; box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.45); }
+.story .node.gym .node-badge { width: 32px; height: 32px; }
+.story .node.gym.done { box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 16px var(--tc), 0 4px 10px rgba(0,0,0,.45); }
+.story .node.gym.next { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 0 6px rgba(255,210,63,.35), 0 0 24px rgba(255,210,63,.7); animation: nodeNext 1.4s ease-in-out infinite; }
+@keyframes nodeNext { 50% { box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 0 10px rgba(255,210,63,.15), 0 0 30px rgba(255,210,63,.9); } }
+.story .node.route { width: 30px; height: 30px; border: 3px solid #fff; background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 3px 8px rgba(0,0,0,.45); }
+.story .node.route .mon-icon { width: 34px; height: auto; margin-top: -10px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)); }
+.story .node.route.new { box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 0 0 5px #ffd23f, 0 0 18px #ffd23f; }
+.story .node .goal-tag, .story .node .new-tag { padding: 2px 8px; border-radius: 6px; font: 900 9px var(--display); letter-spacing: .8px; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.story .node .new-tag { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); }
+.story .node .goal-tag { color: #2a1c00; background: #fff; }
+.story .node.sel { outline: 3px solid var(--gold); outline-offset: 4px; }
+/* «Estás aquí»: el fondo blanco es solo de la etiqueta, no del hueco del avatar (que es otro span) */
+.you-pin .ava { --s: 34px !important; border: 3px solid #fff; border-radius: 50%; overflow: hidden; background: #141a33; box-shadow: 0 0 0 2px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.5); }
+.you-pin .ava .ava-pic { margin: 0; padding: 0; background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.2), transparent 70%); border-radius: 50%; box-shadow: none; width: 100%; height: 100%; display: grid; place-items: center; }
+
+/* Ficha del líder o la ruta */
+.story-side .node-info .leader-head { margin: -14px -16px 8px; padding: 14px 16px 0; border-radius: 20px 20px 0 0;
+  background: radial-gradient(120% 140% at 100% 100%, color-mix(in srgb, var(--tc) 40%, transparent), transparent 60%); }
+.story-side .node-info .arena-info { border-left: 3px solid var(--tc, var(--gold)); background: rgba(8,12,32,.4); }
+.story-side .node-info .mini { border-radius: 12px; }
+
+/* Ventana de confirmación del juego (rendirse, vender, retirarse…) */
+.ui-confirm { z-index: 95; }
+.ui-confirm-box { width: min(440px, 100%); gap: 10px; padding: 22px 24px 20px; text-align: center; border-radius: 18px; border: 2px solid var(--gold);
+  background: radial-gradient(120% 80% at 50% 0%, rgba(255,210,63,.14), transparent 60%), linear-gradient(170deg, #252d62, #161b3e);
+  box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 40px rgba(255,190,40,.2), 0 24px 60px rgba(0,0,0,.6); animation: lootIn .2s cubic-bezier(.2,1.3,.4,1); }
+.ui-confirm-box.danger { border-color: #ff6a5a; box-shadow: inset 0 2px 0 #ffb0a6, 0 0 40px rgba(255,90,80,.22), 0 24px 60px rgba(0,0,0,.6); }
+.ui-confirm-box h3 { margin: 0; font: 900 24px var(--display); }
+.ui-confirm-box p { margin: 0; color: #d6def0; line-height: 1.45; }
+.ui-confirm-box .acts { justify-content: center; gap: 10px; margin-top: 8px; }
+.ui-confirm-box .acts button { min-width: 140px; border-radius: 12px; }
+.ui-confirm-box button.danger-primary { color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.3); background: linear-gradient(180deg, #ff7a6a, #e8403a); box-shadow: 0 4px 0 #9a2620, 0 8px 20px rgba(232,64,58,.35); }
+body.in-battle .ui-confirm { cursor: auto; }
+
+/* Efecto del avatar: capa por encima de la imagen, recortada al círculo (las reglas .fx-<efecto> están en style.css) */
+.ava .ava-pic { position: relative; }
+.ava-fx-layer { position: absolute; inset: 0; z-index: 2; border-radius: 50%; overflow: hidden; pointer-events: none; isolation: isolate; }
+.tz-art .ava { --s: 100% !important; }
+
+/* Logros: tarjetas de línea con sus retos, separador de la colección y rejillas */
+.coll-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.coll-sep { display: inline-flex; align-items: center; gap: 6px; margin: 0 4px 0 10px; padding-left: 12px; border-left: 1px solid rgba(170,190,255,.25); }
+.coll-sep small { font: 900 10px var(--display); letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+.lg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
+.lg-card { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 18px;
+  background: radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--tc) 22%, transparent), transparent 60%), linear-gradient(170deg, #232a58, #161b3e);
+  border: 1px solid color-mix(in srgb, var(--tc) 40%, rgba(170,190,255,.18)); box-shadow: inset 0 2px 0 color-mix(in srgb, var(--tc) 70%, #fff), 0 10px 24px rgba(0,0,0,.35); }
+.lg-card.ready { border-color: var(--gold); box-shadow: inset 0 2px 0 var(--gold-hi), 0 0 20px rgba(255,210,63,.25); }
+.lg-head { display: flex; align-items: center; gap: 10px; padding: 0 4px 4px; }
+.lg-head b { flex: 1; font: 900 18px var(--display); }
+.lg-head small { color: var(--muted); font-weight: 800; }
+.lg-row { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 12px; background: rgba(8,12,32,.4); border: 1px solid rgba(170,190,255,.1); }
+.lg-row.ready { border-color: rgba(255,210,63,.6); background: linear-gradient(90deg, rgba(255,210,63,.14), rgba(8,12,32,.4)); }
+.lg-row.got { opacity: .6; }
+.lg-ico { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.05); position: relative; }
+.lg-ico img { image-rendering: pixelated; }
+.lg-ico .ava-aura { position: absolute; inset: 8px; border-radius: 50%; z-index: 0; }
+.lg-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lg-body b { font: 800 13px var(--display); }
+.lg-body b::first-letter, .frame-item small::first-letter { text-transform: uppercase; }
+.frame-item small { display: block; }
+.lg-body small { color: #c4d0e4; font-size: 11.5px; }
+.lg-body .m-bar { height: 12px; }
+.retos-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); max-height: none; }
+.frames-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.frame-item { gap: 14px; padding-top: 22px; }
+.frame-item.locked .ava { filter: grayscale(.85) brightness(.7); }
+.titles-chips .ms-chip { font-weight: 800; }
+
 @media (max-width: 600px) {
   .menu-card b, .menu-card.wide b { font-size: 24px; }
   .menu-card .art, .menu-card.wide .art { width: 92px; height: 92px; }
@@ -323,5 +867,14 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 6px rgba(0,0,0,
   .shop-item:not(.locked):hover::after, .coll-tile:hover:not(:disabled)::after, .ml-row:hover::after,
   .coll-item:hover::after, .bag-item:hover::after, .dex-card:hover::after, .lang-opt:hover::after { animation: none; opacity: 0; }
   .coll-item, .bag-item, .dex-card, .lang-opt { transition: none; }
-  .mon-card.is-shiny, .coll-tile.ready { animation: none; }
+  .mon-card.is-shiny, .coll-tile.ready, .hub-tz.ready, .hub-mod .news-btn, .missions-widget.has-ready { animation: none; }
+  .ui-tip { transition: none; }
 }
+
+/* Logros: la colección es para ver; aviso de dónde se equipa */
+.coll-where { display: block; margin: 0 0 12px; padding: 6px 12px; font-size: 12px; font-weight: 700; background: rgba(255,203,5,.08); border: 1px solid rgba(255,203,5,.35); color: var(--gold-hi, #ffe27a); border-radius: 8px; }
+.coll-where:hover { background: rgba(255,203,5,.16); }
+.coll-item.own { cursor: default; }
+/* La skin Oro es un filtro fijo (Holo y Galaxia van con animación y ya mandan): gana a la sombra que
+   ponen las tarjetas a sus retratos y la conserva */
+.skin-oro.skin-oro.skin-oro.skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) drop-shadow(0 6px 6px rgba(0,0,0,.45)); }

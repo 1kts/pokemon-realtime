@@ -23,6 +23,9 @@ const WILD_HP = 0.6, WILD_DMG = 0.85;
 const CATCH_IN = 1.0, CATCH_SHAKE = 0.75, CATCH_CLICK = 0.9, CATCH_BREAK = 0.5;
 // A los SUDDEN s empieza la muerte súbita (más daño, sin curar); a los LIMIT s gana quien tenga más PS.
 const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
+// Proyectiles: margen de impacto (px) y radio mínimo del blanco, para que acertar a un Pokémon pequeño con un
+// proyectil fino no sea cuestión de píxeles. Vale igual para el jugador y para la IA.
+const PROJ_FORGIVE = 9, PROJ_MIN_TARGET = 18;
 
 // moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie.
 // ev, iv, nat (naturaleza) · shiny · r: radio de colisión según el tamaño de la especie.
@@ -67,7 +70,7 @@ class Battle {
       idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
-        const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null, glow: m.glow || null });
+        const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
         if (s.hpMult) mon.hp = mon.maxHp = Math.round(mon.maxHp * s.hpMult);   // el muñeco del tutorial aguanta más
         return mon;
@@ -83,7 +86,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, glow: m.glow || null, spdMult: m.spdMult, r: m.r })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }
@@ -424,7 +427,9 @@ class Battle {
   }
 
   throwBall(side, inp) {
-    const kind = ['ultraball', 'superball', 'pokeball'].find(k => (side.balls[k] || 0) > 0 && (inp.ball ? k === inp.ball : true));
+    // Sin elegir, la mejor que quede salvo la Master Ball: esa solo se lanza si la eliges
+    const kind = inp.ball ? ((side.balls[inp.ball] || 0) > 0 ? inp.ball : null)
+      : ['ultraball', 'superball', 'pokeball'].find(k => (side.balls[k] || 0) > 0);
     if (!kind) return;
     side.balls[kind]--;
     side.rec = 0.3;
@@ -455,6 +460,7 @@ class Battle {
   // Aplica un movimiento de 'src' a 'dst'. Devuelve false si fue devuelto por un parry.
   hit(src, dst, m, x, y, o = {}) {
     if (this.mon(dst).fainted || dst.invuln > 0 || dst.forced > 0) return true;
+    dst.lastHit = { by: src.idx, type: m.type };   // para saber con qué tipo de movimiento se le debilita
     const am = this.mon(src), dm = this.mon(dst);
     // Protección
     if (dst.prot >= 0 && m.kind !== 'area' && !o.dot) {
@@ -537,7 +543,7 @@ class Battle {
         if (p.m.type === 'fuego' && this.terrain[i] === T.GRASS && p.m.terrain === 'fuego') this.paint(i, 'fuego');
         // Rival
         const f = this.foe(p.owner);
-        if (Math.hypot(f.x - p.x, f.y - p.y) < this.rad(f) + p.r && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
+        if (Math.hypot(f.x - p.x, f.y - p.y) < Math.max(this.rad(f), PROJ_MIN_TARGET) + p.r + (p.ball ? 0 : PROJ_FORGIVE) && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
           if (p.ball) { this.ballHit(p, f); p.left = 0; break; }
           if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) { p.hitFoe = true; this.projectileEnd(p, true); }
           break;
@@ -751,6 +757,8 @@ class Battle {
       const mon = this.mon(side);
       if (mon.fainted || mon.hp > 0) continue;
       mon.fainted = true;
+      // Debilitado por un golpe del rival: cuenta para los logros de debilitar con movimientos de ese tipo
+      if (side.lastHit && side.lastHit.by !== side.idx) (this.kos = this.kos || []).push({ by: side.lastHit.by, type: side.lastHit.type });
       side.wind = null; side.dash = null; side.kb = null; side.prot = -1; side.swapping = 0;
       this.ev({ k: 'faint', s: side.idx, slot: side.act });
       if (side.team.some(m => !m.fainted)) { side.forced = FORCED_SWAP_T; side.swapTo = -1; }

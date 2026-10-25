@@ -3,10 +3,11 @@
 // animación al recoger. El servidor manda las misiones en p.missions (server/missions.js) y lo
 // recogido en un mensaje 'loot'. Se añaden como métodos de UI (ver el final de ui.js).
 import { t, locale } from './i18n.js';
+import { confirmBox } from './dialog.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
-import { frameBadge, SKIN_LABEL, applySkin, applyGlow, glowName } from './frames.js';
+import { frameBadge, SKIN_LABEL, applySkin, auraName, auraDot } from './frames.js';
 import { portrait } from './sprites.js';
-import { achIcon, FRAME_LABEL_EXTRA } from './achievements.js';
+import { achIcon, achName, achDesc, frameName, FRAME_LABEL_EXTRA } from './achievements.js';
 
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const num = n => n.toLocaleString(locale());
@@ -23,38 +24,52 @@ const CHEST_SVG = `<svg class="chest-svg" viewBox="0 0 32 28" aria-hidden="true"
   <rect x="3" y="13" width="26" height="12" fill="#8a4a1a"/><rect x="3" y="13" width="26" height="2" fill="#ffd23f"/><rect x="3" y="23" width="26" height="2" fill="#5a2e0e"/>
   <rect x="14" y="13" width="4" height="12" fill="#ffd23f"/><rect x="15" y="16" width="2" height="3" fill="#5a2e0e"/></svg>`;
 
-// Avatar de colección: medalla ('badge:<región>:<n>') u objeto ('item:<sprite>')
-const PORTRAIT_FX_NAME = { llamas: 'Llamas', burbujas: 'Burbujas', chispas: 'Chispas', hojas: 'Hojas', copos: 'Copos', sombras: 'Sombras', estrellas: 'Estrellas', destellos: 'Destellos', aurora: 'Aurora' };
+// Avatar de colección: medalla ('badge:<región>:<n>'), objeto ('item:<sprite>') o retrato ('pt:<dex>[:<emoción>]')
+export const EFFECT_NAME = { llamas: 'Llamas', burbujas: 'Burbujas', chispas: 'Chispas', hojas: 'Hojas', copos: 'Copos', sombras: 'Sombras', estrellas: 'Estrellas', destellos: 'Destellos', aurora: 'Aurora' };
+// Partes de un retrato: dex y emoción (la emoción va con mayúscula; ids antiguos con efecto se ignoran)
+const ptParts = id => { const [, d, ...rest] = String(id).split(':'); return { dex: +d, emo: rest.find(x => /^[A-Z]/.test(x)) }; };
 export function avatarArt(id, size) {
   const [kind, a, b] = String(id).split(':');
   if (kind === 'badge') return badgeImg(a, +b, true, Math.round(size * 0.8), 'col-art');
   if (kind === 'item') return itemImg(a, Math.round(size * 0.8), 'col-art');
-  if (kind === 'pt') return portraitArt(+a, b, size);
+  if (kind === 'pt') { const { dex, emo } = ptParts(id); return portraitArt(dex, size, emo); }
   return '';
 }
-// Retrato de Tesoros: la cara del Pokémon de cerca (retrato de SpriteCollab) y encima, dentro de la
-// burbuja, su efecto animado (llamas, burbujas, chispas, hojas, copos, sombras, estrellas, destellos o
-// aurora). Las partículas salen siempre igual para el mismo retrato.
-export function portraitArt(dex, fx, size) {
-  let h = dex * 2654435761 >>> 0;
+// Nombre de cada emoción de los retratos (las de SpriteCollab, en public/portraits/emo)
+export const EMOTION_NAME = { Normal: 'Normal', Happy: 'Contento', Joyous: 'Eufórico', Inspired: 'Inspirado', Determined: 'Decidido',
+  Angry: 'Enfadado', Shouting: 'Gritando', Surprised: 'Sorprendido', Pain: 'Dolorido', Stunned: 'Aturdido', Dizzy: 'Mareado',
+  Worried: 'Preocupado', Sigh: 'Resignado', Sad: 'Triste', 'Teary-Eyed': 'Lloroso', Crying: 'Llorando' };
+// Retrato: la cara del Pokémon de cerca (retrato de SpriteCollab, con emoción si la tiene)
+export function portraitArt(dex, size, emo) {
+  return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.png` : `portraits/${dex}.png`}" alt="" draggable="false" onerror="this.src='sprites/${dex}/Idle.png';this.classList.add('pt-miss')"></span>`;
+}
+// Efecto: capa animada por encima de cualquier avatar (llamas, burbujas, chispas, hojas, copos, sombras,
+// estrellas, destellos o aurora). Las partículas salen siempre igual para el mismo efecto.
+export function effectHtml(fx) {
+  if (!fx) return '';
+  let h = [...fx].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 2654435761) >>> 0, 7);
   const rnd = () => (h = Math.imul(h ^ h >>> 15, 2246822507) >>> 0) / 4294967296;
   const parts = Array.from({ length: 9 }, () => `<b style="--x:${(rnd() * 90 + 5).toFixed(0)}%;--y:${(rnd() * 90 + 5).toFixed(0)}%;--d:${(-rnd() * 3).toFixed(2)}s;--k:${(0.6 + rnd() * 0.8).toFixed(2)}"></b>`).join('');
-  return `<span class="pt-face fx-${fx}" style="--s:${size}px"><img class="pt-img" src="portraits/${dex}.png" alt="" draggable="false" onerror="this.src='sprites/${dex}/Idle.png';this.classList.add('pt-miss')"><i class="pt-fx">${parts}</i></span>`;
+  return `<span class="ava-fx-layer fx-${fx}"><i class="pt-fx">${parts}</i></span>`;
 }
+export const effectName = fx => t('Efecto {name}', { name: t(EFFECT_NAME[fx] || fx) });
 // Nombre de un avatar de colección
 export function avatarName(id) {
   const [kind, a, b] = String(id).split(':');
-  if (kind === 'pt') return t('Retrato de {m} · {fx}', { m: Data.SPECIES[+a] ? Data.SPECIES[+a].name : '', fx: t(PORTRAIT_FX_NAME[b] || b) });
+  if (kind === 'pt') {
+    const { dex, emo } = ptParts(id), m = Data.SPECIES[dex] ? Data.SPECIES[dex].name : '';
+    return emo ? t('Retrato de {m} ({e})', { m, e: t(EMOTION_NAME[emo] || emo) }) : t('Retrato de {m}', { m });
+  }
   if (kind === 'badge') { const g = Data.leadersOf(a)[+b]; return g ? (g.badge || g.name) : ''; }
   const ach = Data.ACHIEVEMENTS.find(x => Data.achievementAvatar(x) === id);
-  return ach ? t(ach.name) : '';
+  return ach ? achName(ach) : '';
 }
 
 export const missionText = m => t(Data.MISSION_BY_ID[m.id].name, { n: m.goal, type: m.type ? Data.TYPE_LABEL[m.type] : '' });
 const missionIcon = (m, size) => m.type ? typeIcon(m.type, size) : icon(EV_ICON[Data.MISSION_BY_ID[m.id].ev] || 'ball', Math.round(size * .8));
 const itemName = id => (Data.SHOP.find(i => i.id === id) || { name: id }).name;
 // Premio en fichas: dinero y objetos
-export const prizeHtml = rw => [rw.coins ? `<span class="mp coins">${coinsHtml(rw.coins)}</span>` : '',
+export const prizeHtml = rw => [rw.coins ? `<span class="mp coins">${coinsHtml(rw.coins)}</span>` : '', rw.gems ? `<span class="mp gems">${icon('gem', 16)}${rw.gems}</span>` : '',
   ...Object.entries(rw.items || {}).map(([k, n]) => `<span class="mp" title="${itemName(k)}">${itemImg(k, 22)}×${n}</span>`)].join('');
 
 // Cuenta atrás hasta un instante (se para sola cuando el elemento sale de la pantalla)
@@ -92,6 +107,19 @@ export const missionViews = {
     return n;
   },
 
+  // Misiones cumplidas sin recoger y cofres por abrir (lo que se lleva «Recoger todo»)
+  missionsReady() {
+    const ms = this.profile.missions;
+    if (!ms) return 0;
+    return ['daily', 'weekly'].reduce((n, k) => n + ms[k].filter(m => m.n >= m.goal && !m.claimed).length + (ms[k].every(m => m.claimed || m.n >= m.goal) && !ms.chest[k] ? 1 : 0), 0);
+  },
+
+  claimAllButton() {
+    const b = el('button', 'primary claim-btn claim-all', `${t('Recoger todo')} <small>${this.readyCount()}</small>`);
+    b.onclick = () => { b.disabled = true; this.net.send({ t: 'mission', a: 'claimAll' }); };
+    return b;
+  },
+
   // Una misión: icono, texto, barra, premio y botones de recoger o cambiar
   missionCard(kind, m, i, compact = false) {
     const ms = this.profile.missions;
@@ -101,7 +129,7 @@ export const missionViews = {
     card.innerHTML = `<span class="m-ico">${missionIcon(m, compact ? 30 : 38)}</span>
       <div class="m-body"><b>${missionText(m)}</b>
         <div class="m-bar"><i style="width:${Math.min(100, m.n / m.goal * 100)}%"></i><span>${num(m.n)} / ${num(m.goal)}</span></div>
-        ${compact ? '' : `<div class="m-prize">${prizeHtml(tpl.reward)}</div>`}</div>`;
+        ${compact ? '' : `<div class="m-prize">${prizeHtml({ ...tpl.reward, gems: kind === 'daily' ? Data.GEMS.missionDaily : Data.GEMS.missionWeekly })}</div>`}</div>`;
     const acts = el('div', 'm-acts');
     if (m.claimed) acts.append(el('em', 'm-ok', `✓ ${t('Recogida')}`));
     else if (done) {
@@ -113,9 +141,9 @@ export const missionViews = {
       const cost = Data.MISSION_REROLL_COST[kind];
       const b = el('button', 'reroll', `↻ <small>${free ? t('Gratis') : coinsHtml(cost)}</small>`);
       b.title = free ? t('Cambiar por otra misión (te quedan {n} cambios gratis)', { n: free }) : t('Cambiar por otra misión por {n}', { n: num(cost) });
-      b.onclick = () => {
-        if (!free && !confirm(t('¿Cambiar esta misión por {n}? Perderás su progreso.', { n: num(cost) + ' ₽' }))) return;
-        if (free && m.n > 0 && !confirm(t('¿Cambiar esta misión? Perderás su progreso.'))) return;
+      b.onclick = async () => {
+        if (!free && !await confirmBox({ title: t('Cambiar misión'), text: t('¿Cambiar esta misión por {n}? Perderás su progreso.', { n: num(cost) + ' ₽' }), ok: t('Cambiar') })) return;
+        if (free && m.n > 0 && !await confirmBox({ title: t('Cambiar misión'), text: t('¿Cambiar esta misión? Perderás su progreso.'), ok: t('Cambiar') })) return;
         b.disabled = true;
         this.net.send({ t: 'mission', a: 'reroll', kind, i });
       };
@@ -133,7 +161,7 @@ export const missionViews = {
     const row = el('div', `chest-row${ready ? ' ready' : ''}${ms.chest[kind] ? ' opened' : ''}`);
     row.innerHTML = `<span class="chest">${CHEST_SVG}</span><div class="m-body"><b>${t(kind === 'daily' ? 'Cofre diario' : 'Cofre semanal')}</b>
       <small>${ms.chest[kind] ? t('Abierto. Vuelve cuando se renueven las misiones.') : t('Recoge las {n} misiones para abrirlo', { n: ms[kind].length })} · ${got}/${ms[kind].length}</small>
-      <div class="m-prize">${prizeHtml(Data.MISSION_CHEST[kind])}${kind === 'weekly' ? `<span class="mp"><i class="glow-dot glow-prisma"></i>${t('Glow de tipo al azar')}</span>` : ''}</div></div>`;
+      <div class="m-prize">${prizeHtml({ ...Data.MISSION_CHEST[kind], gems: kind === 'daily' ? Data.GEMS.chestDaily : Data.GEMS.chestWeekly })}${kind === 'weekly' ? `<span class="mp"><i class="glow-dot glow-prisma"></i>${t('Glow de tipo al azar')}</span>` : ''}</div></div>`;
     if (ready) {
       const b = el('button', 'primary claim-btn', t('¡Abrir!'));
       b.onclick = () => { b.disabled = true; row.classList.add('opening'); this.net.send({ t: 'mission', a: 'chest', kind }); };
@@ -168,8 +196,8 @@ export const missionViews = {
     if (!ach.length && !badges.length) box.append(el('p', 'small', t('Cada logro y cada medalla de gimnasio te dan un avatar nuevo para tu perfil. Cuando consigas uno, recógelo aquí.')));
     for (const a of ach) {
       const rw = a.reward || {};
-      const row = el('div', 'mission done', `<span class="m-ico">${achIcon(a, 40)}</span><div class="m-body"><b>${t(a.name)}</b><small>${t(a.desc)}</small>
-        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp">${frameBadge(rw.frame, 16)}${t(FRAME_LABEL[rw.frame] || rw.frame)}</span>` : ''}${rw.glow ? `<span class="mp"><i class="glow-dot glow-${rw.glow in Data.GLOW_SPECIAL ? rw.glow : 'tipo'}" style="--gc:${Data.glowColor(rw.glow) || '#fff'}"></i>${glowName(rw.glow, t)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
+      const row = el('div', 'mission done', `<span class="m-ico">${achIcon(a, 40)}</span><div class="m-body"><b>${achName(a)}</b><small>${achDesc(a)}</small>
+        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp">${frameBadge(rw.frame, 16)}${frameName(rw.frame)}</span>` : ''}${rw.aura ? `<span class="mp">${auraDot(rw.aura)}${auraName(rw.aura, t)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
       const b = el('button', 'primary claim-btn', t('¡Recoger!'));
       b.onclick = () => { b.disabled = true; this.net.send({ t: 'achclaim', id: a.id }); };
       row.append(b);
@@ -188,7 +216,10 @@ export const missionViews = {
 
   view_missions() {
     const wrap = el('div', 'missions-view');
-    wrap.append(this.topbar(t('Misiones'), 'menu'));
+    // «Recoger todo» va en la cabecera, a la derecha (donde otras pantallas llevan el dinero)
+    const bar = this.topbar(t('Misiones'), 'menu');
+    if (this.readyCount()) bar.querySelector('.tb-ctx').append(this.claimAllButton());
+    wrap.append(bar);
     const body = el('div', 'mv-body scroll');
     if (this.profile.daily) body.append(this.dailyPanel());
     body.append(this.missionPanel('daily'), this.missionPanel('weekly'), this.collectPanel());
@@ -204,6 +235,8 @@ export const missionViews = {
     const head = el('button', 'mw-head', `<b>${t('Misiones')}</b>${ready ? `<span class="m-ready">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</span>` : ''}<i class="go">${t('Ver todas')} ›</i>`);
     head.onclick = () => this.show('missions');
     box.append(head);
+    // En la portada, «Recoger todo» pequeño junto al título, en lugar del aviso «¡N por recoger!»
+    if (this.readyCount()) { head.querySelector('.m-ready') && head.querySelector('.m-ready').remove(); head.insertBefore(this.claimAllButton(), head.querySelector('.go')); }
     // Diarias y semanales en una lista con scroll, cada grupo con su cofre cuando están todas recogidas
     const list = el('div', 'mw-list scroll');
     for (const [kind, title] of [['daily', t('Misiones diarias')], ['weekly', t('Misiones semanales')]]) {
@@ -247,7 +280,9 @@ export const missionViews = {
     this.coinBump = r.coins > 0;
     const pop = el('div', 'loot-pop');
     const box = el('div', 'loot-box' + (r.chest ? ' chest-open' : ''));
-    const head = r.daily ? t('¡Premio del día {n}!', { n: r.daily }) : r.tutorial ? t('¡Tutorial completado!')
+    const head = r.extra !== undefined ? t('¡Todo recogido!')
+      : r.all !== undefined ? (r.chests.length > 1 ? t('¡{n} misiones y {c} cofres recogidos!', { n: r.all, c: r.chests.length }) : r.chests.length ? t('¡{n} misiones y su cofre recogidos!', { n: r.all }) : r.all > 1 ? t('¡{n} misiones recogidas!', { n: r.all }) : t('¡Misión completada!'))
+      : r.daily ? t('¡Premio del día {n}!', { n: r.daily }) : r.tutorial ? t('¡Tutorial completado!')
       : r.chest ? t(r.chest === 'daily' ? '¡Cofre diario abierto!' : '¡Cofre semanal abierto!')
       : r.treasure ? t('¡Premio {rarity}!', { rarity: t(Data.RARITY[r.treasure.rarity].name) })
       : r.mastery ? t('¡Premio de maestría!')
@@ -266,7 +301,7 @@ export const missionViews = {
     if (r.chest) box.append(el('span', 'chest big', CHEST_SVG));
     if (r.mission) box.append(el('p', 'loot-sub', missionText({ ...r.mission, goal: Data.MISSION_BY_ID[r.mission.id].goal })));
     if (r.mastery) box.append(el('p', 'loot-sub', t('Línea de {m}', { m: Data.SPECIES[r.mastery.dex].name })));
-    if (r.treasure) { box.classList.add('tz-loot'); box.style.setProperty('--rc', Data.RARITY[r.treasure.rarity].color); box.append(el('p', 'loot-sub', t('Tesoros · tirada {n}', { n: r.treasure.n }))); }
+    if (r.treasure) { box.classList.add('tz-loot'); box.style.setProperty('--rc', Data.RARITY[r.treasure.rarity].color); box.append(el('p', 'loot-sub', t('Lucky Spin · tirada {n}', { n: r.treasure.n }))); }
     const skinDex = r.skinDex || (r.mastery && r.mastery.dex);
     const list = el('div', 'loot-items');
     const add = (art, label) => { const it = el('div', 'li', `<span class="li-art">${art}</span><small>${label}</small>`); it.style.animationDelay = (0.25 + list.children.length * 0.18) + 's'; list.append(it); };
@@ -283,16 +318,17 @@ export const missionViews = {
     }
     for (const [k, n] of Object.entries(r.items || {})) add(itemImg(k, 48), `${itemName(k)} ×${n}`);
     if (r.title) add(`<span class="title-chip">${t(r.title)}</span>`, t('Título'));
-    if (r.frame) add(frameBadge(r.frame, 44), t('Marco {name}', { name: r.frame.startsWith('tipo-') ? t('Maestría {type}', { type: Data.TYPE_LABEL[r.frame.slice(5)] }) : t(FRAME_LABEL[r.frame] || r.frame) }));
-    // Premios de maestría: estrella, ilustración, brillo de burbuja y skin
+    if (r.frame) add(frameBadge(r.frame, 44), r.frame.startsWith('tipo-') ? frameName(r.frame) : t('Marco {name}', { name: t(FRAME_LABEL[r.frame] || r.frame) }));
+    // Premios de maestría y de Lucky Spin: estrella, ilustración, glow, skin y partículas
     const addEl = (node, label) => { add('', label); list.lastChild.querySelector('.li-art').append(node); };
     if (r.mastery && r.mastery.kind === 'star') add('<b class="loot-star">★</b>', t('Estrella de bronce'));
     if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
-    for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), au === 'prisma' ? t('Brillo prismático') : t('Brillo {type}', { type: Data.TYPE_LABEL[au.slice(5)] }));
-    if (r.glow) { const { dex } = this.avatarDex(); addEl(applyGlow(portrait(dex, 64), r.glow), glowName(r.glow, t)); }
+    for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), auraName(au, t));
     if (r.skin) { addEl(applySkin(portrait(skinDex, 64), r.skin, skinDex), `${t(SKIN_LABEL[r.skin])} · ${Data.SPECIES[skinDex].name}`); }
+    if (r.particles) addEl(applySkin(portrait(r.particles, 64), null, r.particles, true), t('Partículas · línea de {m}', { m: Data.SPECIES[r.particles].name }));
     if (r.gems) add(icon('gem', 48), `+${r.gems} ${t('gemas')}`);
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
+    if (r.effect) { const pv = this.avatar(56, false, undefined, undefined, r.effect); pv.classList.add('ava-preview'); addEl(pv, effectName(r.effect)); }
     box.append(list);
     const acts = el('div', 'acts');
     if (r.avatar) {
@@ -302,9 +338,9 @@ export const missionViews = {
     }
     const equip = (label, msg) => { const b = el('button', '', label); b.onclick = () => { this.net.send({ t: 'look', ...msg }); close(); }; acts.append(b); };
     if (r.art) equip(t('Usar de avatar'), { avatar: r.art, avatarShiny: false, avatarArt: true });
-    if (r.aura || r.aura2) equip(t('Ponerme el brillo'), { aura: r.aura2 || r.aura });
+    if (r.aura || r.aura2) equip(t('Ponerme el glow'), { aura: r.aura2 || r.aura });
+    if (r.effect) equip(t('Ponerme el efecto'), { effect: r.effect });
     if (r.skin) equip(t('Ponérsela'), { skin: { dex: skinDex, skin: r.skin } });
-    if (r.glow) { const b = el('button', '', t('Ponérselo a una línea')); b.onclick = () => { close(); this.glowPick = r.glow; this.openCollection('glow'); }; acts.append(b); }
     const ok = el('button', 'primary', t('¡Genial!'));
     acts.append(ok);
     if (r.chestReady) acts.append(el('p', 'small chest-hint', t('¡Has completado las 3! Abre el cofre en Misiones.')));

@@ -1,17 +1,24 @@
 // Colección: la maestría de cada línea evolutiva (sus premios se recogen a mano) y lo que da:
-// ilustraciones para el avatar, brillos de burbuja y skins, con lo que falta para conseguir cada cosa;
-// y los glows del sprite (de logros y del cofre semanal), que se ponen a la línea que quieras.
+// ilustraciones para el avatar, glows del avatar y skins, con lo que falta para conseguir cada cosa.
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
 import { t } from './i18n.js';
 import { portrait, typeTint } from './sprites.js';
-import { masteryPrize, SKIN_LABEL, applySkin, applyGlow, glowName } from './frames.js';
+import { masteryPrize, SKIN_LABEL, applySkin, auraName, frameBadge } from './frames.js';
+import { achIcon, achName, achDesc, frameName } from './achievements.js';
+import { effectName, avatarArt, avatarName } from './missions.js';
+import { icon, typeIcon } from './pixicons.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const TABS = [['mastery', 'Maestría'], ['art', 'Ilustraciones'], ['aura', 'Brillos'], ['skin', 'Skins'], ['glow', 'Glows']];
+// Logros: retos por línea evolutiva, retos generales (por categorías) y la colección de todo lo que se
+// puede conseguir (con de dónde sale lo que falta), donde también se equipa
+const TABS = [['mastery', 'Líneas'], ['retos', 'Retos'], ['skin', 'Skins'], ['frames', 'Marcos'], ['aura', 'Glows'], ['effects', 'Efectos'], ['art', 'Ilustraciones'], ['titles', 'Títulos']];
 const winsFor = kind => (MASTERY_TIERS.find(x => x.kind === kind || x.skin === kind || x.aura === kind) || {}).wins;
-const AURA_PRISMA = 'prisma';
+const CAT_LABEL = { progreso: 'Progreso', combate: 'Combate', coleccion: 'Colección', torre: 'Torre', pvp: 'Online' };
+// Qué pide cada reto de línea
+const tierAsk = (x, m) => x.stat === 'pvp' ? t('Gana {n} combates online con la línea de {m}', { n: x.goal, m })
+  : x.stat === 'tower' ? t('Llega a una racha de {n} en la Torre con la línea de {m}', { n: x.goal, m }) : t('Gana {n} combates con la línea de {m}', { n: x.wins, m });
 
 // Líneas evolutivas que conoces: las de lo que has atrapado y las que ya tienen victorias
 function lineRoots(p) {
@@ -26,9 +33,9 @@ export const collectionViews = {
     return lineRoots(p).reduce((n, r) => n + Data.masteryReady(p, r).length, 0);
   },
 
-  // Pone la skin y el glow de su línea a un retrato (en los menús; en combate los pinta el shader de actors.js)
+  // Pone la skin y las partículas de su línea a un retrato (en los menús; en combate la pinta el shader de actors.js)
   skinned(node, dex) {
-    return applyGlow(applySkin(node, Data.skinOf(this.profile, dex), dex), Data.glowOf(this.profile, dex));
+    return applySkin(node, Data.skinOf(this.profile, dex), dex, Data.particlesOf(this.profile, dex));
   },
 
   openCollection(tab) {
@@ -38,59 +45,145 @@ export const collectionViews = {
   },
 
   view_collection() {
-    const tab = this.collTab = this.collTab || 'mastery';
+    const tab = this.collTab = TABS.some(([id]) => id === this.collTab) ? this.collTab : 'mastery';
+    const p = this.profile;
     const wrap = el('div', 'collection');
-    wrap.append(this.topbar(t('Colección'), this.collBack || 'menu'));
+    wrap.append(this.topbar(t('Logros'), this.collBack || 'menu'));
     const tabs = el('div', 'coll-tabs');
-    const ready = this.masteryReadyCount();
-    for (const [id, label] of TABS) {
-      const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label) + (id === 'mastery' && ready ? `<i class="nbadge">${ready}</i>` : ''));
+    const ready = this.masteryReadyCount(), retos = (p.achClaim || []).length;
+    TABS.forEach(([id, label], i) => {
+      if (i === 2) tabs.append(el('span', 'coll-sep', `<small>${t('Colección')}</small>`));
+      const n = id === 'mastery' ? ready : id === 'retos' ? retos : 0;
+      const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label) + (n ? `<i class="nbadge">${n}</i>` : ''));
       b.onclick = () => { this.collTab = id; this.show('collection'); };
       tabs.append(b);
-    }
+    });
     const body = el('div', 'coll-body scroll');
     wrap.append(tabs, body);
+    // La colección solo enseña lo que tienes y cómo se consigue lo demás; se equipa en el Perfil
+    // (las skins, en la ficha de cada Pokémon)
+    if (TABS.findIndex(([id]) => id === tab) >= 2) {
+      const go = el('button', 'coll-where', tab === 'skin' ? t('Las skins se ponen en la ficha de cada Pokémon (Mis Pokémon)') : t('Para ponértelo, ve a tu Perfil › Personalizar'));
+      go.onclick = () => tab === 'skin' ? this.openFrom('team') : this.show('profile');
+      body.append(go);
+    }
     this['coll_' + tab](body);
     this.root.append(wrap);
   },
 
-  // Maestría: cada línea con sus 7 premios, la barra hasta el siguiente y el botón de recoger
+  // Líneas: una tarjeta por línea evolutiva con sus retos (victorias, online y Torre), su progreso y recoger
   coll_mastery(body) {
     const p = this.profile;
-    body.append(el('p', 'small coll-intro', t('Cada combate que ganas (historia, Torre, clasificatoria o partida rápida) suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Al llegar a cada meta, recoge su premio aquí.')));
-    const ready = r => Data.masteryReady(p, r).length, wins = r => Data.masteryWins(p, r);
-    const roots = lineRoots(p).sort((a, b) => (ready(b) - ready(a)) || (wins(b) - wins(a)) || a - b);
+    body.append(el('p', 'small coll-intro', t('Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.')));
+    const ready = r => Data.masteryReady(p, r).length, done = r => Data.masteryClaimed(p, r).length;
+    const roots = lineRoots(p).sort((a, b) => (ready(b) - ready(a)) || (done(b) - done(a)) || (Data.masteryWins(p, b) - Data.masteryWins(p, a)) || a - b);
     if (!roots.length) body.append(el('p', 'small', t('Atrapa Pokémon y gana combates con ellos para empezar.')));
-    const list = el('div', 'ml-list');
+    const grid = el('div', 'lg-grid');
     for (const root of roots) {
-      const w = wins(root), tier = Data.masteryTier(w), claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root);
-      const row = typeTint(el('div', 'ml-row' + (can.length ? ' ready' : '')), root);
-      row.append(this.skinned(portrait(root, 56), root));
-      const info = el('div', 'ml-info', `<b>${t('Línea de {m}', { m: SPECIES[root].name })}</b><small>${t('{n} victorias', { n: w })}</small>`);
-      const pips = el('div', 'ml-pips');
+      const claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root), name = SPECIES[root].name;
+      const card = typeTint(el('div', 'lg-card' + (can.length ? ' ready' : '')), root);
+      const head = el('div', 'lg-head', `<b>${name}</b><small>${t('{a}/{b} retos', { a: claimed.length, b: MASTERY_TIERS.length })}</small>`);
+      head.prepend(this.skinned(portrait(root, 44), root));
+      card.append(head);
       MASTERY_TIERS.forEach((x, i) => {
-        const state = claimed.includes(i) ? 'got' : can.includes(i) ? 'ready' : 'locked';
-        const pip = el('span', 'ml-pip ' + state + ' k-' + x.kind, `<i>${x.wins}</i>`);
-        pip.title = `${x.wins} · ${masteryPrize(x, root, t)}${state === 'got' ? ' ✓' : ''}`;
-        pips.append(pip);
+        const cur = Math.min(Data.tierGoal(x), Data.lineStat(p, root, x.stat)), got = claimed.includes(i), ok = can.includes(i);
+        const row = el('div', 'lg-row k-' + x.kind + (got ? ' got' : ok ? ' ready' : ''));
+        row.innerHTML = `<span class="lg-ico">${x.kind === 'skin' ? applySkin(portrait(root, 34), x.skin, root).outerHTML : x.kind === 'star' ? icon('star', 26) : x.kind === 'art' ? icon('user', 26) : x.kind === 'title' ? icon('crown', 26) : x.kind === 'portrait' ? avatarArt('pt:' + root, 34) : `<i class="ava-aura aura-tipo" style="--aura:${Data.TYPE_COLOR[SPECIES[root].types[0]]}"></i>`}</span>
+          <div class="lg-body"><b>${masteryPrize(x, root, t)}</b><small>${tierAsk(x, name)}</small>${got ? '' : `<div class="m-bar"><i style="width:${cur / Data.tierGoal(x) * 100}%"></i><span>${cur} / ${Data.tierGoal(x)}</span></div>`}</div>`;
+        if (ok) {
+          const b = el('button', 'primary claim-btn', t('¡Recoger!'));
+          b.onclick = () => { b.disabled = true; this.net.send({ t: 'masteryclaim', dex: root, i }); };
+          row.append(b);
+        } else if (got) row.append(el('em', 'm-ok', '✓'));
+        card.append(row);
       });
-      info.append(pips);
-      const next = MASTERY_TIERS[tier];
-      if (next) info.append(el('div', 'ml-next', `<span class="mbar"><i style="width:${w / next.wins * 100}%"></i></span><small>${t('Siguiente: {prize} ({w}/{n})', { prize: masteryPrize(next, root, t), w, n: next.wins })}</small>`));
-      else info.append(el('small', 'ml-next done', t('¡Maestría completa!')));
-      row.append(info);
-      if (can.length) {
-        const b = el('button', 'primary claim-btn', t('¡Recoger!'));
-        b.title = masteryPrize(MASTERY_TIERS[can[0]], root, t);
-        b.onclick = () => { b.disabled = true; this.net.send({ t: 'masteryclaim', dex: root, i: can[0] }); };
-        row.append(b);
-      }
-      list.append(row);
+      // los canvas de skin se pintan al cargar la hoja: se cambian por uno vivo
+      card.querySelectorAll('.lg-row.k-skin .lg-ico').forEach((c, k) => { c.innerHTML = ''; c.append(applySkin(portrait(root, 34), MASTERY_TIERS.filter(x => x.kind === 'skin')[k].skin, root)); });
+      grid.append(card);
     }
-    body.append(list);
+    body.append(grid);
   },
 
-  // Ilustraciones oficiales: las de las líneas con su premio recogido se pueden poner de avatar
+  // Retos: todos los logros, por categorías, con su progreso, premio y recoger
+  coll_retos(body) {
+    const p = this.profile, got = p.achievements || {}, pending = p.achClaim || [];
+    const cat = this.retoCat || 'all';
+    const pills = el('div', 'gen-tabs coll-cats');
+    for (const c of ['all', ...Data.ACH_CATS]) {
+      const list = Data.ACHIEVEMENTS.filter(a => c === 'all' || a.cat === c);
+      const b = el('button', c === cat ? 'sel' : '', `${c === 'all' ? t('Todos') : t(CAT_LABEL[c])} <small>${list.filter(a => got[a.id]).length}/${list.length}</small>`);
+      b.onclick = () => { this.retoCat = c; this.show('collection', true); };
+      pills.append(b);
+    }
+    body.append(pills);
+    const grid = el('div', 'ach-grid retos-grid');
+    const list = Data.ACHIEVEMENTS.filter(a => cat === 'all' || a.cat === cat)
+      .sort((a, b) => pending.includes(b.id) - pending.includes(a.id) || (got[a.id] ? 1 : 0) - (got[b.id] ? 1 : 0) || Data.achievementProgress(p, b) / b.goal - Data.achievementProgress(p, a) / a.goal);
+    for (const a of list) {
+      const ok = !!got[a.id], cur = Data.achievementProgress(p, a), ready = pending.includes(a.id), rw = a.reward || {};
+      const prize = [rw.frame && `${frameBadge(rw.frame, 18)}${frameName(rw.frame)}`, rw.title && `${t('Título')}: <b>${t(rw.title)}</b>`, rw.aura && auraName(rw.aura, t), rw.coins && `${icon('coin', 14)}${rw.coins.toLocaleString()}`].filter(Boolean).join(' · ');
+      const card = el('div', 'ach-card' + (ok ? ' got' : '') + (ready ? ' ready' : ''));
+      card.innerHTML = `${achIcon(a, 52, ok)}<div class="ach-body"><b>${achName(a)}</b><small>${achDesc(a)}</small>
+        ${ok ? `<em class="ach-done">${t('Conseguido')}</em>` : `<div class="ach-bar"><i style="width:${cur / a.goal * 100}%"></i></div><small class="ach-num">${cur} / ${a.goal}</small>`}
+        <small class="ach-prize">${prize}</small></div>`;
+      if (ready) {
+        const b = el('button', 'primary claim-btn', t('¡Recoger!'));
+        b.onclick = () => { b.disabled = true; this.net.send({ t: 'achclaim', id: a.id }); };
+        card.querySelector('.ach-body').append(b);
+      }
+      grid.append(card);
+    }
+    body.append(grid);
+  },
+
+  // Marcos: todos (liga, logros y de tipo), los tuyos para ponértelos y de dónde sale cada uno que falta
+  coll_frames(body) {
+    const p = this.profile, own = (p.cosmetics && p.cosmetics.frames) || [];
+    body.append(el('p', 'small coll-intro', t('El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.')));
+    const SRC = {};
+    for (const a of Data.ACHIEVEMENTS) if (a.reward && a.reward.frame) SRC[a.reward.frame] = achName(a);
+    const all = [...new Set(['bronce', 'plata', 'oro', 'platino', 'diamante', 'maestro', ...Data.ACHIEVEMENTS.map(a => a.reward && a.reward.frame).filter(Boolean)])];
+    const grid = el('div', 'coll-grid frames-grid');
+    for (const f of all) {
+      const has = own.includes(f), sel = p.frame === f;
+      const b = el('div', 'coll-item frame-item' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
+      b.append(this.avatar(70, false, f, null, null), el('small', '', frameName(f)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : SRC[f] ? t('Reto: {name}', { name: SRC[f] }) : t('Liga {name}', { name: t(f[0].toUpperCase() + f.slice(1)) })));
+      grid.append(b);
+    }
+    body.append(grid);
+  },
+
+  // Efectos: los de Lucky Spin (encima del avatar; se ponen en el Perfil)
+  coll_effects(body) {
+    const p = this.profile, own = (p.cosmetics && p.cosmetics.effects) || [];
+    body.append(el('p', 'small coll-intro', t('Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.')));
+    const grid = el('div', 'coll-grid frames-grid');
+    for (const fx of Data.EFFECTS) {
+      const has = own.includes(fx), sel = p.effect === fx;
+      const b = el('div', 'coll-item frame-item' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
+      b.append(this.avatar(70, false, null, null, fx), el('small', '', effectName(fx)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : t('En Lucky Spin')));
+      grid.append(b);
+    }
+    body.append(grid);
+  },
+
+  // Títulos: los tuyos y los de los retos que faltan (se ponen en el Perfil)
+  coll_titles(body) {
+    const p = this.profile, own = (p.cosmetics && p.cosmetics.titles) || [];
+    body.append(el('p', 'small coll-intro', t('El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.')));
+    const fromAch = Data.ACHIEVEMENTS.filter(a => a.reward && a.reward.title).map(a => [a.reward.title, achName(a)]);
+    const all = [...new Set([...own, ...fromAch.map(x => x[0])])];
+    const chips = el('div', 'ms-chips titles-chips');
+    for (const ti of all) {
+      const has = own.includes(ti), src = fromAch.find(x => x[0] === ti);
+      const b = el('span', 'ms-chip' + (p.title === ti ? ' sel' : '') + (has ? ' own' : ' locked'), `${has ? '' : '🔒 '}${t(ti)}`);
+      b.title = has ? '' : src ? t('Reto: {name}', { name: src[1] }) : '';
+      chips.append(b);
+    }
+    body.append(chips);
+  },
+
+  // Ilustraciones oficiales: las de las líneas con su premio recogido (se ponen de avatar en el Perfil)
   coll_art(body) {
     const p = this.profile;
     const n = winsFor('art');
@@ -102,14 +195,13 @@ export const collectionViews = {
       if (Data.hasMastery(p, root, 'art')) {
         for (const dex of Data.lineMembers(root).filter(d => caught.has(d))) {
           const sel = p.avatar === dex && p.avatarArt && !p.avatarShiny;
-          const b = el('button', 'coll-item art' + (sel ? ' sel' : ''), `<img src="art/${dex}.png" alt="" loading="lazy" draggable="false"><small>${SPECIES[dex].name}</small>`);
-          b.title = sel ? t('Tu avatar') : t('Usar de avatar');
-          b.onclick = () => this.net.send({ t: 'look', avatar: dex, avatarShiny: false, avatarArt: true });
+          const b = el('div', 'coll-item art own' + (sel ? ' sel' : ''), `<img src="art/${dex}.png" alt="" loading="lazy" draggable="false"><small>${SPECIES[dex].name}</small>`);
+          b.title = sel ? t('Tu avatar') : t('Lo tienes');
           grid.append(b);
         }
       } else {
         const w = Data.masteryWins(p, root);
-        const it = el('div', 'coll-item locked', `<small>${SPECIES[root].name}</small><em>${w >= n ? t('¡Recógela en Maestría!') : `${w}/${n}`}</em>`);
+        const it = el('div', 'coll-item locked', `<small>${SPECIES[root].name}</small><em>${w >= n ? t('¡Recógela en Líneas!') : `${w}/${n}`}</em>`);
         it.prepend(portrait(root, 64, { silhouette: true }));
         it.title = t('Gana {n} combates con la línea de {m}', { n, m: SPECIES[root].name });
         grid.append(it);
@@ -118,57 +210,55 @@ export const collectionViews = {
     body.append(grid);
   },
 
-  // Brillos de burbuja: uno por tipo (con una línea de ese tipo) y el prismático
+  // Glows: la luz de alrededor del avatar. Los de tipo salen de la maestría de una línea de ese tipo
+  // (también de Lucky Spin y del cofre semanal); los especiales, de retos y de la Torre
   coll_aura(body) {
-    const p = this.profile;
-    const auras = (p.cosmetics && p.cosmetics.auras) || [];
-    const n = winsFor('aura'), np = winsFor(AURA_PRISMA);
-    body.append(el('p', 'small coll-intro', t('Un halo animado alrededor de tu avatar. El de cada tipo se consigue con {n} victorias de una línea evolutiva de ese tipo; el prismático, con {m}.', { n, m: np })));
-    const grid = el('div', 'coll-grid aura-grid');
+    const p = this.profile, own = (p.cosmetics && p.cosmetics.auras) || [];
+    const n = winsFor('aura');
+    body.append(el('p', 'small coll-intro', t('Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.', { n })));
+    const SRC = { prisma: t('Reto de línea: racha de {n} en la Torre', { n: MASTERY_TIERS.find(x => x.aura === 'prisma').goal }) };
+    for (const a of Data.ACHIEVEMENTS) if (a.reward && a.reward.aura) SRC[a.reward.aura] = SRC[a.reward.aura] ? SRC[a.reward.aura] + ' · ' + t('Reto: {name}', { name: achName(a) }) : t('Reto: {name}', { name: achName(a) });
     const best = type => {
       let top = null;
-      for (const r of lineRoots(p)) if ((!type || SPECIES[r].types[0] === type) && (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top))) top = r;
+      for (const r of lineRoots(p)) if (SPECIES[r].types[0] === type && (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top))) top = r;
       return top;
     };
-    const opt = (aura, label, need, type) => {
-      const has = !aura || auras.includes(aura), sel = (p.aura || null) === aura;
-      const b = el(has ? 'button' : 'div', 'coll-item aura' + (sel ? ' sel' : '') + (has ? '' : ' locked'));
-      b.append(this.avatar(52, false, undefined, aura));
-      b.append(el('small', '', label));
-      if (!has) {
-        const r = best(type);
-        b.append(el('em', '', r ? `${SPECIES[r].name} ${Data.masteryWins(p, r)}/${need}` : t('Sin líneas de ese tipo')));
-        b.title = type ? t('Gana {n} combates con una línea evolutiva de tipo {type}', { n: need, type: TYPE_LABEL[type] }) : t('Gana {n} combates con una línea evolutiva', { n: need });
-      } else b.onclick = () => this.net.send({ t: 'look', aura });
+    const grid = el('div', 'coll-grid aura-grid');
+    for (const aura of Data.AURAS) {
+      const has = own.includes(aura), sel = p.aura === aura;
+      const b = el('div', 'coll-item aura' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
+      b.append(this.avatar(52, false, undefined, aura), el('small', '', auraName(aura, t)));
+      if (has) b.append(el('em', '', sel ? t('Puesto') : t('Lo tienes')));
+      else if (aura.startsWith('tipo-')) {
+        const r = best(aura.slice(5));
+        b.append(el('em', '', r ? `${SPECIES[r].name} ${Data.masteryWins(p, r)}/${n}` : t('Sin líneas de ese tipo')));
+        b.title = t('Gana {n} combates con una línea evolutiva de tipo {type}', { n, type: TYPE_LABEL[aura.slice(5)] });
+      } else b.append(el('em', '', SRC[aura] || ''));
       grid.append(b);
-    };
-    opt(null, t('Ninguno'));
-    opt(AURA_PRISMA, t('Prismático'), np, null);
-    for (const type of TYPE_NAMES) opt('tipo-' + type, TYPE_LABEL[type], n, type);
+    }
     body.append(grid);
   },
 
   // Skins: Oro, Holo y Galaxia sobre el sprite (en los menús y en combate), una por línea
   coll_skin(body) {
     const p = this.profile;
-    body.append(el('p', 'small coll-intro', t('Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; elige cuál lleva.')));
+    body.append(el('p', 'small coll-intro', t('Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.')));
     for (const id of SKINS) {
       const need = winsFor(id);
       const sec = el('section', 'skin-sec');
       const lines = lineRoots(p).filter(r => Data.hasSkin(p, r, id));
-      sec.append(el('div', 'skin-head', `<h3>${t(SKIN_LABEL[id])}</h3><small>${need ? t('Con {n} victorias de una línea evolutiva', { n: need }) : t('En las ruletas de Tesoros, para una línea concreta')}</small>`));
+      sec.append(el('div', 'skin-head', `<h3>${t(SKIN_LABEL[id])}</h3><small>${need ? t('Con {n} victorias de una línea evolutiva', { n: need }) : t('En las ruletas de Lucky Spin, para una línea concreta')}</small>`));
       const grid = el('div', 'coll-grid');
       for (const r of lines) {
         const on = (p.skins || {})[r] === id;
-        const b = el('button', 'coll-item skin' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${on ? t('Puesta') : t('Ponérsela')}</em>`);
+        const b = el('div', 'coll-item skin own' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${on ? t('Puesta') : t('La tienes')}</em>`);
         b.prepend(applySkin(portrait(r, 72), id, r));
-        b.onclick = () => this.net.send({ t: 'look', skin: { dex: r, skin: on ? null : id } });
         grid.append(b);
       }
       if (!lines.length) {
         let top = null;
         for (const r of lineRoots(p)) if (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top)) top = r;
-        const demo = el(need ? 'div' : 'button', 'coll-item locked demo', `<small>${t('Aún no la tienes')}</small><em>${!need ? t('Mira las ruletas de Tesoros') : top ? t('Lo más cerca: {m} {w}/{n}', { m: SPECIES[top].name, w: Data.masteryWins(p, top), n: need }) : ''}</em>`);
+        const demo = el(need ? 'div' : 'button', 'coll-item locked demo', `<small>${t('Aún no la tienes')}</small><em>${!need ? t('Mira las ruletas de Lucky Spin') : top ? t('Lo más cerca: {m} {w}/{n}', { m: SPECIES[top].name, w: Data.masteryWins(p, top), n: need }) : ''}</em>`);
         if (!need) demo.onclick = () => this.openTreasure();
         demo.prepend(applySkin(portrait(top || 25, 72), id, top || 25));
         grid.append(demo);
@@ -176,34 +266,24 @@ export const collectionViews = {
       sec.append(grid);
       body.append(sec);
     }
-  },
-
-  // Glows: eliges uno de los tuyos y luego a qué línea se lo pones (o se lo quitas)
-  coll_glow(body) {
-    const p = this.profile;
-    const own = (p.cosmetics && p.cosmetics.glows) || [];
-    body.append(el('p', 'small coll-intro', t('Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.')));
-    const pick = this.glowPick && own.includes(this.glowPick) ? this.glowPick : own[0] || null;
-    const chips = el('div', 'glow-chips');
-    const SOURCE = Object.fromEntries(Data.ACHIEVEMENTS.filter(a => a.reward && a.reward.glow).map(a => [a.reward.glow, a]));
-    for (const g of Data.GLOWS) {
-      const has = own.includes(g);
-      const b = el(has ? 'button' : 'span', 'glow-chip' + (g === pick ? ' sel' : '') + (has ? '' : ' locked'), `<i class="glow-dot glow-${g in Data.GLOW_SPECIAL ? g : 'tipo'}" style="--gc:${Data.glowColor(g) || '#fff'}"></i>${glowName(g, t)}`);
-      b.title = has ? t('Elegir') : SOURCE[g] ? t('Logro: {name}', { name: t(SOURCE[g].name) }) : t('Sale al azar en el cofre semanal de misiones');
-      if (has) b.onclick = () => { this.glowPick = g; this.show('collection'); };
-      chips.append(b);
-    }
-    body.append(el('h4', '', t('Tus glows ({n}/{m})', { n: own.length, m: Data.GLOWS.length })), chips);
-    if (!pick) { body.append(el('p', 'small', t('Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.'))); return; }
-    body.append(el('h4', '', t('Tus líneas: toca una para ponerle «{glow}»', { glow: glowName(pick, t) })));
+    // Partículas: van con cualquier skin; salen en Lucky Spin, una por línea
+    const own = (p.cosmetics && p.cosmetics.particles) || [];
+    const sec = el('section', 'skin-sec');
+    sec.append(el('div', 'skin-head', `<h3>${t('Partículas')}</h3><small>${t('En las ruletas de Lucky Spin, para una línea concreta. Van con cualquier skin.')}</small>`));
     const grid = el('div', 'coll-grid');
-    for (const r of lineRoots(p).sort((a, b) => Data.masteryWins(p, b) - Data.masteryWins(p, a) || a - b)) {
-      const cur = Data.glowOf(p, r), on = cur === pick;
-      const b = el('button', 'coll-item' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${cur ? glowName(cur, t) : t('Sin glow')}</em>`);
-      b.prepend(this.skinned(portrait(r, 72), r));
-      b.onclick = () => this.net.send({ t: 'look', glow: { dex: r, glow: on ? null : pick } });
+    for (const r of own) {
+      const on = !!Data.particlesOf(p, r);
+      const b = el('div', 'coll-item skin own' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${on ? t('Puestas') : t('Las tienes')}</em>`);
+      b.prepend(applySkin(portrait(r, 72), null, r, true));
       grid.append(b);
     }
-    body.append(grid);
+    if (!own.length) {
+      const demo = el('button', 'coll-item locked demo', `<small>${t('Aún no tienes')}</small><em>${t('Mira las ruletas de Lucky Spin')}</em>`);
+      demo.onclick = () => this.openTreasure();
+      demo.prepend(applySkin(portrait(4, 72), null, 4, true));
+      grid.append(demo);
+    }
+    sec.append(grid);
+    body.append(sec);
   },
 };

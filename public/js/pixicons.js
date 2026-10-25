@@ -479,7 +479,7 @@ export const iconUrl = name => PIX.url(name);
 export const drawIcon = (ctx, name, x, y, size) => PIX.draw(ctx, name, x, y, size);
 
 // Sprites de objetos de PokeAPI (public/items/): id de la tienda -> fichero
-const ITEM_FILE = { pokeball: 'poke-ball', superball: 'great-ball', ultraball: 'ultra-ball', caramelo: 'rare-candy',
+const ITEM_FILE = { pokeball: 'poke-ball', superball: 'great-ball', ultraball: 'ultra-ball', masterball: 'master-ball', caramelo: 'rare-candy',
   maspsps: 'hp-up', proteina: 'protein', hierro: 'iron', carburante: 'carbos', agua: 'water-stone', trueno: 'thunder-stone',
   fuego: 'fire-stone', hoja: 'leaf-stone', lunar: 'moon-stone', sol: 'sun-stone', hielo: 'ice-stone', noche: 'dusk-stone',
   alba: 'dawn-stone', dia: 'shiny-stone' };

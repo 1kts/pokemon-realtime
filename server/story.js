@@ -184,11 +184,6 @@ function action(p, msg) {
     if (regionMons(p, mon.region).length <= 1) return `Es tu único Pokémon de ${D.REGIONS[mon.region].name}`;
     p.coins += D.sellPrice(mon);
     removeMon(p, mon);
-  } else if (a === 'release') {
-    const mon = monByUid(p, msg.uid);
-    if (mon && inTower(p, mon.uid)) return 'Está en tu equipo de la Torre Batalla: retírate antes';
-    if (!mon || regionMons(p, mon.region).length <= 1) return 'No puedes liberarlo';
-    removeMon(p, mon);
   } else return 'Acción desconocida';
   store.save();
   return null;
@@ -202,7 +197,7 @@ function battleSetup(p, msg) {
   // Solo se combate con Pokémon de la región del lugar
   const team = teamMons(p, node.region);
   if (!team.length) return { error: `Primero elige tu Pokémon inicial de ${D.REGIONS[node.region].name}` };
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, nick: m.nick, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex), glow: D.glowOf(p, m.dex) })) };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, nick: m.nick, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex), parts: D.particlesOf(p, m.dex) })) };
   if (msg.a === 'route') {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };
@@ -210,7 +205,7 @@ function battleSetup(p, msg) {
     const wild = D.rollWild(route);
     const shiny = Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);
     const perfect = !!wild.rare && Math.random() < D.RARE_PERFECT;
-    const balls = { pokeball: p.items.pokeball || 0, superball: p.items.superball || 0, ultraball: p.items.ultraball || 0 };
+    const balls = Object.fromEntries(D.BALL_IDS.map(k => [k, p.items[k] || 0]));
     return {
       kind: 'route', route,
       opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny, iv: perfect ? { ...D.PERFECT_IVS } : undefined }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare, perfect }] },
@@ -234,7 +229,7 @@ function applyResult(p, setup, result, battle) {
   const reward = { coins: 0, xp: [], badge: null, captured: null, balls: null };
   // Las Poké Balls gastadas se descuentan siempre, se gane o se pierda
   if (side.balls) {
-    for (const k of ['pokeball', 'superball', 'ultraball']) p.items[k] = side.balls[k] || 0;
+    for (const k of D.BALL_IDS) p.items[k] = side.balls[k] || 0;
     reward.balls = { ...side.balls };
   }
   const won = result.winner === 0;

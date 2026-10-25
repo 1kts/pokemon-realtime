@@ -26,32 +26,31 @@ function migrate(p) {
     for (const a of D.ACHIEVEMENTS) if (p.achievements[a.id] && D.achievementAvatar(a)) unlock(p, 'avatars', D.achievementAvatar(a));
   }
   if (!p.achClaim) p.achClaim = [];
+  if (!p.cosmetics.effects) p.cosmetics.effects = [];
+  if (!p.koByType) p.koByType = {};
+  if (!p.lineStats) p.lineStats = {};
   if (!p.mastery) p.mastery = {};
   if (!p.cosmetics.auras) p.cosmetics.auras = [];
   if (!p.skins) p.skins = {};
-  // Glows del sprite: los logros ya cobrados antes de existir dan su glow sin más
-  if (!p.cosmetics.glows) {
-    p.cosmetics.glows = [];
-    for (const a of D.ACHIEVEMENTS) if (a.reward && a.reward.glow && p.achievements[a.id] && !(p.achClaim || []).includes(a.id)) unlock(p, 'glows', a.reward.glow);
-  }
-  if (!p.glows) p.glows = {};
+  // Los glows del sprite (quitados) pasan a ser glows del avatar con el mismo nombre
+  if (p.cosmetics.glows) { for (const g of p.cosmetics.glows) if (D.AURAS.includes(g)) unlock(p, 'auras', g); delete p.cosmetics.glows; }
+  delete p.glows;
   // Skins ganadas en Tesoros ('elemental:<línea>'); la Elemental que antes era el premio de maestría de
   // 600 victorias (nivel 7, ya quitado) pasa aquí para quien la tuviera
   if (!p.cosmetics.skins) p.cosmetics.skins = [];
-  for (const [root, list] of Object.entries(p.masteryClaimed || {})) {
-    if (!list.includes(7)) continue;
-    unlock(p, 'skins', 'elemental:' + root);
-    p.masteryClaimed[root] = list.filter(i => i !== 7);
-  }
-  // Maestría: lo que antes se daba solo (estrella a 10, ilustración a 50, marco a 100) cuenta como recogido
-  if (!p.masteryClaimed) {
+  // Retos de línea nuevos (Logros): los premios de maestría de antes eran otros, se empieza de cero
+  if (p.masteryV !== 2) {
+    for (const [root, list] of Object.entries(p.masteryClaimed || {})) if (list.includes(7)) unlock(p, 'skins', 'elemental:' + root);
     p.masteryClaimed = {};
-    const old = { star: 10, art: 50, frame: 100 };
-    for (const [root, wins] of Object.entries(p.mastery)) {
-      const got = D.MASTERY_TIERS.map((x, i) => i).filter(i => old[D.MASTERY_TIERS[i].kind] && wins >= old[D.MASTERY_TIERS[i].kind]);
-      if (got.length) p.masteryClaimed[root] = got;
-    }
+    p.masteryV = 2;
   }
+  // Partículas: antes iban con la skin Elemental; quien la tenga se queda también sus partículas, puestas
+  if (!p.cosmetics.particles) {
+    p.cosmetics.particles = [];
+    p.particles = {};
+    for (const s of p.cosmetics.skins || []) if (s.startsWith('elemental:')) { const l = +s.split(':')[1]; unlock(p, 'particles', l); if (p.skins[l] === 'elemental') p.particles[l] = true; }
+  }
+  if (!p.particles) p.particles = {};
   checkAchievements(p);
 }
 
@@ -75,11 +74,11 @@ function claimAchievement(p, id) {
   if (!a || !p.achClaim.includes(id)) return { error: 'No hay nada que recoger de ese logro' };
   p.achClaim = p.achClaim.filter(x => x !== id);
   const rw = a.reward || {};
-  const loot = { coins: rw.coins || 0, items: {}, title: rw.title || null, frame: rw.frame || null, glow: rw.glow || null, avatar: D.achievementAvatar(a), achievement: id };
+  const loot = { coins: rw.coins || 0, items: {}, title: rw.title || null, frame: rw.frame || null, aura: rw.aura || null, avatar: D.achievementAvatar(a), achievement: id };
   p.coins = Math.min(MAX_COINS, p.coins + loot.coins);
   if (loot.title) unlock(p, 'titles', loot.title);
   if (loot.frame) unlock(p, 'frames', loot.frame);
-  if (loot.glow) unlock(p, 'glows', loot.glow);
+  if (loot.aura) unlock(p, 'auras', loot.aura);
   if (loot.avatar) unlock(p, 'avatars', loot.avatar);
   return { loot };
 }
@@ -108,6 +107,19 @@ function addMastery(p, dexes) {
   return ups;
 }
 
+// Debilitados del combate b hechos por el lado idx, por tipo del movimiento (logros ko-<tipo>)
+function addKOs(p, b, idx) {
+  migrate(p);
+  for (const k of b.kos || []) if (k.by === idx && k.type) p.koByType[k.type] = (p.koByType[k.type] || 0) + 1;
+}
+
+// Contadores de los retos de línea: victorias online (pvp, suma) y mejor racha de la Torre (tower, máximo)
+function addLineStat(p, dexes, stat, value = 1, max = false) {
+  migrate(p);
+  const s = p.lineStats[stat] = p.lineStats[stat] || {};
+  for (const root of new Set(dexes.filter(d => D.SPECIES[d]).map(D.lineOf))) s[root] = max ? Math.max(s[root] || 0, value) : (s[root] || 0) + value;
+}
+
 // Recoger el premio i de la maestría de una línea
 function claimMastery(p, dex, i) {
   migrate(p);
@@ -118,10 +130,11 @@ function claimMastery(p, dex, i) {
   p.masteryClaimed[root] = [...(p.masteryClaimed[root] || []), i];
   const loot = { coins: 0, items: {}, mastery: { dex: root, tier: i, kind: tier.kind } };
   if (tier.kind === 'art') loot.art = root;
+  if (tier.kind === 'portrait') { unlock(p, 'avatars', 'pt:' + root); loot.avatar = 'pt:' + root; }
   if (tier.kind === 'aura') { unlock(p, 'auras', D.typeAuraOf(root)); loot.aura = D.typeAuraOf(root); }
   if (tier.kind === 'frame') { unlock(p, 'frames', D.typeFrameOf(root)); loot.frame = D.typeFrameOf(root); }
   if (tier.kind === 'skin') loot.skin = tier.skin;
-  if (tier.title) { unlock(p, 'titles', D.masteryTitle(root)); loot.title = D.masteryTitle(root); }
+  if (tier.kind === 'title') { unlock(p, 'titles', D.masteryTitle(root)); loot.title = D.masteryTitle(root); }
   if (tier.aura) { unlock(p, 'auras', tier.aura); loot.aura2 = tier.aura; }
   return { loot };
 }
@@ -194,7 +207,7 @@ function setLook(p, msg) {
     p.frame = msg.frame;
   }
   if (msg.aura !== undefined) {
-    if (msg.aura !== null && !p.cosmetics.auras.includes(msg.aura)) return 'No tienes ese brillo';
+    if (msg.aura !== null && !p.cosmetics.auras.includes(msg.aura)) return 'No tienes ese glow';
     p.aura = msg.aura;
   }
   // Skin de una línea evolutiva: { dex, skin } (skin null = sin skin)
@@ -204,17 +217,22 @@ function setLook(p, msg) {
     if (id !== null && !(D.SKINS.includes(id) && D.hasSkin(p, dex, id))) return 'No tienes esa skin';
     if (id) p.skins[D.lineOf(dex)] = id; else delete p.skins[D.lineOf(dex)];
   }
-  // Glow de una línea evolutiva: { dex, glow } (glow null = sin glow)
-  if (msg.glow !== undefined) {
-    const dex = msg.glow && +msg.glow.dex, id = msg.glow && msg.glow.glow;
+  // Partículas de una línea: { dex, on }
+  if (msg.particles !== undefined) {
+    const dex = msg.particles && +msg.particles.dex;
     if (!D.SPECIES[dex]) return 'Ese Pokémon no existe';
-    if (id !== null && !p.cosmetics.glows.includes(id)) return 'No tienes ese glow';
-    if (id) p.glows[D.lineOf(dex)] = id; else delete p.glows[D.lineOf(dex)];
+    if (msg.particles.on && !D.hasParticles(p, dex)) return 'No tienes esas partículas';
+    if (msg.particles.on) p.particles[D.lineOf(dex)] = true; else delete p.particles[D.lineOf(dex)];
   }
   if (msg.showcase !== undefined) {
     const list = Array.isArray(msg.showcase) ? [...new Set(msg.showcase.map(String))] : [];
     if (list.length > D.SHOWCASE_MAX || !list.every(id => p.achievements[id])) return 'Solo puedes mostrar logros que hayas conseguido';
     p.showcase = list;
+  }
+  // Efecto del avatar (por encima de la imagen): uno de los conseguidos, o null para ninguno
+  if (msg.effect !== undefined) {
+    if (msg.effect !== null && !(p.cosmetics.effects || []).includes(msg.effect)) return 'No tienes ese efecto';
+    p.effect = msg.effect;
   }
   if (typeof msg.avatar === 'string') {
     if (!p.cosmetics.avatars.includes(msg.avatar)) return 'No tienes ese avatar';
@@ -234,4 +252,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { unlock, addGems, migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };
+module.exports = { unlock, addGems, migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery, addKOs, addLineStat };

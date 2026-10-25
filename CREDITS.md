@@ -208,6 +208,112 @@ y con atribución a sus artistas.
 | XxWindpawxX | <@!192118698859954178> | 789, 803 |
 <!-- retratos:fin -->
 
+<!-- collab:inicio (lo rellena tools/import-collab.js) -->
+## Animaciones extra y retratos con emoción
+
+Las animaciones extra (dormir, saltar, comer, posar…) y los retratos con emoción de los Pokémon
+1-251 vienen de [SpriteCollab](https://github.com/PMDCollab/SpriteCollab).
+Licencia [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): uso **no comercial**
+y con atribución a sus artistas.
+
+| Artista | Contacto | Pokémon (nº de Pokédex) |
+|---|---|---|
+| <@!136619914512433152> |  | 79 |
+| <@!276175146304405514> |  | 3 |
+| <@!436940337865293834> |  | 69, 180 |
+| <@!571847167489343507> |  | 171 |
+| <@!589906152708505648> |  | 185 |
+| <@!787048769883602956> |  | 132 |
+| <@!967585139485999154> |  | 98, 229 |
+| <ElGian> | <gfcobross@gmail.com> | 169 |
+| 0palite | https://zeropalart.tumblr.com/ | 5, 6, 64, 154, 157, 196 |
+| 3P1C |  | 27 |
+| AlexGroeger |  | 149 |
+| Angels-Snack | https://angels-snack.tumblr.com/ | 239 |
+| anomalocaris | https://twitter.com/radiodonta_lord | 48, 140 |
+| Anon |  | 194 |
+| Axcel |  | 60 |
+| baronessfaron |  | 4, 10, 11, 20, 38, 53, 56, 59, 64, 69, 76, 77, 78, 86, 95, 99, 118, 130, 134, 135, 150, 151, 152, 173, 175, 190, 196, 198, 238 |
+| Blanca |  | 87, 233 |
+| Blanky | https://www.tumblr.com/theblankest123 | 11, 21, 48, 116 |
+| brookriver | https://brookriver.carrd.co/ | 72, 211 |
+| bwappi | https://bsky.app/profile/bwappi.bsky.social | 5, 46, 103, 233 |
+| C_Pariah | <@322382592202637322> | 131, 153, 156, 159, 172, 225 |
+| Caitemis | https://caitemis-art.tumblr.com/ | 14, 22, 55, 72, 80, 97, 109, 126, 142, 186, 198, 206, 220, 223, 236 |
+| CamusZekeSirius |  | 250 |
+| chikorene | <@1346022682667388968> | 44, 111 |
+| CHUNSOFT | https://www.spike-chunsoft.com/ | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251 |
+| Cloudy | https://twitter.com/cloudyskys17695 | 21 |
+| Coksi | https://coksi.carrd.co/ | 125 |
+| cosmosully | https://twitter.com/cosmosully | 63, 215 |
+| Deeshura | https://bsky.app/profile/deeshura.bsky.social | 149, 203 |
+| Deleca7755 | <https://www.deviantart.com/deleca-7755> | 161, 173, 189 |
+| deltaflare | <@555360707617488904> | 78 |
+| Deltex12 | /u/Deltex12 | 58 |
+| dmDash |  | 135 |
+| drawsstuff | https://bugfu.newgrounds.com/ | 96 |
+| Emboarger |  | 6, 27, 31, 34, 39, 66, 81, 94, 100, 143, 149, 191, 200, 212, 232, 240, 241 |
+| Emmuffin | https://twitter.com/Ernmuffin | 2, 8, 9, 12, 23, 24, 28, 53, 58, 63, 75, 76, 90, 104, 105, 128, 137, 148, 157, 161, 164, 169, 176, 179, 180, 184, 188, 194, 195, 197, 198, 199, 203, 209, 213, 216, 221, 222, 226, 230, 232, 235, 245, 246, 251 |
+| estelstarlight | https://estelstarlight.tumblr.com/post/186838449949 | 35 |
+| Fable | https://twitter.com/fabledpainter | 15 |
+| FalafelPorpoise | https://bsky.app/profile/falafel-porpoise.bsky.social | 18 |
+| Fearless-Quit |  | 23, 29, 81, 183, 222, 235 |
+| Felis-Licht | https://www.deviantart.com/felis-licht/ | 43, 54, 66, 104, 179 |
+| fledermaus | https://www.furaffinity.net/user/fleder-maus/ | 41 |
+| FlowerSnek | https://twitter.com/EthanLac13 | 50, 225 |
+| Frostdrop1 |  | 10, 19, 138, 140 |
+| frostibirb | https://twitter.com/frostibirb | 116 |
+| G〜 | https://bsky.app/profile/justtr4sh.pmd.social | 3, 20, 26, 46, 70, 96, 101, 106, 123, 140, 141, 151, 164, 168, 206, 225, 232, 234, 249 |
+| Gayschlatt |  | 40 |
+| Ginnie |  | 136 |
+| Grimlin | https://twitter.com/Griimlin | 5, 26, 215 |
+| gromchurch | https://twitter.com/poongis2 | 182 |
+| Gust | https://twitter.com/Estelaris__ | 36, 40, 50, 51, 65, 147, 174, 192, 202, 209, 216, 228, 238 |
+| Hanbei | https://twitter.com/Hanbei | 177, 206 |
+| Ichor |  | 248 |
+| jackolanternjackalope | https://www.instagram.com/jackolanternjackalope/ | 36 |
+| Jarleypeño | https://www.deviantart.com/applecone413 | 183 |
+| JemDragons | https://twitter.com/JemDragons?s=09 | 129 |
+| JFain |  | 16, 29, 32, 34, 39, 42, 55, 61, 63, 67, 77, 92, 100, 114, 136, 147, 150, 151, 156, 163, 165, 166, 167, 170, 171, 175, 177, 183, 187, 190, 193, 203, 204, 207, 214, 215, 218, 219, 220, 223, 228, 240, 242, 246 |
+| JustAGunk | <@1377429093997477928> | 33, 58, 62, 74, 120 |
+| leafia_barrett | leafbarrett@gmail.com | 251 |
+| LT | https://twitter.com/eLTehH | 58 |
+| Magu | @magu_boi | 62, 164, 201 |
+| MeepTheMareep02 | https://instagram.com/meepy.starsheepy?igshid=NGVhN2U2NjQ0Yg== | 191 |
+| Mojo |  | 39, 113, 137 |
+| Mooncaller | <https://twitter.com/LunarPilgrim> | 49 |
+| Morei | https://bsky.app/profile/murpia57.bsky.social | 54, 66, 79, 114, 188, 200, 229, 239 |
+| Neat_Neato | imneatneato@gmail.com | 161, 162 |
+| NeroIntruder | https://twitter.com/NeroIntruder | 207 |
+| NOLASMOR |  | 143 |
+| Noo | https://artfight.net/~NooNoo_Skidoo | 83, 123, 160, 227, 237 |
+| Novie | <https://twitter.com/themagolord> | 13 |
+| Okami | okamiromhacks@gmail.com | 28 |
+| PhillipsYoung | https://twitter.com/PhilliYoung196 | 52, 93, 101, 112, 216, 217, 236 |
+| programmedsleepstate | <@224476380790915072> | 243 |
+| Ray2064 | <@540823632054714388> | 84 |
+| RelicCipher | <@739304144552198285> | 162 |
+| RoyalRust |  | 200 |
+| Sceptile |  | 104 |
+| SethY | https://linktr.ee/sethyuikora | 149 |
+| Shitpost_Sunkern | https://www.youtube.com/channel/UCxyzfFEM6TfgAQ5LIdGtkXw | 108 |
+| ShyStarryRain |  | 27, 43, 135, 136, 184, 194 |
+| silverfox88 | https://twitter.com/realsilverfox88 | 131 |
+| SirViolet |  | 82 |
+| skygummi | https://twitter.com/skygummi | 49 |
+| Smalusion | https://twitter.com/Smalusion | 198, 251 |
+| Some_Shinx | <@1519393734008115314> | 104 |
+| Soulja | https://twitter.com/OlSoulja | 181 |
+| Spikey-Valentine | https://twitter.com/spikeyvalentine | 172 |
+| Tainted#3886 |  | 17, 75, 106, 202, 217 |
+| TawnySoup | https://linktr.ee/tawnysoup | 23, 30, 31 |
+| Top_Kec | @topkec.bsky.social | 9, 26, 85, 115, 178, 191, 224, 244 |
+| Uni | https://github.com/ArianaCastro01 | 194 |
+| Vex |  | 27, 241 |
+| Vynnyal | <https://vynnyal.tumblr.com/> | 136 |
+| XModxGodX |  | 28 |
+<!-- collab:fin -->
+
 ## Marca
 
 Pokémon y los nombres de sus personajes son marcas de Nintendo, Creatures Inc. y GAME FREAK inc.

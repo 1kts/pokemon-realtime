@@ -73,13 +73,31 @@ function pay(p, rw) {
   const loot = { coins: rw.coins || 0, items: { ...(rw.items || {}) } };
   p.coins = Math.min(MAX_COINS, p.coins + loot.coins);
   for (const [k, q] of Object.entries(loot.items)) p.items[k] = (p.items[k] || 0) + q;
+  if (rw.gems) loot.gems = addGems(p, rw.gems);
   return loot;
 }
 
-// Acciones del jugador: claim (recoger una cumplida), reroll (cambiarla) y chest (abrir el cofre).
+// Acciones del jugador: claim (recoger una cumplida), claimAll (todas las cumplidas y sus cofres), reroll
+// (cambiarla) y chest (abrir el cofre).
 // Devuelve { error } o { loot } con lo recibido (para la animación del cliente).
 function action(p, msg) {
   const ms = refresh(p);
+  // Recoger todo: todas las misiones cumplidas (diarias y semanales) y los cofres que se abran con ellas,
+  // en un solo premio sumado
+  if (msg.a === 'claimAll') {
+    const total = { coins: 0, items: {}, gems: 0, all: 0, chests: [] };
+    const add = l => {
+      total.coins += l.coins || 0; total.gems += l.gems || 0;
+      for (const [k, q] of Object.entries(l.items || {})) total.items[k] = (total.items[k] || 0) + q;
+      if (l.aura) total.aura = l.aura;
+    };
+    for (const k of KINDS) {
+      ms[k].forEach((m, i) => { if (!m.claimed && done(m)) { add(action(p, { a: 'claim', kind: k, i }).loot); total.all++; } });
+      if (ms[k].every(m => m.claimed) && !ms.chest[k]) { add(action(p, { a: 'chest', kind: k }).loot); total.chests.push(k); }
+    }
+    if (!total.all && !total.chests.length) return { error: 'No hay nada que recoger' };
+    return { loot: total };
+  }
   const kind = KINDS.includes(msg.kind) ? msg.kind : null;
   if (!kind) return { error: 'Misión no válida' };
   if (msg.a === 'chest') {
@@ -87,11 +105,10 @@ function action(p, msg) {
     if (!ms[kind].every(m => m.claimed)) return { error: 'Recoge antes las 3 misiones' };
     ms.chest[kind] = true;
     const loot = { ...pay(p, D.MISSION_CHEST[kind]), chest: kind, gems: addGems(p, kind === 'daily' ? D.GEMS.chestDaily : D.GEMS.chestWeekly) };
-    // El semanal trae además un glow de tipo que aún no tengas (con todos, dinero de más)
+    // El semanal trae además un glow de tipo para el avatar que aún no tengas (con todos, dinero de más)
     if (kind === 'weekly') {
-      if (!p.cosmetics.glows) p.cosmetics.glows = [];
-      const left = D.GLOWS.filter(g => g.startsWith('tipo-') && !p.cosmetics.glows.includes(g));
-      if (left.length) { loot.glow = left[Math.floor(Math.random() * left.length)]; p.cosmetics.glows.push(loot.glow); }
+      const own = p.cosmetics.auras || (p.cosmetics.auras = []), left = D.AURAS.filter(g => g.startsWith('tipo-') && !own.includes(g));
+      if (left.length) { loot.aura = left[Math.floor(Math.random() * left.length)]; own.push(loot.aura); }
       else { p.coins = Math.min(MAX_COINS, p.coins + 1500); loot.coins += 1500; }
     }
     return { loot };

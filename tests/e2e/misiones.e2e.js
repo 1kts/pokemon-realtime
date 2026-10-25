@@ -9,7 +9,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   ok(await page.eval(`document.querySelectorAll('.missions-widget .mission').length`) === 6 && await page.eval(`document.querySelectorAll('.missions-widget .mw-sub').length`) === 2, 'el menú enseña las 3 misiones diarias y las 3 semanales');
-  ok(await page.eval(`!!document.querySelector('.missions-widget.has-ready .m-ready')`), 'el panel de misiones avisa de que hay algo por recoger');
+  ok(await page.eval(`!!document.querySelector('.missions-widget.has-ready .claim-all')`), 'el panel de misiones avisa de que hay algo por recoger');
 
   await page.click('.mw-head');
   await page.waitFor(`window.__app.ui.view === 'missions'`);
@@ -24,7 +24,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(true, 'recogerla da el avatar de la medalla, con la animación de premio');
   await page.eval(`[...document.querySelectorAll('.loot-pop .acts button')].find(b => !b.classList.contains('primary')).click(); true`);
   await page.waitFor(`window.__app.ui.profile.avatar === 'badge:kanto:0'`);
-  ok(await page.eval(`!!document.querySelector('.hub-ava .ava.ava-icon')`), '«Usar de avatar» la pone en el perfil');
+  ok(await page.eval(`!!window.__app.ui.meModule().querySelector('.hub-ava .ava.ava-icon')`), '«Usar de avatar» la pone en el perfil');
 
   // Cambiar una misión
   const free = await page.eval(`window.__app.ui.profile.missions.freeRerolls.daily`);

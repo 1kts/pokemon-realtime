@@ -22,8 +22,10 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(visible) === 1, 'el filtro shiny deja solo a Mew');
 
   const mew = () => page.eval(`window.__app.ui.profile.mons.find(m => m.dex === 151)`);
-  await page.click('Ver normal');
+  await page.eval(`document.querySelector('.mon-card[data-shiny="1"]').querySelector('.mon-name').click(); true`);
+  await page.waitFor(`document.querySelector('.mon-sheet .ms-seg')`);
+  await page.eval(`[...document.querySelectorAll('.mon-sheet .ms-seg button')].find(b => b.textContent === 'Normal').click(); true`);
   await page.waitFor(`window.__app.ui.profile.mons.find(m => m.dex === 151).plain`);
   ok((await mew()).plain && (await mew()).shiny, 'Mew se ve normal y sigue siendo shiny');
-  ok(await page.eval(visible) === 1 && await page.eval(`!!document.querySelector('.mon-card button.look:not(.on)')`), 'los filtros se mantienen y el botón pasa a «Ver shiny»');
+  ok(await page.eval(visible) === 1 && await page.eval(`/Normal/.test(document.querySelector('.mon-sheet .ms-seg button.sel').textContent)`), 'los filtros se mantienen y el interruptor de la ficha queda en «Normal»');
 };

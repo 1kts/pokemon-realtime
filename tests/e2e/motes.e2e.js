@@ -42,7 +42,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.mon-card')`);
   const card = `[...document.querySelectorAll('.mon-card')].find(c => c.querySelector('.mon-name').textContent.includes('Chispitas'))`;
   ok(await page.eval(`!!${card} && ${card}.querySelector('.species').textContent === 'Pikachu'`), 'en Mis Pokémon sale con su mote y la especie al lado');
-  await page.eval(`${card}.querySelector('.nick-btn').click(); true`);
+  await page.eval(`${card}.querySelector('.mon-name').click(); true`);
+  await page.waitFor(`document.querySelector('.mon-sheet')`);
+  await page.click('.ms-acts button:nth-child(2)');
   await page.waitFor(`document.querySelector('.nick-modal input')`);
   ok(await page.eval(`document.querySelector('.nick-modal input').value === 'Chispitas'`), '«Mote» abre el cambio con el mote actual');
   await page.type('.nick-modal input', '<b>Rayo</b>');
@@ -61,8 +63,10 @@ module.exports = async ({ page, player, ok }) => {
 
   // Quitarlo: vuelve a llamarse como su especie
   await page.eval(`window.__app.ui.show('team'); true`);
-  await page.waitFor(`document.querySelector('.mon-card .nick-btn')`);
-  await page.click('.mon-card .nick-btn');
+  await page.waitFor(`document.querySelector('.mon-card .mon-name')`);
+  await page.eval(`document.querySelector('.mon-card .mon-name').click(); true`);
+  await page.waitFor(`document.querySelector('.mon-sheet')`);
+  await page.click('.ms-acts button:nth-child(2)');
   await page.waitFor(`document.querySelector('.nick-modal')`);
   await page.click('Quitar mote');
   await page.waitFor(`!window.__app.ui.profile.mons.find(m => m.uid === ${uid}).nick`);

@@ -80,9 +80,21 @@ function decide(st, key, prob) {
   return st.decided.get(key);
 }
 
+// Dificultad adaptativa: sobre la habilidad de su nivel, la IA afloja si va arrasando (ventaja de PS del
+// equipo) y aprieta si va perdiendo, como mucho ADAPT_DOWN / ADAPT_UP. Cambia despacio para que no se note
+// a saltos. Afecta a todo lo que depende de la habilidad: puntería, reflejos, esquivas, parrys y cadencia.
+const ADAPT_DOWN = 0.18, ADAPT_UP = 0.1;
+function adaptiveSkill(b, side, st, dt) {
+  const hp = s => s.team.reduce((a, m) => a + Math.max(0, m.hp) / m.maxHp, 0) / s.team.length;
+  const lead = hp(side) - hp(b.foe(side));   // > 0: la IA va ganando
+  const want = lead > 0.15 ? -ADAPT_DOWN * Math.min(1, (lead - 0.15) / 0.45) : lead < -0.15 ? ADAPT_UP * Math.min(1, (-lead - 0.15) / 0.45) : 0;
+  st.adapt = (st.adapt || 0) + (want - (st.adapt || 0)) * Math.min(1, dt * 0.5);
+  return Math.max(0.05, Math.min(1, side.ai + st.adapt));
+}
+
 function aiInput(b, side, dt) {
   const st = side.aiState;
-  const skill = side.ai;
+  const skill = side.wild ? side.ai : adaptiveSkill(b, side, st, dt);
   const inp = { s: 0, mx: 0, my: 0, a: side.a, tx: side.x, ty: side.y, c: -1, sw: -1 };
   if (b.state !== 'fight') return inp;
   const mon = b.mon(side);
@@ -171,6 +183,9 @@ function aiInput(b, side, dt) {
     }
     if (st.cover) { const cd = Math.hypot(st.cover.x - side.x, st.cover.y - side.y) || 1; mx += (st.cover.x - side.x) / cd * 0.8; my += (st.cover.y - side.y) / cd * 0.8; }
   }
+
+  // Una roca tapa la línea de tiro: las hábiles se desplazan de lado para volver a verlo
+  if (!f.hidden && skill > 0.4 && mode !== 'defender' && lineBlocked(b, side, target)) { mx += (-dy / dist) * st.strafe * 1.2; my += (dx / dist) * st.strafe * 1.2; }
 
   // Esquivar proyectiles que vienen hacia mí
   let threat = null;
@@ -280,6 +295,7 @@ function aiInput(b, side, dt) {
   if (rnd() > cadence) return aim(inp, toFoe, skill);
 
   const opening = (foeFlags & (F.STUN | F.REC | F.WIND)) && rnd() < 0.3 + 0.7 * skill;   // ¿lo ve vendido?
+  const blocked = lineBlocked(b, side, target);
   const reserve = skill > 0.45 ? 25 : 0;    // las buenas guardan energía para escapar
   let best = null, bestU = 0;
   moves.forEach((m, i) => {
@@ -288,6 +304,8 @@ function aiInput(b, side, dt) {
     let u = 0;
     const big = m.cost >= 40;
     if (m.kind === 'proj') u = dist < m.range * 0.92 ? (m.dmg + 2) * (m.count || 1) * 0.6 + (m.stun ? 8 : 0) : 0;
+    // Una roca en medio: el proyectil o el rayo no llegaría (las IA hábiles no lo malgastan)
+    if ((m.kind === 'proj' || m.kind === 'beam') && u > 0 && blocked && rnd() < skill) u *= 0.05;
     else if (m.kind === 'beam') u = dist < m.len * 0.92 ? m.dmg * (opening ? 1.7 : 0.75) : 0;
     else if (m.kind === 'melee') u = dist < m.range + fr + 8 ? m.dmg * 1.2 : 0;
     else if (m.kind === 'cone') u = dist < m.range + fr - 10 ? m.dmg * 1.25 : 0;
@@ -318,8 +336,8 @@ function aiInput(b, side, dt) {
   });
   if (best === null) return aim(inp, toFoe, skill);
   const m = moves[best];
-  // Apuntar con anticipación (más precisa cuanto más hábil)
-  const lead = m.kind === 'proj' || m.kind === 'wave' ? dist / m.speed : m.kind === 'area' ? m.delay + m.wind : m.wind;
+  // Apuntar con anticipación (más precisa cuanto más hábil): lo que tarda en cargar el ataque y en llegar
+  const lead = m.kind === 'proj' || m.kind === 'wave' ? (m.wind || 0) + dist / m.speed : m.kind === 'area' ? m.delay + m.wind : m.wind;
   const px = target.x + vel.x * lead * skill, py = target.y + vel.y * lead * skill;
   inp.a = Math.atan2(py - side.y, px - side.x) + (rnd() - 0.5) * (1 - skill) * 0.6;
   inp.tx = px + (rnd() - 0.5) * (1 - skill) * 100; inp.ty = py + (rnd() - 0.5) * (1 - skill) * 100;
@@ -328,9 +346,19 @@ function aiInput(b, side, dt) {
   return inp;
 }
 
+// ¿Hay una roca entre el atacante y el blanco? (segmento contra círculos; las fantasmas no cuentan)
+function lineBlocked(b, from, to) {
+  const dx = to.x - from.x, dy = to.y - from.y, len2 = dx * dx + dy * dy || 1;
+  return b.obstacles.some(o => {
+    if (o.kind === 'ghost') return false;
+    const k = Math.max(0, Math.min(1, ((o.x - from.x) * dx + (o.y - from.y) * dy) / len2));
+    return Math.hypot(from.x + dx * k - o.x, from.y + dy * k - o.y) < o.r + 4;
+  });
+}
+
 function aim(inp, toFoe, skill) {
   inp.a = toFoe + (Math.random() - 0.5) * (1 - skill) * 0.4;
   return inp;
 }
 
-module.exports = { aiInput, personality };
+module.exports = { aiInput, personality, adaptiveSkill };

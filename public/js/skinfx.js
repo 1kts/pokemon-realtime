@@ -1,7 +1,7 @@
-// Partículas de la skin Elemental en combate: formas de pixel art (llamas, chispas, burbujas, hojas,
+// Partículas de una línea en combate (premio aparte de la skin, de Lucky Spin): formas de pixel art (llamas, chispas, burbujas, hojas,
 // copos, destellos, humo) que salen del Pokémon según el tipo de su línea evolutiva. Un atlas de 8
 // formas en escala de grises (el shader las tiñe) y dos capas: aditiva (fuego, chispas, destellos)
-// y normal (burbujas, hojas, humo). Las emite Actor.update (actors.js) mientras lleva la skin.
+// y normal (burbujas, hojas, humo). Las emite Actor.update (actors.js) si la línea las lleva puestas.
 import * as THREE from 'three';
 
 const MAX = 1500;

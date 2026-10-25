@@ -14,6 +14,7 @@ const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
 const missions = require('./missions.js');
 const daily = require('./daily.js');
+const { collectAll } = require('./collect.js');
 const metrics = require('./metrics.js');
 const limits = require('./limits.js');
 const audit = require('./audit.js');
@@ -206,11 +207,13 @@ function finishDraft(draft) {
   const lvl = D.RANKED_LEVEL;
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex), glow: D.glowOf(c.profile, dex) })) })),
-  }, (result) => {
+    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+  }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
     const mastery = rewards.addMastery(draft.players[result.winner].profile, draft.picks[result.winner]);
+    rewards.addLineStat(draft.players[result.winner].profile, draft.picks[result.winner], 'pvp');
+    draft.players.forEach((c, i) => rewards.addKOs(c.profile, battle, i));
     // Misiones de los dos: combate online jugado, victoria (con los tipos de su equipo) y clasificatoria ganada
     const before = draft.players.map(c => missions.snapshot(c.profile));
     draft.players.forEach((c, i) => {
@@ -267,7 +270,7 @@ function startPractice(c, msg) {
   startBattle([c, null], {
     mode: 'practice', map: tut ? Object.keys(D.MAPS)[0] : maps[Math.floor(Math.random() * maps.length)],
     sides: [
-      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), glow: D.glowOf(c.profile, dex) })) },
+      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) },
       // (el muñeco es un Snorlax: Normal, así que ningún ataque del tutorial le hace poco efecto)
       tut ? { name: 'Muñeco', team: [{ dex: TUTORIAL_DUMMY, level: D.RANKED_LEVEL }], ai: 0, passive: true, hpMult: TUTORIAL_HP }
         : { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
@@ -283,6 +286,7 @@ function startStory(c, msg) {
     const before = missions.snapshot(c.profile);
     const reward = story.applyResult(c.profile, setup, result, b);
     if (result.winner === 0) reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
+    rewards.addKOs(c.profile, b, 0);
     reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
@@ -296,7 +300,11 @@ function startTower(c) {
   startBattle([c, null], setup.opts, (result, b) => {
     const before = missions.snapshot(c.profile);
     const reward = tower.applyResult(c.profile, setup, result);
-    if (result.winner === 0) reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
+    if (result.winner === 0) {
+      reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
+      rewards.addLineStat(c.profile, b.sides[0].team.map(m => m.dex), 'tower', reward.tower.streak, true);
+    }
+    rewards.addKOs(c.profile, b, 0);
     reward.missions = missions.diff(c.profile, before);
     setTimeout(() => sendProfile(c), 50);
     return [reward, null];
@@ -390,7 +398,11 @@ function handle(c, msg) {
     if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
     if (msg.tutorial === false) delete p.tutorial;
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
-    if (msg.glows) { rewards.migrate(p); for (const g of D.GLOWS) rewards.unlock(p, 'glows', g); }
+    if (msg.auras) { rewards.migrate(p); for (const g of D.AURAS) rewards.unlock(p, 'auras', g); }
+    if (msg.missionsDone) { missions.action(p, { a: 'refresh' }); for (const m of p.missions.daily) m.n = D.MISSION_BY_ID[m.id].goal; }
+    if (Array.isArray(msg.effects)) { rewards.migrate(p); for (const fx of msg.effects) if (D.EFFECTS.includes(fx)) rewards.unlock(p, 'effects', fx); }
+    if (msg.elemental) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'skins', 'elemental:' + D.lineOf(m.dex)); }
+    if (msg.particles) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'particles', D.lineOf(m.dex)); }
     if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
     store.save();
     return sendProfile(c);
@@ -423,7 +435,8 @@ function handle(c, msg) {
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
   if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'daily' || msg.t === 'tutorial' || msg.t === 'treasure') {
-    const r = msg.t === 'mission' ? missions.action(c.profile, msg)
+    const r = msg.t === 'mission' && msg.a === 'claimAll' ? collectAll(c.profile)
+      : msg.t === 'mission' ? missions.action(c.profile, msg)
       : msg.t === 'treasure' ? treasure.spin(c.profile, String(msg.id))
       : msg.t === 'daily' ? daily.claim(c.profile)
       : msg.t === 'tutorial' ? daily.claimTutorial(c.profile)
@@ -440,14 +453,14 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
     if (c.battle) return;
     const coins = c.profile.coins;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });
     // Lo que mueve dinero o Pokémon queda apuntado (para investigar trampas o reclamaciones)
     else if (msg.a === 'nick') audit.log('pokemon.mote', { actor: c.profile.id, ip: c.ip, uid: msg.uid | 0, nick: (c.profile.mons.find(m => m.uid === (msg.uid | 0)) || {}).nick || '' });
-    else if (['buy', 'sell', 'release'].includes(msg.a)) audit.log('tienda.' + msg.a, { actor: c.profile.id, ip: c.ip,
+    else if (['buy', 'sell'].includes(msg.a)) audit.log('tienda.' + msg.a, { actor: c.profile.id, ip: c.ip,
       item: typeof msg.item === 'string' ? msg.item.slice(0, 32) : undefined, uid: Number.isInteger(msg.uid) ? msg.uid : undefined,
       qty: Number.isInteger(msg.qty) ? msg.qty : undefined, coins: c.profile.coins - coins });
     return sendProfile(c);

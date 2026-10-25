@@ -275,6 +275,7 @@ body:not(.in-battle) #hud { display: none; }
 .balls i { width: 15px; height: 15px; border-radius: 50%; background: linear-gradient(180deg, #e83030 45%, #222 45% 55%, #f4f4f4 55%); box-shadow: 0 0 0 1px #222; }
 .balls i.superball { background: linear-gradient(180deg, #2f6fe0 45%, #222 45% 55%, #f4f4f4 55%); }
 .balls i.ultraball { background: linear-gradient(180deg, #333 45%, #ffd23a 45% 55%, #f4f4f4 55%); }
+.balls i.masterball { background: radial-gradient(circle at 30% 30%, #ff7ad8 0 14%, transparent 15%), radial-gradient(circle at 70% 30%, #ff7ad8 0 14%, transparent 15%), linear-gradient(180deg, #7a3cc8 45%, #222 45% 55%, #f4f4f4 55%); }
 .help-hint { left: 12px; bottom: 14px; font-size: 12px; color: rgba(255,255,255,.72); text-shadow: 0 1px 3px #000; max-width: 300px; }
 .plate { left: 0; top: 0; text-align: center; min-width: 110px; will-change: transform; }
 .plate .pn { font-weight: 700; font-size: 13px; text-shadow: 0 1px 3px #000, 0 0 2px #000; white-space: nowrap; }
@@ -302,7 +303,7 @@ body:not(.in-battle) #hud { display: none; }
 @keyframes pop { from { transform: scale(1.4); opacity: 0; } }
 
 @media (max-width: 960px) {
-  .story-body, .online-body, .menu-top { grid-template-columns: 1fr; }
+  .story-body, .online-body, .menu-top, .story-head { grid-template-columns: 1fr; }
   .menu-grid { grid-template-columns: 1fr; }
   .team { width: 172px; }
   .tinfo small { display: none; }
@@ -1112,7 +1113,7 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
    centrado, más estrecho en pantallas anchas y bajado al centro si sobra alto, como la portada */
 #screen > :has(> .inner-bar) { display: flex; flex-direction: column; min-height: 100%; }
 .inner-bar { margin-bottom: 24px; }
-.inner-bar ~ * { width: min(1320px, 100%); margin-inline: auto; }
+.inner-bar ~ :not(button) { width: min(1320px, 100%); margin-inline: auto; }
 .inner-bar + * { margin-top: auto; }
 #screen > :has(> .inner-bar) > :last-child:not(.inner-bar) { margin-bottom: auto; }
 /* Misiones de la portada: diarias y semanales en una lista con scroll */
@@ -1487,21 +1488,21 @@ body.in-battle .legal-bar { display: none; }
 @keyframes aura-pulse { 50% { box-shadow: 0 0 24px 8px var(--aura), inset 0 0 14px 3px var(--aura); opacity: .85; } }
 @keyframes aura-spin { to { transform: rotate(1turn); } }
 
-/* ---------- Glows del sprite (menús): drop-shadow del color del glow que sigue la silueta ---------- */
+/* Glows especiales del avatar (de retos) */
+.ava-aura.aura-dorado { box-shadow: 0 0 12px 4px #ffcb05, 0 0 26px 6px rgba(255,170,0,.45), inset 0 0 10px 2px #ffe27a; animation: aura-pulse-gold 2.2s ease-in-out infinite; }
+@keyframes aura-pulse-gold { 50% { box-shadow: 0 0 18px 6px #ffcb05, 0 0 36px 10px rgba(255,170,0,.55), inset 0 0 14px 3px #fff0b0; } }
+.ava-aura.aura-sombra { inset: -9px; background: radial-gradient(circle, transparent 54%, rgba(122,60,255,.85) 62%, rgba(26,8,48,.9) 72%, transparent 76%); filter: blur(2px); animation: aura-spin 6s linear infinite, aura-breathe 2.6s ease-in-out infinite; }
+.ava-aura.aura-estelar { box-shadow: 0 0 12px 3px #bfe6ff, inset 0 0 8px 2px #fff; animation: aura-pulse-star 2s ease-in-out infinite; }
+.ava-aura.aura-estelar::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; background:
+  radial-gradient(2px 2px at 15% 20%, #fff, transparent), radial-gradient(2px 2px at 85% 30%, #fff, transparent), radial-gradient(1.5px 1.5px at 70% 90%, #fff, transparent), radial-gradient(1.5px 1.5px at 10% 75%, #fff, transparent), radial-gradient(2px 2px at 50% 0%, #fff, transparent);
+  animation: aura-spin 9s linear infinite; }
+@keyframes aura-pulse-star { 50% { box-shadow: 0 0 20px 6px #bfe6ff, inset 0 0 12px 3px #fff; } }
+@keyframes aura-breathe { 50% { opacity: .75; } }
 @property --gc { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
-.has-glow { --glowf: drop-shadow(0 0 1px var(--gc)) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 7px color-mix(in srgb, var(--gc) 60%, transparent)); filter: var(--glowf); }
-.has-glow:not([class*="skin-"]) { animation: glow-breathe 2.4s ease-in-out infinite; }
-@keyframes glow-breathe { 50% { filter: drop-shadow(0 0 1px var(--gc)) drop-shadow(0 0 2px var(--gc)) drop-shadow(0 0 4px color-mix(in srgb, var(--gc) 50%, transparent)); } }
-.glow-prisma.has-glow:not([class*="skin-"]), .glow-dot.glow-prisma { animation: glow-prisma 3s linear infinite; }
+.glow-dot.glow-prisma { animation: glow-prisma 3s linear infinite; }
 @keyframes glow-prisma { 0%, 100% { --gc: #ff5ad1; } 25% { --gc: #ffcb05; } 50% { --gc: #4fd06a; } 75% { --gc: #46d0ff; } }
-.glow-sombra.has-glow { --glowf: drop-shadow(0 0 1px #1a0830) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 8px #2a0a50); }
-.glow-estelar.has-glow { --glowf: drop-shadow(0 0 1px #fff) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 8px var(--gc)); }
 .glow-dot { display: inline-block; width: 12px; height: 12px; margin-right: 5px; border-radius: 50%; vertical-align: -1px; background: var(--gc, #fff); box-shadow: 0 0 6px 1px var(--gc, #fff); }
 .glow-dot.glow-prisma { --gc: #ff5ad1; }
-.glow-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.glow-chip { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 99px; font-size: 13px; font-weight: 800; background: rgba(0,0,0,.25); border: 1px solid var(--line); }
-.glow-chip.sel { border-color: var(--yellow); box-shadow: 0 0 0 1px var(--yellow); }
-.glow-chip.locked { opacity: .45; }
 
 /* ---------- Skins de maestría sobre el sprite (en combate las pinta el shader de actors.js) ---------- */
 .skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) var(--glowf, contrast(1)); }

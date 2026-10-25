@@ -18,13 +18,17 @@ export function sheet(dex, anim, shiny = false) {
   return img;
 }
 
-// Si a una especie le falta una animación se usa otra parecida.
+// Si a una especie le falta una animación se usa otra parecida (las extra de tools/import-collab.js no las
+// tienen todas: posar o comer pasan a saltar, el ataque especial al normal…), y si no, Idle o Walk.
+const ANIM_FALLBACK = { Pose: 'Hop', Eat: 'Hop', Twirl: 'Rotate', SpAttack: 'Attack', Swing: 'Attack', Double: 'Attack' };
 export function animMeta(dex, anim) {
   const a = META[dex].a;
-  return a[anim] ? { name: anim, m: a[anim] } : a.Idle ? { name: 'Idle', m: a.Idle } : { name: 'Walk', m: a.Walk };
+  for (let n = anim; n; n = ANIM_FALLBACK[n]) if (a[n]) return { name: n, m: a[n] };
+  return a.Idle ? { name: 'Idle', m: a.Idle } : { name: 'Walk', m: a.Walk };
 }
 
 export const hovers = dex => !!META[dex].hv;
+export const hasAnim = (dex, anim) => !!META[dex].a[anim];
 export const animLength = (dex, anim) => animMeta(dex, anim).m.d.reduce((s, v) => s + v, 0) * 1000 / 60;
 
 // Fotograma para t ms de animación (en bucle o una sola vez).
@@ -42,7 +46,7 @@ export const dirRow = a => ((2 - Math.round(a / (Math.PI / 4))) % 8 + 8) % 8;
 
 // Precarga las hojas de una lista de { dex, shiny } (para que el combate no parpadee al empezar).
 export function preload(list) {
-  const anims = ['Idle', 'Walk', 'Attack', 'Shoot', 'Charge', 'Hurt', 'Faint'];
+  const anims = ['Idle', 'Walk', 'Attack', 'Shoot', 'Charge', 'Hurt', 'Faint', 'SpAttack'];
   return Promise.all(list.flatMap(({ dex, shiny }) => anims.filter(a => META[dex].a[a]).map(a => {
     const img = sheet(dex, a, shiny);
     return img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; });
@@ -50,14 +54,14 @@ export function preload(list) {
 }
 
 // Retrato: primer fotograma de Idle mirando abajo, escalado sin suavizar.
-// opts: { shiny, silhouette (negro, para los misteriosos), className }
+// opts: { shiny, silhouette (negro, para los misteriosos), className, anim (otra animación, p. ej. Sleep) }
 export function portrait(dex, size = 64, opts = {}) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   c.className = 'portrait' + (opts.className ? ' ' + opts.className : '') + (opts.shiny ? ' shiny' : '');
-  const img = sheet(dex, 'Idle', opts.shiny);
+  const { name, m } = animMeta(dex, opts.anim || 'Idle');
+  const img = sheet(dex, name, opts.shiny);
   const draw = () => {
-    const { m } = animMeta(dex, 'Idle');
     const g = c.getContext('2d');
     g.imageSmoothingEnabled = false;
     g.clearRect(0, 0, size, size);
@@ -101,6 +105,26 @@ export const typeTint = (node, dex) => {
 export const trainerImg = (id, cls = '') => `<img class="trainer-img ${cls}" src="trainers/${id}.png" alt="" draggable="false">`;
 // El nodo del líder por su nombre (los combates solo traen el nombre)
 export const leaderByName = name => Object.values(Data.NODES).find(n => n.kind !== 'route' && n.leader === name) || null;
+
+// Cara del Pokémon con una emoción (retratos de SpriteCollab en public/portraits/emo, índice en
+// window.PORTRAIT_EMO). Sin esa emoción, la cara normal; sin caras, null (el que llama usa portrait()).
+const EMO = window.PORTRAIT_EMO || {};
+export const hasFaces = dex => !!EMO[dex];
+export const faceSrc = (dex, emo = 'Normal', shiny = false) => {
+  const f = EMO[dex];
+  if (!f) return null;
+  const e = f.e.includes(emo) ? emo : 'Normal';
+  return `portraits/emo/${dex}/${shiny && f.s && f.s.includes(e) ? 's/' : ''}${e}.png`;
+};
+export function face(dex, size = 40, emo = 'Normal', shiny = false) {
+  const src = faceSrc(dex, emo, shiny);
+  if (!src) return null;
+  const img = document.createElement('img');
+  img.className = 'face' + (shiny ? ' shiny' : '');
+  img.src = src; img.width = img.height = size; img.alt = ''; img.draggable = false;
+  img.dataset.emo = emo;
+  return img;
+}
 
 // Retrato animado (para menús): devuelve el canvas; se anima mientras esté en el documento.
 export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {

@@ -1,13 +1,13 @@
 // Mochila: todos los objetos que tienes, por bolsillos, y para usarlos eliges el Pokémon (como en los
 // juegos). Muestra a quién le sirve cada objeto y por qué no a los demás; el servidor decide al final.
-import { portrait } from './sprites.js';
+import { portrait, animatedPortrait } from './sprites.js';
 import { monLabel } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg } from './pixicons.js';
 
 const { SHOP, SPECIES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const BALLS = ['pokeball', 'superball', 'ultraball'];
+const BALLS = Data.BALL_IDS;
 const POCKETS = [
   ['balls', 'Poké Balls', i => BALLS.includes(i.id)],
   ['meds', 'Objetos', i => !i.dex && !i.vit && !i.stone && !BALLS.includes(i.id)],
@@ -17,7 +17,7 @@ const POCKETS = [
 const evosOf = s => !s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo];
 
 // ¿Se puede usar este objeto en este Pokémon? { ok, why }
-function usable(p, item, mon) {
+export function usable(p, item, mon) {
   if (item.id === 'caramelo') {
     const cap = Data.levelCap(p, mon.region);
     return mon.level >= cap ? { ok: false, why: t('Tope Nv.{n}', { n: cap }) } : { ok: true, why: t('Nv.{a} → {b}', { a: mon.level, b: mon.level + 1 }) };
@@ -77,10 +77,12 @@ export const bagViews = {
           for (const m of mons) {
             const u = usable(p, sel, m);
             const b = el('button', 'bag-mon' + (u.ok ? '' : ' no'));
-            b.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }));
+            // El que acaba de recibir el objeto come (o salta, si no tiene esa animación) unos segundos
+            const fed = this.bagFed && this.bagFed.uid === m.uid && Date.now() - this.bagFed.at < 4000;
+            b.append(fed ? animatedPortrait(m.dex, 48, 'Eat', Data.looksShiny(m)) : portrait(m.dex, 48, { shiny: Data.looksShiny(m) }));
             b.append(el('span', '', `<b>${monLabel(m)}</b><small>${t('Nv.{n}', { n: m.level })} · ${u.why}</small>`));
             b.disabled = !u.ok;
-            b.onclick = () => { this.bagSel = sel.id; this.net.send({ t: 'story', a: 'use', item: sel.id, uid: m.uid }); };
+            b.onclick = () => { this.bagSel = sel.id; this.bagFed = { uid: m.uid, at: Date.now() }; this.net.send({ t: 'story', a: 'use', item: sel.id, uid: m.uid }); };
             grid.append(b);
           }
         }

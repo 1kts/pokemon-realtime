@@ -307,34 +307,41 @@ class Client {
     const ups = [];
     seasonMod.migrate(bp);
     bp.mastery[4] = 0; bp.mastery[172] = 0;
-    for (let i = 0; i < D.MASTERY_FRAME; i++) ups.push(...seasonMod.addMastery(bp, [5, 4, 25]));
-    ok(bp.mastery[4] === D.MASTERY_FRAME && bp.mastery[172] === D.MASTERY_FRAME && ups.filter(u => u.dex === 4).length === 4, 'maestría: una victoria por línea y combate, con sus niveles');
-    ok(!bp.cosmetics.frames.includes('tipo-fuego') && D.masteryReady(bp, 4).join() === '0,1,2,3', 'maestría: los premios no llegan solos, quedan por recoger');
+    for (let i = 0; i < 50; i++) ups.push(...seasonMod.addMastery(bp, [5, 4, 25]));
+    ok(bp.mastery[4] === 50 && bp.mastery[172] === 50 && ups.filter(u => u.dex === 4).length === 3, 'retos de línea: una victoria por línea y combate, con sus niveles');
+    ok(D.masteryReady(bp, 4).join() === '0,1,2', 'retos de línea: los premios no llegan solos, quedan por recoger');
     m = await b.req({ t: 'masteryclaim', dex: 5, i: 4 }, 'error');
-    ok(/nada que recoger/.test(m.msg), 'maestría: no se recoge un premio sin llegar a él');
-    for (const i of [0, 1, 2, 3]) m = await b.req({ t: 'masteryclaim', dex: 5, i }, 'loot');
-    ok(m.r.frame === 'tipo-fuego' && m.r.mastery.dex === 4, 'maestría: recoger el marco de su tipo (con la animación de premio)');
-    ok(bp.cosmetics.frames.includes('tipo-fuego') && bp.cosmetics.auras.includes('tipo-fuego') && !D.masteryReady(bp, 4).length, 'maestría 50 y 100: brillo y marco del tipo de la línea');
-    m = await b.req({ t: 'masteryclaim', dex: 4, i: 3 }, 'error');
-    ok(/nada que recoger/.test(m.msg), 'maestría: cada premio se recoge una sola vez');
+    ok(/nada que recoger/.test(m.msg), 'retos de línea: no se recoge un premio sin llegar a él');
+    for (const i of [0, 2]) m = await b.req({ t: 'masteryclaim', dex: 5, i }, 'loot');
+    ok(m.r.aura === 'tipo-fuego' && m.r.mastery.dex === 4 && bp.cosmetics.auras.includes('tipo-fuego'), 'reto de 50 victorias: glow del tipo de la línea');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 2 }, 'error');
+    ok(/nada que recoger/.test(m.msg), 'retos de línea: cada premio se recoge una sola vez');
     m = await b.req({ t: 'masteryclaim', dex, i: 1 }, 'loot');
-    ok(m.r.art === D.lineOf(dex), 'maestría 25: ilustración oficial de la línea');
-    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, frame: 'tipo-fuego', aura: 'tipo-fuego' });
-    ok(m.p.avatarArt === true && m.p.frame === 'tipo-fuego' && m.p.aura === 'tipo-fuego', 'con maestría: ilustración de avatar, marco y brillo de tipo');
-    // Skins: Oro a 150 victorias, para toda la línea y en el equipo de combate
+    ok(m.r.art === D.lineOf(dex), 'reto de 25 victorias: ilustración oficial de la línea');
+    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, aura: 'tipo-fuego' });
+    ok(m.p.avatarArt === true && m.p.aura === 'tipo-fuego', 'ilustración de avatar y brillo de tipo');
+    // Skins: Oro a 500 victorias, Holo a 25 victorias online y Galaxia con racha de 50 en la Torre
     m = await b.req({ t: 'look', skin: { dex: 4, skin: 'oro' } }, 'error');
-    ok(/esa skin/.test(m.msg), 'skin: sin la maestría no se puede poner');
-    bp.mastery[4] = 150;
-    m = await b.req({ t: 'masteryclaim', dex: 4, i: 4 }, 'loot');
-    ok(m.r.skin === 'oro', 'maestría 150: skin Edición Oro');
+    ok(/esa skin/.test(m.msg), 'skin: sin el reto no se puede poner');
+    bp.mastery[4] = 500;
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 3 }, 'loot');
+    ok(m.r.avatar === 'pt:4' && bp.cosmetics.avatars.includes('pt:4'), 'reto de 100 victorias: retrato de la línea como avatar');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 5 }, 'loot');
+    ok(m.r.skin === 'oro', 'reto de 500 victorias: skin Edición Oro');
     m = await b.req({ t: 'look', skin: { dex: 6, skin: 'oro' } });
     ok(m.p.skins[4] === 'oro' && D.skinOf(bp, 5) === 'oro' && D.skinOf(bp, 25) === null, 'skin: se pone a toda la línea evolutiva');
     m = await b.req({ t: 'look', skin: { dex: 4, skin: null } });
     ok(!m.p.skins[4], 'skin: quitarla');
-    // Perfiles de antes: lo que ya se daba solo (estrella, ilustración a 50, marco a 100) cuenta como recogido
-    const old = { mastery: { 7: 60, 1: 120 }, cosmetics: { titles: [], frames: ['tipo-planta'] } };
-    seasonMod.migrate(old);
-    ok(old.masteryClaimed[7].join() === '0,1' && old.masteryClaimed[1].join() === '0,1,3' && D.masteryReady(old, 1).join() === '2', 'maestría: migración de perfiles antiguos');
+    seasonMod.addLineStat(bp, [5], 'pvp', 25);
+    seasonMod.addLineStat(bp, [6], 'tower', 30, true); seasonMod.addLineStat(bp, [4], 'tower', 50, true); seasonMod.addLineStat(bp, [4], 'tower', 10, true);
+    ok(D.masteryReady(bp, 4).includes(6) && D.masteryReady(bp, 4).includes(7) && bp.lineStats.tower[4] === 50, 'Holo con victorias online y Galaxia con la mejor racha de la Torre (cuenta la mejor)');
+    // Logros de debilitar por tipo: su marco
+    const kp = { cosmetics: { titles: [], frames: [] }, coins: 0, items: {}, mons: [], caught: [], elo: 1000, mastery: {} };
+    seasonMod.migrate(kp);
+    seasonMod.addKOs(kp, { kos: [...Array(100)].map(() => ({ by: 0, type: 'fuego' })).concat([{ by: 1, type: 'agua' }]) }, 0);
+    seasonMod.migrate(kp);
+    ok(kp.koByType.fuego === 100 && !kp.koByType.agua && kp.achClaim.includes('ko-fuego'), 'debilitar 100 con movimientos de fuego cumple su reto (los del rival no cuentan)');
+    ok(seasonMod.claimAchievement(kp, 'ko-fuego').loot.frame === 'tipo-fuego' && kp.cosmetics.frames.includes('tipo-fuego'), 'y su premio es el marco Fuego');
     await b.req({ t: 'look', avatar: null, frame: null, aura: null });
   }
   // Fin de temporada (simulado subiendo el id)
@@ -422,8 +429,8 @@ class Client {
   ok((await err).msg.includes('retírate'), 'con racha en curso no se cambia de equipo');
   m = await tw.req({ t: 'tower', a: 'order', order: [2, 0, 1] });
   ok(m.p.tower.team[0].dex === 3 && m.p.tower.team[1].uid === low.uid, 'reordenar el equipo entre combates');
-  err = tw.wait('error'); tw.send({ t: 'story', a: 'release', uid: low.uid });
-  ok((await err).msg.includes('Torre'), 'no se libera un Pokémon del equipo de la Torre');
+  err = tw.wait('error'); tw.send({ t: 'story', a: 'sell', uid: low.uid });
+  ok((await err).msg.includes('Torre'), 'no se vende un Pokémon del equipo de la Torre');
   const foeTeam = m.p.tower.next.team;
   let tstart = tw.wait('start'); tw.send({ t: 'tower', a: 'battle' });
   s = await tstart;
@@ -447,8 +454,11 @@ class Client {
   for (let i = 0; i < 13; i++) tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 0 });
   const brainSetup = tower.battleSetup(twProf);
   ok(brainSetup.foe.n === 21 && brainSetup.foe.brain && JSON.stringify(brainSetup.foe.team) === JSON.stringify(tower.BRAINS.plata.team), 'combate 21: Cerebro de la Frontera con su equipo fijo');
+  const mb0 = twProf.items.masterball || 0, gems0 = twProf.gems || 0;
   rw = tower.applyResult(twProf, brainSetup, { winner: 0 });
   ok(rw.tower.symbol === 'Símbolo Plata' && twProf.tower.symbols.includes('Símbolo Plata') && twProf.tower.best === 21, 'vencer al Cerebro da el Símbolo Plata');
+  ok(twProf.items.masterball === mb0 + 1 && rw.gems === D.TOWER.symbolPrize.gems + D.GEMS.towerBlock && twProf.gems === gems0 + rw.gems && !('gems' in rw.items),
+    'el Símbolo trae una Master Ball y gemas (con las del bloque), y las gemas no van a la mochila');
   rw = tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 1 });
   ok(rw.tower.ended && twProf.tower.streak === 0 && !twProf.tower.team && twProf.tower.best === 21, 'perder resetea la racha pero guarda el récord');
   // Retirarse guarda la racha
@@ -456,6 +466,86 @@ class Client {
   tower.applyResult(twProf, tower.battleSetup(twProf), { winner: 0 });
   m = await tw.req({ t: 'tower', a: 'retire' });
   ok(!m.p.tower.team && m.p.tower.best === 21 && m.p.tower.runs === 3, 'retirarse termina la racha sin tocar el récord');
+
+  // ---------- Lucky Spin: ruletas de la Gen 1 y 2 por línea ----------
+  {
+    const first = D.treasures(0);
+    const all = Array.from({ length: 8 }, (_, k) => D.treasures(k)).flat();
+    ok(first[0].line === 4 && first[0].prizes[0].id === 'skin:elemental:4', 'la primera ruleta es la de Charmander, con su skin Elemental de gran premio');
+    ok(all.every(r => r.line <= 251 && r.prizes.length === 10 && r.prizes.filter(x => x.rarity === 'mitico').length === 1
+      && r.prizes.every(x => !x.dex || x.dex <= 251) && r.prizes.filter(x => x.kind === 'portrait').every(x => D.lineOf(x.dex) === r.line)),
+      'todas las ruletas son de la Gen 1 y 2: un gran premio, y retratos solo de su propia línea');
+  }
+
+  // ---------- Misiones: recoger todo ----------
+  {
+    const missions = require('../server/missions.js');
+    const mp = { coins: 0, gems: 0, items: {}, cosmetics: { auras: [] } };
+    missions.action(mp, { a: 'claimAll' });   // crea las misiones del día y de la semana
+    for (const m of mp.missions.daily) m.n = D.MISSION_BY_ID[m.id].goal;
+    mp.missions.weekly[0].n = D.MISSION_BY_ID[mp.missions.weekly[0].id].goal;
+    const coins0 = mp.coins;
+    const r = missions.action(mp, { a: 'claimAll' });
+    const expect = mp.missions.daily.reduce((n, m) => n + (D.MISSION_BY_ID[m.id].reward.coins || 0), 0) + D.MISSION_BY_ID[mp.missions.weekly[0].id].reward.coins + D.MISSION_CHEST.daily.coins;
+    ok(r.loot && r.loot.all === 4 && r.loot.chests.join() === 'daily' && mp.coins - coins0 === expect && mp.missions.chest.daily && !mp.missions.weekly[1].claimed,
+      'recoger todo: las 4 misiones cumplidas y el cofre diario de una vez, con el premio sumado');
+    ok(missions.action(mp, { a: 'claimAll' }).error, 'sin nada cumplido, recoger todo avisa');
+  }
+
+  // ---------- Recoger todo: misiones, diario, logros y medallas ----------
+  {
+    const { collectAll } = require('../server/collect.js');
+    const cp = { coins: 0, gems: 0, items: {}, cosmetics: { auras: [] }, prog: { kanto: 2 }, mons: [], caught: [] };
+    require('../server/missions.js').action(cp, { a: 'claimAll' });
+    for (const m of cp.missions.daily) m.n = D.MISSION_BY_ID[m.id].goal;
+    const r = collectAll(cp);
+    ok(r.loot && r.loot.all === 3 && r.loot.chests.includes('daily') && cp.daily && cp.cosmetics.avatars.includes('badge:kanto:0') && cp.cosmetics.avatars.includes('badge:kanto:1'),
+      'recoger todo: las misiones, su cofre, el premio diario y los avatares de medalla de una vez');
+    ok(collectAll(cp).error, 'después ya no queda nada');
+  }
+
+  // ---------- Premio diario con gemas y presupuesto de Tesoros ----------
+  {
+    const daily = require('../server/daily.js');
+    const dp = { coins: 0, gems: 0, items: {} };
+    const l = daily.claim(dp, Date.UTC(2026, 9, 26, 12));
+    ok(l.loot.gems === D.DAILY_LOGIN[0].gems && dp.gems === D.DAILY_LOGIN[0].gems && !('gems' in dp.items), 'el premio diario da gemas');
+    // Quien entra cada día y hace sus diarias junta en 2 semanas lo que cuestan las 3 ruletas enteras
+    const week = D.DAILY_LOGIN.reduce((n, d) => n + (d.gems || 0), 0);
+    const fortnight = 2 * week + D.TREASURE_DAYS * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
+    const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
+    ok(fortnight >= allWheels, `jugando a diario se desbloquean las 3 ruletas en una tanda (${fortnight} gemas para ${allWheels})`);
+  }
+
+  // ---------- Retratos con emoción en Tesoros ----------
+  {
+    const faces = Array.from({ length: 6 }, (_, k) => D.treasures(k)).flat().flatMap(r => r.prizes).filter(x => x.kind === 'portrait');
+    const emo = faces.filter(x => x.emo), plain = faces.filter(x => !x.emo);
+    ok(emo.length && emo.every(x => D.hasEmotion(x.dex, x.emo) && x.id === `pt:${x.dex}:${x.emo}`) && plain.every(x => x.id === `pt:${x.dex}`) && faces.every(x => !x.fx),
+      'los retratos de Lucky Spin son solo la cara (con emoción si la especie la tiene), sin efecto incluido');
+    const fxPrizes = Array.from({ length: 6 }, (_, k) => D.treasures(k)).flat().flatMap(r => r.prizes).filter(x => x.kind === 'effect');
+    ok(fxPrizes.length && fxPrizes.every(x => D.EFFECTS.includes(x.effect) && x.id === 'fx:' + x.effect), 'los efectos son premios aparte de los retratos');
+    {
+      const rewards = require('../server/rewards.js');
+      const ep = { cosmetics: { titles: [], frames: [] }, coins: 0, items: {}, mons: [], caught: [], elo: 1000 };
+      rewards.migrate(ep);
+      ok(rewards.setLook(ep, { effect: 'aurora' }) && !ep.effect, 'no se puede poner un efecto que no tienes');
+      rewards.unlock(ep, 'effects', 'aurora');
+      ok(rewards.setLook(ep, { effect: 'aurora' }) === null && ep.effect === 'aurora' && rewards.setLook(ep, { effect: null }) === null && ep.effect === null, 'el efecto conseguido se pone y se quita, con cualquier avatar');
+    }
+  }
+
+  // ---------- Master Ball ----------
+  ok(D.BALL_IDS.join() === 'pokeball,superball,ultraball,masterball' && D.catchChance(1, 'masterball', false, 150) === 1, 'la Master Ball atrapa seguro, incluso a un legendario con todos sus PS');
+  {
+    const { Battle } = require('../server/battle.js');
+    const side = { balls: { pokeball: 1, superball: 0, ultraball: 0, masterball: 1 }, a: 0, x: 0, y: 0 };
+    const fake = { projectiles: [], ev() {}, rad: () => 10 };
+    Battle.prototype.throwBall.call(fake, side, {});
+    ok(side.balls.masterball === 1 && side.balls.pokeball === 0, 'sin elegirla, la Master Ball no se lanza: sale la mejor de las otras');
+    Battle.prototype.throwBall.call(fake, side, { ball: 'masterball' });
+    ok(side.balls.masterball === 0 && fake.projectiles[1].ball === 'masterball', 'elegida, se lanza la Master Ball');
+  }
 
   // ---------- Aspecto de un shiny (verlo normal) ----------
   {
@@ -546,22 +636,21 @@ class Client {
     ok(l.r.chest === 'daily' && prof.items.caramelo === candy + D.MISSION_CHEST.daily.items.caramelo, 'abrir el cofre diario');
     e = mc.wait('error'); mc.send({ t: 'mission', a: 'chest', kind: 'daily' });
     ok(/Ya has/.test((await e).msg), 'el cofre se abre una vez');
-    // Cofre semanal: trae un glow de tipo que aún no tengas
+    // Cofre semanal: trae un glow de tipo para el avatar que aún no tengas
     prof.missions.weekly.forEach(x => { x.claimed = true; });
     loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'chest', kind: 'weekly' });
     l = await loot;
-    ok(/^tipo-/.test(l.r.glow) && prof.cosmetics.glows.includes(l.r.glow), 'el cofre semanal da un glow de tipo');
-    // Glow por línea: solo los tuyos, y se pone a toda la línea (también en combate)
-    e = mc.wait('error'); mc.send({ t: 'look', glow: { dex: 7, glow: 'dorado' } });
+    ok(/^tipo-/.test(l.r.aura) && prof.cosmetics.auras.includes(l.r.aura), 'el cofre semanal da un glow de tipo para el avatar');
+    e = mc.wait('error'); mc.send({ t: 'look', aura: 'dorado' });
     ok(/ese glow/.test((await e).msg), 'un glow que no tienes no se pone');
-    r = await mc.req({ t: 'look', glow: { dex: 9, glow: l.r.glow } });
-    ok(r.p.glows[7] === l.r.glow && D.glowOf(prof, 8) === l.r.glow && D.glowOf(prof, 25) === null, 'el glow se pone a la línea evolutiva');
-    r = await mc.req({ t: 'look', glow: { dex: 7, glow: null } });
-    ok(!r.p.glows[7], 'y se quita');
-    // Logros ya cobrados de antes: su glow llega con la migración
-    const oldG = { achievements: { shiny1: 1, kantoChamp: 2 }, achClaim: ['kantoChamp'], cosmetics: { titles: [], frames: [] } };
+    r = await mc.req({ t: 'look', aura: l.r.aura });
+    ok(r.p.aura === l.r.aura, 'y se pone alrededor del avatar');
+    await mc.req({ t: 'look', aura: null });
+    // Los glows del sprite (quitados) pasan a ser del avatar
+    const oldG = { achievements: {}, cosmetics: { titles: [], frames: [], glows: ['estelar', 'tipo-agua'] }, glows: { 7: 'tipo-agua' } };
     seasonMod.migrate(oldG);
-    ok(oldG.cosmetics.glows.join() === 'estelar', 'glows de logros ya cobrados (no de los pendientes)');
+    ok(oldG.cosmetics.auras.join() === 'estelar,tipo-agua' && !oldG.cosmetics.glows && !oldG.glows, 'los glows del sprite que tenías pasan a glows del avatar');
+    ok(!D.ACHIEVEMENTS.find(a => a.id === 'shiny1').reward.aura && D.ACHIEVEMENTS.find(a => a.id === 'shiny5').reward.aura === 'estelar', 'Cazador de shinies con el primero; el glow Estelar, con 5 shinies');
     // ---------- Tesoros ----------
     const treasure = require('../server/treasure.js');
     const rid = D.treasures()[0].id;
@@ -579,8 +668,12 @@ class Client {
     }
     ok(new Set(ids).size === 10 && spent === D.SPIN_COST.reduce((a, b) => a + b, 0) && prof.gems === 1000 - spent, 'una ruleta: 10 premios distintos en 10 tiradas, cada una a su precio');
     const rr = D.treasures()[0];
-    const skinP = rr.prizes.find(x => x.kind === 'skin'), ptP = rr.prizes.find(x => x.kind === 'portrait'), glP = rr.prizes.find(x => x.kind === 'glow');
-    ok(D.hasSkin(prof, skinP.dex, 'elemental') && prof.cosmetics.avatars.includes(ptP.id) && prof.cosmetics.glows.includes(glP.glow), 'los premios quedan: skin Elemental de la línea, retrato de avatar y glow');
+    const skinP = rr.prizes.find(x => x.kind === 'skin'), ptP = rr.prizes.find(x => x.kind === 'portrait'), glP = rr.prizes.find(x => x.kind === 'particles');
+    ok(D.hasSkin(prof, skinP.dex, 'elemental') && prof.cosmetics.avatars.includes(ptP.id) && prof.cosmetics.particles.includes(D.lineOf(glP.dex)) && D.particlesOf(prof, glP.dex) === D.SPECIES[D.lineOf(glP.dex)].types[0], 'los premios quedan: skin Elemental de la línea, retrato de avatar y partículas de la línea (puestas)');
+    r = await mc.req({ t: 'look', particles: { dex: glP.dex, on: false } });
+    ok(!D.particlesOf(prof, glP.dex), 'las partículas se apagan aparte de la skin');
+    e = mc.wait('error'); mc.send({ t: 'look', particles: { dex: 133, on: true } });
+    ok(/esas partículas/.test((await e).msg), 'sin tenerlas no se encienden');
     e = mc.wait('error'); mc.send({ t: 'treasure', id: rid });
     ok(/todos/.test((await e).msg), 'una ruleta completa no se tira más');
     r = await mc.req({ t: 'look', skin: { dex: skinP.dex, skin: 'elemental' } });
@@ -597,7 +690,9 @@ class Client {
     // La Elemental que se tenía por maestría (nivel 600, ya quitado) pasa a ser de la línea
     const oldE = { mastery: { 4: 600 }, masteryClaimed: { 4: [0, 1, 2, 3, 4, 5, 6, 7] }, cosmetics: { titles: [], frames: [] }, achievements: {} };
     seasonMod.migrate(oldE);
-    ok(oldE.cosmetics.skins.includes('elemental:4') && !oldE.masteryClaimed[4].includes(7) && D.hasSkin(oldE, 6, 'elemental'), 'la Elemental de maestría se conserva al pasar a Tesoros');
+    ok(oldE.cosmetics.particles.includes(4) && !(oldE.masteryClaimed[4] || []).length && D.hasSkin(oldE, 6, 'elemental'), 'la Elemental de maestría se conserva al pasar a Tesoros y los retos de línea empiezan de cero');
+    oldE.masteryClaimed[4] = [7]; seasonMod.migrate(oldE);
+    ok(oldE.masteryClaimed[4].join() === '7', 'y solo una vez: el reto 8 nuevo (Galaxia) no se toca');
     // Día nuevo: misiones, cambios y cofre nuevos
     prof.missions.day = '2000-01-01';
     r = await mc.req({ t: 'mission', a: 'refresh' });
@@ -615,6 +710,8 @@ class Client {
     loot = mc.wait('loot'); mc.send({ t: 'achclaim', id: 'captura1' });
     l = await loot;
     ok(l.r.coins === 300 && prof.coins === c1 + 300 && l.r.avatar === 'item:poke-ball' && !prof.achClaim.includes('captura1'), 'recoger el logro: dinero y su avatar');
+    // Esta conexión ya ha mandado muchos mensajes seguidos: un respiro para no chocar con el límite anti-spam
+    await new Promise(r => setTimeout(r, 1000));
     // Medallas: cada una da su avatar
     prof.prog.kanto = 1;
     loot = mc.wait('loot'); mc.send({ t: 'badgeclaim', region: 'kanto', index: 0 });

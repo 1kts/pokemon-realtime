@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { Actor } from './actors.js';
 import { toWorld } from './world.js';
-import { portrait, preload, trainerImg, leaderByName } from './sprites.js';
+import { portrait, preload, trainerImg, leaderByName, face, faceSrc, hasAnim } from './sprites.js';
 import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
 import { typeIcon } from './pixicons.js';
@@ -13,7 +13,7 @@ const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
 const INTERP_MS = 100;
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
-const BALLS = ['pokeball', 'superball', 'ultraball'];
+const BALLS = Data.BALL_IDS;
 
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const lerp = (a, b, f) => a + (b - a) * f;
@@ -43,7 +43,7 @@ export class BattleClient {
     this.lastPos = [{ x: 140, y: 300 }, { x: 820, y: 300 }];
     this.world.loadMap(start.map, start.terrain);
     this.fx.clear(); this.p.clear();
-    this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you, s.team[0].skin, s.team[0].glow));
+    this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you, s.team[0].skin, s.team[0].parts));
     preload(this.sides.flatMap(s => s.team.map(m => ({ dex: m.dex, shiny: !!m.shiny }))));
     this.shinyT = [0, 0];
     for (const i of [0, 1]) if (this.sides[i].team[0].shiny) setTimeout(() => this.shinyAppear(i), 600);
@@ -145,7 +145,8 @@ export class BattleClient {
       case 'cast': {
         const m = this.moveOf(s, e.c);
         if (!m) break;
-        actor.play(m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : ['proj', 'beam', 'cone', 'wave'].includes(m.kind) ? 'Shoot' : 'Charge');
+        // Los ataques fuertes (40 ⚡ o más) con su ataque especial, si la especie lo tiene
+        actor.play(m.cost >= 40 && hasAnim(this.dexOf(s), 'SpAttack') ? 'SpAttack' : m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : ['proj', 'beam', 'cone', 'wave'].includes(m.kind) ? 'Shoot' : 'Charge');
         this.app.sfx.cast(m, s === this.you);
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
@@ -164,6 +165,8 @@ export class BattleClient {
         this.fx.impact(e, e.big);
         this.app.sfx.hit(e);
         const label = e.b ? t('Bloqueado') : e.e > 0 ? t('¡Muy eficaz!') : e.e < 0 ? t('Poco eficaz') : '';
+        this.emote(s, e.b ? 'Determined' : e.e > 0 ? 'Teary-Eyed' : 'Pain');
+        if (e.e > 0 && !e.b) this.emote(1 - s, 'Joyous');
         this.floatText(e.x, e.y, '-' + e.n, e.e > 0 ? 'eff' : e.e < 0 ? 'weak' : '', label, e.big);
         break;
       }
@@ -173,15 +176,18 @@ export class BattleClient {
         this.fx.parry(e);
         this.app.sfx.parry();
         this.banner(s === this.you ? t('¡Parry perfecto!') : t('¡Te han hecho parry!'), s === this.you ? 'good' : 'bad');
+        this.emote(s, 'Determined', 1500);
+        this.emote(1 - s, 'Stunned', 1500);
         break;
       case 'perfectswap':
         this.banner(s === this.you ? t('¡Cambio perfecto!') : t('¡Cambio perfecto rival!'), s === this.you ? 'good' : 'bad');
+        this.emote(s, 'Inspired', 1500);
         this.p.emit(toWorld(e.x, e.y).x, 0.8, toWorld(e.x, e.y).z, { n: 40, colors: ['#ffffff', '#a0f0ff'], speed: 4, life: 0.5, size: 0.2 });
         break;
       case 'swap':
         this.fx.swapFlash(pos);
         this.act[s] = e.to;
-        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin, this.monOf(s).glow);
+        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin, this.monOf(s).parts);
         actor.play('Idle', false);
         if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
         this.buildTeams();
@@ -486,13 +492,33 @@ export class BattleClient {
       box.innerHTML = `<div class="tname">${ld ? trainerImg(ld.id, 'tname-face') : ''}${escapeHtml(tServer(this.sides[i].name))}</div>`;
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
-        row.append(portrait(m.dex, 40, { shiny: !!m.shiny }));
+        row.append(face(m.dex, 40, 'Normal', !!m.shiny) || portrait(m.dex, 40, { shiny: !!m.shiny }));
         row.append(el('div', 'tinfo', `<b>${monLabel(m)}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>${t('Nv.{n}', { n: m.level })}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
         row.dataset.slot = slot;
         box.append(row);
       });
     }
     this.updateHud();
+  }
+
+  // Caras con emoción en la barra de equipos: debilitado llora, con poca vida se preocupa, aturdido se marea;
+  // los golpes, parrys y cambios perfectos ponen una emoción un momento (emote) al que está combatiendo
+  emote(i, emo, ms = 1100) {
+    this.emoTemp = this.emoTemp || {};
+    this.emoTemp[i] = { emo, until: performance.now() + ms };
+    this.updateHud();
+  }
+
+  setFace(row, i, slot, fr, st) {
+    const img = row.querySelector('img.face');
+    if (!img) return;
+    const m = this.sides[i].team[slot], tmp = this.emoTemp && this.emoTemp[i];
+    const emo = fr <= 0 ? 'Crying' : slot === st.act && tmp && tmp.until > performance.now() ? tmp.emo
+      : slot === st.act && st.f & F.STUN ? 'Dizzy' : fr < 0.25 ? 'Worried' : 'Normal';
+    if (img.dataset.emo === emo) return;
+    img.dataset.emo = emo;
+    img.src = faceSrc(m.dex, emo, !!m.shiny);
+    if (tmp && emo === tmp.emo) setTimeout(() => this.updateHud(), tmp.until - performance.now() + 20);
   }
 
   buildMoves() {
@@ -534,6 +560,7 @@ export class BattleClient {
         bar.className = fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low';
         row.classList.toggle('fainted', hp <= 0);
         row.classList.toggle('active', slot === st.act);
+        this.setFace(row, i, slot, fr, st);
         if (i === this.you) row.classList.toggle('cool', st.swcd > 0 && slot !== st.act);
       });
     }

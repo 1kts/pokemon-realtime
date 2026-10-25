@@ -288,4 +288,29 @@ check('Descanso cura más, quita estados y duerme más rato', () => {
   assert(me.stun > 2 && me.burn === 0, 'dormido y sin quemadura');
 });
 
+check('un proyectil que pasa rozando a un Pokémon pequeño también le da (margen de impacto)', () => {
+  const bt = battle('pradera', [{ dex: 25, level: 30 }], [{ dex: 129, level: 30 }]);
+  bt.obstacles = [];
+  const [a, b] = bt.sides;
+  a.x = 200; a.y = 300; b.x = 400; b.y = 300 + bt.rad(b) + D.MOVES.impactrueno.radius + 4;   // pasa 4 px por fuera de lo que antes contaba como impacto
+  const hp0 = bt.mon(b).hp;
+  bt.projectiles.push({ id: 999, owner: a, m: { ...D.MOVES.impactrueno }, mk: 'impactrueno', x: 230, y: 300, vx: 780, vy: 0, left: 400, r: D.MOVES.impactrueno.radius });
+  for (let i = 0; i < 20; i++) bt.updateProjectiles(S.DT);
+  assert(bt.mon(b).hp < hp0, 'le ha dado');
+});
+
+check('IA adaptativa: afloja si va arrasando y aprieta si va perdiendo, sin salirse de su margen', () => {
+  const { adaptiveSkill } = require('../server/ai.js');
+  const bt = battle('pradera');
+  const [a, b] = bt.sides;
+  b.ai = 0.6;
+  const st = {};
+  a.team.forEach(m => { m.hp = m.maxHp * 0.1; });   // el jugador va muy tocado
+  let s1; for (let i = 0; i < 300; i++) s1 = adaptiveSkill(bt, b, st, S.DT);
+  a.team.forEach(m => { m.hp = m.maxHp; }); b.team.forEach(m => { m.hp = m.maxHp * 0.1; });   // ahora pierde la IA
+  let s2; for (let i = 0; i < 600; i++) s2 = adaptiveSkill(bt, b, st, S.DT);
+  assert(s1 < 0.5 && s1 >= 0.6 - 0.18 - 1e-9, `afloja (${s1})`);
+  assert(s2 > 0.65 && s2 <= 0.6 + 0.1 + 1e-9, `aprieta (${s2})`);
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

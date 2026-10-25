@@ -3,21 +3,26 @@
 // tirar en el centro, y al lado el premio elegido y las probabilidades de la próxima tirada. Al tirar,
 // la rueda recorre los premios que faltan y se para en el que ha salido; después, la animación de premio.
 import { t } from './i18n.js';
-import { portrait } from './sprites.js';
+import { portrait, faceSrc } from './sprites.js';
 import { icon, item as itemImg, typeIcon } from './pixicons.js';
-import { applySkin, applyGlow, glowName } from './frames.js';
-import { portraitArt, avatarName } from './missions.js';
+import { applySkin } from './frames.js';
+import { portraitArt, avatarName, effectName } from './missions.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, RARITY, SPIN_COST } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const pct = p => (p >= 0.1 ? (p * 100).toFixed(0) : (p * 100).toFixed(1)) + ' %';
 const gemsHtml = n => `<span class="gem-ico">${icon('gem', 16)}</span>${Number(n).toLocaleString()}`;
 
+// Nombre de una ruleta (la de su línea evolutiva) y la cara de su Pokémon para la pestaña
+const rouletteName = r => r.line ? t('Ruleta de {m}', { m: SPECIES[r.line].name }) : t('Ruleta {type}', { type: TYPE_LABEL[r.type] });
+const faceHtml = dex => { const src = faceSrc(dex, 'Happy'); return src ? `<img class="tz-face" src="${src}" alt="" draggable="false">` : typeIcon(SPECIES[dex].types[0], 30); };
+
 // Nombre del premio
 export function prizeName(x) {
   if (x.kind === 'skin') return t('Skin Elemental · línea de {m}', { m: SPECIES[x.dex].name });
-  if (x.kind === 'glow') return glowName(x.glow, t);
+  if (x.kind === 'particles') return t('Partículas · línea de {m}', { m: SPECIES[x.dex].name });
   if (x.kind === 'portrait') return avatarName(x.id);
+  if (x.kind === 'effect') return effectName(x.effect);
   if (x.kind === 'coins') return t('{n} de dinero', { n: x.coins.toLocaleString() });
   if (x.kind === 'item') return `${(Data.SHOP.find(i => i.id === x.item) || { name: x.item }).name} ×${x.qty}`;
   return x.id;
@@ -39,8 +44,9 @@ export const treasureViews = {
   prizeArt(x, size) {
     const box = el('span', 'tz-art');
     if (x.kind === 'skin') box.append(applySkin(portrait(x.dex, size), 'elemental', x.dex));
-    else if (x.kind === 'glow') box.append(applyGlow(portrait(this.avatarDex().dex, size), x.glow));
-    else if (x.kind === 'portrait') box.innerHTML = portraitArt(x.dex, x.fx, Math.round(size * 0.9));
+    else if (x.kind === 'particles') box.append(applySkin(portrait(x.dex, size), null, x.dex, true));
+    else if (x.kind === 'portrait') box.innerHTML = portraitArt(x.dex, Math.round(size * 0.9), x.emo);
+    else if (x.kind === 'effect') box.append(this.avatar(Math.round(size * 0.9), false, null, null, x.effect));
     else if (x.kind === 'coins') box.innerHTML = icon('coin', Math.round(size * 0.6));
     else if (x.kind === 'item') box.innerHTML = itemImg(x.item, Math.round(size * 0.7));
     return box;
@@ -54,117 +60,126 @@ export const treasureViews = {
     this.tzSel = cur.id;
     const mine = got[cur.id] || [];
     const odds = Data.treasureOdds(cur, mine);
+    const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[n], done = n >= N, enough = (p.gems || 0) >= cost;
     const wrap = el('div', 'treasure');
     wrap.style.setProperty('--tc', TYPE_COLOR[cur.type]);
-    wrap.append(this.topbar(t('Tesoros'), this.tzBack || 'menu'));
+    wrap.append(this.topbar(t('Lucky Spin'), this.tzBack || 'menu'));
 
-    // Cabecera: tus gemas, cuándo cambian y de dónde salen
+    // Pestañas (una ruleta por tipo) y, a la derecha, cuándo cambian (las gemas van en la cabecera)
     const days = Math.max(1, Math.ceil((Data.treasureEnds() - Date.now()) / 86400e3));
-    const head = el('div', 'tz-head panel', `<div class="tz-gems">${gemsHtml(p.gems || 0)}<small>${t('gemas')}</small></div>
-      <div class="tz-when"><b>${days > 1 ? t('Cambian en {n} días', { n: days }) : t('Cambian mañana')}</b><small>${t('Lo que consigas se queda; lo que falte de estas ruletas se va.')}</small></div>`);
-    const how = el('button', 'tz-how', t('¿Cómo se consiguen gemas?'));
-    how.onclick = () => this.toast(t('Misiones y cofres, la primera victoria online del día, líderes y Alto Mando, cada 7 de la Torre, subir de liga y los salvajes raros o shiny.'), '', 6000);
-    head.append(how);
-    wrap.append(head);
-
-    // Pestañas: una ruleta por tipo
     const tabs = el('div', 'tz-tabs');
     for (const r of list) {
-      const n = (got[r.id] || []).length;
-      const b = el('button', 'tz-tab' + (r === cur ? ' sel' : '') + (n >= r.prizes.length ? ' done' : ''), `${typeIcon(r.type, 22)}<span>${t('Ruleta {type}', { type: TYPE_LABEL[r.type] })}</span><small>${n}/${r.prizes.length}</small>`);
+      const k = (got[r.id] || []).length;
+      const b = el('button', 'tz-tab' + (r === cur ? ' sel' : '') + (k >= r.prizes.length ? ' done' : ''), `<span class="tz-tab-ico">${faceHtml(r.line)}</span><span><b>${rouletteName(r)}</b><small>${t('Conseguido {a}/{b}', { a: k, b: r.prizes.length })}</small></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[r.type]);
+      b.style.setProperty('--tp', (k / r.prizes.length * 100) + '%');
       b.disabled = !!this.tzSpin;
       b.onclick = () => { this.tzSel = r.id; this.tzPick = null; this.show('treasure'); };
       tabs.append(b);
     }
+    const when = el('span', 'tz-when', `${icon('clock', 16)}<span>${days > 1 ? t('Cambian en {n} días', { n: days }) : t('Cambian mañana')}</span>`);
+    when.title = t('Lo que consigas se queda; lo que falte de estas ruletas se va.');
+    tabs.append(when);
     wrap.append(tabs);
 
     const body = el('div', 'tz-body');
-    // La rueda: 10 premios en círculo y el botón de tirar en el centro
-    const wheel = el('div', 'tz-wheel');
+    // El tablero: el gran premio (el más raro) en el centro y los otros 9 en cartas alrededor. Al tirar se
+    // encienden por turnos y frenan en el que sale.
+    const board = el('div', 'tz-board');
+    const order = ['mitico', 'legendario', 'epico', 'raro', 'comun'];
+    const sorted = [...cur.prizes].sort((a, b) => order.indexOf(a.rarity) - order.indexOf(b.rarity));
+    const big = sorted[0];
     const pick = cur.prizes.find(x => x.id === this.tzPick) || null;
-    cur.prizes.forEach((x, i) => {
-      const a = (i / cur.prizes.length) * Math.PI * 2 - Math.PI / 2;
-      const has = mine.includes(x.id);
-      const b = el('button', `tz-prize r-${x.rarity}${has ? ' got' : ''}${pick === x ? ' sel' : ''}`);
-      b.style.left = (50 + Math.cos(a) * 40) + '%';
-      b.style.top = (50 + Math.sin(a) * 40) + '%';
+    for (const x of sorted) {
+      const has = mine.includes(x.id), isBig = x === big;
+      const b = el('button', `tz-card r-${x.rarity}${isBig ? ' big' : ''}${has ? ' got' : ''}${pick === x ? ' sel' : ''}`);
       b.style.setProperty('--rc', RARITY[x.rarity].color);
       b.dataset.id = x.id;
-      b.append(this.prizeArt(x, 56));
-      b.append(el('i', 'tz-rar', t(RARITY[x.rarity].name)));
+      if (isBig) b.append(el('i', 'tz-burst'), el('i', 'tz-corners'));
+      b.append(this.prizeArt(x, isBig ? 150 : 64));
+      b.append(isBig ? el('span', 'tz-jackpot', `<small>${t('Gran premio')}</small><b>${prizeName(x)}</b>`) : el('span', 'tz-name', prizeName(x)));
+      if (!isBig) b.append(el('i', 'tz-rar', t(RARITY[x.rarity].name)));
       if (has) b.append(el('i', 'tz-check', '✓'));
-      b.title = prizeName(x);
-      b.onclick = () => { this.tzPick = x.id; this.show('treasure'); };
-      wheel.append(b);
-    });
-    const n = mine.length, cost = SPIN_COST[n], done = n >= cur.prizes.length;
-    const center = el('div', 'tz-center');
-    center.append(el('div', 'tz-count', `<small>${t('Conseguido')}</small><b>${n}/${cur.prizes.length}</b>`));
-    center.append(el('div', 'tz-seg', cur.prizes.map((_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')));
-    if (done) center.append(el('div', 'tz-done', `<b>${t('¡Ruleta completa!')}</b><small>${t('Tienes todos sus premios.')}</small>`));
+      b.title = `${prizeName(x)} · ${t(RARITY[x.rarity].name)}`;
+      b.onclick = () => { if (this.tzSpin) return; this.tzPick = x.id; this.show('treasure'); };
+      board.append(b);
+    }
+    const left = el('div', 'tz-left');
+    left.append(board);
+
+    // Barra de abajo: lo elegido o el progreso, las probabilidades y el precio con el botón de tirar
+    const bar = el('div', 'tz-bar');
+    const prog = el('div', 'tz-prog');
+    prog.append(el('div', 'tz-progress', `<b>${n}/${N}</b><span>${t('Conseguido')}</span>`));
+    prog.append(el('div', 'tz-seg', cur.prizes.map((_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')));
+    bar.append(prog);
+    const info = el('div', 'tz-info', pick
+      ? `<b style="color:${RARITY[pick.rarity].color}">${t(RARITY[pick.rarity].name)}</b> · ${prizeName(pick)} · ${mine.includes(pick.id) ? t('Ya lo tienes') : t('{p} en la próxima tirada', { p: pct((odds.find(o => o.prize === pick) || { p: 0 }).p) })}<small>${{
+        skin: t('La skin Elemental de la línea: el sprite con la paleta de su tipo y un contorno brillante, en los menús y en combate.'),
+        particles: t('Brasas, burbujas, chispas… del tipo de la línea alrededor de su sprite, con cualquier skin, en los menús y en combate. Se encienden en la ficha del Pokémon.'),
+        portrait: t('Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.'),
+        effect: t('Un efecto animado por encima de tu avatar, sea cual sea. Póntelo en tu Perfil.'),
+        coins: t('Dinero para la Tienda.'), item: t('Para subir de nivel a tus Pokémon.'),
+      }[pick.kind]}</small>`
+      : `<span>${t('Toca un premio para ver qué es.')}</span><small>${icon('gem', 14)} ${t('Misiones y cofres, la primera victoria online del día, líderes y Alto Mando, cada 7 de la Torre, subir de liga y los salvajes raros o shiny.')}</small>`);
+    bar.append(info);
+    const oddsBtn = el('button', 'tb-btn tz-odds-btn', `${icon('star', 16)}<span>${t('Probabilidades')}</span>`);
+    oddsBtn.onclick = () => this.treasureOdds(cur, mine, odds);
+    bar.append(oddsBtn);
+    const buy = el('div', 'tz-buy');
+    if (done) buy.append(el('div', 'tz-done', `<b>${t('¡Ruleta completa!')}</b><small>${t('Tienes todos sus premios.')}</small>`));
     else {
-      const enough = (p.gems || 0) >= cost;
-      center.append(el('div', 'tz-cost' + (enough ? '' : ' short'), `${gemsHtml(cost)}<small>${t('Tirada {n} de {max}', { n: n + 1, max: cur.prizes.length })}</small>`));
-      const go = el('button', 'primary tz-go', this.tzSpin ? t('Girando…') : t('¡Tirar!'));
+      const rest = SPIN_COST.slice(n).reduce((a, b) => a + b, 0);
+      const price = el('div', 'tz-price' + (enough ? '' : ' short'), `<b>${gemsHtml(cost)}</b><small>${!enough ? t('Te faltan {n} gemas.', { n: cost - (p.gems || 0) }) : t('Tirada {n} de {max}', { n: n + 1, max: N })}</small>`);
+      price.title = n === N - 1 ? t('La última tirada: el último premio es seguro.') : t('Completar la ruleta: {n} gemas más.', { n: rest });
+      const go = el('button', 'tz-go', this.tzSpin ? t('Girando…') : t('¡Tirar!'));
       go.disabled = !enough || !!this.tzSpin;
       go.onclick = () => { this.tzSpin = { id: cur.id }; go.disabled = true; go.textContent = t('Girando…'); this.net.send({ t: 'treasure', id: cur.id }); };
-      center.append(go);
-      const rest = SPIN_COST.slice(n).reduce((a, b) => a + b, 0);
-      center.append(el('small', 'tz-hint' + (enough ? '' : ' short'), !enough ? t('Te faltan {n} gemas.', { n: cost - (p.gems || 0) })
-        : n === cur.prizes.length - 1 ? t('La última tirada: el último premio es seguro.') : t('Completar la ruleta: {n} gemas más.', { n: rest })));
+      buy.append(price, go);
     }
-    wheel.append(center);
-    body.append(wheel);
-
-    // Lateral: el premio elegido y las probabilidades
-    const side = el('div', 'tz-side panel');
-    if (pick) {
-      const o = odds.find(x => x.prize === pick);
-      const art = el('div', 'tz-pick-art');
-      art.append(this.prizeArt(pick, 96));
-      side.append(art);
-      side.append(el('h3', '', prizeName(pick)));
-      side.append(el('p', 'tz-pick-rar', `<b style="color:${RARITY[pick.rarity].color}">${t(RARITY[pick.rarity].name)}</b> · ${mine.includes(pick.id) ? t('Ya lo tienes') : t('{p} en la próxima tirada', { p: pct(o ? o.p : 0) })}`));
-      side.append(el('p', 'small', {
-        skin: t('La skin Elemental de la línea: el sprite con la paleta de su tipo, contorno brillante y partículas, en los menús y en combate.'),
-        glow: t('Un contorno de luz alrededor del sprite que se suma a cualquier skin. Se pone a la línea que quieras en Colección.'),
-        portrait: t('Un avatar con la cara del Pokémon de cerca y su efecto animado dentro de la burbuja.'),
-        coins: t('Dinero para la Tienda.'), item: t('Para subir de nivel a tus Pokémon.'),
-      }[pick.kind]));
-    } else side.append(el('p', 'tz-cap small', t('Toca un premio para ver qué es.')));
-    side.append(el('h4', '', t('Probabilidades de la próxima tirada')));
-    const ol = el('div', 'tz-odds');
-    for (const o of [...odds].sort((a, b) => b.p - a.p)) ol.append(el('div', 'tz-odd', `<i style="background:${RARITY[o.prize.rarity].color}"></i><span>${prizeName(o.prize)}</span><b>${pct(o.p)}</b>`));
-    for (const x of cur.prizes.filter(x => mine.includes(x.id))) ol.append(el('div', 'tz-odd got', `<i></i><span>${prizeName(x)}</span><b>✓</b>`));
-    side.append(ol);
-    side.append(el('p', 'tz-note small', t('Cada tirada da un premio de los que faltan. Lo más común sale más; lo que consigues sale de la bolsa y los demás ganan probabilidad. La ruleta acaba en {n} tiradas como mucho, y en la última el premio que queda es seguro.', { n: cur.prizes.length })));
-    body.append(side);
+    bar.append(buy);
+    left.append(bar);
+    body.append(left);
     wrap.append(body);
     this.root.append(wrap);
   },
 
-  // La rueda recorre los premios que faltaban y frena hasta el que ha salido; luego, done()
+  // Ventana con las probabilidades de la próxima tirada
+  treasureOdds(cur, mine, odds) {
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box tz-odds-modal');
+    back.onclick = e => { if (e.target === back) back.remove(); };
+    box.append(el('h3', '', t('Probabilidades de la próxima tirada')));
+    const ol = el('div', 'tz-odds scroll');
+    for (const o of [...odds].sort((a, b) => b.p - a.p)) ol.append(el('div', 'tz-odd', `<i style="background:${RARITY[o.prize.rarity].color}"></i><span>${prizeName(o.prize)}</span><b>${pct(o.p)}</b>`));
+    for (const x of cur.prizes.filter(x => mine.includes(x.id))) ol.append(el('div', 'tz-odd got', `<i></i><span>${prizeName(x)}</span><b>✓</b>`));
+    box.append(ol, el('p', 'small', t('Cada tirada da un premio de los que faltan. Lo más común sale más; lo que consigues sale de la bolsa y los demás ganan probabilidad. La ruleta acaba en {n} tiradas como mucho, y en la última el premio que queda es seguro.', { n: cur.prizes.length })));
+    const acts = el('div', 'acts');
+    const ok = el('button', 'primary', t('Entendido'));
+    ok.onclick = () => back.remove();
+    acts.append(ok);
+    box.append(acts);
+    back.append(box);
+    document.body.append(back);
+  },
+
+  // Las cartas que faltaban se encienden por turnos, rápido al principio y frenando hasta el premio; luego, done()
   treasureSpin(r, done) {
-    const wheel = this.root.querySelector('.tz-wheel');
-    const cells = wheel ? [...wheel.querySelectorAll('.tz-prize:not(.got)')] : [];
+    const board = this.root.querySelector('.tz-board');
+    const cells = board ? [...board.querySelectorAll('.tz-card:not(.got)')] : [];
     const target = cells.findIndex(c => c.dataset.id === r.treasure.prize);
     if (!cells.length || target < 0) return done();
-    // Momento (ms desde el inicio) de cada paso: rápido al principio y frenando al final
+    board.classList.add('spinning');
     const steps = cells.length * 3 + target, at = [0];
-    for (let i = 1; i <= steps; i++) { const k = (i - 1) / steps; at.push(at[i - 1] + 45 + 260 * k * k * k); }
-    const end = at[steps] + 450, t0 = performance.now();
+    for (let i = 1; i <= steps; i++) { const k = (i - 1) / steps; at.push(at[i - 1] + 50 + 300 * k * k * k); }
+    const end = at[steps] + 600, t0 = performance.now();
     let shown = -1;
     const frame = now => {
       const ms = now - t0;
       let i = shown < 0 ? 0 : shown;
       while (i < steps && at[i + 1] <= ms) i++;
-      if (i !== shown) {
-        cells.forEach(c => c.classList.remove('hot'));
-        cells[i % cells.length].classList.add('hot');
-        shown = i;
-      }
-      if (ms >= end) done(); else requestAnimationFrame(frame);
+      if (i !== shown) { cells.forEach(c => c.classList.remove('hot')); cells[i % cells.length].classList.add('hot'); shown = i; }
+      if (ms >= end) { board.classList.remove('spinning'); cells[target].classList.add('win'); setTimeout(done, 500); } else requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
   },

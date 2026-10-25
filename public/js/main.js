@@ -10,6 +10,8 @@ import { Effects } from './effects.js';
 import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
 import { applyCursor } from './cursor.js';
+import './tips.js';
+import { confirmBox } from './dialog.js';
 import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
@@ -155,6 +157,8 @@ net.on('over', m => {
   const b = app.battle;
   app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
   if (app.tutorial) app.tutorial.finish(m.winner === m.you);
+  // El ganador posa (o salta) mientras se ve el final
+  if (b && m.winner >= 0 && b.actors && b.actors[m.winner]) b.actors[m.winner].play('Pose');
   // Dejar ver el final un momento antes de los resultados
   setTimeout(() => {
     if (app.battle !== b) return;
@@ -172,8 +176,10 @@ function endBattle() {
 }
 
 addEventListener('keydown', e => {
-  if (e.code === 'Escape' && app.battle && !app.battle.over) {
-    if (confirm(t('¿Rendirte y abandonar el combate?'))) { app.battle.over = true; net.send({ t: 'forfeit' }); }
+  if (e.code === 'Escape' && app.battle && !app.battle.over && !document.querySelector('.ui-confirm')) {
+    const b = app.battle;
+    confirmBox({ title: t('¿Rendirte?'), text: t('¿Rendirte y abandonar el combate?'), ok: t('Rendirse'), cancel: t('Seguir combatiendo'), danger: true })
+      .then(yes => { if (yes && app.battle === b && !b.over) { b.over = true; net.send({ t: 'forfeit' }); } });
   }
 });
 

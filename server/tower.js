@@ -9,7 +9,7 @@ const store = require('./store.js');
 const missions = require('./missions.js');
 const { addGems } = require('./rewards.js');
 
-const LEVEL = 50, BLOCK = 7, BRAIN_EVERY = 21;
+const { level: LEVEL, block: BLOCK, brainEvery: BRAIN_EVERY } = D.TOWER;
 const PERFECT_IV = { hp: 31, atk: 31, def: 31, spe: 31 };
 // Cerebro de la Frontera: la primera vez (combate 21) su equipo de plata; después, el de oro
 const BRAINS = {
@@ -79,7 +79,7 @@ function battleMon(p, e) {
   const m = p.mons.find(x => x.uid === e.uid);
   if (!m) return null;
   const moves = [...new Set([...(m.moves || []), ...D.defaultMoves(m.dex, LEVEL)])].filter(k => D.MOVES[k]).slice(0, 4);
-  return { dex: m.dex, level: LEVEL, uid: m.uid, nick: m.nick, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex), glow: D.glowOf(p, m.dex) };
+  return { dex: m.dex, level: LEVEL, uid: m.uid, nick: m.nick, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex), parts: D.particlesOf(p, m.dex) };
 }
 
 // Acciones fuera de combate: start (elegir equipo), order (reordenar), retire. Devuelve error o null.
@@ -137,20 +137,23 @@ const teamSummary = (p, team) => team.map(e => {
   return m ? { dex: m.dex, nick: m.nick, shiny: D.looksShiny(m) } : null;
 }).filter(Boolean);
 
-// Premios por hito: cada victoria da dinero (más cuanto más alto el bloque), cada bloque de 7
-// completado un Caramelo Raro y una vitamina, y el Cerebro de la Frontera su símbolo la primera vez
+// Premios por hito (Data.TOWER): cada victoria da dinero (más cuanto más alto el bloque), cada bloque de 7
+// completado un Caramelo Raro, una vitamina y gemas, y el Cerebro de la Frontera dinero, objetos y gemas,
+// con su símbolo y una Master Ball la primera vez
 function rewardsFor(t, n, foe) {
-  const coins = 60 + 30 * blockOf(n) + (foe.brain ? 1000 : 0);
+  const C = D.TOWER.coins;
+  const coins = C.base + C.perBlock * blockOf(n) + (foe.brain ? C.brain : 0);
   const items = {};
-  const add = (k, q) => { items[k] = (items[k] || 0) + q; };
-  if (n % BLOCK === 0) { add('caramelo', 1); add(pick(D.SHOP.filter(i => i.vit)).id, 1); }
+  let gems = n % BLOCK === 0 ? D.GEMS.towerBlock : 0;
+  const add = prize => { for (const [k, q] of Object.entries(prize)) if (k === 'gems') gems += q; else items[k] = (items[k] || 0) + q; };
+  if (n % BLOCK === 0) add({ ...D.TOWER.blockPrize, [pick(D.SHOP.filter(i => i.vit)).id]: 1 });
   let symbol = null;
   if (foe.brain) {
     const brain = brainOf(n);
-    if (!t.symbols.includes(brain.symbol)) { symbol = brain.symbol; add('caramelo', 2); add('ultraball', 5); }
-    else add('caramelo', 1);
+    if (!t.symbols.includes(brain.symbol)) { symbol = brain.symbol; add(D.TOWER.symbolPrize); }
+    else add(D.TOWER.brainAgain);
   }
-  return { coins, items, symbol };
+  return { coins, items, symbol, gems };
 }
 
 // Resultado de un combate de la Torre. Devuelve la recompensa para el cliente.
@@ -175,7 +178,8 @@ function applyResult(p, setup, result) {
     for (const [k, q] of Object.entries(r.items)) p.items[k] = (p.items[k] || 0) + q;
   }
   if (r.symbol) { t.symbols.push(r.symbol); reward.tower.symbol = r.symbol; }
-  if (t.streak % BLOCK === 0) { reward.tower.blockUp = blockOf(t.streak + 1) + 1; reward.gems = addGems(p, D.GEMS.towerBlock); }
+  if (t.streak % BLOCK === 0) reward.tower.blockUp = blockOf(t.streak + 1) + 1;
+  if (r.gems) reward.gems = addGems(p, r.gems);
   Object.assign(reward.tower, { streak: t.streak, best: t.best });
   missions.track(p, 'tower');
   missions.track(p, 'towerStreak', t.streak);

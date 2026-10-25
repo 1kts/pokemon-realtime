@@ -1,7 +1,7 @@
-// Skin Elemental en los menús (retratos y avatar): lo mismo que el shader del combate (actors.js) pero
-// en el canvas del retrato: recolorea el sprite con la paleta del tipo de su línea, con parpadeo y vetas
-// que suben, un contorno fino que brilla y partículas pequeñas de pixel art por encima (brasas, burbujas,
-// chispas, hojas, copos, humo o destellos). Los retratos animados (animatedPortrait) llaman a c.fx tras
+// Skin Elemental y partículas en los menús (retratos y avatar): lo mismo que el combate (actors.js) pero
+// en el canvas del retrato. La skin recolorea el sprite con la paleta del tipo de su línea, con parpadeo y
+// vetas que suben y un contorno fino que brilla; las partículas (otro premio, con cualquier skin) son
+// pequeñas de pixel art por encima (brasas, burbujas, chispas, hojas, copos, humo o destellos). Los retratos animados (animatedPortrait) llaman a c.fx tras
 // cada fotograma; los fijos (portrait) se repintan aquí desde su primer dibujo.
 import { elementalPalette } from './skinfx.js';
 
@@ -33,8 +33,8 @@ function kind(type) {
   }
 }
 
-// Pone el efecto a un canvas de retrato (o al que haya dentro del nodo)
-export function elementalFx(node, type, typeColor) {
+// Pone el efecto a un canvas de retrato (o al que haya dentro del nodo): recolor (la skin) y/o partículas
+export function elementalFx(node, type, typeColor, { recolor = true, particles = true } = {}) {
   const c = node instanceof HTMLCanvasElement ? node : node.querySelector && node.querySelector('canvas');
   if (!c || c.dataset.fx) return;
   c.dataset.fx = '1';
@@ -55,6 +55,7 @@ export function elementalFx(node, type, typeColor) {
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
       const i = y * w + x, p = i * 4;
       const cx = Math.floor(x / px), cy = Math.floor(y / px);
+      if (solid[i] && !recolor) { opaque.push(i); continue; }
       if (solid[i]) {
         opaque.push(i);
         const l = Math.min(1, Math.max(0, ((0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2]) / 255 - 0.08) / 0.84));
@@ -65,15 +66,15 @@ export function elementalFx(node, type, typeColor) {
         const v = noise(cx * 0.3, cy * 0.25 + t * 6) + 0.5 * noise(cx * 0.7 + 2, cy * 0.5 + t * 10);
         if (v > 1.12) col = pal[3].map(x => x * 1.15); else if (v > 0.92) col = mix(col, pal[2].map(x => x * 1.2), 0.6);
         d[p] = Math.min(255, col[0]); d[p + 1] = Math.min(255, col[1]); d[p + 2] = Math.min(255, col[2]);
-      } else if (on(x - px, y) || on(x + px, y) || on(x, y - px) || on(x, y + px)) {
+      } else if (recolor && on(x - px, y) || on(x + px, y) || on(x, y - px) || on(x, y + px)) {
         const v = noise(cx * 0.6, cy * 0.4 + t * 7);
         if (v > 0.45) { const col = v > 0.75 ? pal[3] : pal[2]; d[p] = col[0]; d[p + 1] = col[1]; d[p + 2] = col[2]; d[p + 3] = 255; }
       }
     }
-    g.putImageData(img, 0, 0);
+    if (recolor) g.putImageData(img, 0, 0);
     // Partículas: nacen en un punto del sprite y se mueven un poco, sin salir de él apenas
     const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
-    if (opaque.length && Math.random() < dt * 14) {
+    if (particles && opaque.length && Math.random() < dt * 14) {
       const i = opaque[Math.floor(Math.random() * opaque.length)];
       parts.push({ x: i % w, y: Math.floor(i / w), life: 0.45 + Math.random() * 0.3, t: 0, shape: k.shapes[Math.floor(Math.random() * k.shapes.length)],
         vx: (Math.random() - 0.5) * 2 * k.vx * size * 0.15, vy: k.vy * size * 0.15 * (0.6 + Math.random() * 0.6), seed: Math.random() * 6 });

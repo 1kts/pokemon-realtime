@@ -19,8 +19,8 @@ module.exports = async ({ page, player, ok }) => {
   // Mis Pokémon: color de los tipos, equipo en dorado y shiny holográfico
   await page.click('Mis Pokémon');
   await page.waitFor(`document.querySelectorAll('.mon-card').length === 2`);
-  ok(await page.eval(`!!document.querySelector('.inner-bar .tb-left .back') && !!document.querySelector('.inner-bar .hub-me .hub-ava') && !document.querySelector('.tb-nav')`),
-    'la cabecera de Mis Pokémon es la del menú: Volver y título, y tu perfil a la derecha, sin la fila de accesos');
+  ok(await page.eval(`!!document.querySelector('.inner-bar .tb-left .back') && !document.querySelector('.inner-bar .hub-me') && !!document.querySelector('.inner-bar .tb-ctx .pill.coins') && !document.querySelector('.tb-nav')`),
+    'la cabecera de Mis Pokémon es mínima: Volver y título, y solo el dinero a la derecha (sin perfil ni fila de accesos)');
   const cards = await page.eval(`[...document.querySelectorAll('.mon-card')].map(c => ({
     name: c.querySelector('.mon-name').textContent, tc: c.style.getPropertyValue('--tc'), tc2: c.style.getPropertyValue('--tc2'),
     in: c.classList.contains('in'), star: getComputedStyle(c, '::before').content, anim: getComputedStyle(c).animationName }))`);
@@ -40,4 +40,11 @@ module.exports = async ({ page, player, ok }) => {
   const tinted = await page.eval(`[...document.querySelectorAll('.pool-card')].every(c => c.style.getPropertyValue('--tc'))`);
   ok(!before.includes('✓') && after.includes('✓'), 'al elegir un Pokémon en Práctica se marca con ✓');
   ok(tinted, 'todas las tarjetas de Práctica llevan el color de su tipo');
+
+  // Tooltips del juego en vez de los blancos del navegador: al pasar por una tarjeta sale .ui-tip con su texto
+  const title = await page.eval(`document.querySelector('.pool-card:nth-child(2)').title`);
+  await page.eval(`document.querySelector('.pool-card:nth-child(2)').dispatchEvent(new PointerEvent('pointerover', { bubbles: true })); true`);
+  ok(await page.eval(`(t => !!t && t.classList.contains('on') && t.textContent === ${JSON.stringify(title)} && !document.querySelector('.pool-card:nth-child(2)').hasAttribute('title'))(document.querySelector('.ui-tip'))`),
+    'al pasar el ratón sale el tooltip del juego con el texto y sin el del navegador');
+  if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/tip.png');
 };

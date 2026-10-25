@@ -39,7 +39,7 @@ function ballTexture(top) {
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
-const BALL_COLORS = { pokeball: '#e83030', superball: '#2f6fe0', ultraball: '#303030' };
+const BALL_COLORS = { pokeball: '#e83030', superball: '#2f6fe0', ultraball: '#303030', masterball: '#7a3cc8' };
 
 export class Effects {
   constructor(world, particles) {

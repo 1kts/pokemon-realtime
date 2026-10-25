@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.21.0', date: '2026-10-25', title: 'Logros, fichas y Lucky Spin',
+      items: [
+        ['nuevo', 'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.'],
+        ['nuevo', 'Toca un Pokémon en Mis Pokémon para abrir su ficha: estadísticas y vitaminas, movimientos, objetos y su aspecto, con skin y partículas.'],
+        ['nuevo', 'Personaliza tu avatar por piezas en el Perfil: 18 marcos de tipo, un glow alrededor, un efecto animado encima y títulos de maestro.'],
+        ['nuevo', 'Con Recoger todo, arriba y en Misiones, cobras de una vez misiones, cofres, el premio diario y los logros.'],
+        ['cambio', 'Tesoros pasa a ser Lucky Spin: el premio grande en el centro, probabilidades a la vista y partículas de tipo como premio aparte de la skin Elemental.'],
+        ['cambio', 'Los proyectiles tienen más margen para acertar y la IA se ajusta a cómo juegas. Ya no se liberan Pokémon: puedes venderlos.'],
+      ],
+    },
+    {
       v: '0.20.0', date: '2026-10-25', title: 'Tesoros: ruletas de gemas',
       items: [
         ['nuevo', 'En Tesoros giras ruletas con gemas: skins Elementales, glows, retratos, dinero y caramelos. Hay 3 ruletas y cambian cada 2 semanas.'],

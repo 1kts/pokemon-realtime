@@ -1086,6 +1086,7 @@
     { id: 'pokeball', name: 'Poké Ball', price: 100, ball: 1, desc: 'La de siempre. Mejor con el salvaje debilitado' },
     { id: 'superball', name: 'Super Ball', price: 350, ball: 1.5, desc: 'Captura con más facilidad que la Poké Ball', req: 2 },
     { id: 'ultraball', name: 'Ultra Ball', price: 900, ball: 2.2, desc: 'Muy eficaz: casi siempre atrapa a un salvaje tocado', req: 5 },
+    { id: 'masterball', name: 'Master Ball', price: 30000, ball: 255, desc: 'Atrapa seguro a cualquier Pokémon salvaje', req: 8 },
     { id: 'caramelo', name: 'Caramelo Raro', price: 1200, desc: 'Sube un nivel a un Pokémon', req: 1 },
     { id: 'maspsps', name: 'Más PS', price: 2500, vit: 'hp', desc: '+10 EV de PS (máx. 252 por stat, 510 en total)', req: 1 },
     { id: 'proteina', name: 'Proteína', price: 2500, vit: 'atk', desc: '+10 EV de Ataque (máx. 252 por stat, 510 en total)', req: 1 },
@@ -1102,6 +1103,8 @@
     { id: 'alba', name: 'Piedra Alba', price: 2500, stone: true, desc: 'Evoluciona a Kirlia (macho), Snorunt (hembra)…', req: 6 },
     { id: 'dia', name: 'Piedra Día', price: 2500, stone: true, desc: 'Evoluciona a Togetic, Roselia, Minccino…', req: 6 },
   ];
+  // Poké Balls, de la más común a la Master Ball (en combate, R las recorre en este orden)
+  const BALL_IDS = SHOP.filter(i => i.ball).map(i => i.id);
 
   // ---------- Clasificatoria ----------
   // Todos a nivel 50; draft con 1 veto y 3 elecciones por jugador.
@@ -1146,33 +1149,50 @@
   const champ = (p, r) => (progOf(p, r) >= leadersOf(r).length ? 1 : 0);
   const towerBest = p => (p.tower && p.tower.best) || 0;
   const ACHIEVEMENTS = [
-    { id: 'captura1', name: 'Primera captura', desc: 'Atrapa tu primer Pokémon salvaje.', icon: 'poke-ball', tier: 1, goal: 2,   /* el inicial cuenta como 1 */ progress: dexCount, reward: { coins: 300, glow: 'tipo-normal' } },
-    { id: 'dex25', name: 'Coleccionista', desc: 'Registra 25 especies en la Pokédex.', icon: 'great-ball', tier: 1, goal: 25, progress: dexCount, reward: { coins: 1000, title: 'Coleccionista' } },
-    { id: 'dex100', name: 'Investigador', desc: 'Registra 100 especies en la Pokédex.', icon: 'ultra-ball', tier: 2, goal: 100, progress: dexCount, reward: { coins: 3000, frame: 'pokedex', title: 'Investigador Pokémon' } },
-    { id: 'dex250', name: 'Enciclopedia andante', desc: 'Registra 250 especies en la Pokédex.', icon: 'master-ball', tier: 3, goal: 250, progress: dexCount, reward: { coins: 8000, title: 'Profesor Pokémon', glow: 'prisma' } },
-    { id: 'shiny1', name: 'Destello', desc: 'Consigue tu primer Pokémon shiny.', icon: 'shiny-charm', tier: 2, goal: 1, progress: shinyCount, reward: { coins: 2000, frame: 'shiny', title: 'Cazador de shinies', glow: 'estelar' } },
-    { id: 'shiny5', name: 'Coleccionista de destellos', desc: 'Consigue 5 Pokémon shiny.', icon: 'shiny-stone', tier: 3, goal: 5, progress: shinyCount, reward: { coins: 6000, title: 'Rey de los destellos' } },
-    { id: 'perfecto', name: 'Ejemplar perfecto', desc: 'Ten un Pokémon con IV perfectos.', icon: 'star-piece', tier: 2, goal: 1, progress: perfectCount, reward: { coins: 2000, title: 'Criador' } },
-    { id: 'medalla1', name: 'Primera medalla', desc: 'Gana tu primera medalla de gimnasio.', icon: 'badge:kanto', tier: 1, goal: 1, progress: p => badgeCount(p, 'kanto') + badgeCount(p, 'johto'), reward: { coins: 500 } },
-    { id: 'kanto8', name: 'Ocho medallas de Kanto', desc: 'Consigue las 8 medallas de Kanto.', icon: 'badge:kanto', tier: 2, goal: 8, progress: p => badgeCount(p, 'kanto'), reward: { coins: 3000, title: 'Entrenador de Kanto' } },
-    { id: 'kantoChamp', name: 'Campeón de Kanto', desc: 'Vence al Alto Mando y al Campeón de Kanto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'kanto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Kanto' , glow: 'dorado' } },
-    { id: 'johto8', name: 'Ocho medallas de Johto', desc: 'Consigue las 8 medallas de Johto.', icon: 'badge:johto', tier: 2, goal: 8, progress: p => badgeCount(p, 'johto'), reward: { coins: 3000, title: 'Entrenador de Johto' } },
-    { id: 'johtoChamp', name: 'Campeón de Johto', desc: 'Vence al Alto Mando y al Campeón de Johto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'johto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Johto' , glow: 'sombra' } },
-    { id: 'torre7', name: 'Escalador', desc: 'Gana 7 combates seguidos en la Torre Batalla.', icon: 'exp-share', tier: 1, goal: 7, progress: towerBest, reward: { coins: 1000 } },
-    { id: 'torre21', name: 'Cerebro vencido', desc: 'Llega a 21 victorias seguidas en la Torre Batalla.', icon: 'amulet-coin', tier: 2, goal: 21, progress: towerBest, reward: { coins: 4000, frame: 'torre', title: 'Desafiante de la Torre' } },
-    { id: 'torre49', name: 'Leyenda de la Torre', desc: 'Llega a 49 victorias seguidas en la Torre Batalla.', icon: 'nugget', tier: 3, goal: 49, progress: towerBest, reward: { coins: 10000, title: 'Leyenda de la Torre' } },
-    { id: 'ranked1', name: 'Primera victoria online', desc: 'Gana una clasificatoria.', icon: 'vs-seeker', tier: 1, goal: 1, progress: p => p.wins || 0, reward: { coins: 500 } },
-    { id: 'ranked25', name: 'Competidor', desc: 'Gana 25 clasificatorias.', icon: 'tm-normal', tier: 2, goal: 25, progress: p => p.wins || 0, reward: { coins: 3000, title: 'Competidor' } },
-    { id: 'equipo10', name: 'Equipo creciente', desc: 'Ten 10 Pokémon.', icon: 'lucky-egg', tier: 1, goal: 10, progress: p => (p.mons || []).length, reward: { coins: 800 } },
+    { id: 'captura1', cat: 'coleccion', name: 'Primera captura', desc: 'Atrapa tu primer Pokémon salvaje.', icon: 'poke-ball', tier: 1, goal: 2,   /* el inicial cuenta como 1 */ progress: dexCount, reward: { coins: 300, aura: 'tipo-normal' } },
+    { id: 'dex25', cat: 'coleccion', name: 'Coleccionista', desc: 'Registra 25 especies en la Pokédex.', icon: 'great-ball', tier: 1, goal: 25, progress: dexCount, reward: { coins: 1000, title: 'Coleccionista' } },
+    { id: 'dex100', cat: 'coleccion', name: 'Investigador', desc: 'Registra 100 especies en la Pokédex.', icon: 'ultra-ball', tier: 2, goal: 100, progress: dexCount, reward: { coins: 3000, frame: 'pokedex', title: 'Investigador Pokémon' } },
+    { id: 'dex250', cat: 'coleccion', name: 'Enciclopedia andante', desc: 'Registra 250 especies en la Pokédex.', icon: 'master-ball', tier: 3, goal: 250, progress: dexCount, reward: { coins: 8000, title: 'Profesor Pokémon', aura: 'prisma' } },
+    { id: 'shiny1', cat: 'coleccion', name: 'Destello', desc: 'Consigue tu primer Pokémon shiny.', icon: 'shiny-charm', tier: 2, goal: 1, progress: shinyCount, reward: { coins: 2000, frame: 'shiny', title: 'Cazador de shinies' } },
+    { id: 'shiny5', cat: 'coleccion', name: 'Coleccionista de destellos', desc: 'Consigue 5 Pokémon shiny.', icon: 'shiny-stone', tier: 3, goal: 5, progress: shinyCount, reward: { coins: 6000, title: 'Rey de los destellos', aura: 'estelar' } },
+    { id: 'perfecto', cat: 'coleccion', name: 'Ejemplar perfecto', desc: 'Ten un Pokémon con IV perfectos.', icon: 'star-piece', tier: 2, goal: 1, progress: perfectCount, reward: { coins: 2000, title: 'Criador' } },
+    { id: 'medalla1', cat: 'progreso', name: 'Primera medalla', desc: 'Gana tu primera medalla de gimnasio.', icon: 'badge:kanto', tier: 1, goal: 1, progress: p => badgeCount(p, 'kanto') + badgeCount(p, 'johto'), reward: { coins: 500 } },
+    { id: 'kanto8', cat: 'progreso', name: 'Ocho medallas de Kanto', desc: 'Consigue las 8 medallas de Kanto.', icon: 'badge:kanto', tier: 2, goal: 8, progress: p => badgeCount(p, 'kanto'), reward: { coins: 3000, title: 'Entrenador de Kanto' } },
+    { id: 'kantoChamp', cat: 'progreso', name: 'Campeón de Kanto', desc: 'Vence al Alto Mando y al Campeón de Kanto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'kanto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Kanto', aura: 'dorado' } },
+    { id: 'johto8', cat: 'progreso', name: 'Ocho medallas de Johto', desc: 'Consigue las 8 medallas de Johto.', icon: 'badge:johto', tier: 2, goal: 8, progress: p => badgeCount(p, 'johto'), reward: { coins: 3000, title: 'Entrenador de Johto' } },
+    { id: 'johtoChamp', cat: 'progreso', name: 'Campeón de Johto', desc: 'Vence al Alto Mando y al Campeón de Johto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'johto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Johto', aura: 'sombra' } },
+    { id: 'torre7', cat: 'torre', name: 'Escalador', desc: 'Gana 7 combates seguidos en la Torre Batalla.', icon: 'exp-share', tier: 1, goal: 7, progress: towerBest, reward: { coins: 1000 } },
+    { id: 'torre21', cat: 'torre', name: 'Cerebro vencido', desc: 'Llega a 21 victorias seguidas en la Torre Batalla.', icon: 'amulet-coin', tier: 2, goal: 21, progress: towerBest, reward: { coins: 4000, frame: 'torre', title: 'Desafiante de la Torre' } },
+    { id: 'torre49', cat: 'torre', name: 'Leyenda de la Torre', desc: 'Llega a 49 victorias seguidas en la Torre Batalla.', icon: 'nugget', tier: 3, goal: 49, progress: towerBest, reward: { coins: 10000, title: 'Leyenda de la Torre' } },
+    { id: 'ranked1', cat: 'pvp', name: 'Primera victoria online', desc: 'Gana una clasificatoria.', icon: 'vs-seeker', tier: 1, goal: 1, progress: p => p.wins || 0, reward: { coins: 500 } },
+    { id: 'ranked25', cat: 'pvp', name: 'Competidor', desc: 'Gana 25 clasificatorias.', icon: 'tm-normal', tier: 2, goal: 25, progress: p => p.wins || 0, reward: { coins: 3000, title: 'Competidor' } },
+    { id: 'equipo10', cat: 'coleccion', name: 'Equipo creciente', desc: 'Ten 10 Pokémon.', icon: 'lucky-egg', tier: 1, goal: 10, progress: p => (p.mons || []).length, reward: { coins: 800 } },
+    // Combate: debilitar con movimientos de cada tipo da su marco
+    ...TYPE_NAMES.map(type => ({ id: 'ko-' + type, cat: 'combate', type, name: 'Especialista en {type}', desc: 'Debilita {n} Pokémon con movimientos de tipo {type}.',
+      icon: 'type:' + type, tier: 2, goal: 100, progress: p => ((p.koByType || {})[type] || 0), reward: { coins: 1500, frame: 'tipo-' + type } })),
   ];
   const achievementProgress = (p, a) => Math.min(a.goal, a.progress(p));
   const SHOWCASE_MAX = 3;
   // Avatares de colección (además de los Pokémon atrapados): el icono de cada logro conseguido
   // ('item:<sprite>') y cada medalla de gimnasio ganada ('badge:<región>:<n>'). Se recogen a mano.
-  const achievementAvatar = a => a.icon.startsWith('badge:') ? null : 'item:' + a.icon;
+  const achievementAvatar = a => a.icon.startsWith('badge:') || a.icon.startsWith('type:') ? null : 'item:' + a.icon;
+  // Categorías de los logros (pestañas de Logros)
+  const ACH_CATS = ['progreso', 'combate', 'coleccion', 'torre', 'pvp'];
   const badgeAvatar = (region, index) => `badge:${region}:${index}`;
   const avatarIds = () => [...new Set(ACHIEVEMENTS.map(achievementAvatar).filter(Boolean))];
 
+  // ---------- Torre Batalla ----------
+  // Todos a Nv.50; cada 7 victorias sube el bloque (IA más lista) y cada 21 combates espera el Cerebro de
+  // la Frontera. Premios (server/tower.js; la ventana de Premios de la Torre los enseña desde aquí): dinero
+  // por victoria (base + por bloque), cada bloque un Caramelo Raro, una vitamina y gemas (GEMS.towerBlock),
+  // y el Cerebro dinero extra y, la primera vez de cada uno, su símbolo con premio.
+  const TOWER = {
+    level: 50, block: 7, brainEvery: 21,
+    coins: { base: 100, perBlock: 50, brain: 2500 },
+    blockPrize: { caramelo: 1 },             // y una vitamina al azar y GEMS.towerBlock gemas
+    symbolPrize: { masterball: 1, caramelo: 3, gems: 50 },
+    brainAgain: { caramelo: 2, ultraball: 3, gems: 25 },
+  };
   // ---------- Misiones diarias y semanales ----------
   // Cada día (medianoche UTC) salen 3 diarias y cada lunes 3 semanales, al azar de estas listas.
   // ev: lo que cuenta (server/missions.js) · type: sale con un tipo al azar de MISSION_TYPES ·
@@ -1206,13 +1226,11 @@
   // Cambios gratis por día (diarias) y por semana (semanales); después cuestan dinero
   const MISSION_REROLLS = { daily: 2, weekly: 1 };
   const MISSION_REROLL_COST = { daily: 200, weekly: 1000 };
-  // Glows del sprite: un contorno de luz alrededor del Pokémon que se combina con cualquier skin y se
-  // elige por línea evolutiva. Los de tipo salen al azar del cofre semanal de misiones (uno que no
-  // tengas); los especiales, de logros (reward.glow en ACHIEVEMENTS).
-  const GLOW_SPECIAL = { dorado: '#ffcb05', sombra: '#7a3cff', estelar: '#bfe6ff', prisma: null };
-  const GLOWS = [...TYPE_NAMES.map(t => 'tipo-' + t), ...Object.keys(GLOW_SPECIAL)];
-  const glowColor = g => g.startsWith('tipo-') ? TYPE_COLOR[g.slice(5)] : GLOW_SPECIAL[g];
-  const glowOf = (p, dex) => { const g = (p.glows || {})[lineOf(dex)]; return g && ((p.cosmetics || {}).glows || []).includes(g) ? g : null; };
+  // Glows del avatar (p.aura): una luz alrededor de tu foto de perfil. Los de tipo salen de la maestría
+  // de una línea de ese tipo, de Lucky Spin o del cofre semanal de misiones (uno que no tengas); los
+  // especiales, de logros (reward.aura en ACHIEVEMENTS) y el prismático también de la Torre
+  const AURA_SPECIAL = ['prisma', 'dorado', 'sombra', 'estelar'];
+  const AURAS = [...AURA_SPECIAL, ...TYPE_NAMES.map(t => 'tipo-' + t)];
   const MISSION_CHEST = {
     daily: { coins: 500, items: { caramelo: 1, superball: 3 } },
     weekly: { coins: 4000, items: { caramelo: 4, ultraball: 5, maspsps: 1, proteina: 1 } },
@@ -1220,13 +1238,13 @@
   // Premio diario por entrar: un ciclo de 7 días que va a más (el 7.º es el grande). Se recoge a mano;
   // si se salta un día, se vuelve al 1.º
   const DAILY_LOGIN = [
-    { coins: 200, items: { pokeball: 5 } },
-    { coins: 300, items: { superball: 2 } },
-    { coins: 300, items: { caramelo: 1 } },
-    { coins: 500, items: { superball: 3 } },
-    { coins: 500, items: { ultraball: 2 } },
-    { coins: 700, items: { caramelo: 2 } },
-    { coins: 1500, items: { ultraball: 3, caramelo: 2, maspsps: 1 } },
+    { coins: 200, gems: 3, items: { pokeball: 5 } },
+    { coins: 300, gems: 3, items: { superball: 2 } },
+    { coins: 300, gems: 5, items: { caramelo: 1 } },
+    { coins: 500, gems: 5, items: { superball: 3 } },
+    { coins: 500, gems: 5, items: { ultraball: 2 } },
+    { coins: 700, gems: 8, items: { caramelo: 2 } },
+    { coins: 1500, gems: 20, items: { ultraball: 3, caramelo: 2, maspsps: 1 } },
   ];
   // Premio por acabar el tutorial (una vez)
   const TUTORIAL_REWARD = { coins: 500, items: { pokeball: 5, superball: 2 } };
@@ -1247,30 +1265,41 @@
   for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
   const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
   const lineMembers = root => Object.values(SPECIES).filter(s => lineOf(s.dex) === root).map(s => s.dex).sort((a, b) => a - b);
+  // Retos de cada línea evolutiva (pestaña Líneas de Logros). La mayoría cuentan victorias con la línea en el
+  // equipo; Holo, las victorias online (clasificatoria o rápida) con ella, y Galaxia, la mejor racha de la
+  // Torre con ella en el equipo. Los marcos de tipo ya no son de aquí: salen de los logros de debilitar con
+  // movimientos de ese tipo (ACHIEVEMENTS ko-<tipo>).
   const MASTERY_TIERS = [
     { wins: 10, kind: 'star' },
     { wins: 25, kind: 'art' },
-    { wins: 50, kind: 'aura' },
-    { wins: 100, kind: 'frame' },
-    { wins: 150, kind: 'skin', skin: 'oro' },
-    { wins: 250, kind: 'skin', skin: 'holo' },
-    { wins: 400, kind: 'skin', skin: 'galaxia', title: true, aura: 'prisma' },
+    { wins: 50, kind: 'aura' }, { wins: 100, kind: 'portrait' },
+    { wins: 150, kind: 'title' },
+    { wins: 500, kind: 'skin', skin: 'oro' },
+    { stat: 'pvp', goal: 25, kind: 'skin', skin: 'holo' },
+    { stat: 'tower', goal: 50, kind: 'skin', skin: 'galaxia', aura: 'prisma' },
   ];
-  const MASTERY = MASTERY_TIERS.map(x => x.wins);
-  const MASTERY_ART = 25, MASTERY_FRAME = 100;
+  const tierGoal = x => x.goal || x.wins;
+  const MASTERY = MASTERY_TIERS.filter(x => !x.stat).map(x => x.wins);   // victorias de cada estrella
+  const MASTERY_ART = 25;
   const SKINS = ['oro', 'holo', 'galaxia', 'elemental'];
   const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
+  // Contador de un reto de línea: victorias, victorias online o mejor racha de la Torre con la línea
+  const lineStat = (p, dex, stat = 'wins') => stat === 'wins' ? masteryWins(p, dex) : (((p.lineStats || {})[stat] || {})[lineOf(dex)] || 0);
   const masteryTier = wins => MASTERY.filter(n => wins >= n).length;
   const typeFrameOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];
   const typeAuraOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];
   const masteryTitle = dex => 'Maestro de ' + SPECIES[lineOf(dex)].name;
   // Premios de maestría ya recogidos de una línea (índices de MASTERY_TIERS) y los que se pueden recoger
   const masteryClaimed = (p, dex) => ((p.masteryClaimed || {})[lineOf(dex)] || []);
-  const masteryReady = (p, dex) => MASTERY_TIERS.map((x, i) => i).filter(i => masteryWins(p, dex) >= MASTERY[i] && !masteryClaimed(p, dex).includes(i));
+  const masteryReady = (p, dex) => MASTERY_TIERS.map((x, i) => i).filter(i => lineStat(p, dex, MASTERY_TIERS[i].stat) >= tierGoal(MASTERY_TIERS[i]) && !masteryClaimed(p, dex).includes(i));
   const hasMastery = (p, dex, kind, skin) => masteryClaimed(p, dex).some(i => MASTERY_TIERS[i].kind === kind && (!skin || MASTERY_TIERS[i].skin === skin));
   // Skins de una línea: las de maestría y las ganadas en Tesoros ('elemental:<línea>' en cosmetics.skins)
   const hasSkin = (p, dex, id) => hasMastery(p, dex, 'skin', id) || ((p.cosmetics || {}).skins || []).includes(id + ':' + lineOf(dex));
   // Skin que lleva un Pokémon (la elegida para su línea, si la tiene)
+  // Partículas de una línea (brasas, burbujas, chispas… del tipo de la línea) alrededor del sprite, con
+  // cualquier skin. Se ganan en Lucky Spin (la línea en cosmetics.particles) y se encienden por línea
+  const hasParticles = (p, dex) => ((p.cosmetics || {}).particles || []).includes(lineOf(dex));
+  const particlesOf = (p, dex) => hasParticles(p, dex) && (p.particles || {})[lineOf(dex)] ? SPECIES[lineOf(dex)].types[0] : null;
   const skinOf = (p, dex) => { const s = (p.skins || {})[lineOf(dex)]; return s && hasSkin(p, dex, s) ? s : null; };
 
   // ---------- Tesoros ----------
@@ -1281,7 +1310,11 @@
   // dinero y caramelos). Cada tirada da uno de los que faltan: lo más común sale más; lo conseguido sale
   // de la bolsa y el resto gana probabilidad; la décima tirada da el último, seguro. Cada tirada cuesta
   // más que la anterior. Al cambiar las ruletas, lo conseguido se queda y lo que faltaba se va.
-  const GEMS = { missionDaily: 3, missionWeekly: 10, chestDaily: 10, chestWeekly: 40, firstWin: 10, leader: 15, leaderAgain: 4, towerBlock: 15, league: 30, rareWild: 5, shiny: 25 };
+  // Gemas: quien entra cada día y hace sus misiones diarias saca en 2 semanas (lo que dura cada tanda de
+  // ruletas) unas 400 (premio diario ~100 + misiones y cofre diario ~310), y las 3 ruletas enteras cuestan
+  // 3 × 130 = 390 (SPIN_COST): todo desbloqueable jugando a diario. Las semanales, la Torre, el online, los
+  // líderes y los salvajes raros dan más y antes: cuanto más juegas, antes lo tienes.
+  const GEMS = { missionDaily: 4, missionWeekly: 10, chestDaily: 10, chestWeekly: 40, firstWin: 10, leader: 15, leaderAgain: 4, towerBlock: 20, league: 30, rareWild: 5, shiny: 25 };
   const TREASURE_EPOCH = Date.UTC(2026, 9, 19), TREASURE_DAYS = 14, TREASURE_COUNT = 3;
   const treasurePeriod = (t = Date.now()) => Math.floor((t - TREASURE_EPOCH) / (TREASURE_DAYS * 86400e3));
   const treasureEnds = (t = Date.now()) => TREASURE_EPOCH + (treasurePeriod(t) + 1) * TREASURE_DAYS * 86400e3;
@@ -1295,28 +1328,56 @@
   const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
     fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };
   const portraitFx = type => PORTRAIT_FX[type] || 'destellos';
+  // Efectos del avatar: algo animado por encima de la imagen (cualquier retrato, medalla o Pokémon). Son
+  // aparte de los retratos (la cara), los marcos (el contorno) y los glows (la luz de fuera): se consiguen
+  // y se ponen por separado
+  const EFFECTS = ['llamas', 'burbujas', 'chispas', 'hojas', 'copos', 'sombras', 'estrellas', 'destellos', 'aurora'];
+  // Retratos con emoción (public/portraits/emo, índice en portraits/emo.js, tools/import-collab.js): de momento
+  // la Gen 1 y 2. En Tesoros, cada cara sale con una emoción según su rareza (si esa especie la tiene), como
+  // variante distinta de la normal
+  const PORTRAIT_EMO = (typeof module !== 'undefined' && module.exports ? require('./portraits/emo.js') : root.PORTRAIT_EMO) || {};
+  const FACE_EMOTIONS = ['Happy', 'Determined', 'Joyous', 'Inspired'];
+  const hasEmotion = (dex, emo) => !!(PORTRAIT_EMO[dex] && PORTRAIT_EMO[dex].e.includes(emo));
   const treasureCache = new Map();
+  // Ruletas de Lucky Spin: de momento solo de la Gen 1 y 2 (como la historia). Cada una es de una línea
+  // evolutiva: el gran premio es su skin Elemental, 2 premios medianos son retratos de esa línea (con
+  // emoción y el efecto de su tipo) y el glow de su tipo, y el resto, cosas útiles para avanzar. Las 3 de
+  // cada tanda salen en orden: primero los iniciales (Charmander, Bulbasaur, Squirtle, luego Johto) y
+  // después el resto de líneas mezcladas, siempre igual en servidor y cliente.
+  const TREASURE_STARTERS = [4, 1, 7, 155, 152, 158];
+  const TREASURE_LINES = (() => {
+    const roots = [...new Set(Object.values(SPECIES).filter(s => s.dex <= 251 && !s.leg).map(s => lineOf(s.dex)))]
+      .filter(d => d <= 251 && SPECIES[d] && !TREASURE_STARTERS.includes(d));
+    const rnd = seeded('lucky-spin-lines');
+    return [...TREASURE_STARTERS, ...roots.sort((x, y) => x - y).sort(() => rnd() - 0.5)];
+  })();
   function treasures(period = treasurePeriod()) {
     if (treasureCache.has(period)) return treasureCache.get(period);
     const rnd = seeded('tesoros:' + period);   // las mismas en el servidor y en el cliente
-    const pick = list => list[Math.floor(rnd() * list.length)];
-    const types = [...TYPE_NAMES].sort(() => rnd() - 0.5).slice(0, TREASURE_COUNT);
-    const specials = Object.keys(GLOW_SPECIAL);
-    const out = types.map((type, k) => {
-      const lines = Object.values(SPECIES).filter(s => lineOf(s.dex) === s.dex && s.types[0] === type && !s.leg).map(s => s.dex);
-      const members = Object.values(SPECIES).filter(s => s.types.includes(type)).map(s => s.dex);
-      const skinLines = [...lines].sort(() => rnd() - 0.5).slice(0, 2);
-      const faces = [...members].sort(() => rnd() - 0.5).slice(0, 4);
+    const n = TREASURE_LINES.length, base = ((period * TREASURE_COUNT) % n + n) % n;
+    const out = Array.from({ length: TREASURE_COUNT }, (_, k) => {
+      const line = TREASURE_LINES[(base + k) % n];
+      const members = lineMembers(line).filter(d => d <= 251);
+      const type = SPECIES[line].types[0];
       const fx = portraitFx(type);
+      const last = members[members.length - 1], first = members[0];
+      const face = (d, emo) => ({ id: `pt:${d}${hasEmotion(d, emo) ? ':' + emo : ''}`, kind: 'portrait', dex: d, ...(hasEmotion(d, emo) ? { emo } : {}) });
+      const vit = SHOP.filter(i => i.vit)[Math.floor(rnd() * 4)].id;
       const prizes = [
-        ...skinLines.map((d, i) => ({ id: `skin:elemental:${d}`, kind: 'skin', skin: 'elemental', dex: d, rarity: i ? 'legendario' : 'mitico' })),
-        { id: 'glow:tipo-' + type, kind: 'glow', glow: 'tipo-' + type, rarity: 'epico' },
-        { id: 'glow:' + specials[(period + k) % specials.length], kind: 'glow', glow: specials[(period + k) % specials.length], rarity: 'legendario' },
-        ...faces.map((d, i) => ({ id: `pt:${d}:${i === 3 ? 'aurora' : fx}`, kind: 'portrait', dex: d, fx: i === 3 ? 'aurora' : fx, rarity: ['raro', 'raro', 'epico', 'legendario'][i] })),
+        { id: `skin:elemental:${line}`, kind: 'skin', skin: 'elemental', dex: line, rarity: 'mitico' },
+        { id: 'fx:' + fx, kind: 'effect', effect: fx, rarity: 'legendario' },
+        { ...face(last, 'Determined'), rarity: 'epico' },
+        { ...face(first === last ? line : first, 'Happy'), rarity: 'epico' },
+        { id: 'pfx:' + line, kind: 'particles', dex: line, rarity: 'epico' },
+        { id: 'item:caramelo:3', kind: 'item', item: 'caramelo', qty: 3, rarity: 'raro' },
+        { id: `item:${vit}:2`, kind: 'item', item: vit, qty: 2, rarity: 'raro' },
+        { id: 'item:ultraball:5', kind: 'item', item: 'ultraball', qty: 5, rarity: 'raro' },
         { id: 'coins:2500', kind: 'coins', coins: 2500, rarity: 'comun' },
-        { id: 'item:caramelo:3', kind: 'item', item: 'caramelo', qty: 3, rarity: 'comun' },
+        { id: 'item:superball:5', kind: 'item', item: 'superball', qty: 5, rarity: 'comun' },
       ];
-      return { id: `${period}-${type}`, type, prizes };
+      // Si la línea tiene una sola especie, los dos retratos coinciden: el segundo pasa a ser Master Ball
+      if (prizes[2].id === prizes[3].id) prizes[3] = { id: 'item:masterball:1', kind: 'item', item: 'masterball', qty: 1, rarity: 'epico' };
+      return { id: `${period}-${line}`, type, line, prizes };
     });
     treasureCache.set(period, out);
     return out;
@@ -1330,8 +1391,8 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, MASTERY_FRAME, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, seasonTitle, RANKED_PAY, hasSkin, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, treasures, treasureOdds,
-    achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, GLOWS, GLOW_SPECIAL, glowColor, glowOf };
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
 })(this);
