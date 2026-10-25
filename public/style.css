@@ -1249,3 +1249,24 @@ label.cursor-opt.sel { border-color: var(--yellow); }
 .cursor-preview { display: flex; gap: 22px; margin-top: 12px; padding: 12px 16px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid var(--line); }
 .cursor-preview span { display: flex; align-items: center; gap: 10px; }
 .cursor-preview small { color: var(--muted); }
+
+/* Iconos de menú (cajas de los juegos) */
+.mon-icon { image-rendering: pixelated; object-fit: contain; flex: none; }
+.mon-icon.silhouette { filter: brightness(0) opacity(.55); }
+.dex-card .pic .mon-icon { width: 64px; height: 48px; margin: 8px 0; }
+
+/* Visor de la ficha de la Pokédex */
+.dex-viewer { display: grid; justify-items: center; gap: 6px; flex: none; }
+.dv-stage { width: 150px; height: 150px; display: grid; place-items: center; border-radius: 16px; background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.14), rgba(255,255,255,.02) 70%); }
+.dv-stage img { max-width: 140px; max-height: 140px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+.dv-stage.anim img { image-rendering: pixelated; min-width: 96px; min-height: 96px; object-fit: contain; }
+.dv-tabs { display: flex; gap: 3px; }
+.dv-tabs button { padding: 3px 7px; font-size: 11px; border-radius: 8px; }
+.dv-tabs button.sel { border-color: var(--yellow); color: var(--yellow); }
+.dv-tabs .dv-shiny { color: #ffe680; }
+
+.caught-home { width: 170px; height: 170px; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,.5)); animation: badgeIn .7s cubic-bezier(.2,1.6,.4,1); }
+.dex-card .tys { display: flex; gap: 3px; }
+.dex-card .tys .type-ico { border-radius: 4px; box-shadow: none; }
+.dex-sheet-top .type { display: inline-flex; align-items: center; gap: 4px; }
+.dex-sheet-top .type .type-ico { border-radius: 3px; box-shadow: none; }

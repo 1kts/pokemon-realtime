@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': 'Sprite',
+    'Animación': 'Animazione',
+    'Renders 3D, iconos y animaciones': 'Render 3D, icone e animazioni',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': 'La scheda del Pokédex mostra ogni Pokémon come sprite, render 3D di HOME, illustrazione ufficiale e animazione.',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': 'Quando catturi un Pokémon lo vedi in 3D, e gli elenchi usano le icone di menu dei giochi.',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': 'Medaglie senza il bordo bianco e Protezione con un’icona come quelle dei tipi.',
     'Maestría {type}': 'Maestria {type}',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': 'Ottieni altri titoli e cornici salendo di lega in Classificata e completando obiettivi. Vinci {n} lotte con una linea evolutiva per la cornice del suo tipo.',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': 'Qualsiasi Pokémon catturato, anche cromatico se ce l’hai. Con {n} vittorie della sua linea evolutiva, anche la sua illustrazione ufficiale. Di default, il primo della tua squadra.',
@@ -1023,6 +1029,7 @@ export default {
     'Otro color': 'Altro colore',
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In Impostazioni puoi scegliere il colore del cursore; colora anche il mirino in lotta.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'I filtri di tipo e ordine di I miei Pokémon e del Pokédex hanno lo stile del gioco, con l\'icona di ogni tipo.',
+    'Cursor a tu gusto': 'Il cursore che vuoi',
   },
 
   patterns: [

@@ -4,14 +4,27 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.12.1', date: '2026-10-25', title: 'Cursor a tu gusto',
+      items: [
+        ['nuevo', 'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.'],
+        ['cambio', 'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.'],
+      ],
+    },
+    {
+      v: '0.12.0', date: '2026-10-25', title: 'Renders 3D, iconos y animaciones',
+      items: [
+        ['nuevo', 'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.'],
+        ['nuevo', 'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.'],
+        ['cambio', 'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.'],
+      ],
+    },
+    {
       v: '0.11.0', date: '2026-10-25', title: 'Misiones y premios para recoger',
       items: [
         ['nuevo', 'Misiones diarias y semanales: cúmplelas jugando y recoge su premio. Si una no te convence, cámbiala por otra.'],
         ['nuevo', 'Recoge las 3 misiones del día o de la semana para abrir su cofre.'],
         ['nuevo', 'Cada medalla de gimnasio y cada logro te dan un avatar nuevo para tu perfil.'],
         ['cambio', 'Los premios de los logros ya no llegan solos: se recogen en Misiones.'],
-        ['nuevo', 'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.'],
-        ['cambio', 'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.'],
       ],
     },
     {

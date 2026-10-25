@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': 'Sprite',
+    'Animación': 'Animation',
+    'Renders 3D, iconos y animaciones': 'Rendus 3D, icônes et animations',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': 'La fiche du Pokédex montre chaque Pokémon en sprite, rendu 3D de HOME, illustration officielle et animation.',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': 'Quand tu captures un Pokémon, tu le vois en 3D, et les listes utilisent les icônes de menu des jeux.',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': 'Badges sans le contour blanc, et Abri avec une icône comme celles des types.',
     'Maestría {type}': 'Maîtrise {type}',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': 'Obtiens plus de titres et de cadres en montant de ligue en Classé et en réussissant des succès. Gagne {n} combats avec une lignée d’évolution pour le cadre de son type.',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': 'N’importe quel Pokémon capturé, aussi en chromatique si tu l’as. Avec {n} victoires de sa lignée d’évolution, aussi son illustration officielle. Par défaut, le premier de ton équipe.',
@@ -1017,6 +1023,7 @@ export default {
     'Otro color': 'Autre couleur',
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'Dans Paramètres, tu peux choisir la couleur du curseur ; elle teinte aussi le réticule en combat.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'Les filtres de type et de tri de Mes Pokémon et du Pokédex ont le style du jeu, avec l\'icône de chaque type.',
+    'Cursor a tu gusto': 'Un curseur à ton goût',
   },
 
   patterns: [

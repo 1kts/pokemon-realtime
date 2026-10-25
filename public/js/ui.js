@@ -1,7 +1,7 @@
 // Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
 // clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
 // la portada, el perfil, las recompensas y las novedades en account.js.
-import { portrait, animatedPortrait } from './sprites.js';
+import { portrait, monIcon, animatedPortrait } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
@@ -311,7 +311,7 @@ export class UI {
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
       b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>`;
-      if (!isLeader && unlocked && n.wild.length) b.prepend(portrait(n.wild[0][0], 30));
+      if (!isLeader && unlocked && n.wild.length) b.prepend(monIcon(n.wild[0][0], 36));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       stage.append(b);
     });
@@ -969,7 +969,11 @@ export class UI {
     box.append(el('h1', won || msg.captured ? 'win' : draw ? '' : 'lose', title));
     if (msg.captured) {
       const c = el('div', 'caught');
-      c.append(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
+      // Render 3D de HOME (si no carga, el sprite animado de siempre)
+      const home = el('img', 'caught-home');
+      home.src = `home/${msg.captured.shiny ? 'shiny/' : ''}${msg.captured.dex}.png`; home.alt = ''; home.draggable = false;
+      home.onerror = () => home.replaceWith(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
+      c.append(home);
       c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && r.captured.perfect ? `<br><b class="perfect">${t('¡Con IV perfectos!')}</b>` : ''}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
       box.append(c);
     }

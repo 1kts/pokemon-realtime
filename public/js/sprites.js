@@ -76,6 +76,20 @@ export function portrait(dex, size = 64, opts = {}) {
   return c;
 }
 
+// Icono de menú (los de las cajas de los juegos, PokeAPI, gen. 1-7, en public/icons): para listas.
+// Los shiny y las especies sin icono usan el retrato. opts: { shiny, silhouette }
+export const MENU_ICON_MAX = 809;
+export function monIcon(dex, size = 40, opts = {}) {
+  if (opts.shiny || dex > MENU_ICON_MAX) return portrait(dex, size, opts);
+  const img = document.createElement('img');
+  img.className = 'mon-icon' + (opts.silhouette ? ' silhouette' : '');
+  img.src = `icons/${dex}.png`;
+  img.width = size; img.height = Math.round(size * 0.75);
+  img.alt = ''; img.draggable = false;
+  img.onerror = () => img.replaceWith(portrait(dex, size, opts));
+  return img;
+}
+
 // Retrato animado (para menús): devuelve el canvas; se anima mientras esté en el documento.
 export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
   const c = document.createElement('canvas');

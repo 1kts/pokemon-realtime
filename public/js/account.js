@@ -1,7 +1,7 @@
 // Pantallas de cuenta y publicación: portada con invitado / inicio de sesión / registro, perfil
 // (estadísticas, historial, títulos, marcos, avatar, contraseña), recompensas de clasificatoria,
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
-import { portrait, animatedPortrait } from './sprites.js';
+import { portrait, animatedPortrait, monIcon } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
@@ -529,9 +529,9 @@ export const accountViews = {
       const row = el('div', 'h-row ' + (h.won ? 'won' : 'lost'));
       row.append(el('b', 'res', h.won ? t('V') : t('D')));
       const team = el('div', 'h-team');
-      for (const d of h.team || []) team.append(portrait(d, 32));
+      for (const d of h.team || []) team.append(monIcon(d, 40));
       team.append(el('span', 'vs', 'vs'));
-      for (const d of h.foeTeam || []) team.append(portrait(d, 32));
+      for (const d of h.foeTeam || []) team.append(monIcon(d, 40));
       row.append(team);
       row.append(el('div', 'h-info', `<span>${escapeHtml(h.foe)} <small>(${h.foeElo})</small></span><small>${ago(h.at)}</small>`));
       row.append(el('b', 'delta', `${h.delta >= 0 ? '+' : ''}${h.delta}`));

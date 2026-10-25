@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': '도트',
+    'Animación': '애니메이션',
+    'Renders 3D, iconos y animaciones': '3D 렌더, 아이콘, 애니메이션',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': '도감 페이지에서 각 포켓몬을 도트, HOME 3D 렌더, 공식 일러스트, 애니메이션으로 볼 수 있어.',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': '포켓몬을 잡으면 3D로 보이고, 목록에는 게임의 메뉴 아이콘을 써.',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': '배지의 흰 테두리를 없애고, 방어는 타입 아이콘과 같은 형식으로.',
     'Maestría {type}': '{type} 마스터리',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': '랭크에서 리그를 올리고 업적을 달성하면 칭호와 프레임을 더 얻어. 진화 계열로 {n}승을 하면 그 타입의 프레임을 얻어.',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': '잡은 포켓몬이라면 누구든, 이로치가 있다면 이로치도. 진화 계열로 {n}승을 하면 공식 일러스트도 고를 수 있어. 기본값은 팀의 첫 번째.',
@@ -1023,6 +1029,7 @@ export default {
     'Otro color': '다른 색',
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '설정에서 커서 색을 고를 수 있어요. 배틀의 조준선 색도 바뀝니다.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '내 포켓몬과 도감의 타입·정렬 필터가 게임 스타일로 바뀌고 타입마다 아이콘이 붙었어요.',
+    'Cursor a tu gusto': '나만의 커서',
   },
 
   patterns: [
