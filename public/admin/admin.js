@@ -79,6 +79,7 @@ function show(tab) {
   if (tab === 'resumen') overview();
   if (tab === 'auditoria' && !$('#audit tbody').children.length) loadAudit();
   if (tab === 'servidor') overview(true);
+  if (tab === 'metricas') loadMetrics();
 }
 for (const b of document.querySelectorAll('#tabs button')) b.addEventListener('click', () => show(b.dataset.tab));
 // El resumen se actualiza solo cada 5 s mientras se mira
@@ -115,6 +116,32 @@ async function overview(onlyServer) {
           h('td', {}, fmtDate(r.at)), h('td', {}, typeTag(r.type)), h('td', {}, r.actorName || r.actor || '—'), h('td', {}, r.targetName || r.target || '—'))))
           : h('p', { class: 'small' }, 'Ninguna todavía.'))));
 }
+// ---------- Métricas ----------
+// Jugadores por día, nuevos, combates y cuántos vuelven (de los que se crearon ese día, cuántos entraron
+// al día siguiente y a los 7 días). Los datos salen de los últimos 35 días que guarda cada perfil.
+const pct = ([n, back]) => n ? `${Math.round(back / n * 100)} % (${back}/${n})` : '—';
+const bar = (v, max) => h('div', { class: 'mbar' }, h('i', { style: `width:${max ? Math.round(v / max * 100) : 0}%` }), h('span', {}, String(v)));
+async function loadMetrics() {
+  const m = await ask('admin.metrics');
+  if (!m.days) return;
+  const s = m.summary;
+  const max = k => Math.max(1, ...m.days.map(d => d[k]));
+  const sum = k => m.days.reduce((a, d) => a + d[k], 0);
+  const cohort = k => m.days.reduce((a, d) => [a[0] + d[k][0], a[1] + d[k][1]], [0, 0]);
+  $('#metricas').replaceChildren(
+    h('div', { class: 'stats' },
+      stat('jugadores hoy', s.dau), stat('últimos 7 días', s.wau), stat('últimos 30 días', s.mau),
+      stat('perfiles · con cuenta', `${s.total} · ${s.accounts}`),
+      stat('vuelven al día siguiente (14 días)', pct(cohort('d1'))), stat('vuelven a la semana (14 días)', pct(cohort('d7'))),
+      stat('combates (14 días)', sum('battles')), stat('combates por jugador y día', (sum('battles') / Math.max(1, sum('active'))).toFixed(1))),
+    h('div', { class: 'card scroll' }, h('h2', {}, 'Últimos 14 días'),
+      table(['Día', 'Jugadores', 'Nuevos', 'Combates', 'Vuelven al día siguiente', 'Vuelven a los 7 días'], m.days.map(d => h('tr', {},
+        h('td', {}, d.day), h('td', {}, bar(d.active, max('active'))), h('td', {}, bar(d.fresh, max('fresh'))), h('td', {}, bar(d.battles, max('battles'))),
+        h('td', {}, pct(d.d1)), h('td', {}, pct(d.d7)))))),
+    h('p', { class: 'small' }, 'Un jugador cuenta como activo el día que entra al juego. «Vuelven» se mide sobre los perfiles creados ese día; los días cuya vuelta aún no ha llegado salen con —.'),
+  );
+}
+
 const table = (heads, rows) => h('table', {}, h('thead', {}, h('tr', {}, heads.map(x => h('th', {}, x)))), h('tbody', {}, rows));
 function typeTag(type) {
   const g = type.split('.')[0];

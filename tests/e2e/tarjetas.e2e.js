@@ -19,6 +19,8 @@ module.exports = async ({ page, player, ok }) => {
   // Mis Pokémon: color de los tipos, equipo en dorado y shiny holográfico
   await page.click('Mis Pokémon');
   await page.waitFor(`document.querySelectorAll('.mon-card').length === 2`);
+  ok(await page.eval(`!!document.querySelector('.inner-bar .tb-left .back') && !!document.querySelector('.inner-bar .hub-me .hub-ava') && !document.querySelector('.tb-nav')`),
+    'la cabecera de Mis Pokémon es la del menú: Volver y título, y tu perfil a la derecha, sin la fila de accesos');
   const cards = await page.eval(`[...document.querySelectorAll('.mon-card')].map(c => ({
     name: c.querySelector('.mon-name').textContent, tc: c.style.getPropertyValue('--tc'), tc2: c.style.getPropertyValue('--tc2'),
     in: c.classList.contains('in'), star: getComputedStyle(c, '::before').content, anim: getComputedStyle(c).animationName }))`);

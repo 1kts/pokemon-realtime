@@ -1104,6 +1104,14 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .menu-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; }
 .menu-top > .menu-side > .profile { position: static; }
 @media (max-width: 900px) { .menu-side { position: static; } }
+/* Portada: modos, colección, misiones y «Cómo se juega» bajan juntos al centro de la pantalla si sobra alto */
+.menu { min-height: 100%; }
+.menu > .menu-top { margin-top: auto; }
+.menu > .howto { margin-bottom: auto; }
+/* Misiones de la portada: diarias y semanales en una lista con scroll */
+.mw-list { display: flex; flex-direction: column; gap: 7px; max-height: 360px; margin-right: -6px; padding-right: 6px; }
+.mw-sub { margin: 4px 2px 0; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+.mw-sub:first-child { margin-top: 0; }
 .missions-view { display: flex; flex-direction: column; height: 100%; }
 .mv-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; overflow: auto; padding-bottom: 20px; }
 .missions { display: flex; flex-direction: column; gap: 8px; }
@@ -1414,6 +1422,13 @@ body.in-battle .legal-bar { display: none; }
 /* Las tarjetas que salen al pasar el ratón por la cabecera, por encima de las del menú */
 .hub-bar { position: relative; z-index: 20; }
 .hub-me .tb-tip { left: auto; right: 0; }
+.hub-bar { position: relative; z-index: 30; }
+/* Cabecera de las pantallas interiores: Volver y el título donde la portada tiene el idioma */
+.inner-bar .tb-left { justify-self: start; gap: 12px; padding: 0 20px 0 7px; min-width: 0; max-width: 100%; }
+.inner-bar .tb-left .back { height: 38px; padding: 0 14px 0 9px; gap: 4px; flex: none; }
+.inner-bar .tb-left h2 { margin: 0; font: 800 21px var(--display); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.inner-bar .tb-left .tb-tip { left: 0; right: auto; }
+.inner-bar .hub-logo { font-size: clamp(20px, 2.4vw, 28px); }
 
 /* Lateral: «Tu colección» */
 .hub-coll { padding: 14px; }
@@ -1441,6 +1456,12 @@ body.in-battle .legal-bar { display: none; }
   .hub-me .support { width: 38px; padding: 0; }
   .hub-me .support span { display: none; }
   .hub-ava .ava { --s: 48px !important; }
+  .inner-bar { grid-template-columns: 1fr; }
+  .inner-bar .hub-logo { display: none; }
+  .inner-bar .tb-left { grid-row: 1; grid-column: 1; }
+  .inner-bar .tb-left .back span { display: none; }
+  .inner-bar .tb-left .back { width: 38px; padding: 0; justify-content: center; }
+  .inner-bar .tb-left h2 { font-size: 18px; }
 }
 @media (max-width: 480px) {
   .hub-mod { gap: 4px; padding: 0 5px; }
@@ -1535,6 +1556,40 @@ body.in-battle .legal-bar { display: none; }
 
 /* El brillo va dentro del propio avatar (si no, el fondo de un botón o panel lo tapa) */
 .ava { isolation: isolate; }
+
+/* Premio diario: los 7 días del ciclo, el de hoy brillando */
+.daily-modal { width: min(760px, 100%); }
+.daily-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 6px 0; }
+.daily-day { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px;
+  background: rgba(0,0,0,.22); border: 1px solid var(--line); text-align: center; }
+.daily-day small { font-weight: 800; color: #c4d0e4; }
+.daily-day .dd-art { display: grid; place-items: center; min-height: 52px; }
+.daily-day .dd-art img { image-rendering: pixelated; }
+.daily-day .m-prize { justify-content: center; }
+.daily-day.big { background: linear-gradient(180deg, rgba(255,210,63,.14), rgba(0,0,0,.22)); }
+.daily-day.got { opacity: .55; }
+.daily-day .dd-ok { position: absolute; top: 6px; right: 8px; color: #8ff0a8; font-size: 16px; }
+.daily-day.today { border-color: rgba(255,203,5,.7); background: linear-gradient(180deg, rgba(255,210,63,.22), rgba(0,0,0,.2)); animation: glow 1.6s ease-in-out infinite; }
+.daily-day.today .dd-art { animation: claimBeat 1.3s ease-in-out infinite; }
+.daily-day .claim-btn { padding: 7px 10px; font-size: 13px; }
+.daily-next { display: flex; align-items: center; gap: 6px; margin: 0 auto 0 0; }
+@media (max-width: 640px) { .daily-days { grid-template-columns: repeat(4, 1fr); } .daily-day.big { grid-column: span 2; } }
+
+/* Tutorial: tarjeta de pasos arriba del combate */
+.tutorial-card { position: fixed; top: 74px; left: 50%; transform: translateX(-50%); z-index: 30; width: min(460px, calc(100% - 32px));
+  padding: 12px 16px 10px; border-radius: 16px; background: rgba(10,18,34,.92); border: 2px solid rgba(255,203,5,.7);
+  box-shadow: 0 10px 30px rgba(0,0,0,.45); text-align: center; pointer-events: auto; }
+.tutorial-card.pop { animation: tutPop .35s cubic-bezier(.2,1.4,.4,1); }
+@keyframes tutPop { from { transform: translateX(-50%) scale(.85); opacity: .3; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+.tutorial-card small { color: #ffd76a; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.tutorial-card p { margin: 4px 0 8px; font: 800 17px/1.35 var(--display); }
+.tutorial-card .tut-dots { display: flex; justify-content: center; gap: 6px; }
+.tutorial-card .tut-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.18); }
+.tutorial-card .tut-dots i.ok { background: #5fe08a; }
+.tutorial-card .tut-dots i.on { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
+.tutorial-card button.link { position: absolute; top: 8px; right: 12px; font-size: 12px; }
+.tutorial-done .m-prize { justify-content: center; margin: 4px 0; }
+.menu-card.tutorial.ready { border-color: rgba(255,203,5,.7); animation: glow 1.6s ease-in-out infinite; }
 
 /* ---------- Retratos de Tesoros: la cara de cerca y su efecto dentro de la burbuja ---------- */
 .pt-face { position: relative; display: block; width: var(--s); height: var(--s); border-radius: 50%; overflow: hidden; isolation: isolate;

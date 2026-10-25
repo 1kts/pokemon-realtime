@@ -30,7 +30,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.aura-grid')`);
   await page.eval(`[...document.querySelectorAll('.aura-grid button.coll-item')].find(b => b.querySelector('.aura-tipo') && getComputedStyle(b.querySelector('.ava-aura')).getPropertyValue('--aura').trim() === Data.TYPE_COLOR.fuego).click(); true`);
   await page.waitFor(`${p}.aura === 'tipo-fuego'`);
-  ok(await page.eval(`!!document.querySelector('.me-chip .ava-aura.aura-tipo')`), 'el brillo de fuego sale alrededor del avatar de arriba');
+  ok(await page.eval(`!!document.querySelector('.hub-ava .ava-aura.aura-tipo')`), 'el brillo de fuego sale alrededor del avatar de arriba');
   ok(await page.eval(`document.querySelectorAll('.aura-grid .coll-item.locked').length`) > 10, 'los brillos que faltan salen bloqueados, con cómo conseguirlos');
 
   // Skin Edición Oro

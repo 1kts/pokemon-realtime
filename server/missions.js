@@ -125,4 +125,4 @@ function view(p) {
   return out;
 }
 
-module.exports = { refresh, track, typesOf, snapshot, diff, action, view, KINDS };
+module.exports = { refresh, track, typesOf, snapshot, diff, action, view, pay, KINDS };

@@ -132,4 +132,43 @@ export class Sfx {
   faint(mine) {
     this.play('faint', () => this.tone('sine', 440, 160, 0.5, 0.1), mine);
   }
+
+  // ---------- Capturas ----------
+  // Unas notas cortas seguidas (semitonos sobre f, cada `gap` s); melodías propias, no las de los juegos
+  notes(f, steps, gap, d, vol, type = 'triangle') {
+    steps.forEach((s, i) => { if (s !== null) this.tone(type, f * 2 ** (s / 12), f * 2 ** (s / 12), d, vol, i * gap); });
+  }
+  throwBall() { this.play('throw', () => this.noise(600, 2400, 0.22, 0.14, 1.5, 0.05)); }
+  // El Pokémon entra en la Ball: barrido que sube y un chasquido al cerrarse
+  ballIn() {
+    this.play('ballin', () => { this.tone('sine', 300, 1200, 0.3, 0.08); this.noise(3000, 2000, 0.03, 0.12, 2, 0.003, 0.32); });
+  }
+  // Cada sacudida: un tic-tac sordo
+  shake() {
+    this.play('shake', () => { this.tone('sine', 260, 200, 0.06, 0.14); this.tone('sine', 230, 180, 0.06, 0.12, 0.12); });
+  }
+  // ¡Atrapado!: el clic de la Ball y una fanfarria corta que sube
+  caught() {
+    this.play('caught', () => {
+      this.noise(4000, 3000, 0.03, 0.14, 2);
+      this.notes(523, [0, 4, 7, 12, null, 7, 12], 0.09, 0.16, 0.07, 'square');
+      this.notes(262, [0, null, 7, null, null, 4, 0], 0.09, 0.2, 0.06);
+    });
+  }
+  // Se escapa: la Ball se abre de golpe
+  breakFree() {
+    this.play('escape', () => { this.noise(2500, 400, 0.18, 0.2, 1); this.tone('triangle', 700, 250, 0.25, 0.07); });
+  }
+
+  // ---------- Fuera del combate ----------
+  // Sube de nivel (evolved: ha evolucionado, más largo)
+  levelUp(evolved) {
+    this.play('levelup', () => evolved
+      ? this.notes(392, [0, 4, 7, 12, 16, 19, 24], 0.07, 0.2, 0.07)
+      : this.notes(440, [0, 4, 7, 12], 0.07, 0.18, 0.07));
+  }
+  // Recoger un premio: destellos de monedas
+  reward() {
+    this.play('reward', () => { this.notes(1318, [0, 5, 12], 0.06, 0.14, 0.06); this.noise(8000, 9000, 0.25, 0.04, 3, 0.01, 0.1); });
+  }
 }

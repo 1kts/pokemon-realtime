@@ -36,6 +36,6 @@ module.exports = async ({ page, player, ok }) => {
   if (pt) {
     await page.eval(`window.__app.net.send({ t: 'look', avatar: '${pt}' }); true`);
     await page.waitFor(`window.__app.ui.profile.avatar === '${pt}'`);
-    ok(await page.eval(`!!document.querySelector('.me-chip .pt-face img.pt-img')`), 'el retrato ganado se pone de avatar: la cara de cerca con su efecto');
+    ok(await page.eval(`!!document.querySelector('.hub-ava .pt-face img.pt-img, .me-chip .pt-face img.pt-img')`), 'el retrato ganado se pone de avatar: la cara de cerca con su efecto');
   }
 };

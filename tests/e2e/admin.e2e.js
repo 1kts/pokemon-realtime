@@ -26,6 +26,13 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.waitFor(`document.querySelectorAll('#resumen .stat').length > 5`);
   ok(await page.eval(`[...document.querySelectorAll('#resumen .stat span')].some(s => /conectados/.test(s.textContent))`), 'el resumen enseña los conectados');
 
+  // Métricas: jugadores de hoy, nuevos y cuántos vuelven, día a día
+  await page.click('[data-tab=metricas]');
+  await page.waitFor(`document.querySelectorAll('#metricas tbody tr').length === 14`);
+  const todayRow = await page.eval(`[...document.querySelectorAll('#metricas tbody tr')[0].children].map(td => td.textContent)`);
+  ok(+todayRow[1] >= 2 && +todayRow[2] >= 2 && await page.eval(`[...document.querySelectorAll('#metricas .stat span')].some(s => /vuelven al día siguiente/.test(s.textContent))`),
+    `Métricas: los últimos 14 días con los jugadores y los nuevos de hoy (${todayRow.slice(1, 3).join(' / ')}) y cuántos vuelven`);
+
   await page.click('[data-tab=jugadores]');
   await page.type('#search [name=q]', 'gamber');
   await page.eval(`document.querySelector('#search').requestSubmit(); true`);

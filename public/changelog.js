@@ -4,6 +4,29 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.19.1', date: '2026-10-25', title: 'Tarjetas a todo color',
+      items: [
+        ['cambio', 'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.'],
+        ['cambio', 'Lo conseguido o listo para recoger, como logros, misiones completadas, cofres y Pokémon capturados, brilla en dorado para que lo veas de un vistazo.'],
+      ],
+    },
+    {
+      v: '0.19.0', date: '2026-10-25', title: 'Premio diario y tutorial',
+      items: [
+        ['nuevo', 'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.'],
+        ['nuevo', 'Tutorial de 1 minuto en Entrenamiento: aprende a moverte, atacar, protegerte y cambiar de Pokémon contra un muñeco, con premio al acabar.'],
+        ['nuevo', 'Las capturas suenan: la Ball se sacude, hace clic al cerrarse y suena una fanfarria si lo atrapas. También suenan subir de nivel y recoger premios.'],
+      ],
+    },
+    {
+      v: '0.18.3', date: '2026-10-25', title: 'Menú centrado y más brillo',
+      items: [
+        ['cambio', 'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.'],
+        ['cambio', 'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.'],
+        ['cambio', 'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.'],
+      ],
+    },
+    {
       v: '0.18.2', date: '2026-10-25', title: 'Tarjetas con más chispa',
       items: [
         ['cambio', 'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.'],

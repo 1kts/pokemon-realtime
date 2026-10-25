@@ -154,6 +154,7 @@ net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
   app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
+  if (app.tutorial) app.tutorial.finish(m.winner === m.you);
   // Dejar ver el final un momento antes de los resultados
   setTimeout(() => {
     if (app.battle !== b) return;
