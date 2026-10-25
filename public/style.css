@@ -1104,6 +1104,14 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .menu-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; }
 .menu-top > .menu-side > .profile { position: static; }
 @media (max-width: 900px) { .menu-side { position: static; } }
+/* Portada: modos, colección, misiones y «Cómo se juega» bajan juntos al centro de la pantalla si sobra alto */
+.menu { min-height: 100%; }
+.menu > .menu-top { margin-top: auto; }
+.menu > .howto { margin-bottom: auto; }
+/* Misiones de la portada: diarias y semanales en una lista con scroll */
+.mw-list { display: flex; flex-direction: column; gap: 7px; max-height: 360px; margin-right: -6px; padding-right: 6px; }
+.mw-sub { margin: 4px 2px 0; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+.mw-sub:first-child { margin-top: 0; }
 .missions-view { display: flex; flex-direction: column; height: 100%; }
 .mv-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; overflow: auto; padding-bottom: 20px; }
 .missions { display: flex; flex-direction: column; gap: 8px; }
@@ -1414,6 +1422,13 @@ body.in-battle .legal-bar { display: none; }
 /* Las tarjetas que salen al pasar el ratón por la cabecera, por encima de las del menú */
 .hub-bar { position: relative; z-index: 20; }
 .hub-me .tb-tip { left: auto; right: 0; }
+.hub-bar { position: relative; z-index: 30; }
+/* Cabecera de las pantallas interiores: Volver y el título donde la portada tiene el idioma */
+.inner-bar .tb-left { justify-self: start; gap: 12px; padding: 0 20px 0 7px; min-width: 0; max-width: 100%; }
+.inner-bar .tb-left .back { height: 38px; padding: 0 14px 0 9px; gap: 4px; flex: none; }
+.inner-bar .tb-left h2 { margin: 0; font: 800 21px var(--display); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.inner-bar .tb-left .tb-tip { left: 0; right: auto; }
+.inner-bar .hub-logo { font-size: clamp(20px, 2.4vw, 28px); }
 
 /* Lateral: «Tu colección» */
 .hub-coll { padding: 14px; }
@@ -1441,6 +1456,12 @@ body.in-battle .legal-bar { display: none; }
   .hub-me .support { width: 38px; padding: 0; }
   .hub-me .support span { display: none; }
   .hub-ava .ava { --s: 48px !important; }
+  .inner-bar { grid-template-columns: 1fr; }
+  .inner-bar .hub-logo { display: none; }
+  .inner-bar .tb-left { grid-row: 1; grid-column: 1; }
+  .inner-bar .tb-left .back span { display: none; }
+  .inner-bar .tb-left .back { width: 38px; padding: 0; justify-content: center; }
+  .inner-bar .tb-left h2 { font-size: 18px; }
 }
 @media (max-width: 480px) {
   .hub-mod { gap: 4px; padding: 0 5px; }
@@ -1459,12 +1480,28 @@ body.in-battle .legal-bar { display: none; }
 @keyframes aura-pulse { 50% { box-shadow: 0 0 24px 8px var(--aura), inset 0 0 14px 3px var(--aura); opacity: .85; } }
 @keyframes aura-spin { to { transform: rotate(1turn); } }
 
+/* ---------- Glows del sprite (menús): drop-shadow del color del glow que sigue la silueta ---------- */
+@property --gc { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+.has-glow { --glowf: drop-shadow(0 0 1px var(--gc)) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 7px color-mix(in srgb, var(--gc) 60%, transparent)); filter: var(--glowf); }
+.has-glow:not([class*="skin-"]) { animation: glow-breathe 2.4s ease-in-out infinite; }
+@keyframes glow-breathe { 50% { filter: drop-shadow(0 0 1px var(--gc)) drop-shadow(0 0 2px var(--gc)) drop-shadow(0 0 4px color-mix(in srgb, var(--gc) 50%, transparent)); } }
+.glow-prisma.has-glow:not([class*="skin-"]), .glow-dot.glow-prisma { animation: glow-prisma 3s linear infinite; }
+@keyframes glow-prisma { 0%, 100% { --gc: #ff5ad1; } 25% { --gc: #ffcb05; } 50% { --gc: #4fd06a; } 75% { --gc: #46d0ff; } }
+.glow-sombra.has-glow { --glowf: drop-shadow(0 0 1px #1a0830) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 8px #2a0a50); }
+.glow-estelar.has-glow { --glowf: drop-shadow(0 0 1px #fff) drop-shadow(0 0 3px var(--gc)) drop-shadow(0 0 8px var(--gc)); }
+.glow-dot { display: inline-block; width: 12px; height: 12px; margin-right: 5px; border-radius: 50%; vertical-align: -1px; background: var(--gc, #fff); box-shadow: 0 0 6px 1px var(--gc, #fff); }
+.glow-dot.glow-prisma { --gc: #ff5ad1; }
+.glow-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.glow-chip { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 99px; font-size: 13px; font-weight: 800; background: rgba(0,0,0,.25); border: 1px solid var(--line); }
+.glow-chip.sel { border-color: var(--yellow); box-shadow: 0 0 0 1px var(--yellow); }
+.glow-chip.locked { opacity: .45; }
+
 /* ---------- Skins de maestría sobre el sprite (en combate las pinta el shader de actors.js) ---------- */
-.skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)); }
+.skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) var(--glowf, contrast(1)); }
 .skin-holo { animation: skin-holo 3.5s linear infinite; }
-@keyframes skin-holo { from { filter: saturate(1.9) hue-rotate(0deg) drop-shadow(0 0 3px rgba(150,220,255,.8)); } to { filter: saturate(1.9) hue-rotate(360deg) drop-shadow(0 0 3px rgba(150,220,255,.8)); } }
-.skin-galaxia { filter: grayscale(1) sepia(1) hue-rotate(215deg) saturate(3.2) brightness(.85) contrast(1.25) drop-shadow(0 0 4px #9b6bff); animation: skin-galaxia 2.6s ease-in-out infinite; }
-@keyframes skin-galaxia { 50% { filter: grayscale(1) sepia(1) hue-rotate(250deg) saturate(3.2) brightness(1) contrast(1.25) drop-shadow(0 0 8px #c08bff); } }
+@keyframes skin-holo { from { filter: saturate(1.9) hue-rotate(0deg) drop-shadow(0 0 3px rgba(150,220,255,.8)) var(--glowf, contrast(1)); } to { filter: saturate(1.9) hue-rotate(360deg) drop-shadow(0 0 3px rgba(150,220,255,.8)) var(--glowf, contrast(1)); } }
+.skin-galaxia { filter: grayscale(1) sepia(1) hue-rotate(215deg) saturate(3.2) brightness(.85) contrast(1.25) drop-shadow(0 0 4px #9b6bff) var(--glowf, contrast(1)); animation: skin-galaxia 2.6s ease-in-out infinite; }
+@keyframes skin-galaxia { 50% { filter: grayscale(1) sepia(1) hue-rotate(250deg) saturate(3.2) brightness(1) contrast(1.25) drop-shadow(0 0 8px #c08bff) var(--glowf, contrast(1)); } }
 /* Elemental en los menús: el sprite arde con el color del tipo (en combate, llamas de verdad en el shader) */
 .skin-elemental { --fx: #ff7a30; filter: drop-shadow(0 -2px 1px var(--fx)) drop-shadow(0 -1px 4px var(--fx)) drop-shadow(0 0 6px color-mix(in srgb, var(--fx) 70%, #fff)); animation: skin-elemental .9s steps(3) infinite; }
 @keyframes skin-elemental { 50% { filter: drop-shadow(0 -3px 1px var(--fx)) drop-shadow(0 -2px 6px var(--fx)) drop-shadow(0 0 9px color-mix(in srgb, var(--fx) 70%, #fff)); } }

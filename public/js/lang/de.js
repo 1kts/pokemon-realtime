@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'Mittiges Menü, mehr Glanz',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'Das Hauptmenü steht jetzt mittig auf dem Bildschirm; rechts ist oben Deine Sammlung und darunter Missionen, mit Tages- und Wochenmissionen.',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'Jeder Bildschirm hat die Leiste des Menüs: links Zurück und der Titel, rechts dein Profil und dein Geld. Meine Pokémon, Beutel und Shop findest du in Deine Sammlung.',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'Panels, Karten, Tabs und der Anmeldebildschirm haben einen neuen Look: Was du wählst, leuchtet golden, und Karten heben sich, wenn du mit der Maus darüberfährst.',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'Karten mit mehr Wumms',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Die Menükarten tragen die Farbe ihres Modus und die Karten deiner Pokémon die Farben ihrer Typen; fährst du mit der Maus darüber, heben sie sich an und leuchten.',
@@ -1180,6 +1185,21 @@ export default {
     'Skin Holo': 'Holo-Skin',
     'Skin Galaxia': 'Galaxie-Skin',
     'Skin Elemental': 'Element-Skin',
+    'Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.': 'Du hast noch keinen: schließe Erfolge ab oder öffne die wöchentliche Missionstruhe.',
+    'Elegir': 'Wählen',
+    'Glow de tipo al azar': 'Zufälliger Typ-Glow',
+    'Glow {type}': '{type}-Glow',
+    'Logro: {name}': 'Erfolg: {name}',
+    'Ponérselo a una línea': 'Einer Reihe geben',
+    'Sale al azar en el cofre semanal de misiones': 'Zufällig aus der wöchentlichen Missionstruhe',
+    'Sin glow': 'Kein Glow',
+    'Tus glows ({n}/{m})': 'Deine Glows ({n}/{m})',
+    'Tus líneas: toca una para ponerle «{glow}»': 'Deine Reihen: tippe eine an, um ihr „{glow}“ zu geben',
+    'Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.': 'Ein Lichtrand um das Sprite, der zu jedem Skin passt, in Menüs und im Kampf. Typ-Glows kommen aus der wöchentlichen Missionstruhe, besondere aus Erfolgen. Wähle einen und tippe eine Reihe an.',
+    'Glows': 'Glows',
+    'Dorado': 'Golden',
+    'Sombra': 'Schatten',
+    'Estelar': 'Stellar',
   },
 
   patterns: [

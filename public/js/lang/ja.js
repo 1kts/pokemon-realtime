@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'メニューが中央に、もっと華やかに',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'メインメニューが画面の中央に表示されます。右側は上に「コレクション」、下に「ミッション」があり、デイリーとウィークリーの両方を確認できます。',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'すべての画面にメニューと同じバーがつきます。左に「もどる」とタイトル、右にプロフィールとおこづかい。「じぶんの ポケモン」「バッグ」「ショップ」は「コレクション」にあります。',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'パネル、カード、タブ、ログイン画面が新しいデザインに。選んだものは金色に光り、カーソルを合わせるとカードが浮き上がります。',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'カードがもっと華やかに',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'メニューのカードは各モードの色に、ポケモンのカードはタイプの色になりました。カーソルを合わせると浮き上がって光ります。',
@@ -1181,6 +1186,21 @@ export default {
     'Skin Holo': 'ホロのスキン',
     'Skin Galaxia': 'ギャラクシーのスキン',
     'Skin Elemental': 'エレメンタルのスキン',
+    'Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.': 'まだ持っていない。実績を達成するか、ミッションの週間宝箱を開けよう。',
+    'Elegir': '選ぶ',
+    'Glow de tipo al azar': 'ランダムなタイプのグロー',
+    'Glow {type}': '{type}グロー',
+    'Logro: {name}': '実績:{name}',
+    'Ponérselo a una línea': '系統につける',
+    'Sale al azar en el cofre semanal de misiones': 'ミッションの週間宝箱からランダムで出る',
+    'Sin glow': 'グローなし',
+    'Tus glows ({n}/{m})': 'あなたのグロー({n}/{m})',
+    'Tus líneas: toca una para ponerle «{glow}»': 'あなたの系統:タップして「{glow}」をつける',
+    'Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.': 'スプライトのまわりの光の輪郭。どのスキンとも重ねられ、メニューでもバトルでも見える。タイプのグローはミッションの週間宝箱から、特別なものは実績から。選んで系統をタップしよう。',
+    'Glows': 'グロー',
+    'Dorado': 'ゴールド',
+    'Sombra': 'シャドウ',
+    'Estelar': 'スター',
   },
 
   patterns: [

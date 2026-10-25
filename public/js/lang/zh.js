@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': '菜单居中，更加闪亮',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': '主菜单现在位于屏幕中央；右侧上方是“我的收藏”，下方是“任务”，每日任务和每周任务都在其中。',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': '所有界面都使用菜单的顶栏：左侧是“返回”和标题，右侧是你的资料和金钱。“我的宝可梦”“背包”和“商店”在“我的收藏”里。',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': '面板、卡片、标签页和登录界面焕然一新：选中的内容会发出金光，鼠标移上去时卡片会浮起。',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': '卡片更有冲击力',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': '菜单卡片使用各模式的专属颜色，宝可梦卡片使用其属性颜色；鼠标移上去时卡片会浮起并发光。',
@@ -1170,6 +1175,21 @@ export default {
     'Skin Holo': '全息皮肤',
     'Skin Galaxia': '星河皮肤',
     'Skin Elemental': '元素皮肤',
+    'Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.': '你还没有:完成成就或打开每周任务宝箱。',
+    'Elegir': '选择',
+    'Glow de tipo al azar': '随机属性光边',
+    'Glow {type}': '{type}光边',
+    'Logro: {name}': '成就:{name}',
+    'Ponérselo a una línea': '用于一条进化链',
+    'Sale al azar en el cofre semanal de misiones': '每周任务宝箱随机掉落',
+    'Sin glow': '无光边',
+    'Tus glows ({n}/{m})': '你的光边({n}/{m})',
+    'Tus líneas: toca una para ponerle «{glow}»': '你的进化链:点击一条来使用「{glow}」',
+    'Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.': '精灵图周围的光边,可与任何皮肤叠加,菜单和对战中都可见。属性光边来自每周任务宝箱,特殊光边来自成就。选一个并点击进化链即可使用。',
+    'Glows': '光边',
+    'Dorado': '金色',
+    'Sombra': '暗影',
+    'Estelar': '星辉',
   },
 
   patterns: [

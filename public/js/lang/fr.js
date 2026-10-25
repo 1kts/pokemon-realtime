@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'Menu centré et plus brillant',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'Le menu principal est centré à l\'écran ; à droite, Ta collection est en haut et Missions en dessous, avec les missions du jour et de la semaine.',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'Tous les écrans ont la barre du menu : Retour et le titre à gauche, ton profil et ton argent à droite. Mes Pokémon, Sac et Boutique sont dans Ta collection.',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'Panneaux, cartes, onglets et écran de connexion ont une nouvelle finition : ce que tu choisis brille en doré et les cartes se soulèvent au survol.',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'Des cartes qui claquent',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Les cartes du menu prennent la couleur de chaque mode et celles de tes Pokémon la couleur de leurs types ; survole-les et elles se soulèvent en brillant.',
@@ -1175,6 +1180,21 @@ export default {
     'Skin Holo': 'Skin Holo',
     'Skin Galaxia': 'Skin Galaxie',
     'Skin Elemental': 'Skin Élémentaire',
+    'Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.': 'Tu n\'en as encore aucun : accomplis des succès ou ouvre le coffre hebdomadaire des missions.',
+    'Elegir': 'Choisir',
+    'Glow de tipo al azar': 'Lueur de type au hasard',
+    'Glow {type}': 'Lueur {type}',
+    'Logro: {name}': 'Succès : {name}',
+    'Ponérselo a una línea': 'L\'appliquer à une lignée',
+    'Sale al azar en el cofre semanal de misiones': 'Sort au hasard du coffre hebdomadaire des missions',
+    'Sin glow': 'Sans lueur',
+    'Tus glows ({n}/{m})': 'Tes lueurs ({n}/{m})',
+    'Tus líneas: toca una para ponerle «{glow}»': 'Tes lignées : touche-en une pour lui appliquer « {glow} »',
+    'Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.': 'Un contour lumineux autour du sprite qui s\'ajoute à n\'importe quel skin, dans les menus et en combat. Les lueurs de type viennent du coffre hebdomadaire des missions ; les spéciales, des succès. Choisis-en une et touche une lignée pour l\'appliquer.',
+    'Glows': 'Lueurs',
+    'Dorado': 'Doré',
+    'Sombra': 'Ombre',
+    'Estelar': 'Stellaire',
   },
 
   patterns: [

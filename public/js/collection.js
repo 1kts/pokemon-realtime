@@ -1,14 +1,15 @@
 // Colección: la maestría de cada línea evolutiva (sus premios se recogen a mano) y lo que da:
-// ilustraciones para el avatar, brillos de burbuja y skins, con lo que falta para conseguir cada cosa.
+// ilustraciones para el avatar, brillos de burbuja y skins, con lo que falta para conseguir cada cosa;
+// y los glows del sprite (de logros y del cofre semanal), que se ponen a la línea que quieras.
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
 import { t } from './i18n.js';
 import { portrait, typeTint } from './sprites.js';
-import { masteryPrize, SKIN_LABEL, applySkin } from './frames.js';
+import { masteryPrize, SKIN_LABEL, applySkin, applyGlow, glowName } from './frames.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-const TABS = [['mastery', 'Maestría'], ['art', 'Ilustraciones'], ['aura', 'Brillos'], ['skin', 'Skins']];
+const TABS = [['mastery', 'Maestría'], ['art', 'Ilustraciones'], ['aura', 'Brillos'], ['skin', 'Skins'], ['glow', 'Glows']];
 const winsFor = kind => (MASTERY_TIERS.find(x => x.kind === kind || x.skin === kind || x.aura === kind) || {}).wins;
 const AURA_PRISMA = 'prisma';
 
@@ -24,9 +25,9 @@ export const collectionViews = {
     return lineRoots(p).reduce((n, r) => n + Data.masteryReady(p, r).length, 0);
   },
 
-  // Pone la skin de su línea a un retrato (en los menús; en combate la pinta el shader de actors.js)
+  // Pone la skin y el glow de su línea a un retrato (en los menús; en combate los pinta el shader de actors.js)
   skinned(node, dex) {
-    return applySkin(node, Data.skinOf(this.profile, dex), dex);
+    return applyGlow(applySkin(node, Data.skinOf(this.profile, dex), dex), Data.glowOf(this.profile, dex));
   },
 
   openCollection(tab) {
@@ -173,5 +174,34 @@ export const collectionViews = {
       sec.append(grid);
       body.append(sec);
     }
+  },
+
+  // Glows: eliges uno de los tuyos y luego a qué línea se lo pones (o se lo quitas)
+  coll_glow(body) {
+    const p = this.profile;
+    const own = (p.cosmetics && p.cosmetics.glows) || [];
+    body.append(el('p', 'small coll-intro', t('Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.')));
+    const pick = this.glowPick && own.includes(this.glowPick) ? this.glowPick : own[0] || null;
+    const chips = el('div', 'glow-chips');
+    const SOURCE = Object.fromEntries(Data.ACHIEVEMENTS.filter(a => a.reward && a.reward.glow).map(a => [a.reward.glow, a]));
+    for (const g of Data.GLOWS) {
+      const has = own.includes(g);
+      const b = el(has ? 'button' : 'span', 'glow-chip' + (g === pick ? ' sel' : '') + (has ? '' : ' locked'), `<i class="glow-dot glow-${g in Data.GLOW_SPECIAL ? g : 'tipo'}" style="--gc:${Data.glowColor(g) || '#fff'}"></i>${glowName(g, t)}`);
+      b.title = has ? t('Elegir') : SOURCE[g] ? t('Logro: {name}', { name: t(SOURCE[g].name) }) : t('Sale al azar en el cofre semanal de misiones');
+      if (has) b.onclick = () => { this.glowPick = g; this.show('collection'); };
+      chips.append(b);
+    }
+    body.append(el('h4', '', t('Tus glows ({n}/{m})', { n: own.length, m: Data.GLOWS.length })), chips);
+    if (!pick) { body.append(el('p', 'small', t('Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.'))); return; }
+    body.append(el('h4', '', t('Tus líneas: toca una para ponerle «{glow}»', { glow: glowName(pick, t) })));
+    const grid = el('div', 'coll-grid');
+    for (const r of lineRoots(p).sort((a, b) => Data.masteryWins(p, b) - Data.masteryWins(p, a) || a - b)) {
+      const cur = Data.glowOf(p, r), on = cur === pick;
+      const b = el('button', 'coll-item' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${cur ? glowName(cur, t) : t('Sin glow')}</em>`);
+      b.prepend(this.skinned(portrait(r, 72), r));
+      b.onclick = () => this.net.send({ t: 'look', glow: { dex: r, glow: on ? null : pick } });
+      grid.append(b);
+    }
+    body.append(grid);
   },
 };

@@ -3,6 +3,7 @@
    del Pokémon, liga…) en el fondo, el borde y un halo detrás del sprite; al pasar el ratón se
    levanta, brilla el borde y cruza un reflejo. Va después de style.css y solo pisa el aspecto.
    Variables: --c (color del modo, tarjetas del menú) y --tc / --tc2 (tipos, puestos desde JS).
+   Al final, la capa «premium» del resto de la página: paneles, cabeceras, pestañas y ventanas.
    =================================================================================== */
 :root {
   --card-ink: #141a36;        /* fondo base de las tarjetas, sobre el que se mezcla el color */
@@ -182,6 +183,96 @@
 /* Los paneles grandes: filo de luz arriba para que no parezcan planos */
 .panel::before { content: ''; position: absolute; inset: 0 18px auto; height: 1px; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); }
 
+/* ===================================================================================
+   Resto de la página con el mismo acabado: paneles con filo de luz y borde que capta el color,
+   títulos de panel con la marca dorada de las secciones del menú, pestañas elegidas que brillan.
+   =================================================================================== */
+.panel, .subbar, .node-info, .hub-mod, .missions-widget, .dex-head, .dex-grid {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(120,150,255,.10), transparent 55%),
+    linear-gradient(180deg, rgba(36,45,90,.94), rgba(18,24,50,.94));
+  border-color: rgba(170,190,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), inset 0 0 0 1px rgba(255,255,255,.02), 0 18px 44px rgba(0,0,0,.42);
+}
+.hub-mod { border-color: rgba(170,190,255,.2); }
+.hub-logo { text-shadow: 0 3px 0 rgba(0,0,0,.35), 0 0 26px rgba(255,210,63,.25); }
+
+/* Títulos de los paneles: marca dorada sesgada, como «Aventura» u «Online» en el menú */
+.panel:not(.modal-box) > h3, .panel:not(.modal-box) > .ach-head h3, .panel:not(.modal-box) > .m-head h3, .panel:not(.modal-box) > .season-head h3, .node-info > h3,
+.mw-head b, .hub-coll h3 { display: flex; align-items: center; gap: 9px; color: #fff; font-weight: 900; letter-spacing: .3px; }
+.panel:not(.modal-box) > h3::before, .panel:not(.modal-box) > .ach-head h3::before, .panel:not(.modal-box) > .m-head h3::before, .panel:not(.modal-box) > .season-head h3::before, .node-info > h3::before,
+.mw-head b::before, .hub-coll h3::before {
+  content: ''; flex: none; width: 5px; height: .95em; border-radius: 3px; transform: skewX(-14deg);
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 10px rgba(255,210,63,.55);
+}
+
+/* Pestañas y opciones elegidas: dorado con brillo */
+.region-tabs button.sel, .gen-tabs button.sel, .diff button.sel, .dv-tabs button.sel, .lang-opt.sel {
+  border-color: var(--gold); color: #fff;
+  background: linear-gradient(180deg, rgba(255,226,120,.34), rgba(255,190,30,.12));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(255,210,63,.35), 0 0 18px rgba(255,210,63,.25);
+}
+.region-tabs button, .gen-tabs button, .diff button, .dv-tabs button { transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; }
+.region-tabs button:hover:not(:disabled):not(.sel), .diff button:hover:not(:disabled):not(.sel), .dv-tabs button:hover:not(:disabled):not(.sel) { transform: translateY(-1px); border-color: rgba(255,210,63,.45); }
+
+/* Botones secundarios de la cabecera y de las tarjetas: cristal con filo de luz */
+.tb-btn, .hub-me .pill.coins { box-shadow: inset 0 1px 0 rgba(255,255,255,.12); }
+.tb-btn:hover:not(:disabled) { border-color: rgba(255,210,63,.5); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 14px rgba(255,210,63,.18); }
+
+/* Ventanas: borde dorado tenue y halo */
+.modal-box { border-color: rgba(255,210,63,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,210,63,.12), 0 0 60px rgba(255,210,63,.10), 0 30px 80px rgba(0,0,0,.6); }
+
+/* Fondo: viñeta más marcada para que los paneles destaquen sobre la arena */
+#screen { background:
+  radial-gradient(ellipse at 50% -10%, rgba(80,110,220,.30), transparent 55%),
+  radial-gradient(ellipse at 50% 120%, rgba(255,190,60,.10), transparent 50%),
+  linear-gradient(180deg, rgba(6,10,22,.62), rgba(6,10,22,.28) 40%, rgba(6,10,22,.72)); }
+
+/* Tarjetas de dentro de los paneles (misiones, logros, ligas, estadísticas, Mochila, Pokédex, Colección,
+   Torre, idiomas…): cristal azulado con filo de luz en vez de negro. Los estados con color propio
+   (conseguido, por recoger, elegido) van con más especificidad en style.css y siguen mandando. */
+.mission, .chest-row, .rm, .ach-card, .lr, .coll-tile, .coll-item, .stat-grid .stat, .profile .stat, .user-card .stat,
+.tcard, .next-foe, .tower-head .streak, .bag-item, .dex-card, .lang-opt, .mini-team .mini, .xp-row, .cursor-opt, .ava-opt, .frame-opt {
+  background: linear-gradient(160deg, rgba(130,155,255,.13), rgba(70,90,170,.06) 45%, rgba(10,14,34,.30));
+  border: 1px solid rgba(170,190,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 6px 16px rgba(0,0,0,.22);
+}
+.dex-card.got { background: linear-gradient(160deg, rgba(255,210,63,.16), rgba(70,90,170,.06) 50%, rgba(10,14,34,.30)); border-color: rgba(255,210,63,.3); }
+.stat-grid .stat b, .profile .stat b, .user-card .stat b { font-family: var(--display); font-weight: 900; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+
+/* Las que se pulsan: se levantan con borde dorado y cruza el reflejo */
+.coll-item, .bag-item, .dex-card, .lang-opt { position: relative; overflow: clip; isolation: isolate; transition: transform .18s cubic-bezier(.2,.9,.3,1.4), border-color .18s, box-shadow .18s; }
+.coll-item:not(.locked):hover, .bag-item:hover:not(:disabled), .dex-card:hover, .lang-opt:hover:not(:disabled) {
+  transform: translateY(-3px); border-color: rgba(255,210,63,.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 18px rgba(255,210,63,.18), 0 12px 26px rgba(0,0,0,.4);
+}
+.coll-item::after, .bag-item::after, .dex-card::after, .lang-opt::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.16) 48%, rgba(255,255,255,.05) 54%, transparent 62%) no-repeat;
+  background-size: 250% 100%; background-position: 130% 0; opacity: 0;
+}
+.coll-item:not(.locked):hover::after, .bag-item:hover:not(:disabled)::after, .dex-card:hover::after, .lang-opt:hover:not(:disabled)::after { opacity: 1; animation: cardSheen .75s ease-out forwards; }
+.mission:hover, .ach-card:hover, .tcard:hover { border-color: rgba(200,215,255,.32); }
+
+/* Huecos vacíos de la Torre: marco discontinuo con un poco de luz */
+.tslot { background: linear-gradient(160deg, rgba(130,155,255,.07), rgba(10,14,34,.2)); border-color: rgba(170,190,255,.28); }
+
+/* Portada de entrada (login): panel con marco dorado y halo, pestañas e inputs de cristal */
+.title-panel {
+  border: 1.5px solid rgba(255,210,63,.35);
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(255,210,63,.14), transparent 60%),
+    radial-gradient(120% 80% at 0% 0%, rgba(120,150,255,.12), transparent 55%),
+    linear-gradient(180deg, rgba(38,47,96,.95), rgba(18,24,50,.95));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 0 0 1px rgba(255,210,63,.10), 0 0 70px rgba(255,210,63,.12), 0 30px 80px rgba(0,0,0,.55);
+}
+.title-panel .logo { filter: drop-shadow(0 0 22px rgba(255,210,63,.3)); }
+.auth-tabs { background: linear-gradient(160deg, rgba(130,155,255,.10), rgba(10,14,34,.35)); border-color: rgba(170,190,255,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+.auth-tabs button { transition: background .15s, color .15s, box-shadow .15s; }
+.auth-tabs button.sel { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold) 60%, #ffb21a); box-shadow: 0 2px 0 #b97a00, 0 0 14px rgba(255,210,63,.35); }
+input { background: linear-gradient(160deg, rgba(130,155,255,.08), rgba(6,10,26,.45)); border-color: rgba(170,190,255,.18); box-shadow: inset 0 2px 6px rgba(0,0,0,.3); }
+input:focus { border-color: var(--gold); box-shadow: inset 0 2px 6px rgba(0,0,0,.3), 0 0 0 4px rgba(255,210,63,.15), 0 0 18px rgba(255,210,63,.15); }
+
 @media (max-width: 600px) {
   .menu-card b, .menu-card.wide b { font-size: 24px; }
   .menu-card .art, .menu-card.wide .art { width: 92px; height: 92px; }
@@ -192,6 +283,8 @@
 @media (prefers-reduced-motion: reduce) {
   .menu-card, .mon-card, .pool-card, .shop-item, .coll-tile, .lr { transition: none; }
   .menu-card:hover:not(:disabled)::after, .mon-card:hover::after, .pool-card:hover:not(:disabled)::after,
-  .shop-item:not(.locked):hover::after, .coll-tile:hover:not(:disabled)::after, .ml-row:hover::after { animation: none; opacity: 0; }
+  .shop-item:not(.locked):hover::after, .coll-tile:hover:not(:disabled)::after, .ml-row:hover::after,
+  .coll-item:hover::after, .bag-item:hover::after, .dex-card:hover::after, .lang-opt:hover::after { animation: none; opacity: 0; }
+  .coll-item, .bag-item, .dex-card, .lang-opt { transition: none; }
   .mon-card.is-shiny, .coll-tile.ready { animation: none; }
 }

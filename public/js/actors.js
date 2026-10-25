@@ -34,6 +34,7 @@ let blobTex = null;
 // art (brasas, chispas, burbujas, hojas…; ver skinfx.js) que no se salen del sprite. Todo a la resolución del pixel art,
 // mirando solo dentro del fotograma actual (uFrame).
 const SKIN_ID = { oro: 1, holo: 2, galaxia: 3, elemental: 4 };
+const GLOW_ID = { prisma: 2, sombra: 3, estelar: 4 };
 const SKIN_PARS = `uniform float uSkin;
 uniform float uTime;
 uniform vec3 uPal0;
@@ -42,6 +43,8 @@ uniform vec3 uPal2;
 uniform vec3 uPal3;
 uniform vec2 uTexel;
 uniform vec4 uFrame;
+uniform float uGlow;
+uniform vec3 uGlowCol;
 float skinHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float skinNoise(vec2 p) {
   vec2 i = floor(p), f = fract(p);
@@ -94,16 +97,38 @@ const SKIN_GLSL = `
       c += vec3(star * (0.55 + 0.45 * sin(uTime * 5.0 + cell.x * 1.7)));
     }
     diffuseColor.rgb = c * diffuse;
+  }
+  // Glow: anillo de 1-2 px alrededor de la silueta que respira; va con cualquier skin.
+  // 1 color fijo · 2 prismático · 3 sombra · 4 estelar (con destellos)
+  if (uGlow > 0.5 && diffuseColor.a < 0.5) {
+    vec2 gc = floor(vMapUv / uTexel);
+    vec2 g0 = (gc + 0.5) * uTexel;
+    vec2 glo = uFrame.xy, ghi = uFrame.xy + uFrame.zw;
+    float near = 0.0;
+    for (int dy = -2; dy <= 2; dy++) for (int dx = -2; dx <= 2; dx++) {
+      float dd = abs(float(dx)) + abs(float(dy));
+      if (dd < 0.5 || dd > 2.5) continue;
+      vec2 q = g0 + vec2(float(dx), float(dy)) * uTexel;
+      if (q.x > glo.x && q.y > glo.y && q.x < ghi.x && q.y < ghi.y && texture2D(map, q).a > 0.5) near = max(near, dd < 1.5 ? 1.0 : 0.7);
+    }
+    if (near > 0.0) {
+      float breathe = 0.78 + 0.22 * sin(uTime * 3.0);
+      vec3 gcol = uGlowCol;
+      if (uGlow > 1.5 && uGlow < 2.5) gcol = 0.55 + 0.45 * cos(6.2831 * (vec3(0.0, 0.33, 0.67) + uTime * 0.3 + gc.y * 0.03));
+      if (uGlow > 3.5 && step(0.88, skinHash(floor(gc / 2.0) + floor(uTime * 5.0))) > 0.5) gcol = vec3(1.0);
+      diffuseColor = vec4(gcol * (uGlow > 2.5 && uGlow < 3.5 ? 0.9 : 1.2) * diffuse, near * breathe);
+    }
   }`;
 
 export class Actor {
   // mine: anillo amarillo (propio) o rojo (rival)
-  constructor(scene, camera, dex, shiny = false, mine = false, skin = null) {
+  constructor(scene, camera, dex, shiny = false, mine = false, skin = null, glow = null) {
     this.scene = scene;
     this.camera = camera;
     this.group = new THREE.Group();
     this.mat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.5, side: THREE.DoubleSide, toneMapped: false });
     this.skinU = { uSkin: { value: 0 }, uTime: { value: 0 }, uTexel: { value: new THREE.Vector2(1, 1) }, uFrame: { value: new THREE.Vector4(0, 0, 1, 1) },
+      uGlow: { value: 0 }, uGlowCol: { value: new THREE.Color() },
       uPal0: { value: new THREE.Color() }, uPal1: { value: new THREE.Color() }, uPal2: { value: new THREE.Color() }, uPal3: { value: new THREE.Color() } };
     this.mat.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, this.skinU);
@@ -135,13 +160,15 @@ export class Actor {
     this.alpha = 1;
     this.scale = 1;
     this.ghosts = [];
-    this.setDex(dex, shiny, skin);
+    this.setDex(dex, shiny, skin, glow);
   }
 
-  setDex(dex, shiny = false, skin = null) {
+  setDex(dex, shiny = false, skin = null, glow = null) {
     this.dex = dex;
     this.shiny = shiny;
     this.skinU.uSkin.value = SKIN_ID[skin] || 0;
+    this.skinU.uGlow.value = !glow ? 0 : GLOW_ID[glow] || 1;
+    if (glow) this.skinU.uGlowCol.value.set(Data.glowColor(glow) || '#ffffff');
     // Elemental: paleta y partículas del tipo de la línea
     this.fxType = skin === 'elemental' ? Data.SPECIES[Data.lineOf(dex)].types[0] : null;
     if (this.fxType) {

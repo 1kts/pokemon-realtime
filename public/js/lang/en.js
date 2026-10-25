@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'Centred menu, more shine',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'The main menu now sits in the centre of the screen; on the right, Your collection goes on top and Missions below, with both daily and weekly missions.',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'Every screen has the menu\'s top bar: Back and the title on the left, your profile and money on the right. My Pokémon, Bag and Shop are in Your collection.',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'Panels, cards, tabs and the login screen get a new finish: whatever you pick glows gold and cards lift up when you hover over them.',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'Cards with more spark',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Menu cards wear the colour of each mode and your Pokémon\'s cards the colours of their types; hover over them and they lift up and glow.',
@@ -1171,6 +1176,21 @@ export default {
     'Skin Holo': 'Holo skin',
     'Skin Galaxia': 'Galaxy skin',
     'Skin Elemental': 'Elemental skin',
+    'Aún no tienes ninguno: completa logros o abre el cofre semanal de misiones.': 'You don\'t have any yet: complete achievements or open the weekly mission chest.',
+    'Elegir': 'Choose',
+    'Glow de tipo al azar': 'Random type glow',
+    'Glow {type}': '{type} glow',
+    'Logro: {name}': 'Achievement: {name}',
+    'Ponérselo a una línea': 'Give it to a line',
+    'Sale al azar en el cofre semanal de misiones': 'Comes at random from the weekly mission chest',
+    'Sin glow': 'No glow',
+    'Tus glows ({n}/{m})': 'Your glows ({n}/{m})',
+    'Tus líneas: toca una para ponerle «{glow}»': 'Your lines: tap one to give it “{glow}”',
+    'Un contorno de luz alrededor del sprite que se suma a cualquier skin, en los menús y en combate. Los de tipo salen del cofre semanal de misiones; los especiales, de logros. Elige uno y tócale a una línea para ponérselo.': 'A light outline around the sprite that adds to any skin, in menus and in battle. Type glows come from the weekly mission chest; special ones, from achievements. Pick one and tap a line to give it.',
+    'Glows': 'Glows',
+    'Dorado': 'Golden',
+    'Sombra': 'Shadow',
+    'Estelar': 'Stellar',
   },
 
   patterns: [
