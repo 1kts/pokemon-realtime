@@ -24,15 +24,27 @@ const CHEST_SVG = `<svg class="chest-svg" viewBox="0 0 32 28" aria-hidden="true"
   <rect x="14" y="13" width="4" height="12" fill="#ffd23f"/><rect x="15" y="16" width="2" height="3" fill="#5a2e0e"/></svg>`;
 
 // Avatar de colección: medalla ('badge:<región>:<n>') u objeto ('item:<sprite>')
+const PORTRAIT_FX_NAME = { llamas: 'Llamas', burbujas: 'Burbujas', chispas: 'Chispas', hojas: 'Hojas', copos: 'Copos', sombras: 'Sombras', estrellas: 'Estrellas', destellos: 'Destellos', aurora: 'Aurora' };
 export function avatarArt(id, size) {
   const [kind, a, b] = String(id).split(':');
   if (kind === 'badge') return badgeImg(a, +b, true, Math.round(size * 0.8), 'col-art');
   if (kind === 'item') return itemImg(a, Math.round(size * 0.8), 'col-art');
+  if (kind === 'pt') return portraitArt(+a, b, size);
   return '';
+}
+// Retrato de Tesoros: la cara del Pokémon de cerca (retrato de SpriteCollab) y encima, dentro de la
+// burbuja, su efecto animado (llamas, burbujas, chispas, hojas, copos, sombras, estrellas, destellos o
+// aurora). Las partículas salen siempre igual para el mismo retrato.
+export function portraitArt(dex, fx, size) {
+  let h = dex * 2654435761 >>> 0;
+  const rnd = () => (h = Math.imul(h ^ h >>> 15, 2246822507) >>> 0) / 4294967296;
+  const parts = Array.from({ length: 9 }, () => `<b style="--x:${(rnd() * 90 + 5).toFixed(0)}%;--y:${(rnd() * 90 + 5).toFixed(0)}%;--d:${(-rnd() * 3).toFixed(2)}s;--k:${(0.6 + rnd() * 0.8).toFixed(2)}"></b>`).join('');
+  return `<span class="pt-face fx-${fx}" style="--s:${size}px"><img class="pt-img" src="portraits/${dex}.png" alt="" draggable="false" onerror="this.src='sprites/${dex}/Idle.png';this.classList.add('pt-miss')"><i class="pt-fx">${parts}</i></span>`;
 }
 // Nombre de un avatar de colección
 export function avatarName(id) {
   const [kind, a, b] = String(id).split(':');
+  if (kind === 'pt') return t('Retrato de {m} · {fx}', { m: Data.SPECIES[+a] ? Data.SPECIES[+a].name : '', fx: t(PORTRAIT_FX_NAME[b] || b) });
   if (kind === 'badge') { const g = Data.leadersOf(a)[+b]; return g ? (g.badge || g.name) : ''; }
   const ach = Data.ACHIEVEMENTS.find(x => Data.achievementAvatar(x) === id);
   return ach ? t(ach.name) : '';
@@ -225,6 +237,11 @@ export const missionViews = {
 
   // Animación al recoger: lo recibido salta uno a uno, el dinero cuenta hacia arriba y confeti
   onLoot(r) {
+    // Tirada de Tesoros: primero gira la rueda hasta el premio y después sale la animación
+    if (r.treasure && this.tzSpin && !r.spun) {
+      return this.treasureSpin(r, () => { this.tzSpin = null; this.show(this.view); this.onLoot({ ...r, spun: true }); });
+    }
+    if (r.treasure) this.tzSpin = null;
     document.querySelectorAll('.loot-pop').forEach(x => x.remove());
     this.app.sfx.reward();
     this.coinBump = r.coins > 0;
@@ -232,6 +249,7 @@ export const missionViews = {
     const box = el('div', 'loot-box' + (r.chest ? ' chest-open' : ''));
     const head = r.daily ? t('¡Premio del día {n}!', { n: r.daily }) : r.tutorial ? t('¡Tutorial completado!')
       : r.chest ? t(r.chest === 'daily' ? '¡Cofre diario abierto!' : '¡Cofre semanal abierto!')
+      : r.treasure ? t('¡Premio {rarity}!', { rarity: t(Data.RARITY[r.treasure.rarity].name) })
       : r.mastery ? t('¡Premio de maestría!')
         : r.badge || (r.avatar && !r.coins) ? t('¡Nuevo avatar!') : r.achievement ? t('¡Logro recogido!') : t('¡Misión completada!');
     const conf = el('div', 'confetti');
@@ -248,6 +266,8 @@ export const missionViews = {
     if (r.chest) box.append(el('span', 'chest big', CHEST_SVG));
     if (r.mission) box.append(el('p', 'loot-sub', missionText({ ...r.mission, goal: Data.MISSION_BY_ID[r.mission.id].goal })));
     if (r.mastery) box.append(el('p', 'loot-sub', t('Línea de {m}', { m: Data.SPECIES[r.mastery.dex].name })));
+    if (r.treasure) { box.classList.add('tz-loot'); box.style.setProperty('--rc', Data.RARITY[r.treasure.rarity].color); box.append(el('p', 'loot-sub', t('Tesoros · tirada {n}', { n: r.treasure.n }))); }
+    const skinDex = r.skinDex || (r.mastery && r.mastery.dex);
     const list = el('div', 'loot-items');
     const add = (art, label) => { const it = el('div', 'li', `<span class="li-art">${art}</span><small>${label}</small>`); it.style.animationDelay = (0.25 + list.children.length * 0.18) + 's'; list.append(it); };
     if (r.coins) {
@@ -270,7 +290,8 @@ export const missionViews = {
     if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
     for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), au === 'prisma' ? t('Brillo prismático') : t('Brillo {type}', { type: Data.TYPE_LABEL[au.slice(5)] }));
     if (r.glow) { const { dex } = this.avatarDex(); addEl(applyGlow(portrait(dex, 64), r.glow), glowName(r.glow, t)); }
-    if (r.skin) { addEl(applySkin(portrait(r.mastery.dex, 64), r.skin, r.mastery.dex), t(SKIN_LABEL[r.skin])); }
+    if (r.skin) { addEl(applySkin(portrait(skinDex, 64), r.skin, skinDex), `${t(SKIN_LABEL[r.skin])} · ${Data.SPECIES[skinDex].name}`); }
+    if (r.gems) add(icon('gem', 48), `+${r.gems} ${t('gemas')}`);
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
     box.append(list);
     const acts = el('div', 'acts');
@@ -282,7 +303,7 @@ export const missionViews = {
     const equip = (label, msg) => { const b = el('button', '', label); b.onclick = () => { this.net.send({ t: 'look', ...msg }); close(); }; acts.append(b); };
     if (r.art) equip(t('Usar de avatar'), { avatar: r.art, avatarShiny: false, avatarArt: true });
     if (r.aura || r.aura2) equip(t('Ponerme el brillo'), { aura: r.aura2 || r.aura });
-    if (r.skin) equip(t('Ponérsela'), { skin: { dex: r.mastery.dex, skin: r.skin } });
+    if (r.skin) equip(t('Ponérsela'), { skin: { dex: skinDex, skin: r.skin } });
     if (r.glow) { const b = el('button', '', t('Ponérselo a una línea')); b.onclick = () => { close(); this.glowPick = r.glow; this.openCollection('glow'); }; acts.append(b); }
     const ok = el('button', 'primary', t('¡Genial!'));
     acts.append(ok);

@@ -3,6 +3,7 @@
 const D = require('../public/data.js');
 const store = require('./store.js');
 const missions = require('./missions.js');
+const { addGems } = require('./rewards.js');
 const names = require('./names.js');
 
 const MAX_LEVEL = 100;
@@ -260,7 +261,11 @@ function applyResult(p, setup, result, battle) {
         reward.items = setup.gym.kind === 'champion' ? { caramelo: 3, [vit]: 2, ultraball: 5 } : { caramelo: 1, [vit]: 1 };
         for (const [k, n] of Object.entries(reward.items)) p.items[k] = (p.items[k] || 0) + n;
       } else reward.coins = Math.round(reward.coins / 2);   // revancha: la mitad del dinero
+      reward.gems = addGems(p, first ? D.GEMS.leader : D.GEMS.leaderAgain);
     }
+    // Gemas por un salvaje raro (o shiny) vencido o atrapado
+    const foe = battle.sides[1];
+    if (setup.kind === 'route' && (foe.rare || foe.team.some(m => m.shiny))) reward.gems = addGems(p, foe.team.some(m => m.shiny) ? D.GEMS.shiny : D.GEMS.rareWild);
     // Experiencia para los que han combatido sin debilitarse; la mitad para los debilitados.
     // Nadie pasa del tope de nivel (media del siguiente gimnasio).
     const base = foeLevels * (setup.kind === 'gym' ? 30 : 18);

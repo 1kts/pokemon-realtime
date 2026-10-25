@@ -4,6 +4,7 @@
 // pagando) y recoger las 3 de un tipo abre su cofre. Todo en p.missions:
 //   { day, week, daily: [{ id, type?, n, claimed }], weekly: [...], rerolls: { daily, weekly }, chest: { daily, weekly } }
 const D = require('../public/data.js');
+const { addGems } = require('./rewards.js');
 
 const KINDS = ['daily', 'weekly'];
 const MAX_COINS = 999999999;
@@ -85,7 +86,7 @@ function action(p, msg) {
     if (ms.chest[kind]) return { error: 'Ya has abierto este cofre' };
     if (!ms[kind].every(m => m.claimed)) return { error: 'Recoge antes las 3 misiones' };
     ms.chest[kind] = true;
-    const loot = { ...pay(p, D.MISSION_CHEST[kind]), chest: kind };
+    const loot = { ...pay(p, D.MISSION_CHEST[kind]), chest: kind, gems: addGems(p, kind === 'daily' ? D.GEMS.chestDaily : D.GEMS.chestWeekly) };
     // El semanal trae además un glow de tipo que aún no tengas (con todos, dinero de más)
     if (kind === 'weekly') {
       if (!p.cosmetics.glows) p.cosmetics.glows = [];
@@ -101,7 +102,7 @@ function action(p, msg) {
     if (m.claimed) return { error: 'Ya has recogido esta misión' };
     if (!done(m)) return { error: 'Esta misión aún no está cumplida' };
     m.claimed = true;
-    return { loot: { ...pay(p, D.MISSION_BY_ID[m.id].reward), mission: { id: m.id, type: m.type || null }, chestReady: ms[kind].every(x => x.claimed) && !ms.chest[kind] } };
+    return { loot: { ...pay(p, D.MISSION_BY_ID[m.id].reward), gems: addGems(p, kind === 'daily' ? D.GEMS.missionDaily : D.GEMS.missionWeekly), mission: { id: m.id, type: m.type || null }, chestReady: ms[kind].every(x => x.claimed) && !ms.chest[kind] } };
   }
   if (msg.a === 'reroll') {
     if (m.claimed || done(m)) return { error: 'Está cumplida: recoge su premio' };

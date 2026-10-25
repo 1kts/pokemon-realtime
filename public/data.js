@@ -1241,8 +1241,8 @@
   // Premios por línea (se recogen a mano en Colección): estrella a 10, la ilustración oficial como
   // avatar a 25, el brillo de burbuja de su tipo a 50, el marco animado de su tipo a 100 (el primero de
   // la especie base: fuego para la línea de Charmander) y las skins Oro (150), Holo (250) y Galaxia
-  // (400, con el título de maestro de la línea y el brillo prismático), y a 600 la skin Elemental:
-  // llamas, chispas… del tipo de la línea saliendo del contorno del sprite.
+  // (400, con el título de maestro de la línea y el brillo prismático). La skin Elemental (paleta y
+  // partículas del tipo) ya no es de maestría: sale en las ruletas de Tesoros, para una línea concreta.
   const PRE = {};
   for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
   const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
@@ -1255,7 +1255,6 @@
     { wins: 150, kind: 'skin', skin: 'oro' },
     { wins: 250, kind: 'skin', skin: 'holo' },
     { wins: 400, kind: 'skin', skin: 'galaxia', title: true, aura: 'prisma' },
-    { wins: 600, kind: 'skin', skin: 'elemental' },
   ];
   const MASTERY = MASTERY_TIERS.map(x => x.wins);
   const MASTERY_ART = 25, MASTERY_FRAME = 100;
@@ -1269,12 +1268,69 @@
   const masteryClaimed = (p, dex) => ((p.masteryClaimed || {})[lineOf(dex)] || []);
   const masteryReady = (p, dex) => MASTERY_TIERS.map((x, i) => i).filter(i => masteryWins(p, dex) >= MASTERY[i] && !masteryClaimed(p, dex).includes(i));
   const hasMastery = (p, dex, kind, skin) => masteryClaimed(p, dex).some(i => MASTERY_TIERS[i].kind === kind && (!skin || MASTERY_TIERS[i].skin === skin));
+  // Skins de una línea: las de maestría y las ganadas en Tesoros ('elemental:<línea>' en cosmetics.skins)
+  const hasSkin = (p, dex, id) => hasMastery(p, dex, 'skin', id) || ((p.cosmetics || {}).skins || []).includes(id + ':' + lineOf(dex));
   // Skin que lleva un Pokémon (la elegida para su línea, si la tiene)
-  const skinOf = (p, dex) => { const s = (p.skins || {})[lineOf(dex)]; return s && hasMastery(p, dex, 'skin', s) ? s : null; };
+  const skinOf = (p, dex) => { const s = (p.skins || {})[lineOf(dex)]; return s && hasSkin(p, dex, s) ? s : null; };
+
+  // ---------- Tesoros ----------
+  // Una moneda propia, las gemas, que dan las misiones y sus cofres, la primera victoria online del día,
+  // los líderes (y el Alto Mando y el Campeón), cada bloque de 7 de la Torre, subir de liga y los
+  // salvajes raros o shiny. Se gastan en ruletas que cambian cada 2 semanas: 3 a la vez, cada una de un
+  // tipo, con 10 premios (skins Elementales de líneas de ese tipo, glows, retratos con efecto y algo de
+  // dinero y caramelos). Cada tirada da uno de los que faltan: lo más común sale más; lo conseguido sale
+  // de la bolsa y el resto gana probabilidad; la décima tirada da el último, seguro. Cada tirada cuesta
+  // más que la anterior. Al cambiar las ruletas, lo conseguido se queda y lo que faltaba se va.
+  const GEMS = { missionDaily: 3, missionWeekly: 10, chestDaily: 10, chestWeekly: 40, firstWin: 10, leader: 15, leaderAgain: 4, towerBlock: 15, league: 30, rareWild: 5, shiny: 25 };
+  const TREASURE_EPOCH = Date.UTC(2026, 9, 19), TREASURE_DAYS = 14, TREASURE_COUNT = 3;
+  const treasurePeriod = (t = Date.now()) => Math.floor((t - TREASURE_EPOCH) / (TREASURE_DAYS * 86400e3));
+  const treasureEnds = (t = Date.now()) => TREASURE_EPOCH + (treasurePeriod(t) + 1) * TREASURE_DAYS * 86400e3;
+  const RARITY = {
+    comun: { w: 40, name: 'Común', color: '#9aa6bd' }, raro: { w: 24, name: 'Raro', color: '#4aa0ff' },
+    epico: { w: 13, name: 'Épico', color: '#a35cff' }, legendario: { w: 6, name: 'Legendario', color: '#ffb21a' },
+    mitico: { w: 3, name: 'Mítico', color: '#ff3d6e' },
+  };
+  const SPIN_COST = [5, 5, 8, 8, 10, 12, 15, 18, 22, 27];
+  // Efecto dentro de la burbuja de los retratos, según el tipo; 'aurora' es el especial (prismático)
+  const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
+    fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };
+  const portraitFx = type => PORTRAIT_FX[type] || 'destellos';
+  const treasureCache = new Map();
+  function treasures(period = treasurePeriod()) {
+    if (treasureCache.has(period)) return treasureCache.get(period);
+    const rnd = seeded('tesoros:' + period);   // las mismas en el servidor y en el cliente
+    const pick = list => list[Math.floor(rnd() * list.length)];
+    const types = [...TYPE_NAMES].sort(() => rnd() - 0.5).slice(0, TREASURE_COUNT);
+    const specials = Object.keys(GLOW_SPECIAL);
+    const out = types.map((type, k) => {
+      const lines = Object.values(SPECIES).filter(s => lineOf(s.dex) === s.dex && s.types[0] === type && !s.leg).map(s => s.dex);
+      const members = Object.values(SPECIES).filter(s => s.types.includes(type)).map(s => s.dex);
+      const skinLines = [...lines].sort(() => rnd() - 0.5).slice(0, 2);
+      const faces = [...members].sort(() => rnd() - 0.5).slice(0, 4);
+      const fx = portraitFx(type);
+      const prizes = [
+        ...skinLines.map((d, i) => ({ id: `skin:elemental:${d}`, kind: 'skin', skin: 'elemental', dex: d, rarity: i ? 'legendario' : 'mitico' })),
+        { id: 'glow:tipo-' + type, kind: 'glow', glow: 'tipo-' + type, rarity: 'epico' },
+        { id: 'glow:' + specials[(period + k) % specials.length], kind: 'glow', glow: specials[(period + k) % specials.length], rarity: 'legendario' },
+        ...faces.map((d, i) => ({ id: `pt:${d}:${i === 3 ? 'aurora' : fx}`, kind: 'portrait', dex: d, fx: i === 3 ? 'aurora' : fx, rarity: ['raro', 'raro', 'epico', 'legendario'][i] })),
+        { id: 'coins:2500', kind: 'coins', coins: 2500, rarity: 'comun' },
+        { id: 'item:caramelo:3', kind: 'item', item: 'caramelo', qty: 3, rarity: 'comun' },
+      ];
+      return { id: `${period}-${type}`, type, prizes };
+    });
+    treasureCache.set(period, out);
+    return out;
+  }
+  // Probabilidad de cada premio que falta en la próxima tirada (por su rareza)
+  function treasureOdds(roulette, got) {
+    const left = roulette.prizes.filter(x => !got.includes(x.id));
+    const total = left.reduce((a, x) => a + RARITY[x.rarity].w, 0);
+    return left.map(x => ({ prize: x, p: RARITY[x.rarity].w / total }));
+  }
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, MASTERY_FRAME, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, seasonTitle, RANKED_PAY,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, MASTERY_FRAME, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, seasonTitle, RANKED_PAY, hasSkin, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, GLOWS, GLOW_SPECIAL, glowColor, glowOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
