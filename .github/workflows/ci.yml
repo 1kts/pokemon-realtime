@@ -19,7 +19,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +42,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     # Parar el servidor espera a los combates en curso (hasta 5 min)
-    timeout-minutes: 15
+    timeout-minutes: 30
     environment: production
     env:
       HOST: ${{ secrets.DEPLOY_HOST }}

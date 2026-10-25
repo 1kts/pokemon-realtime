@@ -112,6 +112,6 @@ npm test                             # incluye las dos cosas
 Si rechaza algo, corrige la nota; no relajes el comprobador para que pase.
 
 Cada punto `nuevo` necesita además un **test e2e** en `tests/e2e/` que use la novedad como un jugador (ver
-`tests/e2e/README.md`): el hook de pre-push y el CI no dejan subir ni desplegar una novedad sin él. Escribir
+`tests/e2e/README.md`): el hook de pre-push no deja subirla sin él y el CI pasa los tests antes de desplegar. Escribir
 la nota y el test a la vez ayuda: si no sabes describir en el test qué hace el jugador, la nota tampoco lo
 dirá claro.
