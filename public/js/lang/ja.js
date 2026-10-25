@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.19.1 ----------
+    'Tarjetas a todo color': 'カードがカラフルに',
+    'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': '「コレクション」「ミッション」、実績、リーグ、プロフィール、「バッグ」、ポケモン図鑑のカードが、メニューと同じグラデーション・ストライプ・光のラインのデザインになりました。',
+    'Lo conseguido o listo para recoger, como logros, misiones completadas, cofres y Pokémon capturados, brilla en dorado para que lo veas de un vistazo.': '獲得したものや受け取れるもの（実績、達成したミッション、宝箱、つかまえたポケモンなど）は金色に光るので、ひと目でわかります。',
     // ---------- Novedades v0.19.0 ----------
     'Premio diario y tutorial': 'デイリーボーナスとチュートリアル',
     'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.': '毎日ログインするとごほうびがもらえます。日ごとに豪華になり、7日目は大当たり。1日でも休むと1日目に戻ります。',

@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.19.1', date: '2026-10-25', title: 'Tarjetas a todo color',
+      items: [
+        ['cambio', 'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.'],
+        ['cambio', 'Lo conseguido o listo para recoger, como logros, misiones completadas, cofres y Pokémon capturados, brilla en dorado para que lo veas de un vistazo.'],
+      ],
+    },
+    {
       v: '0.19.0', date: '2026-10-25', title: 'Premio diario y tutorial',
       items: [
         ['nuevo', 'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.'],

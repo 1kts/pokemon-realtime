@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.19.1 ----------
+    'Tarjetas a todo color': 'Des cartes haute en couleur',
+    'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': 'Les cartes de Ta collection, des Missions, des succès, des ligues, du profil, du Sac et du Pokédex ressemblent à celles du menu, avec dégradé, rayures et un filet de lumière.',
+    'Lo conseguido o listo para recoger, como logros, misiones completadas, cofres y Pokémon capturados, brilla en dorado para que lo veas de un vistazo.': 'Ce que tu as obtenu ou peux récupérer, comme les succès, les missions terminées, les coffres et les Pokémon capturés, brille en doré pour le repérer d\'un coup d\'œil.',
     // ---------- Novedades v0.19.0 ----------
     'Premio diario y tutorial': 'Récompense quotidienne et tutoriel',
     'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.': 'Chaque jour où tu te connectes, une récompense t\'attend, de plus en plus grosse jusqu\'au gros lot du jour 7. Si tu sautes un jour, tu repars du jour 1.',

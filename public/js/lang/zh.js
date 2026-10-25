@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.19.1 ----------
+    'Tarjetas a todo color': '卡片焕然一新',
+    'Las tarjetas de Tu colección, Misiones, logros, ligas, perfil, Mochila y Pokédex lucen como las del menú, con degradado, rayas y una franja de luz.': '“我的收藏”、任务、成就、段位、个人资料、背包和图鉴中的卡片现在和菜单卡片一样，带有渐变、条纹和一道高光。',
+    'Lo conseguido o listo para recoger, como logros, misiones completadas, cofres y Pokémon capturados, brilla en dorado para que lo veas de un vistazo.': '已获得或可以领取的内容，例如成就、已完成的任务、宝箱和已捕捉的宝可梦，会发出金光，一眼就能看到。',
     // ---------- Novedades v0.19.0 ----------
     'Premio diario y tutorial': '每日奖励与教程',
     'Cada día que entras te espera un premio que va a más hasta el gran premio del día 7. Si te saltas un día, vuelves al día 1.': '每天登录都有奖励等着你，奖励逐日递增，第 7 天是大奖。漏掉一天就会回到第 1 天。',
