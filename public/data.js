@@ -1221,7 +1221,8 @@
   // Premios por línea (se recogen a mano en Colección): estrella a 10, la ilustración oficial como
   // avatar a 25, el brillo de burbuja de su tipo a 50, el marco animado de su tipo a 100 (el primero de
   // la especie base: fuego para la línea de Charmander) y las skins Oro (150), Holo (250) y Galaxia
-  // (400, con el título de maestro de la línea y el brillo prismático).
+  // (400, con el título de maestro de la línea y el brillo prismático), y a 600 la skin Elemental:
+  // llamas, chispas… del tipo de la línea saliendo del contorno del sprite.
   const PRE = {};
   for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
   const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
@@ -1234,10 +1235,11 @@
     { wins: 150, kind: 'skin', skin: 'oro' },
     { wins: 250, kind: 'skin', skin: 'holo' },
     { wins: 400, kind: 'skin', skin: 'galaxia', title: true, aura: 'prisma' },
+    { wins: 600, kind: 'skin', skin: 'elemental' },
   ];
   const MASTERY = MASTERY_TIERS.map(x => x.wins);
   const MASTERY_ART = 25, MASTERY_FRAME = 100;
-  const SKINS = ['oro', 'holo', 'galaxia'];
+  const SKINS = ['oro', 'holo', 'galaxia', 'elemental'];
   const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
   const masteryTier = wins => MASTERY.filter(n => wins >= n).length;
   const typeFrameOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];

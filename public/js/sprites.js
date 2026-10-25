@@ -100,6 +100,7 @@ export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
   const c = document.createElement('canvas');
   c.width = c.height = size;
   c.className = 'portrait' + (shiny ? ' shiny' : '');
+  c.dataset.anim = '1';
   const { name, m } = animMeta(dex, anim);
   const img = sheet(dex, name, shiny);
   const scale = Math.floor(size / Math.max(m.w, m.h) * 1.5 * 10) / 10;
@@ -113,6 +114,7 @@ export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
     g.clearRect(0, 0, size, size);
     const f = frameAt(m, now - t0, false);
     g.drawImage(img, f * m.w, 0, m.w, m.h, Math.round(size / 2 - m.ax * scale), Math.round(size * 0.8 - m.ay * scale), m.w * scale, m.h * scale);
+    if (c.fx) c.fx(g, now);   // skin Elemental (menufx.js)
   };
   requestAnimationFrame(loop);
   return c;

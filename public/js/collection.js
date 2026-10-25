@@ -4,7 +4,7 @@
 // y los equipa (setLook).
 import { t } from './i18n.js';
 import { portrait } from './sprites.js';
-import { masteryPrize, SKIN_LABEL } from './frames.js';
+import { masteryPrize, SKIN_LABEL, applySkin } from './frames.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -26,9 +26,7 @@ export const collectionViews = {
 
   // Pone la skin de su línea a un retrato (en los menús; en combate la pinta el shader de actors.js)
   skinned(node, dex) {
-    const skin = Data.skinOf(this.profile, dex);
-    if (skin) node.classList.add('skin-' + skin);
-    return node;
+    return applySkin(node, Data.skinOf(this.profile, dex), dex);
   },
 
   openCollection(tab) {
@@ -161,9 +159,7 @@ export const collectionViews = {
       for (const r of lines) {
         const on = (p.skins || {})[r] === id;
         const b = el('button', 'coll-item skin' + (on ? ' sel' : ''), `<small>${SPECIES[r].name}</small><em>${on ? t('Puesta') : t('Ponérsela')}</em>`);
-        const pic = portrait(r, 72);
-        pic.classList.add('skin-' + id);
-        b.prepend(pic);
+        b.prepend(applySkin(portrait(r, 72), id, r));
         b.onclick = () => this.net.send({ t: 'look', skin: { dex: r, skin: on ? null : id } });
         grid.append(b);
       }
@@ -171,9 +167,7 @@ export const collectionViews = {
         let top = null;
         for (const r of lineRoots(p)) if (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top)) top = r;
         const demo = el('div', 'coll-item locked demo', `<small>${t('Aún no la tienes')}</small><em>${top ? t('Lo más cerca: {m} {w}/{n}', { m: SPECIES[top].name, w: Data.masteryWins(p, top), n: need }) : ''}</em>`);
-        const pic = portrait(top || 25, 72);
-        pic.classList.add('skin-' + id);
-        demo.prepend(pic);
+        demo.prepend(applySkin(portrait(top || 25, 72), id, top || 25));
         grid.append(demo);
       }
       sec.append(grid);

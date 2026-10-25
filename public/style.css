@@ -1463,7 +1463,10 @@ body.in-battle .legal-bar { display: none; }
 @keyframes skin-holo { from { filter: saturate(1.9) hue-rotate(0deg) drop-shadow(0 0 3px rgba(150,220,255,.8)); } to { filter: saturate(1.9) hue-rotate(360deg) drop-shadow(0 0 3px rgba(150,220,255,.8)); } }
 .skin-galaxia { filter: grayscale(1) sepia(1) hue-rotate(215deg) saturate(3.2) brightness(.85) contrast(1.25) drop-shadow(0 0 4px #9b6bff); animation: skin-galaxia 2.6s ease-in-out infinite; }
 @keyframes skin-galaxia { 50% { filter: grayscale(1) sepia(1) hue-rotate(250deg) saturate(3.2) brightness(1) contrast(1.25) drop-shadow(0 0 8px #c08bff); } }
-@media (prefers-reduced-motion: reduce) { .ava-aura, .skin-holo, .skin-galaxia { animation: none; } }
+/* Elemental en los menús: el sprite arde con el color del tipo (en combate, llamas de verdad en el shader) */
+.skin-elemental { --fx: #ff7a30; filter: drop-shadow(0 -2px 1px var(--fx)) drop-shadow(0 -1px 4px var(--fx)) drop-shadow(0 0 6px color-mix(in srgb, var(--fx) 70%, #fff)); animation: skin-elemental .9s steps(3) infinite; }
+@keyframes skin-elemental { 50% { filter: drop-shadow(0 -3px 1px var(--fx)) drop-shadow(0 -2px 6px var(--fx)) drop-shadow(0 0 9px color-mix(in srgb, var(--fx) 70%, #fff)); } }
+@media (prefers-reduced-motion: reduce) { .ava-aura, .skin-holo, .skin-galaxia, .skin-elemental { animation: none; } }
 
 /* ---------- Colección: maestría, ilustraciones, brillos y skins ---------- */
 .collection { display: flex; flex-direction: column; height: 100%; min-height: 0; }

@@ -1052,7 +1052,7 @@ export class UI {
     for (const dex of msg.pool) {
       const banned = msg.bans.includes(dex);
       const c = el('button', 'pool-card' + (banned ? ' banned' : ''));
-      c.append(portrait(dex, 64));
+      c.append(this.skinned(portrait(dex, 64), dex));
       c.append(el('b', '', SPECIES[dex].name), el('div', 'types', typeChips(dex)));
       c.title = SPECIES[dex].moves.map(k => `${MOVES[k].name}: ${describeMove(MOVES[k]).split('\n').join(' · ')}`).join('\n');
       c.disabled = banned;
@@ -1095,7 +1095,7 @@ export class UI {
     start.disabled = true;
     for (const dex of RANKED_POOL) {
       const c = el('button', 'pool-card');
-      c.append(portrait(dex, 64));
+      c.append(this.skinned(portrait(dex, 64), dex));
       c.append(el('b', '', SPECIES[dex].name), el('div', 'types', typeChips(dex)));
       c.title = SPECIES[dex].moves.map(k => MOVES[k].name).join(' · ');
       c.dataset.dex = dex;

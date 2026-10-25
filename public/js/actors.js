@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { animMeta, sheet, frameAt, dirRow, hovers, hasShiny } from './sprites.js';
 import { U, toWorld, softDisc } from './world.js';
+import { emitFx, stepFx, elementalPalette } from './skinfx.js';
 
 const ART = 2.3 * U;            // unidades 3D por píxel de arte
 const textures = new Map();      // "dex/Anim[/s]" -> THREE.Texture base (las de cada actor son clones)
@@ -26,11 +27,54 @@ function baseTexture(dex, anim, shiny) {
 
 let blobTex = null;
 
-// Skins de maestría sobre el sprite (las mismas que en los menús): oro, holo y galaxia.
+// Skins de maestría sobre el sprite (las mismas que en los menús): oro, holo, galaxia y elemental.
 // Se calculan sobre el color del sprite antes del tinte del material (el destello al recibir un golpe).
-const SKIN_ID = { oro: 1, holo: 2, galaxia: 3 };
+// Elemental: el sprite se recolorea con una paleta de 4 colores del tipo de la línea (fuego: brasas),
+// con parpadeo y vetas que suben, y un contorno de 1 px que brilla; encima, partículas pequeñas de pixel
+// art (brasas, chispas, burbujas, hojas…; ver skinfx.js) que no se salen del sprite. Todo a la resolución del pixel art,
+// mirando solo dentro del fotograma actual (uFrame).
+const SKIN_ID = { oro: 1, holo: 2, galaxia: 3, elemental: 4 };
+const SKIN_PARS = `uniform float uSkin;
+uniform float uTime;
+uniform vec3 uPal0;
+uniform vec3 uPal1;
+uniform vec3 uPal2;
+uniform vec3 uPal3;
+uniform vec2 uTexel;
+uniform vec4 uFrame;
+float skinHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float skinNoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(skinHash(i), skinHash(i + vec2(1.0, 0.0)), f.x), mix(skinHash(i + vec2(0.0, 1.0)), skinHash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+`;
 const SKIN_GLSL = `
-  if (uSkin > 0.5) {
+  if (uSkin > 3.5) {
+    vec2 cell = floor(vMapUv / uTexel);
+    vec2 uv0 = (cell + 0.5) * uTexel;
+    vec4 t0 = texture2D(map, uv0);
+    vec2 lo = uFrame.xy, hi = uFrame.xy + uFrame.zw;
+    if (t0.a >= 0.5) {
+      float l = clamp((dot(t0.rgb, vec3(0.299, 0.587, 0.114)) - 0.08) / 0.84, 0.0, 1.0);
+      float x = l * 3.0;
+      vec3 c = x < 1.0 ? mix(uPal0, uPal1, x) : x < 2.0 ? mix(uPal1, uPal2, x - 1.0) : mix(uPal2, uPal3, x - 2.0);
+      c = mix(c, uPal3, 0.3 * l * (0.5 + 0.5 * sin(cell.y * 0.45 + uTime * 9.0 + cell.x * 0.21)));
+      float v = skinNoise(vec2(cell.x * 0.3, cell.y * 0.25 - uTime * 6.0)) + 0.5 * skinNoise(vec2(cell.x * 0.7 + 2.0, cell.y * 0.5 - uTime * 10.0));
+      if (v > 1.12) c = uPal3 * 1.15; else if (v > 0.92) c = mix(c, uPal2 * 1.2, 0.6);
+      diffuseColor.rgb = c * diffuse;
+    } else {
+      // Contorno: píxel vacío pegado a la silueta, que parpadea (nada sobresale más de 1 px)
+      float edge = 0.0;
+      vec2 d[4]; d[0] = vec2(uTexel.x, 0.0); d[1] = vec2(-uTexel.x, 0.0); d[2] = vec2(0.0, uTexel.y); d[3] = vec2(0.0, -uTexel.y);
+      for (int i = 0; i < 4; i++) {
+        vec2 q = uv0 + d[i];
+        if (q.x > lo.x && q.y > lo.y && q.x < hi.x && q.y < hi.y && texture2D(map, q).a > 0.5) edge = 1.0;
+      }
+      float v = skinNoise(vec2(cell.x * 0.6, cell.y * 0.4 - uTime * 7.0));
+      if (edge > 0.5 && v > 0.45) diffuseColor = vec4((v > 0.75 ? uPal3 : uPal2) * diffuse, opacity);
+    }
+  } else if (uSkin > 0.5) {
     vec3 base = diffuseColor.rgb / max(diffuse, vec3(0.001));
     float l = dot(base, vec3(0.299, 0.587, 0.114));
     vec2 sp = gl_FragCoord.xy;
@@ -59,10 +103,11 @@ export class Actor {
     this.camera = camera;
     this.group = new THREE.Group();
     this.mat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.5, side: THREE.DoubleSide, toneMapped: false });
-    this.skinU = { uSkin: { value: 0 }, uTime: { value: 0 } };
+    this.skinU = { uSkin: { value: 0 }, uTime: { value: 0 }, uTexel: { value: new THREE.Vector2(1, 1) }, uFrame: { value: new THREE.Vector4(0, 0, 1, 1) },
+      uPal0: { value: new THREE.Color() }, uPal1: { value: new THREE.Color() }, uPal2: { value: new THREE.Color() }, uPal3: { value: new THREE.Color() } };
     this.mat.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, this.skinU);
-      sh.fragmentShader = 'uniform float uSkin;\nuniform float uTime;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>' + SKIN_GLSL);
+      sh.fragmentShader = SKIN_PARS + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>' + SKIN_GLSL);
     };
     this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.mat);
     this.mesh.castShadow = true;
@@ -97,6 +142,12 @@ export class Actor {
     this.dex = dex;
     this.shiny = shiny;
     this.skinU.uSkin.value = SKIN_ID[skin] || 0;
+    // Elemental: paleta y partículas del tipo de la línea
+    this.fxType = skin === 'elemental' ? Data.SPECIES[Data.lineOf(dex)].types[0] : null;
+    if (this.fxType) {
+      this.fxPal = elementalPalette(this.fxType, Data.TYPE_COLOR[this.fxType]);
+      this.fxPal.forEach((c, i) => this.skinU['uPal' + i].value.set(c));
+    }
     this.hover = hovers(dex);
     this.r = (window.HITBOX && window.HITBOX[dex] || 22) * U;
     this.texCache.clear();
@@ -147,6 +198,8 @@ export class Actor {
     tex.offset.set(f * m.w / img.naturalWidth, 1 - (row + 1) * m.h / img.naturalHeight);
     this.mat.map = tex;
     this.skinU.uTime.value = now / 1000;
+    this.skinU.uTexel.value.set(1 / img.naturalWidth, 1 / img.naturalHeight);
+    this.skinU.uFrame.value.set(tex.offset.x, tex.offset.y, tex.repeat.x, tex.repeat.y);
     // Tamaño y ancla (los pies del sprite caen en la posición del Pokémon)
     const s = ART * this.scale;
     this.mesh.scale.set(m.w * s, m.h * s, 1);
@@ -163,6 +216,13 @@ export class Actor {
     this.mat.opacity = this.alpha;
     this.mat.alphaTest = this.alpha < 1 ? 0.1 : 0.5;
     this.blob.material.opacity = this.alpha;
+    // Partículas de la skin Elemental (las de toda la escena se mueven una vez por fotograma)
+    stepFx(this.scene, this.camera, now);
+    if (this.fxType && this.alpha > 0.5 && this.scale > 0.5) {
+      const dt = this.fxLast ? Math.min(0.05, (now - this.fxLast) / 1000) : 0;
+      emitFx(this.scene, this.fxType, this.fxPal, this.group.position, m.w * s, m.h * s, dt, this.alpha);
+    }
+    this.fxLast = now;
     this.mesh.castShadow = this.alpha > 0.6;
     this.updateGhosts(now);
   }

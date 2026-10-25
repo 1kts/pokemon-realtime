@@ -1151,6 +1151,7 @@ export default {
     'Skin Edición Oro': 'Gold Edition skin',
     'Skin Holo': 'Holo skin',
     'Skin Galaxia': 'Galaxy skin',
+    'Skin Elemental': 'Elemental skin',
   },
 
   patterns: [

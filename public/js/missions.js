@@ -4,7 +4,7 @@
 // recogido en un mensaje 'loot'. Se añaden como métodos de UI (ver el final de ui.js).
 import { t, locale } from './i18n.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
-import { frameBadge, SKIN_LABEL } from './frames.js';
+import { frameBadge, SKIN_LABEL, applySkin } from './frames.js';
 import { portrait } from './sprites.js';
 import { achIcon, FRAME_LABEL_EXTRA } from './achievements.js';
 
@@ -259,7 +259,7 @@ export const missionViews = {
     if (r.mastery && r.mastery.kind === 'star') add('<b class="loot-star">★</b>', t('Estrella de bronce'));
     if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
     for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), au === 'prisma' ? t('Brillo prismático') : t('Brillo {type}', { type: Data.TYPE_LABEL[au.slice(5)] }));
-    if (r.skin) { const pic = portrait(r.mastery.dex, 64); pic.classList.add('skin-' + r.skin); addEl(pic, t(SKIN_LABEL[r.skin])); }
+    if (r.skin) { addEl(applySkin(portrait(r.mastery.dex, 64), r.skin, r.mastery.dex), t(SKIN_LABEL[r.skin])); }
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
     box.append(list);
     const acts = el('div', 'acts');

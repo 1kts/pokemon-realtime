@@ -1,6 +1,8 @@
 // Marcos del avatar: una capa SVG animada encima del avatar (el aro de color lo pone el CSS con
 // .frame-<id>). Lienzo de 150×150 con el avatar en el centro (radio 50): lo que pasa de 50 sobresale.
 // Ligas de clasificatoria (bronce → maestro), los de logros y los de maestría de cada tipo (tipo-<tipo>).
+import { elementalFx } from './menufx.js';
+
 const C = 75, R = 50;
 let uid = 0;
 const spin = (dur, rev) => `<animateTransform attributeName="transform" type="rotate" from="${rev ? 360 : 0} ${C} ${C}" to="${rev ? 0 : 360} ${C} ${C}" dur="${dur}s" repeatCount="indefinite"/>`;
@@ -150,7 +152,20 @@ export function masteryHtml(p, dex, t) {
 }
 
 // Nombre del premio de un nivel de maestría para la línea de dex
-export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia' };
+export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia', elemental: 'Skin Elemental' };
+// Pone una skin a un retrato en los menús: clase CSS (oro, holo, galaxia) o, la elemental, el efecto
+// pintado en el canvas del retrato (menufx.js); sin canvas (una ilustración), un brillo del color del tipo
+export function applySkin(node, skin, dex) {
+  if (!skin) return node;
+  if (skin === 'elemental') {
+    const type = Data.SPECIES[Data.lineOf(dex)].types[0];
+    if (node instanceof HTMLCanvasElement || (node.querySelector && node.querySelector('canvas'))) elementalFx(node, type, Data.TYPE_COLOR[type]);
+    else { node.classList.add('skin-elemental'); node.style.setProperty('--fx', Data.TYPE_COLOR[type]); }
+    return node;
+  }
+  node.classList.add('skin-' + skin);
+  return node;
+}
 export function masteryPrize(tier, dex, t) {
   const type = Data.TYPE_LABEL[Data.SPECIES[Data.lineOf(dex)].types[0]];
   return {

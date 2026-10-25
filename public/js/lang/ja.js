@@ -1161,6 +1161,7 @@ export default {
     'Skin Edición Oro': 'ゴールドエディションのスキン',
     'Skin Holo': 'ホロのスキン',
     'Skin Galaxia': 'ギャラクシーのスキン',
+    'Skin Elemental': 'エレメンタルのスキン',
   },
 
   patterns: [

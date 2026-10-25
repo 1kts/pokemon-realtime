@@ -1161,6 +1161,7 @@ export default {
     'Skin Edición Oro': '골드 에디션 스킨',
     'Skin Holo': '홀로 스킨',
     'Skin Galaxia': '갤럭시 스킨',
+    'Skin Elemental': '엘리멘탈 스킨',
   },
 
   patterns: [

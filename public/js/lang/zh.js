@@ -1150,6 +1150,7 @@ export default {
     'Skin Edición Oro': '黄金版皮肤',
     'Skin Holo': '全息皮肤',
     'Skin Galaxia': '星河皮肤',
+    'Skin Elemental': '元素皮肤',
   },
 
   patterns: [
