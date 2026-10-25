@@ -1366,6 +1366,8 @@ button.mini.pick.empty { justify-content: center; min-height: 82px; border-style
 .music-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
 .music-row input[type=range] { flex: 1 1 200px; accent-color: var(--yellow); height: 6px; }
 .music-row .music-pct { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+.music-row .music-label { flex: 0 0 170px; font-weight: 700; }
+@media (max-width: 520px) { .music-row .music-label { flex-basis: 100%; } }
 
 /* Barra legal: fija abajo, centrada y pegada al borde; el texto se ajusta al ancho de la ventana */
 .legal-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 5; box-sizing: border-box; width: min(100%, 1180px);

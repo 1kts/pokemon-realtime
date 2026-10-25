@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': '菜单不再晕眩',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '菜单背景不再绕着竞技场旋转：它会停在原处，只轻轻摇晃；如果你开启了“减弱动态效果”，则完全静止。',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '在设置中关闭音乐后再调高音量，音乐现在总能重新响起。',
+    'Ataques con sonido': '招式有声音了',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '招式和命中现在有轻柔的音效，会随招式的属性和形态略有变化；效果绝佳的攻击会更明显一些。',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '在设置中可以调高、调低或关闭音效，与音乐音量分开调节。',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': '切换界面或进出对战时，音乐会慢慢淡出，新曲子再柔和地响起，不再突然中断。',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': '菜单一首曲子，每种对战各有曲目，均出自社区音乐人之手。音效是招式和命中的声音。设置会保存在此浏览器中。',
+    'Efectos de sonido': '音效',
+    'Sin efectos': '关闭音效',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': '菜单和对战现在播放由音乐人创作的曲子：训练家对战一首，野生宝可梦一首，道馆馆主和冠军也各有专属曲目。',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '每首曲子的作者都列在“制作名单”和法律声明中，任何界面底部都能找到。',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': '菜单和对战音乐由 jannetty、rckbtm、Navet56（OPMon Lazuli）和 Spring Spring 创作，经其许可或按 CC BY 许可使用。',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': '给宝可梦起昵称',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': '捕获宝可梦时可以给它起昵称，之后也能随时在“我的宝可梦”中用“昵称”按钮修改或移除。',
@@ -44,7 +59,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '游戏有音乐了：菜单和地图共用一首主题曲，对战、馆主和冠军各有主题曲，获胜时还有凯歌。',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '在设置中可以调高或调低音乐音量，也可以关闭；会保存在此浏览器中。',
     'Música': '音乐',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '掌机风格的原创音乐：菜单一首主题曲，对战和馆主各有主题曲。会保存在此浏览器中。',
     'Volumen de la música': '音乐音量',
     'Silenciar': '静音',
     'Sin música': '已关闭音乐',

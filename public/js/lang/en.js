@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Menus without the dizziness',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'The menu background no longer spins around the arena: it stays put and only sways a little, and stands completely still if you have reduce motion turned on.',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'If you turn the music off in Settings and back up again, it now always plays again.',
+    'Ataques con sonido': 'Attacks with sound',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Attacks and hits now have a soft sound that shifts a little with the move\'s type and shape; super effective hits stand out a bit more.',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'In Settings you can turn sound effects up, down or off, separately from the music volume.',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': 'When you change screens or enter and leave a battle, the music fades out and the new track eases in, with no sudden cuts.',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': 'One track for the menus and others for each kind of battle, by community musicians. Effects are the sounds of attacks and hits. Saved in this browser.',
+    'Efectos de sonido': 'Sound effects',
+    'Sin efectos': 'No effects',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'Menus and battles now play tracks composed by musicians: one for trainers, one for wild Pokémon and others for Gym Leaders and the Champion.',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'The composer of each track is listed under Credits and the legal notice, at the bottom of any screen.',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'The menu and battle music is by jannetty, rckbtm, Navet56 (OPMon Lazuli) and Spring Spring, used with their permission or under a CC BY licence.',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': 'Nicknames for your Pokémon',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'When you catch a Pokémon you can give it a nickname, and change or remove it any time with the Nickname button in My Pokémon.',
@@ -44,7 +59,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'The game has music: a theme for the menus and the map, and others for battles, leaders and the Champion, with a fanfare when you win.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'In Settings you can turn the music up or down, or switch it off; it\'s remembered in this browser.',
     'Música': 'Music',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': 'Original music in the style of handheld consoles: one theme for the menus and others for battles and leaders. It\'s remembered in this browser.',
     'Volumen de la música': 'Music volume',
     'Silenciar': 'Mute',
     'Sin música': 'Music off',

@@ -12,6 +12,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': '어지럽지 않은 메뉴',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '메뉴 배경이 더 이상 아레나 주위를 돌지 않아요. 제자리에서 살짝 흔들리기만 하고, 동작 줄이기를 켜 두면 완전히 멈춰 있어요.',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '설정에서 음악을 껐다가 다시 키우면 이제 항상 다시 나와요.',
+    'Ataques con sonido': '기술에 효과음',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '기술과 명중에 은은한 소리가 나요. 기술의 타입과 형태에 따라 조금씩 달라지고, 효과가 굉장한 공격은 조금 더 잘 들려요.',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '설정에서 음악 볼륨과 따로 효과음을 키우거나 줄이거나 끌 수 있어요.',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': '화면을 바꾸거나 배틀에 들어가고 나올 때 음악이 서서히 줄어들고 새 곡이 부드럽게 시작돼요. 갑자기 끊기지 않아요.',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': '메뉴 곡 하나와 배틀 종류별 곡들, 모두 커뮤니티 음악가들의 작품이에요. 효과음은 기술과 명중 소리예요. 이 브라우저에 저장돼요.',
+    'Efectos de sonido': '효과음',
+    'Sin efectos': '효과음 끄기',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': '메뉴와 배틀에서 음악가가 작곡한 곡이 나와요. 트레이너 배틀, 야생 포켓몬 배틀, 체육관 관장과 챔피언 배틀마다 곡이 있어요.',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '각 곡의 작곡가는 어느 화면에서나 아래에 있는 크레딧과 법적 고지에서 볼 수 있어요.',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': '메뉴와 배틀 음악은 jannetty, rckbtm, Navet56(OPMon Lazuli), Spring Spring의 곡으로, 본인의 허락 또는 CC BY 라이선스로 사용합니다.',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': '포켓몬에게 닉네임을',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': '포켓몬을 잡으면 닉네임을 지어 줄 수 있고, 내 포켓몬의 닉네임 버튼으로 언제든지 바꾸거나 지울 수 있어요.',
@@ -45,7 +60,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '게임에 음악이 생겼습니다. 메뉴와 지도는 같은 테마, 배틀·관장·챔피언은 각각의 테마가 있고 이기면 팡파르가 울립니다.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '설정에서 음악 볼륨을 올리거나 내리고, 끌 수도 있습니다. 이 브라우저에 저장됩니다.',
     'Música': '음악',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '휴대용 게임기 스타일의 오리지널 음악: 메뉴는 하나의 테마, 배틀과 관장은 각각의 테마가 있습니다. 이 브라우저에 저장됩니다.',
     'Volumen de la música': '음악 볼륨',
     'Silenciar': '음소거',
     'Sin música': '음악 끔',

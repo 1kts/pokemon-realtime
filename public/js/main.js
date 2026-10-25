@@ -13,6 +13,7 @@ import { applyCursor } from './cursor.js';
 import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
+import { Sfx } from './sfx.js';
 
 const canvas = document.getElementById('view');
 let renderer;
@@ -42,6 +43,7 @@ const app = {
   battle: null, ui: null,
   // Música (music.js): cada pantalla pone su tema desde ui.show y cada combate el suyo
   music: new Music(),
+  sfx: new Sfx(),   // efectos de sonido del combate (sfx.js)
   connect(name) { this.net.connect(name); },
   // Al cambiar de idioma: los textos fijos de index.html (las pantallas se vuelven a pintar solas)
   onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
@@ -49,6 +51,7 @@ const app = {
 app.onLang();
 app.ui = new UI(app);
 window.__app = app;   // para depurar y para las pruebas automáticas
+app.camera = world.camera;
 world.loadMap('pradera', Shared.parseMap('pradera').terrain);
 
 function resize() {
@@ -65,6 +68,7 @@ resize();
 // ---------- Bucle ----------
 let last = performance.now();
 const basePos = new THREE.Vector3();
+const calm = matchMedia('(prefers-reduced-motion: reduce)');
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.05, (now - last) / 1000);
@@ -75,11 +79,13 @@ function loop(now) {
     const sh = app.battle.camShake;
     if (sh) world.camera.position.add(new THREE.Vector3(sh.x, sh.y * 0.5, sh.y));
   } else {
-    // En los menús la cámara gira despacio alrededor de la arena
-    const t = now / 1000 * 0.06;
-    basePos.set(Shared.COLS / 2 + Math.sin(t) * 9, 13, Shared.ROWS / 2 + Math.cos(t) * 15);
+    // En los menús la cámara se queda en un sitio y solo se mece un poco, muy despacio (dar vueltas a la
+    // arena mareaba). Con «reducir movimiento» en el sistema, quieta del todo.
+    const t = calm.matches ? 0 : now / 1000;
+    const sway = Math.sin(t * 0.13) * 1.6, bob = Math.sin(t * 0.21) * 0.25;
+    basePos.set(Shared.COLS / 2 + sway, 13 + bob, Shared.ROWS / 2 + 15 - Math.abs(sway) * 0.2);
     world.camera.position.copy(basePos);
-    world.camera.lookAt(Shared.COLS / 2, 0, Shared.ROWS / 2);
+    world.camera.lookAt(Shared.COLS / 2 + sway * 0.35, 0, Shared.ROWS / 2);
   }
   world.update(dt, particles);
   effects.update(dt);
@@ -146,7 +152,7 @@ net.on('start', m => {
 net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
-  app.music.play(m.winner === m.you ? 'victory' : 'defeat');
+  app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
   // Dejar ver el final un momento antes de los resultados
   setTimeout(() => {
     if (app.battle !== b) return;

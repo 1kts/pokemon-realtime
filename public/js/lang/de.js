@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Menüs ohne Schwindel',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Der Hintergrund der Menüs kreist nicht mehr um die Arena: Er bleibt an seinem Platz und schwankt nur leicht, und steht ganz still, wenn du „Bewegung reduzieren“ aktiviert hast.',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Wenn du die Musik in den Einstellungen ausschaltest und wieder lauter stellst, spielt sie jetzt immer wieder.',
+    'Ataques con sonido': 'Attacken mit Sound',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Attacken und Treffer haben jetzt einen dezenten Sound, der sich mit Typ und Form der Attacke leicht ändert; sehr effektive Treffer hört man etwas deutlicher.',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'In den Einstellungen kannst du die Soundeffekte lauter, leiser oder ganz ausstellen, unabhängig von der Musiklautstärke.',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': 'Wenn du den Bildschirm wechselst oder einen Kampf beginnst oder verlässt, blendet die Musik aus und das neue Stück setzt sanft ein, ohne harte Schnitte.',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': 'Ein Stück für die Menüs und weitere für jede Kampfart, von Musikern aus der Community. Effekte sind die Geräusche von Attacken und Treffern. Wird in diesem Browser gespeichert.',
+    'Efectos de sonido': 'Soundeffekte',
+    'Sin efectos': 'Keine Effekte',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'In Menüs und Kämpfen laufen jetzt Stücke von Musikern: eins für Trainer, eins für wilde Pokémon und weitere für Arenaleiter und den Champ.',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'Wer welches Stück komponiert hat, steht unter Credits und Impressum, unten auf jedem Bildschirm.',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'Die Musik der Menüs und Kämpfe stammt von jannetty, rckbtm, Navet56 (OPMon Lazuli) und Spring Spring, mit ihrer Erlaubnis oder unter CC-BY-Lizenz.',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': 'Spitznamen für deine Pokémon',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'Wenn du ein Pokémon fängst, kannst du ihm einen Spitznamen geben und ihn jederzeit mit dem Button Spitzname unter Meine Pokémon ändern oder entfernen.',
@@ -44,7 +59,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Das Spiel hat Musik: ein Thema für Menüs und Karte und weitere für Kämpfe, Arenaleiter und den Champ, mit Fanfare beim Sieg.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'In den Einstellungen kannst du die Musik lauter oder leiser stellen oder ausschalten; das wird in diesem Browser gespeichert.',
     'Música': 'Musik',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': 'Originalmusik im Stil von Handheld-Konsolen: ein Thema für die Menüs und weitere für Kämpfe und Arenaleiter. Wird in diesem Browser gespeichert.',
     'Volumen de la música': 'Musiklautstärke',
     'Silenciar': 'Stumm',
     'Sin música': 'Musik aus',

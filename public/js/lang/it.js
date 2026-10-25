@@ -12,6 +12,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Menu senza capogiri',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Lo sfondo dei menu non gira più intorno all\'arena: resta fermo e ondeggia appena, e sta del tutto immobile se hai attivato la riduzione del movimento.',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Se togli la musica in Impostazioni e poi la rialzi, ora riparte sempre.',
+    'Ataques con sonido': 'Attacchi con suono',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Attacchi e colpi hanno un suono discreto, che cambia un po\' con il tipo e la forma della mossa; i colpi superefficaci si sentono un po\' di più.',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'In Impostazioni puoi alzare, abbassare o togliere gli effetti sonori, separatamente dal volume della musica.',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': 'Quando cambi schermata o entri ed esci da una lotta, la musica sfuma e il nuovo brano entra dolcemente, senza tagli.',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': 'Un brano per i menu e altri per ogni tipo di lotta, di musicisti della community. Gli effetti sono i suoni di attacchi e colpi. Viene ricordato in questo browser.',
+    'Efectos de sonido': 'Effetti sonori',
+    'Sin efectos': 'Senza effetti',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'Menu e lotte ora suonano brani composti da musicisti: uno per gli Allenatori, uno per i Pokémon selvatici e altri per i Capipalestra e il Campione.',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'Gli autori di ogni brano sono in Crediti e note legali, in fondo a qualsiasi schermata.',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'La musica dei menu e delle lotte è di jannetty, rckbtm, Navet56 (OPMon Lazuli) e Spring Spring, usata con il loro permesso o con licenza CC BY.',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': 'Soprannomi per i tuoi Pokémon',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'Quando catturi un Pokémon puoi dargli un soprannome, e cambiarlo o toglierlo quando vuoi con il pulsante Soprannome di I miei Pokémon.',
@@ -45,7 +60,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Il gioco ha la musica: un tema per i menu e la mappa, e altri per le lotte, i capipalestra e il Campione, con una fanfara quando vinci.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'In Impostazioni puoi alzare o abbassare il volume della musica, o spegnerla; viene ricordato in questo browser.',
     'Música': 'Musica',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': 'Musica originale nello stile delle console portatili: un tema per i menu e altri per le lotte e i capipalestra. Viene ricordata in questo browser.',
     'Volumen de la música': 'Volume della musica',
     'Silenciar': 'Silenzia',
     'Sin música': 'Musica spenta',

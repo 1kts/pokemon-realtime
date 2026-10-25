@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Des menus sans tournis',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Le fond des menus ne tourne plus autour de l\'arène : il reste en place et se balance à peine, et ne bouge plus du tout si tu as activé la réduction des animations.',
+    // ---------- Novedades v0.18.0 ----------
+    'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Si tu coupes la musique dans Paramètres puis la remets, elle se relance désormais à chaque fois.',
+    'Ataques con sonido': 'Des attaques sonores',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Les attaques et les coups ont un son discret, qui change un peu selon le type et la forme de la capacité ; les coups super efficaces s\'entendent un peu plus.',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'Dans Paramètres, tu peux monter, baisser ou couper les effets sonores, indépendamment du volume de la musique.',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': 'Quand tu changes d\'écran ou entres et sors d\'un combat, la musique s\'estompe et le nouveau morceau arrive en douceur, sans coupure.',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': 'Un morceau pour les menus et d\'autres pour chaque type de combat, signés par des musiciens de la communauté. Les effets sont les sons des attaques et des coups. Enregistré dans ce navigateur.',
+    'Efectos de sonido': 'Effets sonores',
+    'Sin efectos': 'Sans effets',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'Les menus et les combats jouent des morceaux composés par des musiciens : un pour les Dresseurs, un pour les Pokémon sauvages et d\'autres pour les Champions d\'Arène et le Maître.',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'Les auteurs de chaque morceau figurent dans Crédits et mentions légales, en bas de n\'importe quel écran.',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'La musique des menus et des combats est signée jannetty, rckbtm, Navet56 (OPMon Lazuli) et Spring Spring, utilisée avec leur accord ou sous licence CC BY.',
     // ---------- Novedades v0.17.0 ----------
     'Motes para tus Pokémon': 'Des surnoms pour tes Pokémon',
     'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'Quand tu captures un Pokémon, tu peux lui donner un surnom, puis le changer ou le retirer quand tu veux avec le bouton Surnom de Mes Pokémon.',
@@ -44,7 +59,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Le jeu a de la musique : un thème pour les menus et la carte, et d\'autres pour les combats, les champions d\'arène et le Maître, avec une fanfare quand tu gagnes.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'Dans Réglages, tu peux monter ou baisser le volume de la musique, ou la couper ; c\'est mémorisé dans ce navigateur.',
     'Música': 'Musique',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': 'Musique originale dans le style des consoles portables : un thème pour les menus et d\'autres pour les combats et les champions d\'arène. C\'est mémorisé dans ce navigateur.',
     'Volumen de la música': 'Volume de la musique',
     'Silenciar': 'Couper le son',
     'Sin música': 'Musique coupée',
