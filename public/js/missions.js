@@ -13,8 +13,9 @@ const num = n => n.toLocaleString(locale());
 const coinsHtml = n => `<span class="coin">${icon('coin', 16)}</span>${num(n)}`;
 const KIND_TITLE = { daily: 'Misiones diarias', weekly: 'Misiones semanales' };
 // Icono de cada misión: el tipo si lo tiene; si no, un objeto que la represente
-const EV_ICON = { wild: 'town-map', catch: 'great-ball', dex: 'rotom-catalog', win: 'vs-seeker', gym: 'medal-box', tower: 'relic-crown',
-  towerStreak: 'relic-crown', online: 'vs-seeker', rankedWin: 'master-ball', level: 'rare-candy', evolve: 'moon-stone' };
+// Icono de lo que pide la misión: pixel art de interfaz, nunca sprites de objetos (esos son los premios y confundían)
+const EV_ICON = { wild: 'boot', catch: 'ball', dex: 'book', win: 'fist', gym: 'medal1', tower: 'crown',
+  towerStreak: 'crown', online: 'friends', rankedWin: 'trophy', level: 'up', evolve: 'sprout' };
 const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro', ...FRAME_LABEL_EXTRA };
 // Cofre en píxeles (la tapa se abre al recogerlo)
 const CHEST_SVG = `<svg class="chest-svg" viewBox="0 0 32 28" aria-hidden="true" shape-rendering="crispEdges">
@@ -38,7 +39,7 @@ export function avatarName(id) {
 }
 
 export const missionText = m => t(Data.MISSION_BY_ID[m.id].name, { n: m.goal, type: m.type ? Data.TYPE_LABEL[m.type] : '' });
-const missionIcon = (m, size) => m.type ? typeIcon(m.type, size) : itemImg(EV_ICON[Data.MISSION_BY_ID[m.id].ev] || 'poke-ball', size);
+const missionIcon = (m, size) => m.type ? typeIcon(m.type, size) : icon(EV_ICON[Data.MISSION_BY_ID[m.id].ev] || 'ball', Math.round(size * .8));
 const itemName = id => (Data.SHOP.find(i => i.id === id) || { name: id }).name;
 // Premio en fichas: dinero y objetos
 export const prizeHtml = rw => [rw.coins ? `<span class="mp coins">${coinsHtml(rw.coins)}</span>` : '',

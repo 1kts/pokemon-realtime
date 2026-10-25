@@ -1108,6 +1108,13 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .menu { min-height: 100%; }
 .menu > .menu-top { margin-top: auto; }
 .menu > .howto { margin-bottom: auto; }
+/* Pantallas interiores (Torre, Clasificatoria, Misiones…): aire bajo la cabecera y el bloque de la pantalla
+   centrado, más estrecho en pantallas anchas y bajado al centro si sobra alto, como la portada */
+#screen > :has(> .inner-bar) { display: flex; flex-direction: column; min-height: 100%; }
+.inner-bar { margin-bottom: 24px; }
+.inner-bar ~ * { width: min(1320px, 100%); margin-inline: auto; }
+.inner-bar + * { margin-top: auto; }
+#screen > :has(> .inner-bar) > :last-child:not(.inner-bar) { margin-bottom: auto; }
 /* Misiones de la portada: diarias y semanales en una lista con scroll */
 .mw-list { display: flex; flex-direction: column; gap: 7px; max-height: 360px; margin-right: -6px; padding-right: 6px; }
 .mw-sub { margin: 4px 2px 0; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }

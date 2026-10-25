@@ -145,7 +145,7 @@ export class UI {
       main.append(sec);
       return grid;
     };
-    const CARD_ICON = { story: 'town-map', tower: 'relic-crown', ranked: 'master-ball', casual: 'vs-seeker', practice: 'tm-normal', ladder: 'medal-box' };
+    const CARD_ICON = { story: 'town-map', tower: 'relic-crown', ranked: 'master-ball', casual: 'vs-seeker', practice: 'tm-normal', ladder: 'medal-box', tutorial: 'exp-share' };
     const card = (grid, title, desc, cls, art, onClick) => {
       const ic = CARD_ICON[cls.split(' ')[0]];
       const c = el('button', 'menu-card ' + cls, `<b>${ic ? itemImg(ic, 40, 'card-ico') : ''}${title}</b><span>${desc}</span><i class="go">${t('Jugar')} ›</i>`);
