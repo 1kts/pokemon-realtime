@@ -4,9 +4,9 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.15.1', date: '2026-10-25', title: 'Mapa más limpio',
+      v: '0.15.2', date: '2026-10-25', title: 'Mapa más limpio',
       items: [
-        ['cambio', 'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.'],
+        ['cambio', 'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.'],
       ],
     },
     {

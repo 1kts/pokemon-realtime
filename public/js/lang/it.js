@@ -12,9 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.15.1 ----------
+    // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Mappa più pulita',
-    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'La mappa della storia non disegna più i sentieri: solo le linee da «Sei qui» ai nuovi percorsi e alla tua prossima sfida.',
+    'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'I sentieri della mappa della storia non hanno più la linea tratteggiata: così risaltano quelle da «Sei qui» ai nuovi percorsi e alla tua prossima sfida.',
+    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'I capipalestra ci mettono la faccia',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Ogni Capopalestra, membro dei Superquattro e Campione appare con il suo sprite dei giochi quando lo scegli sulla mappa della storia.',
