@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.14.0 ----------
+    'Buscador y shiny a tu gusto': 'Suche und Schillernde nach deinem Geschmack',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In Meine Pokémon kannst du nach Name oder Nummer suchen, deine Box nach Typ, schillernd oder legendär filtern und beliebig sortieren.',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'Deine schillernden Pokémon haben einen Knopf, um sie in ihren normalen Farben zu zeigen, auch im Kampf; sie zählen weiter als schillernd.',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'In den Ranglisten erscheinen nur registrierte Konten: Erstelle in deinem Profil ein Konto und du bist mit allem dabei, was du schon hast.',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': 'Gastspielstände, die 60 Tage nicht genutzt werden, werden gelöscht; erstelle ein Konto, damit du deinen nicht verlierst.',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'Die Hilfe „So wird gespielt“ im Menü erklärt die Form jeder Attacke und die Mechaniken der Arenen.',
     'Estás aquí': 'Du bist hier',
     'Nueva': 'Neu',
     'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'Du kannst jeden Kampf wiederholen und auf den Routen weiter fangen.',

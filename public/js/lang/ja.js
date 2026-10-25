@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.14.0 ----------
+    'Buscador y shiny a tu gusto': '検索と色違いの見た目を自由に',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「マイポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '色違いのポケモンにボタンが付き、バトル中も含めて通常の色で表示できます。色違いとしてのカウントはそのままです。',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'ランキングには登録済みのアカウントだけが表示されます。プロフィールからアカウントを作れば、今の記録のまま参加できます。',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '60日間ログインのないゲストのデータは削除されます。消えないようにアカウントを作りましょう。',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'メニューの「遊び方」で、わざの形とアリーナのギミックを説明するようになりました。',
     'Estás aquí': '現在地',
     'Nueva': 'NEW',
     'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'どのバトルも再挑戦でき、道路で捕まえ続けられる。',

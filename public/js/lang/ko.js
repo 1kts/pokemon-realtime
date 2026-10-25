@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.14.0 ----------
+    'Buscador y shiny a tu gusto': '검색과 원하는 대로 바꾸는 색이 다른 포켓몬',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '내 포켓몬에서 이름이나 번호로 검색하고, 박스를 타입·색이 다른 포켓몬·전설로 걸러 원하는 대로 정렬할 수 있습니다.',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '색이 다른 포켓몬에 버튼이 생겨 배틀 중에도 보통 색으로 볼 수 있습니다. 색이 다른 포켓몬으로 계속 집계됩니다.',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': '랭킹에는 등록된 계정만 표시됩니다. 프로필에서 계정을 만들면 지금까지의 기록 그대로 참여할 수 있습니다.',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '60일 동안 접속하지 않은 게스트 기록은 삭제됩니다. 잃지 않으려면 계정을 만드세요.',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': '메뉴의 \'플레이 방법\'에서 기술의 모양과 아레나 기믹을 설명합니다.',
     'Estás aquí': '현재 위치',
     'Nueva': 'NEW',
     'Puedes repetir cualquier combate y seguir capturando en las rutas.': '어떤 배틀이든 다시 할 수 있고 도로에서 계속 포획할 수 있어.',

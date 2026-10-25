@@ -4,6 +4,16 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.14.0', date: '2026-10-25', title: 'Buscador y shiny a tu gusto',
+      items: [
+        ['nuevo', 'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.'],
+        ['nuevo', 'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.'],
+        ['cambio', 'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.'],
+        ['cambio', 'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.'],
+        ['cambio', 'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.'],
+      ],
+    },
+    {
       v: '0.13.0', date: '2026-10-25', title: 'Mapa más claro y medallas en el mapa',
       items: [
         ['nuevo', 'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.'],

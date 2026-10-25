@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.14.0 ----------
+    'Buscador y shiny a tu gusto': 'Recherche et chromatiques à ta façon',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'Dans Mes Pokémon, tu peux chercher par nom ou numéro, filtrer ta boîte par type, chromatique ou légendaire, et la trier comme tu veux.',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'Tes chromatiques ont un bouton pour les voir avec leurs couleurs normales, en combat aussi ; ils comptent toujours comme chromatiques.',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'Seuls les comptes enregistrés apparaissent dans les classements : crée un compte depuis ton profil et tu y entres avec tout ce que tu as déjà.',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': 'Les parties d\'invité restées 60 jours sans connexion sont supprimées ; crée un compte pour ne pas perdre la tienne.',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'L\'aide « Comment jouer » du menu explique la forme de chaque attaque et les mécaniques des arènes.',
     'Estás aquí': 'Tu es ici',
     'Nueva': 'Nouvelle',
     'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'Tu peux rejouer n’importe quel combat et continuer à capturer sur les routes.',

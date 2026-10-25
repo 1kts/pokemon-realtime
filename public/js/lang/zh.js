@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.14.0 ----------
+    'Buscador y shiny a tu gusto': '搜索与随心切换异色',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '在“我的宝可梦”中可以按名字或编号搜索，按属性、异色或传说筛选盒子，并随意排序。',
+    'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '你的异色宝可梦有一个按钮，可以用普通配色显示（对战中也是）；它们仍然算作异色。',
+    'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': '排行榜上只显示已注册的账号：在个人资料中创建账号，就能带着现有的一切上榜。',
+    'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '游客存档连续 60 天未登录将被删除；创建账号即可保留你的进度。',
+    'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': '菜单里的“玩法说明”现在会讲解每个招式的形状和场地机制。',
     'Estás aquí': '你在这里',
     'Nueva': '新',
     'Puedes repetir cualquier combate y seguir capturando en las rutas.': '可以重打任何对战，并继续在道路上捕捉。',
