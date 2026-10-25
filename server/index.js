@@ -200,7 +200,7 @@ function finishDraft(draft) {
   const lvl = D.RANKED_LEVEL;
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex) })) })),
+    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex), glow: D.glowOf(c.profile, dex) })) })),
   }, (result) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
@@ -258,7 +258,7 @@ function startPractice(c, msg) {
   startBattle([c, null], {
     mode: 'practice', map: maps[Math.floor(Math.random() * maps.length)],
     sides: [
-      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex) })) },
+      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), glow: D.glowOf(c.profile, dex) })) },
       { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
     ],
   }, () => []);
@@ -377,6 +377,7 @@ function handle(c, msg) {
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
+    if (msg.glows) { rewards.migrate(p); for (const g of D.GLOWS) rewards.unlock(p, 'glows', g); }
     store.save();
     return sendProfile(c);
   }

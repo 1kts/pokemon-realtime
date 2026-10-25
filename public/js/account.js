@@ -9,7 +9,7 @@ import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 import { avatarArt, avatarName } from './missions.js';
-import { frameFx, frameRing, frameBadge, auraHtml, applySkin } from './frames.js';
+import { frameFx, frameRing, frameBadge, auraHtml, applySkin, applyGlow } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
 import { DEFAULT_SFX } from './sfx.js';
@@ -315,7 +315,7 @@ export const accountViews = {
       pic.append(img);
     } else {
       pic.append(sprite());
-      applySkin(pic, Data.skinOf(p, dex), dex);
+      applyGlow(applySkin(pic, Data.skinOf(p, dex), dex), Data.glowOf(p, dex));
     }
     a.append(pic);
     a.insertAdjacentHTML('beforeend', frameFx(f));

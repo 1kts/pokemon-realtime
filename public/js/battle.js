@@ -43,7 +43,7 @@ export class BattleClient {
     this.lastPos = [{ x: 140, y: 300 }, { x: 820, y: 300 }];
     this.world.loadMap(start.map, start.terrain);
     this.fx.clear(); this.p.clear();
-    this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you, s.team[0].skin));
+    this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you, s.team[0].skin, s.team[0].glow));
     preload(this.sides.flatMap(s => s.team.map(m => ({ dex: m.dex, shiny: !!m.shiny }))));
     this.shinyT = [0, 0];
     for (const i of [0, 1]) if (this.sides[i].team[0].shiny) setTimeout(() => this.shinyAppear(i), 600);
@@ -179,7 +179,7 @@ export class BattleClient {
       case 'swap':
         this.fx.swapFlash(pos);
         this.act[s] = e.to;
-        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin);
+        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin, this.monOf(s).glow);
         actor.play('Idle', false);
         if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
         this.buildTeams();

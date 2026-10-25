@@ -153,6 +153,18 @@ export function masteryHtml(p, dex, t) {
 
 // Nombre del premio de un nivel de maestría para la línea de dex
 export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia', elemental: 'Skin Elemental' };
+// Glow del sprite en los menús: un drop-shadow del color del glow (sigue la silueta) que se suma al
+// filtro de la skin si la hay (--glowf, ver style.css)
+const GLOW_LABEL = { dorado: 'Dorado', sombra: 'Sombra', estelar: 'Estelar', prisma: 'Prismático' };
+export const glowName = (g, t) => g.startsWith('tipo-') ? t('Glow {type}', { type: Data.TYPE_LABEL[g.slice(5)] }) : t('Glow {type}', { type: t(GLOW_LABEL[g]) });
+export function applyGlow(node, glow) {
+  if (!glow) return node;
+  const c = node instanceof HTMLCanvasElement || node instanceof HTMLImageElement ? node : (node.querySelector && node.querySelector('canvas, img')) || node;
+  c.classList.add('has-glow', 'glow-' + (glow in Data.GLOW_SPECIAL ? glow : 'tipo'));
+  c.style.setProperty('--gc', Data.glowColor(glow) || '#ffffff');
+  return node;
+}
+
 // Pone una skin a un retrato en los menús: clase CSS (oro, holo, galaxia) o, la elemental, el efecto
 // pintado en el canvas del retrato (menufx.js); sin canvas (una ilustración), un brillo del color del tipo
 export function applySkin(node, skin, dex) {

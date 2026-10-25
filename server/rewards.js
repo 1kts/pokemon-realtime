@@ -29,6 +29,12 @@ function migrate(p) {
   if (!p.mastery) p.mastery = {};
   if (!p.cosmetics.auras) p.cosmetics.auras = [];
   if (!p.skins) p.skins = {};
+  // Glows del sprite: los logros ya cobrados antes de existir dan su glow sin más
+  if (!p.cosmetics.glows) {
+    p.cosmetics.glows = [];
+    for (const a of D.ACHIEVEMENTS) if (a.reward && a.reward.glow && p.achievements[a.id] && !(p.achClaim || []).includes(a.id)) unlock(p, 'glows', a.reward.glow);
+  }
+  if (!p.glows) p.glows = {};
   // Maestría: lo que antes se daba solo (estrella a 10, ilustración a 50, marco a 100) cuenta como recogido
   if (!p.masteryClaimed) {
     p.masteryClaimed = {};
@@ -61,10 +67,11 @@ function claimAchievement(p, id) {
   if (!a || !p.achClaim.includes(id)) return { error: 'No hay nada que recoger de ese logro' };
   p.achClaim = p.achClaim.filter(x => x !== id);
   const rw = a.reward || {};
-  const loot = { coins: rw.coins || 0, items: {}, title: rw.title || null, frame: rw.frame || null, avatar: D.achievementAvatar(a), achievement: id };
+  const loot = { coins: rw.coins || 0, items: {}, title: rw.title || null, frame: rw.frame || null, glow: rw.glow || null, avatar: D.achievementAvatar(a), achievement: id };
   p.coins = Math.min(MAX_COINS, p.coins + loot.coins);
   if (loot.title) unlock(p, 'titles', loot.title);
   if (loot.frame) unlock(p, 'frames', loot.frame);
+  if (loot.glow) unlock(p, 'glows', loot.glow);
   if (loot.avatar) unlock(p, 'avatars', loot.avatar);
   return { loot };
 }
@@ -180,6 +187,13 @@ function setLook(p, msg) {
     if (id !== null && !(D.SKINS.includes(id) && D.hasMastery(p, dex, 'skin', id))) return 'No tienes esa skin';
     if (id) p.skins[D.lineOf(dex)] = id; else delete p.skins[D.lineOf(dex)];
   }
+  // Glow de una línea evolutiva: { dex, glow } (glow null = sin glow)
+  if (msg.glow !== undefined) {
+    const dex = msg.glow && +msg.glow.dex, id = msg.glow && msg.glow.glow;
+    if (!D.SPECIES[dex]) return 'Ese Pokémon no existe';
+    if (id !== null && !p.cosmetics.glows.includes(id)) return 'No tienes ese glow';
+    if (id) p.glows[D.lineOf(dex)] = id; else delete p.glows[D.lineOf(dex)];
+  }
   if (msg.showcase !== undefined) {
     const list = Array.isArray(msg.showcase) ? [...new Set(msg.showcase.map(String))] : [];
     if (list.length > D.SHOWCASE_MAX || !list.every(id => p.achievements[id])) return 'Solo puedes mostrar logros que hayas conseguido';
@@ -203,4 +217,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };
+module.exports = { unlock, migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };

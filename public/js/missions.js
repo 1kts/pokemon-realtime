@@ -4,7 +4,7 @@
 // recogido en un mensaje 'loot'. Se añaden como métodos de UI (ver el final de ui.js).
 import { t, locale } from './i18n.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
-import { frameBadge, SKIN_LABEL, applySkin } from './frames.js';
+import { frameBadge, SKIN_LABEL, applySkin, applyGlow, glowName } from './frames.js';
 import { portrait } from './sprites.js';
 import { achIcon, FRAME_LABEL_EXTRA } from './achievements.js';
 
@@ -120,7 +120,7 @@ export const missionViews = {
     const row = el('div', `chest-row${ready ? ' ready' : ''}${ms.chest[kind] ? ' opened' : ''}`);
     row.innerHTML = `<span class="chest">${CHEST_SVG}</span><div class="m-body"><b>${t(kind === 'daily' ? 'Cofre diario' : 'Cofre semanal')}</b>
       <small>${ms.chest[kind] ? t('Abierto. Vuelve cuando se renueven las misiones.') : t('Recoge las {n} misiones para abrirlo', { n: ms[kind].length })} · ${got}/${ms[kind].length}</small>
-      <div class="m-prize">${prizeHtml(Data.MISSION_CHEST[kind])}</div></div>`;
+      <div class="m-prize">${prizeHtml(Data.MISSION_CHEST[kind])}${kind === 'weekly' ? `<span class="mp"><i class="glow-dot glow-prisma"></i>${t('Glow de tipo al azar')}</span>` : ''}</div></div>`;
     if (ready) {
       const b = el('button', 'primary claim-btn', t('¡Abrir!'));
       b.onclick = () => { b.disabled = true; row.classList.add('opening'); this.net.send({ t: 'mission', a: 'chest', kind }); };
@@ -156,7 +156,7 @@ export const missionViews = {
     for (const a of ach) {
       const rw = a.reward || {};
       const row = el('div', 'mission done', `<span class="m-ico">${achIcon(a, 40)}</span><div class="m-body"><b>${t(a.name)}</b><small>${t(a.desc)}</small>
-        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp">${frameBadge(rw.frame, 16)}${t(FRAME_LABEL[rw.frame] || rw.frame)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
+        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp">${frameBadge(rw.frame, 16)}${t(FRAME_LABEL[rw.frame] || rw.frame)}</span>` : ''}${rw.glow ? `<span class="mp"><i class="glow-dot glow-${rw.glow in Data.GLOW_SPECIAL ? rw.glow : 'tipo'}" style="--gc:${Data.glowColor(rw.glow) || '#fff'}"></i>${glowName(rw.glow, t)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
       const b = el('button', 'primary claim-btn', t('¡Recoger!'));
       b.onclick = () => { b.disabled = true; this.net.send({ t: 'achclaim', id: a.id }); };
       row.append(b);
@@ -259,6 +259,7 @@ export const missionViews = {
     if (r.mastery && r.mastery.kind === 'star') add('<b class="loot-star">★</b>', t('Estrella de bronce'));
     if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
     for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), au === 'prisma' ? t('Brillo prismático') : t('Brillo {type}', { type: Data.TYPE_LABEL[au.slice(5)] }));
+    if (r.glow) { const { dex } = this.avatarDex(); addEl(applyGlow(portrait(dex, 64), r.glow), glowName(r.glow, t)); }
     if (r.skin) { addEl(applySkin(portrait(r.mastery.dex, 64), r.skin, r.mastery.dex), t(SKIN_LABEL[r.skin])); }
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
     box.append(list);
@@ -272,6 +273,7 @@ export const missionViews = {
     if (r.art) equip(t('Usar de avatar'), { avatar: r.art, avatarShiny: false, avatarArt: true });
     if (r.aura || r.aura2) equip(t('Ponerme el brillo'), { aura: r.aura2 || r.aura });
     if (r.skin) equip(t('Ponérsela'), { skin: { dex: r.mastery.dex, skin: r.skin } });
+    if (r.glow) { const b = el('button', '', t('Ponérselo a una línea')); b.onclick = () => { close(); this.glowPick = r.glow; this.openCollection('glow'); }; acts.append(b); }
     const ok = el('button', 'primary', t('¡Genial!'));
     acts.append(ok);
     if (r.chestReady) acts.append(el('p', 'small chest-hint', t('¡Has completado las 3! Abre el cofre en Misiones.')));

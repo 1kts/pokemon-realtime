@@ -85,7 +85,15 @@ function action(p, msg) {
     if (ms.chest[kind]) return { error: 'Ya has abierto este cofre' };
     if (!ms[kind].every(m => m.claimed)) return { error: 'Recoge antes las 3 misiones' };
     ms.chest[kind] = true;
-    return { loot: { ...pay(p, D.MISSION_CHEST[kind]), chest: kind } };
+    const loot = { ...pay(p, D.MISSION_CHEST[kind]), chest: kind };
+    // El semanal trae además un glow de tipo que aún no tengas (con todos, dinero de más)
+    if (kind === 'weekly') {
+      if (!p.cosmetics.glows) p.cosmetics.glows = [];
+      const left = D.GLOWS.filter(g => g.startsWith('tipo-') && !p.cosmetics.glows.includes(g));
+      if (left.length) { loot.glow = left[Math.floor(Math.random() * left.length)]; p.cosmetics.glows.push(loot.glow); }
+      else { p.coins = Math.min(MAX_COINS, p.coins + 1500); loot.coins += 1500; }
+    }
+    return { loot };
   }
   const m = ms[kind][msg.i];
   if (!Number.isInteger(msg.i) || !m) return { error: 'Misión no válida' };

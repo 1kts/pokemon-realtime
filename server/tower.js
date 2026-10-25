@@ -78,7 +78,7 @@ function battleMon(p, e) {
   const m = p.mons.find(x => x.uid === e.uid);
   if (!m) return null;
   const moves = [...new Set([...(m.moves || []), ...D.defaultMoves(m.dex, LEVEL)])].filter(k => D.MOVES[k]).slice(0, 4);
-  return { dex: m.dex, level: LEVEL, uid: m.uid, nick: m.nick, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex) };
+  return { dex: m.dex, level: LEVEL, uid: m.uid, nick: m.nick, moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex), glow: D.glowOf(p, m.dex) };
 }
 
 // Acciones fuera de combate: start (elegir equipo), order (reordenar), retire. Devuelve error o null.

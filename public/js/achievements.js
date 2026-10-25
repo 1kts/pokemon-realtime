@@ -3,6 +3,7 @@
 // Data.ACHIEVEMENTS; el servidor los da y entrega los premios (server/rewards.js).
 import { t } from './i18n.js';
 import { icon, item as itemImg, badgeImg } from './pixicons.js';
+import { glowName } from './frames.js';
 
 const { ACHIEVEMENTS } = Data;
 const BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
@@ -42,7 +43,7 @@ export const achievementViews = {
       const ok = !!got[a.id], cur = Data.achievementProgress(p, a);
       const ready = (p.achClaim || []).includes(a.id);
       const rw = a.reward || {};
-      const prize = [rw.title && `${t('Título')}: <b>${t(rw.title)}</b>`, rw.frame && `${t('Marco')}: <b>${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}</b>`, Data.achievementAvatar(a) && t('Avatar'), rw.coins && `${icon('coin', 14)}${rw.coins.toLocaleString()}`].filter(Boolean).join(' · ');
+      const prize = [rw.title && `${t('Título')}: <b>${t(rw.title)}</b>`, rw.frame && `${t('Marco')}: <b>${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}</b>`, rw.glow && `<b>${glowName(rw.glow, t)}</b>`, Data.achievementAvatar(a) && t('Avatar'), rw.coins && `${icon('coin', 14)}${rw.coins.toLocaleString()}`].filter(Boolean).join(' · ');
       const card = el('div', 'ach-card' + (ok ? ' got' : '') + (ready ? ' ready' : ''));
       card.innerHTML = `${achIcon(a, 52, ok)}<div class="ach-body"><b>${t(a.name)}</b><small>${t(a.desc)}</small>
         ${ok ? `<em class="ach-done">${t('Conseguido')}</em>` : `<div class="ach-bar"><i style="width:${cur / a.goal * 100}%"></i></div><small class="ach-num">${cur} / ${a.goal}</small>`}
@@ -74,7 +75,7 @@ export const achievementViews = {
     const fresh = ACHIEVEMENTS.filter(a => next[a.id] && !prev[a.id]);
     fresh.forEach((a, i) => setTimeout(() => {
       const rw = a.reward || {};
-      const pop = el('div', 'ach-pop ' + TIER[a.tier], `${achIcon(a, 64)}<div><small>${t('¡Logro desbloqueado!')}</small><b>${t(a.name)}</b><span>${[rw.title && t(rw.title), rw.frame && `${t('Marco')} ${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}`, rw.coins && '+' + rw.coins.toLocaleString() + ' ₽'].filter(Boolean).join(' · ')}</span><em>${t('Recoge el premio en Misiones')}</em></div>`);
+      const pop = el('div', 'ach-pop ' + TIER[a.tier], `${achIcon(a, 64)}<div><small>${t('¡Logro desbloqueado!')}</small><b>${t(a.name)}</b><span>${[rw.title && t(rw.title), rw.frame && `${t('Marco')} ${t(FRAME_LABEL_EXTRA[rw.frame] || rw.frame)}`, rw.glow && glowName(rw.glow, t), rw.coins && '+' + rw.coins.toLocaleString() + ' ₽'].filter(Boolean).join(' · ')}</span><em>${t('Recoge el premio en Misiones')}</em></div>`);
       pop.onclick = () => { pop.remove(); this.show('missions'); };
       document.body.append(pop);
       setTimeout(() => pop.classList.add('out'), 4200);

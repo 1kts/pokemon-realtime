@@ -545,6 +545,22 @@ class Client {
     ok(l.r.chest === 'daily' && prof.items.caramelo === candy + D.MISSION_CHEST.daily.items.caramelo, 'abrir el cofre diario');
     e = mc.wait('error'); mc.send({ t: 'mission', a: 'chest', kind: 'daily' });
     ok(/Ya has/.test((await e).msg), 'el cofre se abre una vez');
+    // Cofre semanal: trae un glow de tipo que aún no tengas
+    prof.missions.weekly.forEach(x => { x.claimed = true; });
+    loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'chest', kind: 'weekly' });
+    l = await loot;
+    ok(/^tipo-/.test(l.r.glow) && prof.cosmetics.glows.includes(l.r.glow), 'el cofre semanal da un glow de tipo');
+    // Glow por línea: solo los tuyos, y se pone a toda la línea (también en combate)
+    e = mc.wait('error'); mc.send({ t: 'look', glow: { dex: 7, glow: 'dorado' } });
+    ok(/ese glow/.test((await e).msg), 'un glow que no tienes no se pone');
+    r = await mc.req({ t: 'look', glow: { dex: 9, glow: l.r.glow } });
+    ok(r.p.glows[7] === l.r.glow && D.glowOf(prof, 8) === l.r.glow && D.glowOf(prof, 25) === null, 'el glow se pone a la línea evolutiva');
+    r = await mc.req({ t: 'look', glow: { dex: 7, glow: null } });
+    ok(!r.p.glows[7], 'y se quita');
+    // Logros ya cobrados de antes: su glow llega con la migración
+    const oldG = { achievements: { shiny1: 1, kantoChamp: 2 }, achClaim: ['kantoChamp'], cosmetics: { titles: [], frames: [] } };
+    seasonMod.migrate(oldG);
+    ok(oldG.cosmetics.glows.join() === 'estelar', 'glows de logros ya cobrados (no de los pendientes)');
     // Día nuevo: misiones, cambios y cofre nuevos
     prof.missions.day = '2000-01-01';
     r = await mc.req({ t: 'mission', a: 'refresh' });
