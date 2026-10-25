@@ -179,7 +179,7 @@ function finishDraft(draft) {
   try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
   }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
@@ -221,8 +221,8 @@ function finishDraft(draft) {
     audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: draft.mode });
     const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
     const pay = [
-      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: pb.name, foeElo: eb0, team: draft.picks[0], foeTeam: draft.picks[1] }),
-      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: pa.name, foeElo: ea0, team: draft.picks[1], foeTeam: draft.picks[0] }),
+      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: store.fullName(pb), foeElo: eb0, team: draft.picks[0], foeTeam: draft.picks[1] }),
+      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: store.fullName(pa), foeElo: ea0, team: draft.picks[1], foeTeam: draft.picks[0] }),
     ];
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
@@ -399,7 +399,7 @@ function handle(c, msg) {
     const old = c.profile.name;
     const checked = names.trainerName(msg.name);
     if (checked.error) return send(c, { t: 'error', msg: checked.error });
-    c.profile.name = checked.name || c.profile.name;
+    if (checked.name) store.setName(c.profile, checked.name);
     if (c.profile.name !== old) audit.log('perfil.nombre', { actor: c.profile.id, ip: c.ip, old, name: c.profile.name });
     store.save();
     return sendProfile(c);

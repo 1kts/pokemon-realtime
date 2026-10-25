@@ -3,7 +3,7 @@
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
 import { confirmBox } from './dialog.js';
 import { portrait, animatedPortrait, monIcon, face } from './sprites.js';
-import { escapeHtml } from './battle.js';
+import { escapeHtml, tagName } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
@@ -467,7 +467,7 @@ export const accountViews = {
     ava.append(pic, editAva);
     card.append(ava);
     const info = el('div', 'tc-info');
-    const nameRow = el('div', 'name-row', `<h2>${escapeHtml(p.name)}</h2>`);
+    const nameRow = el('div', 'name-row', `<h2>${tagName(p.name, p.tag)}</h2>`);
     const edit = el('button', 'icon', '✎');
     edit.title = t('Cambiar nombre');
     edit.onclick = () => {
@@ -805,7 +805,7 @@ export const accountViews = {
     this.board.forEach((b, i) => {
       const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
       li.onclick = () => this.userModal(b.id);
-      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${escapeHtml(b.name)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${tagName(b.name, b.tag)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
       ol.append(li);
     });
     board.append(ol);

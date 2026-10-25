@@ -653,6 +653,9 @@ export class BattleClient {
   }
 }
 
+// Nombre con su etiqueta (Ash#4821): distingue a entrenadores que se llaman igual
+export const tagName = (name, tag) => `${escapeHtml(name)}${tag ? `<small class="ntag">#${tag}</small>` : ''}`;
+
 export function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }

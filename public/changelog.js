@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.23.1', date: '2026-10-26', title: 'La sede de la Liga',
+      items: [
+        ['cambio', 'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.'],
+        ['cambio', 'Los nombres llevan una etiqueta de 4 cifras en los rankings y en las fichas, para distinguir a los entrenadores que se llaman igual.'],
+      ],
+    },
+    {
       v: '0.23.0', date: '2026-10-25', title: 'La Liga, de una vez',
       items: [
         ['nuevo', 'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.'],

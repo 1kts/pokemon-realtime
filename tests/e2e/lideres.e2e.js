@@ -1,5 +1,5 @@
-// Líderes con su sprite: el Alto Mando y el Campeón se ven por su cara en el mapa de Historia, el panel de
-// cada líder enseña su sprite, y al desafiarlo se presenta antes del combate y su cara queda en el marcador
+// Líderes con su sprite: el Alto Mando y el Campeón se ven por su cara en la pantalla de la Liga (en el mapa,
+// su edificio), el panel de cada líder enseña su sprite, y al desafiarlo se presenta antes del combate y su cara queda en el marcador
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'lideres' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
@@ -9,13 +9,16 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`window.__app.ui.show('story'); true`);
-  await page.waitFor(`document.querySelector('.node.champion')`);
+  await page.waitFor(`document.querySelector('.node.league-hq')`);
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);   // la guía de la primera vez
 
-  // Caras cargadas (naturalWidth > 0: la imagen existe y se ha dibujado)
-  await page.waitFor(`[...document.querySelectorAll('.node.elite .trainer-img, .node.champion .trainer-img')].every(i => i.complete && i.naturalWidth > 0)`);
-  ok(await page.eval(`document.querySelectorAll('.node.elite .trainer-img').length`) === 4, 'el Alto Mando sale en el mapa con sus 4 caras');
-  ok(await page.eval(`!!document.querySelector('.node.champion .trainer-img') && !!document.querySelector('.node.champion .crown')`), 'el Campeón con su cara y su corona');
+  // La Liga: sus caras, en su pantalla (caras cargadas: naturalWidth > 0)
+  await page.eval(`window.__app.ui.leagueRegion = 'kanto'; window.__app.ui.show('league'); true`);
+  await page.waitFor(`document.querySelectorAll('.lv-step .lv-face').length === 5 && [...document.querySelectorAll('.lv-step .lv-face')].every(i => i.complete && i.naturalWidth > 0)`);
+  ok(await page.eval(`document.querySelectorAll('.lv-step:not(.champ) .lv-face').length`) === 4, 'el Alto Mando sale en la Liga con sus 4 caras');
+  ok(await page.eval(`!!document.querySelector('.lv-step.champ .lv-face') && /♛/.test(document.querySelector('.lv-step.champ .lv-n').textContent)`), 'el Campeón con su cara y su corona');
+  await page.eval(`window.__app.ui.show('story'); true`);
+  await page.waitFor(`document.querySelector('.node.gym.next')`);
 
   await page.click('.node.gym.next');
   await page.waitFor(`document.querySelector('.leader-head .leader-sprite')?.naturalWidth > 0`);

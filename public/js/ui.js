@@ -48,6 +48,7 @@ const FEATURE = {
   treasure: ['#ff4f8a', () => t('Gasta tus gemas en una ruleta de premios')], tower: ['#a070ff', () => t('Combates seguidos a Nv.50: ¿hasta dónde llegas?')],
   shop: ['#2fbf8a', () => t('Balls, objetos y los Pokémon del día')], bag: ['#30b8c8', () => t('Tus objetos: úsalos en tus Pokémon')],
   team: ['#c070e0', () => t('Tu equipo y tu caja de cada región')], story: ['#ff5a3a', () => t('Tu viaje: rutas, gimnasios y Campeón')],
+  league: ['#ffcb05', () => t('El Alto Mando y el Campeón, 5 combates seguidos')],
   starter: ['#ff5a3a', () => t('Tu viaje: rutas, gimnasios y Campeón')], online: ['#e8a800', () => t('Tu equipo, ELO y ligas contra otros entrenadores')],
   practice: ['#4fd06a', () => t('Contra la IA, sin arriesgar nada')], missions: ['#3b78d8', () => t('Cúmplelas, recoge su premio y abre el cofre')],
   collection: ['#e8a800', () => t('Retos para conseguir skins, marcos, títulos y más')], dex: ['#e8403a', () => t('Todas las especies y dónde encontrarlas')],
@@ -64,6 +65,8 @@ export const ICON = {
 };
 // Color de cada región en su pestaña
 const REGION_COLOR = { kanto: '#ff5a3a', johto: '#e8b020' };
+// Edificio de la Liga en el mapa: un pórtico con columnas y tejado dorado
+const LEAGUE_SVG = '<svg class="league-ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12 16 4l13 8Z" fill="#ffcb05" stroke="#5a3a00" stroke-width="1.6" stroke-linejoin="round"/><rect x="5" y="12" width="22" height="3" fill="#ffe27a" stroke="#5a3a00" stroke-width="1.2"/><g fill="#f4ecd8" stroke="#5a3a00" stroke-width="1.1"><rect x="7" y="15" width="3" height="10"/><rect x="12" y="15" width="3" height="10"/><rect x="17" y="15" width="3" height="10"/><rect x="22" y="15" width="3" height="10"/></g><rect x="4" y="25" width="24" height="3.5" rx="1" fill="#ffcb05" stroke="#5a3a00" stroke-width="1.2"/><circle cx="16" cy="9" r="1.8" fill="#e8403a" stroke="#5a3a00" stroke-width=".8"/></svg>';
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 
 export class UI {
@@ -143,7 +146,7 @@ export class UI {
   // pantalla (su nombre y qué es, del color de la sección) y a la derecha el dinero donde se gasta
   topbar(title, back) {
     const bar = el('header', 'hub-bar inner-bar');
-    const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
+    const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), league: t('Liga Pokémon'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
       ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica'), missions: t('Misiones'), collection: t('Logros'), treasure: t('Lucky Spin') };
     const left = el('div', 'hub-mod tb-left');
     if (back) {
@@ -411,6 +414,7 @@ export class UI {
     const info = el('div', 'node-info');
     const buttons = new Map();
     nodes.forEach(n => {
+      if (n.kind !== 'route' && n.index >= Data.LEAGUE_FROM) return;   // la Liga va en su edificio
       const isLeader = n.kind !== 'route';
       // La Liga se abre entera con las 8 medallas; sus miembros cuentan como vencidos en el desafío en curso
       const inLeague = isLeader && n.index >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
@@ -440,13 +444,19 @@ export class UI {
       buttons.set(n.id, b);
       stage.append(b);
     });
-    // La Liga, agrupada en un recuadro: se juega de una vez
+    // La Liga: un solo edificio en la Meseta Añil (en vez de sus 5 entrenadores sueltos) que abre su pantalla
     const lg = leaders.filter(n => n.index >= Data.LEAGUE_FROM);
     if (lg.length) {
-      const xs = lg.map(n => n.x), ys = lg.map(n => n.y), pad = 4;
-      const lb = el('div', 'league-zone', `<span>${t('Liga Pokémon · {n} seguidos', { n: lg.length })}</span>`);
-      Object.assign(lb.style, { left: Math.min(...xs) - pad + '%', top: Math.min(...ys) - pad - 2 + '%', width: Math.max(...xs) - Math.min(...xs) + pad * 2 + '%', height: Math.max(...ys) - Math.min(...ys) + pad * 2 + 2 + '%' });
-      stage.append(lb);
+      const open = prog >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
+      const plateau = art.cities.find(([name]) => /Meseta|Liga/.test(name));
+      const x = plateau ? plateau[1] : lg.reduce((a, n) => a + n.x, 0) / lg.length, y = plateau ? plateau[2] : lg.reduce((a, n) => a + n.y, 0) / lg.length;
+      const hq = el('button', 'node league-hq' + (open ? '' : ' locked') + (cleared ? ' done' : '') + (open && !cleared ? ' next' : ''), `${LEAGUE_SVG}<label>${t('Liga Pokémon')}</label>${open ? (cleared ? '<i class="crown">♛</i>' : `<em class="ord">${Data.LEAGUE_FROM + 1}</em>`) : `<em class="lock">${LOCK_SVG}</em>`}${open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM ? `<em class="goal-tag">${t('Siguiente reto')}</em>` : ''}`);
+      hq.style.left = x + '%'; hq.style.top = y + '%';
+      hq.title = t('Liga Pokémon');
+      hq.onclick = () => { this.leagueRegion = region; this.show('league'); };
+      stage.append(hq);
+      // las líneas al siguiente reto van al edificio
+      svg.querySelectorAll('.leg.goal').forEach(l => { if (nextLeader && nextLeader.index >= Data.LEAGUE_FROM) { l.setAttribute('x2', x); l.setAttribute('y2', y); } });
     }
     // Objetivo actual y leyenda
     const goal = el('div', 'map-goal');
@@ -482,7 +492,7 @@ export class UI {
     head.append(goal, tools);
     wrap.append(head, body);
     this.root.append(wrap);
-    const next = map.querySelector('.node.next') || map.querySelector('.node.route:not(.locked)');
+    const next = map.querySelector('.node.next:not(.league-hq)') || map.querySelector('.node.route.new') || map.querySelector('.node.route:not(.locked)');
     if (next) next.click();
     if (mode === 'list') { const cur = body.querySelector('.sl-step.now'); if (cur) cur.scrollIntoView({ block: 'center' }); }
   }
@@ -512,6 +522,58 @@ export class UI {
     return box;
   }
 
+  // Pantalla de la Liga: a la izquierda el pasillo con los 5 entrenadores en orden (vencidos en este desafío,
+  // el que toca y los que faltan); a la derecha, el elegido (por defecto el que toca): su equipo, las reglas,
+  // tu equipo y el botón del desafío
+  view_league() {
+    const p = this.profile, region = this.leagueRegion || this.region || 'kanto', R = Data.REGIONS[region];
+    const members = Data.leadersOf(region).slice(Data.LEAGUE_FROM), prog = Data.progOf(p, region);
+    const open = prog >= Data.LEAGUE_FROM, cleared = prog >= Data.leadersOf(region).length;
+    const step = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
+    const pick = Math.max(0, Math.min(members.length - 1, this.leagueSel ?? step));
+    const wrap = el('div', 'league-view');
+    wrap.append(this.topbar(t('Liga Pokémon'), 'story'));
+    const body = el('div', 'lv-body');
+    // Pasillo
+    const hall = el('div', 'panel lv-hall');
+    hall.append(el('div', 'lv-head', `<div><b>${t('Liga Pokémon de {r}', { r: R.name })}</b><small>${cleared ? t('Completada: puedes repetir el desafío cuando quieras.') : open ? t('Desafío en curso: {n}/{m}', { n: step, m: members.length }) : t('Consigue las 8 medallas de la región para entrar en la Liga.')}</small></div><div class="lv-prog">${members.map((_, i) => `<i class="${i < step ? 'done' : i === step && open ? 'now' : ''}"></i>`).join('')}</div>`));
+    const row = el('div', 'lv-steps');
+    members.forEach((m, i) => {
+      const state = i < step ? 'done' : i === step && open ? 'now' : '';
+      const c = el('button', `lv-step ${state}${i === pick ? ' sel' : ''}${m.kind === 'champion' ? ' champ' : ''}${open ? '' : ' locked'}`);
+      c.style.setProperty('--tc', TYPE_COLOR[m.type]);
+      c.innerHTML = `<span class="lv-n">${m.kind === 'champion' ? '♛' : i + 1}</span>${trainerImg(m.id, 'lv-face')}<b>${m.leader}</b><small>${m.kind === 'champion' ? t('Campeón') : t('Alto Mando')}</small><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span>${state === 'done' ? '<em class="lv-ok">✓</em>' : ''}`;
+      c.onclick = () => { this.leagueSel = i; this.show('league'); };
+      row.append(c);
+    });
+    hall.append(row, el('p', 'small lv-rules', t('{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.', { n: members.length })));
+    // Ficha del elegido
+    const m = members[pick];
+    const side = el('div', 'panel lv-side');
+    side.style.setProperty('--tc', TYPE_COLOR[m.type]);
+    side.append(el('div', 'leader-head', `<div><h3>${m.leader}</h3><p class="leader">${m.kind === 'champion' ? t('Campeón') : t('Alto Mando')} · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span></p></div>${trainerImg(m.id, 'leader-sprite')}`));
+    const team = el('div', 'mini-team');
+    for (const [dex, lvl] of Data.leaderTeam(m, p.starter || (p.mons[0] && p.mons[0].dex))) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }
+    side.append(team);
+    const arena = Data.ARENAS[m.map];
+    if (arena) side.append(el('div', 'arena-info', `<b>${t(arena.name)}</b> · ${t(arena.desc)}`));
+    side.append(el('p', 'small', t('Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.')));
+    side.append(el('h4', '', t('Tu equipo')));
+    const mine = el('div', 'mini-team');
+    for (const uid of (p.teams && p.teams[region]) || []) { const mon = p.mons.find(x => x.uid === uid); if (!mon) continue; const c = el('div', 'mini'); c.append(this.skinned(portrait(mon.dex, 56, { shiny: Data.looksShiny(mon) }), mon.dex)); c.append(el('small', '', `${monLabel(mon)}<br>${lv(mon.level)}`)); mine.append(c); }
+    side.append(mine);
+    if (!open) side.append(el('p', 'warn', t('Consigue las 8 medallas de la región para entrar en la Liga.')));
+    else {
+      const go = el('button', 'primary lv-go', step ? t('Seguir el desafío ({n}/{m})', { n: step + 1, m: members.length }) : cleared ? t('Repetir el desafío') : t('Empezar el desafío'));
+      go.onclick = () => this.startStory('gym', members[step].id);
+      side.append(go);
+      if (pick !== step) side.append(el('p', 'small', t('El desafío sigue por {who}.', { who: members[step].leader })));
+    }
+    body.append(hall, side);
+    wrap.append(body);
+    this.root.append(wrap);
+  }
+
   // El viaje paso a paso: antes de cada líder, las rutas que se abren con las medallas que llevas; lo hecho
   // con ✓, lo que toca resaltado y lo que falta con candado. Cada paso abre su ficha al lado, como el mapa
   storyList(region, nodes, prog, nextLeader, buttons, info) {
@@ -538,7 +600,16 @@ export class UI {
     };
     for (const L of leaders) {
       for (const n of nodes.filter(x => x.kind === 'route' && x.req === L.index)) add(n, false);
-      if (L.index === Data.LEAGUE_FROM) list.append(el('div', 'sl-league', `<b>${t('Liga Pokémon')}</b><small>${t('{n} combates seguidos: si pierdes uno, vuelves a empezar', { n: leaders.length - Data.LEAGUE_FROM })}</small>`));
+      if (L.index >= Data.LEAGUE_FROM) {
+        if (L.index > Data.LEAGUE_FROM) continue;
+        // La Liga, una sola fila que abre su pantalla
+        const open = prog >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
+        const row = el('button', 'sl-step leader sl-league' + (cleared ? ' done' : '') + (open && !cleared ? ' now' : '') + (open ? '' : ' locked'));
+        row.innerHTML = `<span class="sl-n">${++step}</span><span class="sl-ico">${LEAGUE_SVG}</span><span class="sl-t">${t('Liga Pokémon')}<small>${t('{n} combates seguidos: si pierdes uno, vuelves a empezar', { n: leaders.length - Data.LEAGUE_FROM })}</small></span><em class="sl-st">${cleared ? '♛' : open ? t('Siguiente reto') : LOCK_SVG}</em>`;
+        row.onclick = () => { this.leagueRegion = region; this.show('league'); };
+        list.append(row);
+        continue;
+      }
       add(L, true);
     }
     for (const n of nodes.filter(x => x.kind === 'route' && x.req > leaders.length - 1)) add(n, false);
@@ -1462,6 +1533,7 @@ export class UI {
   // Adónde se va tras un combate: la pantalla desde la que se empezó
   afterBattleView() {
     const lm = this.lastMode;
+    if (lm && lm.kind === 'story' && lm.a === 'gym' && Data.NODES[lm.id] && Data.NODES[lm.id].index >= Data.LEAGUE_FROM) { this.leagueRegion = Data.NODES[lm.id].region; return 'league'; }
     return lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu';
   }
 

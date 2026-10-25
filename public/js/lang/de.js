@@ -11,6 +11,16 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.1 ----------
+    'La sede de la Liga': 'Das Liga-Gebäude',
+    'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': 'Die Liga ist ein Gebäude auf der Karte: Drinnen siehst du die 5 Trainer der Reihe nach, den nächsten mit seinem Team, und dort startest oder setzt du die Herausforderung fort.',
+    'Los nombres llevan una etiqueta de 4 cifras en los rankings y en las fichas, para distinguir a los entrenadores que se llaman igual.': 'Namen tragen ein vierstelliges Kürzel in Ranglisten und Profilen, um gleichnamige Trainer zu unterscheiden.',
+    // ---------- Pantalla de la Liga ----------
+    'El Alto Mando y el Campeón, 5 combates seguidos': 'Die Top Vier und der Champ, 5 Kämpfe am Stück',
+    'El desafío sigue por {who}.': 'Die Herausforderung geht mit {who} weiter.',
+    'Liga Pokémon de {r}': 'Pokémon-Liga von {r}',
+    'Completada: puedes repetir el desafío cuando quieras.': 'Abgeschlossen: Du kannst die Herausforderung jederzeit wiederholen.',
+    'Desafío en curso: {n}/{m}': 'Herausforderung läuft: {n}/{m}',
     // ---------- Novedades v0.23.0 ----------
     'La Liga, de una vez': 'Die Liga am Stück',
     'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': 'Die Liga läuft wie in den Spielen: Top Vier und Champ sind 5 Kämpfe am Stück, dein Team wird dazwischen geheilt; verlierst du einen, fängst du von vorn an.',

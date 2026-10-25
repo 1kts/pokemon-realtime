@@ -11,6 +11,16 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.1 ----------
+    'La sede de la Liga': '联盟总部',
+    'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': '联盟成了地图上的一座建筑：进入后可按顺序看到 5 位训练家、下一位对手及其队伍，并在此开始或继续挑战。',
+    'Los nombres llevan una etiqueta de 4 cifras en los rankings y en las fichas, para distinguir a los entrenadores que se llaman igual.': '名字会带上 4 位数字标签，在排行榜和资料中区分同名训练家。',
+    // ---------- Pantalla de la Liga ----------
+    'El Alto Mando y el Campeón, 5 combates seguidos': '四天王与冠军，5 连战',
+    'El desafío sigue por {who}.': '挑战将从{who}继续。',
+    'Liga Pokémon de {r}': '{r}宝可梦联盟',
+    'Completada: puedes repetir el desafío cuando quieras.': '已通关：随时可以再次挑战。',
+    'Desafío en curso: {n}/{m}': '挑战进行中：{n}/{m}',
     // ---------- Novedades v0.23.0 ----------
     'La Liga, de una vez': '一口气挑战联盟',
     'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': '联盟像游戏中一样：四天王与冠军共 5 连战，每场之间队伍会恢复；输掉一场就要从头开始。',

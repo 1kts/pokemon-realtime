@@ -1,16 +1,17 @@
-// Liga Pokémon: con las 8 medallas, el Alto Mando y el Campeón se juegan seguidos. En el mapa van juntos en un
-// recuadro, la ficha enseña los 5 y el botón del desafío; si pierdes uno, vuelves a empezar desde el primero
+// Liga Pokémon: con las 8 medallas, el Alto Mando y el Campeón se juegan seguidos. En el mapa es un edificio que
+// abre su pantalla (los 5 entrenadores en orden y el botón del desafío); si pierdes uno, vuelves al primero
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'ligera' });
   me.client.send({ t: 'dev', dex: 6, level: 55, region: 'kanto', badges: 8 }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); localStorage.removeItem('arena.storyMode'); window.__app.ui.show('story'); true`);
-  await page.waitFor(`document.querySelector('.map .league-zone')`);
-  ok(await page.eval(`/Liga Pokémon/.test(document.querySelector('.league-zone').textContent) && document.querySelectorAll('.node.elite:not(.locked), .node.champion:not(.locked)').length === 5`), 'en el mapa, la Liga va junta en un recuadro y se abre entera con las 8 medallas');
-  await page.waitFor(`document.querySelector('.node-info .league-box')`);
-  ok(await page.eval(`document.querySelectorAll('.league-box .lb-step').length === 5 && !!document.querySelector('.league-box .lb-step.now') && /Empezar el desafío/.test(document.querySelector('.league-box button').textContent)`), 'la ficha enseña los 5 combates y el botón de empezar el desafío');
-  await page.eval(`document.querySelector('.league-box button').click(); true`);
+  await page.waitFor(`document.querySelector('.map .node.league-hq')`);
+  ok(await page.eval(`!document.querySelector('.node.elite, .node.champion') && !document.querySelector('.node.league-hq.locked')`), 'en el mapa, la Liga es un solo edificio, abierto con las 8 medallas');
+  await page.eval(`document.querySelector('.node.league-hq').click(); true`);
+  await page.waitFor(`window.__app.ui.view === 'league' && document.querySelectorAll('.lv-step').length === 5`);
+  ok(await page.eval(`!!document.querySelector('.lv-step.now') && !!document.querySelector('.lv-step.champ') && /Empezar el desafío/.test(document.querySelector('.lv-go').textContent)`), 'al entrar se ven los 5 entrenadores en orden, el que toca y el botón de empezar');
+  await page.eval(`document.querySelector('.lv-go').click(); true`);
   await page.waitFor(`window.__app.battle && window.__app.battle.latest`, 15000);
   await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
   await page.waitFor(`document.querySelector('.league-res.failed')`, 15000);

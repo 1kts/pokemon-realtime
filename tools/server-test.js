@@ -283,8 +283,18 @@ class Client {
   ok(bWon && r1.reward.elo > 0 && r2.reward.elo === -r1.reward.elo, `ELO: ganador +${r1.reward.elo}, perdedor ${r2.reward.elo}`);
   ok(r1.reward.coins === D.RANKED_PAY.win + D.RANKED_PAY.firstWin && r1.reward.firstWin && r2.reward.coins === D.RANKED_PAY.loss, 'clasificatoria: dinero por combate y extra por la primera victoria del día');
   m = await b.wait('profile');
-  ok(m.p.history.length === 1 && m.p.history[0].won && m.p.history[0].foe === 'Verde' && m.p.history[0].team.length === 3 && m.rank === 1, 'historial de clasificatorias y puesto en el ranking');
+  ok(m.p.history.length === 1 && m.p.history[0].won && /^Verde#\d{4}$/.test(m.p.history[0].foe) && m.p.history[0].team.length === 3 && m.rank === 1, 'historial de clasificatorias y puesto en el ranking');
   ok(m.board[0].name === 'Azul' && !('account' in m.board[0]) && !('token' in m.board[0]), 'el ranking no filtra datos privados');
+  // Etiquetas: dos entrenadores con el mismo nombre se distinguen por su #0000
+  {
+    const t1 = new Client(port), t2 = new Client(port);
+    await t1.open(); await t2.open();
+    const a1 = await t1.req({ t: 'hello', name: 'Gemelo' }), a2 = await t2.req({ t: 'hello', name: 'Gemelo' });
+    ok(/^\d{4}$/.test(a1.p.tag) && /^\d{4}$/.test(a2.p.tag) && a1.p.tag !== a2.p.tag, `mismo nombre, etiquetas distintas (Gemelo#${a1.p.tag} y Gemelo#${a2.p.tag})`);
+    const r1 = await t1.req({ t: 'name', name: 'Otro' });
+    ok(r1.p.name === 'Otro' && /^\d{4}$/.test(r1.p.tag), 'al cambiar de nombre se conserva una etiqueta válida');
+    t1.ws.close(); t2.ws.close();
+  }
 
   // ---------- Recompensas de liga y temporada ----------
   const seasonMod = require('../server/rewards.js');

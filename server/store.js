@@ -26,6 +26,8 @@ const upsert = db.prepare(`INSERT INTO profiles (token, data, updated) VALUES (?
 
 const profiles = new Map();   // token -> perfil
 for (const r of db.prepare('SELECT data FROM profiles').all()) { const p = JSON.parse(r.data); profiles.set(p.token, p); }
+// Los perfiles de antes de las etiquetas reciben la suya (se guarda en cuanto se escribe el perfil)
+for (const p of profiles.values()) if (!p.tag) p.tag = freeTag(p.name, p);
 
 function writeRows(list) {
   const now = Date.now();
@@ -101,8 +103,25 @@ function newProfile(name) {
   };
 }
 
+// Etiqueta (#4821) para distinguir a entrenadores con el mismo nombre: 4 cifras, distinta de las de los demás
+// con ese nombre. Se cambia solo si cambias de nombre y la tuya ya está cogida con el nuevo
+function freeTag(name, self) {
+  const lower = name.toLowerCase(), taken = new Set();
+  for (const p of profiles.values()) if (p !== self && p.tag && p.name.toLowerCase() === lower) taken.add(p.tag);
+  if (self && self.tag && !taken.has(self.tag)) return self.tag;
+  let tag;
+  do tag = String(1000 + Math.floor(Math.random() * 9000)); while (taken.has(tag) && taken.size < 9000);
+  return tag;
+}
+function setName(p, name) {
+  p.tag = freeTag(name, p);
+  p.name = name;
+}
+const fullName = p => `${p.name}#${p.tag}`;
+
 function addProfile(name) {
   const p = newProfile(name);
+  p.tag = freeTag(name, p);
   profiles.set(p.token, p);
   ids.set(p.id, p);
   writeRows([[p, JSON.stringify(p)]]);
@@ -265,7 +284,7 @@ function leaderboard(n = 10) {
     if (top.length > n) top.pop();
   }
   return top
-    .map(p => ({ id: p.id, name: p.name, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
+    .map(p => ({ id: p.id, name: p.name, tag: p.tag, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
 }
 
 // ---------- Ladder ----------
@@ -296,7 +315,7 @@ function ladder(board, { page = 0, q = '', me = null, online = new Set() } = {})
   const list = needle ? all.filter(x => x.p.name.toLowerCase().includes(needle)) : all;
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   page = Math.max(0, Math.min(pages - 1, page | 0));
-  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
+  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, tag: p.tag, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
   const mine = me && all.find(x => x.p === me);
   return { board, page, pages, total: all.length, found: list.length, q: needle, rows: list.slice(page * PAGE, (page + 1) * PAGE).map(row), me: mine ? row(mine) : null };
 }
@@ -310,7 +329,7 @@ function publicUser(id, online = new Set()) {
     .sort((a, b) => b.level - a.level).slice(0, 6).map(m => ({ dex: m.dex, nick: m.nick, level: m.level, shiny: !!(m.shiny && !m.plain) }));
   const t = tw(p);
   return {
-    id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
+    id: p.id, name: p.name, tag: p.tag, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
     elo: p.elo, wins: p.wins, losses: p.losses, ranked: p.ranked,
     tower: { best: t.best || 0, streak: t.team ? t.streak : 0, symbols: t.symbols || [], wins: t.wins || 0, team: t.bestTeam || [] },
     caught: D.dexCount(p), shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},
@@ -327,5 +346,5 @@ function rankOf(p) {
   return rank;
 }
 
-module.exports = { db, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
+module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
   check, setPassword, banned, persist, remove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

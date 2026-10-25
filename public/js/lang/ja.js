@@ -12,6 +12,16 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.1 ----------
+    'La sede de la Liga': 'ポケモンリーグの建物',
+    'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': 'リーグはマップ上の建物に。中では5人のトレーナーが順番に並び、次の相手とそのチームを確認して、挑戦を始めたり続けたりできます。',
+    'Los nombres llevan una etiqueta de 4 cifras en los rankings y en las fichas, para distinguir a los entrenadores que se llaman igual.': '名前に4桁のタグが付き、ランキングやプロフィールで同じ名前のトレーナーを見分けられます。',
+    // ---------- Pantalla de la Liga ----------
+    'El Alto Mando y el Campeón, 5 combates seguidos': '四天王とチャンピオンの5連戦',
+    'El desafío sigue por {who}.': '挑戦は{who}から続きます。',
+    'Liga Pokémon de {r}': '{r}のポケモンリーグ',
+    'Completada: puedes repetir el desafío cuando quieras.': '制覇済み：いつでも再挑戦できます。',
+    'Desafío en curso: {n}/{m}': '挑戦中：{n}/{m}',
     // ---------- Novedades v0.23.0 ----------
     'La Liga, de una vez': 'ポケモンリーグを一気に',
     'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': 'ポケモンリーグはゲームと同じく、四天王とチャンピオンの5連戦に。戦闘の合間にチームは全回復しますが、1回でも負けると最初からです。',

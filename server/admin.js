@@ -137,7 +137,7 @@ function createAdmin(ctx) {
       const name = sanitize(msg.name, 16);
       if (!name) return 'Nombre vacío';
       const old = p.name;
-      p.name = name;
+      store.setName(p, name);
       store.persist(p);
       for (const x of conns(p.id)) sendProfile(x);
       audit.log('admin.rename', { actor: c.admin.id, target: p.id, ip: c.ip, old, name });
