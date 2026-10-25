@@ -201,6 +201,15 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .results h1.lose { color: #ff8a80; text-shadow: 0 4px 0 #5a1a1a; }
 .results > * { position: relative; }
 .caught { display: flex; flex-direction: column; align-items: center; }
+.nick-form { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center; width: min(360px, 100%); margin: 6px auto 10px; text-align: left; }
+.nick-form label { grid-column: 1 / -1; font-weight: 700; }
+.nick-form input { padding: 9px 12px; }
+.nick-form button.saved { border-color: #4fd06a; color: #9ff0ad; }
+.nick-form .nick-note { grid-column: 1 / -1; color: var(--muted); }
+.nick-modal { width: min(400px, calc(100vw - 32px)); }
+.nick-modal input { margin: 4px 0 12px; }
+.nick-modal .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.mon-card .species { color: var(--muted); }
 .badge-won { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .reward { font-size: 22px; margin: 8px 0; font-weight: 700; }
 .xp-list { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; text-align: left; }

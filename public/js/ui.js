@@ -2,7 +2,7 @@
 // clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
 // la portada, el perfil, las recompensas y las novedades en account.js.
 import { portrait, monIcon, animatedPortrait, trainerImg } from './sprites.js';
-import { escapeHtml, describeMove } from './battle.js';
+import { escapeHtml, describeMove, monLabel } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
 import { pokedexViews } from './pokedex.js';
@@ -63,6 +63,7 @@ export class UI {
     this.profile = p;
     this.board = board || this.board;
     this.rank = rank;
+    if (this.onProfile) this.onProfile(p);
     if (this.pendingFicha) {
       const mon = p.mons.find(m => m.uid === this.pendingFicha);
       this.pendingFicha = null;
@@ -484,7 +485,7 @@ export class UI {
       const m = p.mons.find(x => x.uid === uid);
       const c = el('button', 'mini pick');
       c.title = t('Gestionar equipo');
-      c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }), el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`));
+      c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }), el('small', '', `${monLabel(m)}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`));
       c.onclick = manage;
       team.append(c);
     }
@@ -674,7 +675,7 @@ export class UI {
     // Dos secciones: el equipo (máximo 3) y la caja con el resto
     const scroll = el('div', 'team-sections scroll');
     const inTeamList = team.map(u => mine.find(m => m.uid === u)).filter(Boolean);
-    const nameOf = m => SPECIES[m.dex].name;
+    const nameOf = m => m.nick || SPECIES[m.dex].name;
     const SORTS = { level: (a, b) => b.level - a.level || a.dex - b.dex, dex: (a, b) => a.dex - b.dex || b.level - a.level,
       name: (a, b) => nameOf(a).localeCompare(nameOf(b), locale()) || b.level - a.level, new: (a, b) => b.uid - a.uid };
     const boxList = mine.filter(m => !team.includes(m.uid)).sort(SORTS[f.sort] || SORTS.level);
@@ -691,13 +692,13 @@ export class UI {
       const grid = grids[team.includes(m.uid) ? 'team' : 'box'];
       const inTeam = team.includes(m.uid);
       const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
-      Object.assign(card.dataset, { q: norm(`${nameOf(m)} ${m.dex}`), types: SPECIES[m.dex].types.join(' '), shiny: m.shiny ? '1' : '', leg: SPECIES[m.dex].leg ? '1' : '', box: inTeam ? '' : '1' });
+      Object.assign(card.dataset, { q: norm(`${nameOf(m)} ${SPECIES[m.dex].name} ${m.dex}`), types: SPECIES[m.dex].types.join(' '), shiny: m.shiny ? '1' : '', leg: SPECIES[m.dex].leg ? '1' : '', box: inTeam ? '' : '1' });
       card.append(portrait(m.dex, 72, { shiny: Data.looksShiny(m) }));
       const need = xpToNext(m.level);
       const moves = (m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves).filter(k => MOVES[k]);
       const known = Data.learnedAt(m.dex, m.level).filter(k => !moves.includes(k));
       const upcoming = Data.learnset(m.dex).find(([l]) => l > m.level);
-      card.append(el('div', 'mi', `<b>${SPECIES[m.dex].name}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b> <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
+      card.append(el('div', 'mi', `<b class="mon-name">${monLabel(m)}${m.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''}</b>${m.nick ? ` <small class="species">${SPECIES[m.dex].name}</small>` : ''} <small>${lv(m.level)}${m.level >= cap ? ` · <span class="cap">${t('tope')}</span>` : ''}</small><div class="types">${typeChips(m.dex)}</div><div class="xp"><div style="width:${m.level >= cap ? 100 : Math.min(100, m.xp / need * 100)}%"></div></div>
         <div class="movechips">${moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')}</div>
         ${known.length ? `<small class="newmoves">${known.length > 1 ? t('{n} movimientos más para elegir', { n: known.length }) : t('1 movimiento más para elegir')}</small>` : ''}
         ${upcoming ? `<small class="moves">${t('Aprende {m} al Nv.{n}', { m: MOVES[upcoming[1]].name, n: upcoming[0] })}</small>` : ''}
@@ -713,7 +714,10 @@ export class UI {
       acts.append(toggle);
       const ficha = el('button', '', t('Ficha'));
       ficha.onclick = () => this.statsModal(m);
-      acts.append(ficha);
+      const nick = el('button', 'nick-btn', t('Mote'));
+      nick.title = t('Ponle un nombre: se ve en combate y en tu perfil');
+      nick.onclick = () => this.nickModal(m);
+      acts.append(ficha, nick);
       // Un shiny se puede ver con sus colores normales (también en combate); sigue contando como shiny
       if (m.shiny) {
         const look = el('button', 'look' + (m.plain ? '' : ' on'), m.plain ? t('Ver shiny') : t('Ver normal'));
@@ -743,7 +747,7 @@ export class UI {
       if (evo && !stones.length && typeof evo[1] === 'number') acts.append(el('small', 'evohint', t('Evoluciona a {m} al Nv.{n}', { m: SPECIES[evo[0]].name, n: evo[1] })));
       if (mine.length > 1) {
         const rel = el('button', 'danger', t('Liberar'));
-        rel.onclick = () => { if (confirm(t('¿Liberar a {m} ({lv})? No se puede deshacer.', { m: SPECIES[m.dex].name, lv: lv(m.level) }))) this.net.send({ t: 'story', a: 'release', uid: m.uid }); };
+        rel.onclick = () => { if (confirm(t('¿Liberar a {m} ({lv})? No se puede deshacer.', { m: nameOf(m), lv: lv(m.level) }))) this.net.send({ t: 'story', a: 'release', uid: m.uid }); };
         acts.append(rel);
       }
       card.append(acts);
@@ -772,6 +776,65 @@ export class UI {
     this.root.append(wrap);
   }
 
+  // Mote al capturarlo, en la pantalla de resultados: opcional, se puede cambiar luego en Mis Pokémon
+  nickForm(uid, dex) {
+    const f = el('form', 'nick-form');
+    const input = el('input');
+    Object.assign(input, { maxLength: Data.NICK_MAX, placeholder: SPECIES[dex].name, autocomplete: 'off', spellcheck: false });
+    input.setAttribute('aria-label', t('Mote'));
+    const save = el('button', '', t('Guardar mote'));
+    save.type = 'submit';
+    const note = el('small', 'nick-note', t('Opcional: puedes cambiarlo cuando quieras en Mis Pokémon'));
+    f.append(el('label', '', t('¿Le pones un mote?')), input, save, note);
+    input.oninput = () => { save.textContent = t('Guardar mote'); save.classList.remove('saved'); };
+    f.onsubmit = e => {
+      e.preventDefault();
+      const nick = input.value.trim();
+      // Se marca como guardado cuando el servidor lo confirma (si no lo acepta, avisa con un error)
+      this.onProfile = p => {
+        const m = p.mons.find(x => x.uid === uid);
+        if (!m || (m.nick || '') !== (nick === SPECIES[m.dex].name ? '' : nick.slice(0, Data.NICK_MAX).trim())) return;
+        this.onProfile = null;
+        save.textContent = nick ? t('Mote guardado ✓') : t('Sin mote ✓');
+        save.classList.add('saved');
+      };
+      this.net.send({ t: 'story', a: 'nick', uid, nick });
+    };
+    return f;
+  }
+
+  // Cambiar o quitar el mote de un Pokémon desde Mis Pokémon
+  nickModal(mon) {
+    const back = el('div', 'modal');
+    const box = el('form', 'panel modal-box nick-modal');
+    const input = el('input');
+    Object.assign(input, { maxLength: Data.NICK_MAX, value: mon.nick || '', placeholder: SPECIES[mon.dex].name, autocomplete: 'off', spellcheck: false });
+    input.setAttribute('aria-label', t('Mote'));
+    box.append(el('h3', '', t('Mote de {m}', { m: SPECIES[mon.dex].name })),
+      el('p', 'small', t('Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.', { n: Data.NICK_MAX })), input);
+    const acts = el('div', 'acts');
+    const save = el('button', 'primary', t('Guardar'));
+    save.type = 'submit';
+    const cancel = el('button', '', t('Cancelar'));
+    cancel.type = 'button';
+    cancel.onclick = () => back.remove();
+    acts.append(save);
+    if (mon.nick) {
+      const clear = el('button', '', t('Quitar mote'));
+      clear.type = 'button';
+      clear.onclick = () => { this.net.send({ t: 'story', a: 'nick', uid: mon.uid, nick: '' }); back.remove(); };
+      acts.append(clear);
+    }
+    acts.append(cancel);
+    box.append(acts);
+    box.onsubmit = e => { e.preventDefault(); this.net.send({ t: 'story', a: 'nick', uid: mon.uid, nick: input.value }); back.remove(); };
+    back.append(box);
+    back.onclick = e => { if (e.target === back) back.remove(); };
+    document.body.append(back);
+    input.focus();
+    input.select();
+  }
+
   // Ficha de un Pokémon: estadísticas (con vitaminas), stats base reales, movimientos, evolución y venta
   statsModal(mon) {
     const p = this.profile;
@@ -785,7 +848,7 @@ export class UI {
     const route = mon.met ? Data.NODES[mon.met] || null : null;
     const nat = Data.NATURES[mon.nat] || ['—', null, null];
     const natTxt = nat[1] ? `<b>${nat[0]}</b> (+${Data.STAT6[nat[1]]}, −${Data.STAT6[nat[2]]})` : `<b>${nat[0]}</b> (${t('neutra')})`;
-    head.append(el('div', '', `<h3>${sp.name}${mon.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''} <small>${lv(mon.level)}</small></h3><div class="types">${typeChips(mon.dex)}</div>
+    head.append(el('div', '', `<h3>${monLabel(mon)}${mon.shiny ? ` <i class="shiny-star">${t('✦ shiny')}</i>` : ''} <small>${mon.nick ? sp.name + ' · ' : ''}${lv(mon.level)}</small></h3><div class="types">${typeChips(mon.dex)}</div>
       <p class="small">Nº ${mon.dex} · Gen ${sp.gen}${sp.leg ? ` · <b>${t('legendario')}</b>` : ''} · Hitbox ${Shared.hitboxOf(mon.dex)} px${route ? ` · ${t('Capturado en {r}', { r: route.name })}` : ''}</p>
       <p class="small">${t('Naturaleza')}: ${natTxt}</p>`));
     box.append(head);
@@ -831,7 +894,7 @@ export class UI {
     const price = Data.sellPrice(mon);
     const sell = el('button', 'danger', t('Vender por {price}', { price: coins(price) }));
     sell.disabled = p.mons.filter(x => (x.region || 'kanto') === (mon.region || 'kanto')).length <= 1;
-    sell.onclick = () => { if (confirm(t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: sp.name + (mon.shiny ? ' shiny' : ''), lv: lv(mon.level), price }))) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
+    sell.onclick = () => { if (confirm(t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: (mon.nick || sp.name) + (mon.shiny ? ' shiny' : ''), lv: lv(mon.level), price }))) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); back.remove(); } };
     const close = el('button', 'primary', t('Cerrar'));
     close.onclick = () => back.remove();
     acts.append(sell, close);
@@ -849,7 +912,7 @@ export class UI {
     const chosen = [...current];
     const back = el('div', 'modal');
     const box = el('div', 'panel modal-box');
-    box.append(el('h3', '', `${t('Movimientos de {m}', { m: SPECIES[mon.dex].name })} <small>${lv(mon.level)}</small>`), el('p', 'small', t('Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.')));
+    box.append(el('h3', '', `${t('Movimientos de {m}', { m: monLabel(mon) })} <small>${lv(mon.level)}</small>`), el('p', 'small', t('Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.')));
     const list = el('div', 'move-list');
     const render = () => {
       list.innerHTML = '';
@@ -1094,6 +1157,7 @@ export class UI {
       c.append(home);
       c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && r.captured.perfect ? `<br><b class="perfect">${t('¡Con IV perfectos!')}</b>` : ''}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
       box.append(c);
+      if (r.captured && r.captured.uid) box.append(this.nickForm(r.captured.uid, msg.captured.dex));
     }
     if (r.badge) {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
@@ -1110,7 +1174,7 @@ export class UI {
         row.append(portrait(x.dex, 48, { shiny: !!(pm && pm.shiny) }));
         const lvl = x.level > x.fromLevel ? `${lv(x.fromLevel)} → <span class="lvup">${lv(x.level)} ${t('¡sube de nivel!')}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
-        row.append(el('div', '', `<b>${SPECIES[x.from].name}</b> ${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<br><span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span> <small>${t('(elígelo en Equipo)')}</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
+        row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b> ${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<br><span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span> <small>${t('(elígelo en Equipo)')}</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
         list.append(row);
       }
       box.append(list);

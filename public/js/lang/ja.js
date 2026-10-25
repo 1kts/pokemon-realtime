@@ -12,7 +12,7 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.17.0 ----------
+    // ---------- Novedades v0.18.0 ----------
     'Ataques con sonido': 'わざに効果音',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'わざと命中にひかえめな効果音がつきました。わざのタイプと形で少しだけ変わり、こうかばつぐんの一撃は少し目立ちます。',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '設定で、音楽の音量とは別に効果音を大きく・小さく・オフにできます。',
@@ -23,6 +23,26 @@ export default {
     'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'メニューとバトルで、ミュージシャンが作曲した曲が流れるようになりました。トレーナー戦、野生のポケモン戦、ジムリーダー戦、チャンピオン戦にそれぞれ曲があります。',
     'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '各曲の作曲者は、どの画面でも下にある「クレジット」と法的通知に載っています。',
     'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'メニューとバトルの音楽は jannetty、rckbtm、Navet56（OPMon Lazuli）、Spring Spring によるもので、本人の許可または CC BY ライセンスのもとで使用しています。',
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': 'ポケモンにニックネーム',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'ポケモンをつかまえたらニックネームをつけられます。「じぶんの ポケモン」のニックネームボタンで、いつでも変更・削除できます。',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': 'ニックネームは12文字まで。バトル、チーム、トレーナープロフィールに表示されます。',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': 'メインメニューが新しくなりました：ストーリーを大きく、プロフィールとおこづかいを上に、「じぶんの ポケモン」・バッグ・ショップ・ポケモン図鑑へのショートカットつき。',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': 'クレジット、法的情報、お知らせは画面下のバーからいつでも見られます（バトル中以外）。',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': 'トレーナー名とニックネームには、悪口やゲーム運営になりすます名前は使えません。そうした名前を選ぶと、別の名前をお願いします。',
+    // ---------- Motes y nombres ----------
+    'Mote': 'ニックネーム',
+    'Ponle un nombre: se ve en combate y en tu perfil': '名前をつけよう：バトルとプロフィールに表示されます',
+    'Guardar mote': 'ニックネームを保存',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': '任意：「じぶんの ポケモン」でいつでも変更できます',
+    '¿Le pones un mote?': 'ニックネームをつけますか？',
+    'Mote guardado ✓': 'ニックネームを保存しました ✓',
+    'Sin mote ✓': 'ニックネームなし ✓',
+    'Mote de {m}': '{m}のニックネーム',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': '{n}文字まで。バトル、チーム、公開プロフィールに表示されます。空にすると種族名に戻ります。',
+    'Quitar mote': 'ニックネームを外す',
+    'Ese nombre no está permitido: elige otro': 'その名前は使えません：別の名前にしてください',
+    'Ese mote no está permitido: elige otro': 'そのニックネームは使えません：別のものにしてください',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenasは<b>非公式・無料・非営利のファンゲーム</b>です。広告はなく、寄付しても有利にはなりません。任天堂、株式会社ポケモン、株式会社クリーチャーズ、株式会社ゲームフリークとは提携・後援・承認の関係にありません。ポケモンおよびキャラクター名はそれぞれの権利者の商標です。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. スプライト：<a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
     'Créditos': 'クレジット',
     'Aviso legal y privacidad': '法的通知とプライバシー',

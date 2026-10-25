@@ -11,7 +11,7 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.17.0 ----------
+    // ---------- Novedades v0.18.0 ----------
     'Ataques con sonido': 'Attacks with sound',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Attacks and hits now have a soft sound that shifts a little with the move\'s type and shape; super effective hits stand out a bit more.',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'In Settings you can turn sound effects up, down or off, separately from the music volume.',
@@ -22,6 +22,26 @@ export default {
     'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'Menus and battles now play tracks composed by musicians: one for trainers, one for wild Pokémon and others for Gym Leaders and the Champion.',
     'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'The composer of each track is listed under Credits and the legal notice, at the bottom of any screen.',
     'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'The menu and battle music is by jannetty, rckbtm, Navet56 (OPMon Lazuli) and Spring Spring, used with their permission or under a CC BY licence.',
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': 'Nicknames for your Pokémon',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'When you catch a Pokémon you can give it a nickname, and change or remove it any time with the Nickname button in My Pokémon.',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': 'Nicknames, up to 12 characters, show in battle, in your team and on your trainer profile.',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': 'The main menu has a new look: Story up front, your profile and money at the top, and shortcuts to My Pokémon, Bag, Shop and Pokédex.',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': 'Credits, the legal notice and what\'s new are always at hand in a bar at the bottom, on every screen except in battle.',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': 'Trainer names and nicknames can\'t contain insults or pretend to be the game\'s team: if you pick one like that, we\'ll ask you for another.',
+    // ---------- Motes y nombres ----------
+    'Mote': 'Nickname',
+    'Ponle un nombre: se ve en combate y en tu perfil': 'Give it a name: it shows in battle and on your profile',
+    'Guardar mote': 'Save nickname',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': 'Optional: you can change it any time in My Pokémon',
+    '¿Le pones un mote?': 'Give it a nickname?',
+    'Mote guardado ✓': 'Nickname saved ✓',
+    'Sin mote ✓': 'No nickname ✓',
+    'Mote de {m}': 'Nickname for {m}',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': 'Up to {n} characters. It shows in battle, in your team and on your public profile. Leave it empty to go back to its species name.',
+    'Quitar mote': 'Remove nickname',
+    'Ese nombre no está permitido: elige otro': 'That name isn\'t allowed: pick another one',
+    'Ese mote no está permitido: elige otro': 'That nickname isn\'t allowed: pick another one',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas is an <b>unofficial, free, non-profit fan game</b>: no ads, and donating gives no advantages. It is not affiliated with, sponsored by or endorsed by Nintendo, The Pokémon Company, Creatures Inc. or GAME FREAK inc. Pokémon and character names are trademarks of their respective owners. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites from <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
     'Créditos': 'Credits',
     'Aviso legal y privacidad': 'Legal notice and privacy',

@@ -11,7 +11,7 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.17.0 ----------
+    // ---------- Novedades v0.18.0 ----------
     'Ataques con sonido': '招式有声音了',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '招式和命中现在有轻柔的音效，会随招式的属性和形态略有变化；效果绝佳的攻击会更明显一些。',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '在设置中可以调高、调低或关闭音效，与音乐音量分开调节。',
@@ -22,6 +22,26 @@ export default {
     'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': '菜单和对战现在播放由音乐人创作的曲子：训练家对战一首，野生宝可梦一首，道馆馆主和冠军也各有专属曲目。',
     'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '每首曲子的作者都列在“制作名单”和法律声明中，任何界面底部都能找到。',
     'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': '菜单和对战音乐由 jannetty、rckbtm、Navet56（OPMon Lazuli）和 Spring Spring 创作，经其许可或按 CC BY 许可使用。',
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': '给宝可梦起昵称',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': '捕获宝可梦时可以给它起昵称，之后也能随时在“我的宝可梦”中用“昵称”按钮修改或移除。',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': '昵称最多 12 个字符，会显示在对战、队伍和你的训练家资料中。',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': '主菜单焕然一新：故事模式放在最显眼处，资料和金钱在顶部，还有“我的宝可梦”、背包、商店和图鉴的快捷入口。',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': '制作人员、法律声明和更新内容随时可在底部栏查看，除对战外的所有画面都有。',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': '训练家名字和昵称不能包含辱骂内容，也不能冒充游戏团队：如果你选了这样的名字，我们会请你换一个。',
+    // ---------- Motes y nombres ----------
+    'Mote': '昵称',
+    'Ponle un nombre: se ve en combate y en tu perfil': '给它起个名字：会显示在对战和你的资料中',
+    'Guardar mote': '保存昵称',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': '可选：随时可以在“我的宝可梦”中修改',
+    '¿Le pones un mote?': '要给它起个昵称吗？',
+    'Mote guardado ✓': '昵称已保存 ✓',
+    'Sin mote ✓': '无昵称 ✓',
+    'Mote de {m}': '{m}的昵称',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': '最多 {n} 个字符。会显示在对战、队伍和你的公开资料中。留空则恢复为种类名称。',
+    'Quitar mote': '移除昵称',
+    'Ese nombre no está permitido: elige otro': '不允许使用这个名字：请换一个',
+    'Ese mote no está permitido: elige otro': '不允许使用这个昵称：请换一个',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas 是<b>非官方、免费、非营利的同人游戏</b>：没有广告，捐赠也不会带来任何优势。本游戏与任天堂、The Pokémon Company、Creatures Inc. 和 GAME FREAK inc. 没有隶属、赞助或认可关系。宝可梦及角色名称是其各自所有者的商标。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. 精灵图来自 <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
     'Créditos': '致谢',
     'Aviso legal y privacidad': '法律声明与隐私',

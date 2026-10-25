@@ -65,6 +65,35 @@ class Client {
   ok((await err).msg.includes('no sabe'), 'no puede llevar un movimiento que no ha aprendido');
   m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['placaje', 'ascuas'] });
   ok(m.p.mons[0].moves[0] === 'placaje', 'reordenar sus movimientos');
+  // Motes: se guardan limpios y con 12 caracteres como mucho, pasan el filtro y vacíos se quitan
+  const uid0 = m.p.mons[0].uid;
+  m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: '  Chispas\u200b el grande  ' });
+  ok(m.p.mons[0].nick === 'Chispas el g', 'ponerle mote: sin invisibles ni espacios de más y como mucho 12 caracteres');
+  err = a.wait('error'); a.send({ t: 'story', a: 'nick', uid: uid0, nick: 'P.u.t.4' });
+  ok((await err).msg.includes('mote no está permitido'), 'un mote ofensivo (aunque lo disimule) no se acepta');
+  err = a.wait('error'); a.send({ t: 'story', a: 'nick', uid: 9999, nick: 'Otro' });
+  ok((await err).msg.includes('no es tuyo'), 'no se le pone mote a un Pokémon que no es tuyo');
+  m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: '' });
+  ok(m.p.mons[0].nick === undefined, 'un mote vacío lo quita');
+  m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: 'Chispas' });
+  // Nombre de entrenador: el filtro vale para cambiarlo y para los perfiles nuevos
+  err = a.wait('error'); a.send({ t: 'name', name: 'HijoDePuta' });
+  ok((await err).msg.includes('nombre no está permitido'), 'no se puede cambiar el nombre a uno ofensivo');
+  err = a.wait('error'); a.send({ t: 'name', name: 'Admin' });
+  ok((await err).msg.includes('nombre no está permitido'), 'ni hacerse pasar por el equipo del juego');
+  m = await a.req({ t: 'name', name: 'Rojo  Fuego' });
+  ok(m.p.name === 'Rojo Fuego', 'un nombre normal sí se cambia');
+  m = await a.req({ t: 'name', name: 'Rojo' });
+  const rude = new Client(port); await rude.open();
+  err = rude.wait('error'); rude.send({ t: 'hello', name: 'fuck you' });
+  ok((await err).msg.includes('nombre no está permitido'), 'un invitado nuevo con nombre ofensivo no se crea');
+  ok((await rude.req({ t: 'hello', name: 'Gary' })).p.name === 'Gary', 'y con otro nombre entra');
+  rude.ws.close();
+  const N = require('../server/names.js');
+  const missed = ['puta', 'PUUUTA', 'Pütá', 'p u t a', 'рuta', 'nigg3r', 'Hitler88', 'sieg heil', 'g.i.l.i.p.o.l.l.a.s', 'cazzo', 'scheiße', '씨발', '傻逼', '死ね'].filter(x => N.allowed(x));
+  ok(!missed.length, `el filtro pilla insultos con trucos y en otros idiomas${missed.length ? ' (se escapan: ' + missed.join(', ') + ')' : ''}`);
+  const caught = ['Rojo', 'Pola', 'Computadora', 'Badminton', 'Cazorla', 'Ignazio', 'Therapist', 'Scunthorpe', 'Assassin', 'Cocktail', 'Shitake', 'Isis', 'Pikachu 99'].filter(x => !N.allowed(x));
+  ok(!caught.length, `y deja pasar los nombres normales que contienen esas letras${caught.length ? ' (bloquea: ' + caught.join(', ') + ')' : ''}`);
   // Tope de nivel: sin medallas, la media del equipo de Brock
   const st0 = require('../server/store.js').get(m.p.token);
   st0.mons[0].level = D.levelCap(0); st0.items.caramelo = 1;
@@ -90,6 +119,7 @@ class Client {
   let start1 = a.wait('start'); a.send({ t: 'story', a: 'route', id: 'k-ruta1' });
   let s = await start1;
   ok(s.mode === 'wild' && s.sides[1].wild && s.balls.pokeball === 8, 'empieza un combate salvaje con las Balls del perfil');
+  ok(s.sides[0].team[0].nick === 'Chispas', 'en combate su Pokémon lleva el mote');
   await new Promise(r => setTimeout(r, 300));
   ok(a.lastSnap && a.lastSnap.ps.length === 2, 'llegan instantáneas');
   let over = a.wait('over'); a.send({ t: 'forfeit' });
@@ -103,6 +133,8 @@ class Client {
   const a2 = new Client(port); await a2.open();
   m = await a2.req({ t: 'hello', token, name: 'Rojo' });
   ok(m.p.mons.length === 1 && m.p.items.pokeball === 8, 'el token recupera la partida');
+  const pub = await a2.req({ t: 'user', id: m.p.id }, 'user');
+  ok(pub.u.team[0].nick === 'Chispas' && pub.u.name === 'Rojo', 'su perfil público enseña el mote');
 
   // Captura: un cliente que juega con las instantáneas (como el navegador), debilita al salvaje
   // y deja de atacar y le lanza Poké Balls cuando le quedan menos del 28 % de PS

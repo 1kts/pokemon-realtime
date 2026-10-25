@@ -11,7 +11,7 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.17.0 ----------
+    // ---------- Novedades v0.18.0 ----------
     'Ataques con sonido': 'Des attaques sonores',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'Les attaques et les coups ont un son discret, qui change un peu selon le type et la forme de la capacité ; les coups super efficaces s\'entendent un peu plus.',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': 'Dans Paramètres, tu peux monter, baisser ou couper les effets sonores, indépendamment du volume de la musique.',
@@ -22,6 +22,26 @@ export default {
     'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'Les menus et les combats jouent des morceaux composés par des musiciens : un pour les Dresseurs, un pour les Pokémon sauvages et d\'autres pour les Champions d\'Arène et le Maître.',
     'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': 'Les auteurs de chaque morceau figurent dans Crédits et mentions légales, en bas de n\'importe quel écran.',
     'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'La musique des menus et des combats est signée jannetty, rckbtm, Navet56 (OPMon Lazuli) et Spring Spring, utilisée avec leur accord ou sous licence CC BY.',
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': 'Des surnoms pour tes Pokémon',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'Quand tu captures un Pokémon, tu peux lui donner un surnom, puis le changer ou le retirer quand tu veux avec le bouton Surnom de Mes Pokémon.',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': 'Les surnoms, jusqu\'à 12 caractères, s\'affichent en combat, dans ton équipe et sur ton profil de dresseur.',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': 'Le menu principal fait peau neuve : l\'Histoire en grand, ton profil et ton argent en haut, et des raccourcis vers Mes Pokémon, Sac, Boutique et Pokédex.',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': 'Les crédits, les mentions légales et les nouveautés sont toujours à portée de main dans une barre en bas, sur tous les écrans sauf en combat.',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': 'Les noms de dresseur et les surnoms ne peuvent pas contenir d\'insultes ni se faire passer pour l\'équipe du jeu : si tu en choisis un comme ça, on t\'en demandera un autre.',
+    // ---------- Motes y nombres ----------
+    'Mote': 'Surnom',
+    'Ponle un nombre: se ve en combate y en tu perfil': 'Donne-lui un nom : il s\'affiche en combat et sur ton profil',
+    'Guardar mote': 'Enregistrer le surnom',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': 'Facultatif : tu peux le changer quand tu veux dans Mes Pokémon',
+    '¿Le pones un mote?': 'Tu lui donnes un surnom ?',
+    'Mote guardado ✓': 'Surnom enregistré ✓',
+    'Sin mote ✓': 'Sans surnom ✓',
+    'Mote de {m}': 'Surnom de {m}',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': 'Jusqu\'à {n} caractères. Il s\'affiche en combat, dans ton équipe et sur ton profil public. Laisse vide pour qu\'il reprenne le nom de son espèce.',
+    'Quitar mote': 'Retirer le surnom',
+    'Ese nombre no está permitido: elige otro': 'Ce nom n\'est pas autorisé : choisis-en un autre',
+    'Ese mote no está permitido: elige otro': 'Ce surnom n\'est pas autorisé : choisis-en un autre',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas est un <b>fan-game non officiel, gratuit et à but non lucratif</b> : sans publicité, et faire un don ne donne aucun avantage. Il n’est ni affilié, ni parrainé, ni approuvé par Nintendo, The Pokémon Company, Creatures Inc. ou GAME FREAK inc. Pokémon et les noms des personnages sont des marques de leurs propriétaires respectifs. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
     'Créditos': 'Crédits',
     'Aviso legal y privacidad': 'Mentions légales et confidentialité',

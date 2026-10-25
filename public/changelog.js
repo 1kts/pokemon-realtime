@@ -4,13 +4,23 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.17.0', date: '2026-10-25', title: 'Ataques con sonido',
+      v: '0.18.0', date: '2026-10-25', title: 'Ataques con sonido',
       items: [
         ['nuevo', 'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.'],
         ['nuevo', 'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.'],
         ['cambio', 'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.'],
         ['cambio', 'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.'],
         ['cambio', 'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.'],
+      ],
+    },
+    {
+      v: '0.17.0', date: '2026-10-25', title: 'Motes para tus Pokémon',
+      items: [
+        ['nuevo', 'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.'],
+        ['nuevo', 'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.'],
+        ['cambio', 'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.'],
+        ['cambio', 'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.'],
+        ['cambio', 'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.'],
       ],
     },
     {

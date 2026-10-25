@@ -12,7 +12,7 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.17.0 ----------
+    // ---------- Novedades v0.18.0 ----------
     'Ataques con sonido': '기술에 효과음',
     'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '기술과 명중에 은은한 소리가 나요. 기술의 타입과 형태에 따라 조금씩 달라지고, 효과가 굉장한 공격은 조금 더 잘 들려요.',
     'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '설정에서 음악 볼륨과 따로 효과음을 키우거나 줄이거나 끌 수 있어요.',
@@ -23,6 +23,26 @@ export default {
     'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': '메뉴와 배틀에서 음악가가 작곡한 곡이 나와요. 트레이너 배틀, 야생 포켓몬 배틀, 체육관 관장과 챔피언 배틀마다 곡이 있어요.',
     'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '각 곡의 작곡가는 어느 화면에서나 아래에 있는 크레딧과 법적 고지에서 볼 수 있어요.',
     'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': '메뉴와 배틀 음악은 jannetty, rckbtm, Navet56(OPMon Lazuli), Spring Spring의 곡으로, 본인의 허락 또는 CC BY 라이선스로 사용합니다.',
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': '포켓몬에게 닉네임을',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': '포켓몬을 잡으면 닉네임을 지어 줄 수 있고, 내 포켓몬의 닉네임 버튼으로 언제든지 바꾸거나 지울 수 있어요.',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': '최대 12자의 닉네임이 배틀, 팀, 트레이너 프로필에 표시돼요.',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': '메인 메뉴가 새로워졌어요: 스토리를 크게, 위쪽에는 프로필과 돈, 그리고 내 포켓몬·가방·상점·도감 바로가기.',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': '크레딧, 법적 고지, 새 소식은 배틀 중을 빼고 모든 화면 아래쪽 바에서 언제든지 볼 수 있어요.',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': '트레이너 이름과 닉네임에는 욕설이나 게임 운영진을 사칭하는 이름을 쓸 수 없어요. 그런 이름을 고르면 다른 이름을 부탁드려요.',
+    // ---------- Motes y nombres ----------
+    'Mote': '닉네임',
+    'Ponle un nombre: se ve en combate y en tu perfil': '이름을 지어 주세요: 배틀과 프로필에 표시됩니다',
+    'Guardar mote': '닉네임 저장',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': '선택 사항: 내 포켓몬에서 언제든지 바꿀 수 있어요',
+    '¿Le pones un mote?': '닉네임을 지어 줄까요?',
+    'Mote guardado ✓': '닉네임 저장됨 ✓',
+    'Sin mote ✓': '닉네임 없음 ✓',
+    'Mote de {m}': '{m}의 닉네임',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': '최대 {n}자. 배틀, 팀, 공개 프로필에 표시됩니다. 비워 두면 종족 이름으로 돌아갑니다.',
+    'Quitar mote': '닉네임 지우기',
+    'Ese nombre no está permitido: elige otro': '사용할 수 없는 이름이에요: 다른 이름을 골라 주세요',
+    'Ese mote no está permitido: elige otro': '사용할 수 없는 닉네임이에요: 다른 것을 골라 주세요',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas는 <b>비공식·무료·비영리 팬 게임</b>이야. 광고가 없고, 후원해도 이점은 없어. 닌텐도, 포켓몬 컴퍼니, 크리처스, 게임프리크와는 제휴, 후원, 승인 관계가 없어. 포켓몬과 캐릭터 이름은 각 소유자의 상표야. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. 스프라이트: <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
     'Créditos': '크레딧',
     'Aviso legal y privacidad': '법적 고지 및 개인정보',

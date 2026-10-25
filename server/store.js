@@ -303,7 +303,7 @@ function publicUser(id, online = new Set()) {
   if (!p) return null;
   const rankIn = board => { const i = BOARDS[board].has(p) ? sorted(board).indexOf(p) : -1; return i >= 0 ? i + 1 : null; };
   const team = Object.values(p.teams || {}).flat().map(u => (p.mons || []).find(m => m.uid === u)).filter(Boolean)
-    .sort((a, b) => b.level - a.level).slice(0, 6).map(m => ({ dex: m.dex, level: m.level, shiny: !!(m.shiny && !m.plain) }));
+    .sort((a, b) => b.level - a.level).slice(0, 6).map(m => ({ dex: m.dex, nick: m.nick, level: m.level, shiny: !!(m.shiny && !m.plain) }));
   const t = tw(p);
   return {
     id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,

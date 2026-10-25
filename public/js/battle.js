@@ -125,7 +125,7 @@ export class BattleClient {
   monOf(i) { return this.sides[i].team[this.act[i]]; }
   movesOf(i) { const m = this.sides[i].team[this.act[i]]; return m.moves && m.moves.length ? m.moves : SPECIES[m.dex].moves; }
   moveOf(i, c) { return MOVES[this.movesOf(i)[c]]; }
-  monName(i) { return SPECIES[this.dexOf(i)].name; }
+  monName(i) { const m = this.monOf(i); return m.nick || SPECIES[m.dex].name; }
   posOf(i) { return i === this.you && this.renderPos ? this.renderPos[i] : this.lastPos[i]; }
 
   onEvent(e) {
@@ -483,7 +483,7 @@ export class BattleClient {
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
         row.append(portrait(m.dex, 40, { shiny: !!m.shiny }));
-        row.append(el('div', 'tinfo', `<b>${SPECIES[m.dex].name}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>${t('Nv.{n}', { n: m.level })}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
+        row.append(el('div', 'tinfo', `<b>${monLabel(m)}${m.shiny ? ' <i class="shiny-star">✦</i>' : ''}</b> <small>${t('Nv.{n}', { n: m.level })}</small><div class="hp"><div></div></div>${i === this.you ? `<kbd>${slot + 1}</kbd>` : ''}`));
         row.dataset.slot = slot;
         box.append(row);
       });
@@ -585,7 +585,7 @@ export class BattleClient {
     if (f & F.HASTE) icons.push(`<i class="st haste">${t('VEL')}</i>`);
     if (f & F.POWER) icons.push(`<i class="st power">${t('ATQ')}</i>`);
     if (f & F.HIDDEN) icons.push(`<i class="st hidden">${t('OCULTO')}</i>`);
-    plate.innerHTML = `<div class="pn">${SPECIES[mon.dex].name}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
+    plate.innerHTML = `<div class="pn">${monLabel(mon)}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
   }
 
   floatText(x, y, text, cls = '', sub = '', big = false) {
@@ -625,6 +625,9 @@ export class BattleClient {
 export function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+
+// Nombre de un Pokémon para meterlo en HTML: su mote (escapado, lo escribe el jugador) o el de la especie
+export const monLabel = m => (m.nick ? escapeHtml(m.nick) : SPECIES[m.dex].name);
 
 export function describeMove(m) {
   const kinds = { proj: m.explode ? 'Proyectil que estalla donde apuntas' : 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida',

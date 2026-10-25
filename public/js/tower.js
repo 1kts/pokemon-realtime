@@ -2,7 +2,7 @@
 // (tablas de clasificatoria, Torre y Pokédex con buscador, y ficha pública de cada entrenador).
 // Se añaden como métodos de UI (ver ui.js).
 import { portrait, monIcon, animatedPortrait } from './sprites.js';
-import { escapeHtml } from './battle.js';
+import { escapeHtml, monLabel } from './battle.js';
 import { el, typeChips, coins, lv } from './ui.js';
 import { showcaseHtml } from './achievements.js';
 import { t, tServer, locale } from './i18n.js';
@@ -50,7 +50,7 @@ export const towerViews = {
         const s = el('div', 'tslot' + (e ? ' full' : ''));
         if (e) {
           const m = e.uid && p.mons.find(x => x.uid === e.uid);
-          s.append(portrait(dexOf(e), 56, { shiny: Data.looksShiny(m) }), el('small', '', `${SPECIES[dexOf(e)].name}<br>${e.uid ? t('tuyo') : t('alquiler')}`));
+          s.append(portrait(dexOf(e), 56, { shiny: Data.looksShiny(m) }), el('small', '', `${m ? monLabel(m) : SPECIES[dexOf(e)].name}<br>${e.uid ? t('tuyo') : t('alquiler')}`));
           s.title = t('Quitar');
           s.onclick = () => { chosen.splice(i, 1); refresh(); };
         } else s.append(el('small', '', t('Hueco {n}', { n: i + 1 })));
@@ -131,7 +131,7 @@ export const towerViews = {
       const m = e.uid && p.mons.find(x => x.uid === e.uid);
       const dex = m ? m.dex : e.dex;
       const c = el('div', 'tcard');
-      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: Data.looksShiny(m) }), el('div', '', `<b>${SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small>`));
+      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: Data.looksShiny(m) }), el('div', '', `<b>${m ? monLabel(m) : SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small>`));
       const move = (d) => {
         const order = [0, 1, 2];
         [order[i], order[i + d]] = [order[i + d], order[i]];
@@ -303,13 +303,13 @@ export const towerViews = {
     if (u.team.length) {
       box.append(el('h4', '', t('Sus Pokémon de equipo')));
       const row = el('div', 'mini-team');
-      for (const m of u.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); row.append(c); }
+      for (const m of u.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: m.shiny })); c.append(el('small', '', `${monLabel(m)}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); row.append(c); }
       box.append(row);
     }
     if (u.tower.team.length) {
       box.append(el('h4', '', `${t('Equipo de su récord en la Torre ({n})', { n: u.tower.best })}${u.tower.symbols.length ? ' · ' + u.tower.symbols.map(symbolName).join(', ') : ''}`));
       const row = el('div', 'mini-team');
-      for (const m of u.tower.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: !!m.shiny })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.rental ? '<br>' + t('alquiler') : ''}`)); row.append(c); }
+      for (const m of u.tower.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: !!m.shiny })); c.append(el('small', '', `${monLabel(m)}${m.rental ? '<br>' + t('alquiler') : ''}`)); row.append(c); }
       box.append(row);
     }
     const acts = el('div', 'acts');
