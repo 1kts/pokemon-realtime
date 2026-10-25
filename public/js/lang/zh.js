@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': '馆主们亮相了',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '在剧情地图上选择道馆馆主、四天王和冠军时，会显示他们在游戏中的像素形象。',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': '与馆主的对战开始时，对方会以像素形象登场，记分板上的名字旁也会显示其头像。',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '地图上的四天王和冠军改为以头像显示，而不是星星。',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': '向你发起挑战！',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '搜索与随心切换异色',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '在“我的宝可梦”中可以按名字或编号搜索，按属性、异色或传说筛选盒子，并随意排序。',
@@ -1043,6 +1050,7 @@ export default {
     'Gestionar equipo': '管理队伍',
     'Añadir': '添加',
     'Añadir al equipo': '加入队伍',
+    'Gestionar': '管理',
   },
 
   patterns: [

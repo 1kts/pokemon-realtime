@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': 'Leaders show their faces',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Every Gym Leader, Elite Four member and Champion now appears with their sprite from the games when you pick them on the story map.',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': 'When a battle against a leader starts, they introduce themselves with their sprite, and their face stays next to their name on the scoreboard.',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': 'On the map, the Elite Four and Champions are shown by their faces instead of a star.',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': 'challenges you!',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Search and shinies your way',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In My Pokémon you can search by name or number, filter your box by type, shiny or legendary, and sort it however you like.',
@@ -1044,6 +1051,7 @@ export default {
     'Gestionar equipo': 'Manage team',
     'Añadir': 'Add',
     'Añadir al equipo': 'Add to team',
+    'Gestionar': 'Manage',
   },
 
   patterns: [
