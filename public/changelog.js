@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.13.0', date: '2026-10-25', title: 'Mapa más claro y medallas en el mapa',
+      items: [
+        ['nuevo', 'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.'],
+        ['nuevo', 'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.'],
+      ],
+    },
+    {
       v: '0.12.1', date: '2026-10-25', title: 'Cursor a tu gusto',
       items: [
         ['nuevo', 'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.'],

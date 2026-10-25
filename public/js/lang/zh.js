@@ -11,6 +11,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Estás aquí': '你在这里',
+    'Nueva': '新',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': '可以重打任何对战，并继续在道路上捕捉。',
+    'Ruta abierta · capturados': '已开放道路 · 已捕获',
+    'Ruta nueva': '新道路',
+    'Rutas nuevas': '新道路',
+    'Siguiente reto': '下一个挑战',
+    'Tu objetivo': '你的目标',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '你的{r}宝可梦最高可升到Lv.{n}',
+    'Vence a {who}': '击败{who}',
+    '¡Has completado {r}!': '你已完成{r}！',
+    'Mapa más claro y medallas en el mapa': '更清晰的地图与徽章',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '地图上的道馆会显示徽章，已获得的为彩色。',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '地图会显示你的位置、目标、新道路、每条道路的捕获进度以及仍未解锁的地点。',
     'Sprite': '像素',
     'Animación': '动画',
     'Renders 3D, iconos y animaciones': '3D渲染、图标与动画',

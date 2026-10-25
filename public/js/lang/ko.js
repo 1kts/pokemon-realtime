@@ -12,6 +12,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Estás aquí': '현재 위치',
+    'Nueva': 'NEW',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': '어떤 배틀이든 다시 할 수 있고 도로에서 계속 포획할 수 있어.',
+    'Ruta abierta · capturados': '열린 도로 · 포획 수',
+    'Ruta nueva': '새 도로',
+    'Rutas nuevas': '새 도로',
+    'Siguiente reto': '다음 도전',
+    'Tu objetivo': '목표',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '{r} 포켓몬은 Lv.{n}까지 올라',
+    'Vence a {who}': '{who}을(를) 이겨라',
+    '¡Has completado {r}!': '{r}을(를) 클리어했어!',
+    'Mapa más claro y medallas en el mapa': '더 알기 쉬운 지도와 배지',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '지도의 체육관에 배지가 표시돼. 이미 있으면 컬러로.',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '지도에 현재 위치, 목표, 새 도로, 도로별 포획 수, 아직 잠긴 곳이 표시돼.',
     'Sprite': '도트',
     'Animación': '애니메이션',
     'Renders 3D, iconos y animaciones': '3D 렌더, 아이콘, 애니메이션',

@@ -12,6 +12,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Estás aquí': '現在地',
+    'Nueva': 'NEW',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'どのバトルも再挑戦でき、道路で捕まえ続けられる。',
+    'Ruta abierta · capturados': '開放済みの道路・捕獲数',
+    'Ruta nueva': '新しい道路',
+    'Rutas nuevas': '新しい道路',
+    'Siguiente reto': '次の挑戦',
+    'Tu objetivo': '目標',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '{r}のポケモンはLv.{n}まで上がる',
+    'Vence a {who}': '{who}に勝つ',
+    '¡Has completado {r}!': '{r}をクリアした！',
+    'Mapa más claro y medallas en el mapa': 'わかりやすい地図とバッジ表示',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '地図のジムにバッジを表示。持っていればカラーで。',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '地図に現在地、目標、新しい道路、各道路の捕獲数、まだ行けない場所を表示。',
     'Sprite': 'ドット',
     'Animación': 'アニメ',
     'Renders 3D, iconos y animaciones': '3Dレンダー、アイコン、アニメーション',

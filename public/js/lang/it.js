@@ -12,6 +12,20 @@ const CLASSES = {
 
 export default {
   text: {
+    'Estás aquí': 'Sei qui',
+    'Nueva': 'Nuova',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'Puoi ripetere qualsiasi lotta e continuare a catturare sui percorsi.',
+    'Ruta abierta · capturados': 'Percorso aperto · catturati',
+    'Ruta nueva': 'Nuovo percorso',
+    'Rutas nuevas': 'Nuovi percorsi',
+    'Siguiente reto': 'Prossima sfida',
+    'Tu objetivo': 'Il tuo obiettivo',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': 'I tuoi Pokémon di {r} salgono fino al Lv.{n}',
+    'Vence a {who}': 'Sconfiggi {who}',
+    '¡Has completado {r}!': 'Hai completato {r}!',
+    'Mapa más claro y medallas en el mapa': 'Mappa più chiara con le medaglie',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': 'Le palestre sulla mappa mostrano la medaglia, a colori se ce l’hai già.',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': 'La mappa indica dove sei, il tuo obiettivo, i nuovi percorsi, cosa hai catturato in ciascuno e cosa è ancora bloccato.',
     'Sprite': 'Sprite',
     'Animación': 'Animazione',
     'Renders 3D, iconos y animaciones': 'Render 3D, icone e animazioni',
