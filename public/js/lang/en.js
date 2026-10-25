@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': 'Healing has a price',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Aqua Ring, Synthesis and Moonlight heal 16% (was 20-22%), take 20 s to recharge and leave you stunned for 1.2 s: heal away from your opponent.',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': 'Rest heals 35% (was 50%), takes 28 s to recharge and puts you to sleep for 2.5 s; it is the only heal that removes burn, poison and Leech Seed.',
+    'te deja aturdido {s} s': 'leaves you stunned {s} s',
+    'quita quemadura, veneno y drenadoras': 'removes burn, poison and Leech Seed',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Cleaner map',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Roads on the story map no longer have a dashed line, so the ones from “You are here” to the new routes and your next challenge stand out.',

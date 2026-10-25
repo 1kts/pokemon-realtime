@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': 'Se soigner a un prix',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Anneau Hydro, Synthèse et Rayon Lune soignent 16 % (avant 20-22 %), se rechargent en 20 s et t’étourdissent 1,2 s : soigne-toi loin de l’adversaire.',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': 'Repos soigne 35 % (avant 50 %), se recharge en 28 s et t’endort 2,5 s ; c’est le seul soin qui guérit brûlure, poison et Vampigraine.',
+    'te deja aturdido {s} s': 'te laisse étourdi {s} s',
+    'quita quemadura, veneno y drenadoras': 'soigne brûlure, poison et Vampigraine',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Carte plus nette',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Les chemins de la carte de l’histoire n’ont plus de ligne pointillée : celles qui vont de « Tu es ici » vers les nouvelles routes et ton prochain défi ressortent mieux.',

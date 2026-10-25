@@ -45,6 +45,8 @@
   //       wave (ola que avanza con un frente ancho: width) · area (con count: varios impactos, scatter o line)
   //       dash (embestida) · area (zona con retardo, en el cursor o en uno mismo)
   //       blink (teletransporte) · heal · buff · smoke (nube de vapor que oculta)
+  // heal: cura ese % de los PS; selfStun: te deja aturdido esos segundos (sin moverte, atacar ni proteger);
+  //       cure: quita quemadura, veneno y drenadoras (solo Descanso, como en los juegos)
   //       wall (muro que bloquea) · ball (Poké Ball, la añade el servidor)
   // cost energía · cd recarga (s) · wind preparación (s, se ve venir) · rec recuperación (s, vulnerable)
   // Estados: burn quema, poison veneno, wet mojado, slow ralentiza, stun aturde (s).
@@ -77,11 +79,11 @@
     hidrobomba: { name: 'Hidrobomba', type: 'agua', kind: 'beam', cost: 40, cd: 6, wind: 0.55, rec: 0.3, dmg: 22, len: 540, width: 26, knock: 130, terrain: 'agua' },
     surf: { name: 'Surf', type: 'agua', kind: 'wave', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 20, speed: 340, range: 560, width: 260, thick: 22, knock: 150, terrain: 'agua', wet: 4 },
     acuaJet: { name: 'Acua Jet', type: 'agua', kind: 'dash', cost: 15, cd: 4, wind: 0.06, rec: 0.12, dmg: 10, dist: 220, dur: 0.15 },
-    acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 12, wind: 0.3, rec: 0.2, heal: 0.2 },
+    acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.16, selfStun: 1.2 },
     latigoCepa: { name: 'Látigo Cepa', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.2, rec: 0.2, dmg: 14, speed: 850, range: 230, radius: 14, pull: 110, fx: 'vine' },
     drenadoras: { name: 'Drenadoras', type: 'planta', kind: 'proj', cost: 25, cd: 7, wind: 0.2, rec: 0.15, dmg: 5, speed: 460, range: 560, radius: 11, slow: 2, drain: 1.5, fx: 'seed' },
     rayoSolar: { name: 'Rayo Solar', type: 'planta', kind: 'beam', cost: 55, cd: 11, wind: 0.9, rec: 0.35, dmg: 32, len: 580, width: 32 },
-    sintesis: { name: 'Síntesis', type: 'planta', kind: 'heal', cost: 35, cd: 12, wind: 0.35, rec: 0.2, heal: 0.22 },
+    sintesis: { name: 'Síntesis', type: 'planta', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.16, selfStun: 1.2 },
     rayo: { name: 'Rayo', type: 'electrico', kind: 'beam', cost: 35, cd: 5, wind: 0.45, rec: 0.25, dmg: 18, len: 480, width: 18, stun: 0.4 },
     trueno: { name: 'Trueno', type: 'electrico', kind: 'area', at: 'cursor', cost: 50, cd: 9, wind: 0.25, rec: 0.3, dmg: 24, radius: 85, delay: 0.7, maxRange: 460, stun: 0.6 },
     ondaTrueno: { name: 'Onda Trueno', type: 'electrico', kind: 'proj', cost: 30, cd: 10, wind: 0.2, rec: 0.2, dmg: 2, speed: 520, range: 500, radius: 10, stun: 1.1 },
@@ -103,7 +105,7 @@
     ataqueRapido: { name: 'Ataque Rápido', type: 'normal', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 8, dist: 210, dur: 0.14 },
     golpeCuerpo: { name: 'Golpe Cuerpo', type: 'normal', kind: 'dash', cost: 25, cd: 6, wind: 0.2, rec: 0.2, dmg: 18, dist: 190, dur: 0.25, stun: 0.35 },
     hiperrayo: { name: 'Hiperrayo', type: 'normal', kind: 'beam', cost: 65, cd: 14, wind: 0.8, rec: 1.1, dmg: 38, len: 600, width: 32 },
-    descanso: { name: 'Descanso', type: 'psiquico', kind: 'heal', cost: 30, cd: 18, wind: 0.2, rec: 2, heal: 0.5 },
+    descanso: { name: 'Descanso', type: 'psiquico', kind: 'heal', cost: 30, cd: 28, wind: 0.2, rec: 0.2, heal: 0.35, selfStun: 2.5, cure: true },
     autodestruccion: { name: 'Autodestrucción', type: 'normal', kind: 'area', at: 'self', cost: 60, cd: 30, wind: 0.6, rec: 0.1, dmg: 48, radius: 150, delay: 0.25, selfKO: true },
     patadaBaja: { name: 'Patada Baja', type: 'lucha', kind: 'melee', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 17, range: 72, arc: 1.6, stun: 0.45 },
     punoDinamico: { name: 'Puño Dinámico', type: 'lucha', kind: 'melee', cost: 45, cd: 9, wind: 0.5, rec: 0.3, dmg: 28, range: 78, arc: 1.3, stun: 0.9, knock: 120 },
@@ -126,7 +128,7 @@
     vientoFeerico: { name: 'Viento Feérico', type: 'hada', kind: 'cone', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, range: 170, arc: 0.8 },
     brilloMagico: { name: 'Brillo Mágico', type: 'hada', kind: 'area', at: 'self', cost: 35, cd: 7, wind: 0.25, rec: 0.25, dmg: 18, radius: 130, delay: 0.45 },
     fuerzaLunar: { name: 'Fuerza Lunar', type: 'hada', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 420, range: 560, radius: 15 },
-    luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 12, wind: 0.35, rec: 0.2, heal: 0.22 },
+    luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.16, selfStun: 1.2 },
     disparoDemora: { name: 'Disparo Demora', type: 'bicho', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 520, range: 440, radius: 8, slow: 0.6 },
     zumbido: { name: 'Zumbido', type: 'bicho', kind: 'cone', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 16, range: 300, arc: 0.95 },
     idaYVuelta: { name: 'Ida y Vuelta', type: 'bicho', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 11, dist: 220, dur: 0.15, back: true },

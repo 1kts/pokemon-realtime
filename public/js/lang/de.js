@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': 'Heilen hat seinen Preis',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Wasserring, Synthese und Mondschein heilen 16 % (vorher 20–22 %), brauchen 20 s zum Aufladen und betäuben dich 1,2 s: Heile dich weit weg vom Gegner.',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': 'Erholung heilt 35 % (vorher 50 %), braucht 28 s zum Aufladen und lässt dich 2,5 s schlafen; nur sie heilt Verbrennung, Gift und Egelsamen.',
+    'te deja aturdido {s} s': 'betäubt dich {s} s',
+    'quita quemadura, veneno y drenadoras': 'heilt Verbrennung, Gift und Egelsamen',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Aufgeräumte Karte',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Die Wege auf der Story-Karte haben keine gestrichelte Linie mehr – so fallen die Linien von „Du bist hier“ zu den neuen Routen und deiner nächsten Herausforderung auf.',

@@ -260,4 +260,32 @@ check('logros: se desbloquean una vez, su premio se recoge a mano y se pueden fi
   assert(rewards.setLook(p, { showcase: ['captura1', 'perfecto', 'kantoChamp', 'kanto8'] }), 'máximo 3');
 });
 
+// Curarse tiene precio: menos cura, más recarga y un rato aturdido (sin moverse, atacar ni proteger)
+function heal(key) {
+  const bt = battle('pradera', [{ dex: 9, level: 50, moves: [key] }], [{ dex: 143, level: 50 }]);
+  const [me] = bt.sides;
+  me.x = 200; me.y = 300; me.energy = 100; me.burn = 5;
+  const mon = bt.mon(me);
+  mon.hp = Math.round(mon.maxHp / 2);
+  me.inputs.push({ mx: 0, my: 0, a: 0, tx: 400, ty: 300, c: 0, s: 1 });
+  run(bt, D.MOVES[key].wind + 0.1);
+  return { bt, me, mon };
+}
+check('las curas curan menos y dejan aturdido al que se cura', () => {
+  const { bt, me, mon } = heal('acuaAro');
+  const m = D.MOVES.acuaAro;
+  assert(m.heal <= 0.16 && m.cd >= 20 && m.selfStun >= 1, 'valores nerfeados');
+  assert(mon.hp > mon.maxHp / 2 && mon.hp <= mon.maxHp / 2 + mon.maxHp * m.heal + 1, 'cura como mucho su %');
+  assert(me.stun > 0.9, 'aturdido tras curarse');
+  assert(me.burn > 0, 'Acua Aro no quita la quemadura');
+  const x0 = me.x;
+  run(bt, 0.5, { mx: 1, my: 0 });
+  assert.strictEqual(me.x, x0, 'no se mueve mientras está aturdido');
+  assert(!bt.canAct(me), 'ni puede atacar');
+});
+check('Descanso cura más, quita estados y duerme más rato', () => {
+  const { me } = heal('descanso');
+  assert(me.stun > 2 && me.burn === 0, 'dormido y sin quemadura');
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

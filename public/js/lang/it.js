@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': 'Curarsi ha un prezzo',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Acquanello, Sintesi e Lucelunare curano il 16 % (prima 20-22 %), si ricaricano in 20 s e ti lasciano stordito 1,2 s: curati lontano dall’avversario.',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': 'Riposo cura il 35 % (prima 50 %), si ricarica in 28 s e ti fa dormire 2,5 s; è l’unica cura che toglie scottatura, veleno e Parassiseme.',
+    'te deja aturdido {s} s': 'ti lascia stordito {s} s',
+    'quita quemadura, veneno y drenadoras': 'cura scottatura, veleno e Parassiseme',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Mappa più pulita',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'I sentieri della mappa della storia non hanno più la linea tratteggiata: così risaltano quelle da «Sei qui» ai nuovi percorsi e alla tua prossima sfida.',

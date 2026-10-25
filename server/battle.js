@@ -351,7 +351,9 @@ class Battle {
       const mon = this.mon(side);
       const before = mon.hp;
       if (!this.sudden) mon.hp = Math.min(mon.maxHp, mon.hp + Math.round(mon.maxHp * m.heal));
-      side.burn = side.poison = side.seed = 0;
+      if (m.cure) side.burn = side.poison = side.seed = 0;
+      // Curarse tiene precio: un rato aturdido y vendido
+      if (m.selfStun) side.stun = Math.max(side.stun, m.selfStun);
       this.ev({ k: 'heal', s: side.idx, n: Math.round(mon.hp - before) });
     } else if (m.kind === 'buff') {
       if (m.haste) side.haste = m.haste;

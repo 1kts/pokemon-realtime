@@ -634,6 +634,8 @@ export function describeMove(m) {
   if (m.burn) fx.push(t('quema')); if (m.poison) fx.push(t('envenena')); if (m.wet) fx.push(t('moja')); if (m.slow) fx.push(t('ralentiza'));
   if (m.stun) fx.push(t('aturde {n} s', { n: m.stun })); if (m.knock) fx.push(t('empuja')); if (m.pull) fx.push(t('atrae')); if (m.drain) fx.push(t('drena PS'));
   if (m.terrain) fx.push(t('deja {terrain} en el suelo', { terrain: t(m.terrain) })); if (m.heal) fx.push(t('cura {n} %', { n: Math.round(m.heal * 100) }));
+  if (m.selfStun) fx.push(t('te deja aturdido {s} s', { s: m.selfStun }));
+  if (m.cure) fx.push(t('quita quemadura, veneno y drenadoras'));
   if (m.haste) fx.push(t('más velocidad')); if (m.power) fx.push(t('más daño')); if (m.invuln) fx.push(t('invulnerable bajo tierra'));
   if (m.puddle) fx.push(t('deja un charco tóxico')); if (m.back) fx.push(t('vuelve a su sitio'));
   if (m.selfKO) fx.push(t('¡te debilita!')); if (m.rockWall) fx.push(t('deja una roca')); if (m.splash) fx.push(t('no hace nada'));

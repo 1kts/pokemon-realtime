@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': '回复是有代价的',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': '水流环、光合作用和月光回复16%（之前为20-22%），冷却20秒，使用后自身眩晕1.2秒：请远离对手再回复。',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': '睡觉回复35%（之前为50%），冷却28秒，并会睡眠2.5秒；它是唯一能消除灼伤、中毒和寄生种子的回复招式。',
+    'te deja aturdido {s} s': '使用后自身眩晕{s}秒',
+    'quita quemadura, veneno y drenadoras': '消除灼伤、中毒和寄生种子',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': '更简洁的地图',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '剧情地图上的道路不再有虚线，让从“你在这里”通往新道路和下一个挑战的连线更醒目。',

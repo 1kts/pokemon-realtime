@@ -297,7 +297,11 @@ function aiInput(b, side, dt) {
       if (m.at === 'self') u = dist < m.radius * 0.85 ? m.dmg * 1.3 : 0;
       else u = dist < m.maxRange ? m.dmg * (opening ? 1.8 : 0.65) : 0;
       if (m.selfKO) u = myHp < 0.25 && dist < m.radius * 0.7 && myAlive > 1 ? 60 : 0;
-    } else if (m.kind === 'heal') u = myHp < (mode === 'defender' ? 0.6 : 0.4) && !b.sudden ? 35 : 0;
+    } else if (m.kind === 'heal') {
+      // Curarse deja aturdido: mejor con el rival lejos, salvo a la desesperada
+      const safe = !m.selfStun || dist > 260 || myHp < 0.2;
+      u = myHp < (mode === 'defender' ? 0.6 : 0.4) && !b.sudden && safe ? 35 : 0;
+    }
     else if (m.kind === 'buff') u = side.haste <= 0 && side.power <= 0 && mode !== 'defender' && dist > 150 ? 12 : 0;
     else if (m.kind === 'smoke') u = mode === 'defender' && rnd() < 0.4 ? 20 : 0;
     else if (m.kind === 'wall') u = f.wind && (f.wind.m.kind === 'beam' || f.wind.m.kind === 'proj') ? 25 : mode === 'defender' ? 8 : 0;

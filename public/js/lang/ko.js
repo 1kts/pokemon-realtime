@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': '회복에는 대가가 따라',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': '아쿠아링, 광합성, 달의불빛은 16% 회복(이전 20-22%), 재사용까지 20초, 사용 후 1.2초 기절해. 상대와 떨어져서 회복해.',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': '잠자기는 35% 회복(이전 50%), 재사용까지 28초, 2.5초 동안 잠들어. 화상, 독, 씨뿌리기를 없애는 유일한 회복기야.',
+    'te deja aturdido {s} s': '사용 후 {s}초 기절',
+    'quita quemadura, veneno y drenadoras': '화상, 독, 씨뿌리기를 없앤다',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': '더 깔끔한 지도',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '스토리 지도의 길에서 점선을 없앴어. 「현재 위치」에서 새 도로와 다음 도전으로 가는 선이 잘 보여.',

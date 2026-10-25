@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.3 ----------
+    'Curarse tiene precio': '回復には代償がある',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'アクアリング・こうごうせい・つきのひかりの回復量は16%（以前は20〜22%）、再使用まで20秒、使うと1.2秒動けない。相手から離れて回復しよう。',
+    'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': 'ねむるの回復量は35%（以前は50%）、再使用まで28秒、2.5秒眠る。やけど・どく・やどりぎのタネを治せる唯一の回復技。',
+    'te deja aturdido {s} s': '使うと{s}秒動けない',
+    'quita quemadura, veneno y drenadoras': 'やけど・どく・やどりぎのタネを治す',
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'すっきりした地図',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'ストーリーの地図の道から点線をなくした。「現在地」から新しい道路と次の挑戦への線が目立つように。',

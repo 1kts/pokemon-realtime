@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.15.3', date: '2026-10-25', title: 'Curarse tiene precio',
+      items: [
+        ['cambio', 'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.'],
+        ['cambio', 'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.'],
+      ],
+    },
+    {
       v: '0.15.2', date: '2026-10-25', title: 'Mapa más limpio',
       items: [
         ['cambio', 'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.'],
