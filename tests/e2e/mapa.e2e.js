@@ -1,5 +1,5 @@
 // Mapa de Historia: medallas en los gimnasios (en color las conseguidas), «Estás aquí» en la ciudad del
-// último líder vencido, líneas hacia las rutas nuevas y el siguiente líder, y sin los caminos dibujados
+// último líder vencido, líneas hacia las rutas nuevas y el siguiente líder, y caminos sin línea discontinua
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'mapa' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
@@ -20,6 +20,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(px === sx, '«Estás aquí» está en la ciudad de Lt. Surge');
   const fresh = await page.eval(`document.querySelectorAll('.node.route.new').length`);
   ok(fresh === 2 && await page.eval(`document.querySelectorAll('.paths .leg').length`) === fresh + 1, 'una línea a cada ruta nueva y otra al siguiente líder');
-  ok(await page.eval(`document.querySelectorAll('.mapart polyline').length`) === 0, 'sin caminos dibujados: solo las líneas de a dónde puedes ir');
+  ok(await page.eval(`document.querySelectorAll('.mapart polyline').length`) > 0, 'las carreteras siguen dibujadas');
+  ok(await page.eval(`document.querySelectorAll('.mapart [stroke-dasharray]').length`) === 0, 'sin línea discontinua en los caminos: solo las de a dónde puedes ir');
   ok(await page.eval(`document.querySelectorAll('.map-goal .goal-routes .chip').length`) === fresh, 'el objetivo lista las rutas nuevas');
 };

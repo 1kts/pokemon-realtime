@@ -11,9 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.15.1 ----------
+    // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Carte plus nette',
-    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'La carte de l’histoire ne dessine plus de chemins : seulement les lignes de « Tu es ici » vers les nouvelles routes et ton prochain défi.',
+    'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Les chemins de la carte de l’histoire n’ont plus de ligne pointillée : celles qui vont de « Tu es ici » vers les nouvelles routes et ton prochain défi ressortent mieux.',
+    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'Les champions montrent leur visage',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Chaque Champion d’Arène, membre du Conseil 4 et Maître apparaît avec son sprite des jeux quand tu le choisis sur la carte de l’histoire.',
