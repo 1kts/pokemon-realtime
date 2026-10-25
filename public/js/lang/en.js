@@ -11,6 +11,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.0 ----------
+    'Música para cada momento': 'Music for every moment',
+    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'The game has music: a theme for the menu, another for the routes and others for battles, leaders and the Champion, with a fanfare when you win.',
+    'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'In Settings you can turn the music up or down, or switch it off; it\'s remembered in this browser.',
+    'Música': 'Music',
+    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': 'Original music in the style of handheld consoles, with a theme for the menu, routes, battles and leaders. It\'s remembered in this browser.',
+    'Volumen de la música': 'Music volume',
+    'Silenciar': 'Mute',
+    'Sin música': 'Music off',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'Centred camera',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'The battle camera is centred: the field no longer looks stuck to the top of the screen.',

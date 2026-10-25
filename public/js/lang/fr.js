@@ -11,6 +11,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.16.0 ----------
+    'Música para cada momento': 'De la musique pour chaque moment',
+    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Le jeu a de la musique : un thème pour le menu, un autre pour les routes et d\'autres pour les combats, les champions d\'arène et le Maître, avec une fanfare quand tu gagnes.',
+    'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'Dans Réglages, tu peux monter ou baisser le volume de la musique, ou la couper ; c\'est mémorisé dans ce navigateur.',
+    'Música': 'Musique',
+    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': 'Musique originale dans le style des consoles portables, avec un thème pour le menu, les routes, les combats et les champions d\'arène. C\'est mémorisé dans ce navigateur.',
+    'Volumen de la música': 'Volume de la musique',
+    'Silenciar': 'Couper le son',
+    'Sin música': 'Musique coupée',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'Caméra centrée',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'La caméra de combat est centrée : le terrain ne paraît plus collé en haut de l’écran.',

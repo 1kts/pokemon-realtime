@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.16.0', date: '2026-10-25', title: 'Música para cada momento',
+      items: [
+        ['nuevo', 'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.'],
+        ['nuevo', 'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.'],
+      ],
+    },
+    {
       v: '0.15.5', date: '2026-10-25', title: 'Cámara centrada',
       items: [
         ['cambio', 'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.'],
