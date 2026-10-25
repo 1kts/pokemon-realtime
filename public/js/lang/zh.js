@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.4 ----------
+    'Perfil más ordenado': '更整洁的个人资料',
+    'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': '个人资料更有条理：顶部是带徽章的卡片，所有数据排成一行，徽章与对战记录在成就旁边，账号放在最后。',
+    // ---------- Perfil reordenado ----------
+    'Fija hasta 3 logros con la estrella para lucirlos aquí': '用星标固定最多 3 个成就即可在此展示',
+    'Insignias': '徽章',
     // ---------- Novedades v0.22.3 ----------
     'Rutas que rotan cada 6 horas': '每 6 小时轮换的道路',
     'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': '每 6 小时，每条道路随机出现 4 只宝可梦和 1 只特别宝可梦；越久没出现的几率越高，所以都不会超过几天。',

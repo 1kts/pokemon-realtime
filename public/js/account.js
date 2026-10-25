@@ -448,10 +448,11 @@ export const accountViews = {
     const p = this.profile;
     const wrap = el('div', 'profile-view');
     wrap.append(this.topbar(t('Perfil'), 'menu'));
-    const body = el('div', 'pv-body scroll');
+    // Orden: tarjeta de entrenador arriba (a todo el ancho), una franja con todas las estadísticas, y debajo
+    // dos columnas (medallas y últimas partidas | logros); la cuenta, al final
+    const body = el('div', 'pv-body pv-flow scroll');
     const left = el('div', 'pv-col');
     const mid = el('div', 'pv-col');
-    const right = el('div', 'pv-col');
 
     // Tarjeta de entrenador
     const card = el('div', 'panel trainer-card');
@@ -483,13 +484,16 @@ export const accountViews = {
     nameRow.append(edit);
     info.append(nameRow);
     if (p.title) info.append(el('span', 'title-chip', escapeHtml(t(p.title))));
-    if ((p.showcase || []).length) info.append(el('div', '', showcaseHtml(p.showcase, 44)));
     info.append(el('p', 'small', p.account
       ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(handle(p.account.user)), date: fmtDate(p.account.since) })
       : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
     info.append(el('div', 'tc-league', `<span class="league">${t(p.league)}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">${t('#{n} del ranking', { n: this.rank })}</span>` : ''}`));
     card.append(info);
-    left.append(card);
+    // A la derecha de la tarjeta, los logros fijados como insignias
+    const pins = el('div', 'tc-pins');
+    pins.innerHTML = (p.showcase || []).length ? `<small>${t('Insignias')}</small>${showcaseHtml(p.showcase, 52)}` : `<small>${t('Fija hasta 3 logros con la estrella para lucirlos aquí')}</small>`;
+    card.append(pins);
+    body.append(card);
 
     // Estuche de medallas: las 8 de cada región, a color las ganadas
     const caseBox = el('div', 'panel badge-case');
@@ -514,16 +518,15 @@ export const accountViews = {
     }
     left.append(caseBox);
 
-    // Estadísticas
+    // Estadísticas: una franja con dos filas, Clasificatoria e Historia
     const games = p.wins + p.losses;
     const badges = Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0);
     const stat = (label, value) => `<div class="stat"><small>${t(label)}</small><b>${value}</b></div>`;
-    left.append(el('div', 'panel', `<h3>${t('Clasificatoria')}</h3><div class="stat-grid">
-      ${stat('ELO', p.elo)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}
-      ${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div>`));
-    left.append(el('div', 'panel', `<h3>${t('Historia')}</h3><div class="stat-grid">
-      ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${Data.dexCount(p)}/${Data.DEX_TOTAL}`)}${stat('Pokémon', p.mons.length)}
-      ${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—')}</div>`));
+    const champ = Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—';
+    body.append(el('div', 'panel pv-stats', `<div class="pv-srow"><h3>${t('Clasificatoria')}</h3><div class="stat-grid">
+      ${stat('ELO', p.elo)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div></div>
+      <div class="pv-srow"><h3>${t('Historia')}</h3><div class="stat-grid">
+      ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${Data.dexCount(p)}/${Data.DEX_TOTAL}`)}${stat('Pokémon', p.mons.length)}${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', champ)}</div></div>`));
 
 
     // Historial
@@ -542,12 +545,11 @@ export const accountViews = {
       row.append(el('b', 'delta', `${h.delta >= 0 ? '+' : ''}${h.delta}`));
       hist.append(row);
     }
+    left.append(hist);
     mid.append(this.achievementsPanel());
-    mid.append(hist);
-
-
-    right.append(this.accountPanel());
-    body.append(left, mid, right);
+    const cols = el('div', 'pv-cols');
+    cols.append(left, mid);
+    body.append(cols, this.accountPanel());
     wrap.append(body);
     this.root.append(wrap);
   },

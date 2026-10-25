@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.22.4', date: '2026-10-25', title: 'Perfil más ordenado',
+      items: [
+        ['cambio', 'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.'],
+      ],
+    },
+    {
       v: '0.22.3', date: '2026-10-25', title: 'Rutas que rotan cada 6 horas',
       items: [
         ['cambio', 'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.'],

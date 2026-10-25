@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.4 ----------
+    'Perfil más ordenado': '整理されたプロフィール',
+    'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'プロフィールが見やすくなりました：上にバッジ付きのカード、ステータスを一列に、ジムバッジと対戦履歴を実績の横に、アカウントは最後に。',
+    // ---------- Perfil reordenado ----------
+    'Fija hasta 3 logros con la estrella para lucirlos aquí': '星で実績を3つまで固定すると、ここに表示されます',
+    'Insignias': 'バッジ',
     // ---------- Novedades v0.22.3 ----------
     'Rutas que rotan cada 6 horas': '6時間ごとに変わる道路',
     'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': '6時間ごとに各道路でランダムな4匹とスペシャル1匹が出現。しばらく出ていないポケモンほど出やすいので、数日以上出ないことはありません。',

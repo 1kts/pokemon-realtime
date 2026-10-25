@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.4 ----------
+    'Perfil más ordenado': 'A tidier Profile',
+    'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'Your Profile is better organised: your card with its badges on top, all your stats in one strip, medals and games next to achievements, and your account at the end.',
+    // ---------- Perfil reordenado ----------
+    'Fija hasta 3 logros con la estrella para lucirlos aquí': 'Pin up to 3 achievements with the star to show them off here',
+    'Insignias': 'Badges',
     // ---------- Novedades v0.22.3 ----------
     'Rutas que rotan cada 6 horas': 'Routes rotate every 6 hours',
     'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': 'Every 6 hours each route shows 4 random Pokémon and one of its specials; those that haven\'t appeared for a while are more likely, so none takes more than a few days.',

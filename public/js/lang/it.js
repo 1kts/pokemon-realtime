@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.4 ----------
+    'Perfil más ordenado': 'Profilo più ordinato',
+    'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'Il Profilo è più ordinato: la tua scheda con i distintivi in alto, tutte le statistiche in una striscia, medaglie e partite accanto ai traguardi e l\'account in fondo.',
+    // ---------- Perfil reordenado ----------
+    'Fija hasta 3 logros con la estrella para lucirlos aquí': 'Fissa fino a 3 traguardi con la stella per mostrarli qui',
+    'Insignias': 'Distintivi',
     // ---------- Novedades v0.22.3 ----------
     'Rutas que rotan cada 6 horas': 'Percorsi che cambiano ogni 6 ore',
     'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': 'Ogni 6 ore ogni percorso mostra 4 Pokémon a caso e uno dei suoi speciali; quelli che non escono da tempo hanno più probabilità, quindi nessuno tarda più di qualche giorno.',
