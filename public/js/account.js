@@ -389,7 +389,7 @@ export const accountViews = {
     // Música: volumen (se guarda en este navegador) y silenciar
     const music = this.app.music;
     const mus = el('div', 'panel music-panel');
-    mus.append(el('h3', '', `♫ ${t('Música')}`), el('p', 'small', t('Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.')));
+    mus.append(el('h3', '', `♫ ${t('Música')}`), el('p', 'small', t('Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.')));
     const row = el('div', 'music-row');
     const range = el('input');
     Object.assign(range, { type: 'range', min: 0, max: 100, step: 5, value: Math.round(music.volume * 100) });

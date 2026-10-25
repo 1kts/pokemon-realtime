@@ -14,10 +14,10 @@ export default {
   text: {
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': 'Musica per ogni momento',
-    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Il gioco ha la musica: un tema per il menu, uno per i percorsi e altri per le lotte, i capipalestra e il Campione, con una fanfara quando vinci.',
+    'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'Il gioco ha la musica: un tema per i menu e la mappa, e altri per le lotte, i capipalestra e il Campione, con una fanfara quando vinci.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': 'In Impostazioni puoi alzare o abbassare il volume della musica, o spegnerla; viene ricordato in questo browser.',
     'Música': 'Musica',
-    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': 'Musica originale nello stile delle console portatili, con un tema per il menu, i percorsi, le lotte e i capipalestra. Viene ricordata in questo browser.',
+    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': 'Musica originale nello stile delle console portatili: un tema per i menu e altri per le lotte e i capipalestra. Viene ricordata in questo browser.',
     'Volumen de la música': 'Volume della musica',
     'Silenciar': 'Silenzia',
     'Sin música': 'Musica spenta',

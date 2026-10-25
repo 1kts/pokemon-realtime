@@ -83,7 +83,9 @@ export class UI {
   show(view, keepScroll) {
     const scroll = keepScroll ? (this.root.querySelector('.scroll') || {}).scrollTop : 0;
     this.view = view;
-    const track = trackForView(view, this.app.music.current);
+    // Durante un combate (y el momento final antes de los resultados) la música la pone el combate:
+    // repintar el menú de debajo, p. ej. al llegar el perfil nuevo, no debe cortar la fanfarria
+    const track = !this.app.battle && trackForView(view);
     if (track) this.app.music.play(track);
     this.root.hidden = false;
     this.root.innerHTML = '';

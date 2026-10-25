@@ -13,10 +13,10 @@ export default {
   text: {
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': '每个时刻都有音乐',
-    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '游戏有音乐了：菜单、道路、对战、馆主和冠军各有主题曲，获胜时还有凯歌。',
+    'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '游戏有音乐了：菜单和地图共用一首主题曲，对战、馆主和冠军各有主题曲，获胜时还有凯歌。',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '在设置中可以调高或调低音乐音量，也可以关闭；会保存在此浏览器中。',
     'Música': '音乐',
-    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': '掌机风格的原创音乐，菜单、道路、对战和馆主各有主题曲。会保存在此浏览器中。',
+    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '掌机风格的原创音乐：菜单一首主题曲，对战和馆主各有主题曲。会保存在此浏览器中。',
     'Volumen de la música': '音乐音量',
     'Silenciar': '静音',
     'Sin música': '已关闭音乐',

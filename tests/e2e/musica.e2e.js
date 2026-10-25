@@ -13,13 +13,12 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.music.running && window.__app.music.notes > 10`);
   ok(true, 'al tocar la página empieza a sonar el menú');
 
-  await page.eval(`window.__app.ui.show('story'); true`);
-  ok(await page.eval(`window.__app.music.current`) === 'map', 'el mapa de historia tiene su tema');
-  // Abrir menús desde el mapa no cambia la música (como en los juegos: cambia al cambiar de sitio)
-  for (const v of ['team', 'shop', 'dex', 'settings']) await page.eval(`window.__app.ui.show('${v}'); true`);
-  ok(await page.eval(`window.__app.music.current`) === 'map', 'equipo, tienda, Pokédex y ajustes siguen con el tema del mapa');
-  await page.eval(`window.__app.region = 'johto'; window.__app.ui.region = 'johto'; window.__app.ui.show('story'); true`);
-  ok(await page.eval(`window.__app.music.current`) === 'map', 'cambiar de región no cambia la música');
+  // Fuera de combate suena siempre el mismo tema: moverse por los menús no la corta
+  const notes0 = await page.eval(`window.__app.music.notes`);
+  for (const v of ['story', 'team', 'shop', 'dex', 'settings', 'menu']) await page.eval(`window.__app.ui.show('${v}'); true`);
+  ok(await page.eval(`window.__app.music.current`) === 'menu', 'mapa, equipo, tienda, Pokédex y ajustes usan el mismo tema que el menú');
+  await page.waitFor(`window.__app.music.notes > ${notes0} + 20`);
+  ok(true, 'y sigue sonando sin cortes al pasar de uno a otro');
 
   await page.eval(`window.__app.ui.show('menu'); window.__app.net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0]], skill: 0.1 }); true`);
   await page.waitFor(`window.__app.battle`);
@@ -28,7 +27,9 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.music.current === 'defeat'`);
   ok(true, 'al perder suena la melodía de derrota');
   await page.waitFor(`window.__app.ui.view === 'results'`);   // los resultados salen un momento después
-  ok(await page.eval(`window.__app.music.current`) === 'defeat', 'la pantalla de resultados deja sonar la melodía hasta el final');
+  const atResults = await page.eval(`window.__app.music.current`);
+  // Sigue sonando o ya ha acabado sola (dura 2,5 s): lo que no puede pasar es que la corte el tema del menú
+  ok(atResults === 'defeat' || atResults === null, `el tema del menú no corta la melodía en los resultados (suena: ${atResults})`);
 
   await page.eval(`window.__app.ui.show('settings'); true`);
   await page.waitFor(`document.querySelector('.music-panel input[type=range]')`);

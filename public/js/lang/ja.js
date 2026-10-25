@@ -14,10 +14,10 @@ export default {
   text: {
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': 'あらゆる場面に音楽を',
-    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'ゲームに音楽が付きました。メニュー、道路、バトル、ジムリーダー、チャンピオンそれぞれのテーマがあり、勝つとファンファーレが鳴ります。',
+    'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'ゲームに音楽が付きました。メニューとマップは共通のテーマ、バトル・ジムリーダー・チャンピオンにはそれぞれのテーマがあり、勝つとファンファーレが鳴ります。',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '設定で音楽の音量を上げ下げしたり、オフにしたりできます。このブラウザに保存されます。',
     'Música': '音楽',
-    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': '携帯ゲーム機風のオリジナル音楽。メニュー、道路、バトル、ジムリーダーにそれぞれのテーマがあります。このブラウザに保存されます。',
+    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '携帯ゲーム機風のオリジナル音楽。メニューは共通のテーマ、バトルとジムリーダーにはそれぞれのテーマがあります。このブラウザに保存されます。',
     'Volumen de la música': '音楽の音量',
     'Silenciar': 'ミュート',
     'Sin música': '音楽オフ',

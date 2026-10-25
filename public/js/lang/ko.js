@@ -14,10 +14,10 @@ export default {
   text: {
     // ---------- Novedades v0.16.0 ----------
     'Música para cada momento': '모든 순간에 음악을',
-    'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '게임에 음악이 생겼습니다. 메뉴, 도로, 배틀, 관장, 챔피언마다 테마가 있고 이기면 팡파르가 울립니다.',
+    'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '게임에 음악이 생겼습니다. 메뉴와 지도는 같은 테마, 배틀·관장·챔피언은 각각의 테마가 있고 이기면 팡파르가 울립니다.',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '설정에서 음악 볼륨을 올리거나 내리고, 끌 수도 있습니다. 이 브라우저에 저장됩니다.',
     'Música': '음악',
-    'Música original al estilo de las consolas portátiles, con un tema para el menú, las rutas, los combates y los líderes. Se recuerda en este navegador.': '휴대용 게임기 스타일의 오리지널 음악으로, 메뉴·도로·배틀·관장마다 테마가 있습니다. 이 브라우저에 저장됩니다.',
+    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '휴대용 게임기 스타일의 오리지널 음악: 메뉴는 하나의 테마, 배틀과 관장은 각각의 테마가 있습니다. 이 브라우저에 저장됩니다.',
     'Volumen de la música': '음악 볼륨',
     'Silenciar': '음소거',
     'Sin música': '음악 끔',

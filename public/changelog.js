@@ -6,7 +6,7 @@
     {
       v: '0.16.0', date: '2026-10-25', title: 'Música para cada momento',
       items: [
-        ['nuevo', 'El juego tiene música: un tema para el menú, otro para las rutas y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.'],
+        ['nuevo', 'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.'],
         ['nuevo', 'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.'],
       ],
     },

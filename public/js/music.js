@@ -72,7 +72,7 @@ const DRUMS = {
 // ---------- Temas (composiciones originales) ----------
 // bpm, compases de introducción (no se repiten), acordes por compás, melodía por compás y estilos.
 const TRACKS = {
-  // Menú: marcha luminosa (Do mayor)
+  // Fuera de combate (menús, mapa, equipo…): marcha luminosa (Do mayor)
   menu: {
     bpm: 112, intro: 0, bass: 'march', harmony: 'arp8', drums: ['march', 'march', 'march', 'march', 'march', 'march', 'march', 'fill'],
     chords: ['C', 'G', 'Am', 'Em', 'F', 'C', 'F', 'G'],
@@ -85,21 +85,6 @@ const TRACKS = {
       'E5:4 G5:4 C6:6 B5:2',
       'A5:4 G5:2 F5:2 E5:2 D5:2 C5:4',
       'D5:6 E5:2 F5:2 E5:2 D5:4',
-    ],
-  },
-  // Rutas del mapa: aventura saltarina (Re mayor)
-  map: {
-    bpm: 132, intro: 0, bass: 'bounce', harmony: 'stab', drums: ['bounce', 'bounce', 'bounce', 'bounce', 'bounce', 'bounce', 'bounce', 'fill'],
-    chords: ['D', 'A', 'Bm7', 'G', 'D', 'A', 'G', 'A'],
-    lead: [
-      'F#5:2 A5:2 D6:4 A5:2 F#5:2 A5:4',
-      'E5:2 C#5:2 A4:4 C#5:2 E5:2 A5:4',
-      'D5:4 F#5:2 B5:2 A5:4 F#5:4',
-      'G5:6 F#5:2 E5:4 D5:4',
-      'F#5:2 E5:2 D5:2 F#5:2 A5:4 B5:2 A5:2',
-      'C#6:4 B5:2 A5:2 E5:8',
-      'D5:2 E5:2 G5:4 B5:4 A5:2 G5:2',
-      'A5:8 r:4 C#5:2 E5:2',
     ],
   },
   // Combate: rápido, con bajo de octavas y arpegios (La menor)
@@ -363,14 +348,10 @@ export async function renderTrack(name, seconds = 20, sampleRate = 44100) {
   return ctx.startRendering();
 }
 
-// El tema de cada pantalla: como en los juegos, la música cambia al cambiar de sitio (menú principal o
-// mapa de historia), no al abrir un menú. Las pantallas de paso (equipo, tienda, Pokédex, perfil…)
-// siguen con lo que sonaba; si no sonaba nada (tras la fanfarria de un combate), el tema del menú.
-const PLACES = { title: 'menu', menu: 'menu', story: 'map' };
-export function trackForView(view, current) {
-  if (view === 'results') return undefined;            // se deja sonar la fanfarria
-  if (PLACES[view]) return PLACES[view];
-  return current ? undefined : 'menu';
+// Fuera de combate suena siempre el mismo tema (portada, menú, mapa, equipo, tienda…), así que moverse
+// por los menús no corta la música; solo la pantalla de resultados deja acabar la fanfarria.
+export function trackForView(view) {
+  return view === 'results' ? undefined : 'menu';
 }
 export function trackForBattle(start, Data) {
   if (start.mode === 'wild') return 'wild';
