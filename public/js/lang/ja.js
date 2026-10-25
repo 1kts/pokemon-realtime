@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.5 ----------
+    'Cámara centrada': 'カメラを中央に',
+    'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'バトルのカメラを中央に合わせた。フィールドが画面の上に寄って見えなくなった。',
     // ---------- Novedades v0.15.4 ----------
     'Cámara más abierta': '広くなったカメラ',
     'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'バトルのカメラを引いた。下の隅までフィールド全体が見え、HUDでポケモンが隠れなくなった。',

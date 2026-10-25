@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.5 ----------
+    'Cámara centrada': '가운데 맞춘 카메라',
+    'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': '배틀 카메라가 가운데로 맞춰져서 필드가 더 이상 화면 위쪽에 붙어 보이지 않아.',
     // ---------- Novedades v0.15.4 ----------
     'Cámara más abierta': '더 넓어진 카메라',
     'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': '배틀 카메라가 더 멀어졌어. 아래쪽 구석까지 필드 전체가 보이고, HUD가 더 이상 포켓몬을 가리지 않아.',
