@@ -2,9 +2,10 @@
 // proyectiles con forma propia, rayos, golpes en arco, explosiones por tipo, Protección, etc.
 import * as THREE from 'three';
 import { U, toWorld, softDisc } from './world.js';
-import { PALETTE, SMOKE, DUST } from './particles.js';
+import { PALETTE, SMOKE, DUST, vivid } from './particles.js';
 
-// Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve
+// Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve; los colores
+// pasan a su versión intensa (vivid) en vez de apagarse
 let BRIGHT = false;
 const INK = '#1b2a52';   // color de los avisos propios sobre suelo claro
 
@@ -13,9 +14,9 @@ const glowTex = softDisc('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
 
 function additive(color, opacity = 1) {
   if (BRIGHT) {
-    const c = new THREE.Color(color), mx = Math.max(c.r, c.g, c.b, 1);
-    c.multiplyScalar(0.85 / mx);
-    return new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: Math.min(1, opacity * 1.1), depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
+    const c = new THREE.Color(color);
+    c.multiplyScalar(1 / Math.max(c.r, c.g, c.b, 1));   // los «sobre-brillantes» (bright()) sin quemarse a blanco
+    return new THREE.MeshBasicMaterial({ color: vivid('#' + c.getHexString()), transparent: true, opacity: Math.min(1, opacity * 1.15), depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
   }
   return new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
 }
@@ -25,6 +26,14 @@ function glowSprite(color, size) {
   return s;
 }
 const bright = (hex, k = 1.8) => new THREE.Color(hex).multiplyScalar(k);
+// Sombra suave y oscura detrás de los proyectiles: los recorta sobre suelos claros y oscuros por igual
+const shadeTex = (() => {
+  const cv = document.createElement('canvas'); cv.width = cv.height = 64;
+  const g = cv.getContext('2d'), grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, 'rgba(8,12,30,0.95)'); grad.addColorStop(0.55, 'rgba(8,12,30,0.75)'); grad.addColorStop(1, 'rgba(8,12,30,0)');
+  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
 
 // Textura de Poké Ball
 function ballTexture(top) {
@@ -269,12 +278,20 @@ export class Effects {
       g.add(tw);
       return { obj: g, h: 0.45, update: (_, pos, dt) => { tw.rotation.y += dt * 20; p.trickle(25, dt, pos.x, pos.y, pos.z, { colors: PALETTE.volador, layer: 'soft', speed: 1, life: 0.3, size: 0.12, alpha: 0.7 }); } };
     }
-    // Genérico: núcleo brillante + halo + estela del tipo
-    const core = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.07, r * 0.7), 12, 10), new THREE.MeshBasicMaterial({ color: BRIGHT ? new THREE.Color(pal[Math.min(2, pal.length - 1)]) : bright(pal[1], 2.2), toneMapped: false }));
-    const halo = glowSprite(BRIGHT ? new THREE.Color(TYPE_COLOR[ty]).multiplyScalar(0.7) : bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
-    if (BRIGHT) { halo.material.blending = THREE.NormalBlending; halo.scale.multiplyScalar(0.6); }
-    g.add(core, halo);
-    if (ty === 'fantasma' || ty === 'veneno') core.material.color = bright(pal[2], 1.2);
+    // Genérico, igual en todas las arenas: sombra oscura detrás, núcleo del color intenso del tipo con un
+    // punto blanco caliente, y halo del mismo color (mezcla normal: se ve también sobre blanco)
+    const vc = vivid(TYPE_COLOR[ty]);
+    const cr = Math.max(0.13, r * 1.1);
+    const shade = new THREE.Sprite(new THREE.SpriteMaterial({ map: shadeTex, transparent: true, depthWrite: false, opacity: 0.7 }));
+    shade.scale.setScalar(cr * 2.9);
+    shade.renderOrder = 2;   // encima del halo: hace de contorno oscuro del núcleo
+    const halo = glowSprite(vc, r * 4.2 + 0.35);
+    halo.material.blending = THREE.NormalBlending;
+    halo.renderOrder = 1;
+    const core = new THREE.Mesh(new THREE.SphereGeometry(cr, 14, 12), new THREE.MeshBasicMaterial({ color: vc, toneMapped: false }));
+    const hot = new THREE.Mesh(new THREE.SphereGeometry(cr * 0.26, 8, 6), new THREE.MeshBasicMaterial({ color: ty === 'siniestro' ? '#c8a8ff' : '#ffffff', toneMapped: false, transparent: true, opacity: 0.85 }));
+    hot.position.set(-cr * 0.35, cr * 0.55, cr * 0.6);   // asoma hacia la cámara: brillo arriba a la izquierda
+    g.add(shade, halo, core, hot);
     const big = (m.dmg || 0) >= 15;
     const extra = {};
     if (ty === 'fuego') Object.assign(extra, { grav: -2, speed: 0.8, life: big ? 0.5 : 0.3, size: r * (big ? 3.2 : 2.4) });
@@ -286,7 +303,7 @@ export class Effects {
       obj: g, h: 0.55,
       update: (pr2, pos, dt) => {
         tr(pr2, pos, dt);
-        halo.material.opacity = 0.8 + Math.sin(performance.now() / 40) * 0.2;
+        halo.material.opacity = 0.75 + Math.sin(performance.now() / 40) * 0.12;
         if (ty === 'electrico' && Math.random() < 0.5) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
         if (big && ty === 'fuego') p.trickle(15, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
       },

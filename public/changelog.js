@@ -11,6 +11,13 @@
       ],
     },
     {
+      v: '0.15.6', date: '2026-10-25', title: 'Ataques con más color',
+      items: [
+        ['cambio', 'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.'],
+        ['cambio', 'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.'],
+      ],
+    },
+    {
       v: '0.15.5', date: '2026-10-25', title: 'Cámara centrada',
       items: [
         ['cambio', 'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.'],

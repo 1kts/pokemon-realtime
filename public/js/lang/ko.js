@@ -21,6 +21,10 @@ export default {
     'Volumen de la música': '음악 볼륨',
     'Silenciar': '음소거',
     'Sin música': '음악 끔',
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': '더 선명한 기술',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': '모든 아레나에서 기술이 똑같이 보여. 타입 색을 더 선명하게 하고 그림자로 돋보이게 해서 얼음과 눈 위에서도 잘 보여.',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': '카메라가 멀어져도 잘 보이도록 투사체를 조금 키웠어.',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': '가운데 맞춘 카메라',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': '배틀 카메라가 가운데로 맞춰져서 필드가 더 이상 화면 위쪽에 붙어 보이지 않아.',

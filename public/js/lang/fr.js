@@ -20,6 +20,10 @@ export default {
     'Volumen de la música': 'Volume de la musique',
     'Silenciar': 'Couper le son',
     'Sin música': 'Musique coupée',
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': 'Des attaques plus colorées',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': 'Les attaques se voient pareil dans toutes les arènes, avec la couleur de leur type plus vive et une ombre qui les détache, même sur la glace et la neige.',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': 'Les projectiles sont un peu plus gros pour bien se voir avec la caméra plus éloignée.',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'Caméra centrée',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'La caméra de combat est centrée : le terrain ne paraît plus collé en haut de l’écran.',

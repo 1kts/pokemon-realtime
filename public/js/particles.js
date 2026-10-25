@@ -93,20 +93,22 @@ class Layer {
   clear() { this.p = []; }
 }
 
-const colorCache = new Map(), inkCache = new Map();
+const colorCache = new Map(), vividCache = new Map();
 function col(hex) {
   let c = colorCache.get(hex);
   if (!c) { c = new THREE.Color(hex); colorCache.set(hex, c); }
   return c;
 }
-// Suelo claro: los colores muy claros bajan a un tono medio (mismo matiz) para verse sobre blanco
-function ink(hex) {
-  let c = inkCache.get(hex);
+// Color intenso: el mismo matiz, más saturado y sin pasarse de claro, para que destaque sobre cualquier
+// suelo (los grises, como Normal o Acero, siguen siendo grises)
+export function vivid(hex) {
+  let c = vividCache.get(hex);
   if (!c) {
-    c = new THREE.Color(hex);
-    const l = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-    if (l > 0.42) c.multiplyScalar(0.42 / l);
-    inkCache.set(hex, c);
+    const hsl = {};
+    new THREE.Color(hex).getHSL(hsl);
+    const s = hsl.s < 0.2 ? hsl.s : Math.min(1, hsl.s * 1.3 + 0.1);
+    c = new THREE.Color().setHSL(hsl.h, s, Math.min(0.56, Math.max(0.3, hsl.l)));
+    vividCache.set(hex, c);
   }
   return c;
 }
@@ -154,7 +156,7 @@ export class Particles {
         x: x + (Math.random() - 0.5) * j, y: y + (Math.random() - 0.5) * j * 0.5, z: z + (Math.random() - 0.5) * j,
         vx: vx * sp, vy: vy * sp, vz: vz * sp, t: 0, life: (o.life ?? 0.6) * (0.6 + Math.random() * 0.4),
         size: (o.size ?? 0.3) * (0.7 + Math.random() * 0.6), grav: o.grav ?? 0, drag: o.drag ?? 0.94,
-        c1: (this.bright ? ink : col)(colors[(Math.random() * colors.length) | 0]), c2: o.fade ? (this.bright ? ink : col)(o.fade) : null,
+        c1: (this.bright ? vivid : col)(colors[(Math.random() * colors.length) | 0]), c2: o.fade ? (this.bright ? vivid : col)(o.fade) : null,
         grow: o.grow || 0, floor: !!o.floor, alpha: o.alpha ?? 1,
       });
     }
