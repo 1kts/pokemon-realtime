@@ -39,12 +39,20 @@ function migrate(p) {
   // 600 victorias (nivel 7, ya quitado) pasa aquí para quien la tuviera
   if (!p.cosmetics.skins) p.cosmetics.skins = [];
   // Retos de línea nuevos (Logros): los premios de maestría de antes eran otros, se empieza de cero
-  if (p.masteryV !== 2) {
+  if (!p.masteryV || p.masteryV < 2) {
     for (const [root, list] of Object.entries(p.masteryClaimed || {})) if (list.includes(7)) unlock(p, 'skins', 'elemental:' + root);
     p.masteryClaimed = {};
-    p.masteryV = 2;
+    p.masteryV = 3;
   }
   // Partículas: antes iban con la skin Elemental; quien la tenga se queda también sus partículas, puestas
+  // Retos de línea, versión 3: la estrella pasa a ser un premio útil y se quita el glow de tipo (el que
+  // lo recogió lo conserva). Se recolocan los recogidos: 0 estrella→0, 1 ilustración→1, 2 glow→fuera,
+  // 3 retrato→2, 4 título→3, 5 Oro→4, 6 Holo→5, 7 Galaxia→6
+  if (p.masteryV === 2) {
+    const MAP = [0, 1, -1, 2, 3, 4, 5, 6];
+    for (const [root, list] of Object.entries(p.masteryClaimed)) p.masteryClaimed[root] = [...new Set(list.map(i => MAP[i]).filter(i => i >= 0))];
+    p.masteryV = 3;
+  }
   if (!p.cosmetics.particles) {
     p.cosmetics.particles = [];
     p.particles = {};
@@ -130,6 +138,10 @@ function claimMastery(p, dex, i) {
   p.masteryClaimed[root] = [...(p.masteryClaimed[root] || []), i];
   const loot = { coins: 0, items: {}, mastery: { dex: root, tier: i, kind: tier.kind } };
   if (tier.kind === 'art') loot.art = root;
+  if (tier.kind === 'reward') {
+    p.coins = Math.min(MAX_COINS, p.coins + (tier.coins || 0)); loot.coins = tier.coins || 0;
+    for (const [k, q] of Object.entries(tier.items || {})) { p.items[k] = (p.items[k] || 0) + q; loot.items[k] = q; }
+  }
   if (tier.kind === 'portrait') { unlock(p, 'avatars', 'pt:' + root); loot.avatar = 'pt:' + root; }
   if (tier.kind === 'aura') { unlock(p, 'auras', D.typeAuraOf(root)); loot.aura = D.typeAuraOf(root); }
   if (tier.kind === 'frame') { unlock(p, 'frames', D.typeFrameOf(root)); loot.frame = D.typeFrameOf(root); }

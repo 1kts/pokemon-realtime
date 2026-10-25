@@ -992,3 +992,138 @@ body.in-battle .ui-confirm { cursor: auto; }
 }
 .pv-flow > .panel, .pv-flow > .pv-cols { width: 100% !important; max-width: none !important; align-self: stretch; box-sizing: border-box; }
 .pv-flow > .panel.account { max-width: 640px !important; align-self: flex-start; }
+/* Tarjeta de entrenador: en medio, tu equipo y datos destacados */
+.tc-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 18px; border-left: 1px solid rgba(255,255,255,.08); border-right: 1px solid rgba(255,255,255,.08); }
+.tc-lbl, .tc-pins small { color: #9fb0cc; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.tc-team { display: flex; gap: 8px; }
+.tc-mon { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tc-mon .face, .tc-mon canvas { width: 52px; height: 52px; border-radius: 14px; background: rgba(0,0,0,.25); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12); image-rendering: pixelated; }
+.tc-mon small { font-size: 11px; font-weight: 800; color: #d6e2f5; }
+.tc-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.tc-chip { padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #e6edf7; }
+.tc-chip.fav { background: rgba(255,140,60,.18); border-color: rgba(255,150,70,.55); color: #ffd2a8; }
+@media (max-width: 980px) { .tc-mid { display: none; } }
+
+/* ---------- Mapa de Historia: lo que toca resalta, lo demás se apaga ---------- */
+.map.focus .node.locked { width: 16px !important; height: 16px !important; opacity: .45; filter: grayscale(1) brightness(.7); }
+.map.focus .node.locked > *:not(.lock) { display: none !important; }
+.map.focus .node.locked .lock { transform: scale(.75); }
+.map .paths .leg { stroke: #ffcb05 !important; stroke-width: 3 !important; stroke-dasharray: 7 6; animation: legMove 1.1s linear infinite; filter: drop-shadow(0 0 3px rgba(255,203,5,.7)); }
+.map .paths .leg.goal { stroke-width: 4 !important; }
+@keyframes legMove { to { stroke-dashoffset: -13; } }
+.node .ord { position: absolute; left: -8px; top: -8px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 900 11px var(--display); font-style: normal; color: #2a1c00; background: var(--gold, #ffcb05); box-shadow: 0 2px 4px rgba(0,0,0,.45); z-index: 2; }
+.node.gym.done .ord { background: #d6e2f5; }
+/* Mapa / Lista */
+.story-mode { display: inline-flex; }
+.map > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 6; background: rgba(10,14,34,.75); backdrop-filter: blur(4px); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.story-listwrap { position: relative; display: flex; flex-direction: column; min-height: 0; }
+.story-listwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.story-listwrap .story-list { padding-top: 56px; }
+.story-list { display: flex; flex-direction: column; gap: 6px; padding: 10px; max-height: 70vh; overflow: auto; border-radius: 16px; background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.sl-step { display: grid; grid-template-columns: 28px 44px 1fr auto; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; text-align: left; background: #222b58; border: 1px solid rgba(255,255,255,.1); color: #e6edf7; }
+.sl-step:hover { background: #2a346a; }
+.sl-step.leader { background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 28%, #222b58), #222b58); border-color: color-mix(in srgb, var(--tc) 45%, transparent); }
+.sl-step.now { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 16px rgba(255,203,5,.3); }
+.sl-step.sel { outline: 2px solid #fff; outline-offset: 1px; }
+.sl-step.locked { opacity: .55; }
+.sl-step.done .sl-st { color: #4fd06a; font-size: 16px; }
+.sl-n { font: 900 13px var(--display); color: #8d9bbb; text-align: center; }
+.sl-ico { display: grid; place-items: center; width: 44px; height: 44px; }
+.sl-ico img, .sl-ico canvas { max-width: 40px; max-height: 40px; image-rendering: pixelated; }
+.sl-face { height: 40px; }
+.sl-t { display: flex; flex-direction: column; font-weight: 800; }
+.sl-t small { color: #9fb0cc; font-weight: 600; font-size: 12px; }
+.sl-st { font-style: normal; font-weight: 800; font-size: 12px; color: var(--gold-hi, #ffe27a); white-space: nowrap; }
+.sl-st svg { width: 14px; height: 14px; color: #8d9bbb; }
+
+/* Tarjeta de entrenador: barra hacia la siguiente liga */
+.tc-lbar { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; max-width: 280px; }
+.tc-lbar .bar { height: 8px; border-radius: 99px; background: rgba(0,0,0,.35); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.tc-lbar .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold, #ffcb05), var(--gold-hi, #ffe27a)); }
+.tc-lbar small { color: #9fb0cc; font-size: 11.5px; font-weight: 700; }
+
+/* Historia: «Cómo se juega» a la izquierda, grande, y la leyenda del mapa abajo a la derecha */
+.story-info .help { margin-left: 0 !important; order: -1; padding: 12px 18px; font-size: 15px; background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; border: 0; box-shadow: 0 3px 0 #b97a00; }
+.story-info .help svg { color: #2a1c00; }
+.story-info .rotation { text-align: right; align-items: flex-end; }
+.story .map-legend, .map-legend { left: auto !important; right: 12px; bottom: 10px; max-width: 46%; justify-content: flex-end; font-size: 10.5px; }
+
+/* Logros › Líneas: una fila por línea que se despliega con sus retos */
+.lg-grid.lg-list { display: flex; flex-direction: column; gap: 8px; }
+.lg-list .lg-card { padding: 0; border-radius: 14px; gap: 0; }
+.lg-list .lg-head { display: grid; grid-template-columns: 40px minmax(140px, 1fr) auto auto auto 18px; align-items: center; gap: 12px; width: 100%; padding: 8px 14px; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; }
+.lg-list .lg-head b { display: flex; flex-direction: column; font: 900 16px var(--display); }
+.lg-list .lg-head b small { font: 700 11.5px var(--body, inherit); color: #9fb0cc; }
+.lg-pips { display: flex; gap: 4px; }
+.lg-pips .pip { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); }
+.lg-pips .pip.got { background: var(--gold, #ffcb05); box-shadow: 0 0 6px rgba(255,203,5,.5); }
+.lg-pips .pip.ready { background: #fff3c4; animation: pipBlink 1s ease-in-out infinite; }
+@keyframes pipBlink { 50% { background: var(--gold, #ffcb05); box-shadow: 0 0 10px rgba(255,203,5,.8); } }
+.lg-count { color: #9fb0cc; font-weight: 800; white-space: nowrap; }
+.lg-ready { font-style: normal; font-weight: 900; font-size: 12px; color: #2a1c00; background: var(--gold, #ffcb05); padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.lg-chev { font-style: normal; color: #9fb0cc; transition: transform .2s; }
+.lg-card.open .lg-chev { transform: rotate(180deg); }
+.lg-tiers { display: none; flex-direction: column; gap: 6px; padding: 0 12px 12px; }
+.lg-card.open .lg-tiers { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+@media (max-width: 700px) { .lg-list .lg-head { grid-template-columns: 40px 1fr auto 18px; } .lg-pips, .lg-count { display: none; } }
+
+/* Ficha › Vestuario: cada skin y las partículas, vistas sobre el Pokémon */
+.ms-wardrobe { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.ms-wear { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px 8px; border-radius: 14px; background: #222b58; border: 1px solid rgba(255,255,255,.1); color: #e6edf7; }
+.ms-wear canvas, .ms-wear img { width: 84px; height: 84px; image-rendering: pixelated; }
+.ms-wear b { font: 800 13px var(--display); text-align: center; }
+.ms-wear small { font-size: 11px; color: #9fb0cc; text-align: center; }
+.ms-wear.sel { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 14px rgba(255,203,5,.3); }
+.ms-wear.sel small { color: var(--gold-hi, #ffe27a); font-weight: 800; }
+.ms-wear.locked { cursor: default; background: rgba(34,43,88,.55); border-style: dashed; }
+.ms-wear.locked > b, .ms-wear.locked > small { opacity: .6; }
+.ms-wear:not(.locked):not(.sel):hover { background: #2a346a; }
+/* Ficha › Retos: las mismas filas que Logros › Líneas, siempre desplegadas */
+.lg-tiers.ms-retos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px; padding: 0; margin-bottom: 10px; }
+/* ---------- Liga Pokémon: 5 combates seguidos ---------- */
+.league-zone { position: absolute; z-index: 0; border: 2px dashed rgba(255,203,5,.75); border-radius: 18px; background: rgba(255,203,5,.08); pointer-events: none; }
+.league-zone span { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2px 9px; border-radius: 99px; font: 900 10.5px var(--display); color: #2a1c00; background: var(--gold, #ffcb05); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.league-box { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 12px; border-radius: 14px; background: linear-gradient(160deg, rgba(255,203,5,.14), rgba(20,24,60,.6)); border: 1px solid rgba(255,203,5,.45); }
+.lb-title { font: 900 16px var(--display); color: var(--gold-hi, #ffe27a); }
+.lb-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.lb-step { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 10px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.1); opacity: .7; }
+.lb-step small { font-size: 10px; font-weight: 800; }
+.lb-step .lb-face { height: 40px; image-rendering: pixelated; }
+.lb-step.done { opacity: 1; border-color: rgba(79,208,106,.6); }
+.lb-step.done small::after { content: ' ✓'; color: #4fd06a; }
+.lb-step.now { opacity: 1; border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 12px rgba(255,203,5,.4); }
+.lb-arrow { font-style: normal; color: #8d9bbb; font-weight: 900; }
+.sl-league { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; padding: 8px 12px; border-radius: 12px; background: linear-gradient(90deg, rgba(255,203,5,.25), rgba(255,203,5,.05)); border: 1px dashed rgba(255,203,5,.7); }
+.sl-league b { font: 900 14px var(--display); color: var(--gold-hi, #ffe27a); }
+.sl-league small { color: #e6edf7; font-size: 12px; }
+.league-res { display: flex; flex-direction: column; gap: 3px; margin: 6px 0; padding: 10px 14px; border-radius: 12px; background: rgba(255,203,5,.1); border: 1px solid rgba(255,203,5,.45); }
+.league-res b { font: 900 16px var(--display); color: var(--gold-hi, #ffe27a); }
+.league-res.failed { background: rgba(255,90,80,.12); border-color: rgba(255,110,110,.45); }
+.league-res.failed b { color: #ff8a80; }
+.ms-wear.locked:disabled { opacity: 1; }
+
+/* Ficha › Estadísticas: IV y EV debajo de la barra; la naturaleza marca la que sube (▲) y la que baja (▼) */
+.ms-stat { grid-template-columns: 110px 70px minmax(0, 1fr) 190px !important; }
+.ms-stat .sgrp { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ms-stat .sgrp .ms-ivev { gap: 12px; font-size: 11.5px; }
+.ms-stat .nat { font-style: normal; margin-left: 5px; font-size: 11px; font-weight: 900; }
+.ms-stat .nat.up { color: #4fd06a; }
+.ms-stat .nat.down { color: #ff7a6a; }
+@media (max-width: 760px) { .ms-stat { grid-template-columns: 80px 60px 1fr !important; } .ms-vit { grid-column: span 3; } }
+/* ---------- Clasificatoria: tu equipo de 3 ---------- */
+.pvp-team h4 { margin: 12px 0 6px; color: var(--gold-hi, #ffe27a); font: 800 12px var(--display); text-transform: uppercase; letter-spacing: .5px; }
+.pvp-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pvp-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 14px; background: #222b58; border: 1px solid rgba(255,255,255,.12); color: #e6edf7; min-height: 150px; }
+.pvp-slot.sel { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 14px rgba(255,203,5,.3); }
+.pvp-slot.empty { border-style: dashed; justify-content: center; }
+.pvp-slot b { font: 800 14px var(--display); }
+.pvp-plus { font: 900 30px var(--display); color: var(--gold, #ffcb05); }
+.pvp-moves { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; }
+.pvp-moves i { display: inline-flex; align-items: center; gap: 2px; font-style: normal; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 6px; background: color-mix(in srgb, var(--tc) 30%, rgba(0,0,0,.3)); }
+.pvp-pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
+.pvp-pick { display: grid; place-items: center; padding: 4px; border-radius: 10px; background: #222b58; border: 1px solid rgba(255,255,255,.1); }
+.pvp-pick.in { border: 2px solid var(--gold, #ffcb05); }
+.pvp-mvlist { display: flex; flex-wrap: wrap; gap: 5px; }
+.pvp-mv { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #e6edf7; }
+.pvp-mv.on { background: color-mix(in srgb, var(--tc) 40%, #222b58); border-color: color-mix(in srgb, var(--tc) 80%, transparent); }
+.pvp-mv:disabled { opacity: .45; }

@@ -482,7 +482,7 @@ export const drawIcon = (ctx, name, x, y, size) => PIX.draw(ctx, name, x, y, siz
 const ITEM_FILE = { pokeball: 'poke-ball', superball: 'great-ball', ultraball: 'ultra-ball', masterball: 'master-ball', caramelo: 'rare-candy',
   maspsps: 'hp-up', proteina: 'protein', hierro: 'iron', carburante: 'carbos', agua: 'water-stone', trueno: 'thunder-stone',
   fuego: 'fire-stone', hoja: 'leaf-stone', lunar: 'moon-stone', sol: 'sun-stone', hielo: 'ice-stone', noche: 'dusk-stone',
-  alba: 'dawn-stone', dia: 'shiny-stone' };
+  alba: 'dawn-stone', dia: 'shiny-stone', cordon: 'linking-cord', revestimiento: 'metal-coat', rocarey: 'kings-rock', escamadragon: 'dragon-scale', mejora: 'up-grade' };
 export const itemSrc = id => `items/${ITEM_FILE[id] || id}.png`;
 export const item = (id, size = 32, cls = '') => `<img class="item-img ${cls}" src="${itemSrc(id)}" width="${size}" height="${size}" alt="" draggable="false">`;
 

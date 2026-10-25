@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.23.0', date: '2026-10-25', title: 'La Liga, de una vez',
+      items: [
+        ['nuevo', 'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.'],
+        ['nuevo', 'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.'],
+        ['nuevo', 'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?'],
+        ['cambio', 'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.'],
+        ['cambio', 'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.'],
+        ['cambio', 'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.'],
+      ],
+    },
+    {
       v: '0.22.4', date: '2026-10-25', title: 'Perfil más ordenado',
       items: [
         ['cambio', 'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.'],

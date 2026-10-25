@@ -299,6 +299,15 @@
     list.push([+id, cond]);
     base.evo = list.length === 1 ? list[0] : list;
   }
+  // Evoluciones por intercambio de la Gen 1 y 2: las de solo intercambio, con el Cordón Unión; las de
+  // intercambio con objeto, con ese objeto (Revestimiento Metálico, Escama Dragón, Roca del Rey, Mejora)
+  const EVO_ITEM = { 64: [[65, 'cordon']], 67: [[68, 'cordon']], 75: [[76, 'cordon']], 93: [[94, 'cordon']], 95: [[208, 'revestimiento']],
+    123: [[212, 'revestimiento']], 117: [[230, 'escamadragon']], 61: [[186, 'rocarey']], 79: [[199, 'rocarey']], 137: [[233, 'mejora']] };
+  for (const [from, list] of Object.entries(EVO_ITEM)) {
+    const cur = SPECIES[from].evo, opts = cur ? (Array.isArray(cur[0]) ? cur : [cur]) : [];
+    for (const [to, item] of list) { const o = opts.find(e => e[0] === to); if (o) o[1] = item; else opts.push([to, item]); }
+    SPECIES[from].evo = opts.length === 1 ? opts[0] : opts;
+  }
 
   // ---------- Movimientos por nivel ----------
   // Cada especie aprende sus movimientos al subir de nivel, como en los juegos: primero los
@@ -1053,10 +1062,16 @@
   // Tope de nivel POR REGIÓN: los Pokémon de una región no pasan de la media de niveles del
   // siguiente líder de esa región (sin tope cuando la región está completada).
   // levelCap(perfil, región) · levelCap(medallas) = Kanto (compatibilidad).
+  // La Liga (Alto Mando y Campeón, desde el 9.º líder) se juega de una vez: 5 combates seguidos
+  const LEAGUE_FROM = 8;
+  const avgLevel = n => n.team.reduce((a, [, l]) => a + l, 0) / n.team.length;
+  // Tope de nivel: la media del siguiente líder; con las 8 medallas, la de toda la Liga (se juega seguida);
+  // después del Campeón, 100
   function levelCap(p, region = 'kanto') {
-    const prog = typeof p === 'number' ? p : progOf(p, region);
-    const next = leadersOf(region)[prog];
-    return next ? Math.round(next.team.reduce((a, [, l]) => a + l, 0) / next.team.length) : 100;
+    const prog = typeof p === 'number' ? p : progOf(p, region), leaders = leadersOf(region);
+    if (prog >= leaders.length) return 100;
+    if (prog >= LEAGUE_FROM) { const league = leaders.slice(LEAGUE_FROM); return Math.round(league.reduce((a, n) => a + avgLevel(n), 0) / league.length); }
+    return Math.round(avgLevel(leaders[prog]));
   }
   // Iniciales de cada región (al empezar una región eliges uno nuevo: los Pokémon no viajan)
   const REGION_STARTERS = { kanto: [1, 4, 7], johto: [152, 155, 158] };
@@ -1140,6 +1155,12 @@
     { id: 'noche', name: 'Piedra Noche', price: 2500, stone: true, desc: 'Evoluciona a Murkrow, Misdreavus…', req: 5 },
     { id: 'alba', name: 'Piedra Alba', price: 2500, stone: true, desc: 'Evoluciona a Kirlia (macho), Snorunt (hembra)…', req: 6 },
     { id: 'dia', name: 'Piedra Día', price: 2500, stone: true, desc: 'Evoluciona a Togetic, Roselia, Minccino…', req: 6 },
+    // Objetos de intercambio: como en los juegos, la descripción no dice para qué son
+    { id: 'cordon', name: 'Cordón Unión', price: 3000, stone: true, desc: 'Un cordón extraño que parece unir a dos Pokémon. Algunos reaccionan al tocarlo…', req: 4 },
+    { id: 'revestimiento', name: 'Revestimiento Metálico', price: 3000, stone: true, desc: 'Una capa metálica especial. ¿Qué pasará si se la das a cierto Pokémon?', req: 5 },
+    { id: 'rocarey', name: 'Roca del Rey', price: 3000, stone: true, desc: 'Una roca con forma de corona. Dicen que a algunos Pokémon les sienta muy bien…', req: 5 },
+    { id: 'escamadragon', name: 'Escama Dragón', price: 3500, stone: true, desc: 'Una escama muy dura y brillante. Algo despierta en quien la lleva…', req: 6 },
+    { id: 'mejora', name: 'Mejora', price: 3500, stone: true, desc: 'Una caja transparente llena de datos misteriosos. ¿Quién podría usarla?', req: 6 },
   ];
   // Poké Balls, de la más común a la Master Ball (en combate, R las recorre en este orden)
   const BALL_IDS = SHOP.filter(i => i.ball).map(i => i.id);
@@ -1148,6 +1169,20 @@
   // Todos a nivel 50; draft con 1 veto y 3 elecciones por jugador.
   const RANKED_POOL = [3, 6, 9, 18, 26, 34, 38, 59, 65, 68, 76, 94, 112, 121, 123, 130, 131, 135, 143, 149];
   const RANKED_LEVEL = 50;
+  // Equipo de PvP (Clasificatoria y Partida rápida): 3 Pokémon distintos del pool, cada uno con hasta 4 de
+  // los movimientos que sabe a Nv.50 (sin ninguno válido, los de por defecto). null si no vale
+  function pvpTeam(team) {
+    if (!Array.isArray(team) || team.length !== 3) return null;
+    const out = [];
+    for (const x of team) {
+      const dex = +(x && x.dex);
+      if (!RANKED_POOL.includes(dex) || out.some(o => o.dex === dex)) return null;
+      const can = learnedAt(dex, RANKED_LEVEL);
+      const moves = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))].filter(m => can.includes(m)).slice(0, 4);
+      out.push({ dex, moves: moves.length ? moves : defaultMoves(dex, RANKED_LEVEL) });
+    }
+    return out;
+  }
   // Largo máximo del mote de un Pokémon (como en los juegos)
   const NICK_MAX = 12;
   const LEAGUES = [[0, 'Bronce'], [1100, 'Plata'], [1250, 'Oro'], [1400, 'Platino'], [1550, 'Diamante'], [1700, 'Maestro']];
@@ -1200,9 +1235,9 @@
     { id: 'perfecto', cat: 'coleccion', name: 'Ejemplar perfecto', desc: 'Ten un Pokémon con IV perfectos.', icon: 'star-piece', tier: 2, goal: 1, progress: perfectCount, reward: { coins: 2000, title: 'Criador' } },
     { id: 'medalla1', cat: 'progreso', name: 'Primera medalla', desc: 'Gana tu primera medalla de gimnasio.', icon: 'badge:kanto', tier: 1, goal: 1, progress: p => badgeCount(p, 'kanto') + badgeCount(p, 'johto'), reward: { coins: 500 } },
     { id: 'kanto8', cat: 'progreso', name: 'Ocho medallas de Kanto', desc: 'Consigue las 8 medallas de Kanto.', icon: 'badge:kanto', tier: 2, goal: 8, progress: p => badgeCount(p, 'kanto'), reward: { coins: 3000, title: 'Entrenador de Kanto' } },
-    { id: 'kantoChamp', cat: 'progreso', name: 'Campeón de Kanto', desc: 'Vence al Alto Mando y al Campeón de Kanto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'kanto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Kanto', aura: 'dorado' } },
+    { id: 'kantoChamp', cat: 'progreso', name: 'Campeón de Kanto', desc: 'Vence al Alto Mando y al Campeón de Kanto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'kanto'), reward: { coins: 8000, title: 'Campeón de Kanto', aura: 'dorado' } },
     { id: 'johto8', cat: 'progreso', name: 'Ocho medallas de Johto', desc: 'Consigue las 8 medallas de Johto.', icon: 'badge:johto', tier: 2, goal: 8, progress: p => badgeCount(p, 'johto'), reward: { coins: 3000, title: 'Entrenador de Johto' } },
-    { id: 'johtoChamp', cat: 'progreso', name: 'Campeón de Johto', desc: 'Vence al Alto Mando y al Campeón de Johto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'johto'), reward: { coins: 8000, frame: 'campeon', title: 'Campeón de Johto', aura: 'sombra' } },
+    { id: 'johtoChamp', cat: 'progreso', name: 'Campeón de Johto', desc: 'Vence al Alto Mando y al Campeón de Johto.', icon: 'relic-crown', tier: 3, goal: 1, progress: p => champ(p, 'johto'), reward: { coins: 8000, title: 'Campeón de Johto', aura: 'sombra' } },
     { id: 'torre7', cat: 'torre', name: 'Escalador', desc: 'Gana 7 combates seguidos en la Torre Batalla.', icon: 'exp-share', tier: 1, goal: 7, progress: towerBest, reward: { coins: 1000 } },
     { id: 'torre21', cat: 'torre', name: 'Cerebro vencido', desc: 'Llega a 21 victorias seguidas en la Torre Batalla.', icon: 'amulet-coin', tier: 2, goal: 21, progress: towerBest, reward: { coins: 4000, frame: 'torre', title: 'Desafiante de la Torre' } },
     { id: 'torre49', cat: 'torre', name: 'Leyenda de la Torre', desc: 'Llega a 49 victorias seguidas en la Torre Batalla.', icon: 'nugget', tier: 3, goal: 49, progress: towerBest, reward: { coins: 10000, title: 'Leyenda de la Torre' } },
@@ -1211,7 +1246,7 @@
     { id: 'equipo10', cat: 'coleccion', name: 'Equipo creciente', desc: 'Ten 10 Pokémon.', icon: 'lucky-egg', tier: 1, goal: 10, progress: p => (p.mons || []).length, reward: { coins: 800 } },
     // Combate: debilitar con movimientos de cada tipo da su marco
     ...TYPE_NAMES.map(type => ({ id: 'ko-' + type, cat: 'combate', type, name: 'Especialista en {type}', desc: 'Debilita {n} Pokémon con movimientos de tipo {type}.',
-      icon: 'type:' + type, tier: 2, goal: 100, progress: p => ((p.koByType || {})[type] || 0), reward: { coins: 1500, frame: 'tipo-' + type } })),
+      icon: 'type:' + type, tier: 2, goal: 100, progress: p => ((p.koByType || {})[type] || 0), reward: { coins: 1500, aura: 'tipo-' + type } })),
   ];
   const achievementProgress = (p, a) => Math.min(a.goal, a.progress(p));
   const SHOWCASE_MAX = 3;
@@ -1312,17 +1347,17 @@
   // Torre con ella en el equipo. Los marcos de tipo ya no son de aquí: salen de los logros de debilitar con
   // movimientos de ese tipo (ACHIEVEMENTS ko-<tipo>).
   const MASTERY_TIERS = [
-    { wins: 10, kind: 'star' },
-    { wins: 25, kind: 'art' },
-    { wins: 50, kind: 'aura' }, { wins: 100, kind: 'portrait' },
-    { wins: 150, kind: 'title' },
+    { wins: 10, kind: 'reward', coins: 500, items: { caramelo: 1 } },
+    { wins: 50, kind: 'art' },
+    { wins: 100, kind: 'portrait' },
+    { wins: 200, kind: 'title' },
     { wins: 500, kind: 'skin', skin: 'oro' },
     { stat: 'pvp', goal: 25, kind: 'skin', skin: 'holo' },
     { stat: 'tower', goal: 50, kind: 'skin', skin: 'galaxia', aura: 'prisma' },
   ];
   const tierGoal = x => x.goal || x.wins;
   const MASTERY = MASTERY_TIERS.filter(x => !x.stat).map(x => x.wins);   // victorias de cada estrella
-  const MASTERY_ART = 25;
+  const MASTERY_ART = MASTERY_TIERS.find(x => x.kind === 'art').wins;
   const SKINS = ['oro', 'holo', 'galaxia', 'elemental'];
   const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
   // Contador de un reto de línea: victorias, victorias online o mejor racha de la Torre con la línea
@@ -1365,7 +1400,8 @@
     epico: { w: 13, name: 'Épico', color: '#a35cff' }, legendario: { w: 6, name: 'Legendario', color: '#ffb21a' },
     mitico: { w: 3, name: 'Mítico', color: '#ff3d6e' },
   };
-  const SPIN_COST = [5, 5, 8, 8, 10, 12, 15, 18, 22, 27];
+  // Cada tirada, más cara (300 gemas la ruleta entera): entrando a diario sale 1 tirada al día; jugando más, 2
+  const SPIN_COST = [10, 14, 18, 22, 26, 30, 34, 39, 48, 59];
   // Efecto dentro de la burbuja de los retratos, según el tipo; 'aurora' es el especial (prismático)
   const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
     fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };
@@ -1433,7 +1469,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

@@ -87,7 +87,7 @@ function publicProfile(p) {
     daily: daily.view(p) };
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
-const busy = c => c.battle || c.queue || c.draft;
+const busy = c => c.battle || c.queue;
 
 // ---------- Combates ----------
 function startBattle(clientsBySide, opts, onEnd) {
@@ -104,9 +104,10 @@ function startBattle(clientsBySide, opts, onEnd) {
   return battle;
 }
 
-// ---------- Colas y draft ----------
+// ---------- Colas ----------
+const SAME_FOE_ELO = 3;              // partidas al día contra el mismo rival que cuentan para el ELO
+const pairGames = new Map();         // día -> (par de cuentas -> partidas)
 const queues = { ranked: [], casual: [] };
-const DRAFT_BAN_T = 20, DRAFT_PICK_T = 30;
 
 // ---------- Administración (server/admin.js) ----------
 // Mantenimiento: como al apagar, no se empiezan combates ni colas nuevas, pero el servidor sigue
@@ -128,6 +129,7 @@ setInterval(() => {
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
+  if (!D.pvpTeam(c.profile.pvpTeam)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
   c.queue = mode;
   c.queuedAt = Date.now();
   queues[mode].push(c);
@@ -141,88 +143,43 @@ function leaveQueue(c) {
   c.queue = null;
 }
 
+// Dos conexiones desde la misma IP no se emparejan (así nadie se sube el ELO jugando contra sí mismo en
+// otra pestaña o navegador). En local y en los tests se permite, salvo con SAME_IP_BLOCK
+const sameOrigin = (a, b) => a.ip === b.ip && (process.env.NODE_ENV === 'production' || !!process.env.SAME_IP_BLOCK);
+
 function matchmake(mode) {
   const q = queues[mode];
-  while (q.length >= 2) {
-    // Clasificatoria: el que más lleva esperando contra el de ELO más parecido
-    const a = q.shift();
-    let bi = 0;
-    if (mode === 'ranked') {
-      let best = Infinity;
-      q.forEach((x, i) => { const d = Math.abs(x.profile.elo - a.profile.elo); if (d < best) { best = d; bi = i; } });
-    }
-    const b = q.splice(bi, 1)[0];
+  // Clasificatoria: el que más lleva esperando contra el de ELO más parecido; rápida, el primero que haya
+  for (let ai = 0; ai < q.length; ai++) {
+    const a = q[ai];
+    let bi = -1, best = Infinity;
+    q.forEach((x, i) => {
+      if (i === ai || sameOrigin(a, x)) return;
+      const d = mode === 'ranked' ? Math.abs(x.profile.elo - a.profile.elo) : i;
+      if (d < best) { best = d; bi = i; }
+    });
+    if (bi < 0) continue;
+    const b = q[bi];
+    queues[mode] = q.filter(x => x !== a && x !== b);
     a.queue = b.queue = null;
-    startDraft([a, b], mode);
+    return startDuel([a, b], mode) || matchmake(mode);
   }
 }
 
-function startDraft(players, mode) {
-  const draft = { mode, players, phase: mode === 'ranked' ? 'ban' : 'pick', bans: [null, null], picks: [null, null], timer: null };
-  players.forEach(c => { c.draft = draft; });
-  draftPhase(draft);
-}
-
-function draftPhase(draft) {
-  clearTimeout(draft.timer);
-  const time = draft.phase === 'ban' ? DRAFT_BAN_T : DRAFT_PICK_T;
-  draft.ends = Date.now() + time * 1000;
-  draft.players.forEach((c, i) => send(c, {
-    t: 'draft', phase: draft.phase, mode: draft.mode, time, pool: D.RANKED_POOL,
-    bans: draft.phase === 'pick' ? draft.bans.filter(Boolean) : [], foe: draft.players[1 - i].profile.name,
-    foeElo: draft.mode === 'ranked' ? draft.players[1 - i].profile.elo : null,
-  }));
-  draft.timer = setTimeout(() => draftTimeout(draft), time * 1000 + 300);
-}
-
-function draftTimeout(draft) {
-  if (draft.phase === 'ban') {
-    draft.bans = draft.bans.map(b => b || null);
-    draft.phase = 'pick';
-    return draftPhase(draft);
-  }
-  // Quien no eligió a tiempo recibe 3 al azar de los disponibles
-  const banned = draft.bans.filter(Boolean);
-  draft.picks = draft.picks.map(p => p || shuffle(D.RANKED_POOL.filter(d => !banned.includes(d))).slice(0, 3));
-  finishDraft(draft);
-}
-
-function draftAction(c, msg) {
-  const draft = c.draft;
-  if (!draft) return;
-  const i = draft.players.indexOf(c);
-  if (draft.phase === 'ban' && msg.t === 'ban') {
-    if (!D.RANKED_POOL.includes(msg.dex) || draft.bans[i]) return;
-    draft.bans[i] = msg.dex;
-    if (draft.bans.every(Boolean)) { draft.phase = 'pick'; draftPhase(draft); }
-  } else if (draft.phase === 'pick' && msg.t === 'pick') {
-    const banned = draft.bans.filter(Boolean);
-    const list = Array.isArray(msg.dexes) ? [...new Set(msg.dexes.map(Number))] : [];
-    if (list.length !== 3 || !list.every(d => D.RANKED_POOL.includes(d) && !banned.includes(d)) || draft.picks[i]) return;
-    draft.picks[i] = list;
-    send(c, { t: 'draftwait' });
-    if (draft.picks.every(Boolean)) finishDraft(draft);
-  }
-}
-
-function cancelDraft(draft, leaver) {
-  clearTimeout(draft.timer);
-  draft.players.forEach(c => {
-    c.draft = null;
-    if (c !== leaver) send(c, { t: 'cancelled', reason: 'Tu rival se ha desconectado' });
-  });
+// Sin draft: cada uno combate con el equipo de 3 que se preparó (Pokémon y movimientos, a Nv.50)
+function startDuel(players, mode) {
+  const teams = players.map(c => D.pvpTeam(c.profile.pvpTeam));
+  finishDraft({ mode, players, teams, picks: teams.map(tm => tm.map(x => x.dex)), bans: [] });
 }
 
 function finishDraft(draft) {
-  clearTimeout(draft.timer);
   const [a, b] = draft.players;
-  a.draft = b.draft = null;
   const maps = Object.keys(D.MAPS);
   const lvl = D.RANKED_LEVEL;
   try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
   }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
@@ -249,7 +206,14 @@ function finishDraft(draft) {
     const [ea0, eb0] = [pa.elo, pb.elo];
     const ea = 1 / (1 + Math.pow(10, (pb.elo - pa.elo) / 400));
     const sa = result.winner === 0 ? 1 : 0;
-    const da = Math.round(32 * (sa - ea));
+    // Contra el mismo rival, el ELO solo cuenta en las 3 primeras partidas del día (para que nadie se lo suba
+    // jugando siempre contra la misma cuenta)
+    const today = D.dayKey(), pairKey = [pa.id, pb.id].sort().join(':');
+    if (!pairGames.has(today)) { pairGames.clear(); pairGames.set(today, new Map()); }
+    const pairs = pairGames.get(today), n = (pairs.get(pairKey) || 0) + 1;
+    pairs.set(pairKey, n);
+    const eloOk = n <= SAME_FOE_ELO;
+    const da = eloOk ? Math.round(32 * (sa - ea)) : 0;
     pa.elo += da; pb.elo -= da;
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
@@ -263,7 +227,7 @@ function finishDraft(draft) {
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
     return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
-      league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
+      eloCapped: !eloOk, league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
 
@@ -354,7 +318,6 @@ wss.on('connection', (ws, req) => {
     limits.connClose(ip);
     clients.delete(c);
     leaveQueue(c);
-    if (c.draft) cancelDraft(c.draft, c);
     if (c.battle) c.battle.leave(c.battle.sides[c.side], true);
     if (c.profile) store.release(c.profile);
   });
@@ -415,11 +378,20 @@ function handle(c, msg) {
     if (msg.tutorial === false) delete p.tutorial;
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
     if (msg.auras) { rewards.migrate(p); for (const g of D.AURAS) rewards.unlock(p, 'auras', g); }
+    if (typeof msg.aura === 'string' && D.AURAS.includes(msg.aura)) { rewards.migrate(p); rewards.unlock(p, 'auras', msg.aura); }
     if (msg.missionsDone) { missions.action(p, { a: 'refresh' }); for (const m of p.missions.daily) m.n = D.MISSION_BY_ID[m.id].goal; }
     if (Array.isArray(msg.effects)) { rewards.migrate(p); for (const fx of msg.effects) if (D.EFFECTS.includes(fx)) rewards.unlock(p, 'effects', fx); }
     if (msg.elemental) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'skins', 'elemental:' + D.lineOf(m.dex)); }
     if (msg.particles) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'particles', D.lineOf(m.dex)); }
     if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
+    store.save();
+    return sendProfile(c);
+  }
+  // Equipo para Clasificatoria y Partida rápida: 3 Pokémon del pool, a Nv.50, con sus movimientos
+  if (msg.t === 'pvpteam') {
+    const team = D.pvpTeam(msg.team);
+    if (!team) return send(c, { t: 'error', msg: 'Elige 3 Pokémon distintos de la lista' });
+    c.profile.pvpTeam = team;
     store.save();
     return sendProfile(c);
   }
@@ -498,7 +470,6 @@ function handle(c, msg) {
   if (msg.t === 'user') return send(c, { t: 'user', u: store.publicUser(String(msg.id), onlineIds()) });
   if (msg.t === 'queue' && (msg.mode === 'ranked' || msg.mode === 'casual')) return joinQueue(c, msg.mode);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
-  if (msg.t === 'ban' || msg.t === 'pick') return draftAction(c, msg);
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);
 }
 

@@ -12,7 +12,7 @@ const POCKETS = [
   ['balls', 'Poké Balls', i => BALLS.includes(i.id)],
   ['meds', 'Objetos', i => !i.dex && !i.vit && !i.stone && !BALLS.includes(i.id)],
   ['vit', 'Vitaminas', i => i.vit],
-  ['stones', 'Piedras evolutivas', i => i.stone],
+  ['stones', 'Piedras y objetos de evolución', i => i.stone],
 ];
 const evosOf = s => !s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo];
 

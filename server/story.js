@@ -213,11 +213,19 @@ function battleSetup(p, msg) {
   }
   if (msg.a === 'gym') {
     if (!node || node.kind === 'route') return { error: 'Gimnasio desconocido' };
-    if (node.index > D.progOf(p, node.region)) return { error: 'Antes tienes que vencer al anterior' };
-    const lt = D.leaderTeam(node, p.starters[node.region] || (team[0] && team[0].dex));
+    // La Liga se juega seguida: se lucha contra el que toca del desafío en curso (o el primero)
+    let fight = node, league = null;
+    if (node.index >= D.LEAGUE_FROM) {
+      if (D.progOf(p, node.region) < D.LEAGUE_FROM) return { error: 'Consigue antes las 8 medallas' };
+      const members = D.leadersOf(node.region).slice(D.LEAGUE_FROM);
+      const step = p.leagueRun && p.leagueRun.region === node.region ? p.leagueRun.step : 0;
+      fight = members[step];
+      league = { step, total: members.length };
+    } else if (node.index > D.progOf(p, node.region)) return { error: 'Antes tienes que vencer al anterior' };
+    const lt = D.leaderTeam(fight, p.starters[fight.region] || (team[0] && team[0].dex));
     return {
-      kind: 'gym', gym: node, index: node.index, region: node.region,
-      opts: { mode: 'trainer', map: node.map, sides: [mine, { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(node) })), ai: node.ai }] },
+      kind: 'gym', gym: fight, index: fight.index, region: fight.region, league,
+      opts: { mode: 'trainer', map: fight.map, sides: [mine, { name: fight.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(fight) })), ai: fight.ai }] },
     };
   }
   return { error: 'Combate desconocido' };
@@ -244,7 +252,30 @@ function applyResult(p, setup, result, battle) {
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;
     }
-    if (setup.kind === 'gym') {
+    if (setup.league) {
+      // Liga: un paso más del desafío; al vencer al Campeón, la región queda completada (la primera vez,
+      // con su premio). Cada combate se empieza con el equipo curado del todo
+      migrate(p);
+      const leaders = D.leadersOf(setup.region), firstClear = D.progOf(p, setup.region) < leaders.length;
+      const step = setup.league.step + 1, total = setup.league.total;
+      if (step >= total) {
+        p.leagueRun = null;
+        reward.league = { done: true, step, total };
+        if (firstClear) {
+          p.prog[setup.region] = leaders.length;
+          syncBadges(p);
+          reward.badge = { region: setup.region, index: setup.index, leader: setup.gym.leader, name: setup.gym.badge || setup.gym.name, kind: setup.gym.kind };
+          const vit = D.SHOP.filter(i => i.vit)[Math.floor(Math.random() * 4)].id;
+          reward.items = { caramelo: 3, [vit]: 2, ultraball: 5 };
+          for (const [k, n] of Object.entries(reward.items)) p.items[k] = (p.items[k] || 0) + n;
+        }
+      } else {
+        p.leagueRun = { region: setup.region, step };
+        reward.league = { step, total, next: leaders[D.LEAGUE_FROM + step].leader, nextId: leaders[D.LEAGUE_FROM + step].id };
+      }
+      if (!firstClear) reward.coins = Math.round(reward.coins / 2);
+      reward.gems = addGems(p, firstClear ? D.GEMS.leader : D.GEMS.leaderAgain);
+    } else if (setup.kind === 'gym') {
       migrate(p);
       const first = setup.index === p.prog[setup.region];
       if (first) {
@@ -280,6 +311,11 @@ function applyResult(p, setup, result, battle) {
     missions.track(p, 'win', 1, teamTypes);
     missions.track(p, 'level', reward.xp.reduce((a, x) => a + x.level - x.fromLevel, 0));
     missions.track(p, 'evolve', reward.xp.filter(x => x.evolved).length);
+  }
+  // Perder en la Liga: se vuelve a empezar desde el primero del Alto Mando
+  if (!won && setup.league) {
+    p.leagueRun = null;
+    reward.league = { failed: true, step: setup.league.step, total: setup.league.total, first: D.leadersOf(setup.region)[D.LEAGUE_FROM].leader };
   }
   reward.won = won;
   store.save();

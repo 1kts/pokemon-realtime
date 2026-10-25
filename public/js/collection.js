@@ -7,9 +7,10 @@ import { portrait, typeTint } from './sprites.js';
 import { masteryPrize, SKIN_LABEL, applySkin, auraName, frameBadge } from './frames.js';
 import { achIcon, achName, achDesc, frameName } from './achievements.js';
 import { effectName, avatarArt, avatarName } from './missions.js';
-import { icon, typeIcon } from './pixicons.js';
+import { icon, typeIcon, item as itemImg } from './pixicons.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
+const escapeAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 // Logros: retos por línea evolutiva, retos generales (por categorías) y la colección de todo lo que se
 // puede conseguir (con de dónde sale lo que falta), donde también se equipa
@@ -85,30 +86,45 @@ export const collectionViews = {
     const ready = r => Data.masteryReady(p, r).length, done = r => Data.masteryClaimed(p, r).length;
     const roots = lineRoots(p).sort((a, b) => (ready(b) - ready(a)) || (done(b) - done(a)) || (Data.masteryWins(p, b) - Data.masteryWins(p, a)) || a - b);
     if (!roots.length) body.append(el('p', 'small', t('Atrapa Pokémon y gana combates con ellos para empezar.')));
-    const grid = el('div', 'lg-grid');
+    // Una fila por línea (retrato, victorias, un punto por reto y cuántos van); al tocarla se despliegan sus
+    // retos. Las que tienen algo por recoger salen desplegadas
+    const open = this.lgOpen || (this.lgOpen = new Set());
+    const grid = el('div', 'lg-grid lg-list');
     for (const root of roots) {
       const claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root), name = SPECIES[root].name;
-      const card = typeTint(el('div', 'lg-card' + (can.length ? ' ready' : '')), root);
-      const head = el('div', 'lg-head', `<b>${name}</b><small>${t('{a}/{b} retos', { a: claimed.length, b: MASTERY_TIERS.length })}</small>`);
-      head.prepend(this.skinned(portrait(root, 44), root));
+      const isOpen = open.has(root) || (can.length > 0 && !open.has(-root));
+      const card = typeTint(el('div', 'lg-card' + (can.length ? ' ready' : '') + (isOpen ? ' open' : '')), root);
+      const pips = MASTERY_TIERS.map((x, i) => `<i class="pip${claimed.includes(i) ? ' got' : can.includes(i) ? ' ready' : ''}" title="${escapeAttr(masteryPrize(x, root, t))}"></i>`).join('');
+      const head = el('button', 'lg-head', `<b>${name}<small>${t('{n} victorias', { n: Data.masteryWins(p, root) })}</small></b><span class="lg-pips">${pips}</span><small class="lg-count">${t('{a}/{b} retos', { a: claimed.length, b: MASTERY_TIERS.length })}</small>${can.length ? `<em class="lg-ready">${t('¡{n} por recoger!', { n: can.length })}</em>` : ''}<i class="lg-chev">▾</i>`);
+      head.prepend(this.skinned(portrait(root, 40), root));
+      head.onclick = () => { const now = !card.classList.contains('open'); card.classList.toggle('open', now); open.delete(now ? -root : root); open.add(now ? root : -root); };
       card.append(head);
-      MASTERY_TIERS.forEach((x, i) => {
-        const cur = Math.min(Data.tierGoal(x), Data.lineStat(p, root, x.stat)), got = claimed.includes(i), ok = can.includes(i);
-        const row = el('div', 'lg-row k-' + x.kind + (got ? ' got' : ok ? ' ready' : ''));
-        row.innerHTML = `<span class="lg-ico">${x.kind === 'skin' ? applySkin(portrait(root, 34), x.skin, root).outerHTML : x.kind === 'star' ? icon('star', 26) : x.kind === 'art' ? icon('user', 26) : x.kind === 'title' ? icon('crown', 26) : x.kind === 'portrait' ? avatarArt('pt:' + root, 34) : `<i class="ava-aura aura-tipo" style="--aura:${Data.TYPE_COLOR[SPECIES[root].types[0]]}"></i>`}</span>
-          <div class="lg-body"><b>${masteryPrize(x, root, t)}</b><small>${tierAsk(x, name)}</small>${got ? '' : `<div class="m-bar"><i style="width:${cur / Data.tierGoal(x) * 100}%"></i><span>${cur} / ${Data.tierGoal(x)}</span></div>`}</div>`;
-        if (ok) {
-          const b = el('button', 'primary claim-btn', t('¡Recoger!'));
-          b.onclick = () => { b.disabled = true; this.net.send({ t: 'masteryclaim', dex: root, i }); };
-          row.append(b);
-        } else if (got) row.append(el('em', 'm-ok', '✓'));
-        card.append(row);
-      });
-      // los canvas de skin se pintan al cargar la hoja: se cambian por uno vivo
-      card.querySelectorAll('.lg-row.k-skin .lg-ico').forEach((c, k) => { c.innerHTML = ''; c.append(applySkin(portrait(root, 34), MASTERY_TIERS.filter(x => x.kind === 'skin')[k].skin, root)); });
+      card.append(this.lineTiers(root));
       grid.append(card);
     }
     body.append(grid);
+  },
+
+  // Los retos de una línea evolutiva (victorias, online y Torre) con su progreso y el botón de recoger; se
+  // usan en Logros › Líneas y en la ficha de cada Pokémon
+  lineTiers(root) {
+    const p = this.profile, claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root), name = SPECIES[root].name;
+    const tiers = el('div', 'lg-tiers');
+    MASTERY_TIERS.forEach((x, i) => {
+      const cur = Math.min(Data.tierGoal(x), Data.lineStat(p, root, x.stat)), got = claimed.includes(i), ok = can.includes(i);
+      const row = el('div', 'lg-row k-' + x.kind + (got ? ' got' : ok ? ' ready' : ''));
+      const ico = el('span', 'lg-ico');
+      if (x.kind === 'skin') ico.append(applySkin(portrait(root, 34), x.skin, root));
+      else ico.innerHTML = x.kind === 'reward' ? itemImg('caramelo', 28) : x.kind === 'art' ? icon('user', 26) : x.kind === 'title' ? icon('crown', 26) : x.kind === 'portrait' ? avatarArt('pt:' + root, 34) : icon('star', 26);
+      row.append(ico, el('div', 'lg-body', `<b>${masteryPrize(x, root, t)}</b><small>${tierAsk(x, name)}</small>${got ? '' : `<div class="m-bar"><i style="width:${cur / Data.tierGoal(x) * 100}%"></i><span>${cur} / ${Data.tierGoal(x)}</span></div>`}`));
+      if (ok) {
+        const b = el('button', 'primary claim-btn', t('¡Recoger!'));
+        b.onclick = () => { b.disabled = true; this.net.send({ t: 'masteryclaim', dex: root, i }); };
+        row.append(b);
+      } else if (got) row.append(el('em', 'm-ok', '✓'));
+      tiers.append(row);
+    });
+    return tiers;
   },
 
   // Retos: todos los logros, por categorías, con su progreso, premio y recoger
@@ -146,15 +162,17 @@ export const collectionViews = {
   // Marcos: todos (liga, logros y de tipo), los tuyos para ponértelos y de dónde sale cada uno que falta
   coll_frames(body) {
     const p = this.profile, own = (p.cosmetics && p.cosmetics.frames) || [];
-    body.append(el('p', 'small coll-intro', t('El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.')));
+    body.append(el('p', 'small coll-intro', t('El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.')));
     const SRC = {};
-    for (const a of Data.ACHIEVEMENTS) if (a.reward && a.reward.frame) SRC[a.reward.frame] = achName(a);
-    const all = [...new Set(['bronce', 'plata', 'oro', 'platino', 'diamante', 'maestro', ...Data.ACHIEVEMENTS.map(a => a.reward && a.reward.frame).filter(Boolean)])];
+    for (const a of Data.ACHIEVEMENTS) if (a.reward && a.reward.frame) SRC[a.reward.frame] = t('Reto: {name}', { name: achName(a) });
+    for (const ty of TYPE_NAMES) SRC['tipo-' + ty] = t('Próximamente');
+    // Los de antes que ya no se consiguen (p. ej. el de Campeón) solo salen si los tienes
+    const all = [...new Set(['bronce', 'plata', 'oro', 'platino', 'diamante', 'maestro', ...Data.ACHIEVEMENTS.map(a => a.reward && a.reward.frame).filter(Boolean), ...TYPE_NAMES.map(ty => 'tipo-' + ty), ...own])];
     const grid = el('div', 'coll-grid frames-grid');
     for (const f of all) {
       const has = own.includes(f), sel = p.frame === f;
       const b = el('div', 'coll-item frame-item' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
-      b.append(this.avatar(70, false, f, null, null), el('small', '', frameName(f)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : SRC[f] ? t('Reto: {name}', { name: SRC[f] }) : t('Liga {name}', { name: t(f[0].toUpperCase() + f.slice(1)) })));
+      b.append(this.avatar(70, false, f, null, null), el('small', '', frameName(f)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : SRC[f] || t('Liga {name}', { name: t(f[0].toUpperCase() + f.slice(1)) })));
       grid.append(b);
     }
     body.append(grid);
@@ -217,30 +235,20 @@ export const collectionViews = {
     body.append(grid);
   },
 
-  // Glows: la luz de alrededor del avatar. Los de tipo salen de la maestría de una línea de ese tipo
-  // (también de Lucky Spin y del cofre semanal); los especiales, de retos y de la Torre
+  // Glows: la luz de alrededor del avatar. Los de tipo salen del cofre semanal de misiones (uno que no tengas);
+  // los especiales, de retos y de la Torre
   coll_aura(body) {
     const p = this.profile, own = (p.cosmetics && p.cosmetics.auras) || [];
-    const n = winsFor('aura');
-    body.append(el('p', 'small coll-intro', t('Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.', { n })));
+    body.append(el('p', 'small coll-intro', t('Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.')));
     const SRC = { prisma: t('Reto de línea: racha de {n} en la Torre', { n: MASTERY_TIERS.find(x => x.aura === 'prisma').goal }) };
     for (const a of Data.ACHIEVEMENTS) if (a.reward && a.reward.aura) SRC[a.reward.aura] = SRC[a.reward.aura] ? SRC[a.reward.aura] + ' · ' + t('Reto: {name}', { name: achName(a) }) : t('Reto: {name}', { name: achName(a) });
-    const best = type => {
-      let top = null;
-      for (const r of lineRoots(p)) if (SPECIES[r].types[0] === type && (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top))) top = r;
-      return top;
-    };
     const grid = el('div', 'coll-grid aura-grid');
     for (const aura of Data.AURAS) {
       const has = own.includes(aura), sel = p.aura === aura;
       const b = el('div', 'coll-item aura' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
       b.append(this.avatar(52, false, undefined, aura), el('small', '', auraName(aura, t)));
       if (has) b.append(el('em', '', sel ? t('Puesto') : t('Lo tienes')));
-      else if (aura.startsWith('tipo-')) {
-        const r = best(aura.slice(5));
-        b.append(el('em', '', r ? `${SPECIES[r].name} ${Data.masteryWins(p, r)}/${n}` : t('Sin líneas de ese tipo')));
-        b.title = t('Gana {n} combates con una línea evolutiva de tipo {type}', { n, type: TYPE_LABEL[aura.slice(5)] });
-      } else b.append(el('em', '', SRC[aura] || ''));
+      else b.append(el('em', '', SRC[aura] || ''));
       grid.append(b);
     }
     body.append(grid);

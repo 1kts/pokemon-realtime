@@ -234,7 +234,7 @@ export function applySkin(node, skin, dex, parts = false) {
 export function masteryPrize(tier, dex, t) {
   const type = Data.TYPE_LABEL[Data.SPECIES[Data.lineOf(dex)].types[0]];
   return {
-    star: t('estrella de bronce'), art: t('ilustración oficial como avatar'), portrait: t('retrato como avatar'), aura: t('Glow {type}', { type }),
+    reward: t('Caramelo Raro y {n} de dinero', { n: (tier.coins || 0).toLocaleString() }), star: t('estrella de bronce'), art: t('ilustración oficial como avatar'), portrait: t('retrato como avatar'), aura: t('Glow {type}', { type }),
     frame: t('marco animado de su tipo'), skin: t(SKIN_LABEL[tier.skin] || ''), title: t('título «Maestro de {m}»', { m: Data.SPECIES[Data.lineOf(dex)].name }),
   }[tier.kind] + (tier.aura ? ' · ' + auraName(tier.aura, t) : '');
 }

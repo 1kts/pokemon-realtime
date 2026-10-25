@@ -10,7 +10,8 @@ import { typeDropdown } from './dropdown.js';
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, TYPE_NAMES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const num = d => '#' + String(d).padStart(4, '0');
-// evo: [a, condición] o [[a, condición], ...]; condición = nivel o id de piedra
+// evo: [a, condición] o [[a, condición], ...]; condición = nivel o id de piedra u objeto (los de intercambio no
+// se desvelan: como en los juegos, hay que descubrirlo)
 const evosOf = s => !s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo];
 const stoneName = id => { const it = Data.SHOP.find(i => i.id === id); return it ? it.name : id; };
 
@@ -165,7 +166,7 @@ export const pokedexViews = {
       box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: s.bst })}</small><div class="bs">${s.base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     }
     const evos = evosOf(s).filter(([to]) => SPECIES[to]);
-    if (evos.length) box.append(el('p', 'small', t('Evoluciona a {list}', { list: evos.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? t('Nv.{n}', { n: c }) : stoneName(c)})`).join(', ') })));
+    if (evos.length) box.append(el('p', 'small', t('Evoluciona a {list}', { list: evos.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? t('Nv.{n}', { n: c }) : Data.STONE_IDS.includes(c) ? stoneName(c) : t('¿con algo especial?')})`).join(', ') })));
     const pre = Object.values(SPECIES).find(o => evosOf(o).some(([to]) => to === dex));
     if (pre) box.append(el('p', 'small', t('Evoluciona de {name}', { name: pre.name })));
     // Dónde aparece

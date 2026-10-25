@@ -191,6 +191,17 @@ class Client {
   ok(!!eevee, 'Eevee añadido para probar las piedras');
   m = await a2.req({ t: 'story', a: 'use', item: 'trueno', uid: eevee.uid });
   ok(m.p.mons.find(x => x.uid === eevee.uid).dex === 135 && m.p.items.trueno === 0, 'Piedra Trueno: Eevee -> Jolteon');
+  // Evoluciones por intercambio: con el Cordón Unión (Haunter -> Gengar) o con su objeto (Onix -> Steelix);
+  // subir de nivel ya no las hace evolucionar
+  const storyMod = require('../server/story.js');
+  storyMod.devAddMon(prof, 93, 45, false, 'kanto'); storyMod.devAddMon(prof, 95, 30, false, 'kanto'); storyMod.devAddMon(prof, 64, 44, false, 'kanto');
+  prof.items.cordon = 1; prof.items.revestimiento = 1; prof.items.caramelo = 1;
+  const [hau, onx, kad] = [93, 95, 64].map(d => prof.mons.find(x => x.dex === d));
+  m = await a2.req({ t: 'story', a: 'use', item: 'cordon', uid: hau.uid });
+  ok(m.p.mons.find(x => x.uid === hau.uid).dex === 94 && !m.p.items.cordon, 'Cordón Unión: Haunter -> Gengar (evoluciones por intercambio)');
+  m = await a2.req({ t: 'story', a: 'use', item: 'revestimiento', uid: onx.uid });
+  ok(m.p.mons.find(x => x.uid === onx.uid).dex === 208, 'Revestimiento Metálico: Onix -> Steelix');
+  ok(!D.SHOP.find(i => i.id === 'cordon').desc.includes('Gengar') && D.SPECIES[64].evo.join() === '65,cordon', 'su descripción no dice para qué sirven y Kadabra ya no evoluciona por nivel');
   err = a2.wait('error'); a2.send({ t: 'story', a: 'use', item: 'caramelo', uid: 999 });
   ok(!!(await err), 'usar objeto sobre un Pokémon inexistente da error');
   // Vitaminas: suben la estadística y tienen tope; venta: da dinero y quita el Pokémon
@@ -252,20 +263,19 @@ class Client {
   await b.req({ t: 'hello', name: 'Azul' }); await c.req({ t: 'hello', name: 'Verde' });
   // Solo las cuentas registradas salen en los rankings: Azul y Verde se registran (conservan el perfil)
   await b.req({ t: 'register', user: 'azul', pass: 'clave-azul' }); await c.req({ t: 'register', user: 'verde', pass: 'clave-verde' });
-  const db = b.wait('draft'), dc = c.wait('draft');
-  b.send({ t: 'queue', mode: 'ranked' }); c.send({ t: 'queue', mode: 'ranked' });
-  const [d1] = await Promise.all([db, dc]);
-  ok(d1.phase === 'ban' && d1.pool.length === D.RANKED_POOL.length, 'emparejados: fase de veto');
-  const pb = b.wait('draft', x => x.phase === 'pick'), pc = c.wait('draft', x => x.phase === 'pick');
-  b.send({ t: 'ban', dex: 149 }); c.send({ t: 'ban', dex: 65 });
-  const [p1] = await Promise.all([pb, pc]);
-  ok(p1.bans.includes(149) && p1.bans.includes(65), 'fase de elección con los vetos');
-  b.send({ t: 'pick', dexes: [149, 6, 9] });
-  c.send({ t: 'pick', dexes: [6, 9, 3] });
+  // Sin draft: cada uno se prepara su equipo de 3 (con movimientos) y el rival es al azar
+  let qe = b.wait('error'); b.send({ t: 'queue', mode: 'ranked' });
+  ok(/Prepara antes tu equipo/.test((await qe).msg), 'sin equipo preparado no se puede buscar partida');
+  qe = b.wait('error'); b.send({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 6 }, { dex: 9 }] });
+  ok(/3 Pokémon distintos/.test((await qe).msg), 'el equipo son 3 Pokémon distintos del pool');
+  m = await b.req({ t: 'pvpteam', team: [{ dex: 6, moves: ['lanzallamas', 'noExiste'] }, { dex: 9 }, { dex: 3 }] });
+  ok(m.p.pvpTeam[0].moves.join() === 'lanzallamas' && m.p.pvpTeam[1].moves.length === 4, 'se guarda con los movimientos elegidos (solo los que sabe a Nv.50)');
+  await c.req({ t: 'pvpteam', team: [{ dex: 149 }, { dex: 65 }, { dex: 94 }] });
   const sb = b.wait('start'), sc = c.wait('start');
-  b.send({ t: 'pick', dexes: [6, 9, 3] });   // reintento válido tras uno con un vetado
+  b.send({ t: 'queue', mode: 'ranked' }); c.send({ t: 'queue', mode: 'ranked' });
   const [st] = await Promise.all([sb, sc]);
-  ok(st.mode === 'ranked' && st.sides[0].team.every(t => t.level === 50) && !st.sides.some(x => x.team.some(t => t.dex === 149)), 'combate a nivel 50 sin Pokémon vetados');
+  const mine = st.sides[st.you].team;
+  ok(st.mode === 'ranked' && mine.every(x => x.level === 50) && mine.map(x => x.dex).join() === '6,9,3' && mine[0].moves.join() === 'lanzallamas', 'emparejados: el combate empieza ya, a Nv.50, con el equipo y los movimientos de cada uno');
   const ob = b.wait('over'), oc = c.wait('over');
   c.send({ t: 'forfeit' });
   const [r1, r2] = await Promise.all([ob, oc]);
@@ -310,25 +320,26 @@ class Client {
     seasonMod.migrate(bp);
     bp.mastery[4] = 0; bp.mastery[172] = 0;
     for (let i = 0; i < 50; i++) ups.push(...seasonMod.addMastery(bp, [5, 4, 25]));
-    ok(bp.mastery[4] === 50 && bp.mastery[172] === 50 && ups.filter(u => u.dex === 4).length === 3, 'retos de línea: una victoria por línea y combate, con sus niveles');
-    ok(D.masteryReady(bp, 4).join() === '0,1,2', 'retos de línea: los premios no llegan solos, quedan por recoger');
+    ok(bp.mastery[4] === 50 && bp.mastery[172] === 50 && ups.filter(u => u.dex === 4).length === 2, 'retos de línea: una victoria por línea y combate, con sus niveles');
+    ok(D.masteryReady(bp, 4).join() === '0,1', 'retos de línea: los premios no llegan solos, quedan por recoger');
     m = await b.req({ t: 'masteryclaim', dex: 5, i: 4 }, 'error');
     ok(/nada que recoger/.test(m.msg), 'retos de línea: no se recoge un premio sin llegar a él');
-    for (const i of [0, 2]) m = await b.req({ t: 'masteryclaim', dex: 5, i }, 'loot');
-    ok(m.r.aura === 'tipo-fuego' && m.r.mastery.dex === 4 && bp.cosmetics.auras.includes('tipo-fuego'), 'reto de 50 victorias: glow del tipo de la línea');
-    m = await b.req({ t: 'masteryclaim', dex: 4, i: 2 }, 'error');
+    const candy0 = bp.items.caramelo || 0, coins0 = bp.coins;
+    m = await b.req({ t: 'masteryclaim', dex: 5, i: 0 }, 'loot');
+    ok(m.r.coins === 500 && m.r.items.caramelo === 1 && bp.items.caramelo === candy0 + 1 && bp.coins === coins0 + 500 && m.r.mastery.dex === 4, 'reto de 10 victorias: un Caramelo Raro y 500 de dinero');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 0 }, 'error');
     ok(/nada que recoger/.test(m.msg), 'retos de línea: cada premio se recoge una sola vez');
     m = await b.req({ t: 'masteryclaim', dex, i: 1 }, 'loot');
-    ok(m.r.art === D.lineOf(dex), 'reto de 25 victorias: ilustración oficial de la línea');
-    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, aura: 'tipo-fuego' });
-    ok(m.p.avatarArt === true && m.p.aura === 'tipo-fuego', 'ilustración de avatar y brillo de tipo');
+    ok(m.r.art === D.lineOf(dex) && D.MASTERY_ART === 50, 'reto de 50 victorias: ilustración oficial de la línea');
+    m = await b.req({ t: 'look', avatar: dex, avatarArt: true });
+    ok(m.p.avatarArt === true, 'ilustración de avatar');
     // Skins: Oro a 500 victorias, Holo a 25 victorias online y Galaxia con racha de 50 en la Torre
     m = await b.req({ t: 'look', skin: { dex: 4, skin: 'oro' } }, 'error');
     ok(/esa skin/.test(m.msg), 'skin: sin el reto no se puede poner');
     bp.mastery[4] = 500;
-    m = await b.req({ t: 'masteryclaim', dex: 4, i: 3 }, 'loot');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 2 }, 'loot');
     ok(m.r.avatar === 'pt:4' && bp.cosmetics.avatars.includes('pt:4'), 'reto de 100 victorias: retrato de la línea como avatar');
-    m = await b.req({ t: 'masteryclaim', dex: 4, i: 5 }, 'loot');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 4 }, 'loot');
     ok(m.r.skin === 'oro', 'reto de 500 victorias: skin Edición Oro');
     m = await b.req({ t: 'look', skin: { dex: 6, skin: 'oro' } });
     ok(m.p.skins[4] === 'oro' && D.skinOf(bp, 5) === 'oro' && D.skinOf(bp, 25) === null, 'skin: se pone a toda la línea evolutiva');
@@ -336,14 +347,15 @@ class Client {
     ok(!m.p.skins[4], 'skin: quitarla');
     seasonMod.addLineStat(bp, [5], 'pvp', 25);
     seasonMod.addLineStat(bp, [6], 'tower', 30, true); seasonMod.addLineStat(bp, [4], 'tower', 50, true); seasonMod.addLineStat(bp, [4], 'tower', 10, true);
-    ok(D.masteryReady(bp, 4).includes(6) && D.masteryReady(bp, 4).includes(7) && bp.lineStats.tower[4] === 50, 'Holo con victorias online y Galaxia con la mejor racha de la Torre (cuenta la mejor)');
+    ok(D.masteryReady(bp, 4).includes(5) && D.masteryReady(bp, 4).includes(6) && bp.lineStats.tower[4] === 50, 'Holo con victorias online y Galaxia con la mejor racha de la Torre (cuenta la mejor)');
     // Logros de debilitar por tipo: su marco
     const kp = { cosmetics: { titles: [], frames: [] }, coins: 0, items: {}, mons: [], caught: [], elo: 1000, mastery: {} };
     seasonMod.migrate(kp);
     seasonMod.addKOs(kp, { kos: [...Array(100)].map(() => ({ by: 0, type: 'fuego' })).concat([{ by: 1, type: 'agua' }]) }, 0);
     seasonMod.migrate(kp);
     ok(kp.koByType.fuego === 100 && !kp.koByType.agua && kp.achClaim.includes('ko-fuego'), 'debilitar 100 con movimientos de fuego cumple su reto (los del rival no cuentan)');
-    ok(seasonMod.claimAchievement(kp, 'ko-fuego').loot.frame === 'tipo-fuego' && kp.cosmetics.frames.includes('tipo-fuego'), 'y su premio es el marco Fuego');
+    ok(seasonMod.claimAchievement(kp, 'ko-fuego').loot.aura === 'tipo-fuego' && kp.cosmetics.auras.includes('tipo-fuego') && !kp.cosmetics.frames.includes('tipo-fuego'), 'y su premio es el glow Fuego');
+    ok(!D.ACHIEVEMENTS.some(a => a.reward && (a.reward.frame === 'campeon' || /^tipo-/.test(a.reward.frame || ''))), 'los marcos de tipo y el de Campeón ya no salen de los retos');
     await b.req({ t: 'look', avatar: null, frame: null, aura: null });
   }
   // Fin de temporada (simulado subiendo el id)
@@ -398,17 +410,43 @@ class Client {
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
 
-  // Desconexión durante el draft
-  const e1 = new Client(port), e2 = new Client(port);
-  await e1.open(); await e2.open();
-  await e1.req({ t: 'hello', name: 'X' }); await e2.req({ t: 'hello', name: 'Y' });
-  const de = e2.wait('draft');
-  e1.send({ t: 'queue', mode: 'casual' }); e2.send({ t: 'queue', mode: 'casual' });
-  const dd = await de;
-  ok(dd.phase === 'pick', 'partida rápida: sin fase de veto');
-  const cancel = e2.wait('cancelled');
-  e1.ws.close();
-  ok(!!(await cancel), 'si el rival se va durante el draft, se cancela');
+  // Misma IP: no se emparejan (en producción; aquí se activa a mano). Y contra el mismo rival, el ELO solo
+  // cuenta en las 3 primeras partidas del día
+  {
+    process.env.SAME_IP_BLOCK = '1';
+    const e1 = new Client(port), e2 = new Client(port);
+    await e1.open(); await e2.open();
+    await e1.req({ t: 'hello', name: 'X' }); await e2.req({ t: 'hello', name: 'Y' });
+    for (const e of [e1, e2]) await e.req({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+    const q1 = e1.wait('queue'), q2 = e2.wait('queue');
+    e1.send({ t: 'queue', mode: 'casual' }); e2.send({ t: 'queue', mode: 'casual' });
+    await Promise.all([q1, q2]);
+    const started = await Promise.race([e1.wait('start', () => true, 1500).then(() => true), new Promise(r => setTimeout(() => r(false), 1200))]);
+    ok(!started, 'dos conexiones desde la misma IP no se emparejan (nadie se sube el ELO contra sí mismo)');
+    e1.send({ t: 'unqueue' }); e2.send({ t: 'unqueue' });
+    delete process.env.SAME_IP_BLOCK;
+    e1.ws.close(); e2.ws.close();
+  }
+  {
+    // El mismo par de cuentas: la 4.ª clasificatoria del día ya no mueve el ELO
+    const f1 = new Client(port), f2 = new Client(port);
+    await f1.open(); await f2.open();
+    await f1.req({ t: 'hello', name: 'Fa' }); await f2.req({ t: 'hello', name: 'Fb' });
+    for (const f of [f1, f2]) await f.req({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+    const deltas = [];
+    for (let g = 0; g < 4; g++) {
+      const s1 = f1.wait('start'), s2 = f2.wait('start');
+      f1.send({ t: 'queue', mode: 'ranked' }); f2.send({ t: 'queue', mode: 'ranked' });
+      await Promise.all([s1, s2]);
+      const o1 = f1.wait('over');
+      f2.send({ t: 'forfeit' });
+      const r = await o1;
+      deltas.push(r.reward.elo);
+      await new Promise(x => setTimeout(x, 150));
+    }
+    ok(deltas.slice(0, 3).every(d => d > 0) && deltas[3] === 0, `contra el mismo rival, el ELO solo cuenta 3 partidas al día (${deltas.join(', ')})`);
+    f1.ws.close(); f2.ws.close();
+  }
 
   // ---------- Torre Batalla ----------
   const tower = require('../server/tower.js');
@@ -516,7 +554,8 @@ class Client {
     const week = D.DAILY_LOGIN.reduce((n, d) => n + (d.gems || 0), 0);
     const fortnight = 2 * week + D.TREASURE_DAYS * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
     const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
-    ok(fortnight >= allWheels, `jugando a diario se desbloquean las 3 ruletas en una tanda (${fortnight} gemas para ${allWheels})`);
+    const perDay = fortnight / D.TREASURE_DAYS / (allWheels / 3 / D.SPIN_COST.length);
+    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 300 && perDay >= 0.8 && perDay <= 1.5, `una ruleta entera son 300 gemas: entrando a diario (premio diario y misiones diarias) sale una tirada al día (${perDay.toFixed(2)})`);
   }
 
   // ---------- Retratos con emoción en Tesoros ----------
@@ -693,8 +732,12 @@ class Client {
     const oldE = { mastery: { 4: 600 }, masteryClaimed: { 4: [0, 1, 2, 3, 4, 5, 6, 7] }, cosmetics: { titles: [], frames: [] }, achievements: {} };
     seasonMod.migrate(oldE);
     ok(oldE.cosmetics.particles.includes(4) && !(oldE.masteryClaimed[4] || []).length && D.hasSkin(oldE, 6, 'elemental'), 'la Elemental de maestría se conserva al pasar a Tesoros y los retos de línea empiezan de cero');
-    oldE.masteryClaimed[4] = [7]; seasonMod.migrate(oldE);
-    ok(oldE.masteryClaimed[4].join() === '7', 'y solo una vez: el reto 8 nuevo (Galaxia) no se toca');
+    oldE.masteryClaimed[4] = [6]; seasonMod.migrate(oldE);
+    ok(oldE.masteryClaimed[4].join() === '6', 'y solo una vez: el reto 7 nuevo (Galaxia) no se toca');
+    // Retos de la 0.21 (con estrella y glow de tipo): se recolocan sin perder nada de lo recogido
+    const v2 = { masteryV: 2, masteryClaimed: { 4: [0, 1, 2, 3, 4, 7] }, mastery: { 4: 300 }, cosmetics: { titles: [], frames: [], auras: ['tipo-fuego'] }, achievements: {} };
+    seasonMod.migrate(v2);
+    ok(v2.masteryClaimed[4].join() === '0,1,2,3,6' && v2.cosmetics.auras.includes('tipo-fuego') && v2.masteryV === 3, 'los retos ya recogidos en la 0.21 se recolocan y el glow de tipo se conserva');
     // Día nuevo: misiones, cambios y cofre nuevos
     prof.missions.day = '2000-01-01';
     r = await mc.req({ t: 'mission', a: 'refresh' });
@@ -722,6 +765,28 @@ class Client {
     ok(/nada que recoger/.test((await e).msg), 'una medalla sin ganar no da nada');
     r = await mc.req({ t: 'look', avatar: 'badge:kanto:0' });
     ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
+  }
+
+  // Liga: el Alto Mando y el Campeón, 5 combates seguidos; si pierdes uno, se vuelve al primero
+  {
+    const storyL = require('../server/story.js');
+    const lp = { coins: 0, items: {}, mons: [], caught: [], nextUid: 1, prog: { kanto: 8, johto: 0 }, teams: { kanto: [] }, starters: {}, achievements: {} };
+    storyL.migrate(lp);
+    storyL.devAddMon(lp, 6, 60, false, 'kanto');
+    const L = D.leadersOf('kanto'), members = L.slice(D.LEAGUE_FROM);
+    const fight = id => storyL.battleSetup(lp, { a: 'gym', id });
+    const fakeB = setup => ({ sides: [{ team: [] }, { team: setup.opts.sides[1].team.map(m => ({ level: m.level })) }] });
+    let st0 = fight(members[3].id);
+    ok(!st0.error && st0.gym.id === members[0].id && st0.league.step === 0, 'la Liga empieza siempre por el primero del Alto Mando');
+    ok(D.levelCap(lp, 'kanto') === Math.round(members.reduce((a, n) => a + n.team.reduce((x, [, l]) => x + l, 0) / n.team.length, 0) / members.length), 'con las 8 medallas, el tope de nivel es la media de toda la Liga');
+    let r = storyL.applyResult(lp, st0, { winner: 0 }, fakeB(st0));
+    ok(r.league.step === 1 && r.league.next === members[1].leader && lp.prog.kanto === 8, 'al ganar sigue con el siguiente (sin cerrar la región aún)');
+    const st1 = fight(members[0].id);
+    ok(st1.gym.id === members[1].id, 'el desafío sigue donde lo dejaste');
+    r = storyL.applyResult(lp, st1, { winner: 1 }, fakeB(st1));
+    ok(r.league.failed && !lp.leagueRun && fight(members[0].id).gym.id === members[0].id, 'perder uno te devuelve al primero');
+    for (let i = 0; i < members.length; i++) { const stI = fight(members[0].id); r = storyL.applyResult(lp, stI, { winner: 0 }, fakeB(stI)); }
+    ok(r.league.done && lp.prog.kanto === L.length && r.badge && r.badge.kind === 'champion' && D.levelCap(lp, 'kanto') === 100, 'ganar los 5 seguidos completa la región, con el premio del Campeón; después, tope 100');
   }
 
   // Rutas: cada 6 horas, 4 especies reales al azar y 1 especial de la zona; con «suerte acumulada», ninguna

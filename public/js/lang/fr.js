@@ -11,6 +11,78 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.0 ----------
+    'La Liga, de una vez': 'La Ligue, d\'une traite',
+    'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': 'La Ligue se joue comme dans les jeux : le Conseil 4 et le Maître sont 5 combats d\'affilée, ton équipe soignée entre chacun ; si tu en perds un, tu recommences.',
+    'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.': 'En Classé, tu prépares ton équipe de 3 et ses capacités : plus de vetos, et l\'adversaire est au hasard avec un ELO proche. La Partie rapide utilise la même équipe.',
+    'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?': 'Ectoplasma, Alakazam, Steelix, Cizayox et compagnie évoluent avec des objets de la Boutique, comme le Fil de Liaison ou la Peau Métal. À quoi servira chacun ?',
+    'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.': 'Sur la fiche de tes Pokémon, la Garde-robe montre chaque skin sur le Pokémon et l\'onglet Défis, la progression de sa lignée. Les objets s\'utilisent depuis le Sac.',
+    'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.': 'La carte de l\'Histoire met en avant le chemin vers ton prochain défi, numérote les arènes et a une vue Liste ; ton Profil montre ton équipe, ton favori et ta progression de ligue.',
+    'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.': 'Lucky Spin coûte plus à chaque tirage (300 gemmes la roue entière), les défis de lignée donnent un Super Bonbon à 10 victoires et ceux de Spécialiste, le halo de leur type.',
+    // ---------- Subtítulo Clasificatoria ----------
+    'Tu equipo, ELO y ligas contra otros entrenadores': 'Ton équipe, ELO et ligues contre d\'autres dresseurs',
+    // ---------- Clasificatoria: equipo propio ----------
+    'Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.': 'Combats avec ton équipe de 3 (tous N.{n}) contre un adversaire au hasard d\'ELO proche.',
+    'Movimientos de {m} ({n}/4)': 'Capacités de {m} ({n}/4)',
+    'Online sin ELO, con tu equipo de Clasificatoria': 'En ligne sans ELO, avec ton équipe de Classé',
+    'Prepara tu equipo de 3 para poder buscar partida.': 'Prépare ton équipe de 3 pour chercher une partie.',
+    'Tu equipo (Nv.{n})': 'Ton équipe (N.{n})',
+    'Elige 3 Pokémon distintos: se guarda solo.': 'Choisis 3 Pokémon différents : c\'est enregistré tout seul.',
+    'Prepara antes tu equipo en Clasificatoria': 'Prépare d\'abord ton équipe dans Classé',
+    'Elige 3 Pokémon distintos de la lista': 'Choisis 3 Pokémon différents de la liste',
+    // ---------- Ficha: estadísticas ----------
+    'Estadísticas': 'Stats',
+    'Su naturaleza la sube un 10 %': 'Sa nature l\'augmente de 10 %',
+    'Su naturaleza la baja un 10 %': 'Sa nature la baisse de 10 %',
+    // ---------- Desafío de la Liga ----------
+    'Consigue las 8 medallas de la región para entrar en la Liga.': 'Obtiens les 8 badges de la région pour entrer dans la Ligue.',
+    'Desafío de la Liga': 'Défi de la Ligue',
+    'Empezar el desafío': 'Commencer le défi',
+    'Liga Pokémon · {n} seguidos': 'Ligue Pokémon · {n} d\'affilée',
+    'Liga Pokémon': 'Ligue Pokémon',
+    'Repetir el desafío': 'Refaire le défi',
+    'Seguir el desafío ({n}/{m})': 'Continuer le défi ({n}/{m})',
+    'Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.': 'Tu recommences depuis {who}. Ton équipe commencera entièrement soignée.',
+    '{n} combates seguidos sin caer.': '{n} combats d\'affilée sans tomber.',
+    '¡Has superado la Liga!': 'Tu as vaincu la Ligue !',
+    '{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.': '{n} combats d\'affilée : le Conseil 4 et le Maître. Ton équipe est entièrement soignée entre les combats, mais si tu en perds un, tu recommences depuis le premier.',
+    '{n} combates seguidos: si pierdes uno, vuelves a empezar': '{n} combats d\'affilée : si tu en perds un, tu recommences',
+    'Desafío de la Liga: {n}/{m}': 'Défi de la Ligue : {n}/{m}',
+    'Siguiente: {who} ({n}/{m})': 'Suivant : {who} ({n}/{m})',
+    'Siguiente: {who}. Tu equipo se cura del todo antes del combate.': 'Suivant : {who}. Ton équipe est entièrement soignée avant le combat.',
+    // ---------- Ficha: Vestuario y Retos ----------
+    '25 victorias online con su línea': '25 victoires en ligne avec sa lignée',
+    '500 victorias con su línea': '500 victoires avec sa lignée',
+    'Ponérselas': 'Les mettre',
+    'Quitarlas': 'Les retirer',
+    'Quitársela': 'La retirer',
+    'Racha de 50 en la Torre con su línea': 'Série de 50 dans la Tour avec sa lignée',
+    'Ver todos los retos en Logros': 'Voir tous les défis dans Succès',
+    'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': 'Défis de la lignée de {m} : {n} victoires. Chaque combat gagné avec un Pokémon de la lignée dans l\'équipe en ajoute une.',
+    'Vestuario': 'Garde-robe',
+    // ---------- Objetos de intercambio ----------
+    '¿con algo especial?': 'avec quelque chose de spécial ?',
+    'Piedras y objetos de evolución': 'Pierres et objets d\'évolution',
+    // ---------- Marcos de tipo más adelante ----------
+    'El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.': 'Le contour décoré de ton avatar. Ils viennent des ligues et des défis ; ceux de type, plus tard.',
+    // ---------- Marcos en Lucky Spin, glows en retos ----------
+    'El contorno decorado de tu avatar. Los de tipo salen en las ruletas de Lucky Spin; los demás, de la liga y de otros retos.': 'Le contour décoré de ton avatar. Ceux de type viennent des roues de Lucky Spin ; les autres, des ligues et d\'autres défis.',
+    'Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.': 'Un cadre animé du type de la lignée pour le contour de ton avatar. S\'équipe dans ton Profil.',
+    'Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.': 'Une lumière autour de ton avatar. Ceux de type viennent des défis Spécialiste (mettre K.O. avec des capacités de ce type) et du coffre hebdomadaire ; les spéciaux, d\'autres défis.',
+    // ---------- Retos de línea v3 ----------
+    'Caramelo Raro y {n} de dinero': 'Super Bonbon et {n} d\'argent',
+    'Cofre semanal de misiones': 'Coffre hebdomadaire des missions',
+    'Una luz alrededor de tu avatar. Los de tipo salen en el cofre semanal de misiones, uno que aún no tengas; los especiales, de los retos.': 'Une lumière autour de ton avatar. Ceux de type viennent du coffre hebdomadaire des missions, un que tu n\'as pas encore ; les spéciaux, des défis.',
+    // ---------- Mapa o lista y liga ----------
+    'Mapa': 'Carte',
+    'Lista': 'Liste',
+    'Faltan {n} ELO para {league}': 'Encore {n} ELO pour {league}',
+    'Liga máxima': 'Ligue maximale',
+    'Partidas': 'Parties',
+    // ---------- Tarjeta de entrenador ----------
+    'Equipo de {r}': 'Équipe de {r}',
+    'Torre: récord {n}': 'Tour : record {n}',
+    'Favorito: {m} · {n} victorias': 'Favori : {m} · {n} victoires',
     // ---------- Novedades v0.22.4 ----------
     'Perfil más ordenado': 'Un Profil mieux rangé',
     'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'Ton Profil est mieux organisé : ta carte et ses insignes en haut, toutes tes stats sur une bande, badges et parties à côté des succès, et le compte à la fin.',
@@ -1592,6 +1664,11 @@ export default {
     noche: [null, 'Fait évoluer Cornèbre, Feuforêve…'],
     alba: [null, 'Fait évoluer Kirlia (mâle), Stalgamin (femelle)…'],
     dia: [null, 'Fait évoluer Togetic, Rosélia, Chinchidou…'],
+    cordon: ['Fil de Liaison', 'Un étrange fil qui semble relier deux Pokémon. Certains réagissent à son contact…'],
+    revestimiento: ['Peau Métal', 'Une pellicule métallique spéciale. Que se passerait-il si tu la donnais à un certain Pokémon ?'],
+    rocarey: ['Roche Royale', 'Une roche en forme de couronne. On dit qu\'elle va très bien à certains Pokémon…'],
+    escamadragon: ['Écaille Draco', 'Une écaille très dure et brillante. Quelque chose s\'éveille chez qui la porte…'],
+    mejora: ['Améliorator', 'Une boîte transparente pleine de données mystérieuses. Qui pourrait s\'en servir ?'],
   },
   vit: { hp: 'PV', atk: 'Attaque', def: 'Défense', spe: 'Vitesse' },
 };

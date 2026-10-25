@@ -12,6 +12,78 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.0 ----------
+    'La Liga, de una vez': 'ポケモンリーグを一気に',
+    'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': 'ポケモンリーグはゲームと同じく、四天王とチャンピオンの5連戦に。戦闘の合間にチームは全回復しますが、1回でも負けると最初からです。',
+    'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.': 'ランクマッチでは3匹のチームとわざを事前に用意。禁止指定はなくなり、ELOの近い相手とランダムに対戦します。クイック対戦も同じチームを使います。',
+    'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?': 'ゲンガー、フーディン、ハガネール、ハッサムなどがショップの道具（つながりのヒモ、メタルコートなど）で進化します。どれが何に使えるかな？',
+    'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.': 'ポケモンの詳細画面の「衣装」で各スキンを実際の姿で確認でき、「チャレンジ」タブで系統の進み具合が分かります。道具はバッグから使います。',
+    'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.': 'ストーリーのマップは次の挑戦への道を強調し、ジムに番号を付け、リスト表示も追加。プロフィールにはチーム、お気に入り、リーグの進み具合を表示します。',
+    'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.': 'ラッキースピンは回すたびに高くなります（1台まるごと300ジェム）。系統チャレンジは10勝でふしぎなアメ、スペシャリストはそのタイプのグローがもらえます。',
+    // ---------- Subtítulo Clasificatoria ----------
+    'Tu equipo, ELO y ligas contra otros entrenadores': 'あなたのチーム、ELO、他のトレーナーとのリーグ',
+    // ---------- Clasificatoria: equipo propio ----------
+    'Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.': '3匹のチーム（全員Lv.{n}）で、ELOの近いランダムな相手と対戦します。',
+    'Movimientos de {m} ({n}/4)': '{m}のわざ（{n}/4）',
+    'Online sin ELO, con tu equipo de Clasificatoria': 'ELOなしのオンライン対戦（ランクマッチのチームで）',
+    'Prepara tu equipo de 3 para poder buscar partida.': '対戦を探すには3匹のチームを用意しよう。',
+    'Tu equipo (Nv.{n})': 'あなたのチーム（Lv.{n}）',
+    'Elige 3 Pokémon distintos: se guarda solo.': '違うポケモンを3匹選ぼう：自動で保存されます。',
+    'Prepara antes tu equipo en Clasificatoria': '先にランクマッチでチームを用意しよう',
+    'Elige 3 Pokémon distintos de la lista': 'リストから違うポケモンを3匹選んでください',
+    // ---------- Ficha: estadísticas ----------
+    'Estadísticas': 'ステータス',
+    'Su naturaleza la sube un 10 %': 'せいかくで10%上がる',
+    'Su naturaleza la baja un 10 %': 'せいかくで10%下がる',
+    // ---------- Desafío de la Liga ----------
+    'Consigue las 8 medallas de la región para entrar en la Liga.': 'リーグに入るには地方のバッジを8個集めよう。',
+    'Desafío de la Liga': 'ポケモンリーグ挑戦',
+    'Empezar el desafío': '挑戦を始める',
+    'Liga Pokémon · {n} seguidos': 'ポケモンリーグ・{n}連戦',
+    'Liga Pokémon': 'ポケモンリーグ',
+    'Repetir el desafío': 'もう一度挑戦',
+    'Seguir el desafío ({n}/{m})': '挑戦を続ける（{n}/{m}）',
+    'Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.': '{who}からやり直しです。チームは全回復した状態で始まります。',
+    '{n} combates seguidos sin caer.': '{n}連戦を一度も負けずに突破。',
+    '¡Has superado la Liga!': 'ポケモンリーグを制覇した！',
+    '{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.': '四天王とチャンピオンの{n}連戦。戦闘の合間にチームは全回復しますが、1回でも負けると最初からやり直しです。',
+    '{n} combates seguidos: si pierdes uno, vuelves a empezar': '{n}連戦：1回負けると最初から',
+    'Desafío de la Liga: {n}/{m}': 'リーグ挑戦：{n}/{m}',
+    'Siguiente: {who} ({n}/{m})': '次：{who}（{n}/{m}）',
+    'Siguiente: {who}. Tu equipo se cura del todo antes del combate.': '次：{who}。戦闘の前にチームは全回復します。',
+    // ---------- Ficha: Vestuario y Retos ----------
+    '25 victorias online con su línea': 'その系統でオンライン25勝',
+    '500 victorias con su línea': 'その系統で500勝',
+    'Ponérselas': 'つける',
+    'Quitarlas': 'はずす',
+    'Quitársela': 'はずす',
+    'Racha de 50 en la Torre con su línea': 'その系統でタワー50連勝',
+    'Ver todos los retos en Logros': '実績ですべてのチャレンジを見る',
+    'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m}系統のチャレンジ：{n}勝。系統のポケモンをチームに入れて勝つたびに1勝追加されます。',
+    'Vestuario': '衣装',
+    // ---------- Objetos de intercambio ----------
+    '¿con algo especial?': '何か特別なもので？',
+    'Piedras y objetos de evolución': '進化の石と進化アイテム',
+    // ---------- Marcos de tipo más adelante ----------
+    'El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.': 'アバターの装飾された縁取り。リーグやチャレンジで入手できます。タイプ別は今後追加予定です。',
+    // ---------- Marcos en Lucky Spin, glows en retos ----------
+    'El contorno decorado de tu avatar. Los de tipo salen en las ruletas de Lucky Spin; los demás, de la liga y de otros retos.': 'アバターの装飾された縁取り。タイプ別はラッキースピンのルーレットで、その他はリーグや他のチャレンジで入手できます。',
+    'Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.': '系統のタイプのアニメーションフレームでアバターを縁取ります。プロフィールで装備します。',
+    'Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.': 'アバターの周りの光。タイプ別はスペシャリストチャレンジ（そのタイプのわざで倒す）と週間宝箱で、特別なものは他のチャレンジで入手できます。',
+    // ---------- Retos de línea v3 ----------
+    'Caramelo Raro y {n} de dinero': 'ふしぎなアメと{n}円',
+    'Cofre semanal de misiones': 'ミッションの週間宝箱',
+    'Una luz alrededor de tu avatar. Los de tipo salen en el cofre semanal de misiones, uno que aún no tengas; los especiales, de los retos.': 'アバターの周りの光。タイプ別はミッションの週間宝箱から未所持のものが出て、特別なものはチャレンジで入手できます。',
+    // ---------- Mapa o lista y liga ----------
+    'Mapa': 'マップ',
+    'Lista': 'リスト',
+    'Faltan {n} ELO para {league}': '{league}まであと{n} ELO',
+    'Liga máxima': '最上位リーグ',
+    'Partidas': '試合',
+    // ---------- Tarjeta de entrenador ----------
+    'Equipo de {r}': '{r}のチーム',
+    'Torre: récord {n}': 'タワー：最高 {n}',
+    'Favorito: {m} · {n} victorias': 'お気に入り：{m}・{n}勝',
     // ---------- Novedades v0.22.4 ----------
     'Perfil más ordenado': '整理されたプロフィール',
     'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'プロフィールが見やすくなりました：上にバッジ付きのカード、ステータスを一列に、ジムバッジと対戦履歴を実績の横に、アカウントは最後に。',
@@ -1611,6 +1683,11 @@ export default {
     noche: [null, 'ヤミカラス、ムウマ など が 進化する'],
     alba: [null, 'キルリア（♂）、ユキワラシ（♀）など が 進化する'],
     dia: [null, 'トゲチック、ロゼリア、チラーミィ など が 進化する'],
+    cordon: ['つながりのヒモ', '2匹のポケモンをつなぐような不思議なヒモ。触れると反応するポケモンもいるらしい…'],
+    revestimiento: ['メタルコート', '特殊な金属の膜。あるポケモンに渡したら何が起こるだろう？'],
+    rocarey: ['おうじゃのしるし', '王冠の形をした石。一部のポケモンにとてもよく似合うという…'],
+    escamadragon: ['りゅうのウロコ', 'とても硬く輝くウロコ。持つ者の中で何かが目覚める…'],
+    mejora: ['アップグレード', '謎のデータが詰まった透明な箱。誰が使えるのだろう？'],
   },
   vit: { hp: 'HP', atk: 'こうげき', def: 'ぼうぎょ', spe: 'すばやさ' },
   stat6: { atk: 'こうげき', def: 'ぼうぎょ', spa: 'とくこう', spd: 'とくぼう', spe: 'すばやさ' },

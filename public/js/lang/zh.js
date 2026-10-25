@@ -11,6 +11,78 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.0 ----------
+    'La Liga, de una vez': '一口气挑战联盟',
+    'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': '联盟像游戏中一样：四天王与冠军共 5 连战，每场之间队伍会恢复；输掉一场就要从头开始。',
+    'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.': '在排位赛中提前准备 3 只队伍及其招式：不再禁用，对手为 ELO 相近的随机玩家。快速对战使用同一支队伍。',
+    'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?': '耿鬼、胡地、大钢蛇、巨钳螳螂等可用商店道具进化，比如联结绳或金属膜。每样到底有什么用呢？',
+    'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.': '宝可梦详情页的「衣柜」直接在宝可梦身上展示每款皮肤，「挑战」页显示其系列进度。道具改从背包使用。',
+    'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.': '剧情地图会突出通往下一个挑战的路线、为道馆编号，并新增列表视图；个人资料显示你的队伍、最爱和联赛进度。',
+    'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.': '幸运转盘每转一次都会更贵（整个转盘 300 宝石），系列挑战 10 胜给神奇糖果，专家挑战给其属性的光晕。',
+    // ---------- Subtítulo Clasificatoria ----------
+    'Tu equipo, ELO y ligas contra otros entrenadores': '你的队伍、ELO 与对其他训练家的联赛',
+    // ---------- Clasificatoria: equipo propio ----------
+    'Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.': '用你的 3 只队伍（全部 Lv.{n}）对战 ELO 相近的随机对手。',
+    'Movimientos de {m} ({n}/4)': '{m}的招式（{n}/4）',
+    'Online sin ELO, con tu equipo de Clasificatoria': '无 ELO 的在线对战，使用排位赛队伍',
+    'Prepara tu equipo de 3 para poder buscar partida.': '准备好 3 只的队伍才能寻找对战。',
+    'Tu equipo (Nv.{n})': '你的队伍（Lv.{n}）',
+    'Elige 3 Pokémon distintos: se guarda solo.': '选择 3 只不同的宝可梦：自动保存。',
+    'Prepara antes tu equipo en Clasificatoria': '请先在排位赛中准备队伍',
+    'Elige 3 Pokémon distintos de la lista': '请从列表中选择 3 只不同的宝可梦',
+    // ---------- Ficha: estadísticas ----------
+    'Estadísticas': '能力',
+    'Su naturaleza la sube un 10 %': '性格使其提高 10%',
+    'Su naturaleza la baja un 10 %': '性格使其降低 10%',
+    // ---------- Desafío de la Liga ----------
+    'Consigue las 8 medallas de la región para entrar en la Liga.': '集齐该地区的 8 枚徽章才能进入联盟。',
+    'Desafío de la Liga': '联盟挑战',
+    'Empezar el desafío': '开始挑战',
+    'Liga Pokémon · {n} seguidos': '宝可梦联盟 · {n} 连战',
+    'Liga Pokémon': '宝可梦联盟',
+    'Repetir el desafío': '再次挑战',
+    'Seguir el desafío ({n}/{m})': '继续挑战（{n}/{m}）',
+    'Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.': '你将从{who}重新开始。队伍会完全恢复后开始。',
+    '{n} combates seguidos sin caer.': '{n} 连战一场未败。',
+    '¡Has superado la Liga!': '你通过了宝可梦联盟！',
+    '{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.': '四天王与冠军的 {n} 连战。每场之间队伍会完全恢复，但只要输掉一场就要从第一场重新开始。',
+    '{n} combates seguidos: si pierdes uno, vuelves a empezar': '{n} 连战：输一场就从头再来',
+    'Desafío de la Liga: {n}/{m}': '联盟挑战：{n}/{m}',
+    'Siguiente: {who} ({n}/{m})': '下一位：{who}（{n}/{m}）',
+    'Siguiente: {who}. Tu equipo se cura del todo antes del combate.': '下一位：{who}。战斗前队伍会完全恢复。',
+    // ---------- Ficha: Vestuario y Retos ----------
+    '25 victorias online con su línea': '用该系列在线获胜 25 场',
+    '500 victorias con su línea': '用该系列获胜 500 场',
+    'Ponérselas': '装上',
+    'Quitarlas': '取下',
+    'Quitársela': '取下',
+    'Racha de 50 en la Torre con su línea': '用该系列在对战塔连胜 50 场',
+    'Ver todos los retos en Logros': '在成就中查看所有挑战',
+    'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m}系列挑战：{n} 胜。队伍中有该系列宝可梦时，每赢一场加一胜。',
+    'Vestuario': '衣柜',
+    // ---------- Objetos de intercambio ----------
+    '¿con algo especial?': '用某种特别的东西？',
+    'Piedras y objetos de evolución': '进化石与进化道具',
+    // ---------- Marcos de tipo más adelante ----------
+    'El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.': '头像的装饰边框。来自联赛和挑战；属性头像框之后推出。',
+    // ---------- Marcos en Lucky Spin, glows en retos ----------
+    'El contorno decorado de tu avatar. Los de tipo salen en las ruletas de Lucky Spin; los demás, de la liga y de otros retos.': '头像的装饰边框。属性头像框来自幸运转盘，其余来自联赛和其他挑战。',
+    'Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.': '该系列属性的动画头像框，装饰头像边缘。在个人资料中装备。',
+    'Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.': '头像周围的光。属性光晕来自专家挑战（用该属性招式击倒宝可梦）和每周宝箱，特殊光晕来自其他挑战。',
+    // ---------- Retos de línea v3 ----------
+    'Caramelo Raro y {n} de dinero': '神奇糖果和 {n} 金钱',
+    'Cofre semanal de misiones': '每周任务宝箱',
+    'Una luz alrededor de tu avatar. Los de tipo salen en el cofre semanal de misiones, uno que aún no tengas; los especiales, de los retos.': '头像周围的光。属性光晕来自每周任务宝箱（未拥有的），特殊光晕来自挑战。',
+    // ---------- Mapa o lista y liga ----------
+    'Mapa': '地图',
+    'Lista': '列表',
+    'Faltan {n} ELO para {league}': '距 {league} 还差 {n} ELO',
+    'Liga máxima': '最高段位',
+    'Partidas': '对战',
+    // ---------- Tarjeta de entrenador ----------
+    'Equipo de {r}': '{r}队伍',
+    'Torre: récord {n}': '对战塔：纪录 {n}',
+    'Favorito: {m} · {n} victorias': '最爱：{m} · {n} 胜',
     // ---------- Novedades v0.22.4 ----------
     'Perfil más ordenado': '更整洁的个人资料',
     'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': '个人资料更有条理：顶部是带徽章的卡片，所有数据排成一行，徽章与对战记录在成就旁边，账号放在最后。',
@@ -1603,5 +1675,10 @@ export default {
     noche: [null, '可让黑暗鸦、梦妖等进化…'],
     alba: [null, '可让奇鲁莉安（♂）、雪童子（♀）等进化…'],
     dia: [null, '可让波克基古、毒蔷薇、泡沫栗鼠等进化…'],
+    cordon: ['联结绳', '一条似乎能将两只宝可梦连在一起的奇特绳子。有些宝可梦碰到它会有反应……'],
+    revestimiento: ['金属膜', '特殊的金属薄膜。如果把它交给某只宝可梦会发生什么呢？'],
+    rocarey: ['王者之证', '王冠形状的石头。据说很适合某些宝可梦……'],
+    escamadragon: ['龙之鳞片', '非常坚硬、闪闪发光的鳞片。持有者体内有什么正在觉醒……'],
+    mejora: ['升级数据', '装满神秘数据的透明盒子。谁能用得上呢？'],
   },
 };

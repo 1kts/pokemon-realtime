@@ -2,7 +2,7 @@
 // (estadísticas, historial, títulos, marcos, avatar, contraseña), recompensas de clasificatoria,
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
 import { confirmBox } from './dialog.js';
-import { portrait, animatedPortrait, monIcon } from './sprites.js';
+import { portrait, animatedPortrait, monIcon, face } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
@@ -488,7 +488,36 @@ export const accountViews = {
       ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(handle(p.account.user)), date: fmtDate(p.account.since) })
       : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
     info.append(el('div', 'tc-league', `<span class="league">${t(p.league)}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">${t('#{n} del ranking', { n: this.rank })}</span>` : ''}`));
+    // Progreso hacia la siguiente liga
+    const li = LEAGUES.findIndex(l => l[1] === p.league), nextL = LEAGUES[li + 1];
+    if (nextL) {
+      const from = LEAGUES[li][0], pct = Math.max(0, Math.min(100, (p.elo - from) / (nextL[0] - from) * 100));
+      info.append(el('div', 'tc-lbar', `<div class="bar"><i style="width:${pct}%"></i></div><small>${t('Faltan {n} ELO para {league}', { n: nextL[0] - p.elo, league: t(nextL[1]) })}</small>`));
+    } else info.append(el('div', 'tc-lbar', `<small>${t('Liga máxima')}</small>`));
     card.append(info);
+    // En medio: tu equipo de la región en la que más has avanzado y datos destacados (tu Pokémon favorito,
+    // que es la línea con más victorias, y tu récord en la Torre)
+    const mid0 = el('div', 'tc-mid');
+    const region = [...Data.REGION_IDS].sort((a, b) => Data.progOf(p, b) - Data.progOf(p, a))[0];
+    const team = ((p.teams && p.teams[region]) || []).map(uid => p.mons.find(m => m.uid === uid)).filter(Boolean);
+    if (team.length) {
+      const row = el('div', 'tc-team');
+      for (const m of team) {
+        const c = el('span', 'tc-mon');
+        c.append(face(m.dex, 52, 'Normal', Data.looksShiny(m)) || portrait(m.dex, 52, { shiny: Data.looksShiny(m) }));
+        c.append(el('small', '', `Nv.${m.level}`));
+        c.title = SPECIES[m.dex].name;
+        row.append(c);
+      }
+      mid0.append(el('small', 'tc-lbl', t('Equipo de {r}', { r: Data.REGIONS[region].name })), row);
+    }
+    const lines = Object.keys(p.mastery || {}).map(Number).filter(d => SPECIES[d]);
+    const fav = lines.sort((a, b) => Data.masteryWins(p, b) - Data.masteryWins(p, a))[0];
+    const chips = [];
+    if (fav && Data.masteryWins(p, fav)) chips.push(`<span class="tc-chip fav">${t('Favorito: {m} · {n} victorias', { m: SPECIES[fav].name, n: Data.masteryWins(p, fav) })}</span>`);
+    if (p.tower && p.tower.best) chips.push(`<span class="tc-chip">${t('Torre: récord {n}', { n: p.tower.best })}</span>`);
+    if (chips.length) mid0.append(el('div', 'tc-chips', chips.join('')));
+    if (mid0.children.length) card.append(mid0);
     // A la derecha de la tarjeta, los logros fijados como insignias
     const pins = el('div', 'tc-pins');
     pins.innerHTML = (p.showcase || []).length ? `<small>${t('Insignias')}</small>${showcaseHtml(p.showcase, 52)}` : `<small>${t('Fija hasta 3 logros con la estrella para lucirlos aquí')}</small>`;
@@ -524,7 +553,7 @@ export const accountViews = {
     const stat = (label, value) => `<div class="stat"><small>${t(label)}</small><b>${value}</b></div>`;
     const champ = Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—';
     body.append(el('div', 'panel pv-stats', `<div class="pv-srow"><h3>${t('Clasificatoria')}</h3><div class="stat-grid">
-      ${stat('ELO', p.elo)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div></div>
+      ${stat('Partidas', games)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div></div>
       <div class="pv-srow"><h3>${t('Historia')}</h3><div class="stat-grid">
       ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${Data.dexCount(p)}/${Data.DEX_TOTAL}`)}${stat('Pokémon', p.mons.length)}${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', champ)}</div></div>`));
 

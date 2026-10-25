@@ -11,6 +11,78 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.0 ----------
+    'La Liga, de una vez': 'The League, in one go',
+    'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': 'The League plays like in the games: the Elite Four and the Champion are 5 battles in a row, with your team healed between them; lose one and you start over.',
+    'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.': 'In Ranked you set up your team of 3 and their moves: no more bans, and your rival is random with a similar ELO. Quick match uses the same team.',
+    'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?': 'Gengar, Alakazam, Steelix, Scizor and friends evolve with Shop items like the Linking Cord or the Metal Coat. What could each one be for?',
+    'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.': 'On your Pokémon\'s sheet, the Wardrobe shows each skin on the Pokémon itself and the Challenges tab shows its line\'s progress. Items are used from the Bag.',
+    'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.': 'The Story map highlights the path to your next challenge, numbers the gyms and has a List view; your Profile shows your team, your favourite and your league progress.',
+    'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.': 'Lucky Spin gets pricier with each spin (300 gems for a whole wheel), line challenges give a Rare Candy at 10 wins and Specialist ones give their type\'s glow.',
+    // ---------- Subtítulo Clasificatoria ----------
+    'Tu equipo, ELO y ligas contra otros entrenadores': 'Your team, ELO and leagues against other trainers',
+    // ---------- Clasificatoria: equipo propio ----------
+    'Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.': 'Battle with your team of 3 (all Lv.{n}) against a random rival with similar ELO.',
+    'Movimientos de {m} ({n}/4)': '{m}\'s moves ({n}/4)',
+    'Online sin ELO, con tu equipo de Clasificatoria': 'Online without ELO, with your Ranked team',
+    'Prepara tu equipo de 3 para poder buscar partida.': 'Set up your team of 3 to search for a match.',
+    'Tu equipo (Nv.{n})': 'Your team (Lv.{n})',
+    'Elige 3 Pokémon distintos: se guarda solo.': 'Pick 3 different Pokémon: it saves automatically.',
+    'Prepara antes tu equipo en Clasificatoria': 'Set up your team in Ranked first',
+    'Elige 3 Pokémon distintos de la lista': 'Pick 3 different Pokémon from the list',
+    // ---------- Ficha: estadísticas ----------
+    'Estadísticas': 'Stats',
+    'Su naturaleza la sube un 10 %': 'Its nature raises it by 10%',
+    'Su naturaleza la baja un 10 %': 'Its nature lowers it by 10%',
+    // ---------- Desafío de la Liga ----------
+    'Consigue las 8 medallas de la región para entrar en la Liga.': 'Get the region\'s 8 badges to enter the League.',
+    'Desafío de la Liga': 'League challenge',
+    'Empezar el desafío': 'Start the challenge',
+    'Liga Pokémon · {n} seguidos': 'Pokémon League · {n} in a row',
+    'Liga Pokémon': 'Pokémon League',
+    'Repetir el desafío': 'Repeat the challenge',
+    'Seguir el desafío ({n}/{m})': 'Continue the challenge ({n}/{m})',
+    'Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.': 'You start again from {who}. Your team will start fully healed.',
+    '{n} combates seguidos sin caer.': '{n} battles in a row without falling.',
+    '¡Has superado la Liga!': 'You beat the League!',
+    '{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.': '{n} battles in a row: the Elite Four and the Champion. Your team is fully healed between battles, but if you lose one you start again from the first.',
+    '{n} combates seguidos: si pierdes uno, vuelves a empezar': '{n} battles in a row: lose one and you start again',
+    'Desafío de la Liga: {n}/{m}': 'League challenge: {n}/{m}',
+    'Siguiente: {who} ({n}/{m})': 'Next: {who} ({n}/{m})',
+    'Siguiente: {who}. Tu equipo se cura del todo antes del combate.': 'Next: {who}. Your team is fully healed before the battle.',
+    // ---------- Ficha: Vestuario y Retos ----------
+    '25 victorias online con su línea': '25 online wins with its line',
+    '500 victorias con su línea': '500 wins with its line',
+    'Ponérselas': 'Put them on',
+    'Quitarlas': 'Take them off',
+    'Quitársela': 'Take it off',
+    'Racha de 50 en la Torre con su línea': 'Streak of 50 in the Tower with its line',
+    'Ver todos los retos en Logros': 'See all challenges in Achievements',
+    'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m} line challenges: {n} wins. Every battle you win with a Pokémon of the line in your team adds one.',
+    'Vestuario': 'Wardrobe',
+    // ---------- Objetos de intercambio ----------
+    '¿con algo especial?': 'with something special?',
+    'Piedras y objetos de evolución': 'Evolution stones and items',
+    // ---------- Marcos de tipo más adelante ----------
+    'El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.': 'The decorated outline of your avatar. They come from leagues and challenges; type frames, later on.',
+    // ---------- Marcos en Lucky Spin, glows en retos ----------
+    'El contorno decorado de tu avatar. Los de tipo salen en las ruletas de Lucky Spin; los demás, de la liga y de otros retos.': 'The decorated outline of your avatar. Type frames come from the Lucky Spin wheels; the rest, from leagues and other challenges.',
+    'Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.': 'An animated frame of the line\'s type for your avatar\'s outline. Equip it in your Profile.',
+    'Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.': 'A light around your avatar. Type glows come from the Specialist challenges (knock out Pokémon with moves of that type) and the weekly mission chest; special ones, from other challenges.',
+    // ---------- Retos de línea v3 ----------
+    'Caramelo Raro y {n} de dinero': 'Rare Candy and {n} money',
+    'Cofre semanal de misiones': 'Weekly mission chest',
+    'Una luz alrededor de tu avatar. Los de tipo salen en el cofre semanal de misiones, uno que aún no tengas; los especiales, de los retos.': 'A light around your avatar. Type glows come from the weekly mission chest, one you don\'t have yet; special ones, from challenges.',
+    // ---------- Mapa o lista y liga ----------
+    'Mapa': 'Map',
+    'Lista': 'List',
+    'Faltan {n} ELO para {league}': '{n} ELO to {league}',
+    'Liga máxima': 'Top league',
+    'Partidas': 'Games',
+    // ---------- Tarjeta de entrenador ----------
+    'Equipo de {r}': '{r} team',
+    'Torre: récord {n}': 'Tower: best {n}',
+    'Favorito: {m} · {n} victorias': 'Favourite: {m} · {n} wins',
     // ---------- Novedades v0.22.4 ----------
     'Perfil más ordenado': 'A tidier Profile',
     'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': 'Your Profile is better organised: your card with its badges on top, all your stats in one strip, medals and games next to achievements, and your account at the end.',
@@ -1615,6 +1687,11 @@ export default {
     noche: ['Dusk Stone', 'Evolves Murkrow, Misdreavus…'],
     alba: ['Dawn Stone', 'Evolves Kirlia (male), Snorunt (female)…'],
     dia: ['Shiny Stone', 'Evolves Togetic, Roselia, Minccino…'],
+    cordon: ['Linking Cord', 'A strange cord that seems to link two Pokémon. Some react when they touch it…'],
+    revestimiento: ['Metal Coat', 'A special metallic film. What would happen if you gave it to a certain Pokémon?'],
+    rocarey: ['King\'s Rock', 'A crown-shaped rock. They say it suits some Pokémon very well…'],
+    escamadragon: ['Dragon Scale', 'A very tough, shiny scale. Something awakens in whoever holds it…'],
+    mejora: ['Up-Grade', 'A transparent box full of mysterious data. Who could use it?'],
   },
 
   natures: {

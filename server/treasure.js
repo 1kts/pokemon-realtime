@@ -20,6 +20,7 @@ function grant(p, x) {
   rewards.migrate(p);
   const loot = { coins: 0, items: {} };
   if (x.kind === 'skin') { rewards.unlock(p, 'skins', `${x.skin}:${D.lineOf(x.dex)}`); loot.skin = x.skin; loot.skinDex = D.lineOf(x.dex); }
+  if (x.kind === 'frame') { rewards.unlock(p, 'frames', x.frame); loot.frame = x.frame; }
   if (x.kind === 'particles') { rewards.migrate(p); rewards.unlock(p, 'particles', D.lineOf(x.dex)); p.particles[D.lineOf(x.dex)] = true; loot.particles = D.lineOf(x.dex); }
   if (x.kind === 'portrait') { rewards.unlock(p, 'avatars', x.id); loot.avatar = x.id; }
   if (x.kind === 'effect') { rewards.unlock(p, 'effects', x.effect); loot.effect = x.effect; }

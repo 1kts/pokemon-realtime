@@ -12,6 +12,78 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.0 ----------
+    'La Liga, de una vez': '리그를 한 번에',
+    'La Liga se juega como en los juegos: el Alto Mando y el Campeón son 5 combates seguidos, con tu equipo curado entre ellos; si pierdes uno, vuelves a empezar.': '리그는 게임처럼 사천왕과 챔피언의 5연전입니다. 배틀 사이에 팀이 회복되지만, 한 번이라도 지면 처음부터 다시 시작합니다.',
+    'En Clasificatoria preparas tu equipo de 3 y sus movimientos: ya no hay vetos y el rival es al azar con ELO parecido. Partida rápida usa el mismo equipo.': '랭크전에서는 3마리 팀과 기술을 미리 준비합니다. 밴은 없어졌고 상대는 ELO가 비슷한 무작위입니다. 빠른 대전도 같은 팀을 씁니다.',
+    'Gengar, Alakazam, Steelix, Scizor y compañía evolucionan con objetos de la Tienda, como el Cordón Unión o el Revestimiento Metálico. ¿Para qué servirá cada uno?': '팬텀, 후딘, 강철톤, 핫삼 등이 연결의끈, 금속코트 같은 상점 도구로 진화합니다. 각각 어디에 쓰일까요?',
+    'En la ficha de tus Pokémon, el Vestuario enseña cada skin sobre el propio Pokémon y la pestaña Retos, el progreso de su línea. Los objetos se usan desde la Mochila.': '포켓몬 상세 화면의 옷장에서는 각 스킨을 포켓몬에게 직접 입혀 보고, 도전 탭에서는 계열의 진행도를 봅니다. 도구는 가방에서 사용합니다.',
+    'El mapa de la Historia resalta el camino al siguiente reto, numera los gimnasios y tiene vista de Lista; tu Perfil enseña tu equipo, tu favorito y tu progreso de liga.': '스토리 지도는 다음 도전까지의 길을 강조하고 체육관에 번호를 붙이며 목록 보기를 추가했습니다. 프로필에는 팀, 최애, 리그 진행도가 나옵니다.',
+    'Lucky Spin sube de precio con cada tirada (300 gemas la ruleta entera), los retos de línea dan un Caramelo Raro a las 10 victorias y los de Especialista, el glow de su tipo.': '럭키 스핀은 돌릴수록 비싸집니다(룰렛 전체 300젬). 계열 도전은 10승에 이상한사탕, 스페셜리스트 도전은 그 타입의 글로우를 줍니다.',
+    // ---------- Subtítulo Clasificatoria ----------
+    'Tu equipo, ELO y ligas contra otros entrenadores': '내 팀, ELO, 다른 트레이너와의 리그',
+    // ---------- Clasificatoria: equipo propio ----------
+    'Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.': '3마리 팀(모두 Lv.{n})으로 ELO가 비슷한 무작위 상대와 싸웁니다.',
+    'Movimientos de {m} ({n}/4)': '{m}의 기술 ({n}/4)',
+    'Online sin ELO, con tu equipo de Clasificatoria': 'ELO 없는 온라인 대전, 랭크전 팀으로',
+    'Prepara tu equipo de 3 para poder buscar partida.': '대전을 찾으려면 3마리 팀을 준비하세요.',
+    'Tu equipo (Nv.{n})': '내 팀 (Lv.{n})',
+    'Elige 3 Pokémon distintos: se guarda solo.': '서로 다른 포켓몬 3마리를 고르세요: 자동으로 저장됩니다.',
+    'Prepara antes tu equipo en Clasificatoria': '먼저 랭크전에서 팀을 준비하세요',
+    'Elige 3 Pokémon distintos de la lista': '목록에서 서로 다른 포켓몬 3마리를 고르세요',
+    // ---------- Ficha: estadísticas ----------
+    'Estadísticas': '능력치',
+    'Su naturaleza la sube un 10 %': '성격으로 10% 오른다',
+    'Su naturaleza la baja un 10 %': '성격으로 10% 내려간다',
+    // ---------- Desafío de la Liga ----------
+    'Consigue las 8 medallas de la región para entrar en la Liga.': '리그에 들어가려면 지방의 배지 8개를 모으세요.',
+    'Desafío de la Liga': '포켓몬리그 도전',
+    'Empezar el desafío': '도전 시작',
+    'Liga Pokémon · {n} seguidos': '포켓몬리그 · {n}연전',
+    'Liga Pokémon': '포켓몬리그',
+    'Repetir el desafío': '다시 도전',
+    'Seguir el desafío ({n}/{m})': '도전 계속 ({n}/{m})',
+    'Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.': '{who}부터 다시 시작합니다. 팀은 완전히 회복된 상태로 시작합니다.',
+    '{n} combates seguidos sin caer.': '{n}연전을 쓰러지지 않고 돌파.',
+    '¡Has superado la Liga!': '리그를 제패했다!',
+    '{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.': '사천왕과 챔피언의 {n}연전. 배틀 사이에 팀이 완전히 회복되지만, 한 번이라도 지면 처음부터 다시 시작합니다.',
+    '{n} combates seguidos: si pierdes uno, vuelves a empezar': '{n}연전: 한 번 지면 처음부터',
+    'Desafío de la Liga: {n}/{m}': '리그 도전: {n}/{m}',
+    'Siguiente: {who} ({n}/{m})': '다음: {who} ({n}/{m})',
+    'Siguiente: {who}. Tu equipo se cura del todo antes del combate.': '다음: {who}. 배틀 전에 팀이 완전히 회복됩니다.',
+    // ---------- Ficha: Vestuario y Retos ----------
+    '25 victorias online con su línea': '그 계열로 온라인 25승',
+    '500 victorias con su línea': '그 계열로 500승',
+    'Ponérselas': '장착하기',
+    'Quitarlas': '빼기',
+    'Quitársela': '빼기',
+    'Racha de 50 en la Torre con su línea': '그 계열로 타워 50연승',
+    'Ver todos los retos en Logros': '업적에서 모든 도전 보기',
+    'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m} 계열 도전: {n}승. 계열 포켓몬을 팀에 넣고 이길 때마다 1승이 더해집니다.',
+    'Vestuario': '옷장',
+    // ---------- Objetos de intercambio ----------
+    '¿con algo especial?': '특별한 무언가로?',
+    'Piedras y objetos de evolución': '진화의 돌과 진화 도구',
+    // ---------- Marcos de tipo más adelante ----------
+    'El contorno decorado de tu avatar. Salen de la liga y de los retos; los de tipo, más adelante.': '아바타의 장식 테두리. 리그와 도전에서 얻으며, 타입 프레임은 나중에 나옵니다.',
+    // ---------- Marcos en Lucky Spin, glows en retos ----------
+    'El contorno decorado de tu avatar. Los de tipo salen en las ruletas de Lucky Spin; los demás, de la liga y de otros retos.': '아바타의 장식 테두리. 타입 프레임은 럭키 스핀 룰렛에서, 나머지는 리그와 다른 도전에서 얻습니다.',
+    'Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.': '계열 타입의 움직이는 프레임으로 아바타를 꾸밉니다. 프로필에서 장착합니다.',
+    'Una luz alrededor de tu avatar. Los de tipo salen de los retos de Especialista (debilitar con movimientos de ese tipo) y del cofre semanal de misiones; los especiales, de otros retos.': '아바타 주위의 빛. 타입 글로우는 스페셜리스트 도전(그 타입 기술로 쓰러뜨리기)과 주간 상자에서, 특별한 것은 다른 도전에서 얻습니다.',
+    // ---------- Retos de línea v3 ----------
+    'Caramelo Raro y {n} de dinero': '이상한사탕과 {n}원',
+    'Cofre semanal de misiones': '주간 미션 상자',
+    'Una luz alrededor de tu avatar. Los de tipo salen en el cofre semanal de misiones, uno que aún no tengas; los especiales, de los retos.': '아바타 주위의 빛. 타입 글로우는 주간 미션 상자에서 아직 없는 것이 나오고, 특별한 것은 도전으로 얻습니다.',
+    // ---------- Mapa o lista y liga ----------
+    'Mapa': '지도',
+    'Lista': '목록',
+    'Faltan {n} ELO para {league}': '{league}까지 {n} ELO',
+    'Liga máxima': '최고 리그',
+    'Partidas': '경기',
+    // ---------- Tarjeta de entrenador ----------
+    'Equipo de {r}': '{r} 팀',
+    'Torre: récord {n}': '타워: 최고 {n}',
+    'Favorito: {m} · {n} victorias': '최애: {m} · {n}승',
     // ---------- Novedades v0.22.4 ----------
     'Perfil más ordenado': '정리된 프로필',
     'El Perfil se ordena mejor: tu tarjeta con las insignias arriba, todas tus estadísticas en una franja, medallas y partidas junto a los logros, y la cuenta al final.': '프로필이 더 깔끔해졌습니다: 위에 휘장이 있는 카드, 모든 통계를 한 줄로, 배지와 대전을 업적 옆에, 계정은 맨 아래에.',
@@ -1611,5 +1683,10 @@ export default {
     noche: [null, '니로우, 무우마 등이 진화한다'],
     alba: [null, '킬리아(♂), 눈꼬마(♀) 등이 진화한다'],
     dia: [null, '토게틱, 로젤리아, 치라미 등이 진화한다'],
+    cordon: ['연결의끈', '두 포켓몬을 이어 주는 듯한 신기한 끈. 닿으면 반응하는 포켓몬도 있다는데…'],
+    revestimiento: ['금속코트', '특수한 금속 막. 어떤 포켓몬에게 주면 무슨 일이 일어날까?'],
+    rocarey: ['왕의징표석', '왕관 모양의 돌. 일부 포켓몬에게 아주 잘 어울린다고 한다…'],
+    escamadragon: ['용의비늘', '아주 단단하고 반짝이는 비늘. 지닌 자 안에서 무언가가 깨어난다…'],
+    mejora: ['업그레이드', '수수께끼 데이터로 가득한 투명한 상자. 누가 쓸 수 있을까?'],
   },
 };

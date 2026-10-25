@@ -6,6 +6,7 @@ import { t } from './i18n.js';
 import { portrait, faceSrc } from './sprites.js';
 import { icon, item as itemImg, typeIcon } from './pixicons.js';
 import { applySkin } from './frames.js';
+import { frameName } from './achievements.js';
 import { portraitArt, avatarName, effectName } from './missions.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, RARITY, SPIN_COST } = Data;
@@ -20,6 +21,7 @@ const faceHtml = dex => { const src = faceSrc(dex, 'Happy'); return src ? `<img 
 // Nombre del premio
 export function prizeName(x) {
   if (x.kind === 'skin') return t('Skin Elemental · línea de {m}', { m: SPECIES[x.dex].name });
+  if (x.kind === 'frame') return frameName(x.frame);
   if (x.kind === 'particles') return t('Partículas · línea de {m}', { m: SPECIES[x.dex].name });
   if (x.kind === 'portrait') return avatarName(x.id);
   if (x.kind === 'effect') return effectName(x.effect);
@@ -44,6 +46,7 @@ export const treasureViews = {
   prizeArt(x, size) {
     const box = el('span', 'tz-art');
     if (x.kind === 'skin') box.append(applySkin(portrait(x.dex, size), 'elemental', x.dex));
+    else if (x.kind === 'frame') box.append(this.avatar(size, false, x.frame, null, null));
     else if (x.kind === 'particles') box.append(applySkin(portrait(x.dex, size), null, x.dex, true));
     else if (x.kind === 'portrait') box.innerHTML = portraitArt(x.dex, Math.round(size * 0.9), x.emo);
     else if (x.kind === 'effect') box.append(this.avatar(Math.round(size * 0.9), false, null, null, x.effect));
@@ -116,6 +119,7 @@ export const treasureViews = {
     const info = el('div', 'tz-info', pick
       ? `<b style="color:${RARITY[pick.rarity].color}">${t(RARITY[pick.rarity].name)}</b> · ${prizeName(pick)} · ${mine.includes(pick.id) ? t('Ya lo tienes') : t('{p} en la próxima tirada', { p: pct((odds.find(o => o.prize === pick) || { p: 0 }).p) })}<small>${{
         skin: t('La skin Elemental de la línea: el sprite con la paleta de su tipo y un contorno brillante, en los menús y en combate.'),
+        frame: t('Un marco animado del tipo de la línea para el contorno de tu avatar. Se pone en tu Perfil.'),
         particles: t('Brasas, burbujas, chispas… del tipo de la línea alrededor de su sprite, con cualquier skin, en los menús y en combate. Se encienden en la ficha del Pokémon.'),
         portrait: t('Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.'),
         effect: t('Un efecto animado por encima de tu avatar, sea cual sea. Póntelo en tu Perfil.'),

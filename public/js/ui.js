@@ -25,6 +25,9 @@ import { tutorialViews } from './tutorial.js';
 import { monSheetViews } from './monsheet.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
+// Cara con emoción: si el Pokémon no tiene esa, la más parecida que tenga (contento → feliz → normal…)
+const MOOD_FALLBACK = { Joyous: ['Joyous', 'Happy', 'Inspired', 'Normal'], Sad: ['Sad', 'Crying', 'Pain', 'Worried', 'Normal'], Pain: ['Pain', 'Sad', 'Normal'], Normal: ['Normal'] };
+const moodFace = (dex, size, emo, shiny) => { for (const e of MOOD_FALLBACK[emo] || [emo, 'Normal']) { const f = face(dex, size, e, shiny); if (f) return f; } return null; };
 export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 export const typeChips = dex => SPECIES[dex].types.map(t => `<span class="type" style="--tc:${TYPE_COLOR[t]}">${TYPE_LABEL[t]}</span>`).join('');
 export const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
@@ -45,7 +48,7 @@ const FEATURE = {
   treasure: ['#ff4f8a', () => t('Gasta tus gemas en una ruleta de premios')], tower: ['#a070ff', () => t('Combates seguidos a Nv.50: ¿hasta dónde llegas?')],
   shop: ['#2fbf8a', () => t('Balls, objetos y los Pokémon del día')], bag: ['#30b8c8', () => t('Tus objetos: úsalos en tus Pokémon')],
   team: ['#c070e0', () => t('Tu equipo y tu caja de cada región')], story: ['#ff5a3a', () => t('Tu viaje: rutas, gimnasios y Campeón')],
-  starter: ['#ff5a3a', () => t('Tu viaje: rutas, gimnasios y Campeón')], online: ['#e8a800', () => t('Draft, ELO y ligas contra otros entrenadores')],
+  starter: ['#ff5a3a', () => t('Tu viaje: rutas, gimnasios y Campeón')], online: ['#e8a800', () => t('Tu equipo, ELO y ligas contra otros entrenadores')],
   practice: ['#4fd06a', () => t('Contra la IA, sin arriesgar nada')], missions: ['#3b78d8', () => t('Cúmplelas, recoge su premio y abre el cofre')],
   collection: ['#e8a800', () => t('Retos para conseguir skins, marcos, títulos y más')], dex: ['#e8403a', () => t('Todas las especies y dónde encontrarlas')],
   profile: ['#3b78d8', () => t('Tu tarjeta de entrenador, títulos y marcos')], settings: ['#7a86a8', () => t('Idioma, sonido, cursor y cuenta')],
@@ -197,7 +200,7 @@ export class UI {
     const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
     const ready = this.claimable().length;
     card(online, t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
-    card(online, t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
+    card(online, t('Partida rápida'), t('Online sin ELO, con tu equipo de Clasificatoria'), 'casual', 6, () => { if (!Data.pvpTeam(p.pvpTeam)) return this.show('online'); this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
@@ -352,14 +355,25 @@ export class UI {
     // «Siguiente: líder · tope» de la barra sobra aquí: lo dice ya «Tu objetivo»
     sb.querySelector('.next-goal').remove();
     const tools = el('div', 'panel story-info');
-    tools.append(this.rotationTimer('long'));
+
+    // Mapa o lista: el mismo viaje, en el mapa de la región o paso a paso
+    const mode = this.storyMode || storage.get('arena.storyMode') || 'map';
+    const seg = el('div', 'seg story-mode');
+    for (const [k, label] of [['map', t('Mapa')], ['list', t('Lista')]]) {
+      const b = el('button', mode === k ? 'sel' : '', label);
+      b.onclick = () => { this.storyMode = k; storage.set('arena.storyMode', k); this.show('story'); };
+      seg.append(b);
+    }
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
     help.onclick = () => this.storyGuide();
-    tools.append(help);
+    // «Cómo se juega» delante, a la izquierda (es lo primero que mira quien empieza), y la cuenta atrás después
+    tools.append(help, this.rotationTimer('long'));
     wrap.append(bar, sb);
     if (!storage.get('arena.storyGuide')) { storage.set('arena.storyGuide', '1'); setTimeout(() => this.storyGuide(), 400); }
     const body = el('div', 'story-body');
-    const map = el('div', 'map region-' + region);
+    // En el mapa, lo que toca (siguiente líder, rutas nuevas y el camino hasta ellos) resalta y lo bloqueado se
+    // apaga; lo ya abierto se ve normal, para repetirlo cuando quieras
+    const map = el('div', 'map focus region-' + region);
     // Lienzo con la proporción del mapa (16:10), centrado; el mar del SVG rellena lo que sobre
     const stage = el('div', 'map-stage', regionMapSVG(region));
     map.append(stage);
@@ -377,7 +391,9 @@ export class UI {
     const nodes = R.nodes;
     const leaders = nodes.filter(n => n.kind !== 'route');
     const allDone = prog >= leaders.length;
-    const nextLeader = leaders.find(n => n.index === prog);
+    // El siguiente reto; en la Liga, el que toca del desafío en curso
+    const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
+    const nextLeader = leaders.find(n => n.index === (prog >= Data.LEAGUE_FROM && prog < leaders.length ? Data.LEAGUE_FROM + run : prog));
     // Dónde estás: la ciudad del último líder vencido, o el pueblo de salida
     const lastBeaten = leaders.find(n => n.index === prog - 1);
     const here = lastBeaten ? { x: lastBeaten.x, y: lastBeaten.y } : { x: art.cities[0][1], y: art.cities[0][2] };
@@ -396,8 +412,10 @@ export class UI {
     const buttons = new Map();
     nodes.forEach(n => {
       const isLeader = n.kind !== 'route';
-      const unlocked = isLeader ? n.index <= prog : n.req <= prog;
-      const done = isLeader && n.index < prog;
+      // La Liga se abre entera con las 8 medallas; sus miembros cuentan como vencidos en el desafío en curso
+      const inLeague = isLeader && n.index >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
+      const unlocked = inLeague ? prog >= Data.LEAGUE_FROM : isLeader ? n.index <= prog : n.req <= prog;
+      const done = inLeague ? cleared || n.index < Data.LEAGUE_FROM + run : isLeader && n.index < prog;
       const isNew = !isLeader && n.req === prog && unlocked;
       const b = el('button', `node ${isLeader ? 'gym ' + n.kind : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${n === nextLeader ? ' next' : ''}${isNew ? ' new' : ''}`);
       b.style.left = n.x + '%'; b.style.top = n.y + '%';
@@ -415,12 +433,21 @@ export class UI {
       if (!unlocked) extra = `<em class="lock">${LOCK_SVG}</em>`;
       if (isNew) extra += `<em class="new-tag">${t('Nueva')}</em>`;
       if (n === nextLeader) extra += `<em class="goal-tag">${t('Siguiente reto')}</em>`;
+      if (n.kind === 'gym' && unlocked) extra += `<em class="ord">${n.index + 1}</em>`;   // el orden de los gimnasios, a la vista
       b.innerHTML = `${face}<label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>${extra}`;
       if (!isLeader && unlocked && n.wild.length) b.prepend(monIcon(n.wild[0][0], 36));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
       buttons.set(n.id, b);
       stage.append(b);
     });
+    // La Liga, agrupada en un recuadro: se juega de una vez
+    const lg = leaders.filter(n => n.index >= Data.LEAGUE_FROM);
+    if (lg.length) {
+      const xs = lg.map(n => n.x), ys = lg.map(n => n.y), pad = 4;
+      const lb = el('div', 'league-zone', `<span>${t('Liga Pokémon · {n} seguidos', { n: lg.length })}</span>`);
+      Object.assign(lb.style, { left: Math.min(...xs) - pad + '%', top: Math.min(...ys) - pad - 2 + '%', width: Math.max(...xs) - Math.min(...xs) + pad * 2 + '%', height: Math.max(...ys) - Math.min(...ys) + pad * 2 + 2 + '%' });
+      stage.append(lb);
+    }
     // Objetivo actual y leyenda
     const goal = el('div', 'map-goal');
     const cap = Data.levelCap(p, region);
@@ -446,13 +473,76 @@ export class UI {
       `<span><i class="lg locked">${LOCK_SVG}</i>${t('Bloqueado')}</span>`].join('')));
     const side = el('div', 'story-side');
     side.append(info);
-    body.append(map, side);
+    // El selector Mapa / Lista va en la esquina de arriba a la izquierda de lo que se ve
+    let view = map;
+    if (mode === 'list') { view = el('div', 'story-listwrap'); view.append(this.storyList(region, nodes, prog, nextLeader, buttons, info)); }
+    view.prepend(seg);
+    body.append(view, side);
     const head = el('div', 'story-head');
     head.append(goal, tools);
     wrap.append(head, body);
     this.root.append(wrap);
     const next = map.querySelector('.node.next') || map.querySelector('.node.route:not(.locked)');
     if (next) next.click();
+    if (mode === 'list') { const cur = body.querySelector('.sl-step.now'); if (cur) cur.scrollIntoView({ block: 'center' }); }
+  }
+
+  // Liga Pokémon: el Alto Mando y el Campeón, 5 combates seguidos. El equipo empieza cada combate curado
+  // del todo; si pierdes uno, vuelves al primero
+  leagueBox(region) {
+    const p = this.profile, members = Data.leadersOf(region).slice(Data.LEAGUE_FROM);
+    const prog = Data.progOf(p, region), open = prog >= Data.LEAGUE_FROM, cleared = prog >= Data.leadersOf(region).length;
+    const step = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
+    const box = el('div', 'league-box');
+    box.append(el('b', 'lb-title', t('Desafío de la Liga')), el('p', 'small', t('{n} combates seguidos: el Alto Mando y el Campeón. Tu equipo se cura del todo entre combates, pero si pierdes uno vuelves a empezar desde el primero.', { n: members.length })));
+    const row = el('div', 'lb-row');
+    members.forEach((m, i) => {
+      const c = el('div', 'lb-step' + (i < step ? ' done' : i === step && open ? ' now' : ''), `${trainerImg(m.id, 'lb-face')}<small>${m.leader}</small>`);
+      c.title = `${m.leader} · ${TYPE_LABEL[m.type]}`;
+      row.append(c);
+      if (i < members.length - 1) row.append(el('i', 'lb-arrow', '›'));
+    });
+    box.append(row);
+    if (!open) box.append(el('p', 'warn', t('Consigue las 8 medallas de la región para entrar en la Liga.')));
+    else {
+      const go = el('button', 'primary', step ? t('Seguir el desafío ({n}/{m})', { n: step + 1, m: members.length }) : cleared ? t('Repetir el desafío') : t('Empezar el desafío'));
+      go.onclick = () => this.startStory('gym', members[step].id);
+      box.append(go);
+    }
+    return box;
+  }
+
+  // El viaje paso a paso: antes de cada líder, las rutas que se abren con las medallas que llevas; lo hecho
+  // con ✓, lo que toca resaltado y lo que falta con candado. Cada paso abre su ficha al lado, como el mapa
+  storyList(region, nodes, prog, nextLeader, buttons, info) {
+    const p = this.profile;
+    const list = el('div', 'story-list scroll');
+    const leaders = nodes.filter(n => n.kind !== 'route');
+    let step = 0;
+    const add = (n, isLeader) => {
+      const inLeague = isLeader && n.index >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
+      const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
+      const unlocked = inLeague ? prog >= Data.LEAGUE_FROM : isLeader ? n.index <= prog : n.req <= prog;
+      const done = inLeague ? cleared || n.index < Data.LEAGUE_FROM + run : isLeader && n.index < prog;
+      const now = isLeader ? n === nextLeader : unlocked && n.req === prog;
+      const dexes = isLeader ? [] : [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => p.caught.includes(d)).length;
+      const row = el('button', 'sl-step' + (isLeader ? ' leader' : ' route') + (done ? ' done' : '') + (now ? ' now' : '') + (unlocked ? '' : ' locked'));
+      if (isLeader) row.style.setProperty('--tc', TYPE_COLOR[n.type]);
+      const icon = isLeader ? (n.kind === 'gym' ? badgeImg(region, n.index, done, 34) : trainerImg(n.id, 'sl-face')) : '';
+      const title = isLeader ? `${n.leader} <small>${n.kind === 'gym' ? n.name : n.kind === 'champion' ? t('Campeón') : t('Alto Mando')}</small>` : n.name;
+      const state = done ? '✓' : !unlocked ? LOCK_SVG : now ? (isLeader ? t('Siguiente reto') : t('Ruta nueva')) : isLeader ? '' : `${got}/${dexes.length}`;
+      row.innerHTML = `<span class="sl-n">${++step}</span><span class="sl-ico">${icon}</span><span class="sl-t">${title}${!isLeader ? `<small>${t('Nv.{n}', { n: n.lvl[0] + '-' + n.lvl[1] })}</small>` : ''}</span><em class="sl-st">${state}</em>`;
+      if (!isLeader && unlocked && n.wild.length) row.querySelector('.sl-ico').append(portrait(n.wild[0][0], 40));
+      row.onclick = () => { list.querySelectorAll('.sl-step').forEach(x => x.classList.remove('sel')); row.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
+      list.append(row);
+    };
+    for (const L of leaders) {
+      for (const n of nodes.filter(x => x.kind === 'route' && x.req === L.index)) add(n, false);
+      if (L.index === Data.LEAGUE_FROM) list.append(el('div', 'sl-league', `<b>${t('Liga Pokémon')}</b><small>${t('{n} combates seguidos: si pierdes uno, vuelves a empezar', { n: leaders.length - Data.LEAGUE_FROM })}</small>`));
+      add(L, true);
+    }
+    for (const n of nodes.filter(x => x.kind === 'route' && x.req > leaders.length - 1)) add(n, false);
+    return list;
   }
 
   nodeInfo(box, n, unlocked, done) {
@@ -472,7 +562,8 @@ export class UI {
       if (arena) box.append(el('div', 'arena-info', `<b>${t(arena.name)}</b> · ${t(arena.desc)}`));
       if (n.kind === 'elite' || n.kind === 'champion') box.append(el('p', 'small', t('Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.')));
       box.append(el('p', 'small', t('Dificultad de la IA: {ai} % · Premio {prize} · la primera vez también Caramelo Raro y una vitamina', { ai: Math.round(n.ai * 100), prize: coins(n.reward) + (n.badge ? t(' y {b}', { b: n.badge }) : '') })));
-      if (!unlocked) box.append(el('p', 'warn', n.index >= 8 ? t('Consigue las 8 medallas de la región y vence a los anteriores.') : t('Vence antes al anterior.')));
+      if (n.index >= Data.LEAGUE_FROM) box.append(this.leagueBox(n.region));
+      else if (!unlocked) box.append(el('p', 'warn', t('Vence antes al anterior.')));
       else {
         const go = el('button', 'primary', done ? t('Revancha') : t('¡Desafiar!'));
         go.onclick = () => this.startStory('gym', n.id);
@@ -1062,21 +1153,84 @@ export class UI {
     const next = LEAGUES.find(l => l[0] > p.elo);
     me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="league">${t(p.league)}</div><div class="big-elo">${p.elo}</div>
       <p class="small">${t('{w} victorias · {l} derrotas', { w: p.wins, l: p.losses })}${next ? ` · ${t('{n} puntos para {league}', { n: next[0] - p.elo, league: t(next[1]) })}` : ''}</p>
-      <p class="small">${t('Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.', { n: Data.RANKED_LEVEL })}</p>`;
+      <p class="small">${t('Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.', { n: Data.RANKED_LEVEL })}</p>`;
     const go = el('button', 'primary', t('Buscar partida clasificatoria'));
+    go.disabled = !Data.pvpTeam(p.pvpTeam);
     go.onclick = () => { this.lastMode = 'ranked'; this.net.send({ t: 'queue', mode: 'ranked' }); };
     me.append(go);
+    if (go.disabled) me.append(el('p', 'warn', t('Prepara tu equipo de 3 para poder buscar partida.')));
     const col = el('div', 'online-col');
-    col.append(me, this.boardPanel());
+    col.append(me, this.pvpTeamPanel(), this.boardPanel());
     body.append(col, this.seasonPanel());
     wrap.append(body);
     this.root.append(wrap);
   }
 
+  // Equipo de PvP (Clasificatoria y Partida rápida): 3 huecos; tocas uno y eliges su Pokémon del pool y hasta
+  // 4 movimientos de los que sabe a Nv.50. Se guarda solo en cuanto está completo
+  pvpTeamPanel() {
+    const p = this.profile;
+    const team = this.pvpEdit || (this.pvpEdit = (Data.pvpTeam(p.pvpTeam) || []).map(x => ({ ...x, moves: [...x.moves] })));
+    const sel = Math.min(this.pvpSel || 0, 2);
+    const box = el('div', 'panel pvp-team');
+    box.append(el('h3', '', t('Tu equipo (Nv.{n})', { n: Data.RANKED_LEVEL })));
+    const save = () => { const ok = Data.pvpTeam(team); if (ok && team.length === 3) this.net.send({ t: 'pvpteam', team }); else this.show('online'); };
+    const slots = el('div', 'pvp-slots');
+    for (let i = 0; i < 3; i++) {
+      const m = team[i];
+      const b = el('button', 'pvp-slot' + (i === sel ? ' sel' : '') + (m ? '' : ' empty'));
+      if (m) {
+        typeTint(b, m.dex);
+        b.append(this.skinned(portrait(m.dex, 56), m.dex), el('b', '', SPECIES[m.dex].name),
+          el('span', 'pvp-moves', m.moves.map(k => `<i style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 12)}${MOVES[k].name}</i>`).join('')));
+      } else b.append(el('span', 'pvp-plus', '+'), el('small', '', t('Elegir')));
+      b.onclick = () => { this.pvpSel = i; this.show('online'); };
+      slots.append(b);
+    }
+    box.append(slots);
+    // Pool: tocar uno lo pone en el hueco elegido (si ya está en otro hueco, se cambian)
+    box.append(el('h4', '', t('Pokémon')));
+    const pool = el('div', 'pvp-pool');
+    for (const dex of Data.RANKED_POOL) {
+      const at = team.findIndex(x => x && x.dex === dex);
+      const c = typeTint(el('button', 'pvp-pick' + (at >= 0 ? ' in' : '')), dex);
+      c.append(this.skinned(portrait(dex, 40), dex));
+      c.title = SPECIES[dex].name;
+      c.onclick = () => {
+        if (at >= 0) { [team[at], team[sel]] = [team[sel], team[at]]; }
+        else team[sel] = { dex, moves: Data.defaultMoves(dex, Data.RANKED_LEVEL) };
+        for (let k = 0; k < 3; k++) if (!team[k]) team[k] = undefined;
+        this.pvpSel = team.findIndex(x => !x) >= 0 ? team.findIndex(x => !x) : sel;
+        save();
+      };
+      pool.append(c);
+    }
+    box.append(pool);
+    // Movimientos del Pokémon del hueco elegido: hasta 4
+    const cur = team[sel];
+    if (cur) {
+      box.append(el('h4', '', t('Movimientos de {m} ({n}/4)', { m: SPECIES[cur.dex].name, n: cur.moves.length })));
+      const mv = el('div', 'pvp-mvlist');
+      for (const k of Data.learnedAt(cur.dex, Data.RANKED_LEVEL)) {
+        if (!MOVES[k]) continue;
+        const on = cur.moves.includes(k);
+        const c = el('button', 'pvp-mv' + (on ? ' on' : ''), `${typeIcon(MOVES[k].type, 14)}${MOVES[k].name}`);
+        c.style.setProperty('--tc', TYPE_COLOR[MOVES[k].type]);
+        c.title = describeMove(MOVES[k]).split('\n').join(' · ');
+        c.disabled = !on && cur.moves.length >= 4;
+        c.onclick = () => { cur.moves = on ? cur.moves.filter(x => x !== k) : [...cur.moves, k]; if (!cur.moves.length) cur.moves = [k]; save(); };
+        mv.append(c);
+      }
+      box.append(mv);
+    }
+    if (team.filter(Boolean).length < 3) box.append(el('p', 'small', t('Elige 3 Pokémon distintos: se guarda solo.')));
+    return box;
+  }
+
   view_queue() {
     const box = el('div', 'panel center-panel');
     const mode = this.queueMode === 'ranked' ? t('Buscando rival para clasificatoria…') : t('Buscando rival para partida rápida…');
-    box.innerHTML = `<div class="spinner"></div><h3>${mode}</h3><p class="small qtime">0:00</p><p class="small">${t('Para probar solo, abre otra pestaña y busca partida también.')}</p>`;
+    box.innerHTML = `<div class="spinner"></div><h3>${mode}</h3><p class="small qtime">0:00</p>`;
     const cancel = el('button', '', t('Cancelar'));
     cancel.onclick = () => this.net.send({ t: 'unqueue' });
     box.append(cancel);
@@ -1237,7 +1391,7 @@ export class UI {
         // Quien evoluciona posa y quien sube de nivel salta; los demás, cara de victoria o de derrota
         const shiny = !!(pm && pm.shiny), dex = x.evolved || x.dex;
         row.append(x.evolved ? animatedPortrait(dex, 48, 'Pose', shiny) : x.level > x.fromLevel ? animatedPortrait(dex, 48, 'Hop', shiny)
-          : face(dex, 48, draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny) || portrait(dex, 48, { shiny }));
+          : moodFace(dex, 48, draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny) || portrait(dex, 48, { shiny }));
         const lvl = x.level > x.fromLevel ? `${lv(x.fromLevel)} → <span class="lvup">${lv(x.level)} ${t('¡sube de nivel!')}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
         row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b> ${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<br><span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span> <small>${t('(elígelo en Equipo)')}</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
@@ -1254,6 +1408,12 @@ export class UI {
       up.append(go);
       box.append(up);
     }
+    if (r.league) {
+      const L = r.league;
+      box.append(el('div', 'league-res' + (L.failed ? ' failed' : L.done ? ' done' : ''), L.done ? `<b>${t('¡Has superado la Liga!')}</b><small>${t('{n} combates seguidos sin caer.', { n: L.total })}</small>`
+        : L.failed ? `<b>${t('Desafío de la Liga: {n}/{m}', { n: L.step, m: L.total })}</b><small>${t('Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.', { who: L.first })}</small>`
+        : `<b>${t('Desafío de la Liga: {n}/{m}', { n: L.step, m: L.total })}</b><small>${t('Siguiente: {who}. Tu equipo se cura del todo antes del combate.', { who: L.next })}</small>`));
+    }
     if (r.tower) this.towerResults(box, r);
     this.resultsMissions(box, r.missions);
     if (r.elo !== undefined) box.append(el('p', 'reward', `ELO ${r.elo >= 0 ? '+' : ''}${r.elo} → <b>${r.total}</b>`));
@@ -1263,6 +1423,12 @@ export class UI {
     const acts = el('div', 'acts');
     const lm = this.lastMode;
     const lost = !won && !draw && !msg.captured;
+    // Liga: tras cada victoria, seguir con el siguiente (el desafío no se pierde si sales)
+    if (r.league && !r.league.done && !r.league.failed) {
+      const next = el('button', 'primary', t('Siguiente: {who} ({n}/{m})', { who: r.league.next, n: r.league.step + 1, m: r.league.total }));
+      next.onclick = () => this.startStory('gym', r.league.nextId);
+      acts.append(next);
+    }
     // Si pierdes contra un líder: reintentar a la primera o ir a mejorar el equipo
     if (lost && lm && lm.kind === 'story' && lm.a !== 'route') {
       const retry = el('button', 'primary', t('Reintentar'));
@@ -1307,7 +1473,7 @@ export class UI {
       const box = el('div', 'rh-side' + (me ? ' me' : ' foe'));
       // Contra un líder de la historia, su retrato; si no, la cara de su Pokémon
       if (!me && lm && lm.kind === 'story' && lm.a !== 'route' && lm.id) box.innerHTML = trainerImg(lm.id, 'rh-trainer');
-      else box.append(face(lead.dex, 96, mood(me), lead.shiny) || portrait(lead.dex, 96, { shiny: lead.shiny }));
+      else box.append(moodFace(lead.dex, 96, mood(me), lead.shiny) || portrait(lead.dex, 96, { shiny: lead.shiny }));
       box.append(el('small', '', escapeHtml(me ? t('Tú') : s.name || '')));
       return box;
     };
@@ -1322,7 +1488,7 @@ export class UI {
     const row = (s, me) => {
       const r = el('div', 'rs-team' + (me ? ' me' : ''));
       for (const m of s.team) {
-        const f = face(m.dex, 40, m.fainted ? 'Pain' : 'Normal', m.shiny) || portrait(m.dex, 40, { shiny: m.shiny });
+        const f = moodFace(m.dex, 40, m.fainted ? 'Pain' : 'Normal', m.shiny) || portrait(m.dex, 40, { shiny: m.shiny });
         const cell = el('span', 'rs-mon' + (m.fainted ? ' out' : ''));
         cell.append(f);
         r.append(cell);

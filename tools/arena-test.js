@@ -240,7 +240,7 @@ check('logros: se desbloquean una vez, su premio se recoge a mano y se pueden fi
   assert(p.achievements.captura1 && p.achievements.kantoChamp && p.achievements.perfecto, 'desbloqueados');
   assert(p.coins === 0 && p.achClaim.includes('kantoChamp') && !p.cosmetics.frames.includes('campeon'), 'el premio espera a que se recoja');
   for (const id of [...p.achClaim]) assert(rewards.claimAchievement(p, id).loot, 'recoger ' + id);
-  assert(p.cosmetics.frames.includes('campeon') && p.cosmetics.titles.includes('Campeón de Kanto') && p.cosmetics.avatars.includes('item:relic-crown'), 'premios cosméticos y avatar');
+  assert(p.cosmetics.auras.includes('dorado') && !p.cosmetics.frames.includes('campeon') && p.cosmetics.titles.includes('Campeón de Kanto') && p.cosmetics.avatars.includes('item:relic-crown'), 'premios: título, glow dorado y avatar (sin marco)');
   const coins = p.coins;
   assert(coins >= 300 + 8000 + 2000, 'dinero');
   assert(rewards.claimAchievement(p, 'kantoChamp').error, 'no se recoge dos veces');

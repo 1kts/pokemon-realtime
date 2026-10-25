@@ -4,17 +4,18 @@
 // (elegir 4 y su orden), objetos (Caramelo Raro y piedras evolutivas) y aspecto (skin de su línea).
 // Se queda abierta al llegar el perfil nuevo (cada cambio vuelve del servidor) y con ← → pasa al siguiente.
 import { confirmBox } from './dialog.js';
-import { animatedPortrait, typeTint } from './sprites.js';
+import { animatedPortrait, typeTint, portrait } from './sprites.js';
 import { monLabel, describeMove } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg, typeIcon } from './pixicons.js';
 import { usable } from './bag.js';
-import { SKIN_LABEL } from './frames.js';
+import { SKIN_LABEL, applySkin } from './frames.js';
 
 const { SPECIES, MOVES, SHOP, TYPE_COLOR, TYPE_LABEL } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const lv = n => t('Nv.{n}', { n });
-const TABS = [['stats', 'Estadísticas'], ['moves', 'Movimientos'], ['items', 'Objetos'], ['look', 'Aspecto']];
+// Caramelos, piedras y objetos se usan desde la Mochila; aquí, cómo es, cómo se viste y sus retos
+const TABS = [['stats', 'Estadísticas'], ['moves', 'Movimientos'], ['look', 'Vestuario'], ['retos', 'Retos']];
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
 
 export const monSheetViews = {
@@ -148,11 +149,14 @@ export const monSheetViews = {
     const rows = el('div', 'ms-stats');
     const bars = [['hp', t('PS'), st.maxHp, 400, `${st.maxHp}`], ['atk', t('Ataque'), st.atk, 2, `×${st.atk.toFixed(2)}`],
       ['def', t('Defensa'), st.def, 1.7, `×${st.def.toFixed(2)}`], ['spe', t('Velocidad'), sp.spd * st.spdMult, 340, `${Math.round(sp.spd * st.spdMult)}`]];
+    // La naturaleza sube una estadística (▲) y baja otra (▼): se marca en la suya
+    const nat = Data.NATURES[mon.nat] || [null, null, null];
     for (const [key, label, val, max, text] of bars) {
       const item = SHOP.find(x => x.vit === key), have = p.items[item.id] || 0, u = usable(p, item, mon);
       const row = el('div', 'ms-stat');
-      row.innerHTML = `<span class="sl">${label}</span><b class="sv">${text}</b><div class="sbar"><div style="width:${Math.min(100, val / max * 100)}%"></div></div>
-        <span class="ms-ivev"><i>IV <b class="${iv[key] >= 31 ? 'iv-top' : ''}">${iv[key]}</b></i><i>EV <b>${ev[key]}</b></i></span>`;
+      const mark = nat[1] === key ? `<i class="nat up" title="${t('Su naturaleza la sube un 10 %')}">▲</i>` : nat[2] === key ? `<i class="nat down" title="${t('Su naturaleza la baja un 10 %')}">▼</i>` : '';
+      row.innerHTML = `<span class="sl">${label}${mark}</span><b class="sv">${text}</b><div class="sgrp"><div class="sbar"><div style="width:${Math.min(100, val / max * 100)}%"></div></div>
+        <span class="ms-ivev"><i>IV <b class="${iv[key] >= 31 ? 'iv-top' : ''}">${iv[key]}</b></i><i>EV <b>${ev[key]}</b></i></span></div>`;
       const b = el('button', 'ms-vit' + (u.ok && have ? ' ok' : ''), `${itemImg(item.id, 22)}<span>${item.name}<small>${have ? `×${have}` : t('no tienes')}</small></span>`);
       b.disabled = !have || !u.ok;
       b.title = u.ok ? u.why : u.why || t('Cómprala en la tienda');
@@ -165,6 +169,12 @@ export const monSheetViews = {
     const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
     body.append(el('h4', '', t('Stats base de la especie (total {n})', { n: sp.bst })),
       el('div', 'base-stats', `<div class="bs">${base.map((v, k) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[k]}</span></div>`).join('')}</div>`));
+    // Cómo evoluciona (los objetos de intercambio no se desvelan: hay que descubrirlo)
+    const evo = sp.evo;
+    if (evo) {
+      const list = Array.isArray(evo[0]) ? evo : [evo];
+      body.append(el('p', 'small', t('Evoluciona a {list}', { list: list.filter(([to]) => SPECIES[to]).map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? lv(c) : Data.STONE_IDS.includes(c) ? (SHOP.find(i => i.id === c) || { name: c }).name : t('¿con algo especial?')})`).join(', ') })));
+    }
   },
 
   // Movimientos: los 4 de las teclas arriba (en orden) y debajo todos los que sabe; tocar añade o quita
@@ -213,58 +223,44 @@ export const monSheetViews = {
     body.append(list);
   },
 
-  // Objetos: los que le sirven (Caramelo Raro, piedras, vitaminas) con cuántos tienes y qué hacen
-  sheet_items(body, mon) {
-    const p = this.profile;
-    const items = SHOP.filter(i => i.id === 'caramelo' || i.stone || i.vit);
-    const grid = el('div', 'ms-items');
-    for (const item of items) {
-      const u = usable(p, item, mon), have = p.items[item.id] || 0;
-      if (item.stone && !u.ok) continue;   // solo las piedras que le hacen algo
-      const b = el('button', 'ms-item' + (u.ok && have ? ' ok' : ''), `${itemImg(item.id, 40)}<span><b>${item.name}</b><small>${u.why || item.desc}</small></span><i>×${have}</i>`);
-      b.disabled = !u.ok || !have;
-      b.title = !have ? t('Cómprala en la tienda') : '';
-      b.onclick = () => this.net.send({ t: 'story', a: 'use', item: item.id, uid: mon.uid });
-      grid.append(b);
-    }
-    body.append(grid);
-    const evo = SPECIES[mon.dex].evo;
-    if (evo) {
-      const list = Array.isArray(evo[0]) ? evo : [evo];
-      body.append(el('p', 'small', t('Evoluciona a {list}', { list: list.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? lv(c) : (SHOP.find(i => i.id === c) || { name: c }).name})`).join(', ') })));
-    }
-  },
-
-  // Aspecto: la skin y las partículas de su línea (las que tengas), para ponerlas aquí mismo
+  // Vestuario: cada skin y las partículas de su línea, vistas sobre el propio Pokémon; las que tienes se ponen
+  // al tocarlas, las que no salen apagadas con de dónde salen
   sheet_look(body, mon) {
-    const p = this.profile, line = Data.lineOf(mon.dex);
-    const skinNow = Data.skinOf(p, mon.dex);
+    const p = this.profile, line = Data.lineOf(mon.dex), shiny = Data.looksShiny(mon);
+    const skinNow = Data.skinOf(p, mon.dex), partsNow = !!Data.particlesOf(p, mon.dex), hasP = Data.hasParticles(p, mon.dex);
+    const card = (cls, sel, locked, label, sub, paint, onClick) => {
+      const b = el('button', 'ms-wear ' + cls + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
+      b.append(paint(portrait(mon.dex, 84, { shiny })), el('b', '', label), el('small', '', sub));
+      if (locked) b.disabled = true; else b.onclick = onClick;
+      return b;
+    };
+    const SRC = { oro: t('500 victorias con su línea'), holo: t('25 victorias online con su línea'), galaxia: t('Racha de 50 en la Torre con su línea'), elemental: t('En Lucky Spin') };
     body.append(el('h4', '', t('Skin de la línea de {m}', { m: SPECIES[line].name })));
-    const skins = el('div', 'ms-chips');
-    const none = el('button', 'ms-chip' + (!skinNow ? ' sel' : ''), t('Sin skin'));
-    none.onclick = () => this.net.send({ t: 'look', skin: { dex: line, skin: null } });
-    skins.append(none);
+    const skins = el('div', 'ms-wardrobe');
+    skins.append(card('skin', !skinNow, false, t('Sin skin'), skinNow ? t('Quitársela') : t('Puesta'), n => n, () => this.net.send({ t: 'look', skin: { dex: line, skin: null } })));
     for (const id of Data.SKINS) {
-      const has = Data.hasSkin(p, mon.dex, id);
-      const b = el('button', 'ms-chip' + (skinNow === id ? ' sel' : '') + (has ? '' : ' locked'), t(SKIN_LABEL[id]));
-      b.disabled = !has;
-      b.title = has ? '' : t('Aún no la tienes: maestría o Lucky Spin');
-      b.onclick = () => this.net.send({ t: 'look', skin: { dex: line, skin: id } });
-      skins.append(b);
+      const has = Data.hasSkin(p, mon.dex, id), on = skinNow === id;
+      skins.append(card('skin', on, !has, t(SKIN_LABEL[id]), on ? t('Puesta') : has ? t('Ponérsela') : SRC[id], n => applySkin(n, id, line), () => this.net.send({ t: 'look', skin: { dex: line, skin: id } })));
     }
     body.append(skins);
     // Partículas de la línea: aparte de la skin, se encienden o se apagan
-    const hasP = Data.hasParticles(p, mon.dex), onP = !!Data.particlesOf(p, mon.dex);
     body.append(el('h4', '', t('Partículas')));
-    const parts = el('div', 'ms-chips');
-    for (const on of [false, true]) {
-      const b = el('button', 'ms-chip' + (onP === on ? ' sel' : '') + (on && !hasP ? ' locked' : ''), on ? t('Partículas de {type}', { type: Data.TYPE_LABEL[SPECIES[line].types[0]] }) : t('Sin partículas'));
-      b.disabled = on && !hasP;
-      if (on && !hasP) b.title = t('Aún no las tienes: salen en Lucky Spin');
-      b.onclick = () => this.net.send({ t: 'look', particles: { dex: line, on } });
-      parts.append(b);
-    }
+    const parts = el('div', 'ms-wardrobe');
+    parts.append(card('parts', !partsNow, false, t('Sin partículas'), !partsNow ? t('Puesto') : t('Quitarlas'), n => n, () => this.net.send({ t: 'look', particles: { dex: line, on: false } })));
+    parts.append(card('parts', partsNow, !hasP, t('Partículas de {type}', { type: Data.TYPE_LABEL[SPECIES[line].types[0]] }), partsNow ? t('Puestas') : hasP ? t('Ponérselas') : t('En Lucky Spin'), n => applySkin(n, null, line, true), () => this.net.send({ t: 'look', particles: { dex: line, on: true } })));
     body.append(parts);
     body.append(el('p', 'small', t('La skin y las partículas se ponen a toda la línea evolutiva y se ven en los menús y en combate.')));
+  },
+
+  // Retos: los de su línea evolutiva, con su progreso, y recogerlos aquí mismo
+  sheet_retos(body, mon) {
+    const p = this.profile, line = Data.lineOf(mon.dex);
+    body.append(el('p', 'small', t('Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.', { m: SPECIES[line].name, n: Data.masteryWins(p, line) })));
+    const tiers = this.lineTiers(line);
+    tiers.classList.add('ms-retos');
+    body.append(tiers);
+    const all = el('button', 'link', t('Ver todos los retos en Logros'));
+    all.onclick = () => { this.closeSheet(); this.openCollection('mastery'); };
+    body.append(all);
   },
 };
