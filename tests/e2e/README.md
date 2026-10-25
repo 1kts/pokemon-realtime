@@ -5,6 +5,10 @@ temporal (y `ARENA_DEV`, para el gancho de pruebas), abre Chromium sin ventana y
 `tests/e2e/*.e2e.js`. Un test falla si alguna comprobación falla, si la página tiene un error de JavaScript o
 una violación de la CSP, o si carga algo de fuera de nuestro dominio.
 
+Al subir, el hook de pre-push pasa solo los e2e relacionados con lo que cambia (`tools/e2e-related.js`:
+los tests nuevos o cambiados, los que mencionan los archivos tocados y `portada` siempre); el CI pasa
+la tanda completa en cada push a develop y main. `E2E_ALL=1 git push` pasa todos también en local.
+
 ```bash
 npm run test:e2e                              # todos
 node tools/e2e.js tests/e2e/admin.e2e.js      # uno

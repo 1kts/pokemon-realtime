@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-# Antes de cada push: las novedades traen tests e2e y el código trae tests (tools/require-tests.js), y
-# toda la batería pasa (npm test y los e2e en un navegador). Se activa solo con `npm ci`/`npm install`
-# (script prepare: git config core.hooksPath .githooks). El CI comprueba lo mismo, así que saltárselo
+# Antes de cada push: las novedades traen tests e2e y el código trae tests (tools/require-tests.js), pasa
+# npm test y pasan los e2e relacionados con lo que se sube (tools/e2e-related.js). La tanda e2e completa la
+# pasa el CI en cada push a develop y main; para pasarla aquí también: E2E_ALL=1 git push.
+# Se activa solo con `npm ci`/`npm install` (script prepare: git config core.hooksPath .githooks). El CI comprueba lo mismo, así que saltárselo
 # con --no-verify solo retrasa el problema: sin tests no se despliega.
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 1
 zero=0000000000000000000000000000000000000000
 checked=0
+related=""
 while read -r local_ref local_sha remote_ref remote_sha; do
   [ "$local_sha" = "$zero" ] && continue   # borrar una rama: nada que comprobar
   node tools/require-tests.js "$remote_sha" "$local_sha" "$remote_ref" || exit 1
+  base="$remote_sha"
+  if [ "$base" = "$zero" ]; then base=$(git merge-base "$local_sha" origin/develop 2>/dev/null || echo "$local_sha"); fi
+  related="$related $(node tools/e2e-related.js "$base" "$local_sha")"
   checked=1
 done
 [ "$checked" = 1 ] || exit 0
@@ -19,11 +24,14 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   echo "Aviso: hay cambios sin commit; los tests se pasan sobre lo que hay en la carpeta, no solo sobre lo que subes."
 fi
 log=$(mktemp)
-echo "Pasando todos los tests antes de subir (npm test y e2e; un par de minutos)…"
+if [ -n "${E2E_ALL:-}" ]; then e2e_files=""; what="todos los e2e"
+else e2e_files=$(printf '%s\n' $related | sort -u | tr '\n' ' '); what="e2e relacionados: $(printf '%s\n' $e2e_files | sed 's#tests/e2e/##; s#\.e2e\.js##' | tr '\n' ' ')"; fi
+echo "Pasando npm test y $what antes de subir…"
 if ! npm test >"$log" 2>&1; then
   echo "✗ npm test falla:"; grep -E "✗|Error|fallos|falla" "$log" | head -30; echo "(registro completo: $log)"; exit 1
 fi
-if ! npm run --silent test:e2e >"$log" 2>&1; then
+# shellcheck disable=SC2086
+if ! node tools/e2e.js $e2e_files >"$log" 2>&1; then
   echo "✗ Los tests e2e fallan:"; grep -E "✗|error|captura|fallan" "$log" | head -30; echo "(registro completo: $log)"; exit 1
 fi
 rm -f "$log"
