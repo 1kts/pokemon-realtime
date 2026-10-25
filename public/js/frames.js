@@ -124,14 +124,37 @@ export function frameFx(frame) {
   return body ? `<svg class="ava-fx" viewBox="0 0 150 150" aria-hidden="true">${body}</svg>` : '';
 }
 
+// Vista previa de un marco sin Pokémon (premios de liga, misiones, logros): el aro y su capa animada
+export function frameBadge(frame, size) {
+  const ring = frameRing(frame);
+  return `<span class="ava fr-badge frame-${frame || 'none'}" style="--s:${size}px${ring ? `;--ring:${ring}` : ''}">${frameFx(frame)}</span>`;
+}
+
+// Brillo de burbuja: un halo animado detrás del avatar, del color de un tipo (tipo-<tipo>) o prismático
+export function auraHtml(aura) {
+  if (!aura) return '';
+  const col = aura.startsWith('tipo-') ? Data.TYPE_COLOR[aura.slice(5)] : null;
+  return `<i class="ava-aura aura-${col ? 'tipo' : aura}"${col ? ` style="--aura:${col}"` : ''}></i>`;
+}
+
 // Color del aro para los marcos de tipo (el CSS solo conoce los fijos)
 export const frameRing = frame => frame && frame.startsWith('tipo-') ? Data.TYPE_COLOR[frame.slice(5)] : null;
 
 // Maestría de la línea evolutiva: estrellas, barra hasta el siguiente premio y victorias
 export function masteryHtml(p, dex, t) {
   const wins = Data.masteryWins(p, dex), tier = Data.masteryTier(wins);
-  const next = Data.MASTERY[tier];
-  const prize = [t('estrella de bronce'), t('ilustración oficial como avatar'), t('marco animado de su tipo')][tier];
-  const title = next ? t('Maestría: {w}/{n} victorias con su línea evolutiva. Siguiente premio: {prize}', { w: wins, n: next, prize }) : t('Maestría completa: {w} victorias con su línea evolutiva', { w: wins });
-  return `<div class="mastery" title="${title}"><i class="mstars">${'★'.repeat(tier)}${'☆'.repeat(3 - tier)}</i>${next ? `<span class="mbar"><i style="width:${wins / next * 100}%"></i></span><span>${wins}/${next}</span>` : `<span>${wins} ${t('victorias')}</span>`}</div>`;
+  const next = Data.MASTERY[tier], n = Data.MASTERY.length;
+  const title = next ? t('Maestría: {w}/{n} victorias con su línea evolutiva. Siguiente premio: {prize}', { w: wins, n: next, prize: masteryPrize(Data.MASTERY_TIERS[tier], dex, t) }) : t('Maestría completa: {w} victorias con su línea evolutiva', { w: wins });
+  const ready = Data.masteryReady(p, dex).length;
+  return `<div class="mastery${ready ? ' ready' : ''}" title="${title}"><i class="mstars">${'★'.repeat(tier)}${'☆'.repeat(n - tier)}</i>${next ? `<span class="mbar"><i style="width:${wins / next * 100}%"></i></span><span>${wins}/${next}</span>` : `<span>${wins} ${t('victorias')}</span>`}</div>`;
+}
+
+// Nombre del premio de un nivel de maestría para la línea de dex
+export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia' };
+export function masteryPrize(tier, dex, t) {
+  const type = Data.TYPE_LABEL[Data.SPECIES[Data.lineOf(dex)].types[0]];
+  return {
+    star: t('estrella de bronce'), art: t('ilustración oficial como avatar'), aura: t('brillo de burbuja {type}', { type }),
+    frame: t('marco animado de su tipo'), skin: t(SKIN_LABEL[tier.skin] || ''),
+  }[tier.kind] + (tier.title ? ' · ' + t('título y brillo prismático') : '');
 }

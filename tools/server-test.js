@@ -276,11 +276,34 @@ class Client {
     seasonMod.migrate(bp);
     bp.mastery[4] = 0; bp.mastery[172] = 0;
     for (let i = 0; i < D.MASTERY_FRAME; i++) ups.push(...seasonMod.addMastery(bp, [5, 4, 25]));
-    ok(bp.mastery[4] === D.MASTERY_FRAME && bp.mastery[172] === D.MASTERY_FRAME && ups.filter(u => u.dex === 4).length === 3, 'maestría: una victoria por línea y combate, con sus 3 niveles');
-    ok(bp.cosmetics.frames.includes('tipo-fuego') && bp.cosmetics.frames.includes('tipo-electrico'), 'maestría 100: marco del tipo de la línea');
-    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, frame: 'tipo-fuego' });
-    ok(m.p.avatarArt === true && m.p.frame === 'tipo-fuego', 'con maestría: ilustración de avatar y marco de tipo');
-    await b.req({ t: 'look', avatar: null, frame: null });
+    ok(bp.mastery[4] === D.MASTERY_FRAME && bp.mastery[172] === D.MASTERY_FRAME && ups.filter(u => u.dex === 4).length === 4, 'maestría: una victoria por línea y combate, con sus niveles');
+    ok(!bp.cosmetics.frames.includes('tipo-fuego') && D.masteryReady(bp, 4).join() === '0,1,2,3', 'maestría: los premios no llegan solos, quedan por recoger');
+    m = await b.req({ t: 'masteryclaim', dex: 5, i: 4 }, 'error');
+    ok(/nada que recoger/.test(m.msg), 'maestría: no se recoge un premio sin llegar a él');
+    for (const i of [0, 1, 2, 3]) m = await b.req({ t: 'masteryclaim', dex: 5, i }, 'loot');
+    ok(m.r.frame === 'tipo-fuego' && m.r.mastery.dex === 4, 'maestría: recoger el marco de su tipo (con la animación de premio)');
+    ok(bp.cosmetics.frames.includes('tipo-fuego') && bp.cosmetics.auras.includes('tipo-fuego') && !D.masteryReady(bp, 4).length, 'maestría 50 y 100: brillo y marco del tipo de la línea');
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 3 }, 'error');
+    ok(/nada que recoger/.test(m.msg), 'maestría: cada premio se recoge una sola vez');
+    m = await b.req({ t: 'masteryclaim', dex, i: 1 }, 'loot');
+    ok(m.r.art === D.lineOf(dex), 'maestría 25: ilustración oficial de la línea');
+    m = await b.req({ t: 'look', avatar: dex, avatarArt: true, frame: 'tipo-fuego', aura: 'tipo-fuego' });
+    ok(m.p.avatarArt === true && m.p.frame === 'tipo-fuego' && m.p.aura === 'tipo-fuego', 'con maestría: ilustración de avatar, marco y brillo de tipo');
+    // Skins: Oro a 150 victorias, para toda la línea y en el equipo de combate
+    m = await b.req({ t: 'look', skin: { dex: 4, skin: 'oro' } }, 'error');
+    ok(/esa skin/.test(m.msg), 'skin: sin la maestría no se puede poner');
+    bp.mastery[4] = 150;
+    m = await b.req({ t: 'masteryclaim', dex: 4, i: 4 }, 'loot');
+    ok(m.r.skin === 'oro', 'maestría 150: skin Edición Oro');
+    m = await b.req({ t: 'look', skin: { dex: 6, skin: 'oro' } });
+    ok(m.p.skins[4] === 'oro' && D.skinOf(bp, 5) === 'oro' && D.skinOf(bp, 25) === null, 'skin: se pone a toda la línea evolutiva');
+    m = await b.req({ t: 'look', skin: { dex: 4, skin: null } });
+    ok(!m.p.skins[4], 'skin: quitarla');
+    // Perfiles de antes: lo que ya se daba solo (estrella, ilustración a 50, marco a 100) cuenta como recogido
+    const old = { mastery: { 7: 60, 1: 120 }, cosmetics: { titles: [], frames: ['tipo-planta'] } };
+    seasonMod.migrate(old);
+    ok(old.masteryClaimed[7].join() === '0,1' && old.masteryClaimed[1].join() === '0,1,3' && D.masteryReady(old, 1).join() === '2', 'maestría: migración de perfiles antiguos');
+    await b.req({ t: 'look', avatar: null, frame: null, aura: null });
   }
   // Fin de temporada (simulado subiendo el id)
   const sid = D.SEASON.id, coins1 = bp.coins;

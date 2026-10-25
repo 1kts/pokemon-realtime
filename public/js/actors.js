@@ -26,13 +26,44 @@ function baseTexture(dex, anim, shiny) {
 
 let blobTex = null;
 
+// Skins de maestría sobre el sprite (las mismas que en los menús): oro, holo y galaxia.
+// Se calculan sobre el color del sprite antes del tinte del material (el destello al recibir un golpe).
+const SKIN_ID = { oro: 1, holo: 2, galaxia: 3 };
+const SKIN_GLSL = `
+  if (uSkin > 0.5) {
+    vec3 base = diffuseColor.rgb / max(diffuse, vec3(0.001));
+    float l = dot(base, vec3(0.299, 0.587, 0.114));
+    vec2 sp = gl_FragCoord.xy;
+    vec3 c;
+    if (uSkin < 1.5) {
+      float g = smoothstep(0.05, 0.9, l);
+      c = mix(vec3(0.16, 0.07, 0.0), vec3(0.95, 0.6, 0.05), smoothstep(0.0, 0.55, g));
+      c = mix(c, vec3(1.0, 0.93, 0.55), smoothstep(0.55, 1.0, g));
+      c += vec3(1.0, 0.9, 0.6) * pow(max(0.0, sin((sp.x + sp.y) * 0.035 - uTime * 2.6)), 18.0) * 0.6;
+    } else if (uSkin < 2.5) {
+      vec3 rainbow = 0.5 + 0.5 * cos(6.2831 * (vec3(0.0, 0.33, 0.67) + l * 1.2 + (sp.x + sp.y) * 0.004 + uTime * 0.35));
+      c = base * 0.45 + rainbow * 0.7;
+    } else {
+      c = mix(vec3(0.07, 0.03, 0.22), vec3(0.58, 0.38, 1.0), l);
+      vec2 cell = floor(sp / 3.0);
+      float star = step(0.975, fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453));
+      c += vec3(star * (0.55 + 0.45 * sin(uTime * 5.0 + cell.x * 1.7)));
+    }
+    diffuseColor.rgb = c * diffuse;
+  }`;
+
 export class Actor {
   // mine: anillo amarillo (propio) o rojo (rival)
-  constructor(scene, camera, dex, shiny = false, mine = false) {
+  constructor(scene, camera, dex, shiny = false, mine = false, skin = null) {
     this.scene = scene;
     this.camera = camera;
     this.group = new THREE.Group();
     this.mat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.5, side: THREE.DoubleSide, toneMapped: false });
+    this.skinU = { uSkin: { value: 0 }, uTime: { value: 0 } };
+    this.mat.onBeforeCompile = sh => {
+      Object.assign(sh.uniforms, this.skinU);
+      sh.fragmentShader = 'uniform float uSkin;\nuniform float uTime;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>' + SKIN_GLSL);
+    };
     this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.mat);
     this.mesh.castShadow = true;
     this.mesh.renderOrder = 5;
@@ -59,12 +90,13 @@ export class Actor {
     this.alpha = 1;
     this.scale = 1;
     this.ghosts = [];
-    this.setDex(dex, shiny);
+    this.setDex(dex, shiny, skin);
   }
 
-  setDex(dex, shiny = false) {
+  setDex(dex, shiny = false, skin = null) {
     this.dex = dex;
     this.shiny = shiny;
+    this.skinU.uSkin.value = SKIN_ID[skin] || 0;
     this.hover = hovers(dex);
     this.r = (window.HITBOX && window.HITBOX[dex] || 22) * U;
     this.texCache.clear();
@@ -114,6 +146,7 @@ export class Actor {
     tex.repeat.set(m.w / img.naturalWidth, m.h / img.naturalHeight);
     tex.offset.set(f * m.w / img.naturalWidth, 1 - (row + 1) * m.h / img.naturalHeight);
     this.mat.map = tex;
+    this.skinU.uTime.value = now / 1000;
     // Tamaño y ancla (los pies del sprite caen en la posición del Pokémon)
     const s = ART * this.scale;
     this.mesh.scale.set(m.w * s, m.h * s, 1);

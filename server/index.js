@@ -199,7 +199,7 @@ function finishDraft(draft) {
   const lvl = D.RANKED_LEVEL;
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl })) })),
+    sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex) })) })),
   }, (result) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
@@ -257,7 +257,7 @@ function startPractice(c, msg) {
   startBattle([c, null], {
     mode: 'practice', map: maps[Math.floor(Math.random() * maps.length)],
     sides: [
-      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL })) },
+      { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex) })) },
       { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
     ],
   }, () => []);
@@ -373,6 +373,7 @@ function handle(c, msg) {
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
+    if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
     store.save();
     return sendProfile(c);
   }
@@ -401,14 +402,15 @@ function handle(c, msg) {
   }
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
-  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim') {
+  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim') {
     const r = msg.t === 'mission' ? missions.action(c.profile, msg)
       : msg.t === 'achclaim' ? rewards.claimAchievement(c.profile, String(msg.id))
-        : rewards.claimBadge(c.profile, String(msg.region), msg.index | 0);
+        : msg.t === 'masteryclaim' ? rewards.claimMastery(c.profile, msg.dex | 0, msg.i | 0)
+          : rewards.claimBadge(c.profile, String(msg.region), msg.index | 0);
     if (r.error) send(c, { t: 'error', msg: r.error });
     else {
       if (r.loot) send(c, { t: 'loot', r: r.loot });
-      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : 'medalla'), { actor: c.profile.id, ip: c.ip,
+      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : msg.t === 'masteryclaim' ? 'maestria' : 'medalla'), { actor: c.profile.id, ip: c.ip,
         coins: r.loot ? r.loot.coins : -(r.cost || 0) });
       store.save();
     }

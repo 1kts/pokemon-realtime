@@ -4,6 +4,8 @@
 // recogido en un mensaje 'loot'. Se añaden como métodos de UI (ver el final de ui.js).
 import { t, locale } from './i18n.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
+import { frameBadge, SKIN_LABEL } from './frames.js';
+import { portrait } from './sprites.js';
 import { achIcon, FRAME_LABEL_EXTRA } from './achievements.js';
 
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -154,7 +156,7 @@ export const missionViews = {
     for (const a of ach) {
       const rw = a.reward || {};
       const row = el('div', 'mission done', `<span class="m-ico">${achIcon(a, 40)}</span><div class="m-body"><b>${t(a.name)}</b><small>${t(a.desc)}</small>
-        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp"><i class="sw frame-${rw.frame}"></i>${t(FRAME_LABEL[rw.frame] || rw.frame)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
+        <div class="m-prize">${prizeHtml(rw)}${rw.title ? `<span class="mp title-chip">${t(rw.title)}</span>` : ''}${rw.frame ? `<span class="mp">${frameBadge(rw.frame, 16)}${t(FRAME_LABEL[rw.frame] || rw.frame)}</span>` : ''}${Data.achievementAvatar(a) ? `<span class="mp">${avatarArt(Data.achievementAvatar(a), 26)}${t('Avatar')}</span>` : ''}</div></div>`);
       const b = el('button', 'primary claim-btn', t('¡Recoger!'));
       b.onclick = () => { b.disabled = true; this.net.send({ t: 'achclaim', id: a.id }); };
       row.append(b);
@@ -220,7 +222,8 @@ export const missionViews = {
     const pop = el('div', 'loot-pop');
     const box = el('div', 'loot-box' + (r.chest ? ' chest-open' : ''));
     const head = r.chest ? t(r.chest === 'daily' ? '¡Cofre diario abierto!' : '¡Cofre semanal abierto!')
-      : r.badge || (r.avatar && !r.coins) ? t('¡Nuevo avatar!') : r.achievement ? t('¡Logro recogido!') : t('¡Misión completada!');
+      : r.mastery ? t('¡Premio de maestría!')
+        : r.badge || (r.avatar && !r.coins) ? t('¡Nuevo avatar!') : r.achievement ? t('¡Logro recogido!') : t('¡Misión completada!');
     const conf = el('div', 'confetti');
     const colors = ['#ffcb05', '#3b78d8', '#e8403a', '#4fd06a', '#ff9ee0', '#ffffff'];
     for (let i = 0; i < 60; i++) {
@@ -234,6 +237,7 @@ export const missionViews = {
     box.append(el('div', 'rays'), conf, el('h2', '', head));
     if (r.chest) box.append(el('span', 'chest big', CHEST_SVG));
     if (r.mission) box.append(el('p', 'loot-sub', missionText({ ...r.mission, goal: Data.MISSION_BY_ID[r.mission.id].goal })));
+    if (r.mastery) box.append(el('p', 'loot-sub', t('Línea de {m}', { m: Data.SPECIES[r.mastery.dex].name })));
     const list = el('div', 'loot-items');
     const add = (art, label) => { const it = el('div', 'li', `<span class="li-art">${art}</span><small>${label}</small>`); it.style.animationDelay = (0.25 + list.children.length * 0.18) + 's'; list.append(it); };
     if (r.coins) {
@@ -249,7 +253,13 @@ export const missionViews = {
     }
     for (const [k, n] of Object.entries(r.items || {})) add(itemImg(k, 48), `${itemName(k)} ×${n}`);
     if (r.title) add(`<span class="title-chip">${t(r.title)}</span>`, t('Título'));
-    if (r.frame) add(`<i class="sw big frame-${r.frame}"></i>`, t('Marco {name}', { name: t(FRAME_LABEL[r.frame] || r.frame) }));
+    if (r.frame) add(frameBadge(r.frame, 44), t('Marco {name}', { name: r.frame.startsWith('tipo-') ? t('Maestría {type}', { type: Data.TYPE_LABEL[r.frame.slice(5)] }) : t(FRAME_LABEL[r.frame] || r.frame) }));
+    // Premios de maestría: estrella, ilustración, brillo de burbuja y skin
+    const addEl = (node, label) => { add('', label); list.lastChild.querySelector('.li-art').append(node); };
+    if (r.mastery && r.mastery.kind === 'star') add('<b class="loot-star">★</b>', t('Estrella de bronce'));
+    if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
+    for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), au === 'prisma' ? t('Brillo prismático') : t('Brillo {type}', { type: Data.TYPE_LABEL[au.slice(5)] }));
+    if (r.skin) { const pic = portrait(r.mastery.dex, 64); pic.classList.add('skin-' + r.skin); addEl(pic, t(SKIN_LABEL[r.skin])); }
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
     box.append(list);
     const acts = el('div', 'acts');
@@ -258,6 +268,10 @@ export const missionViews = {
       use.onclick = () => { this.net.send({ t: 'look', avatar: r.avatar }); close(); };
       acts.append(use);
     }
+    const equip = (label, msg) => { const b = el('button', '', label); b.onclick = () => { this.net.send({ t: 'look', ...msg }); close(); }; acts.append(b); };
+    if (r.art) equip(t('Usar de avatar'), { avatar: r.art, avatarShiny: false, avatarArt: true });
+    if (r.aura || r.aura2) equip(t('Ponerme el brillo'), { aura: r.aura2 || r.aura });
+    if (r.skin) equip(t('Ponérsela'), { skin: { dex: r.mastery.dex, skin: r.skin } });
     const ok = el('button', 'primary', t('¡Genial!'));
     acts.append(ok);
     if (r.chestReady) acts.append(el('p', 'small chest-hint', t('¡Has completado las 3! Abre el cofre en Misiones.')));

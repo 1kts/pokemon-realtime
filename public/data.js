@@ -1216,20 +1216,40 @@
   // ---------- Maestría por línea evolutiva ----------
   // Cada combate ganado (historia, Torre, clasificatoria o rápida; la práctica no) suma una victoria a
   // la línea evolutiva de cada Pokémon de tu equipo: Charmander, Charmeleon y Charizard suman a la misma.
-  // Premios por línea: estrella de bronce a 10, la ilustración oficial como avatar a 50, y a 100 el
-  // marco animado de su tipo (el primero de la especie base: fuego para la línea de Charmander).
+  // Premios por línea (se recogen a mano en Colección): estrella a 10, la ilustración oficial como
+  // avatar a 25, el brillo de burbuja de su tipo a 50, el marco animado de su tipo a 100 (el primero de
+  // la especie base: fuego para la línea de Charmander) y las skins Oro (150), Holo (250) y Galaxia
+  // (400, con el título de maestro de la línea y el brillo prismático).
   const PRE = {};
   for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
   const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
   const lineMembers = root => Object.values(SPECIES).filter(s => lineOf(s.dex) === root).map(s => s.dex).sort((a, b) => a - b);
-  const MASTERY = [10, 50, 100];
-  const MASTERY_ART = 50, MASTERY_FRAME = 100;
+  const MASTERY_TIERS = [
+    { wins: 10, kind: 'star' },
+    { wins: 25, kind: 'art' },
+    { wins: 50, kind: 'aura' },
+    { wins: 100, kind: 'frame' },
+    { wins: 150, kind: 'skin', skin: 'oro' },
+    { wins: 250, kind: 'skin', skin: 'holo' },
+    { wins: 400, kind: 'skin', skin: 'galaxia', title: true, aura: 'prisma' },
+  ];
+  const MASTERY = MASTERY_TIERS.map(x => x.wins);
+  const MASTERY_ART = 25, MASTERY_FRAME = 100;
+  const SKINS = ['oro', 'holo', 'galaxia'];
   const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
   const masteryTier = wins => MASTERY.filter(n => wins >= n).length;
   const typeFrameOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];
+  const typeAuraOf = dex => 'tipo-' + SPECIES[lineOf(dex)].types[0];
+  const masteryTitle = dex => 'Maestro de ' + SPECIES[lineOf(dex)].name;
+  // Premios de maestría ya recogidos de una línea (índices de MASTERY_TIERS) y los que se pueden recoger
+  const masteryClaimed = (p, dex) => ((p.masteryClaimed || {})[lineOf(dex)] || []);
+  const masteryReady = (p, dex) => MASTERY_TIERS.map((x, i) => i).filter(i => masteryWins(p, dex) >= MASTERY[i] && !masteryClaimed(p, dex).includes(i));
+  const hasMastery = (p, dex, kind, skin) => masteryClaimed(p, dex).some(i => MASTERY_TIERS[i].kind === kind && (!skin || MASTERY_TIERS[i].skin === skin));
+  // Skin que lleva un Pokémon (la elegida para su línea, si la tiene)
+  const skinOf = (p, dex) => { const s = (p.skins || {})[lineOf(dex)]; return s && hasMastery(p, dex, 'skin', s) ? s : null; };
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_ART, MASTERY_FRAME, masteryWins, masteryTier, typeFrameOf, seasonTitle, RANKED_PAY,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, MASTERY_FRAME, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, seasonTitle, RANKED_PAY,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

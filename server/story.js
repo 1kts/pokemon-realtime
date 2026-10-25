@@ -193,7 +193,7 @@ function battleSetup(p, msg) {
   // Solo se combate con Pokémon de la región del lugar
   const team = teamMons(p, node.region);
   if (!team.length) return { error: `Primero elige tu Pokémon inicial de ${D.REGIONS[node.region].name}` };
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m) })) };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex) })) };
   if (msg.a === 'route') {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };

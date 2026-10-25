@@ -1,4 +1,5 @@
-// Recompensas de clasificatoria, temporadas, logros y cosméticos del perfil (títulos, marcos y avatares).
+// Recompensas de clasificatoria, temporadas, logros, maestría y cosméticos del perfil (títulos, marcos,
+// avatares, brillos de burbuja y skins).
 // Por temporada: cada liga alcanzada por primera vez da un premio que se reclama a mano;
 // al cambiar de temporada se cobra el premio de la anterior según la mejor liga y el ELO se
 // acerca a la mitad hacia 1000. Cada combate paga algo y la primera victoria del día, más.
@@ -26,6 +27,17 @@ function migrate(p) {
   }
   if (!p.achClaim) p.achClaim = [];
   if (!p.mastery) p.mastery = {};
+  if (!p.cosmetics.auras) p.cosmetics.auras = [];
+  if (!p.skins) p.skins = {};
+  // Maestría: lo que antes se daba solo (estrella a 10, ilustración a 50, marco a 100) cuenta como recogido
+  if (!p.masteryClaimed) {
+    p.masteryClaimed = {};
+    const old = { star: 10, art: 50, frame: 100 };
+    for (const [root, wins] of Object.entries(p.mastery)) {
+      const got = D.MASTERY_TIERS.map((x, i) => i).filter(i => old[D.MASTERY_TIERS[i].kind] && wins >= old[D.MASTERY_TIERS[i].kind]);
+      if (got.length) p.masteryClaimed[root] = got;
+    }
+  }
   checkAchievements(p);
 }
 
@@ -69,7 +81,7 @@ function claimBadge(p, region, index) {
 }
 
 // Maestría: una victoria más para la línea evolutiva de cada Pokémon del equipo (una vez por línea).
-// Al llegar a MASTERY_FRAME se desbloquea el marco de su tipo. Devuelve las líneas que suben de nivel.
+// Devuelve las líneas que llegan a un premio nuevo (se recoge a mano con claimMastery).
 function addMastery(p, dexes) {
   migrate(p);
   const ups = [];
@@ -77,9 +89,26 @@ function addMastery(p, dexes) {
     const before = p.mastery[root] || 0;
     p.mastery[root] = before + 1;
     if (D.masteryTier(before + 1) > D.masteryTier(before)) ups.push({ dex: root, tier: D.masteryTier(before + 1) });
-    if (before + 1 >= D.MASTERY_FRAME) unlock(p, 'frames', D.typeFrameOf(root));
   }
   return ups;
+}
+
+// Recoger el premio i de la maestría de una línea
+function claimMastery(p, dex, i) {
+  migrate(p);
+  if (!D.SPECIES[dex]) return { error: 'Ese Pokémon no existe' };
+  const root = D.lineOf(dex), tier = D.MASTERY_TIERS[i];
+  if (!tier) return { error: 'Ese premio no existe' };
+  if (!D.masteryReady(p, root).includes(i)) return { error: 'No hay nada que recoger de ese premio' };
+  p.masteryClaimed[root] = [...(p.masteryClaimed[root] || []), i];
+  const loot = { coins: 0, items: {}, mastery: { dex: root, tier: i, kind: tier.kind } };
+  if (tier.kind === 'art') loot.art = root;
+  if (tier.kind === 'aura') { unlock(p, 'auras', D.typeAuraOf(root)); loot.aura = D.typeAuraOf(root); }
+  if (tier.kind === 'frame') { unlock(p, 'frames', D.typeFrameOf(root)); loot.frame = D.typeFrameOf(root); }
+  if (tier.kind === 'skin') loot.skin = tier.skin;
+  if (tier.title) { unlock(p, 'titles', D.masteryTitle(root)); loot.title = D.masteryTitle(root); }
+  if (tier.aura) { unlock(p, 'auras', tier.aura); loot.aura2 = tier.aura; }
+  return { loot };
 }
 
 function rollSeason(p) {
@@ -140,6 +169,17 @@ function setLook(p, msg) {
     if (msg.frame !== null && !p.cosmetics.frames.includes(msg.frame)) return 'No tienes ese marco';
     p.frame = msg.frame;
   }
+  if (msg.aura !== undefined) {
+    if (msg.aura !== null && !p.cosmetics.auras.includes(msg.aura)) return 'No tienes ese brillo';
+    p.aura = msg.aura;
+  }
+  // Skin de una línea evolutiva: { dex, skin } (skin null = sin skin)
+  if (msg.skin !== undefined) {
+    const dex = msg.skin && +msg.skin.dex, id = msg.skin && msg.skin.skin;
+    if (!D.SPECIES[dex]) return 'Ese Pokémon no existe';
+    if (id !== null && !(D.SKINS.includes(id) && D.hasMastery(p, dex, 'skin', id))) return 'No tienes esa skin';
+    if (id) p.skins[D.lineOf(dex)] = id; else delete p.skins[D.lineOf(dex)];
+  }
   if (msg.showcase !== undefined) {
     const list = Array.isArray(msg.showcase) ? [...new Set(msg.showcase.map(String))] : [];
     if (list.length > D.SHOWCASE_MAX || !list.every(id => p.achievements[id])) return 'Solo puedes mostrar logros que hayas conseguido';
@@ -155,7 +195,7 @@ function setLook(p, msg) {
     if (msg.avatar !== null && !p.caught.includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     if (shiny && !(p.shinies || []).includes(msg.avatar)) return 'Solo puedes usar Pokémon que hayas atrapado';
     const art = !!msg.avatarArt && msg.avatar !== null;
-    if (art && D.masteryWins(p, msg.avatar) < D.MASTERY_ART) return 'Esa ilustración aún no está desbloqueada';
+    if (art && !D.hasMastery(p, msg.avatar, 'art')) return 'Esa ilustración aún no está desbloqueada';
     p.avatar = msg.avatar;
     p.avatarShiny = shiny;
     p.avatarArt = art;
@@ -163,4 +203,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery };
+module.exports = { migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };

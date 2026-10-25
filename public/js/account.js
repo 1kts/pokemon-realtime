@@ -9,7 +9,7 @@ import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 import { avatarArt, avatarName } from './missions.js';
-import { frameFx, frameRing } from './frames.js';
+import { frameFx, frameRing, frameBadge, auraHtml } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
 
@@ -287,13 +287,15 @@ export const accountViews = {
     return lead ? { dex: lead.dex, shiny: Data.looksShiny(lead) } : { dex: 25, shiny: false };
   },
 
-  // frame: para previsualizar otro marco (undefined = el del perfil)
-  avatar(size, animated, frame) {
+  // frame / aura: para previsualizar otro marco o brillo (undefined = el del perfil)
+  avatar(size, animated, frame, aura) {
     const p = this.profile;
     const f = frame === undefined ? p.frame || null : frame;
+    const au = aura === undefined ? p.aura || null : aura;
     const a = el('div', 'ava frame-' + (f || 'none'));
     a.style.setProperty('--s', size + 'px');
     if (frameRing(f)) a.style.setProperty('--ring', frameRing(f));
+    if (au) a.insertAdjacentHTML('afterbegin', auraHtml(au));
     // Avatar de colección (medalla o icono de logro)
     if (typeof p.avatar === 'string' && avatarArt(p.avatar, size)) {
       a.classList.add('ava-icon');
@@ -309,7 +311,11 @@ export const accountViews = {
       img.src = `art/${shiny ? 'shiny/' : ''}${dex}.png`; img.alt = ''; img.draggable = false;
       img.onerror = () => img.replaceWith(sprite());   // sin conexión con PokeAPI: el sprite de siempre
       pic.append(img);
-    } else pic.append(sprite());
+    } else {
+      pic.append(sprite());
+      const skin = Data.skinOf(p, dex);
+      if (skin) pic.classList.add('skin-' + skin);
+    }
     a.append(pic);
     a.insertAdjacentHTML('beforeend', frameFx(f));
     return a;
@@ -555,7 +561,19 @@ export const accountViews = {
       frames.append(b);
     }
     look.append(el('h4', '', t('Marco')), frames);
-    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.', { n: Data.MASTERY_FRAME })));
+    // Brillo de burbuja: los conseguidos con la maestría
+    const auras = el('div', 'frame-grid');
+    for (const au of [null, ...(cos.auras || [])]) {
+      const b = el('button', 'frame-opt' + ((p.aura || null) === au ? ' sel' : ''));
+      b.append(this.avatar(44, false, undefined, au), el('small', '', !au ? t('Ninguno') : au === 'prisma' ? t('Prismático') : Data.TYPE_LABEL[au.slice(5)]));
+      b.onclick = () => this.net.send({ t: 'look', aura: au });
+      auras.append(b);
+    }
+    look.append(el('h4', '', t('Brillo de burbuja')), auras);
+    look.append(el('p', 'small', t('Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Ganando combates con una línea evolutiva consigues su ilustración, brillos, el marco de su tipo y skins.')));
+    const collBtn = el('button', '', t('Ver colección y maestría'));
+    collBtn.onclick = () => this.openCollection('mastery');
+    look.append(collBtn);
     const avaBtn = el('button', '', t('Elegir avatar'));
     avaBtn.onclick = () => this.avatarPicker();
     look.append(el('h4', '', t('Avatar')), avaBtn);
@@ -597,7 +615,7 @@ export const accountViews = {
       for (const dex of [...p.caught].sort((a, b) => a - b)) {
         if (!SPECIES[dex]) continue;
         // Con la maestría de su línea, también la ilustración oficial
-        const arts = Data.masteryWins(p, dex) >= Data.MASTERY_ART ? [false, true] : [false];
+        const arts = Data.hasMastery(p, dex, 'art') ? [false, true] : [false];
         for (const [shiny, art] of (shinies.has(dex) ? [false, true] : [false]).flatMap(s => arts.map(a => [s, a]))) {
           const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (art ? ' is-art' : '') + (p.avatar === dex && !!p.avatarShiny === shiny && !!p.avatarArt === art ? ' sel' : ''));
           if (art) b.innerHTML = `<img class="ava-art" src="art/${shiny ? 'shiny/' : ''}${dex}.png" alt="" loading="lazy" draggable="false"><i class="art-tag">${t('Arte')}</i>`;
@@ -703,7 +721,7 @@ export const accountViews = {
       const claimed = min === 0 || s.claimed.includes(name);
       const card = el('div', `lr ${name.toLowerCase()}${reached ? ' reached' : ''}${reached && !claimed ? ' ready' : ''}${claimed && reached ? ' claimed' : ''}`);
       const loot = [r.coins ? coins(r.coins) : '', ...Object.entries(r.items).map(([id, n]) => `${itemName(id)} ×${n}`)].filter(Boolean);
-      card.innerHTML = `<i class="sw frame-${r.frame}"></i><b>${t(name)}</b><small>${min ? min + ' ELO' : t('inicio')}</small>
+      card.innerHTML = `${frameBadge(r.frame, 42)}<b>${t(name)}</b><small>${min ? min + ' ELO' : t('inicio')}</small>
         <div class="loot">${loot.map(x => `<span>${x}</span>`).join('')}<span class="title-chip">${escapeHtml(t(r.title))}</span><span>${t('Marco {name}', { name: t(FRAME_LABEL[r.frame]) })}</span></div>`;
       if (min === 0) card.append(el('em', 'state', t('De serie')));
       else if (!reached) card.append(el('em', 'state', t('Faltan {n}', { n: min - s.peak })));
