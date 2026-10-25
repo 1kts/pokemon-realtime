@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': '広くなったカメラ',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'バトルのカメラを引いた。下の隅までフィールド全体が見え、HUDでポケモンが隠れなくなった。',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': '回復には代償がある',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'アクアリング・こうごうせい・つきのひかりの回復量は16%（以前は20〜22%）、再使用まで20秒、使うと1.2秒動けない。相手から離れて回復しよう。',

@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.15.4', date: '2026-10-25', title: 'Cámara más abierta',
+      items: [
+        ['cambio', 'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.'],
+      ],
+    },
+    {
       v: '0.15.3', date: '2026-10-25', title: 'Curarse tiene precio',
       items: [
         ['cambio', 'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.'],

@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': 'Wider camera',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'The battle camera is further back: you see the whole field, including the bottom corners, and the HUD no longer hides any Pokémon.',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': 'Healing has a price',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Aqua Ring, Synthesis and Moonlight heal 16% (was 20-22%), take 20 s to recharge and leave you stunned for 1.2 s: heal away from your opponent.',

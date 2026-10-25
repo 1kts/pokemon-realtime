@@ -31,6 +31,8 @@ export function softDisc(inner = 'rgba(255,255,255,1)', outer = 'rgba(255,255,25
 }
 
 // ---------- Temas ----------
+// Lo lejos que está la cámara del combate (1 = la de antes; la niebla se escala igual)
+const CAM_ZOOM = 1.3;
 // light: fondo/niebla, luz ambiental (cielo, suelo, intensidad) y sol (color, intensidad)
 const LIGHT = {
   day: { bg: '#9cc8ec', fog: [28, 60], hemi: ['#d8ecff', '#4a6a30', 1.15], sun: ['#fff0d8', 2.3] },
@@ -369,12 +371,13 @@ export class World {
   }
 
   placeCamera(aspect) {
-    // Cámara inclinada estilo Battlerite; más alta si la ventana es estrecha
+    // Cámara inclinada estilo Battlerite, lo bastante lejos para ver el campo entero por encima del HUD
+    // (las esquinas de abajo no quedan tapadas); más alta si la ventana es estrecha
     const cx = COLS / 2, cz = ROWS / 2;
-    const fit = Math.max(1, 1.62 / aspect);
+    const fit = Math.max(1, 1.62 / aspect) * CAM_ZOOM;
     this.camera.aspect = aspect;
     this.camera.position.set(cx, 17.5 * fit, cz + 11.5 * fit);
-    this.camera.lookAt(cx, 0, cz + 0.6);
+    this.camera.lookAt(cx, 0, cz + 2.6);
     this.camera.updateProjectionMatrix();
   }
 
@@ -393,7 +396,7 @@ export class World {
     s.add(sun, sun.target);
     this.sun = sun;
     this.scene.background = new THREE.Color('#9cc8ec');
-    this.scene.fog = new THREE.Fog('#9cc8ec', 28, 60);
+    this.scene.fog = new THREE.Fog('#9cc8ec', 28 * CAM_ZOOM, 60 * CAM_ZOOM);
   }
 
   ground() {
@@ -435,7 +438,7 @@ export class World {
     if (this.onTheme) this.onTheme(this.bright);
     const L = LIGHT[th.light] || LIGHT.day;
     this.scene.background = new THREE.Color(L.bg);
-    this.scene.fog.color.set(L.bg); this.scene.fog.near = L.fog[0]; this.scene.fog.far = L.fog[1];
+    this.scene.fog.color.set(L.bg); this.scene.fog.near = L.fog[0] * CAM_ZOOM; this.scene.fog.far = L.fog[1] * CAM_ZOOM;
     this.hemi.color.set(L.hemi[0]); this.hemi.groundColor.set(L.hemi[1]); this.hemi.intensity = L.hemi[2];
     this.sun.color.set(L.sun[0]); this.sun.intensity = L.sun[1];
     this.arena.material.map = this.tex('g:' + name, () => groundTexture(name));
@@ -468,7 +471,8 @@ export class World {
     this.animated = [];
     const r = rng(seedOf(name, 'decorado'));
     const add = (o, x, z) => { o.position.set(x, o.position.y, z); o.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); this.decorGroup.add(o); return o; };
-    const free = (x, z) => !(x > -1.2 && x < COLS + 1.2 && z > -1.2 && z < ROWS + 1.2);
+    // Fuera del campo, y nada alto justo delante de la pared de abajo: taparía el campo a la cámara
+    const free = (x, z) => !(x > -1.2 && x < COLS + 1.2 && z > -1.2 && z < ROWS + 5);
     const spots = n => { const out = []; let k = 0; while (out.length < n && k++ < n * 6) { const x = -14 + r() * (COLS + 28), z = -12 + r() * (ROWS + 24); if (free(x, z)) out.push([x, z]); } return out; };
     const leaves = (th.leaves || ['#3f7f35', '#4a8f3a', '#356f2c', '#5a9a40']).map(c => mat(c, { roughness: 0.9, flatShading: true }));
     const trunk = mat('#6a4a30', { roughness: 1 });

@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': 'Weitere Kamera',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'Die Kampfkamera ist weiter weg: Du siehst das ganze Feld, auch die unteren Ecken, und die Anzeige verdeckt kein Pokémon mehr.',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': 'Heilen hat seinen Preis',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Wasserring, Synthese und Mondschein heilen 16 % (vorher 20–22 %), brauchen 20 s zum Aufladen und betäuben dich 1,2 s: Heile dich weit weg vom Gegner.',

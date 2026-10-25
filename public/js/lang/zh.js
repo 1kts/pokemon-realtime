@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': '更广的镜头',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': '对战镜头拉远了：可以看到整个场地，包括下方角落，界面不会再挡住任何宝可梦。',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': '回复是有代价的',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': '水流环、光合作用和月光回复16%（之前为20-22%），冷却20秒，使用后自身眩晕1.2秒：请远离对手再回复。',

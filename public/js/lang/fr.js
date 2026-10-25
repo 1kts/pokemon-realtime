@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': 'Caméra plus large',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'La caméra de combat est plus éloignée : tu vois tout le terrain, y compris les coins du bas, et l’interface ne cache plus aucun Pokémon.',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': 'Se soigner a un prix',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Anneau Hydro, Synthèse et Rayon Lune soignent 16 % (avant 20-22 %), se rechargent en 20 s et t’étourdissent 1,2 s : soigne-toi loin de l’adversaire.',

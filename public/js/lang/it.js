@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.4 ----------
+    'Cámara más abierta': 'Telecamera più ampia',
+    'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'La telecamera della lotta è più lontana: vedi tutto il campo, anche gli angoli in basso, e l’interfaccia non nasconde più nessun Pokémon.',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': 'Curarsi ha un prezzo',
     'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': 'Acquanello, Sintesi e Lucelunare curano il 16 % (prima 20-22 %), si ricaricano in 20 s e ti lasciano stordito 1,2 s: curati lontano dall’avversario.',
