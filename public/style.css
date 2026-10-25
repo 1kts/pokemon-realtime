@@ -1104,6 +1104,14 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .menu-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; }
 .menu-top > .menu-side > .profile { position: static; }
 @media (max-width: 900px) { .menu-side { position: static; } }
+/* Portada: modos, colección, misiones y «Cómo se juega» bajan juntos al centro de la pantalla si sobra alto */
+.menu { min-height: 100%; }
+.menu > .menu-top { margin-top: auto; }
+.menu > .howto { margin-bottom: auto; }
+/* Misiones de la portada: diarias y semanales en una lista con scroll */
+.mw-list { display: flex; flex-direction: column; gap: 7px; max-height: 360px; margin-right: -6px; padding-right: 6px; }
+.mw-sub { margin: 4px 2px 0; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+.mw-sub:first-child { margin-top: 0; }
 .missions-view { display: flex; flex-direction: column; height: 100%; }
 .mv-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; overflow: auto; padding-bottom: 20px; }
 .missions { display: flex; flex-direction: column; gap: 8px; }
@@ -1414,6 +1422,13 @@ body.in-battle .legal-bar { display: none; }
 /* Las tarjetas que salen al pasar el ratón por la cabecera, por encima de las del menú */
 .hub-bar { position: relative; z-index: 20; }
 .hub-me .tb-tip { left: auto; right: 0; }
+.hub-bar { position: relative; z-index: 30; }
+/* Cabecera de las pantallas interiores: Volver y el título donde la portada tiene el idioma */
+.inner-bar .tb-left { justify-self: start; gap: 12px; padding: 0 20px 0 7px; min-width: 0; max-width: 100%; }
+.inner-bar .tb-left .back { height: 38px; padding: 0 14px 0 9px; gap: 4px; flex: none; }
+.inner-bar .tb-left h2 { margin: 0; font: 800 21px var(--display); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.inner-bar .tb-left .tb-tip { left: 0; right: auto; }
+.inner-bar .hub-logo { font-size: clamp(20px, 2.4vw, 28px); }
 
 /* Lateral: «Tu colección» */
 .hub-coll { padding: 14px; }
@@ -1441,6 +1456,12 @@ body.in-battle .legal-bar { display: none; }
   .hub-me .support { width: 38px; padding: 0; }
   .hub-me .support span { display: none; }
   .hub-ava .ava { --s: 48px !important; }
+  .inner-bar { grid-template-columns: 1fr; }
+  .inner-bar .hub-logo { display: none; }
+  .inner-bar .tb-left { grid-row: 1; grid-column: 1; }
+  .inner-bar .tb-left .back span { display: none; }
+  .inner-bar .tb-left .back { width: 38px; padding: 0; justify-content: center; }
+  .inner-bar .tb-left h2 { font-size: 18px; }
 }
 @media (max-width: 480px) {
   .hub-mod { gap: 4px; padding: 0 5px; }

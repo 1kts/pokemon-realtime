@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': '菜单居中，更加闪亮',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': '主菜单现在位于屏幕中央；右侧上方是“我的收藏”，下方是“任务”，每日任务和每周任务都在其中。',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': '所有界面都使用菜单的顶栏：左侧是“返回”和标题，右侧是你的资料和金钱。“我的宝可梦”“背包”和“商店”在“我的收藏”里。',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': '面板、卡片、标签页和登录界面焕然一新：选中的内容会发出金光，鼠标移上去时卡片会浮起。',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': '卡片更有冲击力',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': '菜单卡片使用各模式的专属颜色，宝可梦卡片使用其属性颜色；鼠标移上去时卡片会浮起并发光。',

@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'メニューが中央に、もっと華やかに',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'メインメニューが画面の中央に表示されます。右側は上に「コレクション」、下に「ミッション」があり、デイリーとウィークリーの両方を確認できます。',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'すべての画面にメニューと同じバーがつきます。左に「もどる」とタイトル、右にプロフィールとおこづかい。「じぶんの ポケモン」「バッグ」「ショップ」は「コレクション」にあります。',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'パネル、カード、タブ、ログイン画面が新しいデザインに。選んだものは金色に光り、カーソルを合わせるとカードが浮き上がります。',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'カードがもっと華やかに',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'メニューのカードは各モードの色に、ポケモンのカードはタイプの色になりました。カーソルを合わせると浮き上がって光ります。',

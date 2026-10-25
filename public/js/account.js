@@ -322,22 +322,6 @@ export const accountViews = {
     return a;
   },
 
-  // Botón de la barra superior: avatar, nombre y acceso al perfil (con aviso si hay algo que reclamar)
-  profileChip() {
-    const p = this.profile;
-    const b = el('button', 'me-chip');
-    b.append(this.avatar(30));
-    b.append(el('span', '', escapeHtml(p.name)));
-    if (this.claimable().length || !p.account) b.append(el('i', 'ndot'));
-    b.setAttribute('aria-label', t('Perfil'));
-    b.onclick = () => this.show('profile');
-    const ready = this.claimable().length;
-    return this.hoverTip(b, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO${p.account ? ` · ${escapeHtml(handle(p.account.user))}` : ''}</span>
-      <p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>
-      ${!p.account ? `<p class="tip-warn">${t('Invitado: crea una cuenta para no perder tu partida.')}</p>` : ''}
-      ${ready ? `<p class="tip-good">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</p>` : ''}`);
-  },
-
   // Icono de diario en el menú: abre las novedades (con un punto si hay algo sin ver)
   newsIcon() {
     const b = el('button', 'tb-btn icon news-btn', `${icon('book', 24)}${this.hasNews() ? '<i class="ndot news"></i>' : ''}`);

@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.3 ----------
+    'Menú centrado y más brillo': 'Menu centrato e più brillante',
+    'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.': 'Il menu principale è ora al centro dello schermo; a destra, La tua collezione sta in alto e Missioni sotto, con le missioni giornaliere e settimanali.',
+    'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.': 'Ogni schermata ha la barra del menu: Indietro e il titolo a sinistra, il tuo profilo e i soldi a destra. I miei Pokémon, Borsa e Negozio sono in La tua collezione.',
+    'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.': 'Pannelli, carte, schede e schermata d\'accesso hanno un look nuovo: ciò che scegli brilla d\'oro e le carte si sollevano quando ci passi sopra col mouse.',
     // ---------- Novedades v0.18.2 ----------
     'Tarjetas con más chispa': 'Carte più scintillanti',
     'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Le carte del menu hanno il colore di ogni modalità e quelle dei tuoi Pokémon il colore dei loro tipi; passaci sopra col mouse e si sollevano brillando.',

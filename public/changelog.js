@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.18.3', date: '2026-10-25', title: 'Menú centrado y más brillo',
+      items: [
+        ['cambio', 'El menú principal se centra en la pantalla; a la derecha, Tu colección va arriba y Misiones debajo, con las diarias y las semanales.'],
+        ['cambio', 'Todas las pantallas llevan la barra del menú: Volver y el título a la izquierda, tu perfil y dinero a la derecha. Mis Pokémon, Mochila y Tienda están en Tu colección.'],
+        ['cambio', 'Paneles, tarjetas, pestañas y la pantalla de entrada tienen un acabado nuevo: lo elegido brilla en dorado y las tarjetas se levantan al pasar el ratón.'],
+      ],
+    },
+    {
       v: '0.18.2', date: '2026-10-25', title: 'Tarjetas con más chispa',
       items: [
         ['cambio', 'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.'],

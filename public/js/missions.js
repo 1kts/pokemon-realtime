@@ -187,11 +187,17 @@ export const missionViews = {
     const ms = this.profile.missions;
     const ready = this.readyCount();
     const box = el('div', 'panel missions-widget' + (ready ? ' has-ready' : ''));
-    const head = el('button', 'mw-head', `<b>${t('Misiones diarias')}</b>${ready ? `<span class="m-ready">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</span>` : ''}<i class="go">${t('Ver todas')} ›</i>`);
+    const head = el('button', 'mw-head', `<b>${t('Misiones')}</b>${ready ? `<span class="m-ready">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</span>` : ''}<i class="go">${t('Ver todas')} ›</i>`);
     head.onclick = () => this.show('missions');
     box.append(head);
-    ms.daily.forEach((m, i) => box.append(this.missionCard('daily', m, i, true)));
-    if (ms.daily.every(m => m.claimed)) box.append(this.chestRow('daily'));
+    // Diarias y semanales en una lista con scroll, cada grupo con su cofre cuando están todas recogidas
+    const list = el('div', 'mw-list scroll');
+    for (const [kind, title] of [['daily', t('Misiones diarias')], ['weekly', t('Misiones semanales')]]) {
+      list.append(el('h4', 'mw-sub', title));
+      ms[kind].forEach((m, i) => list.append(this.missionCard(kind, m, i, true)));
+      if (ms[kind].every(m => m.claimed)) list.append(this.chestRow(kind));
+    }
+    box.append(list);
     return box;
   },
 

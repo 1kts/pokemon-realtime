@@ -39,7 +39,6 @@ const ICON = {
   back: svg('<path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'),
   ball: svg('<circle cx="10" cy="10" r="7.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.8 10h4.6M12.6 10h4.6" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.3 8.6a7.2 7.2 0 0 1 13.4 0" fill="currentColor" opacity=".35"/>'),
   bag: svg('<path d="M4.5 7.5h11l-.9 9h-9.2l-.9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 7.5V6a2.7 2.7 0 0 1 5.4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>'),
-  quest: svg('<rect x="4" y="3.5" width="12" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 3.5V2.6h5v.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m6.8 9.6 1.5 1.5 2.9-3M6.8 14.2h6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'),
   trophy: svg('<path d="M6 3.5h8v4a4 4 0 0 1-8 0v-4Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 5H3.5a2.5 2.5 0 0 0 2.6 3M14 5h2.5a2.5 2.5 0 0 1-2.6 3M10 11.5V14M6.8 16.5h6.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'),
 };
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
@@ -109,60 +108,23 @@ export class UI {
 
   hide() { this.root.hidden = true; this.root.innerHTML = ''; }
 
+  // Cabecera de las pantallas interiores: la misma que la de la portada (logo en medio y tu perfil, dinero y
+  // Ajustes a la derecha), con Volver y el título de la pantalla a la izquierda en vez del idioma
   topbar(title, back) {
-    const p = this.profile;
-    const bar = el('div', 'topbar');
-    // Botón con icono y texto; si la barra se queda estrecha, solo queda el icono (ver .topbar en style.css)
-    // Con tip, al pasar el ratón sale una tarjeta con qué hay y datos del jugador
-    const btn = (icon, label, onClick, cls = '', tip = null) => {
-      const b = el('button', 'tb-btn ' + cls, `${icon}<span>${label}</span>`);
-      b.title = label;
-      b.setAttribute('aria-label', label);
-      b.onclick = onClick;
-      return tip ? this.hoverTip(b, `<b>${label}</b>${tip}`) : b;
-    };
-    const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
-    const total = Object.keys(SPECIES).length;
+    const bar = el('header', 'hub-bar inner-bar');
     const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
       ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica'), missions: t('Misiones'), collection: t('Colección') };
-    const left = el('div', 'tb-left');
-    if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back', VIEW_NAME[back] ? `<p>${t('Volver a {view}', { view: VIEW_NAME[back] })}</p>` : null));
+    const left = el('div', 'hub-mod tb-left');
+    if (back) {
+      const b = el('button', 'tb-btn back', `${ICON.back}<span>${t('Volver')}</span>`);
+      b.setAttribute('aria-label', t('Volver'));
+      b.onclick = () => this.show(back);
+      left.append(VIEW_NAME[back] ? this.hoverTip(b, `<b>${t('Volver')}</b><p>${t('Volver a {view}', { view: VIEW_NAME[back] })}</p>`) : b);
+    }
     left.append(el('h2', '', title));
-    bar.append(left);
-    const right = el('div', 'tb-right');
-    // Accesos fijos a Mis Pokémon, Tienda y Ladder desde cualquier pantalla fuera de combate
-    const nav = el('nav', 'tb-nav');
-    if (p.mons.length) {
-      if (this.view !== 'team') nav.append(btn(itemImg('pokeball', 26), t('Mis Pokémon'), () => this.openFrom('team'), '', `<span class="tip-sub">${t('{n} Pokémon · {s} shiny', { n: p.mons.length, s: p.mons.filter(m => m.shiny).length })}</span><p>${t('Tu equipo y tu caja de cada región: elige quién combate, sus movimientos y mira su ficha.')}</p>`));
-      if (this.view !== 'bag') nav.append(btn(itemImg('seal-bag', 26), t('Mochila'), () => this.openFrom('bag'), '', `<span class="tip-sub">${t('{n} objetos', { n: items })}</span><p>${t('Tus objetos: Poké Balls, Caramelos Raros, vitaminas y piedras evolutivas.')}</p>`));
-      if (this.view !== 'shop') nav.append(btn(itemImg('forage-bag', 26), t('Tienda'), () => this.openFrom('shop'), '', `<span class="tip-sub">${t('Tienes {coins}', { coins: coins(p.coins) })}</span><p>${t('Balls, Caramelos Raros, vitaminas, piedras evolutivas y los Pokémon del día.')}</p>`));
-    }
-    if (this.view !== 'dex') nav.append(btn(itemImg('rotom-catalog', 26), t('Pokédex'), () => this.openFrom('dex'), '', `<div class="tip-bar"><i style="width:${p.caught.length / total * 100}%"></i></div><p>${t('{a} de {b} especies capturadas. Mira cuáles te faltan y en qué rutas salen hoy.', { a: p.caught.length, b: total })}</p>`));
-    // Misiones: con la cuenta de lo que hay por recoger
-    if (this.view !== 'missions' && p.missions) {
-      const ready = this.readyCount();
-      const done = ['daily', 'weekly'].map(k => p.missions[k].filter(m => m.claimed).length);
-      const mb = btn(ICON.quest, t('Misiones'), () => this.show('missions'), 'quest' + (ready ? ' has-ready' : ''),
-        `<span class="tip-sub">${t('Diarias {a}/3 · Semanales {b}/3', { a: done[0], b: done[1] })}</span><p>${t('Misiones diarias y semanales: cúmplelas, recoge su premio y abre el cofre. ¿No te convence una? Cámbiala.')}</p>${ready ? `<p class="tip-good">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</p>` : ''}`);
-      if (ready) (mb.querySelector('.tb-btn') || mb).append(el('i', 'nbadge', String(ready)));
-      nav.append(mb);
-    }
-    if (this.view !== 'ladder') nav.append(btn(itemImg('medal-box', 26), t('Ladder'), () => this.openLadder(), '', `<p>${t('Rankings de clasificatoria, Torre Batalla y Pokédex. Busca a cualquier entrenador y mira su ficha.')}</p>`));
-    right.append(nav);
-    // Dinero, tu perfil, novedades (en el menú) y Ajustes
-    const me = el('div', 'tb-me');
-    me.append(this.supportButton());
-    const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
-    this.coinBump = false;
-    me.append(this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`));
-    if (this.view !== 'profile') me.append(this.profileChip());
-    if (this.view === 'menu') me.append(this.newsIcon());
-    if (this.view !== 'settings') me.append(this.settingsButton());
-    right.append(me);
-    bar.append(right);
+    bar.append(left, el('h1', 'hub-logo', 'Poké<b>Arenas</b>'), this.meModule());
     return bar;
   }
-
 
   // ---------- Menú ----------
   view_menu() {
@@ -204,10 +166,10 @@ export class UI {
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
-    // Lateral: misiones y accesos a lo tuyo (el perfil se abre desde el avatar de arriba)
+    // Lateral: accesos a lo tuyo y misiones (el perfil se abre desde el avatar de arriba)
     const side = el('div', 'menu-side');
-    if (p.missions) side.append(this.missionsWidget());
     side.append(this.collectionTiles());
+    if (p.missions) side.append(this.missionsWidget());
     top.append(main, side);
     wrap.append(top, this.howTo());
     this.root.append(wrap);
@@ -215,11 +177,16 @@ export class UI {
 
   // Cabecera de la portada: idioma y pantalla completa a la izquierda, tu perfil, dinero y novedades a la derecha
   hubBar() {
-    const p = this.profile;
     const bar = el('header', 'hub-bar');
     const tools = el('div', 'hub-mod hub-tools');
     tools.append(this.langPicker(), this.fullscreenButton());
-    const logo = el('h1', 'hub-logo', 'Poké<b>Arenas</b>');
+    bar.append(tools, el('h1', 'hub-logo', 'Poké<b>Arenas</b>'), this.meModule());
+    return bar;
+  }
+
+  // Tu perfil (avatar, nombre y liga), dinero, novedades, apoyo y Ajustes: a la derecha de todas las cabeceras
+  meModule() {
+    const p = this.profile;
     const me = el('div', 'hub-mod hub-me');
     const ava = el('button', 'hub-ava');
     ava.setAttribute('aria-label', t('Perfil'));
@@ -229,12 +196,14 @@ export class UI {
     const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
     const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
     this.coinBump = false;
-    me.append(this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>`),
+    const ready = this.claimable().length;
+    me.append(this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>
+      ${!p.account ? `<p class="tip-warn">${t('Invitado: crea una cuenta para no perder tu partida.')}</p>` : ''}
+      ${ready ? `<p class="tip-good">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</p>` : ''}`),
       info,
       this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
       el('i', 'hub-sep'), this.newsIcon(), this.supportButton(), this.settingsButton());
-    bar.append(tools, logo, me);
-    return bar;
+    return me;
   }
 
   // Pantalla completa: solo si el navegador la permite
