@@ -1,5 +1,5 @@
-// Cámara del combate: se ve el campo entero, y las esquinas de abajo quedan por encima de la barra de
-// movimientos (antes se podía esconder un Pokémon ahí, fuera de la pantalla o bajo el HUD)
+// Cámara del combate: se ve el campo entero y centrado, y las esquinas de abajo quedan por encima de la
+// barra de movimientos (antes se podía esconder un Pokémon ahí, fuera de la pantalla o bajo el HUD)
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'camara' });
   me.client.send({ t: 'dev', dex: 4, level: 10, region: 'kanto' });
@@ -19,4 +19,6 @@ module.exports = async ({ page, player, ok }) => {
   })()`);
   ok(r.corners.every(c => c.x >= 0 && c.x <= r.w && c.y >= 0 && c.y <= r.h), 'las 4 esquinas del campo se ven en pantalla');
   ok(r.corners.slice(2).every(c => c.y < r.movesTop), 'las esquinas de abajo quedan por encima de la barra de movimientos');
+  const mid = (r.corners[0].y + r.corners[2].y) / 2;
+  ok(Math.abs(mid - r.h / 2) < r.h * 0.06, 'el campo está centrado en vertical (no pegado arriba)');
 };

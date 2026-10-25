@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.5 ----------
+    'Cámara centrada': 'Caméra centrée',
+    'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'La caméra de combat est centrée : le terrain ne paraît plus collé en haut de l’écran.',
     // ---------- Novedades v0.15.4 ----------
     'Cámara más abierta': 'Caméra plus large',
     'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': 'La caméra de combat est plus éloignée : tu vois tout le terrain, y compris les coins du bas, et l’interface ne cache plus aucun Pokémon.',

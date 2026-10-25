@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.15.5', date: '2026-10-25', title: 'Cámara centrada',
+      items: [
+        ['cambio', 'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.'],
+      ],
+    },
+    {
       v: '0.15.4', date: '2026-10-25', title: 'Cámara más abierta',
       items: [
         ['cambio', 'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.'],

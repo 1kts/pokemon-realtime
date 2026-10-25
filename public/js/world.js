@@ -32,7 +32,7 @@ export function softDisc(inner = 'rgba(255,255,255,1)', outer = 'rgba(255,255,25
 
 // ---------- Temas ----------
 // Lo lejos que está la cámara del combate (1 = la de antes; la niebla se escala igual)
-const CAM_ZOOM = 1.3;
+const CAM_ZOOM = 1.35;
 // light: fondo/niebla, luz ambiental (cielo, suelo, intensidad) y sol (color, intensidad)
 const LIGHT = {
   day: { bg: '#9cc8ec', fog: [28, 60], hemi: ['#d8ecff', '#4a6a30', 1.15], sun: ['#fff0d8', 2.3] },
@@ -377,7 +377,7 @@ export class World {
     const fit = Math.max(1, 1.62 / aspect) * CAM_ZOOM;
     this.camera.aspect = aspect;
     this.camera.position.set(cx, 17.5 * fit, cz + 11.5 * fit);
-    this.camera.lookAt(cx, 0, cz + 2.6);
+    this.camera.lookAt(cx, 0, cz + 1.4);   // el campo, centrado en vertical
     this.camera.updateProjectionMatrix();
   }
 

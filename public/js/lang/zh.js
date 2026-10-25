@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.5 ----------
+    'Cámara centrada': '镜头居中',
+    'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': '对战镜头已居中：场地不再显得贴在屏幕上方。',
     // ---------- Novedades v0.15.4 ----------
     'Cámara más abierta': '更广的镜头',
     'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': '对战镜头拉远了：可以看到整个场地，包括下方角落，界面不会再挡住任何宝可梦。',
