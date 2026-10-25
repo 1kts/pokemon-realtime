@@ -152,7 +152,6 @@ const TRACKS = {
 // Variantes: el mismo tema en otra tonalidad o tempo (para que no suene todo igual)
 const VARIANTS = {
   wild: { track: 'battle', transpose: 2 },
-  johto: { track: 'map', transpose: -2, bpm: 0.95 },
   champion: { track: 'leader', transpose: 1, bpm: 1.05 },
 };
 
@@ -364,11 +363,14 @@ export async function renderTrack(name, seconds = 20, sampleRate = 44100) {
   return ctx.startRendering();
 }
 
-// El tema de cada pantalla y de cada combate
-export function trackForView(view, region) {
+// El tema de cada pantalla: como en los juegos, la música cambia al cambiar de sitio (menú principal o
+// mapa de historia), no al abrir un menú. Las pantallas de paso (equipo, tienda, Pokédex, perfil…)
+// siguen con lo que sonaba; si no sonaba nada (tras la fanfarria de un combate), el tema del menú.
+const PLACES = { title: 'menu', menu: 'menu', story: 'map' };
+export function trackForView(view, current) {
   if (view === 'results') return undefined;            // se deja sonar la fanfarria
-  if (view === 'story') return region === 'johto' ? 'johto' : 'map';
-  return 'menu';
+  if (PLACES[view]) return PLACES[view];
+  return current ? undefined : 'menu';
 }
 export function trackForBattle(start, Data) {
   if (start.mode === 'wild') return 'wild';

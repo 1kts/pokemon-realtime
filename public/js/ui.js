@@ -83,7 +83,7 @@ export class UI {
   show(view, keepScroll) {
     const scroll = keepScroll ? (this.root.querySelector('.scroll') || {}).scrollTop : 0;
     this.view = view;
-    const track = trackForView(view, this.region);
+    const track = trackForView(view, this.app.music.current);
     if (track) this.app.music.play(track);
     this.root.hidden = false;
     this.root.innerHTML = '';

@@ -15,6 +15,11 @@ module.exports = async ({ page, ok }) => {
 
   await page.eval(`window.__app.ui.show('story'); true`);
   ok(await page.eval(`window.__app.music.current`) === 'map', 'el mapa de historia tiene su tema');
+  // Abrir menús desde el mapa no cambia la música (como en los juegos: cambia al cambiar de sitio)
+  for (const v of ['team', 'shop', 'dex', 'settings']) await page.eval(`window.__app.ui.show('${v}'); true`);
+  ok(await page.eval(`window.__app.music.current`) === 'map', 'equipo, tienda, Pokédex y ajustes siguen con el tema del mapa');
+  await page.eval(`window.__app.region = 'johto'; window.__app.ui.region = 'johto'; window.__app.ui.show('story'); true`);
+  ok(await page.eval(`window.__app.music.current`) === 'map', 'cambiar de región no cambia la música');
 
   await page.eval(`window.__app.ui.show('menu'); window.__app.net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0]], skill: 0.1 }); true`);
   await page.waitFor(`window.__app.battle`);
