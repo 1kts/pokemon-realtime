@@ -22,12 +22,20 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # el historial, para ver qué tests trae cada subida
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Lo mismo que el hook de pre-push: las novedades traen test e2e y el código, algún test
+      - name: Tests para lo que se sube
+        if: github.event_name == 'push' && !startsWith(github.event.before, '0000000')
+        run: node tools/require-tests.js ${{ github.event.before }} ${{ github.sha }} ${{ github.ref }}
       - run: npm test
+      # El juego en un navegador (Chrome ya viene en los runners de GitHub)
+      - run: npm run test:e2e
 
   deploy:
     needs: test
