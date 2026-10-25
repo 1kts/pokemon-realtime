@@ -921,6 +921,9 @@
         else if (ARENAS['g-' + n.type]) n.map = 'g-' + n.type;
       }
       else {
+        // Algunas zonas juntan niveles de hierba, surf y caña de dos juegos (Tentacool de Nv.5 a 40): cada
+        // especie se queda con los 8 niveles más altos de su tramo para que no salgan niveles tan dispares
+        for (const w of n.wild) w[1] = Math.max(w[1], w[2] - 8);
         n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
         n.ai = Math.min(0.25, 0.02 + n.req * 0.025);
         n.rare = 0.015 + n.req * 0.003;
@@ -942,39 +945,38 @@
   const dayKey = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
   // Momento (ms) en que cambian las rutas: la próxima medianoche UTC
   const nextDay = (t = Date.now()) => { const d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1); };
-  // Encuentros de una ruta: cada día salen 4 especies al azar de las que aparecen de verdad en ese
-  // tramo (las comunes, más a menudo) y 1 especial: un legendario o muy raro de la región que
-  // comparta tipo con la zona si es posible. Igual en servidor y cliente.
-  const DAILY_WEIGHTS = [35, 30, 20, 15];
+  // Encuentros de una ruta: todas las especies que salen de verdad en ese tramo, con su probabilidad real,
+  // y sus especiales: el legendario o el Pokémon raro que da esa zona en los juegos (estáticos, regalos,
+  // fósiles, la Zona Safari, el Gyarados rojo…). Los perros legendarios de Johto, además, vagan por todas
+  // las rutas de Johto. Igual en servidor y cliente.
+  const ROUTE_SPECIALS = {
+    'k-ruta1': [25], 'k-ruta2': [25], 'k-ruta3': [35, 138, 140, 142], 'k-ruta24': [1, 4], 'k-ruta6': [7, 51],
+    'k-ruta11': [145, 143], 'k-tunelroca': [133, 106, 107], 'k-torre': [93, 105], 'k-ruta15': [143],
+    'k-safari': [113, 147, 123, 127, 115, 128], 'k-ruta19': [131], 'k-espuma': [144], 'k-ruta23': [146],
+    'j-ruta29': [175, 152, 155, 158], 'j-oscura': [206], 'j-ruta32': [235], 'j-ruta33': [131], 'j-encinar': [251],
+    'j-ruta35': [123, 127], 'j-ruta37': [243, 244, 245], 'j-ruta38': [213], 'j-ruta41': [249], 'j-ruta42': [236],
+    'j-ruta43': [{ dex: 130, shiny: true }], 'j-ruta44': [215], 'j-guarida': [148], 'j-ruta46': [246],
+  };
+  const ROAMERS = { johto: [243, 244, 245] };
+  const ROAM_CHANCE = 0.005;
   const routeCache = new Map();
-  function routeWild(route, day = dayKey()) {
-    const key = route.id + day;
-    if (routeCache.has(key)) return routeCache.get(key);
-    const r = seeded(key);
-    const pool = route.wild.slice();
-    const picks = [];
-    while (picks.length < 4 && pool.length) {
-      const total = pool.reduce((a, w) => a + w[3], 0);
-      let x = r() * total, i = 0;
-      while (i < pool.length - 1 && (x -= pool[i][3]) > 0) i++;
-      picks.push(pool.splice(i, 1)[0]);
-    }
-    picks.sort((a, b) => b[3] - a[3]);
-    const types = new Set(route.wild.flatMap(([d]) => SPECIES[d].types));
-    const legends = REGIONS[route.region].legends;
-    const fitting = legends.filter(d => SPECIES[d].types.some(t => types.has(t)));
-    const pickFrom = fitting.length ? fitting : legends;
-    const rare = pickFrom[Math.floor(r() * pickFrom.length)];
-    const out = { day, list: picks.map(([dex, min, max], i) => ({ dex, min, max, weight: DAILY_WEIGHTS[i] })), rare: { dex: rare, chance: route.rare } };
-    routeCache.set(key, out);
-    if (routeCache.size > 300) routeCache.delete(routeCache.keys().next().value);
+  function routeWild(route) {
+    if (routeCache.has(route.id)) return routeCache.get(route.id);
+    const total = route.wild.reduce((a, w) => a + w[3], 0);
+    const list = route.wild.map(([dex, min, max, w]) => ({ dex, min, max, weight: w / total })).sort((a, b) => b.weight - a.weight);
+    const specials = (ROUTE_SPECIALS[route.id] || []).map(x => typeof x === 'number' ? { dex: x } : x);
+    const roam = (ROAMERS[route.region] || []).filter(d => !specials.some(x => x.dex === d));
+    const out = { list, specials, chance: specials.length ? route.rare : 0, roam, roamChance: roam.length ? ROAM_CHANCE : 0, level: route.lvl[1] + 3 };
+    routeCache.set(route.id, out);
     return out;
   }
-  function rollWild(route, rand = Math.random, day = dayKey()) {
-    const w = routeWild(route, day);
-    if (rand() < w.rare.chance) return { dex: w.rare.dex, level: route.lvl[1] + 3, rare: true };
-    const total = w.list.reduce((a, x) => a + x.weight, 0);
-    let x = rand() * total;
+  // Un encuentro: a veces un especial (o un perro errante en Johto); si no, una especie según su probabilidad
+  function rollWild(route, rand = Math.random) {
+    const w = routeWild(route);
+    const x0 = rand();
+    if (x0 < w.chance) { const sp = w.specials[Math.floor(rand() * w.specials.length)]; return { dex: sp.dex, level: w.level, rare: true, shiny: !!sp.shiny }; }
+    if (x0 < w.chance + w.roamChance) return { dex: w.roam[Math.floor(rand() * w.roam.length)], level: w.level, rare: true };
+    let x = rand();
     for (const e of w.list) if ((x -= e.weight) <= 0) return { dex: e.dex, level: e.min + Math.floor(rand() * (e.max - e.min + 1)) };
     const e = w.list[0];
     return { dex: e.dex, level: e.min };
@@ -1395,7 +1397,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

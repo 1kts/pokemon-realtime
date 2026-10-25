@@ -11,6 +11,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': 'Routen wie in den Spielen',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': 'Auf jeder Route erscheinen alle Pokémon, die es dort in den Spielen gibt, jedes mit seiner Wahrscheinlichkeit, statt 4 anderer pro Tag.',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': 'Besondere tauchen dort auf, wo sie es in den Spielen tun: Pikachu im Vertania-Wald, Arktos auf den Seeschauminseln, das rote Garados am See des Zorns und die legendären Hunde in ganz Johto.',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': 'Das Aufgeben-Fenster sieht aus wie die Niederlage, mit deinem Pokémon gegenüber dem Gegner, und der Anmelde-Knopf wie die Spielen-Knöpfe im Menü.',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': 'Jeden Tag um {h} (deine Zeit) wechseln die Pokémon im Shop',
+    'Especiales': 'Besondere',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': 'Besondere haben in 1 von 3 Fällen <b>perfekte IS-Werte</b>.',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': 'Flieht es, kannst du es erneut versuchen. Eins von 300 ist <b>schillernd</b> (Besondere dreimal so oft).',
+    'Siempre shiny': 'Immer schillernd',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': 'Er verkauft auch <b>4 Pokémon am Tag</b> mit perfekten IS-Werten, teuer und einzeln; sie wechseln jeden Tag um <b>{h}</b> (deine Zeit).',
+    'Vaga por todas las rutas de Johto': 'Streift über alle Routen von Johto',
+    'especial': 'besonders',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': 'Besonderes der Gegend: taucht sehr selten auf, ist schwer zu fangen und 1 von 3 hat perfekte IS-Werte',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'Jede Gegend hat auch ihre <b>Besonderen</b>, sehr selten: das Legendäre oder besondere Pokémon, das es dort in den Spielen gibt. In Johto streifen Raikou, Entei und Suicune über alle Routen.',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': 'Auf Routen kämpfst du gegen wilde Pokémon: <b>dieselben wie in den Spielen</b>, jedes mit seiner Wahrscheinlichkeit.',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': 'Avatar-Editor',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'Tippe im Profil auf dein Bild oder auf Bearbeiten, um deinen Avatar zu ändern: Bild, Rahmen, Glow, Effekt und Titel an einem Ort, mit Vorschau.',

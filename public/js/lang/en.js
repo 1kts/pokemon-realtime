@@ -11,6 +11,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': 'Routes like in the games',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': 'Every route has all the Pokémon that appear there in the games, each with its own odds, instead of 4 different ones each day.',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': 'Specials appear where they do in the games: Pikachu in Viridian Forest, Articuno on the Seafoam Islands, the red Gyarados at the Lake of Rage and the legendary beasts across Johto.',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': 'The forfeit window looks like the defeat screen, with your Pokémon facing the rival, and the sign-in button matches the menu\'s Play buttons.',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': 'Every day at {h} (your time) the Shop\'s Pokémon change',
+    'Especiales': 'Specials',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': 'Specials have <b>perfect IVs</b> 1 in 3 times.',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': 'If it runs away, you can try again. One in 300 is <b>shiny</b> (specials, three times as often).',
+    'Siempre shiny': 'Always shiny',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': 'It also sells <b>4 Pokémon a day</b> with perfect IVs, pricey and one at a time; they change every day at <b>{h}</b> (your time).',
+    'Vaga por todas las rutas de Johto': 'Roams every route in Johto',
+    'especial': 'special',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': 'Area special: shows up very rarely, is hard to catch and 1 in 3 has perfect IVs',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'Each area also has its <b>specials</b>, very rare: the legendary or special Pokémon that area gives in the games. In Johto, Raikou, Entei and Suicune roam every route.',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': 'On routes you battle wild Pokémon: <b>the same ones as in the games</b>, each with its own odds.',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': 'Avatar editor',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'Tap your picture in your Profile, or Edit, to change your avatar: picture, frame, glow, effect and title in one place, with a preview.',

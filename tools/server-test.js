@@ -244,7 +244,7 @@ class Client {
   const jr = story.applyResult(prof, jset, { winner: 0 }, jfake);
   ok(prof.prog.johto === 1 && jr.badge && jr.badge.region === 'johto' && (prof.items.caramelo || 0) === items0 + 1, 'vencer a Pegaso da la Medalla Céfiro y premios');
   const jroute = story.battleSetup(prof, { a: 'route', id: 'j-ruta32' });
-  ok(!jroute.error && D.NODES['j-ruta32'].wild.some(w => w[0] === jroute.opts.sides[1].team[0].dex || D.routeWild(D.NODES['j-ruta32']).rare.dex === jroute.opts.sides[1].team[0].dex), 'la Ruta 32 saca un Pokémon de sus encuentros reales');
+  ok(!jroute.error && D.NODES['j-ruta32'].wild.some(w => w[0] === jroute.opts.sides[1].team[0].dex || D.routeWild(D.NODES['j-ruta32']).specials.concat(D.routeWild(D.NODES['j-ruta32']).roam.map(dex => ({ dex }))).some(x => x.dex === jroute.opts.sides[1].team[0].dex)), 'la Ruta 32 saca un Pokémon de sus encuentros reales');
 
   // ---------- Clasificatoria con draft ----------
   const b = new Client(port), c = new Client(port);
@@ -724,6 +724,18 @@ class Client {
     ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
   }
 
+  // Rutas: todas sus especies reales (con su probabilidad) y sus especiales, solo donde salen en los juegos
+  {
+    const seq = xs => { let i = 0; return () => xs[i++ % xs.length]; };
+    const r2 = D.NODES['k-ruta2'], w2 = D.routeWild(r2);
+    ok(w2.list.length === r2.wild.length && Math.abs(w2.list.reduce((a, x) => a + x.weight, 0) - 1) < 1e-9 && w2.specials.map(x => x.dex).join() === '25', 'Bosque Verde: salen sus 7 especies reales y su especial es Pikachu');
+    ok(D.rollWild(r2, seq([0.99, 0.999999])).dex === w2.list[w2.list.length - 1].dex && D.rollWild(r2, seq([0, 0])).rare, 'cada especie sale según su probabilidad y el especial, a veces');
+    const lake = D.rollWild(D.NODES['j-ruta43'], seq([0, 0]));
+    ok(lake.dex === 130 && lake.shiny && lake.rare, 'el especial del Lago de la Furia es el Gyarados rojo (shiny)');
+    const roam = D.routeWild(D.NODES['j-ruta29']);
+    ok(roam.roam.join() === '243,244,245' && !D.routeWild(D.NODES['k-ruta1']).roam.length && D.rollWild(D.NODES['j-ruta29'], seq([roam.chance + 0.001, 0])).dex === 243, 'Raikou, Entei y Suicune vagan por las rutas de Johto (no por Kanto)');
+    ok(!Object.values(D.ROUTE_SPECIALS).flat().some(x => [150, 151, 250].includes(x.dex || x)), 'Mewtwo, Mew y Ho-Oh no salen en las rutas');
+  }
   ok(D.DEX_TOTAL === 251 && D.dexCount({ caught: [1, 152, 252, 448] }) === 2, 'la Pokédex cuenta solo las generaciones con región abierta (Gen 1 y 2)');
   // Datos de equilibrio: lo que cuenta un combate (los lados de la IA no) y el resumen del panel
   {

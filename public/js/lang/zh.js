@@ -11,6 +11,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': '与游戏一致的道路',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '每条道路都会出现游戏中该处的所有宝可梦，各有出现几率，不再是每天换 4 只。',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': '特别宝可梦出现在游戏中的地点：常磐森林的皮卡丘、双子岛的急冻鸟、愤怒之湖的红色暴鲤龙，以及在城都游荡的传说之犬。',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': '投降窗口与失败画面风格一致，你的宝可梦与对手面对面；登录按钮也改成了菜单「开始」按钮的样式。',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': '每天 {h}（你的时间）商店的宝可梦会更换',
+    'Especiales': '特别',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': '特别宝可梦有 1/3 的几率<b>个体值完美</b>。',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': '逃跑了可以再试。每 300 只中有 1 只是<b>异色</b>（特别宝可梦为三倍）。',
+    'Siempre shiny': '必定异色',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': '还每天出售 <b>4 只</b>个体值完美的宝可梦，价格昂贵、一次一只；每天 <b>{h}</b>（你的时间）更换。',
+    'Vaga por todas las rutas de Johto': '在城都所有道路游荡',
+    'especial': '特别',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': '区域特别：极少出现、很难捕捉，1/3 个体值完美',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': '每个区域还有极为稀有的<b>特别宝可梦</b>：游戏中该区域出现的传说或特殊宝可梦。在城都，雷公、炎帝和水君会在所有道路游荡。',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': '在道路上与野生宝可梦战斗：<b>与游戏中相同</b>，各有出现几率。',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': '头像编辑器',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': '在个人资料中点击头像或「编辑」即可更换头像：图片、头像框、光晕、特效和称号都在一处设置，并可预览。',

@@ -9,6 +9,7 @@ import { Particles } from './particles.js';
 import { Effects } from './effects.js';
 import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
+import { faceSrc } from './sprites.js';
 import { applyCursor } from './cursor.js';
 import './tips.js';
 import { confirmBox } from './dialog.js';
@@ -179,7 +180,13 @@ function endBattle() {
 addEventListener('keydown', e => {
   if (e.code === 'Escape' && app.battle && !app.battle.over && !document.querySelector('.ui-confirm')) {
     const b = app.battle;
-    confirmBox({ title: t('¿Rendirte?'), text: t('¿Rendirte y abandonar el combate?'), ok: t('Rendirse'), cancel: t('Seguir combatiendo'), danger: true })
+    // Con el mismo aire que la pantalla de derrota: tu Pokémon preocupado frente al rival
+    const pic = (i, emos) => {
+      const m = b.monOf(i), src = emos.map(e => faceSrc(m.dex, e, !!m.shiny)).find(Boolean);
+      return src ? `<img class="face" src="${src}" alt="" draggable="false">` : '';
+    };
+    const hero = `<div class="cf-hero"><span class="me">${pic(b.you, ['Worried', 'Sad', 'Normal'])}</span><b>VS</b><span class="foe">${pic(b.foeIdx, ['Determined', 'Happy', 'Normal'])}</span></div>`;
+    confirmBox({ title: t('¿Rendirte?'), text: t('¿Rendirte y abandonar el combate?'), ok: t('Rendirse'), cancel: t('Seguir combatiendo'), danger: true, hero, cls: 'forfeit' })
       .then(yes => { if (yes && app.battle === b && !b.over) { b.over = true; net.send({ t: 'forfeit' }); } });
   }
 });

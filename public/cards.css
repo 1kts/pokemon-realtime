@@ -941,3 +941,25 @@ body.in-battle .ui-confirm { cursor: auto; }
 .ae-body { min-height: 180px; max-height: 46vh; overflow: auto; padding-right: 4px; }
 .ae-body .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
 .ae-more { align-self: center; font-size: 13px; }
+/* Rendirse: el mismo aire que la pantalla de derrota (fondo rojizo, título grande y las dos caras) */
+.ui-confirm-box.danger { background: linear-gradient(160deg, rgba(120,30,40,.6), rgba(20,18,40,.95) 55%), var(--panel, #1a2140); border: 1px solid rgba(255,110,110,.45); box-shadow: 0 0 40px rgba(255,90,80,.18), 0 24px 60px rgba(0,0,0,.6); }
+.ui-confirm-box.forfeit { width: min(480px, 100%); }
+.ui-confirm-box.forfeit h3 { font-size: 40px; color: #ff8a80; text-shadow: 0 4px 0 #5a1a1a, 0 0 28px rgba(255,80,80,.35); animation: lose-drop .4s cubic-bezier(.2,.9,.3,1.3) both; }
+.cf-hero { display: flex; align-items: center; justify-content: center; gap: 18px; margin-bottom: 4px; }
+.cf-hero .face { width: 76px; height: 76px; border-radius: 18px; background: rgba(0,0,0,.25); image-rendering: pixelated; box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 8px 20px rgba(0,0,0,.4); }
+.cf-hero .me .face { box-shadow: 0 0 0 3px rgba(255,110,110,.45), 0 8px 20px rgba(0,0,0,.4); }
+.cf-hero b { font: 900 16px var(--display); color: #8d9bbb; }
+.ui-confirm-box.forfeit .acts button { min-width: 170px; }
+/* Entrada: el botón principal como los «Jugar ›» del menú (dorado, inclinado, en mayúsculas) */
+.title-panel .auth button.primary { align-self: center; width: auto; min-width: 62%; margin-top: 6px; padding: 11px 34px 11px 30px; border: 0; border-radius: 8px; transform: skewX(-12deg);
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #ffb21a); color: #2a1c00; font: 900 20px var(--display); letter-spacing: .6px; text-transform: uppercase;
+  box-shadow: 0 4px 0 #b97a00, 0 8px 20px rgba(255,190,40,.3); transition: transform .15s, box-shadow .15s; }
+.title-panel .auth button.primary::after { content: ' ›'; }
+.title-panel .auth button.primary:hover { transform: skewX(-12deg) translateY(-1px); box-shadow: 0 4px 0 #b97a00, 0 0 26px rgba(255,210,63,.65); }
+.title-panel .auth button.primary:active { transform: skewX(-12deg) translateY(2px); box-shadow: 0 2px 0 #b97a00; }
+.title-panel .auth button.primary:disabled { filter: grayscale(.4) brightness(.8); }
+
+/* Ruta: todas sus especies (más pequeñas, en rejilla) y los especiales aparte */
+.route-list, .route-sp { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+.route-list .mini small, .route-sp .mini small { font-size: 11px; line-height: 1.25; }
+.route-sp-h { margin: 10px 0 4px; color: var(--gold-hi, #ffe27a); font: 800 13px var(--display); text-transform: uppercase; letter-spacing: .5px; }

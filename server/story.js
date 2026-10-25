@@ -203,7 +203,7 @@ function battleSetup(p, msg) {
     if (!route) return { error: 'Ruta desconocida' };
     if (route.req > D.progOf(p, route.region)) return { error: `Necesitas ${route.req} medallas de ${D.REGIONS[route.region].name}` };
     const wild = D.rollWild(route);
-    const shiny = Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);
+    const shiny = wild.shiny || Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);   // el Gyarados rojo del Lago de la Furia siempre
     const perfect = !!wild.rare && Math.random() < D.RARE_PERFECT;
     const balls = Object.fromEntries(D.BALL_IDS.map(k => [k, p.items[k] || 0]));
     return {

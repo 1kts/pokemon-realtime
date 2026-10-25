@@ -9,7 +9,7 @@ module.exports = async ({ page, player, ok }) => {
   const esc = () => page.eval(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true })); true`);
   await esc();
   await page.waitFor(`document.querySelector('.ui-confirm-box')`);
-  ok(await page.eval(`/Rendirte/.test(document.querySelector('.ui-confirm-box h3').textContent)`), 'Esc abre la ventana del juego para rendirse');
+  ok(await page.eval(`/Rendirte/.test(document.querySelector('.ui-confirm-box h3').textContent) && document.querySelectorAll('.ui-confirm-box.forfeit .cf-hero .face').length === 2`), 'Esc abre la ventana del juego para rendirse, con tu Pokémon frente al rival como en la derrota');
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/rendirse.png');
   await page.click('Seguir combatiendo');
   await page.waitFor(`!document.querySelector('.ui-confirm')`);

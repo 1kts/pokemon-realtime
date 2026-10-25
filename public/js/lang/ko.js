@@ -12,6 +12,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': '게임과 같은 도로',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '각 도로에 게임에서 그곳에 나오는 포켓몬이 모두 각자의 확률로 나옵니다. 매일 4마리가 바뀌던 방식은 없어졌습니다.',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': '스페셜은 게임과 같은 곳에: 상록숲의 피카츄, 쌍둥이섬의 프리져, 분노의 호수의 빨간 갸라도스, 그리고 성도를 누비는 전설의 개들.',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': '항복 창이 패배 화면처럼 바뀌어 내 포켓몬과 상대가 마주 보고, 로그인 버튼도 메뉴의 플레이 버튼과 같아졌습니다.',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': '매일 {h}(내 시간)에 상점의 포켓몬이 바뀝니다',
+    'Especiales': '스페셜',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': '스페셜은 3번에 1번 <b>개체값이 최고</b>입니다.',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': '도망쳐도 다시 도전할 수 있습니다. 300마리 중 1마리는 <b>색이 다른</b> 포켓몬입니다(스페셜은 3배).',
+    'Siempre shiny': '항상 색이 다름',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': '개체값 최고의 <b>포켓몬을 하루 4마리</b> 비싸게 한 마리씩 팝니다. 매일 <b>{h}</b>(내 시간)에 바뀝니다.',
+    'Vaga por todas las rutas de Johto': '성도의 모든 도로를 돌아다님',
+    'especial': '스페셜',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': '지역 스페셜: 아주 드물게 나타나고 잡기 어려우며 3마리 중 1마리는 개체값이 최고',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': '각 지역에는 아주 드문 <b>스페셜</b>도 있습니다: 게임에서 그 지역에 나오는 전설이나 특별한 포켓몬입니다. 성도에서는 라이코, 앤테이, 스이쿤이 모든 도로를 돌아다닙니다.',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': '도로에서는 야생 포켓몬과 싸웁니다: <b>게임과 같은 포켓몬</b>이 각자의 확률로 나옵니다.',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': '아바타 편집기',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': '프로필에서 사진이나 편집을 눌러 아바타를 바꾸세요: 이미지, 프레임, 글로우, 효과, 칭호를 미리 보기와 함께 한곳에서.',

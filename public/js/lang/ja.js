@@ -12,6 +12,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': 'ゲームと同じ道路',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '各道路には、ゲームでそこに出るポケモンがすべてそれぞれの確率で出現します（毎日4匹が変わる方式は廃止）。',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': 'スペシャルはゲームと同じ場所に：トキワの森のピカチュウ、ふたごじまのフリーザー、いかりのみずうみの赤いギャラドス、そしてジョウト中を巡る伝説の犬たち。',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': '降参画面が敗北画面と同じデザインになり、あなたのポケモンと相手が向かい合います。ログインボタンもメニューの「プレイ」ボタンと同じになりました。',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': '毎日{h}（あなたの時間）にショップのポケモンが入れ替わります',
+    'Especiales': 'スペシャル',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': 'スペシャルは3回に1回<b>個体値が最高</b>です。',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': '逃げられても再挑戦できます。300匹に1匹は<b>色違い</b>（スペシャルは3倍）。',
+    'Siempre shiny': '必ず色違い',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': 'さらに個体値最高の<b>ポケモンを1日4匹</b>、高価で1匹ずつ販売。毎日<b>{h}</b>（あなたの時間）に入れ替わります。',
+    'Vaga por todas las rutas de Johto': 'ジョウトのすべての道路を徘徊',
+    'especial': 'スペシャル',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': 'エリアのスペシャル：めったに現れず、捕まえにくく、3匹に1匹は個体値が最高',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': '各エリアには非常にまれな<b>スペシャル</b>もいます：ゲームでそのエリアに出る伝説や特別なポケモンです。ジョウトではライコウ・エンテイ・スイクンがすべての道路を徘徊します。',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': '道路では野生のポケモンと戦います：<b>ゲームと同じポケモン</b>が、それぞれの確率で出現します。',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': 'アバター編集',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'プロフィールの写真か「編集」をタップしてアバターを変更：画像・フレーム・グロー・エフェクト・称号をプレビュー付きでまとめて設定できます。',

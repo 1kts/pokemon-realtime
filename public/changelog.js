@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.22.2', date: '2026-10-25', title: 'Rutas como en los juegos',
+      items: [
+        ['cambio', 'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.'],
+        ['cambio', 'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.'],
+        ['cambio', 'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.'],
+      ],
+    },
+    {
       v: '0.22.1', date: '2026-10-25', title: 'Editor de avatar',
       items: [
         ['cambio', 'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.'],

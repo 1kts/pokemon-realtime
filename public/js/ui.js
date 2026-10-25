@@ -352,7 +352,6 @@ export class UI {
     // «Siguiente: líder · tope» de la barra sobra aquí: lo dice ya «Tu objetivo»
     sb.querySelector('.next-goal').remove();
     const tools = el('div', 'panel story-info');
-    tools.append(this.rotationTimer('long'));
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
     help.onclick = () => this.storyGuide();
     tools.append(help);
@@ -481,24 +480,33 @@ export class UI {
     } else {
       const w = Data.routeWild(n);
       box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
-      box.append(this.rotationTimer('short'));
-      const list = el('div', 'mini-team');
-      const total = w.list.reduce((a, x) => a + x.weight, 0) / (1 - w.rare.chance);
+      // Todas las especies de la zona, de la más común a la más rara, y sus especiales aparte
+      const list = el('div', 'mini-team route-list');
+      const normal = 1 - w.chance - w.roamChance;
       for (const { dex, weight, min, max } of w.list) {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
-        c.append(portrait(dex, 56));
-        c.append(el('small', '', `${SPECIES[dex].name}<br>${Math.max(1, Math.round(weight / total * 100))} % · ${lv(min === max ? min : min + '-' + max)}`));
+        c.append(portrait(dex, 48));
+        const pct = weight * normal * 100;
+        c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} % · ${lv(min === max ? min : min + '-' + max)}`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
         list.append(c);
       }
-      // El misterioso del día: silueta hasta que lo atrapas
-      const known = p.caught.includes(w.rare.dex);
-      const rare = el('div', 'mini rare' + (known ? ' caught' : ''));
-      rare.append(portrait(w.rare.dex, 56, { silhouette: !known }));
-      rare.append(el('small', '', `${known ? SPECIES[w.rare.dex].name : '???'}<br>${+(w.rare.chance * 100).toFixed(1)} % · ${lv(n.lvl[1] + 3)}`));
-      rare.title = t('Pokémon misterioso del día: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
-      list.append(rare);
       box.append(list);
+      // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos
+      const specials = [...w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length })), ...w.roam.map(dex => ({ dex, roam: true, chance: w.roamChance / w.roam.length }))];
+      if (specials.length) {
+        box.append(el('h4', 'route-sp-h', t('Especiales')));
+        const sp = el('div', 'mini-team route-sp');
+        for (const x of specials) {
+          const known = p.caught.includes(x.dex);
+          const c = el('div', 'mini rare' + (known ? ' caught' : ''));
+          c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
+          c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} % · ${lv(w.level)}`));
+          c.title = x.roam ? t('Vaga por todas las rutas de Johto') : x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
+          sp.append(c);
+        }
+        box.append(sp);
+      }
       const balls = Data.BALL_IDS.reduce((n, k) => n + (p.items[k] || 0), 0);
       box.append(el('p', 'small', t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })));
       if (!unlocked) box.append(el('p', 'warn', t('Necesitas {n} medallas de {r}.', { n: n.req, r: R.name })));
@@ -564,21 +572,21 @@ export class UI {
 
   // Barra propia de región (debajo de la barra global): elegir región y, en Historia, sus medallas
   // y el siguiente objetivo.
-  // Cuenta atrás hasta que cambian los Pokémon de las rutas (medianoche UTC). Al llegar a cero,
-  // si estás en el mapa, se vuelve a dibujar con los nuevos.
+  // Cuenta atrás hasta que cambian los Pokémon de la tienda (medianoche UTC). Al llegar a cero, si estás
+  // en la tienda, se vuelve a dibujar con los nuevos.
   rotationTimer(kind) {
     const box = el('div', 'rotation ' + kind);
     const at = Data.nextDay();
     const hour = new Date(at).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
-    const label = kind === 'long' ? t('Pokémon de las rutas nuevos en') : kind === 'instore' ? t('Pokémon nuevos en la tienda en') : t('Estos Pokémon cambian en');
-    box.title = t('Cada día a las {h} (tu hora) cambian los 4 Pokémon y el misterioso de cada ruta', { h: hour });
+    const label = t('Pokémon nuevos en la tienda en');
+    box.title = t('Cada día a las {h} (tu hora) cambian los Pokémon de la tienda', { h: hour });
     const tick = () => {
       if (!box.isConnected && box.dataset.started) return;
       box.dataset.started = '1';
       const left = Math.max(0, at - Date.now());
       const hh = Math.floor(left / 3600e3), mm = Math.floor(left / 60e3) % 60, ss = Math.floor(left / 1e3) % 60;
       box.innerHTML = `<span>${label}</span> <b>${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}</b>`;
-      if (left <= 0) { if (['story', 'shop'].includes(this.view) && !this.root.hidden) this.show(this.view); return; }
+      if (left <= 0) { if (this.view === 'shop' && !this.root.hidden) this.show(this.view); return; }
       setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
     };
     tick();
@@ -604,15 +612,15 @@ export class UI {
         t('Cada <b>medalla</b> abre nuevas rutas. Los candados indican lo que aún no puedes visitar.'),
       ]),
       sec(t('Rutas y Pokémon salvajes'), [
-        t('En las rutas luchas contra Pokémon salvajes. Cada día salen <b>4 especies</b> de las que viven en esa ruta en los juegos, más un <b>Pokémon misterioso</b> muy raro.'),
-        t('Cambian cada día a las <b>{h}</b> (tu hora). El contador de arriba indica cuánto falta.', { h: hour }),
+        t('En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.'),
+        t('Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.'),
         t('Ganar da dinero y experiencia.'),
       ]),
       sec(t('Capturar'), [
         t('Lanza una Poké Ball con <kbd>F</kbd> y cambia de Ball con <kbd>R</kbd>. La Ball tiene que darle.'),
         t('Es más fácil cuanta <b>menos vida</b> le quede y si tiene un <b>estado</b> (quemado, envenenado, aturdido…). La Súper Ball y la Ultra Ball ayudan mucho.'),
-        t('Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (el misterioso, el triple).'),
-        t('El Pokémon misterioso tiene <b>IV perfectos</b> 1 de cada 3 veces.'),
+        t('Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).'),
+        t('Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.'),
       ]),
       sec(t('Subir de nivel'), [
         t('Los Pokémon que combaten ganan experiencia (la mitad si se debilitan).'),
@@ -629,7 +637,7 @@ export class UI {
       ]),
       sec(t('Mejorar tu equipo'), [
         t('En la <b>tienda</b>: Balls, Caramelos Raros (suben un nivel hasta el tope), vitaminas (EV) y piedras evolutivas.'),
-        t('También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian a la vez que las rutas.'),
+        t('También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).', { h: hour }),
         t('Usa los objetos desde la <b>Mochila</b>: eliges el objeto y luego el Pokémon.'),
         t('En la ficha de cada Pokémon ves su naturaleza, IV y EV, y puedes venderlo.'),
         t('La <b>Pokédex</b> muestra todas las especies, las que te faltan y en qué rutas aparecen.'),

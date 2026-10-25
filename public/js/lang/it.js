@@ -12,6 +12,23 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.2 ----------
+    'Rutas como en los juegos': 'Percorsi come nei giochi',
+    'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': 'In ogni percorso compaiono tutti i Pokémon che ci sono nei giochi, ciascuno con la sua probabilità, invece di 4 diversi ogni giorno.',
+    'Los especiales salen donde en los juegos: Pikachu en el Bosque Verde, Articuno en las Islas Espuma, el Gyarados rojo en el Lago de la Furia y los perros legendarios por Johto.': 'Gli speciali compaiono dove lo fanno nei giochi: Pikachu nel Bosco Smeraldo, Articuno alle Isole Spumarine, il Gyarados rosso al Lago d\'Ira e i cani leggendari in tutta Johto.',
+    'La ventana de rendirse luce como la de derrota, con tu Pokémon frente al rival, y el botón de entrar es como los de Jugar del menú.': 'La finestra di resa somiglia a quella di sconfitta, con il tuo Pokémon di fronte all\'avversario, e il pulsante d\'accesso è come i Gioca del menu.',
+    // ---------- Rutas: encuentros reales y especiales ----------
+    'Cada día a las {h} (tu hora) cambian los Pokémon de la tienda': 'Ogni giorno alle {h} (tua ora) cambiano i Pokémon del Negozio',
+    'Especiales': 'Speciali',
+    'Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.': 'Gli speciali hanno <b>IV perfetti</b> 1 volta su 3.',
+    'Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).': 'Se fugge, puoi riprovare. Uno su 300 è <b>cromatico</b> (gli speciali, il triplo).',
+    'Siempre shiny': 'Sempre cromatico',
+    'También vende <b>4 Pokémon al día</b> con IV perfectos, caros y de uno en uno; cambian cada día a las <b>{h}</b> (tu hora).': 'Vende anche <b>4 Pokémon al giorno</b> con IV perfetti, cari e uno alla volta; cambiano ogni giorno alle <b>{h}</b> (tua ora).',
+    'Vaga por todas las rutas de Johto': 'Vaga per tutti i percorsi di Johto',
+    'especial': 'speciale',
+    'Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos': 'Speciale della zona: appare molto di rado, è difficile da catturare e 1 su 3 ha IV perfetti',
+    'Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'Ogni zona ha anche i suoi <b>speciali</b>, rarissimi: il leggendario o il Pokémon speciale che offre quella zona nei giochi. A Johto, Raikou, Entei e Suicune vagano per tutti i percorsi.',
+    'En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.': 'Sui percorsi lotti contro Pokémon selvatici: <b>gli stessi dei giochi</b>, ciascuno con la sua probabilità.',
     // ---------- Novedades v0.22.1 ----------
     'Editor de avatar': 'Editor dell\'avatar',
     'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'Tocca la tua foto nel Profilo, o Modifica, per cambiare l\'avatar: immagine, cornice, bagliore, effetto e titolo in un unico posto, con anteprima.',
