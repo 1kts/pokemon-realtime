@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': 'I capipalestra ci mettono la faccia',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Ogni Capopalestra, membro dei Superquattro e Campione appare con il suo sprite dei giochi quando lo scegli sulla mappa della storia.',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': 'All’inizio di una lotta contro un capopalestra, si presenta con il suo sprite e il suo volto resta accanto al nome sul tabellone.',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': 'Sulla mappa, i Superquattro e i Campioni si riconoscono dal volto invece che da una stella.',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': 'ti sfida!',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Ricerca e cromatici come vuoi',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In I miei Pokémon puoi cercare per nome o numero, filtrare il box per tipo, cromatici o leggendari e ordinarlo come preferisci.',

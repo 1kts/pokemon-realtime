@@ -90,6 +90,11 @@ export function monIcon(dex, size = 40, opts = {}) {
   return img;
 }
 
+// Sprite de entrenador (líderes, Alto Mando y Campeones; de Pokémon Showdown, en public/trainers por id)
+export const trainerImg = (id, cls = '') => `<img class="trainer-img ${cls}" src="trainers/${id}.png" alt="" draggable="false">`;
+// El nodo del líder por su nombre (los combates solo traen el nombre)
+export const leaderByName = name => Object.values(Data.NODES).find(n => n.kind !== 'route' && n.leader === name) || null;
+
 // Retrato animado (para menús): devuelve el canvas; se anima mientras esté en el documento.
 export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
   const c = document.createElement('canvas');

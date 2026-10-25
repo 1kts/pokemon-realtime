@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': '관장들이 얼굴을 드러냈어',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '스토리 지도에서 체육관 관장, 사천왕, 챔피언을 고르면 게임 속 도트 스프라이트로 나와.',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': '관장과의 배틀이 시작되면 스프라이트로 등장하고, 점수판의 이름 옆에 얼굴이 남아.',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '지도에서 사천왕과 챔피언은 별 대신 얼굴로 알아볼 수 있어.',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': '이(가) 승부를 걸어왔다!',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '검색과 원하는 대로 바꾸는 색이 다른 포켓몬',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '내 포켓몬에서 이름이나 번호로 검색하고, 박스를 타입·색이 다른 포켓몬·전설로 걸러 원하는 대로 정렬할 수 있습니다.',

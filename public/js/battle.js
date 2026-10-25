@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { Actor } from './actors.js';
 import { toWorld } from './world.js';
-import { portrait, preload } from './sprites.js';
+import { portrait, preload, trainerImg, leaderByName } from './sprites.js';
 import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
 import { typeIcon } from './pixicons.js';
@@ -51,8 +51,20 @@ export class BattleClient {
     this.bindInput();
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
+    // Contra un líder: su presentación al empezar
+    const leader = this.mode === 'trainer' && leaderByName(foe.name);
+    if (leader) this.leaderIntro(leader);
     if (foe.rare) setTimeout(() => this.banner(t('¡Un {m} salvaje muy raro!', { m: foe.team[0] && Data.SPECIES[foe.team[0].dex].name }), 'rare'), 300);
     if (foe.perfect) setTimeout(() => this.banner(t('¡Y tiene IV perfectos!'), 'rare'), 1300);
+  }
+
+  leaderIntro(n) {
+    const kind = n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Alto Mando');
+    const v = el('div', 'leader-intro', `<div class="li-band"></div>${trainerImg(n.id, 'li-sprite')}<div class="li-text"><small>${kind}</small><b>${n.leader}</b><span>${t('¡Te desafía!')}</span></div>`);
+    v.style.setProperty('--tc', TYPE_COLOR[n.type]);
+    document.body.append(v);
+    setTimeout(() => v.classList.add('out'), 1900);
+    setTimeout(() => v.remove(), 2400);
   }
 
   // Un shiny entra en combate: destellos y aviso
@@ -462,7 +474,8 @@ export class BattleClient {
   buildTeams() {
     for (const i of [this.you, this.foeIdx]) {
       const box = this.teamsEl[i === this.you ? 0 : 1];
-      box.innerHTML = `<div class="tname">${escapeHtml(tServer(this.sides[i].name))}</div>`;
+      const ld = i !== this.you && this.mode === 'trainer' && leaderByName(this.sides[i].name);
+      box.innerHTML = `<div class="tname">${ld ? trainerImg(ld.id, 'tname-face') : ''}${escapeHtml(tServer(this.sides[i].name))}</div>`;
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
         row.append(portrait(m.dex, 40, { shiny: !!m.shiny }));

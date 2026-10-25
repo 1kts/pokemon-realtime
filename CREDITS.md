@@ -19,6 +19,9 @@ de los juegos. No se usa ningún mapa oficial.
   Showdown (`/anim/`) se descargan de [PokeAPI/sprites](https://github.com/PokeAPI/sprites) la primera vez que se piden
   (`server/art.js`) (© Nintendo / Creatures Inc. / GAME FREAK inc.; animaciones de Showdown © sus autores).
 - Los iconos de menú de los Pokémon (`public/icons/`) son los de Pokémon Sol y Luna, también de PokeAPI/sprites.
+- Los sprites de los líderes, el Alto Mando y los Campeones (`public/trainers/`) son los de Pokémon Oro HeartGold y
+  Plata SoulSilver (y Rojo Fuego para Lorelei y Agatha), tal como los publica [Pokémon Showdown](https://play.pokemonshowdown.com/sprites/trainers/)
+  (© Nintendo / Creatures Inc. / GAME FREAK inc.).
 - Las medallas llevan quitado el borde blanco exterior del original.
 - Los iconos pixel art de la interfaz y los emblemas de los movimientos (`public/js/pixicons.js`) son de
   [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js`), de JPTER78 y colaboradores, con

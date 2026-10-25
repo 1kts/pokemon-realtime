@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.15.0', date: '2026-10-25', title: 'Los líderes dan la cara',
+      items: [
+        ['nuevo', 'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.'],
+        ['nuevo', 'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.'],
+        ['cambio', 'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.'],
+      ],
+    },
+    {
       v: '0.14.0', date: '2026-10-25', title: 'Buscador y shiny a tu gusto',
       items: [
         ['nuevo', 'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.'],

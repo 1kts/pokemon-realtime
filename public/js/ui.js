@@ -1,7 +1,7 @@
 // Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
 // clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
 // la portada, el perfil, las recompensas y las novedades en account.js.
-import { portrait, monIcon, animatedPortrait } from './sprites.js';
+import { portrait, monIcon, animatedPortrait, trainerImg } from './sprites.js';
 import { escapeHtml, describeMove } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
@@ -326,7 +326,7 @@ export class UI {
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
       // Gimnasio: su medalla (en color si la tienes); Alto Mando y Campeón, estrella y corona
-      const face = n.kind === 'gym' ? badgeImg(region, n.index, done, 28, 'node-badge') : isLeader ? `<span>${n.kind === 'champion' ? '♛' : '★'}</span>` : '';
+      const face = n.kind === 'gym' ? badgeImg(region, n.index, done, 28, 'node-badge') : isLeader ? `<span class="node-face">${trainerImg(n.id)}</span>${n.kind === 'champion' ? '<i class="crown">♛</i>' : ''}` : '';
       let extra = '';
       if (!isLeader && unlocked) {
         const dexes = [...new Set(n.wild.map(([d]) => d))];
@@ -376,7 +376,9 @@ export class UI {
     const R = Data.REGIONS[n.region];
     if (n.kind !== 'route') {
       const title = n.kind === 'gym' ? n.name : n.kind === 'champion' ? t('Campeón de {r}', { r: R.name }) : t('Alto Mando de {r}', { r: R.name });
-      box.append(el('h3', '', title), el('p', 'leader', `${n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Miembro')}: <b>${n.leader}</b> · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span>`));
+      const head = el('div', 'leader-head', `<div><h3>${title}</h3><p class="leader">${n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Miembro')}: <b>${n.leader}</b> · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span></p></div>${trainerImg(n.id, 'leader-sprite')}`);
+      head.style.setProperty('--tc', TYPE_COLOR[n.type]);
+      box.append(head);
       const used = Data.leaderTeam(n, p.starter || (p.mons[0] && p.mons[0].dex));
       const team = el('div', 'mini-team');
       for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }

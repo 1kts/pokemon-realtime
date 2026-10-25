@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': 'リーダーたちが顔を見せる',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'ストーリーの地図でジムリーダー、四天王、チャンピオンを選ぶと、ゲームのドット絵で登場する。',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': 'リーダーとのバトル開始時にドット絵で登場し、スコア表示の名前の横に顔が表示される。',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '地図上の四天王とチャンピオンは、星の代わりに顔で表示される。',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': 'が勝負を仕掛けてきた！',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '検索と色違いの見た目を自由に',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「マイポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',

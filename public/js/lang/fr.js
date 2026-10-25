@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.0 ----------
+    'Los líderes dan la cara': 'Les champions montrent leur visage',
+    'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Chaque Champion d’Arène, membre du Conseil 4 et Maître apparaît avec son sprite des jeux quand tu le choisis sur la carte de l’histoire.',
+    'Al empezar un combate contra un líder, se presenta con su sprite antes del combate y su cara queda junto a su nombre en el marcador.': 'Au début d’un combat contre un champion, il se présente avec son sprite, et son visage reste à côté de son nom sur le tableau.',
+    'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': 'Sur la carte, le Conseil 4 et les Maîtres se reconnaissent à leur visage au lieu d’une étoile.',
+    // ---------- Novedades v0.14.0 ----------
+    '¡Te desafía!': 'te défie !',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Recherche et chromatiques à ta façon',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'Dans Mes Pokémon, tu peux chercher par nom ou numéro, filtrer ta boîte par type, chromatique ou légendaire, et la trier comme tu veux.',
