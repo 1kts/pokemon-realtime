@@ -11,6 +11,17 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.17.0 ----------
+    'Ataques con sonido': '招式有声音了',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': '招式和命中现在有轻柔的音效，会随招式的属性和形态略有变化；效果绝佳的攻击会更明显一些。',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '在设置中可以调高、调低或关闭音效，与音乐音量分开调节。',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': '切换界面或进出对战时，音乐会慢慢淡出，新曲子再柔和地响起，不再突然中断。',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': '菜单一首曲子，每种对战各有曲目，均出自社区音乐人之手。音效是招式和命中的声音。设置会保存在此浏览器中。',
+    'Efectos de sonido': '音效',
+    'Sin efectos': '关闭音效',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': '菜单和对战现在播放由音乐人创作的曲子：训练家对战一首，野生宝可梦一首，道馆馆主和冠军也各有专属曲目。',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '每首曲子的作者都列在“制作名单”和法律声明中，任何界面底部都能找到。',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': '菜单和对战音乐由 jannetty、rckbtm、Navet56（OPMon Lazuli）和 Spring Spring 创作，经其许可或按 CC BY 许可使用。',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas 是<b>非官方、免费、非营利的同人游戏</b>：没有广告，捐赠也不会带来任何优势。本游戏与任天堂、The Pokémon Company、Creatures Inc. 和 GAME FREAK inc. 没有隶属、赞助或认可关系。宝可梦及角色名称是其各自所有者的商标。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. 精灵图来自 <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
     'Créditos': '致谢',
     'Aviso legal y privacidad': '法律声明与隐私',
@@ -24,7 +35,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': '游戏有音乐了：菜单和地图共用一首主题曲，对战、馆主和冠军各有主题曲，获胜时还有凯歌。',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '在设置中可以调高或调低音乐音量，也可以关闭；会保存在此浏览器中。',
     'Música': '音乐',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '掌机风格的原创音乐：菜单一首主题曲，对战和馆主各有主题曲。会保存在此浏览器中。',
     'Volumen de la música': '音乐音量',
     'Silenciar': '静音',
     'Sin música': '已关闭音乐',

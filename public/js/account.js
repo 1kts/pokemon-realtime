@@ -12,6 +12,7 @@ import { avatarArt, avatarName } from './missions.js';
 import { frameFx, frameRing } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
+import { DEFAULT_SFX } from './sfx.js';
 
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
@@ -219,6 +220,7 @@ export const accountViews = {
         <p>${t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
         <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.')}</p>
         <p>${t('Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).')}</p>
+        <p>${t('La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.')}</p>
         <p>${t('Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.', { url: getLang() === 'es' ? '/legal' : '/legal/en' })}</p>
         <p>${t('El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.', { url: KOFI_URL })}</p>
         <h4>${t('Datos que guardamos')}</h4>
@@ -366,20 +368,26 @@ export const accountViews = {
     }
     lang.append(langs);
 
-    // Música: volumen (se guarda en este navegador) y silenciar
-    const music = this.app.music;
+    // Sonido: volumen de la música y de los efectos del combate (se guardan en este navegador) y silenciar
     const mus = el('div', 'panel music-panel');
-    mus.append(el('h3', '', `♫ ${t('Música')}`), el('p', 'small', t('Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.')));
-    const row = el('div', 'music-row');
-    const range = el('input');
-    Object.assign(range, { type: 'range', min: 0, max: 100, step: 5, value: Math.round(music.volume * 100) });
-    range.setAttribute('aria-label', t('Volumen de la música'));
-    const pct = el('b', 'music-pct', `${range.value} %`);
-    const mute = el('button', music.volume ? '' : 'sel', music.volume ? t('Silenciar') : t('Sin música'));
-    range.oninput = () => { music.setVolume(range.value / 100); pct.textContent = `${range.value} %`; mute.textContent = +range.value ? t('Silenciar') : t('Sin música'); mute.classList.toggle('sel', !+range.value); };
-    mute.onclick = () => { range.value = +range.value ? 0 : Math.round(DEFAULT_MUSIC * 100); range.oninput(); };
-    row.append(range, pct, mute);
-    mus.append(row);
+    mus.append(el('h3', '', `♫ ${t('Música')}`), el('p', 'small', t('Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.')));
+    const volumeRow = (player, cls, label, off, def, test) => {
+      const row = el('div', 'music-row ' + cls);
+      row.append(el('span', 'music-label', label));
+      const range = el('input');
+      Object.assign(range, { type: 'range', min: 0, max: 100, step: 5, value: Math.round(player.volume * 100) });
+      range.setAttribute('aria-label', label);
+      const pct = el('b', 'music-pct', `${range.value} %`);
+      const mute = el('button', player.volume ? '' : 'sel', player.volume ? t('Silenciar') : off);
+      range.oninput = () => { player.setVolume(range.value / 100); pct.textContent = `${range.value} %`; mute.textContent = +range.value ? t('Silenciar') : off; mute.classList.toggle('sel', !+range.value); };
+      if (test) range.onchange = test;   // al soltar, se oye cómo queda
+      mute.onclick = () => { range.value = +range.value ? 0 : Math.round(def * 100); range.oninput(); if (test) test(); };
+      row.append(range, pct, mute);
+      return row;
+    };
+    const sfx = this.app.sfx;
+    mus.append(volumeRow(this.app.music, 'music-vol', t('Volumen de la música'), t('Sin música'), DEFAULT_MUSIC),
+      volumeRow(sfx, 'sfx-vol', t('Efectos de sonido'), t('Sin efectos'), DEFAULT_SFX, () => { sfx.start(); sfx.hit({ e: 1 }); }));
 
     // Color del cursor: paleta, color libre y vista previa (normal y al pasar por algo pulsable)
     const cursorBox = el('div', 'panel cursor-panel');

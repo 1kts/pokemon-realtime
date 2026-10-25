@@ -12,6 +12,17 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.17.0 ----------
+    'Ataques con sonido': 'わざに効果音',
+    'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.': 'わざと命中にひかえめな効果音がつきました。わざのタイプと形で少しだけ変わり、こうかばつぐんの一撃は少し目立ちます。',
+    'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.': '設定で、音楽の音量とは別に効果音を大きく・小さく・オフにできます。',
+    'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.': '画面を切り替えたりバトルに出入りしたりすると、音楽がゆっくり消えてから次の曲がやさしく始まり、急に途切れません。',
+    'Un tema para los menús y otros para cada tipo de combate, de músicos de la comunidad. Los efectos son el sonido de los ataques y los golpes. Se recuerda en este navegador.': 'メニューの曲と、バトルの種類ごとの曲。どれもコミュニティのミュージシャンによるものです。効果音はわざと命中の音です。このブラウザに保存されます。',
+    'Efectos de sonido': '効果音',
+    'Sin efectos': '効果音なし',
+    'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.': 'メニューとバトルで、ミュージシャンが作曲した曲が流れるようになりました。トレーナー戦、野生のポケモン戦、ジムリーダー戦、チャンピオン戦にそれぞれ曲があります。',
+    'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.': '各曲の作曲者は、どの画面でも下にある「クレジット」と法的通知に載っています。',
+    'La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.': 'メニューとバトルの音楽は jannetty、rckbtm、Navet56（OPMon Lazuli）、Spring Spring によるもので、本人の許可または CC BY ライセンスのもとで使用しています。',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenasは<b>非公式・無料・非営利のファンゲーム</b>です。広告はなく、寄付しても有利にはなりません。任天堂、株式会社ポケモン、株式会社クリーチャーズ、株式会社ゲームフリークとは提携・後援・承認の関係にありません。ポケモンおよびキャラクター名はそれぞれの権利者の商標です。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. スプライト：<a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
     'Créditos': 'クレジット',
     'Aviso legal y privacidad': '法的通知とプライバシー',
@@ -25,7 +36,6 @@ export default {
     'El juego tiene música: un tema para los menús y el mapa, y otros para los combates, los líderes y el Campeón, con fanfarria al ganar.': 'ゲームに音楽が付きました。メニューとマップは共通のテーマ、バトル・ジムリーダー・チャンピオンにはそれぞれのテーマがあり、勝つとファンファーレが鳴ります。',
     'En Ajustes puedes subir o bajar el volumen de la música, o quitarla; se recuerda en este navegador.': '設定で音楽の音量を上げ下げしたり、オフにしたりできます。このブラウザに保存されます。',
     'Música': '音楽',
-    'Música original al estilo de las consolas portátiles: un tema para los menús y otros para los combates y los líderes. Se recuerda en este navegador.': '携帯ゲーム機風のオリジナル音楽。メニューは共通のテーマ、バトルとジムリーダーにはそれぞれのテーマがあります。このブラウザに保存されます。',
     'Volumen de la música': '音楽の音量',
     'Silenciar': 'ミュート',
     'Sin música': '音楽オフ',

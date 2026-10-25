@@ -1,7 +1,11 @@
-// Música del juego: chiptune al estilo de las consolas portátiles de los 90. Dos canales de onda
+// Música del juego. Los temas con grabación (FILES: public/music/*.mp3, compuestos por músicos que nos
+// han dado permiso; créditos en /legal) suenan desde su archivo y, si falta o tarda en cargar, se usa la
+// versión sintetizada de ese mismo tema (abajo), que sigue funcionando por sí sola. Los temas sin
+// grabación suenan siempre sintetizados. Los bucles se hacen con un fundido cruzado de FADE segundos.
+//
+// Lo sintetizado: chiptune al estilo de las consolas portátiles de los 90. Dos canales de onda
 // cuadrada (melodía, y armonía o arpegios), una onda triangular para el bajo y ruido para la batería,
-// todo generado con Web Audio: no hay archivos de audio. Las melodías son composiciones originales de
-// PokéArenas; no se usa ninguna melodía de los juegos de Pokémon (tienen derechos de autor), solo su
+// generado con Web Audio. Las melodías son composiciones originales de PokéArenas; no se usa ninguna melodía de los juegos de Pokémon (tienen derechos de autor), solo su
 // manera de sonar: vibrato en las notas largas, arpegios rápidos, bajo de octavas en los combates…
 //
 // Notación de las melodías: "nota:duración" en semicorcheas (un compás = 16), p. ej. 'E5:4 r:2'
@@ -10,6 +14,15 @@ import { storage } from './net.js';
 
 const KEY = 'arena.music';
 const DEFAULT_VOLUME = 0.45;
+const FADE = 3;                                  // s de fundido cruzado entre el final y el principio de un bucle
+const FILE_WAIT = 2500;                          // ms que se espera a un archivo antes de usar lo sintetizado
+// Cambio de tema: el que suena se apaga en FADE_OUT s, se deja un respiro de GAP s y el nuevo entra
+// poco a poco en FADE_IN s (al cambiar de pantalla o entrar y salir de un combate no corta de golpe)
+const FADE_OUT = 1.5, GAP = 0.8, FADE_IN = 2.5;
+// Tema -> grabación. pueblo y lider: "A Pokémon Tale in Three Parts" de jannetty (partes 1 y 3);
+// desierto: "Desert Battle" de rckbtm; salvaje: "The Wild Duel" de Navet56 (OPMon Lazuli, CC-BY 4.0);
+// campeon: "Face The Champion!" de Spring Spring (CC-BY 3.0). Se suben con el volumen igualado (-16 LUFS).
+const FILES = { menu: 'pueblo', battle: 'desierto', wild: 'salvaje', leader: 'lider', champion: 'campeon' };
 
 // ---------- Notas y acordes ----------
 const PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -121,18 +134,6 @@ const TRACKS = {
       'D#6:4 C6:2 B5:2 A5:2 G5:2 F#5:4',
     ],
   },
-  // Fanfarria de victoria (Do mayor; no se repite)
-  victory: {
-    bpm: 150, intro: 0, loop: false, bass: 'march', harmony: 'arp', drums: ['march', 'fill'],
-    chords: ['C', 'C'],
-    lead: ['C5:2 E5:2 G5:2 C6:6 B5:2 A5:2', 'G5:4 E5:2 G5:2 C6:8'],
-  },
-  // Derrota: corta y en menor (no se repite)
-  defeat: {
-    bpm: 96, intro: 0, loop: false, bass: 'march', harmony: 'arp8', drums: ['none'],
-    chords: ['Am'],
-    lead: ['E5:4 C5:4 A4:8'],
-  },
 };
 // Variantes: el mismo tema en otra tonalidad o tempo (para que no suene todo igual)
 const VARIANTS = {
@@ -176,7 +177,15 @@ export class Music {
     this.ctx = null;
     this.want = null;       // el tema que toca ahora (aunque el audio aún no se haya desbloqueado)
     this.seq = null;        // { song, bus, step, time }
-    this.notes = 0;         // notas programadas (para las pruebas)
+    this.notes = 0;         // notas sintetizadas programadas (para las pruebas)
+    this.file = null;       // { name, bus, buf, loop, next, srcs }: la grabación que suena
+    this.token = 0;         // cada cambio de tema invalida las cargas pendientes del anterior
+    this.starts = 0;        // veces que se ha empezado un tema (para las pruebas)
+    this.bytes = new Map(); // archivo -> promesa con sus bytes (o null si no está)
+    this.buffers = new Map();
+    // El del menú se pide ya (suena primero); el resto, cuando la página está tranquila
+    this.preload('menu');
+    setTimeout(() => Object.keys(FILES).forEach(n => this.preload(n)), 4000);
     // Los navegadores no dejan sonar nada hasta que el jugador toca la página
     const unlock = () => { this.start(); };
     addEventListener('pointerdown', unlock, { capture: true });
@@ -191,6 +200,8 @@ export class Music {
 
   get current() { return this.want; }
   get running() { return !!this.ctx && this.ctx.state === 'running'; }
+  get sounding() { return !!(this.seq || this.file); }
+  get source() { return this.file ? 'archivo' : this.seq ? 'sintetizado' : null; }
 
   start() {
     if (!this.ctx) {
@@ -210,7 +221,7 @@ export class Music {
       this.timer = setInterval(() => this.tick(), 25);
     }
     if (this.volume > 0 && this.ctx.state !== 'running') this.ctx.resume();
-    if (this.want && !this.seq) this.begin(this.want);
+    if (this.want && !this.seq && !this.file) this.launch(this.want);
   }
 
   // Onda cuadrada con el ancho de pulso de las portátiles (12,5 %, 25 % o 50 %)
@@ -220,30 +231,105 @@ export class Music {
     return this.ctx.createPeriodicWave(re, im);
   }
 
-  // Cambia de tema con un fundido corto (si ya suena ese, no hace nada)
+  // Cambia de tema con un fundido (si ya suena ese, no hace nada)
   play(name) {
     if (name === this.want) return;
     this.want = name;
     if (!this.ctx) return;
-    this.fadeOut();
-    if (name) this.begin(name);
+    const was = this.fadeOut();
+    if (name) this.launch(name, was ? (FADE_OUT + GAP) * 1000 : 0);
   }
   stop() { this.play(null); }
 
+  // ---------- Grabaciones ----------
+  preload(name) {
+    const file = FILES[name];
+    if (!file) return Promise.resolve(null);
+    if (!this.bytes.has(file)) {
+      this.bytes.set(file, fetch(`/music/${file}.mp3`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null));
+    }
+    return this.bytes.get(file);
+  }
+  async decode(name) {
+    const file = FILES[name];
+    if (this.buffers.has(file)) return this.buffers.get(file);
+    const raw = await this.preload(name);
+    if (!raw || !this.ctx) return null;
+    try {
+      const buf = await this.ctx.decodeAudioData(raw.slice(0));
+      this.buffers.set(file, buf);
+      return buf;
+    } catch { this.bytes.set(file, Promise.resolve(null)); return null; }
+  }
+  // Empieza un tema: su grabación si está (o llega enseguida) y, si no, el sintetizado
+  // (wait: ms que espera a que se apague el anterior; mientras, ya va cargando)
+  async launch(name, wait = 0) {
+    const token = ++this.token;
+    this.starts++;
+    let buf = FILES[name] ? this.buffers.get(FILES[name]) : null;
+    const load = !buf && FILES[name] ? Promise.race([this.decode(name), new Promise(r => setTimeout(r, FILE_WAIT, null))]) : buf;
+    [buf] = await Promise.all([load, new Promise(r => setTimeout(r, wait))]);
+    if (token !== this.token || !this.ctx) return;   // mientras tanto se ha pedido otro tema
+    if (buf) this.startFile(name, buf); else this.begin(name);
+  }
+  // Un bus que entra poco a poco
+  fadeInBus() {
+    const bus = this.ctx.createGain(), t = this.ctx.currentTime;
+    bus.gain.setValueAtTime(0, t);
+    bus.gain.linearRampToValueAtTime(1, t + FADE_IN);
+    bus.connect(this.master);
+    return bus;
+  }
+  startFile(name, buf) {
+    const bus = this.fadeInBus();
+    this.file = { name, bus, buf, loop: true, next: this.ctx.currentTime + 0.05, srcs: [] };
+    this.fileTick();
+  }
+  // Programa la siguiente pasada de la grabación cuando se acerca su momento
+  fileTick() {
+    const f = this.file;
+    if (!f || !this.running) return;
+    while (f.next < this.ctx.currentTime + 0.4) {
+      const t = f.next, dur = f.buf.duration;
+      const src = this.ctx.createBufferSource(), g = this.ctx.createGain();
+      src.buffer = f.buf;
+      const fade = Math.min(FADE, dur / 3);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(1, t + (f.srcs.length ? fade : 0.05));   // la entrada la hace el bus
+      if (f.loop) { g.gain.setValueAtTime(1, t + dur - fade); g.gain.linearRampToValueAtTime(0, t + dur); }
+      src.connect(g).connect(f.bus);
+      src.start(t);
+      f.srcs.push(src);
+      src.onended = () => { f.srcs = f.srcs.filter(x => x !== src); if (!f.loop && this.file === f) { this.file = null; this.want = null; } };
+      this.notes++;
+      if (!f.loop) { f.next = Infinity; break; }
+      f.next = t + dur - fade;
+    }
+  }
+
   begin(name) {
     const song = compile(name);
-    const bus = this.ctx.createGain();
-    bus.connect(this.master);
+    const bus = this.fadeInBus();
     this.seq = { song, bus, step: 0, time: this.ctx.currentTime + 0.08 };
   }
 
+  // Apaga lo que suena en FADE_OUT s; dice si sonaba algo
   fadeOut() {
-    if (!this.seq) return;
-    const { bus } = this.seq, t = this.ctx.currentTime;
-    bus.gain.setValueAtTime(bus.gain.value, t);
-    bus.gain.linearRampToValueAtTime(0, t + 0.5);
-    setTimeout(() => bus.disconnect(), 700);
-    this.seq = null;
+    const was = !!(this.file || this.seq), t = this.ctx.currentTime;
+    const off = bus => {
+      bus.gain.cancelScheduledValues(t);
+      bus.gain.setValueAtTime(bus.gain.value, t);
+      bus.gain.linearRampToValueAtTime(0, t + FADE_OUT);
+      setTimeout(() => bus.disconnect(), (FADE_OUT + 0.2) * 1000);
+    };
+    const f = this.file;
+    if (f) {
+      off(f.bus);
+      for (const s of f.srcs) { try { s.stop(t + FADE_OUT + 0.1); } catch { /* ya había acabado */ } }
+      this.file = null;
+    }
+    if (this.seq) { off(this.seq.bus); this.seq = null; }
+    return was;
   }
 
   setVolume(v) {
@@ -257,6 +343,7 @@ export class Music {
 
   // Programa lo que toca en los próximos 150 ms
   tick() {
+    this.fileTick();
     const s = this.seq;
     if (!s || !this.running) return;
     const until = this.ctx.currentTime + 0.15;
@@ -348,10 +435,10 @@ export async function renderTrack(name, seconds = 20, sampleRate = 44100) {
   return ctx.startRendering();
 }
 
-// Fuera de combate suena siempre el mismo tema (portada, menú, mapa, equipo, tienda…), así que moverse
-// por los menús no corta la música; solo la pantalla de resultados deja acabar la fanfarria.
-export function trackForView(view) {
-  return view === 'results' ? undefined : 'menu';
+// Fuera de combate suena siempre el mismo tema (portada, menú, mapa, equipo, tienda, resultados…), así que
+// moverse por los menús no corta la música.
+export function trackForView() {
+  return 'menu';
 }
 export function trackForBattle(start, Data) {
   if (start.mode === 'wild') return 'wild';

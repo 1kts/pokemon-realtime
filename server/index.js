@@ -25,7 +25,7 @@ const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.png': 'image/png', '.json': 'application/json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8' };
+  '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8', '.mp3': 'audio/mpeg' };
 
 // Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: todo
 // (scripts, Three.js y fuentes en public/vendor) se carga de este servidor, más los scripts en línea
@@ -59,7 +59,7 @@ const server = http.createServer((req, res) => {
     if (err) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
     if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : 'no-cache' });
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' });
     res.end(data);
   });
 });

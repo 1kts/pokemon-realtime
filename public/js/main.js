@@ -13,6 +13,7 @@ import { applyCursor } from './cursor.js';
 import { Net, storage } from './net.js';
 import { t, tServer } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
+import { Sfx } from './sfx.js';
 
 const canvas = document.getElementById('view');
 let renderer;
@@ -42,6 +43,7 @@ const app = {
   battle: null, ui: null,
   // Música (music.js): cada pantalla pone su tema desde ui.show y cada combate el suyo
   music: new Music(),
+  sfx: new Sfx(),   // efectos de sonido del combate (sfx.js)
   connect(name) { this.net.connect(name); },
   // Al cambiar de idioma: los textos fijos de index.html (las pantallas se vuelven a pintar solas)
   onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
@@ -142,7 +144,7 @@ net.on('start', m => {
 net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
-  app.music.play(m.winner === m.you ? 'victory' : 'defeat');
+  app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
   // Dejar ver el final un momento antes de los resultados
   setTimeout(() => {
     if (app.battle !== b) return;

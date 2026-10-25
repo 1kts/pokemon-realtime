@@ -144,6 +144,7 @@ export class BattleClient {
         const m = this.moveOf(s, e.c);
         if (!m) break;
         actor.play(m.kind === 'melee' || m.kind === 'dash' ? 'Attack' : ['proj', 'beam', 'cone', 'wave'].includes(m.kind) ? 'Shoot' : 'Charge');
+        this.app.sfx.cast(m, s === this.you);
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
         if (m.kind === 'heal') this.p.emit(w.x, 0.1, w.z, { n: 40, colors: ['#ffffff', '#b0ffd0', '#70f0ff'], dir: [0, 1, 0], spread: 0.4, speed: 2.5, life: 1, size: 0.18, jitter: 1 });
@@ -155,10 +156,11 @@ export class BattleClient {
       case 'cone': this.fx.cone(e); break;
       case 'melee': this.fx.melee(e, pos); break;
       case 'warn': this.fx.warn(e); break;
-      case 'boom': this.fx.boom(e); break;
+      case 'boom': this.fx.boom(e); this.app.sfx.boom(e.s === undefined || e.s === this.you); break;
       case 'hit': {
         this.actors[s].flash(); this.actors[s].play('Hurt');
         this.fx.impact(e, e.big);
+        this.app.sfx.hit(e);
         const label = e.b ? t('Bloqueado') : e.e > 0 ? t('¡Muy eficaz!') : e.e < 0 ? t('Poco eficaz') : '';
         this.floatText(e.x, e.y, '-' + e.n, e.e > 0 ? 'eff' : e.e < 0 ? 'weak' : '', label, e.big);
         break;
@@ -167,6 +169,7 @@ export class BattleClient {
       case 'pend': if (!e.imp) { const w = toWorld(e.x, e.y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 6, colors: PALETTE[e.ty], speed: 1.5, life: 0.3, size: 0.15 }); } break;
       case 'parry':
         this.fx.parry(e);
+        this.app.sfx.parry();
         this.banner(s === this.you ? t('¡Parry perfecto!') : t('¡Te han hecho parry!'), s === this.you ? 'good' : 'bad');
         break;
       case 'perfectswap':
@@ -184,6 +187,7 @@ export class BattleClient {
         break;
       case 'faint':
         actor.play('Faint');
+        this.app.sfx.faint(s === this.you);
         this.banner(t('¡{m} se ha debilitado!', { m: SPECIES[this.sides[s].team[e.slot].dex].name }), s === this.you ? 'bad' : 'good');
         if (s === this.you && this.sides[s].team.some((m, i) => i !== e.slot && (this.me ? this.me.hp[i] > 0 : true))) this.banner(t('Elige otro Pokémon: 1 · 2 · 3'), 'info');
         break;

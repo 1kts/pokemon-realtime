@@ -1,4 +1,4 @@
-// Música: suena tras tocar la página, cada pantalla y cada combate ponen su tema, fanfarria al acabar
+// Música: suena tras tocar la página, cada pantalla y cada combate ponen su tema, al acabar vuelve el del menú
 // y volumen/silencio en Ajustes que se recuerda
 module.exports = async ({ page, ok }) => {
   await page.goto('/');
@@ -10,26 +10,28 @@ module.exports = async ({ page, ok }) => {
   await page.type('.title-panel input', 'Melómano');
   await page.realClick('.title-panel button.primary');
   await page.waitFor(`window.__app.ui.view === 'menu'`);
-  await page.waitFor(`window.__app.music.running && window.__app.music.notes > 10`);
-  ok(true, 'al tocar la página empieza a sonar el menú');
+  await page.waitFor(`window.__app.music.running && window.__app.music.sounding`);
+  ok(await page.eval(`window.__app.music.source`) === 'archivo', 'al tocar la página suena la grabación del menú (public/music/pueblo.mp3, de jannetty)');
 
   // Fuera de combate suena siempre el mismo tema: moverse por los menús no la corta
-  const notes0 = await page.eval(`window.__app.music.notes`);
+  const starts0 = await page.eval(`window.__app.music.starts`);
   for (const v of ['story', 'team', 'shop', 'dex', 'settings', 'menu']) await page.eval(`window.__app.ui.show('${v}'); true`);
   ok(await page.eval(`window.__app.music.current`) === 'menu', 'mapa, equipo, tienda, Pokédex y ajustes usan el mismo tema que el menú');
-  await page.waitFor(`window.__app.music.notes > ${notes0} + 20`);
-  ok(true, 'y sigue sonando sin cortes al pasar de uno a otro');
+  ok(await page.eval(`window.__app.music.starts`) === starts0 && await page.eval(`window.__app.music.sounding`), 'y sigue sonando sin reiniciarse al pasar de uno a otro');
 
+  // Sin archivo (no está o no carga) suena el mismo tema sintetizado: se simula con el del combate
+  await page.eval(`window.__app.music.bytes.set('desierto', Promise.resolve(null)); true`);
   await page.eval(`window.__app.ui.show('menu'); window.__app.net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0]], skill: 0.1 }); true`);
   await page.waitFor(`window.__app.battle`);
   ok(await page.eval(`window.__app.music.current`) === 'battle', 'un combate pone el tema de combate');
+  await page.waitFor(`window.__app.music.sounding`);
+  ok(await page.eval(`window.__app.music.source`) === 'sintetizado', 'si el archivo del tema falta, suena la versión sintetizada');
   await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
-  await page.waitFor(`window.__app.music.current === 'defeat'`);
-  ok(true, 'al perder suena la melodía de derrota');
-  await page.waitFor(`window.__app.ui.view === 'results'`);   // los resultados salen un momento después
-  const atResults = await page.eval(`window.__app.music.current`);
-  // Sigue sonando o ya ha acabado sola (dura 2,5 s): lo que no puede pasar es que la corte el tema del menú
-  ok(atResults === 'defeat' || atResults === null, `el tema del menú no corta la melodía en los resultados (suena: ${atResults})`);
+  await page.waitFor(`window.__app.music.current === 'menu'`);
+  ok(true, 'al acabar el combate vuelve el tema del menú (sin fanfarria ni melodía de derrota)');
+  await page.waitFor(`window.__app.ui.view === 'results'`);
+  await page.waitFor(`window.__app.music.sounding`);
+  ok(await page.eval(`window.__app.music.current`) === 'menu' && await page.eval(`window.__app.music.source`) === 'archivo', 'y en los resultados sigue sonando la grabación del menú');
 
   await page.eval(`window.__app.ui.show('settings'); true`);
   await page.waitFor(`document.querySelector('.music-panel input[type=range]')`);

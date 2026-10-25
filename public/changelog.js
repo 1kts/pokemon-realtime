@@ -4,6 +4,16 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.17.0', date: '2026-10-25', title: 'Ataques con sonido',
+      items: [
+        ['nuevo', 'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.'],
+        ['nuevo', 'En Ajustes puedes subir, bajar o quitar los efectos de sonido, aparte del volumen de la música.'],
+        ['cambio', 'Los menús y los combates suenan con temas compuestos por músicos: uno para entrenadores, otro para salvajes y otros para líderes y el Campeón.'],
+        ['cambio', 'Al cambiar de pantalla o entrar y salir de un combate, la música se apaga poco a poco y el tema nuevo entra suave, sin cortes.'],
+        ['cambio', 'Los autores de cada tema salen en Créditos y aviso legal, abajo en cualquier pantalla.'],
+      ],
+    },
+    {
       v: '0.16.1', date: '2026-10-25', title: 'Proyectiles como siempre',
       items: [
         ['cambio', 'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.'],
