@@ -37,7 +37,8 @@ module.exports = async ({ page, player, ok }) => {
   ok((await geo()).shown && (await geo()).bottom === 0, 'también está en el menú del juego');
   await page.eval(`document.body.classList.add('in-battle'); true`);
   await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display === 'none'`);
-  ok((await page.eval(`getComputedStyle(document.documentElement).getPropertyValue('--legal-h')`)).trim() === '0px', 'en combate se esconde y no ocupa sitio');
+  await page.waitFor(`getComputedStyle(document.documentElement).getPropertyValue('--legal-h').trim() === '0px'`);   // lo publica el ResizeObserver, un instante después
+  ok(true, 'en combate se esconde y no ocupa sitio');
   await page.eval(`document.body.classList.remove('in-battle'); true`);
   await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display !== 'none'`);
   await page.click('.legal-bar button.link');
