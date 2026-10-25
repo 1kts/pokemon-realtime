@@ -35,6 +35,14 @@ function migrate(p) {
     for (const a of D.ACHIEVEMENTS) if (a.reward && a.reward.glow && p.achievements[a.id] && !(p.achClaim || []).includes(a.id)) unlock(p, 'glows', a.reward.glow);
   }
   if (!p.glows) p.glows = {};
+  // Skins ganadas en Tesoros ('elemental:<línea>'); la Elemental que antes era el premio de maestría de
+  // 600 victorias (nivel 7, ya quitado) pasa aquí para quien la tuviera
+  if (!p.cosmetics.skins) p.cosmetics.skins = [];
+  for (const [root, list] of Object.entries(p.masteryClaimed || {})) {
+    if (!list.includes(7)) continue;
+    unlock(p, 'skins', 'elemental:' + root);
+    p.masteryClaimed[root] = list.filter(i => i !== 7);
+  }
   // Maestría: lo que antes se daba solo (estrella a 10, ilustración a 50, marco a 100) cuenta como recogido
   if (!p.masteryClaimed) {
     p.masteryClaimed = {};
@@ -130,6 +138,13 @@ function rollSeason(p) {
   p.season = { id: D.SEASON.id, peak: p.elo, claimed: [] };
 }
 
+// Gemas de Tesoros (aquí y no en treasure.js para no requerirse en círculo)
+function addGems(p, n) {
+  if (p.gems === undefined) p.gems = 0;
+  p.gems = Math.min(999999, p.gems + (n || 0));
+  return n || 0;
+}
+
 function unlock(p, kind, id) {
   if (!p.cosmetics[kind].includes(id)) p.cosmetics[kind].push(id);
 }
@@ -146,7 +161,8 @@ function afterRanked(p, { won, delta, foe, foeElo, team, foeTeam }) {
   p.coins += coins;
   p.history.unshift({ at: Date.now(), won, delta, elo: p.elo, foe, foeElo, team, foeTeam });
   p.history.length = Math.min(p.history.length, HISTORY);
-  return { coins, firstWin: first };
+  const gems = first ? addGems(p, D.GEMS.firstWin) : 0;
+  return { coins, firstWin: first, gems };
 }
 
 // Reclamar el premio de una liga ya alcanzada en esta temporada
@@ -159,6 +175,7 @@ function claim(p, league) {
   if (p.season.claimed.includes(league)) return 'Ya has reclamado ese premio esta temporada';
   p.season.claimed.push(league);
   p.coins += r.coins;
+  addGems(p, D.GEMS.league);
   for (const [id, n] of Object.entries(r.items)) p.items[id] = (p.items[id] || 0) + n;
   unlock(p, 'titles', r.title);
   unlock(p, 'frames', r.frame);
@@ -184,7 +201,7 @@ function setLook(p, msg) {
   if (msg.skin !== undefined) {
     const dex = msg.skin && +msg.skin.dex, id = msg.skin && msg.skin.skin;
     if (!D.SPECIES[dex]) return 'Ese Pokémon no existe';
-    if (id !== null && !(D.SKINS.includes(id) && D.hasMastery(p, dex, 'skin', id))) return 'No tienes esa skin';
+    if (id !== null && !(D.SKINS.includes(id) && D.hasSkin(p, dex, id))) return 'No tienes esa skin';
     if (id) p.skins[D.lineOf(dex)] = id; else delete p.skins[D.lineOf(dex)];
   }
   // Glow de una línea evolutiva: { dex, glow } (glow null = sin glow)
@@ -217,4 +234,4 @@ function setLook(p, msg) {
   return null;
 }
 
-module.exports = { unlock, migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };
+module.exports = { unlock, addGems, migrate, afterRanked, claim, setLook, checkAchievements, claimAchievement, claimBadge, badgesToClaim, addMastery, claimMastery };

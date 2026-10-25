@@ -9,6 +9,7 @@ const { Battle } = require('./battle.js');
 const store = require('./store.js');
 const story = require('./story.js');
 const rewards = require('./rewards.js');
+const treasure = require('./treasure.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
 const missions = require('./missions.js');
@@ -72,6 +73,7 @@ function sendProfile(c) {
   delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
+  treasure.migrate(c.profile);
   send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
 }
 function publicProfile(p) {
@@ -238,7 +240,7 @@ function finishDraft(draft) {
     ];
     store.save();
     setTimeout(() => draft.players.forEach(sendProfile), 50);
-    return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, missions: progress[i],
+    return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
       league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
@@ -378,6 +380,7 @@ function handle(c, msg) {
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
     if (msg.glows) { rewards.migrate(p); for (const g of D.GLOWS) rewards.unlock(p, 'glows', g); }
+    if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
     store.save();
     return sendProfile(c);
   }
@@ -408,15 +411,16 @@ function handle(c, msg) {
   }
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
-  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim') {
+  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'treasure') {
     const r = msg.t === 'mission' ? missions.action(c.profile, msg)
+      : msg.t === 'treasure' ? treasure.spin(c.profile, String(msg.id))
       : msg.t === 'achclaim' ? rewards.claimAchievement(c.profile, String(msg.id))
         : msg.t === 'masteryclaim' ? rewards.claimMastery(c.profile, msg.dex | 0, msg.i | 0)
           : rewards.claimBadge(c.profile, String(msg.region), msg.index | 0);
     if (r.error) send(c, { t: 'error', msg: r.error });
     else {
       if (r.loot) send(c, { t: 'loot', r: r.loot });
-      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : msg.t === 'masteryclaim' ? 'maestria' : 'medalla'), { actor: c.profile.id, ip: c.ip,
+      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : msg.t === 'masteryclaim' ? 'maestria' : msg.t === 'treasure' ? 'tesoro' : 'medalla'), { actor: c.profile.id, ip: c.ip,
         coins: r.loot ? r.loot.coins : -(r.cost || 0) });
       store.save();
     }

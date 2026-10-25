@@ -521,6 +521,7 @@ class Client {
     let loot = mc.wait('loot'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 0 });
     let l = await loot;
     ok(l.r.coins === D.MISSION_BY_ID['d-wild'].reward.coins && prof.coins === coins0 + l.r.coins && prof.missions.daily[0].claimed, 'recoger da el premio');
+    ok(l.r.gems === D.GEMS.missionDaily, 'y gemas para Tesoros');
     e = mc.wait('error'); mc.send({ t: 'mission', a: 'claim', kind: 'daily', i: 0 });
     ok(/Ya has/.test((await e).msg), 'y solo una vez');
     // Cambios: los gratis y después pagando
@@ -561,6 +562,42 @@ class Client {
     const oldG = { achievements: { shiny1: 1, kantoChamp: 2 }, achClaim: ['kantoChamp'], cosmetics: { titles: [], frames: [] } };
     seasonMod.migrate(oldG);
     ok(oldG.cosmetics.glows.join() === 'estelar', 'glows de logros ya cobrados (no de los pendientes)');
+    // ---------- Tesoros ----------
+    const treasure = require('../server/treasure.js');
+    const rid = D.treasures()[0].id;
+    prof.gems = 3;
+    e = mc.wait('error'); mc.send({ t: 'treasure', id: rid });
+    ok(/gemas/.test((await e).msg), 'sin gemas no se tira');
+    prof.gems = 1000;
+    const ids = [];
+    let spent = 0;
+    for (let i = 0; i < 10; i++) {
+      loot = mc.wait('loot'); mc.send({ t: 'treasure', id: rid });
+      l = await loot;
+      ids.push(l.r.treasure.prize);
+      spent += l.r.treasure.cost;
+    }
+    ok(new Set(ids).size === 10 && spent === D.SPIN_COST.reduce((a, b) => a + b, 0) && prof.gems === 1000 - spent, 'una ruleta: 10 premios distintos en 10 tiradas, cada una a su precio');
+    const rr = D.treasures()[0];
+    const skinP = rr.prizes.find(x => x.kind === 'skin'), ptP = rr.prizes.find(x => x.kind === 'portrait'), glP = rr.prizes.find(x => x.kind === 'glow');
+    ok(D.hasSkin(prof, skinP.dex, 'elemental') && prof.cosmetics.avatars.includes(ptP.id) && prof.cosmetics.glows.includes(glP.glow), 'los premios quedan: skin Elemental de la línea, retrato de avatar y glow');
+    e = mc.wait('error'); mc.send({ t: 'treasure', id: rid });
+    ok(/todos/.test((await e).msg), 'una ruleta completa no se tira más');
+    r = await mc.req({ t: 'look', skin: { dex: skinP.dex, skin: 'elemental' } });
+    ok(r.p.skins[D.lineOf(skinP.dex)] === 'elemental', 'la skin Elemental de Tesoros se pone a su línea');
+    r = await mc.req({ t: 'look', avatar: ptP.id });
+    ok(r.p.avatar === ptP.id, 'y el retrato, de avatar');
+    // La última tirada siempre da el que queda: con una sola por sacar, ese
+    const solo = { gems: 100, coins: 0, items: {}, achievements: {}, mons: [], caught: [], treasure: { period: D.treasurePeriod(), got: { [rid]: rr.prizes.slice(1).map(x => x.id) } } };
+    ok(treasure.spin(solo, rid, () => 0.999).loot.treasure.prize === rr.prizes[0].id, 'la última tirada da el premio que queda');
+    // Cambio de periodo: las ruletas viejas se van, lo conseguido se queda
+    prof.treasure.period = D.treasurePeriod() - 1;
+    r = await mc.req({ t: 'mission', a: 'refresh' });
+    ok(!Object.keys(r.p.treasure.got).length && r.p.cosmetics.avatars.includes(ptP.id), 'cada 2 semanas, ruletas nuevas; lo ganado se queda');
+    // La Elemental que se tenía por maestría (nivel 600, ya quitado) pasa a ser de la línea
+    const oldE = { mastery: { 4: 600 }, masteryClaimed: { 4: [0, 1, 2, 3, 4, 5, 6, 7] }, cosmetics: { titles: [], frames: [] }, achievements: {} };
+    seasonMod.migrate(oldE);
+    ok(oldE.cosmetics.skins.includes('elemental:4') && !oldE.masteryClaimed[4].includes(7) && D.hasSkin(oldE, 6, 'elemental'), 'la Elemental de maestría se conserva al pasar a Tesoros');
     // Día nuevo: misiones, cambios y cofre nuevos
     prof.missions.day = '2000-01-01';
     r = await mc.req({ t: 'mission', a: 'refresh' });

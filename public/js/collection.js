@@ -15,7 +15,8 @@ const AURA_PRISMA = 'prisma';
 
 // Líneas evolutivas que conoces: las de lo que has atrapado y las que ya tienen victorias
 function lineRoots(p) {
-  return [...new Set([...(p.caught || []), ...Object.keys(p.mastery || {}).map(Number)].filter(d => SPECIES[d]).map(Data.lineOf))];
+  const won = ((p.cosmetics || {}).skins || []).map(s => +s.split(':')[1]);
+  return [...new Set([...(p.caught || []), ...Object.keys(p.mastery || {}).map(Number), ...won].filter(d => SPECIES[d]).map(Data.lineOf))];
 }
 
 export const collectionViews = {
@@ -154,8 +155,8 @@ export const collectionViews = {
     for (const id of SKINS) {
       const need = winsFor(id);
       const sec = el('section', 'skin-sec');
-      const lines = lineRoots(p).filter(r => Data.hasMastery(p, r, 'skin', id));
-      sec.append(el('div', 'skin-head', `<h3>${t(SKIN_LABEL[id])}</h3><small>${t('Con {n} victorias de una línea evolutiva', { n: need })}</small>`));
+      const lines = lineRoots(p).filter(r => Data.hasSkin(p, r, id));
+      sec.append(el('div', 'skin-head', `<h3>${t(SKIN_LABEL[id])}</h3><small>${need ? t('Con {n} victorias de una línea evolutiva', { n: need }) : t('En las ruletas de Tesoros, para una línea concreta')}</small>`));
       const grid = el('div', 'coll-grid');
       for (const r of lines) {
         const on = (p.skins || {})[r] === id;
@@ -167,7 +168,8 @@ export const collectionViews = {
       if (!lines.length) {
         let top = null;
         for (const r of lineRoots(p)) if (!top || Data.masteryWins(p, r) > Data.masteryWins(p, top)) top = r;
-        const demo = el('div', 'coll-item locked demo', `<small>${t('Aún no la tienes')}</small><em>${top ? t('Lo más cerca: {m} {w}/{n}', { m: SPECIES[top].name, w: Data.masteryWins(p, top), n: need }) : ''}</em>`);
+        const demo = el(need ? 'div' : 'button', 'coll-item locked demo', `<small>${t('Aún no la tienes')}</small><em>${!need ? t('Mira las ruletas de Tesoros') : top ? t('Lo más cerca: {m} {w}/{n}', { m: SPECIES[top].name, w: Data.masteryWins(p, top), n: need }) : ''}</em>`);
+        if (!need) demo.onclick = () => this.openTreasure();
         demo.prepend(applySkin(portrait(top || 25, 72), id, top || 25));
         grid.append(demo);
       }

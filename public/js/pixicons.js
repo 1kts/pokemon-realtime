@@ -107,6 +107,10 @@ const PIX = (() => {
     coin: { pal: { y: '#ffd23f', o: '#c08a10', w: '#fff4b0' }, rows: [
       '....kkkk....', '..kkyyyykk..', '.kyywwyyyyk.', '.kywyyyyyok.', 'kyyyyooyyyok', 'kywyoyyoyyok',
       'kyyyoyyoyyok', 'kyyyyooyyyok', '.kyyyyyyyok.', '.kooyyyyook.', '..kkooookk..', '....kkkk....'] },
+    // Gema de Tesoros (la moneda de las ruletas)
+    gem: { pal: { a: '#ff7ad8', b: '#c23aa8', c: '#ffc8f0', d: '#8a1f7a', w: '#ffffff' }, rows: [
+      '............', '...kkkkkk...', '..kcwcaabk..', '.kcwcaaabbk.', 'kkkkkkkkkkkk', 'kcaaaaabbbdk',
+      '.kcaaaabbdk.', '..kcaaabdk..', '...kcaabk...', '....kcbk....', '.....kk.....', '............'] },
     cards: { pal: { a: '#ffd23f', b: '#4fb4ff', w: '#e6f4ff' }, rows: [
       '............', '.kkkkkk.....', '.kaaaaakkkk.', '.kaaaakbbbbk', '.kaaaakbwwbk', '.kaaaakbwwbk',
       '.kaaaakbbbbk', '.kaaaakbwwbk', '.kkkkkkbwwbk', '......kbbbbk', '......kkkkkk', '............'] },

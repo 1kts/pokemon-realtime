@@ -11,6 +11,7 @@ import { achievementViews } from './achievements.js';
 import { missionViews } from './missions.js';
 import { legalBarViews } from './legalbar.js';
 import { collectionViews } from './collection.js';
+import { treasureViews } from './treasure.js';
 import { dropdown, typeDropdown } from './dropdown.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
@@ -74,7 +75,7 @@ export class UI {
       this.show('menu');
       // Primera vez en esta versión: enseñar las novedades
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions', 'collection'].includes(this.view)) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions', 'collection', 'treasure'].includes(this.view) && !this.tzSpin) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -124,7 +125,7 @@ export class UI {
     const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
     const total = Object.keys(SPECIES).length;
     const VIEW_NAME = { menu: t('Menú principal'), story: t('Historia'), team: t('Mis Pokémon'), bag: t('Mochila'), shop: t('Tienda'), dex: t('Pokédex'),
-      ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica'), missions: t('Misiones'), collection: t('Colección') };
+      ladder: t('Ladder'), online: t('Clasificatoria'), tower: t('Torre Batalla'), profile: t('Perfil'), settings: t('Ajustes'), practice: t('Práctica'), missions: t('Misiones'), collection: t('Colección'), treasure: t('Tesoros') };
     const left = el('div', 'tb-left');
     if (back) left.append(btn(ICON.back, t('Volver'), () => this.show(back), 'back', VIEW_NAME[back] ? `<p>${t('Volver a {view}', { view: VIEW_NAME[back] })}</p>` : null));
     left.append(el('h2', '', title));
@@ -229,9 +230,12 @@ export class UI {
     const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
     const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
     this.coinBump = false;
+    const gemPill = el('button', 'pill gems', `${icon('gem', 16)}${(p.gems || 0).toLocaleString()}`);
+    gemPill.onclick = () => this.openTreasure();
     me.append(this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>`),
       info,
       this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
+      this.hoverTip(gemPill, `<b>${t('Gemas')}</b><span class="tip-sub">${(p.gems || 0).toLocaleString()}</span><p>${t('Para las ruletas de Tesoros. Salen de misiones, líderes, la Torre, la primera victoria online del día y los salvajes raros.')}</p>`),
       el('i', 'hub-sep'), this.newsIcon(), this.supportButton(), this.settingsButton());
     bar.append(tools, logo, me);
     return bar;
@@ -258,7 +262,7 @@ export class UI {
     const grid = el('div', 'coll-grid');
     const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
     const tile = (ico, label, sub, view, cls = '') => {
-      const b = el('button', 'coll-tile ' + cls, `${itemImg(ico, 40)}<span class="coll-txt"><b>${label}</b><small>${sub}</small></span>`);
+      const b = el('button', 'coll-tile ' + cls, `${ico.startsWith('<') ? ico : itemImg(ico, 40)}<span class="coll-txt"><b>${label}</b><small>${sub}</small></span>`);
       b.onclick = typeof view === 'function' ? view : () => this.openFrom(view);
       grid.append(b);
       return b;
@@ -271,6 +275,9 @@ export class UI {
     const ready = this.masteryReadyCount();
     const m = tile('relic-crown', t('Maestría'), ready ? t('¡{n} premios por recoger!', { n: ready }) : t('Maestría, ilustraciones, brillos y skins'), () => this.openCollection(), 'wide' + (ready ? ' ready' : ''));
     if (ready) m.append(el('i', 'nbadge', String(ready)));
+    // Tesoros: las ruletas de gemas (brilla si te llega para una tirada)
+    const tz = this.treasureReady();
+    tile(icon('gem', 40), t('Tesoros'), t('{n} gemas · ruletas de skins, glows y retratos', { n: (p.gems || 0).toLocaleString() }), () => this.openTreasure(), 'wide tz-tile' + (tz ? ' ready' : ''));
     box.append(grid);
     return box;
   }
@@ -1164,6 +1171,7 @@ export class UI {
     }
     if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `<span class="ri">${itemImg(k, 28)}${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}</span>`).join(' ')));
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
+    if (r.gems) box.append(el('p', 'reward gems', `+${icon('gem', 18)} ${t('{n} gemas', { n: r.gems })}`));
     if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', t('Tope de nivel {n}: vence al siguiente gimnasio para que sigan subiendo.', { n: r.cap })));
     if (r.xp && r.xp.length) {
       const list = el('div', 'xp-list');
@@ -1218,4 +1226,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, treasureViews);

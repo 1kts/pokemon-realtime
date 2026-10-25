@@ -109,6 +109,7 @@ net.on('disconnected', () => {
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
 net.on('error', m => {
   ui.toast(tServer(m.msg), 'bad');
+  if (ui.tzSpin) { ui.tzSpin = null; ui.show(ui.view); }   // tirada de Tesoros rechazada: la rueda vuelve
   // En la portada, si el servidor no crea el perfil (nombre no permitido, demasiados perfiles): se puede volver a intentar
   if (!ui.profile && net.joined) { net.joined = false; if (ui.view === 'title') ui.show('title'); }
 });

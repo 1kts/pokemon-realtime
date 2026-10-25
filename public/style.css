@@ -1535,3 +1535,86 @@ body.in-battle .legal-bar { display: none; }
 
 /* El brillo va dentro del propio avatar (si no, el fondo de un botón o panel lo tapa) */
 .ava { isolation: isolate; }
+
+/* ---------- Retratos de Tesoros: la cara de cerca y su efecto dentro de la burbuja ---------- */
+.pt-face { position: relative; display: block; width: var(--s); height: var(--s); border-radius: 50%; overflow: hidden; isolation: isolate;
+  background: radial-gradient(circle at 50% 40%, #2a3466, #10152e); }
+.pt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.pt-img.pt-miss { object-fit: none; object-position: 50% 30%; transform: scale(2); }
+.pt-fx { position: absolute; inset: 0; pointer-events: none; }
+.pt-fx b { position: absolute; left: var(--x); top: var(--y); width: 12%; height: 12%; animation: pt-rise calc(2.2s * var(--k)) linear infinite; animation-delay: var(--d); }
+@keyframes pt-rise { from { transform: translateY(40%) scale(.6); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(-220%) scale(1); opacity: 0; } }
+@keyframes pt-fall { from { transform: translateY(-120%) rotate(0); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(220%) rotate(220deg); opacity: 0; } }
+@keyframes pt-twinkle { 0%, 100% { transform: scale(.2); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
+.fx-llamas::after, .fx-sombras::after, .fx-aurora::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.fx-llamas::after { background: linear-gradient(to top, rgba(255,90,20,.55), rgba(255,170,40,.15) 45%, transparent 70%); mix-blend-mode: screen; animation: pt-flicker .9s steps(3) infinite; }
+.fx-llamas .pt-fx b { background: radial-gradient(circle at 50% 70%, #fff3a0, #ffb21a 40%, #ff4a12 70%, transparent 72%); border-radius: 50% 50% 40% 40%; top: auto; bottom: calc(var(--y) / 3); }
+@keyframes pt-flicker { 50% { opacity: .7; } }
+.fx-burbujas .pt-fx b { border: 2px solid rgba(200,240,255,.9); border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.7) 15%, transparent 30%); }
+.fx-chispas .pt-fx b { background: #fff6a0; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation-name: pt-twinkle; animation-duration: calc(.8s * var(--k)); box-shadow: 0 0 6px #ffd23a; }
+.fx-chispas::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, transparent 55%, rgba(255,210,58,.45)); animation: pt-flicker .5s steps(2) infinite; }
+.fx-hojas .pt-fx b { background: linear-gradient(135deg, #b8f070, #4fb02a); border-radius: 0 80% 0 80%; animation-name: pt-fall; animation-duration: calc(3s * var(--k)); }
+.fx-copos .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-fall; animation-duration: calc(3.5s * var(--k)); }
+.fx-sombras::after { background: radial-gradient(circle at 50% 110%, rgba(60,10,90,.75), transparent 70%); }
+.fx-sombras .pt-fx b { width: 22%; height: 22%; border-radius: 50%; background: radial-gradient(circle, rgba(150,80,220,.75), transparent 70%); filter: blur(1px); }
+.fx-estrellas .pt-fx b { background: #ffd6f4; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); animation-name: pt-twinkle; animation-duration: calc(1.6s * var(--k)); filter: drop-shadow(0 0 3px #ff9ee0); }
+.fx-destellos .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-twinkle; animation-duration: calc(1.4s * var(--k)); }
+.fx-aurora::after { background: conic-gradient(from 0deg, rgba(255,90,209,.4), rgba(255,203,5,.35), rgba(79,208,106,.35), rgba(70,208,255,.4), rgba(255,90,209,.4)); mix-blend-mode: screen; animation: aura-spin 4s linear infinite; }
+.fx-aurora .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-twinkle; animation-duration: calc(1.2s * var(--k)); }
+.ava-icon .ava-pic .pt-face, .ava-opt .pt-face { margin: auto; }
+@media (prefers-reduced-motion: reduce) { .pt-fx b, .pt-face::after { animation: none; } }
+
+/* ---------- Tesoros: ruletas de gemas ---------- */
+.gem-ico { display: inline-flex; vertical-align: -3px; margin-right: 3px; }
+.gem-ico img, .pill.gems img { image-rendering: pixelated; }
+.hub-me .pill.gems, .pill.gems { display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px; border-radius: 99px; font-weight: 800; white-space: nowrap; background: rgba(0,0,0,.3); border: 1px solid rgba(255,122,216,.45); color: #ffd6f4; cursor: pointer; }
+.pill.gems:hover { background: rgba(255,122,216,.15); }
+.coll-tile.tz-tile.ready { border-color: rgba(255,122,216,.7); box-shadow: 0 0 18px rgba(255,122,216,.25); }
+.reward.gems { color: #ffd6f4; }
+.treasure { display: flex; flex-direction: column; gap: 12px; height: 100%; min-height: 0; }
+.tz-head { display: flex; align-items: center; gap: 18px; padding: 12px 18px; flex-wrap: wrap; }
+.tz-gems { display: flex; align-items: baseline; gap: 6px; font: 800 30px var(--display); color: #ffd6f4; }
+.tz-gems small { font: 700 13px var(--text); color: var(--muted); }
+.tz-when { display: flex; flex-direction: column; flex: 1; min-width: 200px; }
+.tz-when small { color: var(--muted); }
+.tz-how { margin-left: auto; }
+.tz-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tz-tab { display: flex; align-items: center; gap: 8px; padding: 8px 16px 8px 10px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); font: 800 15px var(--display); }
+.tz-tab small { padding: 2px 8px; border-radius: 99px; background: rgba(0,0,0,.35); font: 800 12px var(--text); }
+.tz-tab.sel { border-color: var(--tc); box-shadow: 0 0 0 1px var(--tc), 0 0 22px color-mix(in srgb, var(--tc) 35%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--tc) 30%, transparent), transparent 70%), var(--panel); }
+.tz-tab.done small { background: var(--yellow); color: #2a1c00; }
+.tz-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 14px; }
+.tz-wheel { position: relative; width: min(100%, 560px); aspect-ratio: 1; margin: 0 auto; align-self: center; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tc) 22%, transparent), transparent 65%), radial-gradient(circle, transparent 46%, rgba(255,255,255,.06) 47%, transparent 48%); }
+.tz-prize { position: absolute; transform: translate(-50%, -50%); width: 17%; aspect-ratio: 1; padding: 0; display: grid; place-items: center; border-radius: 22px;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 35%, transparent), rgba(10,14,30,.9) 70%); border: 2px solid color-mix(in srgb, var(--rc) 70%, transparent); box-shadow: 0 0 14px color-mix(in srgb, var(--rc) 30%, transparent); transition: transform .15s; }
+.tz-prize:hover { transform: translate(-50%, -50%) scale(1.06); }
+.tz-prize.sel { box-shadow: 0 0 0 3px #fff, 0 0 24px var(--rc); }
+.tz-prize.hot { transform: translate(-50%, -50%) scale(1.14); box-shadow: 0 0 0 3px #fff, 0 0 34px var(--rc), 0 0 60px var(--rc); z-index: 2; }
+.tz-prize.got { opacity: .45; filter: grayscale(.4); }
+.tz-art { display: grid; place-items: center; width: 70%; height: 70%; }
+.tz-art canvas, .tz-art img { max-width: 100%; max-height: 100%; image-rendering: pixelated; }
+.tz-art .pt-face { --s: 100% !important; width: 100%; height: 100%; }
+.tz-rar { position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); padding: 1px 7px; border-radius: 99px; font: 800 9px var(--text); font-style: normal; white-space: nowrap; color: #fff; background: var(--rc); }
+.tz-check { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-weight: 900; color: #2a1c00; background: var(--yellow); }
+.tz-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 44%; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.tz-count small { display: block; color: var(--muted); font-weight: 700; } .tz-count b { font: 800 28px var(--display); }
+.tz-seg { display: flex; gap: 3px; } .tz-seg i { width: 14px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.12); } .tz-seg i.on { background: var(--tc); box-shadow: 0 0 6px var(--tc); }
+.tz-cost { display: flex; flex-direction: column; align-items: center; font: 800 22px var(--display); color: #ffd6f4; } .tz-cost small { font: 700 12px var(--text); color: var(--muted); }
+.tz-cost.short { color: #ff8a8a; }
+.tz-go { padding: 12px 34px; font-size: 20px; }
+.tz-hint { color: var(--muted); } .tz-hint.short { color: #ff8a8a; }
+.tz-done b { display: block; font: 800 18px var(--display); color: var(--yellow); }
+.tz-side { padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+.tz-pick-art { display: grid; place-items: center; height: 110px; }
+.tz-pick-art .tz-art { width: 100px; height: 100px; }
+.tz-side h3 { margin: 0; }
+.tz-odds { display: flex; flex-direction: column; gap: 4px; }
+.tz-odd { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 10px; background: rgba(0,0,0,.22); font-size: 13px; }
+.tz-odd i { width: 10px; height: 10px; border-radius: 50%; flex: none; } .tz-odd span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tz-odd.got { opacity: .5; } .tz-odd.got i { background: var(--yellow); }
+.tz-note { color: var(--muted); }
+.loot-box.tz-loot { box-shadow: 0 0 0 2px var(--rc), 0 0 60px color-mix(in srgb, var(--rc) 50%, transparent); }
+.loot-box.tz-loot h2 { color: var(--rc); }
+@media (max-width: 1000px) { .tz-body { grid-template-columns: 1fr; } .tz-side { max-height: none; } }
+@media (max-width: 520px) { .tz-prize { width: 19%; border-radius: 16px; } .tz-center { width: 52%; } .tz-count b { font-size: 22px; } .tz-go { padding: 10px 20px; font-size: 16px; } }

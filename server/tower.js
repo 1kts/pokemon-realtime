@@ -7,6 +7,7 @@
 const D = require('../public/data.js');
 const store = require('./store.js');
 const missions = require('./missions.js');
+const { addGems } = require('./rewards.js');
 
 const LEVEL = 50, BLOCK = 7, BRAIN_EVERY = 21;
 const PERFECT_IV = { hp: 31, atk: 31, def: 31, spe: 31 };
@@ -174,7 +175,7 @@ function applyResult(p, setup, result) {
     for (const [k, q] of Object.entries(r.items)) p.items[k] = (p.items[k] || 0) + q;
   }
   if (r.symbol) { t.symbols.push(r.symbol); reward.tower.symbol = r.symbol; }
-  if (t.streak % BLOCK === 0) reward.tower.blockUp = blockOf(t.streak + 1) + 1;
+  if (t.streak % BLOCK === 0) { reward.tower.blockUp = blockOf(t.streak + 1) + 1; reward.gems = addGems(p, D.GEMS.towerBlock); }
   Object.assign(reward.tower, { streak: t.streak, best: t.best });
   missions.track(p, 'tower');
   missions.track(p, 'towerStreak', t.streak);
