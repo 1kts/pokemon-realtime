@@ -67,7 +67,7 @@ class Battle {
       idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
-        const mon = makeMon(m.dex, m.level, { uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null });
+        const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
         return mon;
       }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,
@@ -82,7 +82,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
-      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, spdMult: m.spdMult, r: m.r })) })),
+      sides: this.sides.map(s => ({ name: s.name, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }

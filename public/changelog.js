@@ -4,6 +4,16 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.17.0', date: '2026-10-25', title: 'Motes para tus Pokémon',
+      items: [
+        ['nuevo', 'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.'],
+        ['nuevo', 'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.'],
+        ['cambio', 'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.'],
+        ['cambio', 'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.'],
+        ['cambio', 'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.'],
+      ],
+    },
+    {
       v: '0.16.1', date: '2026-10-25', title: 'Proyectiles como siempre',
       items: [
         ['cambio', 'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.'],

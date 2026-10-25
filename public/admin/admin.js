@@ -156,6 +156,7 @@ async function openPlayer(id) {
       ...[['Id', p.id], ['Usuario', p.account ? p.account.user : 'invitado (sin cuenta)'], ['Alta', fmtDate(p.created)], ['Cuenta desde', p.account && fmtDate(p.account.since)],
         ['Clasificatoria', `${p.elo} ELO · ${p.wins || 0} V / ${p.losses || 0} D · ${p.ranked || 0} combates`], ['Dinero', `₽ ${(p.coins || 0).toLocaleString('es-ES')}`],
         ['Pokémon', `${(p.mons || []).length} · Pokédex ${(p.caught || []).length} · shinies ${(p.shinies || []).length}`],
+        ['Motes', (p.mons || []).filter(m => m.nick).map(m => `${m.nick} (nº ${m.dex})`).join(' · ')],
         ['Torre', `mejor racha ${tw.best || 0}${tw.team ? ` · en curso ${tw.streak || 0}` : ''}`],
         ['Suspensión', p.ban ? `${p.ban.reason} · ${p.ban.until ? 'hasta ' + fmtDate(p.ban.until) : 'para siempre'} · desde ${fmtDate(p.ban.at)}${p.banned ? '' : ' (ya terminó)'}` : 'no'],
       ].filter(([, v]) => v).flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])),
@@ -167,6 +168,7 @@ async function openPlayer(id) {
       h('button', { onclick: () => act('kick', { reason: reason.value })() }, 'Desconectar')),
     h('div', { class: 'actions' },
       h('label', {}, 'Nombre de entrenador', newName), h('button', { onclick: () => act('rename', { name: newName.value })() }, 'Renombrar'),
+      (p.mons || []).some(m => m.nick) && h('button', { onclick: () => confirm(`¿Quitar todos los motes de los Pokémon de ${p.name}?`) && act('nicks')() }, 'Quitar motes'),
       p.id === myId && h('button', { onclick: () => confirm('¿Desbloquear todo en tu cuenta? (Pokédex completa, legendarios shiny perfectos, medallas, dinero, objetos y cosméticos). Tu cuenta dejará de salir en los rankings.') && act('unlockall')() }, 'Desbloquear todo (mi cuenta)'),
       h('button', { class: 'danger', onclick: () => {
         const name = prompt(`Borrar a ${p.name} del todo (perfil, partida, cuenta y su registro). No se puede deshacer.\n\nEscribe su nombre de entrenador para confirmar:`);

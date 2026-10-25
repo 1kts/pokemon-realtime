@@ -103,6 +103,15 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   const r1 = await adm.ask('admin.action', { a: 'rename', id: victim.p.id, name: 'Nombre limpio' });
   const renamed = await victim.wait(m => m.t === 'profile');
   ok(r1.ok && renamed && renamed.p.name === 'Nombre limpio', 'renombrar cambia el nombre y el jugador lo ve al momento');
+  victim.send({ t: 'story', a: 'starter', dex: 1 });
+  const starter = await victim.wait(m => m.t === 'profile');
+  victim.send({ t: 'story', a: 'nick', uid: starter.p.mons[0].uid, nick: 'Hojita' });
+  ok((await victim.wait(m => m.t === 'profile')).p.mons[0].nick === 'Hojita', 'el jugador le pone un mote a su Pokémon');
+  ok((await adm.ask('admin.player', { id: victim.p.id })).player.profile.mons[0].nick === 'Hojita', 'la ficha del panel enseña sus motes');
+  const rn = await adm.ask('admin.action', { a: 'nicks', id: victim.p.id });
+  const unnicked = await victim.wait(m => m.t === 'profile');
+  ok(/1 mote quitado/.test(rn.ok) && unnicked && !unnicked.p.mons[0].nick && audit.query({ type: 'admin.motes' }).length === 1,
+    '«Quitar motes» se los quita, el jugador lo ve al momento y queda en la auditoría');
   const r2 = await adm.ask('admin.action', { a: 'ban', id: victim.p.id, reason: 'Trampas', hours: 24 });
   const bannedMsg = await victim.wait(m => m.t === 'banned');
   await sleep(100);

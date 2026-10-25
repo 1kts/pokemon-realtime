@@ -3,6 +3,7 @@
 const D = require('../public/data.js');
 const store = require('./store.js');
 const missions = require('./missions.js');
+const names = require('./names.js');
 
 const MAX_LEVEL = 100;
 
@@ -119,6 +120,13 @@ function action(p, msg) {
     if (!mon) return 'Ese Pokémon no es tuyo';
     if (!mon.shiny) return 'Solo los Pokémon shiny pueden cambiar de aspecto';
     if (msg.plain) mon.plain = true; else delete mon.plain;
+  } else if (a === 'nick') {
+    // Mote: se ve en sus pantallas, en combate y en su perfil público; vacío (o el de la especie) lo quita
+    const mon = monByUid(p, msg.uid | 0);
+    if (!mon) return 'Ese Pokémon no es tuyo';
+    const r = names.nickname(msg.nick);
+    if (r.error) return r.error;
+    if (r.nick && r.nick !== D.SPECIES[mon.dex].name) mon.nick = r.nick; else delete mon.nick;
   } else if (a === 'team') {
     const uids = Array.isArray(msg.uids) ? [...new Set(msg.uids.map(Number))] : [];
     if (uids.length < 1 || uids.length > 3 || !uids.every(u => { const m = monByUid(p, u); return m && m.region === region; })) return 'Equipo no válido (máximo 3, todos de la misma región)';
@@ -193,7 +201,7 @@ function battleSetup(p, msg) {
   // Solo se combate con Pokémon de la región del lugar
   const team = teamMons(p, node.region);
   if (!team.length) return { error: `Primero elige tu Pokémon inicial de ${D.REGIONS[node.region].name}` };
-  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex) })) };
+  const mine = { name: p.name, team: team.map(m => ({ dex: m.dex, level: m.level, uid: m.uid, nick: m.nick, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: D.looksShiny(m), skin: D.skinOf(p, m.dex) })) };
   if (msg.a === 'route') {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };

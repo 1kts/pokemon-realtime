@@ -16,6 +16,7 @@ const limits = require('./limits.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
+const names = require('./names.js');
 const STARTED = Date.now();
 const crypto = require('crypto');
 
@@ -336,10 +337,12 @@ function handle(c, msg) {
   if (msg.t.startsWith('admin.')) return adminPanel.handle(c, msg);
   if (msg.t === 'hello') {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
-    const name = String(msg.name || '').trim().slice(0, 16) || 'Entrenador';
     if (busy(c) || c.authing) return;
     const token = typeof msg.token === 'string' ? msg.token : null;
     const known = store.has(token);
+    const checked = names.trainerName(msg.name);
+    if (!known && checked.error) return send(c, { t: 'error', msg: checked.error });
+    const name = checked.name || 'Entrenador';
     if (!known && !limits.newProfile(c.ip)) {
       audit.logNoisy('limite.perfiles', c.ip);
       return send(c, { t: 'error', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
@@ -379,7 +382,9 @@ function handle(c, msg) {
   }
   if (msg.t === 'name') {
     const old = c.profile.name;
-    c.profile.name = String(msg.name || '').trim().slice(0, 16) || c.profile.name;
+    const checked = names.trainerName(msg.name);
+    if (checked.error) return send(c, { t: 'error', msg: checked.error });
+    c.profile.name = checked.name || c.profile.name;
     if (c.profile.name !== old) audit.log('perfil.nombre', { actor: c.profile.id, ip: c.ip, old, name: c.profile.name });
     store.save();
     return sendProfile(c);
@@ -417,12 +422,13 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell', 'appearance'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'release', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
     if (c.battle) return;
     const coins = c.profile.coins;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });
     // Lo que mueve dinero o Pokémon queda apuntado (para investigar trampas o reclamaciones)
+    else if (msg.a === 'nick') audit.log('pokemon.mote', { actor: c.profile.id, ip: c.ip, uid: msg.uid | 0, nick: (c.profile.mons.find(m => m.uid === (msg.uid | 0)) || {}).nick || '' });
     else if (['buy', 'sell', 'release'].includes(msg.a)) audit.log('tienda.' + msg.a, { actor: c.profile.id, ip: c.ip,
       item: typeof msg.item === 'string' ? msg.item.slice(0, 32) : undefined, uid: Number.isInteger(msg.uid) ? msg.uid : undefined,
       qty: Number.isInteger(msg.qty) ? msg.qty : undefined, coins: c.profile.coins - coins });
