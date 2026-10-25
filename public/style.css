@@ -1376,8 +1376,9 @@ body.in-battle .legal-bar { display: none; }
 .hub-tools { justify-self: start; }
 .hub-me { justify-self: end; padding-left: 8px; }
 .hub-tools .lang-menu { left: 0; right: auto; }
-.hub-tools .support span, .hub-me .settings-btn span { display: none; }
-.hub-tools .support, .hub-me .settings-btn { width: 44px; padding: 0; justify-content: center; }
+.hub-me .settings-btn span { display: none; }
+.hub-me .settings-btn { width: 44px; padding: 0; justify-content: center; }
+.hub-me .support { padding: 0 14px 0 10px; }
 .fs-btn svg { width: 22px; height: 22px; }
 .fs-btn.on svg { transform: rotate(180deg); }
 .hub-logo { margin: 0; font: 900 clamp(26px, 3.4vw, 42px)/1 var(--display); color: #fff; letter-spacing: .5px; text-shadow: 0 3px 0 rgba(0,0,0,.4), 0 0 28px rgba(255,203,5,.35); white-space: nowrap; }
@@ -1440,6 +1441,8 @@ body.in-battle .legal-bar { display: none; }
   .hub-ava .ava { --s: 42px !important; }
   .hub-hero .menu-card .art { zoom: 1.4; }
   .hub-who { display: none; }
+  .hub-me .support { width: 36px; padding: 0; justify-content: center; }
+  .hub-me .support span { display: none; }
   .hub-me .pill.coins { height: 36px; padding: 0 10px; font-size: 13px; }
   .hub-hero .menu-card.hero { min-height: 190px; padding: 20px; }
   .hub-hero .menu-card.hero b { font-size: 30px; }
@@ -1448,9 +1451,11 @@ body.in-battle .legal-bar { display: none; }
   .hub .menu-card.feature { min-height: 150px; }
 }
 @media (max-width: 480px) {
-  .hub-mod { padding: 6px; gap: 4px; }
+  .hub-mod { padding: 5px; gap: 3px; }
+  .hub-ava .ava { --s: 36px !important; }
+  .hub-me .pill.coins { padding: 0 8px; }
   .hub-me .tb-btn, .hub-tools .tb-btn { width: 36px; height: 36px; }
-  .hub-tools .lang-cur b, .hub-tools .support { display: none; }
+  .hub-tools .lang-cur b { display: none; }
   .hub .menu-sec .menu-grid { grid-template-columns: 1fr; }
   .hub .menu-card.feature .art { zoom: 1; }
 }

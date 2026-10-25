@@ -224,7 +224,7 @@ export class UI {
     const p = this.profile;
     const bar = el('header', 'hub-bar');
     const tools = el('div', 'hub-mod hub-tools');
-    tools.append(this.langPicker(), this.fullscreenButton(), this.supportButton());
+    tools.append(this.langPicker(), this.fullscreenButton());
     const logo = el('h1', 'hub-logo', 'Poké<b>Arenas</b>');
     const me = el('div', 'hub-mod hub-me');
     const ava = el('button', 'hub-ava');
@@ -235,7 +235,7 @@ export class UI {
     const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
     const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
     this.coinBump = false;
-    me.append(this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>`),
+    me.append(this.supportButton(), this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>`),
       info,
       this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
       this.newsIcon(), this.settingsButton());
