@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.22.1', date: '2026-10-25', title: 'Editor de avatar',
+      items: [
+        ['cambio', 'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.'],
+        ['cambio', 'La Pokédex cuenta solo las generaciones con región abierta: de momento, los 251 Pokémon de Kanto y Johto.'],
+      ],
+    },
+    {
       v: '0.22.0', date: '2026-10-25', title: 'En línea y nueva derrota',
       items: [
         ['nuevo', 'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.'],

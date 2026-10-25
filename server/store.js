@@ -9,6 +9,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { promisify } = require('util');
 const { DatabaseSync } = require('node:sqlite');
+const D = require('../public/data.js');
 
 // PROFILES_FILE era el JSON de antes: si alguien la sigue usando (p. ej. un servidor de pruebas)
 // no se ignora en silencio, porque acabaría usando los datos reales de data/
@@ -276,8 +277,8 @@ const BOARDS = {
     row: p => ({ elo: p.elo, wins: p.wins, losses: p.losses }) },
   tower: { has: p => tw(p).best > 0, cmp: (a, b) => tw(b).best - tw(a).best || tw(a).bestAt - tw(b).bestAt,
     row: p => ({ best: tw(p).best, streak: tw(p).team ? tw(p).streak : 0, symbols: tw(p).symbols || [], team: tw(p).bestTeam || [] }) },
-  dex: { has: p => (p.caught || []).length > 0, cmp: (a, b) => b.caught.length - a.caught.length || (b.shinies || []).length - (a.shinies || []).length || badgesOf(b) - badgesOf(a),
-    row: p => ({ caught: p.caught.length, shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
+  dex: { has: p => D.dexCount(p) > 0, cmp: (a, b) => D.dexCount(b) - D.dexCount(a) || (b.shinies || []).length - (a.shinies || []).length || badgesOf(b) - badgesOf(a),
+    row: p => ({ caught: D.dexCount(p), shinies: (p.shinies || []).length, badges: badgesOf(p) }) },
 };
 // En los rankings solo salen cuentas registradas (un invitado se puede crear y tirar sin más, y con
 // varios se podría inflar el ELO de otro): ni invitados, ni suspendidos, ni cuentas del equipo con
@@ -312,7 +313,7 @@ function publicUser(id, online = new Set()) {
     id: p.id, name: p.name, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
     elo: p.elo, wins: p.wins, losses: p.losses, ranked: p.ranked,
     tower: { best: t.best || 0, streak: t.team ? t.streak : 0, symbols: t.symbols || [], wins: t.wins || 0, team: t.bestTeam || [] },
-    caught: (p.caught || []).length, shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},
+    caught: D.dexCount(p), shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},
     team, ranks: { ranked: rankIn('ranked'), tower: rankIn('tower'), dex: rankIn('dex') },
   };
 }

@@ -31,8 +31,9 @@ const todayOn = (dex, n) => { const w = Data.routeWild(n); return w.list.some(x 
 export const pokedexViews = {
   view_dex() {
     const p = this.profile;
-    const caught = new Set(p.caught || []), shinies = new Set(p.shinies || []);
-    const all = Object.values(SPECIES).sort((a, b) => a.dex - b.dex);
+    // Solo las generaciones con región abierta (Data.DEX_GENS)
+    const caught = new Set((p.caught || []).filter(Data.inDex)), shinies = new Set((p.shinies || []).filter(Data.inDex));
+    const all = Object.values(SPECIES).filter(s => s.gen <= Data.DEX_GENS).sort((a, b) => a.dex - b.dex);
     const f = this.dexFilter = this.dexFilter || { q: '', gen: 0, type: '', status: 'all' };
     const wrap = el('div', 'dexview');
     wrap.append(this.topbar(t('Pokédex'), this.returnTo || 'menu'));
@@ -42,7 +43,7 @@ export const pokedexViews = {
     const search = el('input');
     search.type = 'search'; search.placeholder = t('Buscar por nombre o número'); search.value = f.q;
     const gens = el('div', 'chips');
-    for (let g = 0; g <= 9; g++) {
+    for (let g = 0; g <= Data.DEX_GENS; g++) {
       const total = g ? all.filter(s => s.gen === g).length : all.length;
       const have = g ? all.filter(s => s.gen === g && caught.has(s.dex)).length : caught.size;
       const b = el('button', 'chip' + (f.gen === g ? ' sel' : ''), g ? `${t('Gen {n}', { n: g })} <small>${have}/${total}</small>` : t('Todas'));

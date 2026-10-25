@@ -11,6 +11,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.1 ----------
+    'Editor de avatar': 'Avatar editor',
+    'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'Tap your picture in your Profile, or Edit, to change your avatar: picture, frame, glow, effect and title in one place, with a preview.',
+    'La Pokédex cuenta solo las generaciones con región abierta: de momento, los 251 Pokémon de Kanto y Johto.': 'The Pokédex only counts generations with an open region: for now, the 251 Pokémon of Kanto and Johto.',
+    // ---------- Editor del avatar ----------
+    'Editar avatar': 'Edit avatar',
+    'Editar': 'Edit',
+    'Ver cómo conseguir más en Logros': 'See how to get more in Achievements',
+    'Imagen': 'Picture',
     // ---------- Novedades v0.22.0 ----------
     'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'Tackle and other close-range hits land more easily: the rival\'s size counts and Tackle reaches a bit further.',
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'If you go to Achievements from a battle\'s results, Back takes you where you started. In My Pokémon, the team button now says Remove from team.',

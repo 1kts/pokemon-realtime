@@ -11,6 +11,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.1 ----------
+    'Editor de avatar': '头像编辑器',
+    'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': '在个人资料中点击头像或「编辑」即可更换头像：图片、头像框、光晕、特效和称号都在一处设置，并可预览。',
+    'La Pokédex cuenta solo las generaciones con región abierta: de momento, los 251 Pokémon de Kanto y Johto.': '图鉴只统计已开放地区的世代：目前是关都和城都的 251 只宝可梦。',
+    // ---------- Editor del avatar ----------
+    'Editar avatar': '编辑头像',
+    'Editar': '编辑',
+    'Ver cómo conseguir más en Logros': '在成就中查看如何获得更多',
+    'Imagen': '图片',
     // ---------- Novedades v0.22.0 ----------
     'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': '撞击等近身攻击更容易命中：会计算对手的体型，撞击的距离也稍远一些。',
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '从对战结果进入成就后，按返回会回到开始的地方。在我的宝可梦中，队伍按钮改为「移出队伍」。',

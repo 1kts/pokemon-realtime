@@ -52,10 +52,10 @@ function field(label, type, opts = {}) {
   return [wrap, input];
 }
 
-function modal(cls, build) {
+function modal(cls, build, onClose) {
   const back = el('div', 'modal');
   const box = el('div', 'panel modal-box ' + cls);
-  const close = () => back.remove();
+  const close = () => { back.remove(); if (onClose) onClose(); };
   build(box, close);
   back.append(box);
   back.onclick = e => { if (e.target === back) close(); };
@@ -455,7 +455,16 @@ export const accountViews = {
 
     // Tarjeta de entrenador
     const card = el('div', 'panel trainer-card');
-    card.append(this.avatar(120, true));
+    // Tu foto: al tocarla (o «Editar») se abre el editor del avatar
+    const ava = el('div', 'tc-ava');
+    const pic = this.avatar(120, true);
+    pic.classList.add('editable');
+    pic.title = t('Editar avatar');
+    pic.onclick = () => this.avatarEditor();
+    const editAva = el('button', 'primary tc-edit', t('Editar'));
+    editAva.onclick = () => this.avatarEditor();
+    ava.append(pic, editAva);
+    card.append(ava);
     const info = el('div', 'tc-info');
     const nameRow = el('div', 'name-row', `<h2>${escapeHtml(p.name)}</h2>`);
     const edit = el('button', 'icon', '✎');
@@ -506,7 +515,6 @@ export const accountViews = {
     left.append(caseBox);
 
     // Estadísticas
-    const total = Object.keys(SPECIES).length;
     const games = p.wins + p.losses;
     const badges = Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0);
     const stat = (label, value) => `<div class="stat"><small>${t(label)}</small><b>${value}</b></div>`;
@@ -514,7 +522,7 @@ export const accountViews = {
       ${stat('ELO', p.elo)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}
       ${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div>`));
     left.append(el('div', 'panel', `<h3>${t('Historia')}</h3><div class="stat-grid">
-      ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${p.caught.length}/${total}`)}${stat('Pokémon', p.mons.length)}
+      ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${Data.dexCount(p)}/${Data.DEX_TOTAL}`)}${stat('Pokémon', p.mons.length)}
       ${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—')}</div>`));
 
 
@@ -537,52 +545,6 @@ export const accountViews = {
     mid.append(this.achievementsPanel());
     mid.append(hist);
 
-    // Personalizar
-    const look = el('div', 'panel look');
-    look.append(el('h3', '', t('Personalizar')));
-    const cos = p.cosmetics || { titles: [], frames: [] };
-    const titles = el('div', 'chips');
-    for (const ti of [null, ...cos.titles]) {
-      const b = el('button', 'chip' + ((p.title || null) === ti ? ' sel' : ''), ti ? escapeHtml(t(ti)) : t('Sin título'));
-      b.onclick = () => this.net.send({ t: 'look', title: ti });
-      titles.append(b);
-    }
-    look.append(el('h4', '', t('Título')), titles);
-    const frames = el('div', 'frame-grid');
-    for (const f of [null, ...cos.frames]) {
-      const b = el('button', 'frame-opt' + ((p.frame || null) === f ? ' sel' : ''));
-      b.append(this.avatar(44, false, f), el('small', '', f ? frameLabel(f) : t('Ninguno')));
-      b.onclick = () => this.net.send({ t: 'look', frame: f });
-      frames.append(b);
-    }
-    look.append(el('h4', '', t('Marco')), frames);
-    // Glow: la luz de alrededor del avatar (maestría, retos, Lucky Spin y cofre semanal)
-    const auras = el('div', 'frame-grid');
-    for (const au of [null, ...(cos.auras || [])]) {
-      const b = el('button', 'frame-opt' + ((p.aura || null) === au ? ' sel' : ''));
-      b.append(this.avatar(44, false, undefined, au), el('small', '', !au ? t('Ninguno') : auraName(au, t)));
-      b.onclick = () => this.net.send({ t: 'look', aura: au });
-      auras.append(b);
-    }
-    look.append(el('h4', '', t('Glow')), auras);
-    // Efecto: una capa animada por encima de la imagen del avatar (se consigue aparte, en Lucky Spin)
-    const effects = el('div', 'frame-grid');
-    for (const fx of [null, ...(cos.effects || [])]) {
-      const b = el('button', 'frame-opt' + ((p.effect || null) === fx ? ' sel' : ''));
-      b.append(this.avatar(44, false, undefined, undefined, fx), el('small', '', fx ? effectName(fx) : t('Ninguno')));
-      b.onclick = () => this.net.send({ t: 'look', effect: fx });
-      effects.append(b);
-    }
-    if (!(cos.effects || []).length) effects.append(el('small', 'small', t('Sin efectos todavía: salen en Lucky Spin.')));
-    look.append(el('h4', '', t('Efecto')), effects);
-    look.append(el('p', 'small', t('Consigue más títulos, marcos y glows subiendo de liga y completando retos. En Logros ves todo lo que hay y cómo se consigue cada cosa.')));
-    const collBtn = el('button', '', t('Ver logros y colección'));
-    collBtn.onclick = () => this.openCollection('mastery');
-    look.append(collBtn);
-    const avaBtn = el('button', '', t('Elegir avatar'));
-    avaBtn.onclick = () => this.avatarPicker();
-    look.append(el('h4', '', t('Avatar')), avaBtn);
-    right.append(look);
 
     right.append(this.accountPanel());
     body.append(left, mid, right);
@@ -590,59 +552,116 @@ export const accountViews = {
     this.root.append(wrap);
   },
 
-  avatarPicker() {
-    const p = this.profile;
-    modal('avatar-pick', (box, close) => {
-      box.append(el('h3', '', t('Avatar')));
-      // Colección: medallas e iconos de logros recogidos
-      const col = (p.cosmetics && p.cosmetics.avatars) || [];
-      box.append(el('h4', '', t('Colección')));
-      const cgrid = el('div', 'ava-grid ava-col');
-      if (!col.length) cgrid.append(el('p', 'small', t('Recoge medallas y logros en Misiones para conseguir avatares de colección.')));
-      for (const id of col) {
-        const b = el('button', 'ava-opt' + (p.avatar === id ? ' sel' : ''), avatarArt(id, 48));
-        b.title = avatarName(id);
-        b.onclick = () => { this.net.send({ t: 'look', avatar: id }); close(); };
-        cgrid.append(b);
-      }
-      box.append(cgrid, el('h4', '', t('Pokémon')));
-      box.append(el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.', { n: Data.MASTERY_ART })));
-      const search = el('input');
-      search.type = 'search'; search.placeholder = t('Buscar por nombre o número');
-      const grid = el('div', 'ava-grid scroll');
-      const empty = el('p', 'small', t('No hay ningún Pokémon con esos filtros.'));
-      empty.hidden = true;
-      const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), `<small>${t('Automático')}</small>`);
-      auto.onclick = () => { this.net.send({ t: 'look', avatar: null }); close(); };
-      grid.append(auto);
-      const shinies = new Set(p.shinies || []);
-      const opts = [];
-      for (const dex of [...p.caught].sort((a, b) => a - b)) {
-        if (!SPECIES[dex]) continue;
-        // Con la maestría de su línea, también la ilustración oficial
-        const arts = Data.hasMastery(p, dex, 'art') ? [false, true] : [false];
-        for (const [shiny, art] of (shinies.has(dex) ? [false, true] : [false]).flatMap(s => arts.map(a => [s, a]))) {
-          const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (art ? ' is-art' : '') + (p.avatar === dex && !!p.avatarShiny === shiny && !!p.avatarArt === art ? ' sel' : ''));
-          if (art) b.innerHTML = `<img class="ava-art" src="art/${shiny ? 'shiny/' : ''}${dex}.png" alt="" loading="lazy" draggable="false"><i class="art-tag">${t('Arte')}</i>`;
-          else b.append(portrait(dex, 48, { shiny }));
-          if (shiny) b.append(el('i', 'shiny-star', '✦'));
-          b.title = SPECIES[dex].name + (shiny ? ' ✦' : '') + (art ? ' · ' + t('Ilustración oficial') : '');
-          b.dataset.q = `${SPECIES[dex].name.toLowerCase()} ${dex}`;
-          b.onclick = () => { this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny, avatarArt: art }); close(); };
-          grid.append(b);
-          opts.push(b);
+  // Editor del avatar (se abre tocando tu foto en el Perfil): vista previa arriba y pestañas para la
+  // imagen, el marco, el glow, el efecto y el título. Cada cambio se guarda al momento y el editor se
+  // repinta con el perfil nuevo (setProfile llama a avaEditDraw)
+  avatarEditor(tab) {
+    if (tab) this.avaTab = tab;
+    modal('ava-edit', box => {
+      const draw = () => {
+        const p = this.profile, cos = p.cosmetics || {}, tabId = this.avaTab || 'avatar';
+        box.innerHTML = '';
+        box.append(el('h3', '', t('Editar avatar')));
+        const prev = el('div', 'ae-preview');
+        prev.append(this.avatar(104, true), el('div', 'ae-who', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(t(p.title))}</span>` : `<small>${t('Sin título')}</small>`}`));
+        box.append(prev);
+        const tabs = el('div', 'ae-tabs');
+        for (const [id, label] of [['avatar', 'Imagen'], ['frame', 'Marco'], ['aura', 'Glow'], ['effect', 'Efecto'], ['title', 'Título']]) {
+          const b = el('button', id === tabId ? 'sel' : '', t(label));
+          b.onclick = () => { this.avaTab = id; draw(); };
+          tabs.append(b);
         }
-      }
-      search.oninput = () => {
-        const q = search.value.trim().toLowerCase().replace('#', '').replace(/^0+(?=\d)/, '');
-        let n = 0;
-        for (const b of opts) { b.hidden = !!q && !b.dataset.q.split(' ').some(w => w.startsWith(q)) && !b.dataset.q.includes(q); n += !b.hidden; }
-        auto.hidden = !!q;
-        empty.hidden = !q || n > 0;
+        box.append(tabs);
+        const body = el('div', 'ae-body scroll');
+        const opts = (list, render, msg) => {
+          const g = el('div', 'frame-grid');
+          for (const v of list) {
+            const [node, label, sel] = render(v);
+            const b = el('button', 'frame-opt' + (sel ? ' sel' : ''));
+            b.append(node, el('small', '', label));
+            b.onclick = () => this.net.send({ t: 'look', ...msg(v) });
+            g.append(b);
+          }
+          return g;
+        };
+        if (tabId === 'avatar') this.avatarOptions(body);
+        if (tabId === 'frame') body.append(opts([null, ...(cos.frames || [])], f => [this.avatar(56, false, f), f ? frameLabel(f) : t('Ninguno'), (p.frame || null) === f], f => ({ frame: f })));
+        if (tabId === 'aura') body.append(opts([null, ...(cos.auras || [])], au => [this.avatar(56, false, undefined, au), au ? auraName(au, t) : t('Ninguno'), (p.aura || null) === au], au => ({ aura: au })));
+        if (tabId === 'effect') {
+          body.append(opts([null, ...(cos.effects || [])], fx => [this.avatar(56, false, undefined, undefined, fx), fx ? effectName(fx) : t('Ninguno'), (p.effect || null) === fx], fx => ({ effect: fx })));
+          if (!(cos.effects || []).length) body.append(el('p', 'small', t('Sin efectos todavía: salen en Lucky Spin.')));
+        }
+        if (tabId === 'title') {
+          const chips = el('div', 'chips');
+          for (const ti of [null, ...(cos.titles || [])]) {
+            const b = el('button', 'chip' + ((p.title || null) === ti ? ' sel' : ''), ti ? escapeHtml(t(ti)) : t('Sin título'));
+            b.onclick = () => this.net.send({ t: 'look', title: ti });
+            chips.append(b);
+          }
+          body.append(chips);
+        }
+        box.append(body);
+        const more = el('button', 'ae-more', t('Ver cómo conseguir más en Logros'));
+        more.onclick = () => { document.querySelectorAll('.modal').forEach(m => m.remove()); this.avaEditDraw = null; this.openCollection(tabId === 'avatar' ? 'art' : tabId === 'title' ? 'titles' : tabId === 'effect' ? 'effects' : tabId === 'frame' ? 'frames' : 'aura'); };
+        box.append(more);
       };
-      box.append(search, empty, grid);
-      setTimeout(() => search.focus(), 0);
-    });
+      this.avaEditDraw = draw;
+      draw();
+    }, () => { this.avaEditDraw = null; });
+  },
+
+  // Imágenes para el avatar: las de colección (medallas, logros, retratos) y cualquier Pokémon atrapado
+  avatarOptions(box) {
+    const p = this.profile;
+    const col = (p.cosmetics && p.cosmetics.avatars) || [];
+    box.append(el('h4', '', t('Colección')));
+    const cgrid = el('div', 'ava-grid ava-col');
+    if (!col.length) cgrid.append(el('p', 'small', t('Recoge medallas y logros en Misiones para conseguir avatares de colección.')));
+    for (const id of col) {
+      const b = el('button', 'ava-opt' + (p.avatar === id ? ' sel' : ''), avatarArt(id, 48));
+      b.title = avatarName(id);
+      b.onclick = () => this.net.send({ t: 'look', avatar: id });
+      cgrid.append(b);
+    }
+    box.append(cgrid, el('h4', '', t('Pokémon')));
+    box.append(el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.', { n: Data.MASTERY_ART })));
+    const search = el('input');
+    search.type = 'search'; search.placeholder = t('Buscar por nombre o número'); search.value = this.avaQ || '';
+    const grid = el('div', 'ava-grid');
+    const empty = el('p', 'small', t('No hay ningún Pokémon con esos filtros.'));
+    empty.hidden = true;
+    const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), `<small>${t('Automático')}</small>`);
+    auto.onclick = () => this.net.send({ t: 'look', avatar: null });
+    grid.append(auto);
+    const shinies = new Set(p.shinies || []);
+    const opts = [];
+    for (const dex of [...p.caught].sort((a, b) => a - b)) {
+      if (!SPECIES[dex]) continue;
+      // Con la maestría de su línea, también la ilustración oficial
+      const arts = Data.hasMastery(p, dex, 'art') ? [false, true] : [false];
+      for (const [shiny, art] of (shinies.has(dex) ? [false, true] : [false]).flatMap(s => arts.map(a => [s, a]))) {
+        const b = el('button', 'ava-opt' + (shiny ? ' is-shiny' : '') + (art ? ' is-art' : '') + (p.avatar === dex && !!p.avatarShiny === shiny && !!p.avatarArt === art ? ' sel' : ''));
+        if (art) b.innerHTML = `<img class="ava-art" src="art/${shiny ? 'shiny/' : ''}${dex}.png" alt="" loading="lazy" draggable="false"><i class="art-tag">${t('Arte')}</i>`;
+        else b.append(portrait(dex, 48, { shiny }));
+        if (shiny) b.append(el('i', 'shiny-star', '✦'));
+        b.title = SPECIES[dex].name + (shiny ? ' ✦' : '') + (art ? ' · ' + t('Ilustración oficial') : '');
+        b.dataset.q = `${SPECIES[dex].name.toLowerCase()} ${dex}`;
+        b.onclick = () => this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny, avatarArt: art });
+        grid.append(b);
+        opts.push(b);
+      }
+    }
+    const filter = () => {
+      this.avaQ = search.value;
+      const q = search.value.trim().toLowerCase().replace('#', '').replace(/^0+(?=\d)/, '');
+      let n = 0;
+      for (const b of opts) { b.hidden = !!q && !b.dataset.q.split(' ').some(w => w.startsWith(q)) && !b.dataset.q.includes(q); n += !b.hidden; }
+      auto.hidden = !!q;
+      empty.hidden = !q || n > 0;
+    };
+    search.oninput = filter;
+    filter();
+    box.append(search, empty, grid);
   },
 
   accountPanel() {

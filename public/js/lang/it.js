@@ -12,6 +12,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.1 ----------
+    'Editor de avatar': 'Editor dell\'avatar',
+    'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': 'Tocca la tua foto nel Profilo, o Modifica, per cambiare l\'avatar: immagine, cornice, bagliore, effetto e titolo in un unico posto, con anteprima.',
+    'La Pokédex cuenta solo las generaciones con región abierta: de momento, los 251 Pokémon de Kanto y Johto.': 'Il Pokédex conta solo le generazioni con una regione aperta: per ora, i 251 Pokémon di Kanto e Johto.',
+    // ---------- Editor del avatar ----------
+    'Editar avatar': 'Modifica avatar',
+    'Editar': 'Modifica',
+    'Ver cómo conseguir más en Logros': 'Scopri come ottenerne altri in Traguardi',
+    'Imagen': 'Immagine',
     // ---------- Novedades v0.22.0 ----------
     'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': 'Azione e i colpi corpo a corpo vanno a segno più facilmente: conta la stazza dell\'avversario e Azione arriva un po\' più lontano.',
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'Se vai in Traguardi dai risultati di una lotta, Indietro ti riporta dove avevi iniziato. In I miei Pokémon, il pulsante della squadra dice Togli dalla squadra.',

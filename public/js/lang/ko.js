@@ -12,6 +12,15 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.1 ----------
+    'Editor de avatar': '아바타 편집기',
+    'Toca tu foto en el Perfil, o Editar, para cambiar tu avatar: imagen, marco, glow, efecto y título en un solo sitio, con vista previa.': '프로필에서 사진이나 편집을 눌러 아바타를 바꾸세요: 이미지, 프레임, 글로우, 효과, 칭호를 미리 보기와 함께 한곳에서.',
+    'La Pokédex cuenta solo las generaciones con región abierta: de momento, los 251 Pokémon de Kanto y Johto.': '도감은 지역이 열린 세대만 셉니다: 지금은 관동과 성도의 포켓몬 251마리입니다.',
+    // ---------- Editor del avatar ----------
+    'Editar avatar': '아바타 편집',
+    'Editar': '편집',
+    'Ver cómo conseguir más en Logros': '업적에서 더 얻는 방법 보기',
+    'Imagen': '이미지',
     // ---------- Novedades v0.22.0 ----------
     'Placaje y los golpes cuerpo a cuerpo dan más fácil: cuenta el tamaño del rival y Placaje llega un poco más lejos.': '몸통박치기와 근접 공격이 더 잘 맞습니다: 상대의 크기를 반영하고 몸통박치기의 사거리가 조금 늘었습니다.',
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '배틀 결과에서 업적으로 가도 뒤로 가기로 처음 화면에 돌아갑니다. 내 포켓몬의 팀 버튼은 이제 \'팀에서 빼기\'입니다.',

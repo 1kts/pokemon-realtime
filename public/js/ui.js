@@ -85,6 +85,7 @@ export class UI {
     this.rank = rank;
     if (this.onProfile) this.onProfile(p);
     if (this.sheet) setTimeout(() => this.refreshSheet(), 0);
+    if (this.avaEditDraw) setTimeout(() => this.avaEditDraw && this.avaEditDraw(), 0);
     if (this.pendingFicha) {
       const mon = p.mons.find(m => m.uid === this.pendingFicha);
       this.pendingFicha = null;
@@ -297,7 +298,7 @@ export class UI {
     tile('seal-bag', t('Mochila'), t('{n} objetos', { n: items }), 'bag');
     // La Tienda avisa cuando han rotado los Pokémon del día y aún no la has abierto
     tile('forage-bag', t('Tienda'), coins(p.coins), 'shop', storage.get('arena.shopSeen') === Data.dayKey() ? '' : 'ready');
-    tile('rotom-catalog', t('Pokédex'), `${p.caught.length} / ${Object.keys(SPECIES).length}`, 'dex');
+    tile('rotom-catalog', t('Pokédex'), `${Data.dexCount(p)} / ${Data.DEX_TOTAL}`, 'dex');
     // Logros: retos de línea y generales, y la colección (con aviso si hay premios por recoger)
     const ready = this.masteryReadyCount() + (p.achClaim || []).length;
     const m = tile('relic-crown', t('Logros'), ready ? t('¡{n} premios por recoger!', { n: ready }) : t('Retos para conseguir skins, marcos, títulos y más'), () => this.openCollection(), 'wide' + (ready ? ' ready' : ''));

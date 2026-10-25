@@ -1142,7 +1142,11 @@
   // Cada logro mide un número del perfil (progress) contra una meta. Al cumplirse se queda para siempre
   // y da su premio: título, marco del avatar y/o dinero. Se pueden fijar hasta 3 en el perfil como
   // insignias. tier: 1 bronce · 2 plata · 3 oro. icon: sprite de objeto (public/items) o 'badge:<región>'.
-  const dexCount = p => (p.caught || []).length;
+  // La Pokédex cuenta solo las generaciones con región abierta (una por región: Kanto = Gen 1, Johto = Gen 2…)
+  const DEX_GENS = REGION_IDS.length;
+  const inDex = dex => !!SPECIES[dex] && SPECIES[dex].gen <= DEX_GENS;
+  const DEX_TOTAL = Object.values(SPECIES).filter(s => s.gen <= DEX_GENS).length;
+  const dexCount = p => (p.caught || []).filter(inDex).length;
   const shinyCount = p => Math.max((p.shinies || []).length, (p.mons || []).filter(m => m.shiny).length);
   const perfectCount = p => (p.mons || []).filter(m => m.iv && STAT_KEYS.every(k => m.iv[k] === IV_MAX)).length;
   const badgeCount = (p, r) => Math.min(8, progOf(p, r));
@@ -1391,7 +1395,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

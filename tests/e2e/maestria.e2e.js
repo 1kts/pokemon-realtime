@@ -46,10 +46,15 @@ module.exports = async ({ page, player, ok }) => {
 
   // Desde el Perfil: el glow de fuego
   await page.eval(`window.__app.ui.show('profile'); true`);
-  await page.waitFor(`document.querySelector('.look .frame-opt')`);
-  await page.eval(`[...document.querySelectorAll('.look .frame-opt')].find(b => /Glow Fuego/.test(b.textContent)).click(); true`);
+  await page.waitFor(`document.querySelector('.trainer-card .tc-edit')`);
+  await page.eval(`document.querySelector('.trainer-card .tc-edit').click(); true`);
+  await page.waitFor(`document.querySelector('.ava-edit .ae-tabs')`);
+  await page.eval(`[...document.querySelectorAll('.ava-edit .ae-tabs button')].find(b => b.textContent === 'Glow').click(); true`);
+  await page.waitFor(`[...document.querySelectorAll('.ava-edit .frame-opt')].some(b => /Glow Fuego/.test(b.textContent))`);
+  await page.eval(`[...document.querySelectorAll('.ava-edit .frame-opt')].find(b => /Glow Fuego/.test(b.textContent)).click(); true`);
   await page.waitFor(`${p}.aura === 'tipo-fuego'`);
-  ok(await page.eval(`!!window.__app.ui.meModule().querySelector('.hub-ava .ava-aura.aura-tipo')`), 'el glow de fuego, puesto en el Perfil, sale alrededor del avatar de arriba');
+  ok(await page.eval(`!!window.__app.ui.meModule().querySelector('.hub-ava .ava-aura.aura-tipo')`), 'el glow de fuego, puesto desde el editor del Perfil, sale alrededor del avatar de arriba');
+  await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
 
   // Skin Edición Oro: en la ficha del Pokémon
   await page.eval(`window.__app.ui.show('team'); true`);

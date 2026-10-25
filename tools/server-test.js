@@ -724,6 +724,7 @@ class Client {
     ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
   }
 
+  ok(D.DEX_TOTAL === 251 && D.dexCount({ caught: [1, 152, 252, 448] }) === 2, 'la Pokédex cuenta solo las generaciones con región abierta (Gen 1 y 2)');
   // Datos de equilibrio: lo que cuenta un combate (los lados de la IA no) y el resumen del panel
   {
     const bal = require('../server/balance.js');
