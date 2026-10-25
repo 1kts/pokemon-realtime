@@ -963,3 +963,11 @@ body.in-battle .ui-confirm { cursor: auto; }
 .route-list, .route-sp { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
 .route-list .mini small, .route-sp .mini small { font-size: 11px; line-height: 1.25; }
 .route-sp-h { margin: 10px 0 4px; color: var(--gold-hi, #ffe27a); font: 800 13px var(--display); text-transform: uppercase; letter-spacing: .5px; }
+
+/* Ruta: todo lo que puede salir, plegado bajo la tanda actual */
+.route-all { margin-top: 8px; }
+.route-all summary { cursor: pointer; font-weight: 800; color: #c4d0e4; font-size: 13px; }
+.route-all-grid { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 4px; }
+.route-all .ra { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.05); opacity: .55; }
+.route-all .ra.caught { opacity: 1; box-shadow: inset 0 0 0 1.5px rgba(79,208,106,.5); }
+.route-all .ra.sp { box-shadow: inset 0 0 0 1.5px rgba(255,203,5,.55); opacity: .9; }

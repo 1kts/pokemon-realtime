@@ -352,6 +352,7 @@ export class UI {
     // «Siguiente: líder · tope» de la barra sobra aquí: lo dice ya «Tu objetivo»
     sb.querySelector('.next-goal').remove();
     const tools = el('div', 'panel story-info');
+    tools.append(this.rotationTimer('long'));
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
     help.onclick = () => this.storyGuide();
     tools.append(help);
@@ -480,12 +481,13 @@ export class UI {
     } else {
       const w = Data.routeWild(n);
       box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
-      // Todas las especies de la zona, de la más común a la más rara, y sus especiales aparte
+      box.append(this.rotationTimer('short'));
+      // Las 4 de esta tanda (cambian cada 6 horas) y, aparte, su especial y los errantes
       const list = el('div', 'mini-team route-list');
       const normal = 1 - w.chance - w.roamChance;
       for (const { dex, weight, min, max } of w.list) {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
-        c.append(portrait(dex, 48));
+        c.append(portrait(dex, 56));
         const pct = weight * normal * 100;
         c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} % · ${lv(min === max ? min : min + '-' + max)}`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
@@ -495,7 +497,7 @@ export class UI {
       // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos
       const specials = [...w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length })), ...w.roam.map(dex => ({ dex, roam: true, chance: w.roamChance / w.roam.length }))];
       if (specials.length) {
-        box.append(el('h4', 'route-sp-h', t('Especiales')));
+        box.append(el('h4', 'route-sp-h', t('Especial')));
         const sp = el('div', 'mini-team route-sp');
         for (const x of specials) {
           const known = p.caught.includes(x.dex);
@@ -507,6 +509,20 @@ export class UI {
         }
         box.append(sp);
       }
+      // Todo lo que puede salir en la zona, para saber qué esperar de las próximas tandas
+      const all = el('details', 'route-all');
+      all.append(el('summary', '', t('Pueden salir aquí ({n})', { n: n.wild.length + (Data.ROUTE_SPECIALS[n.id] || []).length })));
+      const grid = el('div', 'route-all-grid');
+      for (const [dex] of n.wild) { const c = el('span', 'ra' + (p.caught.includes(dex) ? ' caught' : '')); c.append(monIcon(dex, 32)); c.title = SPECIES[dex].name; grid.append(c); }
+      for (const x of Data.ROUTE_SPECIALS[n.id] || []) {
+        const dex = x.dex || x, known = p.caught.includes(dex);
+        const c = el('span', 'ra sp' + (known ? ' caught' : ''));
+        c.append(monIcon(dex, 32, { silhouette: !known }));
+        c.title = (known ? SPECIES[dex].name : '???') + ' · ' + t('especial');
+        grid.append(c);
+      }
+      all.append(grid, el('p', 'small', t('Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.')));
+      box.append(all);
       const balls = Data.BALL_IDS.reduce((n, k) => n + (p.items[k] || 0), 0);
       box.append(el('p', 'small', t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })));
       if (!unlocked) box.append(el('p', 'warn', t('Necesitas {n} medallas de {r}.', { n: n.req, r: R.name })));
@@ -572,21 +588,21 @@ export class UI {
 
   // Barra propia de región (debajo de la barra global): elegir región y, en Historia, sus medallas
   // y el siguiente objetivo.
-  // Cuenta atrás hasta que cambian los Pokémon de la tienda (medianoche UTC). Al llegar a cero, si estás
-  // en la tienda, se vuelve a dibujar con los nuevos.
+  // Cuenta atrás hasta que cambian los Pokémon de las rutas (cada 6 horas) o los de la tienda (medianoche
+  // UTC). Al llegar a cero, si estás en el mapa o en la tienda, se vuelve a dibujar con los nuevos.
   rotationTimer(kind) {
     const box = el('div', 'rotation ' + kind);
-    const at = Data.nextDay();
+    const shop = kind === 'instore', at = shop ? Data.nextDay() : Data.rotEnds();
     const hour = new Date(at).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
-    const label = t('Pokémon nuevos en la tienda en');
-    box.title = t('Cada día a las {h} (tu hora) cambian los Pokémon de la tienda', { h: hour });
+    const label = kind === 'long' ? t('Pokémon de las rutas nuevos en') : shop ? t('Pokémon nuevos en la tienda en') : t('Estos Pokémon cambian en');
+    box.title = shop ? t('Cada día a las {h} (tu hora) cambian los Pokémon de la tienda', { h: hour }) : t('Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})', { h: hour });
     const tick = () => {
       if (!box.isConnected && box.dataset.started) return;
       box.dataset.started = '1';
       const left = Math.max(0, at - Date.now());
       const hh = Math.floor(left / 3600e3), mm = Math.floor(left / 60e3) % 60, ss = Math.floor(left / 1e3) % 60;
       box.innerHTML = `<span>${label}</span> <b>${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}</b>`;
-      if (left <= 0) { if (this.view === 'shop' && !this.root.hidden) this.show(this.view); return; }
+      if (left <= 0) { if (['story', 'shop'].includes(this.view) && !this.root.hidden) this.show(this.view); return; }
       setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
     };
     tick();
@@ -612,8 +628,8 @@ export class UI {
         t('Cada <b>medalla</b> abre nuevas rutas. Los candados indican lo que aún no puedes visitar.'),
       ]),
       sec(t('Rutas y Pokémon salvajes'), [
-        t('En las rutas luchas contra Pokémon salvajes: salen <b>los mismos que en los juegos</b>, cada uno con su probabilidad.'),
-        t('Cada zona tiene también sus <b>especiales</b>, muy raros: el legendario o el Pokémon especial que da esa zona en los juegos. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.'),
+        t('En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.'),
+        t('Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.'),
         t('Ganar da dinero y experiencia.'),
       ]),
       sec(t('Capturar'), [

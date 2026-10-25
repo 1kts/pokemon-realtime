@@ -12,6 +12,18 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.3 ----------
+    'Rutas que rotan cada 6 horas': '6시간마다 바뀌는 도로',
+    'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': '6시간마다 각 도로에 무작위 포켓몬 4마리와 스페셜 1마리가 나옵니다. 오래 안 나온 포켓몬일수록 확률이 높아져 며칠 이상 걸리지 않습니다.',
+    'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.': '각 도로 화면에서 바뀌는 시간과, 접힌 목록으로 그곳에 나올 수 있는 모든 포켓몬을 볼 수 있습니다. 도감에서는 지금 어디에 나오는지 보입니다.',
+    // ---------- Rotación de rutas cada 6 h ----------
+    'Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})': '6시간마다 각 도로의 포켓몬 4마리와 스페셜이 바뀝니다(다음은 {h})',
+    'Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.': '6시간마다 무작위 4마리와 스페셜 1마리가 나옵니다. 오래 안 나온 포켓몬일수록 다음 차례에 나올 확률이 높아집니다.',
+    'Especial': '스페셜',
+    'Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': '오래 안 나온 포켓몬은 다음 차례에 나올 확률이 높아져 며칠 이상 걸리지 않습니다. 성도에서는 라이코, 앤테이, 스이쿤이 모든 도로를 돌아다닙니다.',
+    'Pueden salir aquí ({n})': '여기에 나올 수 있는 포켓몬({n})',
+    '¡ahora!': '지금!',
+    'En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.': '도로에서는 게임에서 그곳에 사는 야생 포켓몬과 싸웁니다. <b>6시간마다</b> 무작위 4마리와 그 지역의 전설 또는 희귀 포켓몬인 <b>스페셜</b> 1마리가 나옵니다.',
     // ---------- Novedades v0.22.2 ----------
     'Rutas como en los juegos': '게임과 같은 도로',
     'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '각 도로에 게임에서 그곳에 나오는 포켓몬이 모두 각자의 확률로 나옵니다. 매일 4마리가 바뀌던 방식은 없어졌습니다.',

@@ -11,6 +11,18 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.3 ----------
+    'Rutas que rotan cada 6 horas': 'Routes rotate every 6 hours',
+    'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': 'Every 6 hours each route shows 4 random Pokémon and one of its specials; those that haven\'t appeared for a while are more likely, so none takes more than a few days.',
+    'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.': 'Each route\'s card shows when they change and, folded away, everything that can appear there; the Pokédex shows where each one is out right now.',
+    // ---------- Rotación de rutas cada 6 h ----------
+    'Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})': 'Every 6 hours each route\'s 4 Pokémon and special change (next time at {h})',
+    'Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.': 'Every 6 hours 4 random ones and one of its specials show up; the ones that haven\'t appeared for a while are more likely to show up in the next batch.',
+    'Especial': 'Special',
+    'Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'Those that haven\'t appeared for a while are more likely in the next batch, so none takes more than a few days. In Johto, Raikou, Entei and Suicune roam every route.',
+    'Pueden salir aquí ({n})': 'Can appear here ({n})',
+    '¡ahora!': 'now!',
+    'En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.': 'On routes you battle wild Pokémon from the ones that live there in the games. <b>Every 6 hours</b> 4 random ones show up plus one of its <b>specials</b>: that area\'s legendary or rare Pokémon.',
     // ---------- Novedades v0.22.2 ----------
     'Rutas como en los juegos': 'Routes like in the games',
     'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': 'Every route has all the Pokémon that appear there in the games, each with its own odds, instead of 4 different ones each day.',

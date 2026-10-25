@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.22.3', date: '2026-10-25', title: 'Rutas que rotan cada 6 horas',
+      items: [
+        ['cambio', 'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.'],
+        ['cambio', 'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.'],
+      ],
+    },
+    {
       v: '0.22.2', date: '2026-10-25', title: 'Rutas como en los juegos',
       items: [
         ['cambio', 'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.'],

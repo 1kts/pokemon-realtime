@@ -724,16 +724,29 @@ class Client {
     ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
   }
 
-  // Rutas: todas sus especies reales (con su probabilidad) y sus especiales, solo donde salen en los juegos
+  // Rutas: cada 6 horas, 4 especies reales al azar y 1 especial de la zona; con «suerte acumulada», ninguna
+  // tarda demasiado en salir. Los especiales, solo donde salen en los juegos
   {
     const seq = xs => { let i = 0; return () => xs[i++ % xs.length]; };
-    const r2 = D.NODES['k-ruta2'], w2 = D.routeWild(r2);
-    ok(w2.list.length === r2.wild.length && Math.abs(w2.list.reduce((a, x) => a + x.weight, 0) - 1) < 1e-9 && w2.specials.map(x => x.dex).join() === '25', 'Bosque Verde: salen sus 7 especies reales y su especial es Pikachu');
-    ok(D.rollWild(r2, seq([0.99, 0.999999])).dex === w2.list[w2.list.length - 1].dex && D.rollWild(r2, seq([0, 0])).rare, 'cada especie sale según su probabilidad y el especial, a veces');
+    const at = k => D.ROT_EPOCH + k * D.ROT_MS + 1000;
+    const r2 = D.NODES['k-ruta2'], w2 = D.routeWild(r2, at(10));
+    ok(w2.list.length === 4 && new Set(w2.list.map(x => x.dex)).size === 4 && w2.list.every(x => r2.wild.some(([d]) => d === x.dex)) && w2.specials.map(x => x.dex).join() === '25' && w2.ends === at(11) - 1000,
+      'Bosque Verde: cada tanda salen 4 de sus especies reales y su especial, Pikachu, hasta la siguiente tanda');
+    ok(JSON.stringify(D.routeWild(r2, at(10))) === JSON.stringify(w2) && JSON.stringify(D.routeWild(r2, at(11)).list) !== JSON.stringify(D.routeWild(r2, at(12)).list), 'la misma tanda es igual para todos y va cambiando');
+    // Suerte acumulada: en 30 días todas las especies salen y ninguna pasa más de 3 días (12 tandas) sin salir
+    for (const id of ['k-ruta2', 'j-ruta32', 'k-ruta23']) {
+      const n = D.NODES[id], last = {}; let gap = 0;
+      for (let k = 0; k < 120; k++) { const w = D.routeWild(n, at(k)); for (const x of w.list) { gap = Math.max(gap, k - (last[x.dex] ?? -1) - 1); last[x.dex] = k; } }
+      for (const [d] of n.wild) gap = Math.max(gap, 119 - (last[d] ?? -1));
+      ok(gap <= 12, `${n.name}: todas sus especies salen y ninguna pasa más de 12 tandas sin salir (${gap})`);
+    }
+    ok(D.rollWild(r2, seq([0.99, 0.999999]), at(10)).dex === w2.list[3].dex && D.rollWild(r2, seq([0, 0]), at(10)).rare, 'en la tanda, cada especie sale según su peso y el especial, a veces');
     const lake = D.rollWild(D.NODES['j-ruta43'], seq([0, 0]));
     ok(lake.dex === 130 && lake.shiny && lake.rare, 'el especial del Lago de la Furia es el Gyarados rojo (shiny)');
     const roam = D.routeWild(D.NODES['j-ruta29']);
     ok(roam.roam.join() === '243,244,245' && !D.routeWild(D.NODES['k-ruta1']).roam.length && D.rollWild(D.NODES['j-ruta29'], seq([roam.chance + 0.001, 0])).dex === 243, 'Raikou, Entei y Suicune vagan por las rutas de Johto (no por Kanto)');
+    const safari = new Set(); for (let k = 0; k < 40; k++) safari.add(D.routeWild(D.NODES['k-safari'], at(k)).specials[0].dex);
+    ok(safari.size === 6, 'los 6 especiales de la Zona Safari se van turnando');
     ok(!Object.values(D.ROUTE_SPECIALS).flat().some(x => [150, 151, 250].includes(x.dex || x)), 'Mewtwo, Mew y Ho-Oh no salen en las rutas');
   }
   ok(D.DEX_TOTAL === 251 && D.dexCount({ caught: [1, 152, 252, 448] }) === 2, 'la Pokédex cuenta solo las generaciones con región abierta (Gen 1 y 2)');

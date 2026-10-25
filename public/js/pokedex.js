@@ -31,8 +31,9 @@ function whereOf(dex) {
   }
   return whereCache.get(dex) || [];
 }
-// En esa ruta sale como especial (o errante) y no entre los de siempre
-const specialOn = (dex, n) => { const w = Data.routeWild(n); return !w.list.some(x => x.dex === dex) && (w.specials.some(x => x.dex === dex) || w.roam.includes(dex)); };
+// En esa ruta sale ahora (en la tanda de estas 6 horas) o es uno de sus especiales
+const nowOn = (dex, n) => { const w = Data.routeWild(n); return w.list.some(x => x.dex === dex) || w.specials.some(x => x.dex === dex); };
+const specialOn = (dex, n) => !n.wild.some(([d]) => d === dex);
 
 export const pokedexViews = {
   view_dex() {
@@ -172,7 +173,7 @@ export const pokedexViews = {
     const w = el('div', 'dex-where');
     w.append(el('h4', '', t('Dónde encontrarlo')));
     if (where.length) {
-      w.append(el('ul', '', where.map(n => `<li>${n.name} <small>${Data.REGIONS[n.region].name} · ${t('Nv.{n}', { n: n.lvl[0] + '-' + n.lvl[1] })}</small>${specialOn(dex, n) ? ` <em class="today">${t('especial')}</em>` : ''}</li>`).join('')));
+      w.append(el('ul', '', where.map(n => `<li>${n.name} <small>${Data.REGIONS[n.region].name} · ${t('Nv.{n}', { n: n.lvl[0] + '-' + n.lvl[1] })}</small>${specialOn(dex, n) ? ` <small>${t('especial')}</small>` : ''}${nowOn(dex, n) ? ` <em class="today">${t('¡ahora!')}</em>` : ''}</li>`).join('')));
       w.append(el('p', 'small', t('Cada ruta saca 4 especies al día de su lista; las rutas cambian cada día.')));
     } else w.append(el('p', 'small', t('No aparece en las rutas de Kanto ni Johto: puede salir como Pokémon misterioso, en la tienda o en futuras regiones.')));
     box.append(w);

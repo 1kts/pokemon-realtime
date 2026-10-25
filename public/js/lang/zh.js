@@ -11,6 +11,18 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.3 ----------
+    'Rutas que rotan cada 6 horas': '每 6 小时轮换的道路',
+    'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': '每 6 小时，每条道路随机出现 4 只宝可梦和 1 只特别宝可梦；越久没出现的几率越高，所以都不会超过几天。',
+    'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.': '每条道路的卡片会显示更换时间，并可展开查看所有可能出现的宝可梦；图鉴会显示每只宝可梦现在在哪里出现。',
+    // ---------- Rotación de rutas cada 6 h ----------
+    'Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})': '每 6 小时更换每条道路的 4 只宝可梦和特别宝可梦（下次在 {h}）',
+    'Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.': '每 6 小时随机出现 4 只和 1 只特别宝可梦；越久没出现的，下一轮出现几率越高。',
+    'Especial': '特别',
+    'Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': '越久没出现的宝可梦下一轮几率越高，所以都不会超过几天。在城都，雷公、炎帝和水君会在所有道路游荡。',
+    'Pueden salir aquí ({n})': '这里可能出现（{n}）',
+    '¡ahora!': '出现中！',
+    'En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.': '在道路上与游戏中栖息于此的野生宝可梦战斗。<b>每 6 小时</b>随机出现 4 只，以及 1 只该区域的传说或稀有<b>特别</b>宝可梦。',
     // ---------- Novedades v0.22.2 ----------
     'Rutas como en los juegos': '与游戏一致的道路',
     'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '每条道路都会出现游戏中该处的所有宝可梦，各有出现几率，不再是每天换 4 只。',

@@ -11,6 +11,18 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.3 ----------
+    'Rutas que rotan cada 6 horas': 'Routen wechseln alle 6 Stunden',
+    'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': 'Alle 6 Stunden zeigt jede Route 4 zufällige Pokémon und eines ihrer Besonderen; wer länger nicht dran war, kommt eher, also dauert es bei keinem mehr als ein paar Tage.',
+    'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.': 'Auf jeder Routenkarte siehst du, wann sie wechseln, und eingeklappt alles, was dort erscheinen kann; im Pokédex, wo jedes gerade zu finden ist.',
+    // ---------- Rotación de rutas cada 6 h ----------
+    'Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})': 'Alle 6 Stunden wechseln die 4 Pokémon und das Besondere jeder Route (nächstes Mal um {h})',
+    'Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.': 'Alle 6 Stunden erscheinen 4 zufällige und eines ihrer Besonderen; wer länger nicht dran war, hat in der nächsten Runde bessere Chancen.',
+    'Especial': 'Besonderes',
+    'Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'Wer länger nicht erschienen ist, hat in der nächsten Runde bessere Chancen, also dauert es bei keinem mehr als ein paar Tage. In Johto streifen Raikou, Entei und Suicune über alle Routen.',
+    'Pueden salir aquí ({n})': 'Können hier erscheinen ({n})',
+    '¡ahora!': 'jetzt!',
+    'En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.': 'Auf Routen kämpfst du gegen wilde Pokémon, die dort in den Spielen leben. <b>Alle 6 Stunden</b> erscheinen 4 zufällige und eines ihrer <b>Besonderen</b>: das Legendäre oder seltene Pokémon der Gegend.',
     // ---------- Novedades v0.22.2 ----------
     'Rutas como en los juegos': 'Routen wie in den Spielen',
     'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': 'Auf jeder Route erscheinen alle Pokémon, die es dort in den Spielen gibt, jedes mit seiner Wahrscheinlichkeit, statt 4 anderer pro Tag.',

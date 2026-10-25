@@ -12,6 +12,18 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.3 ----------
+    'Rutas que rotan cada 6 horas': '6時間ごとに変わる道路',
+    'Cada 6 horas salen 4 Pokémon al azar de cada ruta y uno de sus especiales; los que llevan tiempo sin salir tienen más probabilidades, así que ninguno tarda más de unos días.': '6時間ごとに各道路でランダムな4匹とスペシャル1匹が出現。しばらく出ていないポケモンほど出やすいので、数日以上出ないことはありません。',
+    'En la ficha de cada ruta ves cuándo cambian y, plegado, todo lo que puede salir allí; en la Pokédex, dónde sale ahora cada uno.': '各道路の画面で入れ替わる時刻と、折りたたみでそこに出るすべてのポケモンを確認できます。図鑑では今どこに出ているかが分かります。',
+    // ---------- Rotación de rutas cada 6 h ----------
+    'Cada 6 horas cambian los 4 Pokémon y el especial de cada ruta (la próxima vez, a las {h})': '6時間ごとに各道路の4匹とスペシャルが入れ替わります（次は{h}）',
+    'Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.': '6時間ごとにランダムな4匹とスペシャル1匹が出現。しばらく出ていないポケモンほど次の回に出やすくなります。',
+    'Especial': 'スペシャル',
+    'Los que llevan tiempo sin salir tienen más probabilidades en la siguiente tanda, así que ninguno tarda más de unos días. En Johto, Raikou, Entei y Suicune vagan por todas las rutas.': 'しばらく出ていないポケモンは次の回に出やすくなるので、数日以上出ないことはありません。ジョウトではライコウ・エンテイ・スイクンがすべての道路を徘徊します。',
+    'Pueden salir aquí ({n})': 'ここに出るポケモン（{n}）',
+    '¡ahora!': '出現中！',
+    'En las rutas luchas contra Pokémon salvajes de los que salen allí en los juegos. <b>Cada 6 horas</b> salen 4 al azar y uno de sus <b>especiales</b>: el legendario o el Pokémon raro de esa zona.': '道路では、ゲームでそこにすむ野生のポケモンと戦います。<b>6時間ごと</b>にランダムな4匹と、伝説や珍しいポケモンの<b>スペシャル</b>1匹が出現します。',
     // ---------- Novedades v0.22.2 ----------
     'Rutas como en los juegos': 'ゲームと同じ道路',
     'En cada ruta salen todos los Pokémon que aparecen allí en los juegos, cada uno con su probabilidad, en vez de 4 distintos cada día.': '各道路には、ゲームでそこに出るポケモンがすべてそれぞれの確率で出現します（毎日4匹が変わる方式は廃止）。',

@@ -1,5 +1,6 @@
-// Rutas de la Historia: la ficha de cada ruta enseña todas las especies que salen en ella en los juegos (con su
-// probabilidad) y, aparte, sus especiales en silueta hasta que los atrapas (en el Bosque Verde, Pikachu)
+// Rutas de la Historia: la ficha de cada ruta enseña las 4 especies de esta tanda de 6 horas (con su
+// probabilidad), su especial en silueta hasta que lo atrapas (en el Bosque Verde, Pikachu), cuándo cambian
+// y, plegado, todo lo que puede salir allí
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'rutera' });
   me.client.send({ t: 'dev', dex: 4, level: 10, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
@@ -9,6 +10,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`[...document.querySelectorAll('.node.route')].some(b => /Bosque Verde/.test(b.textContent))`);
   await page.eval(`[...document.querySelectorAll('.node.route')].find(b => /Bosque Verde/.test(b.textContent)).click(); true`);
   await page.waitFor(`document.querySelector('.route-list')`);
-  ok(await page.eval(`document.querySelectorAll('.route-list .mini').length === Data.NODES['k-ruta2'].wild.length && /Caterpie/.test(document.querySelector('.route-list').textContent)`), 'la ficha del Bosque Verde enseña sus 7 especies reales');
-  ok(await page.eval(`document.querySelectorAll('.route-sp .mini.rare').length === 1 && /\\?\\?\\?/.test(document.querySelector('.route-sp').textContent) && !document.querySelector('.rotation')`), 'y su especial aparte, en silueta, sin cuenta atrás diaria');
+  ok(await page.eval(`document.querySelectorAll('.route-list .mini').length === 4 && !!document.querySelector('.rotation.short')`), 'la ficha del Bosque Verde enseña las 4 especies de esta tanda y cuándo cambian');
+  ok(await page.eval(`document.querySelectorAll('.route-sp .mini.rare').length === 1 && /\\?\\?\\?/.test(document.querySelector('.route-sp').textContent)`), 'y su especial aparte, en silueta');
+  ok(await page.eval(`document.querySelectorAll('.route-all .ra').length === Data.NODES['k-ruta2'].wild.length + 1 && /Pueden salir aquí \\(8\\)/.test(document.querySelector('.route-all summary').textContent)`), 'plegado, todo lo que puede salir allí: sus 7 especies y Pikachu');
 };
