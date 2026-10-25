@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.1 ----------
+    'Mapa más limpio': 'Aufgeräumte Karte',
+    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Die Story-Karte zeichnet keine Wege mehr: nur die Linien von „Du bist hier“ zu den neuen Routen und deiner nächsten Herausforderung.',
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'Die Arenaleiter zeigen Gesicht',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Jeder Arenaleiter, jedes Mitglied der Top Vier und jeder Champ erscheint mit seinem Sprite aus den Spielen, wenn du ihn auf der Story-Karte auswählst.',

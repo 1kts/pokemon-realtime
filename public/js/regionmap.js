@@ -1,7 +1,7 @@
 // Mapa de región genérico en SVG (arte propio, no el mapa oficial): mar, costa con playa, tierra,
-// montes, bosques, lagos, caminos, rutas marinas y ciudades. Al ser vectorial se ve nítido a
-// cualquier tamaño. Se dibuja en un lienzo de 160x100 que la UI encaja sin deformarlo; el mar se
-// extiende más allá para rellenar el hueco que sobre. Los nombres y nodos van en HTML encima.
+// montes, bosques, lagos y ciudades. Sin caminos: la UI marca con líneas a dónde puedes ir ahora.
+// Al ser vectorial se ve nítido a cualquier tamaño. Se dibuja en un lienzo de 160x100 que la UI encaja
+// sin deformarlo; el mar se extiende más allá para rellenar el hueco que sobre. Los nombres y nodos van en HTML encima.
 // Coordenadas en % (las mismas que los nodos de tools/regions-src.js).
 
 export const REGION_ART = {
@@ -10,10 +10,6 @@ export const REGION_ART = {
     islands: [[12, 96, 4, 3], [26, 96, 3, 2]],
     cities: [['Pueblo Paleta', 18, 86, 3], ['Ciudad Verde', 18, 64, 4], ['Ciudad Plateada', 18, 28, 4], ['Ciudad Celeste', 64, 22, 5], ['Ciudad Azafrán', 64, 44, 7],
       ['Ciudad Carmín', 64, 70, 5], ['Pueblo Lavanda', 88, 46, 3], ['Ciudad Azulona', 40, 46, 6], ['Ciudad Fucsia', 48, 84, 5], ['Isla Canela', 12, 96, 3], ['Meseta Añil', 6, 10, 3]],
-    roads: [[[18, 86], [18, 64], [18, 42], [18, 28]], [[18, 64], [8, 62], [6, 46], [6, 32], [6, 10]], [[18, 28], [30, 26], [42, 20], [52, 24], [64, 22]],
-      [[64, 22], [64, 10], [76, 8]], [[64, 22], [64, 44], [64, 70]], [[64, 22], [76, 22], [88, 28], [88, 46]], [[88, 46], [76, 46], [64, 44], [50, 46], [40, 46]],
-      [[64, 70], [76, 70], [88, 64], [88, 46]], [[88, 64], [82, 80], [72, 86], [60, 86], [48, 84]], [[40, 46], [30, 46], [26, 62], [34, 80], [48, 84]], [[18, 64], [44, 64], [64, 70]]],
-    sea: [[[48, 84], [48, 98], [36, 96], [26, 96], [12, 96]], [[12, 96], [14, 86], [18, 86]]],
     mountains: [[42, 17, 1.2], [37, 21, 0.9], [47, 22, 0.8], [6, 30, 1.1], [10, 35, 0.8], [3, 22, 0.8], [88, 37, 1], [92, 41, 0.8], [30, 14, 0.7], [80, 14, 0.8]],
     forests: [[18, 42, 5], [48, 93, 4], [30, 60, 3], [80, 58, 3], [52, 32, 3]],
     lakes: [[48, 94, 2.5, 1.8], [72, 60, 2, 1.4]],
@@ -23,10 +19,6 @@ export const REGION_ART = {
     islands: [[4, 52, 4, 5], [16, 66, 3, 2.5]],
     cities: [['Pueblo Primavera', 90, 74, 3], ['Ciudad Cerezo', 74, 68, 3], ['Ciudad Malva', 58, 42, 5], ['Pueblo Azalea', 44, 78, 3], ['Ciudad Trigal', 32, 52, 8], ['Ciudad Iris', 42, 12, 5],
       ['Ciudad Olivo', 16, 32, 5], ['Ciudad Orquídea', 4, 52, 3], ['Pueblo Caoba', 72, 22, 3], ['Ciudad Endrino', 92, 26, 4], ['Liga Pokémon', 82, 92, 3]],
-    roads: [[[90, 74], [82, 72], [74, 68], [72, 60], [66, 46], [58, 42]], [[58, 42], [58, 58], [56, 70], [50, 80], [44, 78]], [[44, 78], [32, 76], [32, 64], [32, 52]],
-      [[32, 52], [32, 40], [42, 34], [48, 28], [58, 42]], [[42, 34], [42, 22], [42, 12]], [[42, 12], [28, 14], [18, 20], [16, 32]], [[42, 12], [56, 14], [62, 20], [72, 22]],
-      [[72, 22], [72, 12], [74, 6]], [[72, 22], [80, 22], [88, 14], [92, 26]], [[92, 26], [92, 42], [88, 58], [82, 72]], [[90, 74], [96, 62], [96, 82], [82, 92]], [[58, 42], [48, 50], [32, 52]]],
-    sea: [[[16, 32], [12, 44], [8, 60], [4, 52]], [[8, 60], [16, 66]]],
     mountains: [[62, 16, 1.1], [57, 19, 0.8], [67, 21, 0.8], [86, 12, 1], [91, 15, 0.9], [96, 9, 1], [98, 40, 0.8], [93, 46, 0.7], [24, 8, 0.8], [12, 14, 0.9]],
     forests: [[32, 76, 5], [42, 34, 3], [70, 50, 3], [28, 40, 3], [84, 84, 3]],
     lakes: [[74, 6, 4, 2.6], [96, 13, 2.2, 1.6], [48, 50, 1.6, 1.1]],
@@ -40,7 +32,6 @@ const f = n => +n.toFixed(2);
 const X = x => f(x * MAP_W / 100);
 // Convierte un path en % ("M2,10 Q4,2 18,3 ...") a unidades del lienzo
 const scalePath = d => d.replace(/(-?[\d.]+),(-?[\d.]+)/g, (_, x, y) => `${X(+x)},${f(+y)}`);
-const pts = l => l.map(([x, y]) => `${X(x)},${f(y)}`).join(' ');
 // Radio de las elipses (islas, lagos): mismo criterio que el mapa anterior (1 % ancho = 16 px, 1 % alto = 10 px)
 const ell = (x, y, rx, ry, grow = 0) => `<ellipse cx="${X(x)}" cy="${f(y)}" rx="${f(rx * 1.6 + grow)}" ry="${f(ry * 2.24 + grow)}"/>`;
 
@@ -79,12 +70,6 @@ export function regionMapSVG(region) {
   out.push(`<g clip-path="url(#clip-${region})">${inner.join('')}</g>`);
   // Lagos
   for (const [x, y, rx, ry] of a.lakes) out.push(`<g fill="#f3e2a4">${ell(x, y, rx, ry, 0.7)}</g><g fill="#4aa0e6">${ell(x, y, rx, ry)}</g><g fill="#7cc4f6">${ell(x - rx * 0.15, y - ry * 0.25, rx * 0.55, ry * 0.4)}</g>`);
-  // Rutas marinas y caminos
-  // Bien visibles: sombra, borde oscuro, cuneta, firme claro y línea central discontinua
-  const sea = a.sea.map(l => `<polyline points="${pts(l)}"/>`).join('');
-  out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#0f3f73" stroke-opacity=".75" stroke-width="1.6">${sea}</g><g stroke="#ffffff" stroke-width=".85" stroke-dasharray="1.7 1.1">${sea}</g></g>`);
-  const roads = a.roads.map(l => `<polyline points="${pts(l)}"/>`).join('');
-  out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-opacity=".22" stroke-width="4.4" transform="translate(.25 .35)">${roads}</g><g stroke="#5a3a1a" stroke-width="3.6">${roads}</g><g stroke="#c9974e" stroke-width="2.8">${roads}</g><g stroke="#f8de98" stroke-width="2.1">${roads}</g><g stroke="#fff8e2" stroke-opacity=".9" stroke-width=".45" stroke-dasharray="1.4 1.2">${roads}</g></g>`);
   // Iconos ordenados de arriba abajo: árboles, montes y ciudades
   const icons = [];
   for (const [x, y, n] of a.forests) {

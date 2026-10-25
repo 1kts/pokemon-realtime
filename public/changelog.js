@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.15.1', date: '2026-10-25', title: 'Mapa más limpio',
+      items: [
+        ['cambio', 'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.'],
+      ],
+    },
+    {
       v: '0.15.0', date: '2026-10-25', title: 'Los líderes dan la cara',
       items: [
         ['nuevo', 'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.'],

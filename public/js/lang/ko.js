@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.1 ----------
+    'Mapa más limpio': '더 깔끔한 지도',
+    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '스토리 지도에 더 이상 길을 그리지 않아. 「현재 위치」에서 새 도로와 다음 도전으로 가는 선만 표시돼.',
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': '관장들이 얼굴을 드러냈어',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '스토리 지도에서 체육관 관장, 사천왕, 챔피언을 고르면 게임 속 도트 스프라이트로 나와.',

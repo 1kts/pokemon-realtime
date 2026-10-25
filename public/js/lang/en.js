@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.1 ----------
+    'Mapa más limpio': 'Cleaner map',
+    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'The story map no longer draws roads: only the lines from “You are here” to the new routes and your next challenge.',
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'Leaders show their faces',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Every Gym Leader, Elite Four member and Champion now appears with their sprite from the games when you pick them on the story map.',

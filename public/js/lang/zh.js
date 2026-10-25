@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.1 ----------
+    'Mapa más limpio': '更简洁的地图',
+    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '剧情地图不再绘制道路，只显示从“你在这里”通往新道路和下一个挑战的连线。',
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': '馆主们亮相了',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '在剧情地图上选择道馆馆主、四天王和冠军时，会显示他们在游戏中的像素形象。',

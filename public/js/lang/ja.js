@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.1 ----------
+    'Mapa más limpio': 'すっきりした地図',
+    'El mapa de la historia ya no dibuja caminos: solo las líneas desde «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'ストーリーの地図に道を描かなくなった。「現在地」から新しい道路と次の挑戦への線だけを表示。',
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'リーダーたちが顔を見せる',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'ストーリーの地図でジムリーダー、四天王、チャンピオンを選ぶと、ゲームのドット絵で登場する。',
