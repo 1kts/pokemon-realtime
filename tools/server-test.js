@@ -13,11 +13,18 @@ const { start } = require('../server/index.js');
 const D = require('../public/data.js');
 
 let failures = 0;
+// Nunca colgado (bloquearía el push): como mucho 5 minutos
+setTimeout(() => { console.log('✗ server-test: más de 5 minutos, algo se ha quedado esperando'); process.exit(1); }, 5 * 60e3).unref();
 const ok = (cond, msg) => { console.log(`${cond ? '✓' : '✗'} ${msg}`); if (!cond) failures++; };
 
 class Client {
   constructor(port) {
     this.ws = new WebSocket(`ws://localhost:${port}`);
+    this.opened = new Promise((resolve, reject) => {
+      this.ws.once('open', resolve);
+      this.ws.once('close', () => reject(new Error('el servidor cerró la conexión antes de abrirla')));
+    });
+    this.opened.catch(() => {});
     this.msgs = [];
     this.waiters = [];
     this.ws.on('message', raw => {
@@ -27,7 +34,9 @@ class Client {
       this.waiters = this.waiters.filter(w => (w.pred(m) ? (w.resolve(m), false) : true));
     });
   }
-  open() { return new Promise(r => this.ws.on('open', r)); }
+  // Se escucha desde que se crea la conexión: si se esperase a llamar a open(), una conexión que se abre
+  // mientras se espera a otra perdería el evento y el test se quedaría colgado
+  open() { return this.opened; }
   send(m) { this.ws.send(JSON.stringify(m)); }
   wait(t, pred = () => true, ms = 8000) {
     return new Promise((resolve, reject) => {

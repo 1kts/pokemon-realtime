@@ -158,7 +158,9 @@ async function run(files) {
     try {
       ctx = await setup(name);
       Object.assign(t, ctx);
-      await require(path.resolve(file))(t);
+      // Como mucho 2 minutos por prueba: un test colgado no puede bloquear el push
+      await Promise.race([require(path.resolve(file))(t),
+        new Promise((_, j) => setTimeout(() => j(new Error('más de 2 minutos: algo se ha quedado esperando')), 120e3).unref())]);
       if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
       const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
       if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));
