@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': '招式更鲜艳',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': '招式在所有场地中看起来都一样，属性颜色更鲜艳，还有阴影衬托，在冰面和雪地上也很清楚。',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': '弹射物稍微变大了，镜头拉远后也能看清。',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': '镜头居中',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': '对战镜头已居中：场地不再显得贴在屏幕上方。',

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': 'Farbigere Attacken',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': 'Attacken sehen in allen Arenen gleich aus, mit kräftigerer Typfarbe und einem Schatten, der sie abhebt – auch auf Eis und Schnee.',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': 'Projektile sind etwas größer, damit man sie mit der weiter entfernten Kamera gut erkennt.',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'Zentrierte Kamera',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'Die Kampfkamera ist zentriert: Das Feld klebt nicht mehr am oberen Bildschirmrand.',

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': '色鮮やかな技',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': 'どのアリーナでも技の見た目が同じに。タイプの色をより鮮やかにし、影で浮き立たせたので、氷や雪の上でもよく見える。',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': 'カメラを引いても見やすいよう、弾を少し大きくした。',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'カメラを中央に',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'バトルのカメラを中央に合わせた。フィールドが画面の上に寄って見えなくなった。',

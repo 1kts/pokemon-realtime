@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.15.6 ----------
+    'Ataques con más color': 'Mosse più colorate',
+    'Los ataques se ven igual en todas las arenas, con el color de su tipo más intenso y una sombra que los recorta, también sobre hielo y nieve.': 'Le mosse si vedono uguali in tutte le arene, con il colore del tipo più intenso e un’ombra che le stacca, anche su ghiaccio e neve.',
+    'Los proyectiles son algo más grandes, para que se lean bien con la cámara más lejos.': 'I proiettili sono un po’ più grandi per vedersi bene con la telecamera più lontana.',
     // ---------- Novedades v0.15.5 ----------
     'Cámara centrada': 'Telecamera centrata',
     'La cámara del combate queda centrada: el campo ya no se ve pegado a la parte de arriba de la pantalla.': 'La telecamera della lotta è centrata: il campo non sembra più attaccato alla parte alta dello schermo.',
