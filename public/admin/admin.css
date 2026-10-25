@@ -57,3 +57,9 @@ a, .link { color: var(--blue); cursor: pointer; text-decoration: underline; }
 .mbar { position: relative; min-width: 120px; height: 18px; border-radius: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
 .mbar i { display: block; height: 100%; background: linear-gradient(90deg, #3b78d8, #6fb4ff); }
 .mbar span { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 6px; font-size: 12px; font-weight: 700; }
+
+/* Balance: cabeceras que ordenan y filas con pocos datos más apagadas */
+th.sort { cursor: pointer; user-select: none; } th.sort:hover, th.sort.on { color: var(--fg); }
+tr.few td { opacity: .55; }
+.bal-t { margin-bottom: 14px; max-height: 60vh; }
+#balance h2 { margin-top: 6px; }

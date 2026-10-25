@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': 'Vois qui est en ligne',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'Les cartes Classé et Partie rapide indiquent combien de joueurs sont en ligne et s\'illuminent quand quelqu\'un cherche un adversaire dans ce mode.',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'Dans Succès, un bouton Tout récupérer en haut encaisse d\'un coup les défis de tes lignées et tes succès.',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1 cherche un adversaire',
+    '{n} buscando rival': '{n} cherchent un adversaire',
+    '{n} en línea': '{n} en ligne',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': 'Succès, fiches et Lucky Spin',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': 'Succès remplace Maîtrise : 8 défis par lignée, avec un portrait à 100 victoires, Or à 500, Holo en ligne et Galaxie dans la Tour, et des défis par catégorie.',

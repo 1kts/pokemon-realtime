@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': 'オンラインの人を確認',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'ランクマッチとクイック対戦のカードにオンライン人数が表示され、そのモードで誰かが対戦相手を探していると光ります。',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '実績の上部にある「すべて受け取る」で、進化系統のチャレンジと実績をまとめて受け取れます。',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1人が対戦相手を検索中',
+    '{n} buscando rival': '{n}人が対戦相手を検索中',
+    '{n} en línea': '{n}人オンライン',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': '実績・詳細画面・ラッキースピン',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': 'マスタリーが実績に：進化系統ごとに8つのチャレンジ。100勝でポートレート、500勝でゴールド、オンラインでホロ、タワーでギャラクシー。カテゴリ別チャレンジも。',

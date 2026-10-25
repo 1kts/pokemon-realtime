@@ -81,6 +81,7 @@ function show(tab) {
   if (tab === 'jugadores' && !$('#results').children.length) loadPlayers();
   if (tab === 'servidor') overview(true);
   if (tab === 'metricas') loadMetrics();
+  if (tab === 'balance') loadBalance();
 }
 for (const b of document.querySelectorAll('#tabs button')) b.addEventListener('click', () => show(b.dataset.tab));
 // El resumen se actualiza solo cada 5 s mientras se mira
@@ -142,6 +143,61 @@ async function loadMetrics() {
     h('p', { class: 'small' }, 'Un jugador cuenta como activo el día que entra al juego. «Vuelven» se mide sobre los perfiles creados ese día; los días cuya vuelta aún no ha llegado salen con —.'),
   );
 }
+
+// ---------- Balance ----------
+// Datos de equilibrio (server/balance.js): por Pokémon, movimiento y líder, en los días y el modo elegidos.
+// Con pocos datos (menos de MIN) no se marca nada, para no nerfear por casualidad. Las cabeceras ordenan.
+const MIN = { mon: 30, move: 50, leader: 10 };
+const pc = (a, b) => b ? Math.round(a / b * 1000) / 10 : null;
+const per = (a, b) => b ? Math.round(a / b * 10) / 10 : null;
+const balSort = {};
+function sortable(id, cols, rows, def) {
+  const st = balSort[id] || (balSort[id] = { k: def, dir: -1 });
+  const box = h('div', { class: 'card scroll bal-t' });
+  const val = r => r[st.k] ?? -Infinity;
+  const draw = () => {
+    const sorted = [...rows].sort((a, b) => (val(a) > val(b) ? 1 : val(a) < val(b) ? -1 : 0) * st.dir);
+    const th = cols.map(([k, label]) => h('th', { class: 'sort' + (st.k === k ? ' on' : ''), onclick: () => { st.dir = st.k === k ? -st.dir : -1; st.k = k; draw(); } }, label + (st.k === k ? (st.dir < 0 ? ' ▼' : ' ▲') : '')));
+    box.replaceChildren(rows.length ? h('table', {}, h('thead', {}, h('tr', {}, th)), h('tbody', {}, sorted.map(r => h('tr', { class: r.few ? 'few' : '' }, cols.map(([k, , fmt]) => h('td', {}, fmt ? fmt(r[k], r) : r[k] ?? '—'))))))
+      : h('p', { class: 'small' }, 'Sin datos todavía en estos días.'));
+  };
+  draw();
+  return box;
+}
+const pctTxt = v => v === null ? '—' : v + ' %';
+const note = v => v ? h('span', { class: 'tag ' + v[0] }, v[1]) : '';
+async function loadBalance() {
+  const f = new FormData($('#bal-f'));
+  const b = await ask('admin.balance', { days: +f.get('days'), mode: f.get('mode') });
+  const mons = b.mons.map(m => {
+    const wr = pc(m.wins, m.games), few = m.games < MIN.mon;
+    return { ...m, wr, few, pick: pc(m.picked, b.all.drafts * 2), ban: pc(m.banned, b.all.drafts * 2), dmgG: per(m.dmg, m.games), takenG: per(m.taken, m.games), kosG: per(m.kos, m.games), faintP: pc(m.fainted, m.games),
+      note: few ? ['', 'pocos datos'] : wr >= 58 ? ['fallo', 'fuerte'] : wr <= 42 ? ['on', 'flojo'] : null };
+  });
+  const usable = b.moves.filter(m => m.casts >= MIN.move).map(m => m.dmg / m.casts).sort((x, y) => x - y);
+  const median = usable.length ? usable[Math.floor(usable.length / 2)] : 0;
+  const moves = b.moves.map(m => {
+    const hit = pc(m.landed, m.casts), dpu = per(m.dmg, m.casts), few = m.casts < MIN.move;
+    return { ...m, hit, dpu, few, note: few ? ['', 'pocos datos'] : hit < 30 ? ['admin', 'cuesta acertar'] : median && dpu > median * 2 ? ['fallo', 'mucho daño'] : null };
+  });
+  const leaders = b.leaders.map(l => {
+    const wr = pc(l.wins, l.tries), few = l.tries < MIN.leader;
+    return { ...l, wr, few, note: few ? ['', 'pocos datos'] : wr < 35 ? ['fallo', 'muro'] : wr > 90 ? ['on', 'muy fácil'] : null };
+  });
+  $('#bal').replaceChildren(
+    h('div', { class: 'stats' }, stat('combates', b.all.battles), stat('drafts online', b.all.drafts), stat('desde', b.from)),
+    h('h2', {}, 'Pokémon'),
+    h('p', { class: 'small' }, `De los jugadores (la IA no cuenta). «Fuerte» o «flojo» a partir de ${MIN.mon} partidas: 58 % de victorias o más, o 42 % o menos. Elegido y vetado, en el draft online.`),
+    sortable('mon', [['name', 'Pokémon'], ['games', 'Partidas'], ['wr', '% victoria', pctTxt], ['pick', '% elegido', pctTxt], ['ban', '% vetado', pctTxt], ['dmgG', 'Daño/partida'], ['takenG', 'Recibido/partida'], ['kosG', 'KOs/partida'], ['faintP', '% debilitado', pctTxt], ['note', '', note]], mons, 'games'),
+    h('h2', {}, 'Movimientos'),
+    h('p', { class: 'small' }, `Usos, en cuántos da (al menos un golpe) y daño medio por uso. A partir de ${MIN.move} usos se marca si acierta menos del 30 % o hace más del doble de daño por uso que la mediana.`),
+    sortable('move', [['name', 'Movimiento'], ['type', 'Tipo'], ['casts', 'Usos'], ['hit', '% acierto', pctTxt], ['dpu', 'Daño/uso'], ['kos', 'KOs'], ['note', '', note]], moves, 'casts'),
+    h('h2', {}, 'Líderes de la historia'),
+    h('p', { class: 'small' }, `Intentos y victorias contra cada líder. A partir de ${MIN.leader} intentos: «muro» si se gana menos del 35 %, «muy fácil» si más del 90 %.`),
+    sortable('leader', [['name', 'Líder'], ['region', 'Región'], ['index', 'Orden'], ['tries', 'Intentos'], ['wr', '% victoria', pctTxt], ['note', '', note]], leaders, 'index'),
+  );
+}
+$('#bal-f').addEventListener('change', loadBalance);
 
 const table = (heads, rows) => h('table', {}, h('thead', {}, h('tr', {}, heads.map(x => h('th', {}, x)))), h('tbody', {}, rows));
 function typeTag(type) {

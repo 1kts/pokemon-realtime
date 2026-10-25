@@ -109,6 +109,7 @@ net.on('disconnected', () => {
   ui.show('menu');
 });
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
+net.on('pop', m => { ui.pop = m; ui.updatePop(); });
 net.on('error', m => {
   ui.toast(tServer(m.msg), 'bad');
   if (ui.tzSpin) { ui.tzSpin = null; ui.show(ui.view); }   // tirada de Tesoros rechazada: la rueda vuelve

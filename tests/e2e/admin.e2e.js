@@ -33,6 +33,20 @@ module.exports = async ({ page, player, env, ok }) => {
   ok(+todayRow[1] >= 2 && +todayRow[2] >= 2 && await page.eval(`[...document.querySelectorAll('#metricas .stat span')].some(s => /vuelven al día siguiente/.test(s.textContent))`),
     `Métricas: los últimos 14 días con los jugadores y los nuevos de hoy (${todayRow.slice(1, 3).join(' / ')}) y cuántos vuelven`);
 
+  // Balance: un combate de práctica (rendido) ya cuenta para su Pokémon, en el modo Práctica
+  const pr = await player({ user: 'practicante' });
+  pr.client.send({ t: 'practice', dexes: [6], skill: 0.1 });
+  await pr.client.wait(m => m.t === 'start');
+  pr.client.send({ t: 'forfeit' });
+  await pr.client.wait(m => m.t === 'over');
+  await page.click('[data-tab=balance]');
+  await page.eval(`document.querySelector('#bal-f [name=mode]').value = 'practice'; document.querySelector('#bal-f').dispatchEvent(new Event('change')); true`);
+  await page.waitFor(`[...document.querySelectorAll('#bal tbody tr')].some(tr => /Charizard/.test(tr.textContent))`);
+  ok(await page.eval(`(() => { const tr = [...document.querySelectorAll('#bal tbody tr')].find(tr => /Charizard/.test(tr.textContent)); return tr.children[1].textContent === '1' && tr.children[2].textContent === '0 %' && /pocos datos/.test(tr.textContent); })()`),
+    'Balance: el combate cuenta para Charizard (1 partida, 0 % de victorias, con aviso de pocos datos)');
+  await page.eval(`[...document.querySelectorAll('#bal th')].find(th => /% victoria/.test(th.textContent)).click(); true`);
+  ok(await page.eval(`!!document.querySelector('#bal th.sort.on')`), 'las columnas se ordenan al tocarlas');
+
   await page.click('[data-tab=jugadores]');
   await page.waitFor(`document.querySelectorAll('#results tr.click').length >= 2`);
   ok(await page.eval(`/perfiles en total/.test(document.querySelector('#results').textContent)`), 'Jugadores: al entrar sale la lista de todos, con cuántas cuentas e invitados hay');

@@ -205,6 +205,23 @@ export class UI {
     top.append(main, side);
     wrap.append(top, this.howTo());
     this.root.append(wrap);
+    this.updatePop();
+  }
+
+  // Gente en línea en las tarjetas de PvP: cuántos hay conectados y, si alguien busca rival en ese modo,
+  // cuántos (el servidor manda 'pop' cuando cambia; se repinta solo esa línea)
+  updatePop() {
+    const pop = this.pop;
+    if (!pop || this.view !== 'menu') return;
+    for (const mode of ['ranked', 'casual']) {
+      const card = this.root.querySelector('.menu-card.' + mode);
+      if (!card) continue;
+      let live = card.querySelector('.pvp-live');
+      if (!live) { live = el('span', 'pvp-live'); card.querySelector('span').after(live); }
+      const q = pop.queue[mode];
+      live.classList.toggle('hot', q > 0);
+      live.innerHTML = `<i class="dot"></i><span>${t('{n} en línea', { n: pop.online })}${q ? ` · <b>${q > 1 ? t('{n} buscando rival', { n: q }) : t('1 buscando rival')}</b>` : ''}</span>`;
+    }
   }
 
   // Cabecera de la portada: idioma y pantalla completa a la izquierda, tu perfil, dinero y novedades a la derecha

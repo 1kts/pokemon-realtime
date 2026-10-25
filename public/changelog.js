@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.22.0', date: '2026-10-25', title: 'Mira quién está en línea',
+      items: [
+        ['nuevo', 'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.'],
+        ['cambio', 'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.'],
+      ],
+    },
+    {
       v: '0.21.0', date: '2026-10-25', title: 'Logros, fichas y Lucky Spin',
       items: [
         ['nuevo', 'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.'],

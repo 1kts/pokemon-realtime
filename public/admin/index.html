@@ -14,6 +14,7 @@
   <nav id="tabs">
     <button data-tab="resumen" class="sel">Resumen</button>
     <button data-tab="metricas">Métricas</button>
+    <button data-tab="balance">Balance</button>
     <button data-tab="jugadores">Jugadores</button>
     <button data-tab="auditoria">Auditoría</button>
     <button data-tab="servidor">Servidor</button>
@@ -35,6 +36,13 @@
 
   <section id="resumen" class="tab" hidden></section>
   <section id="metricas" class="tab" hidden></section>
+  <section id="balance" class="tab" hidden>
+    <form id="bal-f" class="row wrap">
+      <label>Días <select name="days"><option>7</option><option selected>14</option><option>30</option><option>90</option></select></label>
+      <label>Modo <select name="mode"><option value="">Todos</option><option value="ranked">Clasificatoria</option><option value="casual">Partida rápida</option><option value="tower">Torre</option><option value="lider">Líderes de la historia</option><option value="ruta">Rutas (salvajes)</option><option value="practice">Práctica</option></select></label>
+    </form>
+    <div id="bal"></div>
+  </section>
 
   <section id="jugadores" class="tab" hidden>
     <form id="search" class="row">

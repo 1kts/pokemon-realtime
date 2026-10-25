@@ -7,6 +7,7 @@ const os = require('os');
 const crypto = require('crypto');
 const store = require('./store.js');
 const audit = require('./audit.js');
+const balance = require('./balance.js');
 const totp = require('./totp.js');
 const limits = require('./limits.js');
 const story = require('./story.js');
@@ -197,6 +198,7 @@ function createAdmin(ctx) {
     switch (msg.t) {
       case 'admin.overview': return reply(overview());
       case 'admin.metrics': return reply(metrics.compute(store.all()));
+      case 'admin.balance': return reply(balance.summary(msg.days, String(msg.mode || '')));
       // Jugadores: con texto busca; sin texto, la lista entera (cuentas primero, por última conexión)
       case 'admin.search': {
         const rows = store.search(msg.q, msg.q ? 50 : 5000, String(msg.kind || ''));

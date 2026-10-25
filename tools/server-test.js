@@ -722,6 +722,21 @@ class Client {
     ok(r.p.avatar === 'badge:kanto:0', 'usar la medalla de avatar');
   }
 
+  // Datos de equilibrio: lo que cuenta un combate (los lados de la IA no) y el resumen del panel
+  {
+    const bal = require('../server/balance.js');
+    const fake = { mode: 'prueba', sides: [{ idx: 0, ai: null, team: [{ dex: 6, fainted: false }] }, { idx: 1, ai: 0.5, team: [{ dex: 9, fainted: true }] }],
+      stats: { mons: [{ 0: { dmg: 120, taken: 30, kos: 1, out: 1 } }, { 0: { dmg: 30, taken: 120, kos: 0, out: 1 } }], moves: [{ lanzallamas: { casts: 4, landed: 3, dmg: 120, kos: 1 } }, { pistolaAgua: { casts: 2, landed: 1, dmg: 30, kos: 0 } }] } };
+    bal.battle(fake, { winner: 0 }); bal.battle(fake, { winner: 1 });
+    bal.draft('prueba', [[6, 25, 3], [9, 4, 1]], [150, 149]);
+    bal.leader(D.NODES.brock, true); bal.leader(D.NODES.brock, false);
+    const sm = bal.summary(7, 'prueba'), zard = sm.mons.find(x => x.dex === 6), fl = sm.moves.find(x => x.key === 'lanzallamas');
+    ok(zard.games === 2 && zard.wins === 1 && zard.dmg === 240 && zard.kos === 2 && zard.picked === 1 && !sm.mons.find(x => x.dex === 9 && x.games), 'balance: partidas, victorias, daño y KOs de cada Pokémon del jugador (la IA no cuenta)');
+    ok(fl.casts === 8 && fl.landed === 6 && !sm.moves.find(x => x.key === 'pistolaAgua') && sm.mons.find(x => x.dex === 150).banned === 1 && sm.all.battles === 2 && sm.all.drafts === 1, 'balance: usos y aciertos de cada movimiento, vetos y totales');
+    const lid = bal.summary(7, 'lider').leaders.find(x => x.id === 'brock');
+    ok(lid.tries === 2 && lid.wins === 1 && lid.name === 'Brock', 'balance: intentos y victorias contra cada líder');
+  }
+
   // Mensajes basura no tumban el servidor
   const g = new Client(port); await g.open();
   g.ws.send('no es json'); g.send({ t: 'in', mx: 'x', a: null }); g.send({ t: 'story', a: 'buy', id: { x: 1 } }); g.send({ foo: 1 });

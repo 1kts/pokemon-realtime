@@ -16,6 +16,7 @@ const missions = require('./missions.js');
 const daily = require('./daily.js');
 const { collectAll } = require('./collect.js');
 const metrics = require('./metrics.js');
+const balance = require('./balance.js');
 const limits = require('./limits.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
@@ -95,6 +96,7 @@ function startBattle(clientsBySide, opts, onEnd) {
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
+      try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       return onEnd(result, b);
     },
   });
@@ -111,6 +113,18 @@ const DRAFT_BAN_T = 20, DRAFT_PICK_T = 30;
 let maintenance = false;
 const adminPanel = createAdmin({ clients, send, sendProfile, queues, version: VERSION, startedAt: STARTED,
   maintenance: () => maintenance, setMaintenance: on => { maintenance = on; } });
+
+// Gente en línea para las tarjetas de PvP del menú: conectados, buscando rival en cada cola y combatiendo.
+// Cada 2 s se manda a quien no tenga ya los números de ahora (los recién llegados lo reciben enseguida)
+function popInfo() {
+  let online = 0, battling = 0;
+  for (const c of clients) if (c.profile) { online++; if (c.battle || c.draft) battling++; }
+  return { online, battling, queue: { ranked: queues.ranked.length, casual: queues.casual.length } };
+}
+setInterval(() => {
+  const pop = popInfo(), key = JSON.stringify(pop);
+  for (const c of clients) if (c.profile && c.popKey !== key) { c.popKey = key; send(c, { t: 'pop', ...pop }); }
+}, 2000).unref();
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
@@ -205,6 +219,7 @@ function finishDraft(draft) {
   a.draft = b.draft = null;
   const maps = Object.keys(D.MAPS);
   const lvl = D.RANKED_LEVEL;
+  try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
     sides: draft.players.map((c, i) => ({ name: c.profile.name, team: draft.picks[i].map(dex => ({ dex, level: lvl, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
@@ -268,7 +283,7 @@ function startPractice(c, msg) {
   // Tutorial: un muñeco que ni se mueve ni ataca, para aprender los controles sin presión
   const tut = !!msg.tutorial;
   startBattle([c, null], {
-    mode: 'practice', map: tut ? Object.keys(D.MAPS)[0] : maps[Math.floor(Math.random() * maps.length)],
+    mode: 'practice', tutorial: tut, map: tut ? Object.keys(D.MAPS)[0] : maps[Math.floor(Math.random() * maps.length)],
     sides: [
       { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) },
       // (el muñeco es un Snorlax: Normal, así que ningún ataque del tutorial le hace poco efecto)
@@ -285,6 +300,7 @@ function startStory(c, msg) {
   startBattle([c, null], setup.opts, (result, b) => {
     const before = missions.snapshot(c.profile);
     const reward = story.applyResult(c.profile, setup, result, b);
+    if (setup.gym) try { balance.leader(setup.gym, result.winner === 0); } catch (e) { console.error('Datos de equilibrio:', e); }
     if (result.winner === 0) reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
     rewards.addKOs(c.profile, b, 0);
     reward.missions = missions.diff(c.profile, before);
@@ -435,7 +451,7 @@ function handle(c, msg) {
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
   if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'daily' || msg.t === 'tutorial' || msg.t === 'treasure') {
-    const r = msg.t === 'mission' && msg.a === 'claimAll' ? collectAll(c.profile)
+    const r = msg.t === 'mission' && msg.a === 'claimAll' ? collectAll(c.profile, msg.scope)
       : msg.t === 'mission' ? missions.action(c.profile, msg)
       : msg.t === 'treasure' ? treasure.spin(c.profile, String(msg.id))
       : msg.t === 'daily' ? daily.claim(c.profile)

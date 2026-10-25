@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': 'Guarda chi è online',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'Le carte Classificata e Partita rapida mostrano quante persone sono online e si illuminano quando qualcuno cerca un avversario in quella modalità.',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'In Traguardi c\'è un pulsante Riscatta tutto in alto che riscuote in un colpo le sfide delle tue linee evolutive e i traguardi.',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1 cerca un avversario',
+    '{n} buscando rival': '{n} cercano un avversario',
+    '{n} en línea': '{n} online',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': 'Traguardi, schede e Lucky Spin',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': 'Traguardi sostituisce Maestria: 8 sfide per linea evolutiva, con ritratto a 100 vittorie, Oro a 500, Holo online e Galassia nella Torre, più sfide per categoria.',

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': 'See who\'s online',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'The Ranked and Quick match cards show how many people are online and light up when someone is looking for a match in that mode.',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'Achievements has a Collect all button at the top that claims your evolution line challenges and achievements in one go.',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1 looking for a match',
+    '{n} buscando rival': '{n} looking for a match',
+    '{n} en línea': '{n} online',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': 'Achievements, sheets and Lucky Spin',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': 'Achievements replaces Mastery: 8 challenges per evolution line, with a portrait at 100 wins, Gold at 500, Holo online and Galaxy in the Tower, plus challenges by category.',

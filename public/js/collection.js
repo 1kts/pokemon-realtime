@@ -48,9 +48,16 @@ export const collectionViews = {
     const tab = this.collTab = TABS.some(([id]) => id === this.collTab) ? this.collTab : 'mastery';
     const p = this.profile;
     const wrap = el('div', 'collection');
-    wrap.append(this.topbar(t('Logros'), this.collBack || 'menu'));
+    const bar = this.topbar(t('Logros'), this.collBack || 'menu');
+    wrap.append(bar);
     const tabs = el('div', 'coll-tabs');
     const ready = this.masteryReadyCount(), retos = (p.achClaim || []).length;
+    // Recoger todo: los retos de línea y los logros de una vez
+    if (ready + retos) {
+      const all = el('button', 'primary claim-btn claim-all', `${t('Recoger todo')} <small>${ready + retos}</small>`);
+      all.onclick = () => { all.disabled = true; this.net.send({ t: 'mission', a: 'claimAll', scope: 'logros' }); };
+      (bar.querySelector('.tb-ctx') || bar).append(all);
+    }
     TABS.forEach(([id, label], i) => {
       if (i === 2) tabs.append(el('span', 'coll-sep', `<small>${t('Colección')}</small>`));
       const n = id === 'mastery' ? ready : id === 'retos' ? retos : 0;

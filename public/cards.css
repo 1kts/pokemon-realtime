@@ -878,3 +878,12 @@ body.in-battle .ui-confirm { cursor: auto; }
 /* La skin Oro es un filtro fijo (Holo y Galaxia van con animación y ya mandan): gana a la sombra que
    ponen las tarjetas a sus retratos y la conserva */
 .skin-oro.skin-oro.skin-oro.skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) drop-shadow(0 6px 6px rgba(0,0,0,.45)); }
+
+/* Gente en línea en las tarjetas de PvP; si alguien busca rival en ese modo, se enciende */
+.menu-card .pvp-live { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 6px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; color: #d6e2f5; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); position: relative; z-index: 1; }
+.menu-card .pvp-live .dot { width: 8px; height: 8px; border-radius: 50%; background: #4fd06a; box-shadow: 0 0 6px #4fd06a; }
+.menu-card .pvp-live.hot { color: #fff3c4; border-color: rgba(255,203,5,.6); background: rgba(255,203,5,.12); animation: pvpHot 1.6s ease-in-out infinite; }
+.menu-card .pvp-live b { all: unset; font-weight: 800; }
+.menu-card .pvp-live.hot b { color: var(--gold-hi, #ffe27a); }
+.menu-card .pvp-live span { all: unset; white-space: nowrap; }
+@keyframes pvpHot { 50% { box-shadow: 0 0 12px rgba(255,203,5,.45); } }

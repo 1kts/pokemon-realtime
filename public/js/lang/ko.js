@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': '누가 온라인인지 보세요',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '랭크전과 빠른 대전 카드에 온라인 인원이 표시되고, 그 모드에서 누군가 상대를 찾으면 빛납니다.',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '업적 위쪽의 모두 받기 버튼으로 진화 계열 도전과 업적을 한 번에 받습니다.',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1명 상대 찾는 중',
+    '{n} buscando rival': '{n}명 상대 찾는 중',
+    '{n} en línea': '{n}명 온라인',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': '업적, 상세 화면, 럭키 스핀',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': '마스터리가 업적으로: 진화 계열마다 도전 8개. 100승에 초상화, 500승에 골드, 온라인에서 홀로, 타워에서 갤럭시, 그리고 카테고리별 도전.',

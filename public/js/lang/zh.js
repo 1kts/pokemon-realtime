@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.22.0 ----------
+    'Mira quién está en línea': '看看谁在线',
+    'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '排位赛和快速对战卡片会显示在线人数，有人在该模式寻找对手时会亮起。',
+    'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '成就顶部的「全部领取」按钮可一次领取进化系列挑战和成就奖励。',
+    // ---------- Gente en línea en PvP ----------
+    '1 buscando rival': '1 人正在寻找对手',
+    '{n} buscando rival': '{n} 人正在寻找对手',
+    '{n} en línea': '{n} 人在线',
     // ---------- Novedades v0.21.0 ----------
     'Logros, fichas y Lucky Spin': '成就、详情页与幸运转盘',
     'Logros sustituye a Maestría: 8 retos por línea evolutiva, con retrato a las 100 victorias, Oro a las 500, Holo online y Galaxia en la Torre, y retos por categorías.': '成就取代精通：每个进化系列 8 项挑战，100 胜得肖像，500 胜得黄金，在线得全息，对战塔得银河，另有分类挑战。',

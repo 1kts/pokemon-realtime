@@ -41,6 +41,7 @@ class Battle {
   //         map, mode: 'wild'|'trainer'|'ranked'|'casual'|'practice', onEnd(result) }
   constructor(opts) {
     this.mode = opts.mode;
+    this.tutorial = !!opts.tutorial;
     this.mapName = opts.map || 'pradera';
     this.onEnd = opts.onEnd || (() => {});
     const { terrain, rocks } = S.parseMap(this.mapName);
@@ -59,6 +60,9 @@ class Battle {
     this.countdown = 3;
     this.projectiles = [];
     this.areas = [];
+    // Datos de equilibrio de este combate (ver execute y server/balance.js): por lado, movimientos y Pokémon
+    this.stats = { moves: [{}, {}], mons: [{}, {}] };
+    for (const side of this.sides) this.statMon(side).out = 1;
     this.events = [];
     this.result = null;
     this.timer = setInterval(() => this.tick(), 1000 / S.TICK);
@@ -243,7 +247,7 @@ class Battle {
         const f = this.foe(side);
         if (!d.hit && !this.mon(f).fainted && Math.hypot(f.x - side.x, f.y - side.y) < this.rad(side) + this.rad(f) + 7) {
           d.hit = true;
-          this.hit(side, f, d.m, side.x, side.y, { a: Math.atan2(d.vy, d.vx) });
+          this.hit(side, f, d.m, side.x, side.y, { a: Math.atan2(d.vy, d.vx), cast: d.cast });
         }
       }
       if ((d.t -= dt) <= 0 || (Math.hypot(side.x - before.x, side.y - before.y) < 0.5 && key === 'kb')) {
@@ -297,6 +301,7 @@ class Battle {
 
   doSwap(side, to, forced) {
     side.act = to;
+    this.statMon(side).out = 1;
     side.swapping = 0; side.forced = 0; side.swapTo = -1;
     side.swapIn = forced ? 0 : D.SWAP.perfect;
     side.invuln = forced ? ENTRY_INVULN : 0;
@@ -306,7 +311,29 @@ class Battle {
   }
 
   // ---------- Ejecución de movimientos ----------
+  // Cada uso de un movimiento es un «cast» para los datos de equilibrio (server/balance.js): se apunta si
+  // acaba dando y cuánto daño hace; los proyectiles, áreas y embestidas lo llevan consigo hasta que dan
   execute(side, w) {
+    this.curCast = this.castStat(side, this.mon(side).moves[w.c]);
+    try { this.runMove(side, w); } finally { this.curCast = null; }
+  }
+
+  castStat(side, key) {
+    if (!key) return null;
+    const mv = this.statMove(side, key);
+    mv.casts++;
+    return { key, side: side.idx, landed: false };
+  }
+  statMove(side, key) {
+    const all = this.stats.moves[side.idx];
+    return all[key] || (all[key] = { casts: 0, landed: 0, dmg: 0, kos: 0 });
+  }
+  statMon(side, slot = side.act) {
+    const all = this.stats.mons[side.idx];
+    return all[slot] || (all[slot] = { dmg: 0, taken: 0, kos: 0, out: 0 });
+  }
+
+  runMove(side, w) {
     const m = w.m, a = w.a;
     const ax = Math.cos(a), ay = Math.sin(a);
     this.ev({ k: 'cast', s: side.idx, c: w.c, a: +a.toFixed(2), x: Math.round(side.x), y: Math.round(side.y) });
@@ -316,12 +343,12 @@ class Battle {
       const reach = m.explode && m.maxRange ? Math.max(60, Math.min(m.maxRange, Math.hypot(w.tx - side.x, w.ty - side.y))) : m.range;
       for (let j = 0; j < n; j++) {
         const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
-        this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c],
+        this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast,
           x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: reach, r: m.radius });
       }
     } else if (m.kind === 'wave') {
       // Ola (Surf): un frente ancho que avanza, atraviesa las rocas y moja el suelo a su paso
-      this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], wide: m.width / 2,
+      this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast, wide: m.width / 2,
         x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: ax * m.speed, vy: ay * m.speed, left: m.range, r: m.thick || 20 });
     } else if (m.kind === 'cone') {
       this.cone(side, m, a);
@@ -336,7 +363,7 @@ class Battle {
       this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
       if (Math.hypot(dx, dy) < m.range + this.rad(f) && Math.abs(diff) < m.arc / 2) this.hit(side, f, m, f.x, f.y, { a });
     } else if (m.kind === 'dash') {
-      side.dash = { m, vx: ax, vy: ay, speed: m.dist / m.dur, t: m.dur, hit: false };
+      side.dash = { m, vx: ax, vy: ay, speed: m.dist / m.dur, t: m.dur, hit: false, cast: this.curCast };
       if (m.invuln) side.invuln = m.dur;
       if (m.haste) side.haste = m.haste;
     } else if (m.kind === 'area') {
@@ -347,7 +374,7 @@ class Battle {
         : Array.from({ length: m.count }, (_, k) => { const an = Math.random() * Math.PI * 2, d = k === 0 ? 0 : 30 + Math.random() * (m.scatter || 70); return { x: at.x + Math.cos(an) * d, y: at.y + Math.sin(an) * d }; });
       pts.forEach((pt, k) => {
         const x = S.clamp(pt.x, 10, S.ARENA.w - 10), y = S.clamp(pt.y, 10, S.ARENA.h - 10), d = m.delay + k * (m.stagger || 0);
-        this.areas.push({ owner: side, m, x, y, t: d });
+        this.areas.push({ owner: side, m, x, y, t: d, cast: this.curCast });
         this.ev({ k: 'warn', s: side.idx, x: Math.round(x), y: Math.round(y), r: m.radius, d, ty: m.type });
       });
     } else if (m.kind === 'blink') {
@@ -460,7 +487,9 @@ class Battle {
   // Aplica un movimiento de 'src' a 'dst'. Devuelve false si fue devuelto por un parry.
   hit(src, dst, m, x, y, o = {}) {
     if (this.mon(dst).fainted || dst.invuln > 0 || dst.forced > 0) return true;
-    dst.lastHit = { by: src.idx, type: m.type };   // para saber con qué tipo de movimiento se le debilita
+    const cast = o.cast || (o.proj && o.proj.cast) || this.curCast || null;
+    // Para saber con qué tipo de movimiento se le debilita (y, para los datos de equilibrio, con cuál y quién)
+    dst.lastHit = { by: src.idx, type: m.type, key: cast && cast.key, slot: src.act };
     const am = this.mon(src), dm = this.mon(dst);
     // Protección
     if (dst.prot >= 0 && m.kind !== 'area' && !o.dot) {
@@ -501,10 +530,13 @@ class Battle {
       if (blocked) dmg *= 1 - D.PROTECT.block;
       dmg = Math.max(1, Math.round(dmg));
       dm.hp = Math.max(0, dm.hp - dmg);
+      this.statMon(src).dmg += dmg; this.statMon(dst).taken += dmg;
+      if (cast) { const mv = this.statMove(src, cast.key); mv.dmg += dmg; if (!cast.landed) { cast.landed = true; mv.landed++; } }
       src.energy = Math.min(D.ENERGY.max, src.energy + D.ENERGY.onHit);
       this.ev({ k: 'hit', s: dst.idx, x: Math.round(x), y: Math.round(y), n: dmg, e: mult > 1 ? 1 : mult < 1 ? -1 : 0, b: blocked ? 1 : 0, ty: m.type, big: dmg >= dm.maxHp * 0.12 ? 1 : 0 });
       if (blocked) return true;
     }
+    if (cast && !cast.landed) { cast.landed = true; this.statMove(src, cast.key).landed++; }   // los de estado, sin daño
     // Estados
     if (m.burn) dst.burn = Math.max(dst.burn, m.burn);
     if (m.poison) dst.poison = Math.max(dst.poison, m.poison);
@@ -567,7 +599,7 @@ class Battle {
       const dx = f.x - p.x, dy = f.y - p.y;
       if (Math.abs(dx * ux + dy * uy) < p.r + this.rad(f) && Math.abs(-dx * uy + dy * ux) < p.wide + this.rad(f)) {
         p.hitFoe = true;
-        this.hit(p.owner, f, { ...p.m, noParry: true }, f.x, f.y, { a: Math.atan2(p.vy, p.vx) });
+        this.hit(p.owner, f, { ...p.m, noParry: true }, f.x, f.y, { a: Math.atan2(p.vy, p.vx), cast: p.cast });
       }
     }
     if (p.left <= 0 || p.x < -60 || p.y < -60 || p.x > S.ARENA.w + 60 || p.y > S.ARENA.h + 60) p.left = 0;
@@ -582,7 +614,7 @@ class Battle {
       const m = p.m, R = m.explode;
       this.ev({ k: 'boom', s: p.owner.idx, x: Math.round(p.x), y: Math.round(p.y), r: R, ty: m.type });
       const f = this.foe(p.owner);
-      if (!p.hitFoe && Math.hypot(f.x - p.x, f.y - p.y) < R + this.rad(f)) this.hit(p.owner, f, { ...m, kind: 'area', dmg: Math.round(m.dmg * 0.6) }, f.x, f.y);
+      if (!p.hitFoe && Math.hypot(f.x - p.x, f.y - p.y) < R + this.rad(f)) this.hit(p.owner, f, { ...m, kind: 'area', dmg: Math.round(m.dmg * 0.6) }, f.x, f.y, { cast: p.cast });
       const c0 = i, cx = c0 % COLS, cy = Math.floor(c0 / COLS), rr = Math.ceil(R / CELL);
       for (let y = cy - rr; y <= cy + rr; y++) for (let x = cx - rr; x <= cx + rr; x++) {
         if (x < 0 || y < 0 || x >= COLS || y >= ROWS) continue;
@@ -632,7 +664,7 @@ class Battle {
       if ((ar.t -= dt) > 0) continue;
       const m = ar.m, src = ar.owner, f = this.foe(src);
       this.ev({ k: 'boom', s: src.idx, x: Math.round(ar.x), y: Math.round(ar.y), r: m.radius, ty: m.type });
-      if (Math.hypot(f.x - ar.x, f.y - ar.y) < m.radius + this.rad(f)) this.hit(src, f, m, f.x, f.y);
+      if (Math.hypot(f.x - ar.x, f.y - ar.y) < m.radius + this.rad(f)) this.hit(src, f, m, f.x, f.y, { cast: ar.cast });
       // Terreno en el área
       const r = Math.ceil(m.radius / CELL);
       const c0 = S.cellIndex(ar.x, ar.y), cx = c0 % COLS, cy = Math.floor(c0 / COLS);
@@ -758,7 +790,12 @@ class Battle {
       if (mon.fainted || mon.hp > 0) continue;
       mon.fainted = true;
       // Debilitado por un golpe del rival: cuenta para los logros de debilitar con movimientos de ese tipo
-      if (side.lastHit && side.lastHit.by !== side.idx) (this.kos = this.kos || []).push({ by: side.lastHit.by, type: side.lastHit.type });
+      if (side.lastHit && side.lastHit.by !== side.idx) {
+        const lh = side.lastHit, by = this.sides[lh.by];
+        (this.kos = this.kos || []).push({ by: lh.by, type: lh.type });
+        this.statMon(by, lh.slot).kos++;
+        if (lh.key) this.statMove(by, lh.key).kos++;
+      }
       side.wind = null; side.dash = null; side.kb = null; side.prot = -1; side.swapping = 0;
       this.ev({ k: 'faint', s: side.idx, slot: side.act });
       if (side.team.some(m => !m.fainted)) { side.forced = FORCED_SWAP_T; side.swapTo = -1; }

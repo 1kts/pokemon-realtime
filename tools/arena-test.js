@@ -313,4 +313,20 @@ check('IA adaptativa: afloja si va arrasando y aprieta si va perdiendo, sin sali
   assert(s2 > 0.65 && s2 <= 0.6 + 0.1 + 1e-9, `aprieta (${s2})`);
 });
 
+check('datos de equilibrio: el combate cuenta usos, aciertos, daño y KOs de cada movimiento y Pokémon', () => {
+  const bt = battle('pradera', [{ dex: 25, level: 50, moves: ['impactrueno'] }], [{ dex: 129, level: 5 }]);
+  bt.obstacles = [];
+  const [a, b] = bt.sides;
+  a.x = 200; a.y = 300; b.x = 330; b.y = 300; a.energy = 100;
+  a.inputs.push({ mx: 0, my: 0, a: 0, tx: 330, ty: 300, c: 0, s: 1 });
+  run(bt, 1.5);
+  const mv = bt.stats.moves[0].impactrueno, me = bt.stats.mons[0][0], foe = bt.stats.mons[1][0];
+  assert(mv && mv.casts === 1 && mv.landed === 1 && mv.dmg > 0, `un uso que da (${JSON.stringify(mv)})`);
+  assert(me.dmg === mv.dmg && foe.taken === mv.dmg && me.out === 1, 'el daño cuenta para quien lo hace y quien lo recibe');
+  if (bt.mon(b).fainted) assert(mv.kos === 1 && me.kos === 1, 'y el KO, para el movimiento y el Pokémon');
+  a.inputs.push({ mx: 0, my: 0, a: Math.PI, tx: 0, ty: 300, c: 0, s: 2 });   // hacia atrás: falla
+  run(bt, 1.5);
+  assert(bt.stats.moves[0].impactrueno.casts >= 1 && bt.stats.moves[0].impactrueno.landed <= bt.stats.moves[0].impactrueno.casts, 'los fallos cuentan como uso sin acierto');
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);
