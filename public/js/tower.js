@@ -1,7 +1,7 @@
 // Torre Batalla (elegir equipo, progreso de la racha, siguiente rival en silueta) y Ladder
 // (tablas de clasificatoria, Torre y Pokédex con buscador, y ficha pública de cada entrenador).
 // Se añaden como métodos de UI (ver ui.js).
-import { portrait, monIcon, animatedPortrait } from './sprites.js';
+import { portrait, monIcon, animatedPortrait, typeTint } from './sprites.js';
 import { escapeHtml, monLabel } from './battle.js';
 import { el, typeChips, coins, lv } from './ui.js';
 import { showcaseHtml } from './achievements.js';
@@ -72,7 +72,7 @@ export const towerViews = {
     };
     const card = (e, sub, shiny) => {
       const dex = dexOf(e);
-      const c = el('button', 'pool-card');
+      const c = typeTint(el('button', 'pool-card'), dex);
       c.dataset.e = JSON.stringify(e);
       c.append(portrait(dex, 56, { shiny }), el('b', '', SPECIES[dex].name + (shiny ? ' ✦' : '')), el('div', 'types', typeChips(dex)), el('small', 'small', sub));
       c.title = t('Total de stats base {n}', { n: SPECIES[dex].bst });

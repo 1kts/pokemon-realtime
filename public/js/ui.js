@@ -1,7 +1,7 @@
 // Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
 // clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
 // la portada, el perfil, las recompensas y las novedades en account.js.
-import { portrait, monIcon, animatedPortrait, trainerImg } from './sprites.js';
+import { portrait, monIcon, animatedPortrait, trainerImg, typeTint } from './sprites.js';
 import { escapeHtml, describeMove, monLabel } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
@@ -689,7 +689,7 @@ export class UI {
     for (const m of [...inTeamList, ...boxList]) {
       const grid = grids[team.includes(m.uid) ? 'team' : 'box'];
       const inTeam = team.includes(m.uid);
-      const card = el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : ''));
+      const card = typeTint(el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : '')), m.dex);
       Object.assign(card.dataset, { q: norm(`${nameOf(m)} ${SPECIES[m.dex].name} ${m.dex}`), types: SPECIES[m.dex].types.join(' '), shiny: m.shiny ? '1' : '', leg: SPECIES[m.dex].leg ? '1' : '', box: inTeam ? '' : '1' });
       card.append(this.skinned(portrait(m.dex, 72, { shiny: Data.looksShiny(m) }), m.dex));
       const need = xpToNext(m.level);
@@ -975,7 +975,8 @@ export class UI {
       const grid = el('div', 'shop-grid');
       for (const item of items) {
         const locked = (item.req || 0) > p.badges;
-        const c = el('div', 'shop-item' + (locked ? ' locked' : ''));
+        const c = el('div', 'shop-item' + (locked ? ' locked' : '') + (item.dex ? ' has-mon' : ''));
+        if (item.dex) typeTint(c, item.dex);
         const pic = item.dex ? portrait(item.dex, 64) : el('span', 'item-pic', itemImg(item.id, 48));
         c.append(pic);
         const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.levelCap(p, this.region || 'kanto') }) : item.desc;
@@ -1051,7 +1052,7 @@ export class UI {
     confirm.disabled = true;
     for (const dex of msg.pool) {
       const banned = msg.bans.includes(dex);
-      const c = el('button', 'pool-card' + (banned ? ' banned' : ''));
+      const c = typeTint(el('button', 'pool-card' + (banned ? ' banned' : '')), dex);
       c.append(this.skinned(portrait(dex, 64), dex));
       c.append(el('b', '', SPECIES[dex].name), el('div', 'types', typeChips(dex)));
       c.title = SPECIES[dex].moves.map(k => `${MOVES[k].name}: ${describeMove(MOVES[k]).split('\n').join(' · ')}`).join('\n');
@@ -1094,7 +1095,7 @@ export class UI {
     const start = el('button', 'primary', t('Empezar'));
     start.disabled = true;
     for (const dex of RANKED_POOL) {
-      const c = el('button', 'pool-card');
+      const c = typeTint(el('button', 'pool-card'), dex);
       c.append(this.skinned(portrait(dex, 64), dex));
       c.append(el('b', '', SPECIES[dex].name), el('div', 'types', typeChips(dex)));
       c.title = SPECIES[dex].moves.map(k => MOVES[k].name).join(' · ');

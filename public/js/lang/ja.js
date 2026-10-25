@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.2 ----------
+    'Tarjetas con más chispa': 'カードがもっと華やかに',
+    'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'メニューのカードは各モードの色に、ポケモンのカードはタイプの色になりました。カーソルを合わせると浮き上がって光ります。',
+    'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.': '「じぶんの ポケモン」では、チームのポケモンに星つきの金色の枠が、色違いには色が移り変わる枠がつきます。',
+    'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.': 'バトルタワー・練習・ランクバトルでポケモンを選ぶと、選んだポケモンは金色と ✓ で、禁止されたポケモンは赤い線で示されます。',
     // ---------- Novedades v0.18.1 ----------
     'Menús sin mareos': '酔わないメニュー',
     'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'メニューの背景がアリーナの周りを回らなくなりました。その場で少しゆれるだけで、「視差効果を減らす」をオンにしていれば完全に止まります。',
@@ -92,7 +97,7 @@ export default {
     '¡Te desafía!': 'が勝負を仕掛けてきた！',
     // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '検索と色違いの見た目を自由に',
-    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「マイポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',
+    'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「じぶんの ポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '色違いのポケモンにボタンが付き、バトル中も含めて通常の色で表示できます。色違いとしてのカウントはそのままです。',
     'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'ランキングには登録済みのアカウントだけが表示されます。プロフィールからアカウントを作れば、今の記録のまま参加できます。',
     'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '60日間ログインのないゲストのデータは削除されます。消えないようにアカウントを作りましょう。',
@@ -1129,7 +1134,7 @@ export default {
     'Elige el color del ratón. También tiñe la retícula para apuntar en combate. Se recuerda en este navegador.': 'マウスカーソルの色を選べます。バトルの照準の色も変わります。このブラウザに保存されます。',
     'Otro color': 'ほかの色',
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '設定でカーソルの色を選べるようになりました。バトルの照準の色も変わります。',
-    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '「マイポケモン」と図鑑のタイプ・並び順フィルターがゲームのデザインになり、各タイプのアイコンが付きました。',
+    'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '「じぶんの ポケモン」と図鑑のタイプ・並び順フィルターがゲームのデザインになり、各タイプのアイコンが付きました。',
     'Cursor a tu gusto': '好きな色のカーソル',
     'Gestionar equipo': 'チームを編集',
     'Añadir': '追加',

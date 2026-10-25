@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.2 ----------
+    'Tarjetas con más chispa': '卡片更有冲击力',
+    'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': '菜单卡片使用各模式的专属颜色，宝可梦卡片使用其属性颜色；鼠标移上去时卡片会浮起并发光。',
+    'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.': '在“我的宝可梦”中，队伍成员带有金色边框和星标，异色宝可梦则有不断变换的彩色边框。',
+    'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.': '在对战塔、练习或排位赛中选择宝可梦时，选中的会以金色和 ✓ 标出，被禁用的会用红线划掉。',
     // ---------- Novedades v0.18.1 ----------
     'Menús sin mareos': '菜单不再晕眩',
     'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '菜单背景不再绕着竞技场旋转：它会停在原处，只轻轻摇晃；如果你开启了“减弱动态效果”，则完全静止。',

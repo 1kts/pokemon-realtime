@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.18.2', date: '2026-10-25', title: 'Tarjetas con más chispa',
+      items: [
+        ['cambio', 'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.'],
+        ['cambio', 'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.'],
+        ['cambio', 'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.'],
+      ],
+    },
+    {
       v: '0.18.1', date: '2026-10-25', title: 'Menús sin mareos',
       items: [
         ['cambio', 'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.'],

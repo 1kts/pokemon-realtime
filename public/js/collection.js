@@ -3,7 +3,7 @@
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
 import { t } from './i18n.js';
-import { portrait } from './sprites.js';
+import { portrait, typeTint } from './sprites.js';
 import { masteryPrize, SKIN_LABEL, applySkin } from './frames.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
@@ -62,7 +62,7 @@ export const collectionViews = {
     const list = el('div', 'ml-list');
     for (const root of roots) {
       const w = wins(root), tier = Data.masteryTier(w), claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root);
-      const row = el('div', 'ml-row' + (can.length ? ' ready' : ''));
+      const row = typeTint(el('div', 'ml-row' + (can.length ? ' ready' : '')), root);
       row.append(this.skinned(portrait(root, 56), root));
       const info = el('div', 'ml-info', `<b>${t('Línea de {m}', { m: SPECIES[root].name })}</b><small>${t('{n} victorias', { n: w })}</small>`);
       const pips = el('div', 'ml-pips');

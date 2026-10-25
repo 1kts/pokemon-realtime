@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.2 ----------
+    'Tarjetas con más chispa': 'Carte più scintillanti',
+    'Las tarjetas del menú llevan el color de cada modo y las de tus Pokémon el de sus tipos; al pasar el ratón se levantan y brillan.': 'Le carte del menu hanno il colore di ogni modalità e quelle dei tuoi Pokémon il colore dei loro tipi; passaci sopra col mouse e si sollevano brillando.',
+    'En Mis Pokémon, los de tu equipo llevan marco dorado con estrella y los shiny un borde de colores que cambia.': 'In I miei Pokémon, quelli della tua squadra hanno una cornice dorata con stella e i cromatici un bordo dai colori cangianti.',
+    'Al elegir Pokémon en la Torre, la Práctica o la clasificatoria, el elegido se marca en dorado con un ✓ y el vetado se tacha en rojo.': 'Quando scegli i Pokémon nella Torre Lotta, nell\'Allenamento o nelle Classificate, quelli scelti sono segnati in oro con una ✓ e quelli bannati barrati in rosso.',
     // ---------- Novedades v0.18.1 ----------
     'Menús sin mareos': 'Menu senza capogiri',
     'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Lo sfondo dei menu non gira più intorno all\'arena: resta fermo e ondeggia appena, e sta del tutto immobile se hai attivato la riduzione del movimento.',

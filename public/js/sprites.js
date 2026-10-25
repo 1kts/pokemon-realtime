@@ -91,6 +91,13 @@ export function monIcon(dex, size = 40, opts = {}) {
 }
 
 // Sprite de entrenador (líderes, Alto Mando y Campeones; de Pokémon Showdown, en public/trainers por id)
+// Colores de los dos tipos de la especie (--tc, --tc2) para teñir su tarjeta
+export const typeTint = (node, dex) => {
+  const [a, b] = Data.SPECIES[dex].types;
+  node.style.setProperty('--tc', Data.TYPE_COLOR[a]);
+  node.style.setProperty('--tc2', Data.TYPE_COLOR[b || a]);
+  return node;
+};
 export const trainerImg = (id, cls = '') => `<img class="trainer-img ${cls}" src="trainers/${id}.png" alt="" draggable="false">`;
 // El nodo del líder por su nombre (los combates solo traen el nombre)
 export const leaderByName = name => Object.values(Data.NODES).find(n => n.kind !== 'route' && n.leader === name) || null;

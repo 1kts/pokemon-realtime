@@ -1,0 +1,197 @@
+/* ===================================================================================
+   Tarjetas con más gancho: cada una lleva el color de lo que representa (modo de juego, tipo
+   del Pokémon, liga…) en el fondo, el borde y un halo detrás del sprite; al pasar el ratón se
+   levanta, brilla el borde y cruza un reflejo. Va después de style.css y solo pisa el aspecto.
+   Variables: --c (color del modo, tarjetas del menú) y --tc / --tc2 (tipos, puestos desde JS).
+   =================================================================================== */
+:root {
+  --card-ink: #141a36;        /* fondo base de las tarjetas, sobre el que se mezcla el color */
+  --card-ink-2: #0e1329;
+  --gold: #ffd23f; --gold-hi: #fff1a8;
+  --lift: translateY(-4px);
+}
+
+/* Reflejo que cruza la tarjeta al pasar el ratón (capa ::after en todas) */
+.menu-card::after, .mon-card::after, .pool-card::after, .shop-item::after, .coll-tile::after, .ml-row::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.16) 48%, rgba(255,255,255,.05) 54%, transparent 62%) no-repeat;
+  background-size: 250% 100%; background-position: 130% 0; opacity: 0;
+}
+.menu-card:hover:not(:disabled)::after, .mon-card:hover::after, .pool-card:hover:not(:disabled)::after,
+.shop-item:not(.locked):hover::after, .coll-tile:hover:not(:disabled)::after, .ml-row:hover::after {
+  opacity: 1; animation: cardSheen .75s ease-out forwards;
+}
+@keyframes cardSheen { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+
+/* ---------- Menú: modos de juego ---------- */
+.menu-sec .sec-head h3 { font: 900 17px var(--display); text-transform: uppercase; letter-spacing: 1.4px; color: #fff; display: flex; align-items: center; gap: 8px; }
+.menu-sec .sec-head h3::before { content: ''; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 0 10px rgba(255,210,63,.6); transform: skewX(-14deg); }
+
+.menu-card {
+  isolation: isolate; border: 1.5px solid color-mix(in srgb, var(--c) 45%, transparent);
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
+    radial-gradient(120% 140% at 100% 50%, color-mix(in srgb, var(--c) 55%, transparent), transparent 60%),
+    linear-gradient(120deg, color-mix(in srgb, var(--c) 30%, var(--card-ink)) 0%, var(--card-ink) 48%, var(--card-ink-2) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -40px 60px -30px rgba(0,0,0,.45), 0 14px 34px rgba(0,0,0,.4);
+  transition: transform .2s cubic-bezier(.2,.9,.3,1.3), border-color .2s, box-shadow .2s;
+}
+/* Franja de color arriba, como el borde de una carta */
+.menu-card::before {
+  inset: 0 0 auto 0; height: 4px; opacity: 1; z-index: 1;
+  background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 40%, #fff) 50%, transparent);
+}
+.menu-card:hover::before { opacity: 1; }
+.menu-card:hover:not(:disabled) {
+  transform: var(--lift); border-color: var(--c);
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
+    radial-gradient(120% 140% at 100% 50%, color-mix(in srgb, var(--c) 70%, transparent), transparent 62%),
+    linear-gradient(120deg, color-mix(in srgb, var(--c) 38%, var(--card-ink)) 0%, var(--card-ink) 48%, var(--card-ink-2) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 0 0 1px color-mix(in srgb, var(--c) 40%, transparent), 0 0 34px color-mix(in srgb, var(--c) 35%, transparent), 0 22px 50px rgba(0,0,0,.5);
+}
+.menu-card b { font: 900 28px var(--display); letter-spacing: .2px; text-shadow: 0 3px 0 rgba(0,0,0,.45), 0 0 22px color-mix(in srgb, var(--c) 45%, transparent); }
+.menu-card b .card-ico { background: color-mix(in srgb, var(--c) 30%, rgba(0,0,0,.35)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 70%, transparent), 0 4px 10px rgba(0,0,0,.35); }
+.menu-card span { color: #e2e9f8; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+/* Sprite sobre un foco del color del modo */
+.menu-card .art { z-index: 0; filter: drop-shadow(0 10px 8px rgba(0,0,0,.55)) drop-shadow(0 0 18px color-mix(in srgb, var(--c) 55%, transparent)); transition: transform .3s cubic-bezier(.2,.9,.3,1.4); }
+.menu-card:hover .art { transform: scale(1.12) rotate(-3deg); }
+.menu-card.wide:hover .art { transform: translateY(-50%) scale(1.12) rotate(-3deg); }
+/* «Jugar»: chapa sesgada, como en los menús de los juegos competitivos */
+.menu-card .go {
+  opacity: 1; padding: 5px 18px 5px 16px; border-radius: 6px; transform: skewX(-12deg);
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #ffb21a); color: #2a1c00;
+  box-shadow: 0 3px 0 #b97a00, 0 6px 16px rgba(255,190,40,.3); letter-spacing: .4px; text-transform: uppercase;
+}
+.menu-card:hover .go { transform: skewX(-12deg) translateX(4px); box-shadow: 0 3px 0 #b97a00, 0 0 22px rgba(255,210,63,.65); }
+.menu-card.wide { min-height: 168px; }
+.menu-card.wide b { font-size: 34px; }
+
+/* ---------- Mis Pokémon ---------- */
+.mon-card {
+  position: relative; isolation: isolate; overflow: clip; border-radius: 20px;
+  border: 1.5px solid color-mix(in srgb, var(--tc, #8aa) 40%, transparent);
+  background:
+    radial-gradient(90px 90px at 48px 50px, color-mix(in srgb, var(--tc, #8aa) 45%, transparent), transparent 70%),
+    linear-gradient(135deg, color-mix(in srgb, var(--tc, #8aa) 24%, var(--card-ink)) 0%, var(--card-ink) 42%, color-mix(in srgb, var(--tc2, #8aa) 14%, var(--card-ink-2)) 100%);
+  box-shadow: inset 4px 0 0 var(--tc, #8aa), inset 0 1px 0 rgba(255,255,255,.1), 0 12px 30px rgba(0,0,0,.35);
+  transition: transform .2s cubic-bezier(.2,.9,.3,1.3), border-color .2s, box-shadow .2s;
+}
+.mon-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--tc, #8aa) 80%, #fff); box-shadow: inset 4px 0 0 var(--tc, #8aa), inset 0 1px 0 rgba(255,255,255,.14), 0 0 26px color-mix(in srgb, var(--tc, #8aa) 30%, transparent), 0 18px 40px rgba(0,0,0,.45); }
+.mon-card > .portrait, .mon-card > canvas, .mon-card > :first-child { background: none; filter: drop-shadow(0 6px 6px rgba(0,0,0,.5)); transition: transform .25s cubic-bezier(.2,.9,.3,1.5); }
+.mon-card:hover > :first-child { transform: scale(1.1) translateY(-2px); }
+.mon-card .mon-name { font: 900 17px var(--display); text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+.mon-card .xp { height: 7px; background: rgba(0,0,0,.4); box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
+.mon-card .xp > div { background: linear-gradient(90deg, #3aa0ff, #7ae0ff); box-shadow: 0 0 10px rgba(122,224,255,.6); }
+.mon-card .acts button { border-radius: 10px; background: rgba(0,0,0,.28); }
+.mon-card .acts button:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+/* En el equipo: marco dorado que respira y chapa con estrella */
+.mon-card.in { border-color: var(--gold); box-shadow: inset 4px 0 0 var(--tc, #8aa), inset 0 0 0 1px rgba(255,210,63,.6), 0 0 24px rgba(255,210,63,.22), 0 12px 30px rgba(0,0,0,.35); }
+.mon-card.in::before { content: '★'; position: absolute; top: 10px; right: 10px; z-index: 3; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; transform: rotate(8deg);
+  font-size: 15px; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 3px 0 #b97a00, 0 0 14px rgba(255,210,63,.6); }
+.mon-card .acts button.on:not(.look) { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); border-color: transparent; box-shadow: 0 2px 0 #b97a00; }
+/* Shiny: borde holográfico que se mueve */
+.mon-card.is-shiny { border-color: transparent; background:
+    radial-gradient(90px 90px at 48px 50px, rgba(255,230,120,.4), transparent 70%),
+    linear-gradient(135deg, color-mix(in srgb, var(--tc, #8aa) 22%, var(--card-ink)), var(--card-ink) 45%, var(--card-ink-2)) padding-box,
+    linear-gradient(var(--holo-a, 120deg), #ffd84a, #ff7ad9, #7ad9ff, #9dff7a, #ffd84a) border-box;
+  animation: holoTurn 4s linear infinite; }
+@property --holo-a { syntax: '<angle>'; inherits: false; initial-value: 120deg; }
+@keyframes holoTurn { to { --holo-a: 480deg; } }
+
+/* ---------- Elegir Pokémon: draft, práctica y Torre ---------- */
+.pool-card {
+  position: relative; isolation: isolate; overflow: clip; border-radius: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--tc, #8aa) 40%, transparent);
+  background:
+    radial-gradient(60px 44px at 50% 40px, color-mix(in srgb, var(--tc, #8aa) 55%, transparent), transparent 75%),
+    linear-gradient(180deg, color-mix(in srgb, var(--tc, #8aa) 22%, var(--card-ink)) 0%, var(--card-ink) 55%, color-mix(in srgb, var(--tc2, #8aa) 16%, var(--card-ink-2)) 100%);
+  box-shadow: inset 0 3px 0 var(--tc, #8aa), inset 0 1px 0 rgba(255,255,255,.12), 0 8px 20px rgba(0,0,0,.35);
+  transition: transform .18s cubic-bezier(.2,.9,.3,1.4), border-color .18s, box-shadow .18s;
+}
+.pool-card:hover:not(:disabled) { transform: translateY(-4px) scale(1.03); border-color: var(--tc, #8aa); background:
+    radial-gradient(60px 44px at 50% 40px, color-mix(in srgb, var(--tc, #8aa) 75%, transparent), transparent 75%),
+    linear-gradient(180deg, color-mix(in srgb, var(--tc, #8aa) 30%, var(--card-ink)) 0%, var(--card-ink) 55%, color-mix(in srgb, var(--tc2, #8aa) 20%, var(--card-ink-2)) 100%);
+  box-shadow: inset 0 3px 0 var(--tc, #8aa), 0 0 22px color-mix(in srgb, var(--tc, #8aa) 40%, transparent), 0 14px 28px rgba(0,0,0,.45); }
+.pool-card > :first-child { filter: drop-shadow(0 5px 4px rgba(0,0,0,.5)); transition: transform .22s cubic-bezier(.2,.9,.3,1.6); }
+.pool-card:hover:not(:disabled) > :first-child { transform: scale(1.12) translateY(-2px); }
+.pool-card b { font: 800 14px var(--display); text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+/* Elegido: marco dorado y marca */
+.pool-card.sel { border-color: var(--gold); background:
+    radial-gradient(60px 44px at 50% 40px, rgba(255,210,63,.55), transparent 75%),
+    linear-gradient(180deg, color-mix(in srgb, var(--gold) 26%, var(--card-ink)), var(--card-ink) 60%, var(--card-ink-2));
+  box-shadow: inset 0 3px 0 var(--gold), 0 0 0 2px var(--gold), 0 0 26px rgba(255,210,63,.45), 0 10px 24px rgba(0,0,0,.4); transform: translateY(-2px); }
+.pool-card.sel::before { content: '✓'; position: absolute; top: 6px; right: 6px; z-index: 3; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
+  font: 900 13px/1 var(--text); color: #2a1c00; background: var(--gold); box-shadow: 0 2px 0 #b97a00, 0 0 12px rgba(255,210,63,.7); animation: pop .25s; }
+/* Vetado: tachado con una banda roja */
+.pool-card.banned { opacity: .5; text-decoration: none; }
+.pool-card.banned::before { content: ''; position: absolute; left: -20%; right: -20%; top: 50%; height: 6px; z-index: 3; background: #e8403a; transform: rotate(-24deg); box-shadow: 0 0 12px rgba(232,64,58,.8); }
+
+/* Huecos de la Torre: esperan a su Pokémon */
+.tslot { border-radius: 16px; }
+.tslot.full { border-color: rgba(255,210,63,.55); box-shadow: 0 0 18px rgba(255,210,63,.15); }
+
+/* ---------- Tienda ---------- */
+.shop-item {
+  position: relative; isolation: isolate; overflow: clip;
+  border: 1.5px solid rgba(255,210,63,.18);
+  background: radial-gradient(70px 70px at 46px 46px, rgba(255,210,63,.16), transparent 70%), linear-gradient(135deg, #1d2550, var(--card-ink) 50%, var(--card-ink-2));
+  transition: transform .2s cubic-bezier(.2,.9,.3,1.3), border-color .2s, box-shadow .2s;
+}
+.shop-item:not(.locked):hover { transform: translateY(-3px); border-color: rgba(255,210,63,.65); box-shadow: 0 0 24px rgba(255,210,63,.2), 0 16px 36px rgba(0,0,0,.45); }
+.shop-item.has-mon { border-color: color-mix(in srgb, var(--tc) 45%, transparent); background: radial-gradient(70px 70px at 46px 46px, color-mix(in srgb, var(--tc) 45%, transparent), transparent 70%),
+  linear-gradient(135deg, color-mix(in srgb, var(--tc) 24%, var(--card-ink)), var(--card-ink) 50%, color-mix(in srgb, var(--tc2) 14%, var(--card-ink-2))); }
+.shop-item.has-mon:not(.locked):hover { border-color: var(--tc); box-shadow: 0 0 24px color-mix(in srgb, var(--tc) 35%, transparent), 0 16px 36px rgba(0,0,0,.45); }
+.shop-item .item-pic { background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.2), rgba(255,255,255,.02) 70%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); transition: transform .25s cubic-bezier(.2,.9,.3,1.6); }
+.shop-item:not(.locked):hover .item-pic { transform: scale(1.08) rotate(-6deg); }
+.shop-item .si b { font: 800 16px var(--display); }
+.shop-item .price { padding: 2px 10px 2px 6px; border-radius: 99px; background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 1px rgba(255,210,63,.3); align-self: flex-start; }
+.shop-item.locked { opacity: .55; filter: saturate(.4); }
+
+/* ---------- Lateral del menú: colección y misiones ---------- */
+.coll-tile { position: relative; overflow: clip; isolation: isolate; transition: transform .18s cubic-bezier(.2,.9,.3,1.4), border-color .18s, box-shadow .18s; }
+.coll-tile:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 18px rgba(255,200,120,.18), 0 10px 22px rgba(0,0,0,.35); }
+.coll-tile img { transition: transform .22s cubic-bezier(.2,.9,.3,1.6); }
+.coll-tile:hover:not(:disabled) img { transform: scale(1.15) rotate(-8deg); }
+.coll-tile.ready { background: linear-gradient(90deg, rgba(255,210,63,.18), rgba(0,0,0,.2)); animation: glow 1.6s ease-in-out infinite; }
+
+.m-bar { height: 15px; background: rgba(0,0,0,.4); box-shadow: inset 0 1px 3px rgba(0,0,0,.55); }
+.m-bar i { background: linear-gradient(180deg, rgba(255,255,255,.3), transparent 55%), linear-gradient(90deg, #3b78d8, #6fb4ff); box-shadow: 0 0 10px rgba(111,180,255,.5); }
+.mission.done .m-bar i, .rm.done .m-bar i { background: linear-gradient(180deg, rgba(255,255,255,.4), transparent 55%), linear-gradient(90deg, #ffb21a, #ffe066); box-shadow: 0 0 12px rgba(255,210,63,.7); }
+.mission, .chest-row { transition: transform .18s, border-color .18s; }
+.mission:hover, .chest-row:hover { border-color: var(--line-hi); }
+.m-ico { background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.14), rgba(255,255,255,.03)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+
+/* ---------- Maestría ---------- */
+.ml-row { position: relative; overflow: clip; isolation: isolate; transition: border-color .18s, box-shadow .18s;
+  border-color: color-mix(in srgb, var(--tc, #8aa) 35%, transparent);
+  background: radial-gradient(80px 80px at 50px 50%, color-mix(in srgb, var(--tc, #8aa) 40%, transparent), transparent 70%),
+    linear-gradient(100deg, color-mix(in srgb, var(--tc, #8aa) 20%, var(--card-ink)), var(--card-ink) 40%, var(--card-ink-2));
+  box-shadow: inset 4px 0 0 var(--tc, #8aa); }
+.ml-row:hover { border-color: color-mix(in srgb, var(--tc, #8aa) 75%, #fff); }
+.ml-row.ready { border-color: rgba(255,203,5,.65); background: linear-gradient(90deg, rgba(255,210,63,.16), rgba(0,0,0,.2)); }
+
+/* ---------- Clasificatoria: ELO y ligas ---------- */
+.big-elo { font-size: 76px; background: linear-gradient(180deg, #fff 30%, #ffe680 75%, #ffb21a); -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none; filter: drop-shadow(0 4px 0 rgba(0,0,0,.4)) drop-shadow(0 0 22px rgba(255,210,63,.3)); font-variant-numeric: tabular-nums; }
+.league { font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; }
+.lr { transition: transform .18s, border-color .18s, box-shadow .18s; }
+.lr.reached { border-color: rgba(143,240,168,.35); }
+.lr:hover { transform: translateX(3px); border-color: var(--line-hi); }
+
+/* Los paneles grandes: filo de luz arriba para que no parezcan planos */
+.panel::before { content: ''; position: absolute; inset: 0 18px auto; height: 1px; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); }
+
+@media (max-width: 600px) {
+  .menu-card b, .menu-card.wide b { font-size: 24px; }
+  .menu-card .art, .menu-card.wide .art { width: 92px; height: 92px; }
+  .menu-card span, .menu-card.wide span { max-width: calc(100% - 96px); }
+  .big-elo { font-size: 60px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-card, .mon-card, .pool-card, .shop-item, .coll-tile, .lr { transition: none; }
+  .menu-card:hover:not(:disabled)::after, .mon-card:hover::after, .pool-card:hover:not(:disabled)::after,
+  .shop-item:not(.locked):hover::after, .coll-tile:hover:not(:disabled)::after, .ml-row:hover::after { animation: none; opacity: 0; }
+  .mon-card.is-shiny, .coll-tile.ready { animation: none; }
+}
