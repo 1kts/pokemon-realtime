@@ -6,7 +6,7 @@ import { toWorld } from './world.js';
 import { portrait, preload } from './sprites.js';
 import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
-import { icon, typeIcon } from './pixicons.js';
+import { typeIcon } from './pixicons.js';
 
 const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
@@ -480,8 +480,8 @@ export class BattleClient {
       b.title = describeMove(m);
       this.movesEl.append(b);
     });
-    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd>${icon('shield', 24, 'mv-ico')}<b>${t('Protección')}</b><small>${t('parry {n} ms', { n: Math.round(PROTECT.perfect * 1000) })}</small><div class="cd"></div><span class="cdt"></span>`);
-    pr.style.setProperty('--tc', '#70ffb0');
+    const pr = el('div', 'mv protect', `<kbd>${t('Espacio')}</kbd><img class="type-ico mv-ico" src="types/proteccion.svg" width="30" height="30" alt="" draggable="false"><b>${t('Protección')}</b><small>${t('parry {n} ms', { n: Math.round(PROTECT.perfect * 1000) })}</small><div class="cd"></div><span class="cdt"></span>`);
+    pr.style.setProperty('--tc', '#2fb488');
     pr.title = t('Bloquea el 80 % del daño. Si el golpe llega justo al activarla, lo devuelves (parry).');
     this.movesEl.append(pr);
   }

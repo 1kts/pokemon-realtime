@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': 'Sprite',
+    'Animación': 'Animation',
+    'Renders 3D, iconos y animaciones': '3D renders, icons and animations',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': 'The Pokédex entry shows each Pokémon as a sprite, HOME 3D render, official artwork and animation.',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': 'When you catch a Pokémon you see it in 3D, and lists use the games\' menu icons.',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': 'Badges without the white outline, and Protect with an icon like the type ones.',
     'Maestría {type}': '{type} Mastery',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': 'Get more titles and frames by climbing leagues in Ranked and completing achievements. Win {n} battles with an evolution line for its type frame.',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': 'Any Pokémon you\'ve caught, also in shiny if you have it. With {n} wins from its evolution line, also its official artwork. By default, the first in your team.',

@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': '像素',
+    'Animación': '动画',
+    'Renders 3D, iconos y animaciones': '3D渲染、图标与动画',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': '图鉴页面可将每只宝可梦以像素、HOME 3D渲染、官方插画和动画查看。',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': '捕获宝可梦时会以3D显示，列表使用游戏中的菜单图标。',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': '徽章去掉白边，守住改用与属性相同风格的图标。',
     'Maestría {type}': '{type}精通',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': '在排位赛中升级联赛并完成成就，可获得更多称号和头像框。用一条进化链赢得{n}场对战，可获得其属性头像框。',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': '任何捕获过的宝可梦，有异色的话也可选异色。进化链赢得{n}场后，还可选择官方插画。默认是队伍中的第一只。',

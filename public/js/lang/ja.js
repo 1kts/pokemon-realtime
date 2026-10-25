@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': 'ドット',
+    'Animación': 'アニメ',
+    'Renders 3D, iconos y animaciones': '3Dレンダー、アイコン、アニメーション',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': '図鑑のページで各ポケモンをドット、HOMEの3Dレンダー、公式イラスト、アニメで見られる。',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': '捕まえたポケモンは3Dで表示。リストにはゲームのメニューアイコンを使用。',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': 'バッジの白い縁を削除。まもるはタイプと同じ形式のアイコンに。',
     'Maestría {type}': '{type}マスタリー',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': 'ランクマッチでリーグを上げたり実績を達成すると、称号やフレームが増える。進化ラインで{n}勝すると、そのタイプのフレームがもらえる。',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': '捕まえたポケモンならどれでも。色違いを持っていれば色違いも。進化ラインで{n}勝すると公式イラストも選べる。初期設定はチームの先頭。',

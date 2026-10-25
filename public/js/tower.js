@@ -1,7 +1,7 @@
 // Torre Batalla (elegir equipo, progreso de la racha, siguiente rival en silueta) y Ladder
 // (tablas de clasificatoria, Torre y Pokédex con buscador, y ficha pública de cada entrenador).
 // Se añaden como métodos de UI (ver ui.js).
-import { portrait, animatedPortrait } from './sprites.js';
+import { portrait, monIcon, animatedPortrait } from './sprites.js';
 import { escapeHtml } from './battle.js';
 import { el, typeChips, coins, lv } from './ui.js';
 import { showcaseHtml } from './achievements.js';
@@ -256,7 +256,7 @@ export const towerViews = {
       const table = el('table', 'ladder-rows');
       table.innerHTML = `<thead>${head}</thead><tbody>${msg.rows.map(row).join('')}${msg.me && !msg.rows.some(r => r.id === me) && !msg.q ? `<tr class="gap"><td colspan="${cols.length + 2}">…</td></tr>${row(msg.me)}` : ''}</tbody>`;
       table.querySelectorAll('tr[data-id]').forEach(tr => { tr.onclick = () => this.userModal(tr.dataset.id); });
-      table.querySelectorAll('.tdex').forEach(s => s.append(portrait(+s.dataset.dex, 32, { shiny: !!s.dataset.shiny })));
+      table.querySelectorAll('.tdex').forEach(s => s.append(monIcon(+s.dataset.dex, 40, { shiny: !!s.dataset.shiny })));
       const scroll = el('div', 'scroll');
       scroll.append(table);
       box.append(scroll);

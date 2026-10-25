@@ -1,9 +1,10 @@
 // Pokédex: todas las especies del juego frente a las que has capturado. Filtros por nombre o número,
 // generación, tipo y estado; ficha de cada una con sus stats, evolución y rutas donde aparece
 // (marcando las que salen hoy). Los retratos se dibujan solo al entrar en pantalla.
-import { portrait } from './sprites.js';
+import { portrait, monIcon } from './sprites.js';
 import { t } from './i18n.js';
 import { masteryHtml } from './frames.js';
+import { typeIcon } from './pixicons.js';
 import { typeDropdown } from './dropdown.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, TYPE_NAMES } = Data;
@@ -66,7 +67,7 @@ export const pokedexViews = {
       for (const e of entries) {
         if (!e.isIntersecting) continue;
         const card = e.target, d = +card.dataset.dex;
-        card.querySelector('.pic').append(portrait(d, 64, { silhouette: !caught.has(d) && f.status !== 'missing' && !card.dataset.reveal }));
+        card.querySelector('.pic').append(monIcon(d, 64, { silhouette: !caught.has(d) && f.status !== 'missing' && !card.dataset.reveal }));
         io.unobserve(card);
       }
     }, { root: grid, rootMargin: '200px' });
@@ -84,7 +85,7 @@ export const pokedexViews = {
         card.dataset.dex = s.dex;
         if (q) card.dataset.reveal = '1';   // si lo buscas por nombre, se ve aunque no lo tengas
         card.innerHTML = `<span class="no">${num(s.dex)}</span><span class="pic"></span><b>${s.name}</b>
-          <span class="tys">${s.types.map(ty => `<i style="--tc:${TYPE_COLOR[ty]}" title="${TYPE_LABEL[ty]}"></i>`).join('')}</span>
+          <span class="tys">${s.types.map(ty => `<span title="${TYPE_LABEL[ty]}">${typeIcon(ty, 16)}</span>`).join('')}</span>
           ${got ? `<em class="ok">${shinies.has(s.dex) ? '✦' : '✓'}</em>` : ''}`;
         card.onclick = () => this.dexModal(s.dex);
         grid.append(card);
@@ -98,6 +99,45 @@ export const pokedexViews = {
     render();
   },
 
+  // Visor de la ficha: sprite del juego, render 3D de HOME, ilustración oficial y animación de Showdown
+  // (las tres últimas las sirve el servidor desde PokeAPI). Con el shiny capturado, botón para verlo.
+  dexViewer(dex, shinyOwned) {
+    const box = el('div', 'dex-viewer');
+    const stage = el('div', 'dv-stage');
+    const tabs = el('div', 'dv-tabs');
+    const st = this.dexView = this.dexView || { mode: 'sprite', shiny: false };
+    const MODES = [['sprite', t('Sprite')], ['home', '3D'], ['art', t('Arte')], ['anim', t('Animación')]];
+    const draw = () => {
+      const shiny = shinyOwned && st.shiny;
+      stage.innerHTML = '';
+      stage.className = 'dv-stage ' + st.mode;
+      if (st.mode === 'sprite') stage.append(portrait(dex, 120, { shiny }));
+      else {
+        const img = el('img');
+        img.alt = ''; img.draggable = false;
+        img.src = st.mode === 'anim' ? `anim/${shiny ? 'shiny/' : ''}${dex}.gif` : `${st.mode}/${shiny ? 'shiny/' : ''}${dex}.png`;
+        img.onerror = () => img.replaceWith(portrait(dex, 120, { shiny }));
+        stage.append(img);
+      }
+      tabs.querySelectorAll('button').forEach(b => b.classList.toggle('sel', b.dataset.m === st.mode || (b.dataset.m === 'shiny' && shiny)));
+    };
+    for (const [m, label] of MODES) {
+      const b = el('button', '', label);
+      b.dataset.m = m;
+      b.onclick = () => { st.mode = m; draw(); };
+      tabs.append(b);
+    }
+    if (shinyOwned) {
+      const b = el('button', 'dv-shiny', '✦');
+      b.dataset.m = 'shiny'; b.title = t('Ver shiny');
+      b.onclick = () => { st.shiny = !st.shiny; draw(); };
+      tabs.append(b);
+    }
+    box.append(stage, tabs);
+    draw();
+    return box;
+  },
+
   dexModal(dex) {
     const p = this.profile, s = SPECIES[dex];
     const got = (p.caught || []).includes(dex), shiny = (p.shinies || []).includes(dex);
@@ -106,9 +146,9 @@ export const pokedexViews = {
     const close = () => back.remove();
     back.onclick = e => { if (e.target === back) close(); };
     const top = el('div', 'dex-sheet-top');
-    top.append(portrait(dex, 120, { shiny }));
+    top.append(this.dexViewer(dex, shiny));
     top.append(el('div', '', `<small>${num(dex)} · ${t('Gen {n}', { n: s.gen })}${s.leg ? ' · ' + t('Legendario') : ''}</small><h3>${s.name}</h3>
-      <div>${s.types.map(ty => `<span class="type" style="--tc:${TYPE_COLOR[ty]}">${TYPE_LABEL[ty]}</span>`).join('')}</div>
+      <div>${s.types.map(ty => `<span class="type" style="--tc:${TYPE_COLOR[ty]}">${typeIcon(ty, 14)}${TYPE_LABEL[ty]}</span>`).join('')}</div>
       <p class="${got ? 'ok' : 'small'}">${got ? (shiny ? t('✦ Capturado, también shiny') : t('✓ Capturado')) : t('Todavía no lo has capturado')}</p>`));
     box.append(top);
     if (got) box.append(el('div', 'dex-mastery', masteryHtml(p, dex, t)));

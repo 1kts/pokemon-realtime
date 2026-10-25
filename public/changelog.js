@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.12.0', date: '2026-10-25', title: 'Renders 3D, iconos y animaciones',
+      items: [
+        ['nuevo', 'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.'],
+        ['nuevo', 'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.'],
+        ['cambio', 'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.'],
+      ],
+    },
+    {
       v: '0.11.0', date: '2026-10-25', title: 'Misiones y premios para recoger',
       items: [
         ['nuevo', 'Misiones diarias y semanales: cúmplelas jugando y recoge su premio. Si una no te convence, cámbiala por otra.'],

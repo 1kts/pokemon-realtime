@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    'Sprite': 'Sprite',
+    'Animación': 'Animation',
+    'Renders 3D, iconos y animaciones': '3D-Renderings, Symbole und Animationen',
+    'La ficha de la Pokédex enseña cada Pokémon como sprite, render 3D de HOME, ilustración oficial y animación.': 'Der Pokédex-Eintrag zeigt jedes Pokémon als Sprite, HOME-3D-Rendering, offizielles Artwork und Animation.',
+    'Al capturar un Pokémon lo ves en 3D, y las listas usan los iconos de menú de los juegos.': 'Beim Fangen siehst du das Pokémon in 3D, und Listen nutzen die Menüsymbole der Spiele.',
+    'Las medallas sin el borde blanco y Protección con un icono como el de los tipos.': 'Orden ohne weißen Rand und Schutzschild mit einem Symbol wie die Typen.',
     'Maestría {type}': '{type}-Meisterschaft',
     'Consigue más títulos y marcos subiendo de liga en Clasificatoria y completando logros. Gana {n} combates con una línea evolutiva para el marco de su tipo.': 'Hol dir mehr Titel und Rahmen, indem du in Ranglisten-Ligen aufsteigst und Erfolge abschließt. Gewinne {n} Kämpfe mit einer Entwicklungsreihe für den Rahmen ihres Typs.',
     'Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.': 'Jedes gefangene Pokémon, auch schillernd, wenn du es hast. Mit {n} Siegen seiner Entwicklungsreihe auch sein offizielles Artwork. Standardmäßig das erste deines Teams.',
