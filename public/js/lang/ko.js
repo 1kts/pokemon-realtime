@@ -1047,6 +1047,7 @@ export default {
     'Gestionar equipo': '팀 관리',
     'Añadir': '추가',
     'Añadir al equipo': '팀에 추가',
+    'Gestionar': '관리',
   },
 
   patterns: [

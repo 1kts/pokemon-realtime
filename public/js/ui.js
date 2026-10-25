@@ -422,13 +422,11 @@ export class UI {
         box.append(go);
       }
     }
-    // Tu equipo de la región: se gestiona desde aquí (botón, cada Pokémon o un hueco libre abren Mis Pokémon en esta región)
+    // Tu equipo de la región: se gestiona desde aquí (el enlace, cada Pokémon o un hueco libre abren Mis Pokémon en esta región)
     const manage = () => { this.teamRegion = n.region; this.openFrom('team'); };
-    const mb = el('button', 'manage-team', `${itemImg('pokeball', 22)}<span>${t('Gestionar equipo')}</span>`);
-    mb.onclick = manage;
-    if (unlocked) box.append(mb);
     const head = el('div', 'team-head', `<h4>${t('Tu equipo')}</h4>`);
-    const edit = el('button', 'link', t('Cambiar'));
+    const edit = el('button', 'link', t('Gestionar'));
+    edit.title = t('Gestionar equipo');
     edit.onclick = manage;
     head.append(edit);
     box.append(head);
@@ -449,7 +447,6 @@ export class UI {
       c.onclick = manage;
       team.append(c);
     }
-    if (!unlocked) box.append(mb);
     box.append(team);
   }
 

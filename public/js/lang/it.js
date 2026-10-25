@@ -1047,6 +1047,7 @@ export default {
     'Gestionar equipo': 'Gestisci squadra',
     'Añadir': 'Aggiungi',
     'Añadir al equipo': 'Aggiungi alla squadra',
+    'Gestionar': 'Gestisci',
   },
 
   patterns: [

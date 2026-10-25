@@ -1272,9 +1272,6 @@ label.cursor-opt.sel { border-color: var(--yellow); }
 .dex-sheet-top .type .type-ico { border-radius: 3px; box-shadow: none; }
 
 /* ---------- Gestionar el equipo desde el mapa ---------- */
-.node-info button.manage-team { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 8px; padding: 10px 14px; font-weight: 700; border-color: rgba(255,203,5,.4); }
-.node-info button.manage-team:hover:not(:disabled) { border-color: var(--yellow); color: var(--yellow); }
-.manage-team img { image-rendering: pixelated; }
 .node-info .team-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 6px; }
 .node-info .team-head h4 { margin: 0; }
 .node-info .team-head .link { font-size: 12px; }

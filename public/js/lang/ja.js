@@ -1047,6 +1047,7 @@ export default {
     'Gestionar equipo': 'チームを編集',
     'Añadir': '追加',
     'Añadir al equipo': 'チームに追加',
+    'Gestionar': '編集',
   },
 
   patterns: [

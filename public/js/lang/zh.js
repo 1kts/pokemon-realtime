@@ -1036,6 +1036,7 @@ export default {
     'Gestionar equipo': '管理队伍',
     'Añadir': '添加',
     'Añadir al equipo': '加入队伍',
+    'Gestionar': '管理',
   },
 
   patterns: [
