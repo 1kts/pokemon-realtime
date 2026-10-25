@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Menu senza capogiri',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Lo sfondo dei menu non gira più intorno all\'arena: resta fermo e ondeggia appena, e sta del tutto immobile se hai attivato la riduzione del movimento.',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Se togli la musica in Impostazioni e poi la rialzi, ora riparte sempre.',
     'Ataques con sonido': 'Attacchi con suono',

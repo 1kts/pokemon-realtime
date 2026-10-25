@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.18.1', date: '2026-10-25', title: 'Menús sin mareos',
+      items: [
+        ['cambio', 'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.'],
+      ],
+    },
+    {
       v: '0.18.0', date: '2026-10-25', title: 'Ataques con sonido',
       items: [
         ['nuevo', 'Los ataques y los golpes tienen un sonido suave, que cambia un poco con el tipo y la forma del movimiento; los muy eficaces se notan algo más.'],

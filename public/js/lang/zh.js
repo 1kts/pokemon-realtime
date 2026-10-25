@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': '菜单不再晕眩',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '菜单背景不再绕着竞技场旋转：它会停在原处，只轻轻摇晃；如果你开启了“减弱动态效果”，则完全静止。',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '在设置中关闭音乐后再调高音量，音乐现在总能重新响起。',
     'Ataques con sonido': '招式有声音了',

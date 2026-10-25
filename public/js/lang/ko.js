@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': '어지럽지 않은 메뉴',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': '메뉴 배경이 더 이상 아레나 주위를 돌지 않아요. 제자리에서 살짝 흔들리기만 하고, 동작 줄이기를 켜 두면 완전히 멈춰 있어요.',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '설정에서 음악을 껐다가 다시 키우면 이제 항상 다시 나와요.',
     'Ataques con sonido': '기술에 효과음',

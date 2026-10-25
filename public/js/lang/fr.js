@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Des menus sans tournis',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Le fond des menus ne tourne plus autour de l\'arène : il reste en place et se balance à peine, et ne bouge plus du tout si tu as activé la réduction des animations.',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Si tu coupes la musique dans Paramètres puis la remets, elle se relance désormais à chaque fois.',
     'Ataques con sonido': 'Des attaques sonores',

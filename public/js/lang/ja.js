@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': '酔わないメニュー',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'メニューの背景がアリーナの周りを回らなくなりました。その場で少しゆれるだけで、「視差効果を減らす」をオンにしていれば完全に止まります。',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': '設定で音楽を消してから音量を戻すと、必ずまた流れるようになりました。',
     'Ataques con sonido': 'わざに効果音',

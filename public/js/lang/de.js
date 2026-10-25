@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.18.1 ----------
+    'Menús sin mareos': 'Menüs ohne Schwindel',
+    'El fondo de los menús ya no da vueltas alrededor de la arena: se queda quieto y solo se mece un poco, y del todo quieto si tienes activado reducir el movimiento.': 'Der Hintergrund der Menüs kreist nicht mehr um die Arena: Er bleibt an seinem Platz und schwankt nur leicht, und steht ganz still, wenn du „Bewegung reduzieren“ aktiviert hast.',
     // ---------- Novedades v0.18.0 ----------
     'Si quitas la música en Ajustes y la vuelves a subir, ahora siempre vuelve a sonar.': 'Wenn du die Musik in den Einstellungen ausschaltest und wieder lauter stellst, spielt sie jetzt immer wieder.',
     'Ataques con sonido': 'Attacken mit Sound',
