@@ -18,6 +18,8 @@ import { masteryHtml, frameBadge, masteryPrize } from './frames.js';
 import { accountViews } from './account.js';
 import { t, locale } from './i18n.js';
 import { trackForView } from './music.js';
+import { dailyViews } from './daily.js';
+import { tutorialViews } from './tutorial.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 export const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -72,8 +74,9 @@ export class UI {
     }
     if (first) {
       this.show('menu');
-      // Primera vez en esta versión: enseñar las novedades
+      // Primera vez en esta versión: enseñar las novedades; si no, el premio diario si está por recoger
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
+      else this.dailyAuto();
     } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions', 'collection'].includes(this.view)) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
@@ -204,6 +207,7 @@ export class UI {
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
+    card(training, t('Tutorial'), p.tutorial ? t('Repasa los controles en 1 minuto') : t('Aprende a jugar en 1 minuto y llévate un premio'), 'tutorial' + (p.tutorial ? '' : ' ready'), 6, () => this.startTutorial());
     // Lateral: misiones y accesos a lo tuyo (el perfil se abre desde el avatar de arriba)
     const side = el('div', 'menu-side');
     if (p.missions) side.append(this.missionsWidget());
@@ -1166,6 +1170,8 @@ export class UI {
     if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
     if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', t('Tope de nivel {n}: vence al siguiente gimnasio para que sigan subiendo.', { n: r.cap })));
     if (r.xp && r.xp.length) {
+      const up = r.xp.filter(x => x.level > x.fromLevel || x.evolved);
+      if (up.length) setTimeout(() => this.app.sfx.levelUp(up.some(x => x.evolved)), 600);
       const list = el('div', 'xp-list');
       for (const x of r.xp) {
         const row = el('div', 'xp-row');
@@ -1218,4 +1224,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews);

@@ -48,6 +48,7 @@ export class BattleClient {
     this.shinyT = [0, 0];
     for (const i of [0, 1]) if (this.sides[i].team[0].shiny) setTimeout(() => this.shinyAppear(i), 600);
     this.buildHud();
+    if (this.app.tutorial) this.app.tutorial.attach(this);   // tutorial jugable (tutorial.js)
     this.bindInput();
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
@@ -129,6 +130,7 @@ export class BattleClient {
   posOf(i) { return i === this.you && this.renderPos ? this.renderPos[i] : this.lastPos[i]; }
 
   onEvent(e) {
+    if (this.app.tutorial) this.app.tutorial.onEvent(e, this);
     const s = e.s;
     const actor = s !== undefined ? this.actors[s] : null;
     const pos = s !== undefined ? this.posOf(s) : null;
@@ -197,17 +199,18 @@ export class BattleClient {
       case 'zap': this.fx.zap(e.cells); this.floatText(this.posOf(this.foeIdx).x, this.posOf(this.foeIdx).y - 30, t('¡Descarga en el agua!'), 'info'); break;
       case 'capture': {
         // El Pokémon entra en la Ball; las sacudidas se anuncian una a una
+        this.app.sfx.ballIn();
         const seq = this.fx.capture(e, step => {
-          if (step === 'ok') { this.banner(t('¡{m} atrapado!', { m: this.monName(s) }), 'good big2'); }
-          else if (step === 'fail') { this.banner(t('¡Oh, no! ¡Se ha escapado!'), 'bad'); }
-          else this.floatText(e.x, e.y - 10, step + '…', 'shake');
+          if (step === 'ok') { this.banner(t('¡{m} atrapado!', { m: this.monName(s) }), 'good big2'); this.app.sfx.caught(); }
+          else if (step === 'fail') { this.banner(t('¡Oh, no! ¡Se ha escapado!'), 'bad'); this.app.sfx.breakFree(); }
+          else { this.floatText(e.x, e.y - 10, step + '…', 'shake'); this.app.sfx.shake(); }
         });
         this.catchSeq = { s, t0: performance.now(), ok: !!e.ok, shakes: e.shakes, IN: seq.IN, SHAKE: seq.SHAKE };
         this.banner(t('Probabilidad: {n} %', { n: e.chance }), 'info');
         break;
       }
       case 'escape': this.catchSeq = null; break;
-      case 'throw': if (s === this.you && this.balls) { this.balls[e.ball] = e.left; this.updateBallHud(); } break;
+      case 'throw': this.app.sfx.throwBall(); if (s === this.you && this.balls) { this.balls[e.ball] = e.left; this.updateBallHud(); } break;
       case 'sudden': this.banner(t('¡Muerte súbita! Daño ×1,5 y sin curaciones'), 'bad'); break;
       // Mecánicas de las arenas de gimnasio
       case 'arena': this.banner(tServer(e.msg), 'info'); break;
@@ -323,6 +326,7 @@ export class BattleClient {
   // ---------- Bucle ----------
   frame(now, dt) {
     if (!this.latest) return;
+    if (this.app.tutorial) this.app.tutorial.tick(this);
     this.updateAim();
     this.acc += Math.min(250, dt * 1000);
     while (this.acc >= 1000 / TICK) {

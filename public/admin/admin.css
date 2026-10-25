@@ -54,3 +54,6 @@ a, .link { color: var(--blue); cursor: pointer; text-decoration: underline; }
 #toast.bad { border-color: var(--red); }
 #conn { position: fixed; top: 0; left: 0; right: 0; background: var(--red); color: #fff; text-align: center; padding: 6px; z-index: 30; }
 @media (max-width: 900px) { .split, .grid2 { grid-template-columns: 1fr; } .kv { grid-template-columns: 120px 1fr; } }
+.mbar { position: relative; min-width: 120px; height: 18px; border-radius: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
+.mbar i { display: block; height: 100%; background: linear-gradient(90deg, #3b78d8, #6fb4ff); }
+.mbar span { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 6px; font-size: 12px; font-weight: 700; }

@@ -324,4 +324,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats };
+  check, setPassword, banned, persist, remove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

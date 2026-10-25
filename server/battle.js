@@ -64,11 +64,12 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
+      idx: i, name: s.name, ws: s.ws || null, ai: s.ai ?? null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null });
         if (s.wild) mon.hp = mon.maxHp = Math.round(mon.maxHp * WILD_HP);
+        if (s.hpMult) mon.hp = mon.maxHp = Math.round(mon.maxHp * s.hpMult);   // el muñeco del tutorial aguanta más
         return mon;
       }), act: 0, dmgMult: s.wild ? WILD_DMG : 1,
       x: i === 0 ? 140 : S.ARENA.w - 140, y: S.ARENA.h / 2, a: i === 0 ? 0 : Math.PI,
@@ -106,7 +107,11 @@ class Battle {
       if (this.countdown <= 0) this.state = 'fight';
     }
     for (const side of this.sides) {
-      if (side.ai !== null) side.inputs.push(aiInput(this, side, dt));
+      if (side.ai !== null) {
+        const inp = aiInput(this, side, dt);
+        if (side.passive) { inp.c = -1; inp.sw = -1; inp.mx = 0; inp.my = 0; }   // tutorial: muñeco quieto que no ataca
+        side.inputs.push(inp);
+      }
       let steps = side.inputs.length > 3 ? 2 : 1;   // si hay atraso, consumir dos para recuperar
       while (steps-- > 0) {
         const inp = side.inputs.shift();

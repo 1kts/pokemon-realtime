@@ -12,6 +12,8 @@ const rewards = require('./rewards.js');
 const VERSION = require('../package.json').version;
 const tower = require('./tower.js');
 const missions = require('./missions.js');
+const daily = require('./daily.js');
+const metrics = require('./metrics.js');
 const limits = require('./limits.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
@@ -72,11 +74,13 @@ function sendProfile(c) {
   delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
+  if (metrics.touch(c.profile)) store.save();
   send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
 }
 function publicProfile(p) {
-  const { account, ...rest } = p;
-  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p) };
+  const { account, act, ...rest } = p;
+  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p),
+    daily: daily.view(p) };
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
 const busy = c => c.battle || c.queue || c.draft;
@@ -91,7 +95,7 @@ function startBattle(clientsBySide, opts, onEnd) {
       return onEnd(result, b);
     },
   });
-  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; } });
+  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile) metrics.battle(c.profile); } });
   return battle;
 }
 
@@ -250,16 +254,21 @@ function shuffle(arr) {
 }
 
 // ---------- Práctica contra bot ----------
+const TUTORIAL_DUMMY = 143, TUTORIAL_HP = 0.6;   // Snorlax, con algo menos de vida para que el tutorial dure ~1 min
 function startPractice(c, msg) {
   const list = Array.isArray(msg.dexes) ? [...new Set(msg.dexes.map(Number))].filter(d => D.RANKED_POOL.includes(d)).slice(0, 3) : [];
   if (!list.length) return send(c, { t: 'error', msg: 'Elige al menos un Pokémon' });
   const skill = Math.max(0, Math.min(1, +msg.skill || 0.28));
   const maps = Object.keys(D.MAPS);
+  // Tutorial: un muñeco que ni se mueve ni ataca, para aprender los controles sin presión
+  const tut = !!msg.tutorial;
   startBattle([c, null], {
-    mode: 'practice', map: maps[Math.floor(Math.random() * maps.length)],
+    mode: 'practice', map: tut ? Object.keys(D.MAPS)[0] : maps[Math.floor(Math.random() * maps.length)],
     sides: [
       { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex) })) },
-      { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
+      // (el muñeco es un Snorlax: Normal, así que ningún ataque del tutorial le hace poco efecto)
+      tut ? { name: 'Muñeco', team: [{ dex: TUTORIAL_DUMMY, level: D.RANKED_LEVEL }], ai: 0, passive: true, hpMult: TUTORIAL_HP }
+        : { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
     ],
   }, () => []);
 }
@@ -376,6 +385,8 @@ function handle(c, msg) {
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
+    if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
+    if (msg.tutorial === false) delete p.tutorial;
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
     store.save();
     return sendProfile(c);
@@ -407,15 +418,17 @@ function handle(c, msg) {
   }
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
-  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim') {
+  if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'daily' || msg.t === 'tutorial') {
     const r = msg.t === 'mission' ? missions.action(c.profile, msg)
+      : msg.t === 'daily' ? daily.claim(c.profile)
+      : msg.t === 'tutorial' ? daily.claimTutorial(c.profile)
       : msg.t === 'achclaim' ? rewards.claimAchievement(c.profile, String(msg.id))
         : msg.t === 'masteryclaim' ? rewards.claimMastery(c.profile, msg.dex | 0, msg.i | 0)
           : rewards.claimBadge(c.profile, String(msg.region), msg.index | 0);
     if (r.error) send(c, { t: 'error', msg: r.error });
     else {
       if (r.loot) send(c, { t: 'loot', r: r.loot });
-      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : msg.t === 'masteryclaim' ? 'maestria' : 'medalla'), { actor: c.profile.id, ip: c.ip,
+      audit.log('premio.' + (msg.t === 'mission' ? 'mision.' + msg.a : msg.t === 'achclaim' ? 'logro' : msg.t === 'masteryclaim' ? 'maestria' : msg.t === 'daily' ? 'diario' : msg.t === 'tutorial' ? 'tutorial' : 'medalla'), { actor: c.profile.id, ip: c.ip,
         coins: r.loot ? r.loot.coins : -(r.cost || 0) });
       store.save();
     }

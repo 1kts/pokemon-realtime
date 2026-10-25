@@ -1210,6 +1210,19 @@
     daily: { coins: 500, items: { caramelo: 1, superball: 3 } },
     weekly: { coins: 4000, items: { caramelo: 4, ultraball: 5, maspsps: 1, proteina: 1 } },
   };
+  // Premio diario por entrar: un ciclo de 7 días que va a más (el 7.º es el grande). Se recoge a mano;
+  // si se salta un día, se vuelve al 1.º
+  const DAILY_LOGIN = [
+    { coins: 200, items: { pokeball: 5 } },
+    { coins: 300, items: { superball: 2 } },
+    { coins: 300, items: { caramelo: 1 } },
+    { coins: 500, items: { superball: 3 } },
+    { coins: 500, items: { ultraball: 2 } },
+    { coins: 700, items: { caramelo: 2 } },
+    { coins: 1500, items: { ultraball: 3, caramelo: 2, maspsps: 1 } },
+  ];
+  // Premio por acabar el tutorial (una vez)
+  const TUTORIAL_REWARD = { coins: 500, items: { pokeball: 5, superball: 2 } };
   const MISSION_BY_ID = Object.fromEntries([...MISSIONS.daily, ...MISSIONS.weekly].map(m => [m.id, m]));
   // Semana: la fecha (UTC) de su lunes, y cuándo empieza la siguiente
   const weekKey = (t = Date.now()) => { const d = new Date(t); return dayKey(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - (d.getUTCDay() + 6) % 7)); };
@@ -1253,6 +1266,7 @@
   const skinOf = (p, dex) => { const s = (p.skins || {})[lineOf(dex)]; return s && hasMastery(p, dex, 'skin', s) ? s : null; };
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
+    DAILY_LOGIN, TUTORIAL_REWARD,
     levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, catchChance, routeWild, rollWild, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, MASTERY_FRAME, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, seasonTitle, RANKED_PAY,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

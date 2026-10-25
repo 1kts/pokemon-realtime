@@ -12,6 +12,7 @@ const limits = require('./limits.js');
 const story = require('./story.js');
 const rewards = require('./rewards.js');
 const tower = require('./tower.js');
+const metrics = require('./metrics.js');
 const D = require('../public/data.js');
 
 const { db } = store;
@@ -195,6 +196,7 @@ function createAdmin(ctx) {
     const reply = (data) => send(c, { t: msg.t, rid: msg.rid, ...data });
     switch (msg.t) {
       case 'admin.overview': return reply(overview());
+      case 'admin.metrics': return reply(metrics.compute(store.all()));
       case 'admin.search': return reply({ rows: store.search(msg.q).map(p => ({ id: p.id, name: p.name, user: p.account ? p.account.user : null,
         created: p.created, elo: p.elo, ranked: p.ranked, banned: store.banned(p), online: conns(p.id).length > 0 })) });
       case 'admin.player': return reply({ player: player(String(msg.id)) });

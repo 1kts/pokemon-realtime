@@ -41,11 +41,11 @@ export const missionText = m => t(Data.MISSION_BY_ID[m.id].name, { n: m.goal, ty
 const missionIcon = (m, size) => m.type ? typeIcon(m.type, size) : itemImg(EV_ICON[Data.MISSION_BY_ID[m.id].ev] || 'poke-ball', size);
 const itemName = id => (Data.SHOP.find(i => i.id === id) || { name: id }).name;
 // Premio en fichas: dinero y objetos
-const prizeHtml = rw => [rw.coins ? `<span class="mp coins">${coinsHtml(rw.coins)}</span>` : '',
+export const prizeHtml = rw => [rw.coins ? `<span class="mp coins">${coinsHtml(rw.coins)}</span>` : '',
   ...Object.entries(rw.items || {}).map(([k, n]) => `<span class="mp" title="${itemName(k)}">${itemImg(k, 22)}×${n}</span>`)].join('');
 
 // Cuenta atrás hasta un instante (se para sola cuando el elemento sale de la pantalla)
-function countdown(at, onEnd) {
+export function countdown(at, onEnd) {
   const box = el('span', 'mcount');
   const tick = () => {
     if (!box.isConnected && box.dataset.started) return;
@@ -71,7 +71,7 @@ export const missionViews = {
   // Todo lo que se puede recoger ahora: misiones cumplidas, cofres, logros y medallas
   readyCount() {
     const p = this.profile, ms = p.missions;
-    let n = (p.achClaim || []).length + this.badgesReady().length;
+    let n = (p.achClaim || []).length + this.badgesReady().length + (this.dailyReady() ? 1 : 0);
     if (ms) for (const kind of ['daily', 'weekly']) {
       n += ms[kind].filter(m => m.n >= m.goal && !m.claimed).length;
       if (ms[kind].every(m => m.claimed) && !ms.chest[kind]) n++;
@@ -177,6 +177,7 @@ export const missionViews = {
     const wrap = el('div', 'missions-view');
     wrap.append(this.topbar(t('Misiones'), 'menu'));
     const body = el('div', 'mv-body scroll');
+    if (this.profile.daily) body.append(this.dailyPanel());
     body.append(this.missionPanel('daily'), this.missionPanel('weekly'), this.collectPanel());
     wrap.append(body);
     this.root.append(wrap);
@@ -218,10 +219,12 @@ export const missionViews = {
   // Animación al recoger: lo recibido salta uno a uno, el dinero cuenta hacia arriba y confeti
   onLoot(r) {
     document.querySelectorAll('.loot-pop').forEach(x => x.remove());
+    this.app.sfx.reward();
     this.coinBump = r.coins > 0;
     const pop = el('div', 'loot-pop');
     const box = el('div', 'loot-box' + (r.chest ? ' chest-open' : ''));
-    const head = r.chest ? t(r.chest === 'daily' ? '¡Cofre diario abierto!' : '¡Cofre semanal abierto!')
+    const head = r.daily ? t('¡Premio del día {n}!', { n: r.daily }) : r.tutorial ? t('¡Tutorial completado!')
+      : r.chest ? t(r.chest === 'daily' ? '¡Cofre diario abierto!' : '¡Cofre semanal abierto!')
       : r.mastery ? t('¡Premio de maestría!')
         : r.badge || (r.avatar && !r.coins) ? t('¡Nuevo avatar!') : r.achievement ? t('¡Logro recogido!') : t('¡Misión completada!');
     const conf = el('div', 'confetti');

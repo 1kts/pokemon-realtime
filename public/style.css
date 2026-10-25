@@ -1519,3 +1519,37 @@ body.in-battle .legal-bar { display: none; }
 
 /* El brillo va dentro del propio avatar (si no, el fondo de un botón o panel lo tapa) */
 .ava { isolation: isolate; }
+
+/* Premio diario: los 7 días del ciclo, el de hoy brillando */
+.daily-modal { width: min(760px, 100%); }
+.daily-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 6px 0; }
+.daily-day { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px;
+  background: rgba(0,0,0,.22); border: 1px solid var(--line); text-align: center; }
+.daily-day small { font-weight: 800; color: #c4d0e4; }
+.daily-day .dd-art { display: grid; place-items: center; min-height: 52px; }
+.daily-day .dd-art img { image-rendering: pixelated; }
+.daily-day .m-prize { justify-content: center; }
+.daily-day.big { background: linear-gradient(180deg, rgba(255,210,63,.14), rgba(0,0,0,.22)); }
+.daily-day.got { opacity: .55; }
+.daily-day .dd-ok { position: absolute; top: 6px; right: 8px; color: #8ff0a8; font-size: 16px; }
+.daily-day.today { border-color: rgba(255,203,5,.7); background: linear-gradient(180deg, rgba(255,210,63,.22), rgba(0,0,0,.2)); animation: glow 1.6s ease-in-out infinite; }
+.daily-day.today .dd-art { animation: claimBeat 1.3s ease-in-out infinite; }
+.daily-day .claim-btn { padding: 7px 10px; font-size: 13px; }
+.daily-next { display: flex; align-items: center; gap: 6px; margin: 0 auto 0 0; }
+@media (max-width: 640px) { .daily-days { grid-template-columns: repeat(4, 1fr); } .daily-day.big { grid-column: span 2; } }
+
+/* Tutorial: tarjeta de pasos arriba del combate */
+.tutorial-card { position: fixed; top: 74px; left: 50%; transform: translateX(-50%); z-index: 30; width: min(460px, calc(100% - 32px));
+  padding: 12px 16px 10px; border-radius: 16px; background: rgba(10,18,34,.92); border: 2px solid rgba(255,203,5,.7);
+  box-shadow: 0 10px 30px rgba(0,0,0,.45); text-align: center; pointer-events: auto; }
+.tutorial-card.pop { animation: tutPop .35s cubic-bezier(.2,1.4,.4,1); }
+@keyframes tutPop { from { transform: translateX(-50%) scale(.85); opacity: .3; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+.tutorial-card small { color: #ffd76a; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.tutorial-card p { margin: 4px 0 8px; font: 800 17px/1.35 var(--display); }
+.tutorial-card .tut-dots { display: flex; justify-content: center; gap: 6px; }
+.tutorial-card .tut-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.18); }
+.tutorial-card .tut-dots i.ok { background: #5fe08a; }
+.tutorial-card .tut-dots i.on { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
+.tutorial-card button.link { position: absolute; top: 8px; right: 12px; font-size: 12px; }
+.tutorial-done .m-prize { justify-content: center; margin: 4px 0; }
+.menu-card.tutorial.ready { border-color: rgba(255,203,5,.7); animation: glow 1.6s ease-in-out infinite; }

@@ -207,7 +207,7 @@ export const accountViews = {
       });
       const acts = el('div', 'acts');
       const ok = el('button', 'primary', t('¡A jugar!'));
-      ok.onclick = close;
+      ok.onclick = () => { close(); this.dailyAuto(); };   // luego, el premio diario
       acts.append(ok);
       box.append(list, acts);
     });
