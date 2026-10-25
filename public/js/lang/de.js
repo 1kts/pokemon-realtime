@@ -11,6 +11,26 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.17.0 ----------
+    'Motes para tus Pokémon': 'Spitznamen für deine Pokémon',
+    'Al capturar un Pokémon puedes ponerle un mote, y cambiarlo o quitarlo cuando quieras con el botón Mote de Mis Pokémon.': 'Wenn du ein Pokémon fängst, kannst du ihm einen Spitznamen geben und ihn jederzeit mit dem Button Spitzname unter Meine Pokémon ändern oder entfernen.',
+    'Los motes, de hasta 12 caracteres, se ven en combate, en tu equipo y en tu perfil de entrenador.': 'Spitznamen mit bis zu 12 Zeichen erscheinen im Kampf, in deinem Team und in deinem Trainerprofil.',
+    'El menú principal estrena portada: Historia en grande, tu perfil y tu dinero arriba, y accesos directos a Mis Pokémon, Mochila, Tienda y Pokédex.': 'Das Hauptmenü hat ein neues Gesicht: die Geschichte groß im Blick, dein Profil und dein Geld oben und Abkürzungen zu Meine Pokémon, Beutel, Shop und Pokédex.',
+    'Los créditos, el aviso legal y las novedades están siempre a mano en una barra abajo, en todas las pantallas menos en combate.': 'Credits, Impressum und Neuigkeiten hast du immer griffbereit in einer Leiste unten, auf jedem Bildschirm außer im Kampf.',
+    'Los nombres de entrenador y los motes no pueden llevar insultos ni hacerse pasar por el equipo del juego: si eliges uno así, te pediremos otro.': 'Trainernamen und Spitznamen dürfen keine Beleidigungen enthalten und sich nicht als Team des Spiels ausgeben: Wählst du so einen, bitten wir dich um einen anderen.',
+    // ---------- Motes y nombres ----------
+    'Mote': 'Spitzname',
+    'Ponle un nombre: se ve en combate y en tu perfil': 'Gib ihm einen Namen: Er erscheint im Kampf und in deinem Profil',
+    'Guardar mote': 'Spitzname speichern',
+    'Opcional: puedes cambiarlo cuando quieras en Mis Pokémon': 'Optional: Du kannst ihn jederzeit unter Meine Pokémon ändern',
+    '¿Le pones un mote?': 'Möchtest du ihm einen Spitznamen geben?',
+    'Mote guardado ✓': 'Spitzname gespeichert ✓',
+    'Sin mote ✓': 'Kein Spitzname ✓',
+    'Mote de {m}': 'Spitzname für {m}',
+    'Hasta {n} caracteres. Se ve en combate, en tu equipo y en tu perfil público. Vacío, vuelve a llamarse como su especie.': 'Bis zu {n} Zeichen. Er erscheint im Kampf, in deinem Team und in deinem öffentlichen Profil. Leer heißt es wieder wie seine Art.',
+    'Quitar mote': 'Spitznamen entfernen',
+    'Ese nombre no está permitido: elige otro': 'Dieser Name ist nicht erlaubt: Wähle einen anderen',
+    'Ese mote no está permitido: elige otro': 'Dieser Spitzname ist nicht erlaubt: Wähle einen anderen',
     'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas ist ein <b>inoffizielles, kostenloses und nicht gewinnorientiertes Fan-Spiel</b>: keine Werbung, und Spenden bringen keine Vorteile. Es ist weder mit Nintendo, The Pokémon Company, Creatures Inc. oder GAME FREAK inc. verbunden noch von ihnen gesponsert oder gebilligt. Pokémon und die Namen der Figuren sind Marken ihrer jeweiligen Inhaber. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites von <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
     'Créditos': 'Danksagung',
     'Aviso legal y privacidad': 'Impressum und Datenschutz',

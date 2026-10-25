@@ -141,6 +141,15 @@ function createAdmin(ctx) {
       audit.log('admin.rename', { actor: c.admin.id, target: p.id, ip: c.ip, old, name });
       return `${old} ahora se llama ${name}`;
     },
+    // Quitar todos los motes de sus Pokémon (si alguno es ofensivo): vuelven al nombre de la especie
+    nicks(c, msg, p) {
+      const list = (p.mons || []).filter(m => m.nick);
+      for (const m of list) delete m.nick;
+      store.persist(p);
+      for (const x of conns(p.id)) sendProfile(x);
+      audit.log('admin.motes', { actor: c.admin.id, target: p.id, ip: c.ip, motes: list.length });
+      return list.length ? `${list.length} mote${list.length > 1 ? 's' : ''} quitado${list.length > 1 ? 's' : ''}` : 'No tenía motes';
+    },
     // Derecho de supresión: perfil, partida, cuenta y su registro de seguridad. Hay que escribir su
     // nombre para confirmar; queda constancia (solo el id) de que se borró y quién lo hizo.
     remove(c, msg, p) {

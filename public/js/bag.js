@@ -1,6 +1,7 @@
 // Mochila: todos los objetos que tienes, por bolsillos, y para usarlos eliges el Pokémon (como en los
 // juegos). Muestra a quién le sirve cada objeto y por qué no a los demás; el servidor decide al final.
 import { portrait } from './sprites.js';
+import { monLabel } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg } from './pixicons.js';
 
@@ -77,7 +78,7 @@ export const bagViews = {
             const u = usable(p, sel, m);
             const b = el('button', 'bag-mon' + (u.ok ? '' : ' no'));
             b.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }));
-            b.append(el('span', '', `<b>${SPECIES[m.dex].name}</b><small>${t('Nv.{n}', { n: m.level })} · ${u.why}</small>`));
+            b.append(el('span', '', `<b>${monLabel(m)}</b><small>${t('Nv.{n}', { n: m.level })} · ${u.why}</small>`));
             b.disabled = !u.ok;
             b.onclick = () => { this.bagSel = sel.id; this.net.send({ t: 'story', a: 'use', item: sel.id, uid: m.uid }); };
             grid.append(b);

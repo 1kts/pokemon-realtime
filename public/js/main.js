@@ -101,7 +101,11 @@ net.on('disconnected', () => {
   ui.show('menu');
 });
 net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
-net.on('error', m => ui.toast(tServer(m.msg), 'bad'));
+net.on('error', m => {
+  ui.toast(tServer(m.msg), 'bad');
+  // En la portada, si el servidor no crea el perfil (nombre no permitido, demasiados perfiles): se puede volver a intentar
+  if (!ui.profile && net.joined) { net.joined = false; if (ui.view === 'title') ui.show('title'); }
+});
 net.on('loot', m => ui.onLoot(m.r));
 // Anuncio de un administrador a todos los conectados
 net.on('announce', m => ui.toast(`${t('Aviso')}: ${tServer(m.msg)}`, 'announce', 12000));
