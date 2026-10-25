@@ -12,13 +12,27 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.13.0 ----------
+    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '검색과 원하는 대로 바꾸는 색이 다른 포켓몬',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '내 포켓몬에서 이름이나 번호로 검색하고, 박스를 타입·색이 다른 포켓몬·전설로 걸러 원하는 대로 정렬할 수 있습니다.',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '색이 다른 포켓몬에 버튼이 생겨 배틀 중에도 보통 색으로 볼 수 있습니다. 색이 다른 포켓몬으로 계속 집계됩니다.',
     'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': '랭킹에는 등록된 계정만 표시됩니다. 프로필에서 계정을 만들면 지금까지의 기록 그대로 참여할 수 있습니다.',
     'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '60일 동안 접속하지 않은 게스트 기록은 삭제됩니다. 잃지 않으려면 계정을 만드세요.',
     'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': '메뉴의 \'플레이 방법\'에서 기술의 모양과 아레나 기믹을 설명합니다.',
+    'Estás aquí': '현재 위치',
+    'Nueva': 'NEW',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': '어떤 배틀이든 다시 할 수 있고 도로에서 계속 포획할 수 있어.',
+    'Ruta abierta · capturados': '열린 도로 · 포획 수',
+    'Ruta nueva': '새 도로',
+    'Rutas nuevas': '새 도로',
+    'Siguiente reto': '다음 도전',
+    'Tu objetivo': '목표',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '{r} 포켓몬은 Lv.{n}까지 올라',
+    'Vence a {who}': '{who}을(를) 이겨라',
+    '¡Has completado {r}!': '{r}을(를) 클리어했어!',
+    'Mapa más claro y medallas en el mapa': '더 알기 쉬운 지도와 배지',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '지도의 체육관에 배지가 표시돼. 이미 있으면 컬러로.',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '지도에 현재 위치, 목표, 새 도로, 도로별 포획 수, 아직 잠긴 곳이 표시돼.',
     'Sprite': '도트',
     'Animación': '애니메이션',
     'Renders 3D, iconos y animaciones': '3D 렌더, 아이콘, 애니메이션',
@@ -1037,6 +1051,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '설정에서 커서 색을 고를 수 있어요. 배틀의 조준선 색도 바뀝니다.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '내 포켓몬과 도감의 타입·정렬 필터가 게임 스타일로 바뀌고 타입마다 아이콘이 붙었어요.',
     'Cursor a tu gusto': '나만의 커서',
+    'Gestionar equipo': '팀 관리',
+    'Añadir': '추가',
+    'Añadir al equipo': '팀에 추가',
   },
 
   patterns: [

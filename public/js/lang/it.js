@@ -12,13 +12,27 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.13.0 ----------
+    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Ricerca e cromatici come vuoi',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In I miei Pokémon puoi cercare per nome o numero, filtrare il box per tipo, cromatici o leggendari e ordinarlo come preferisci.',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'I tuoi cromatici hanno un pulsante per vederli con i colori normali, anche in lotta; contano sempre come cromatici.',
     'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'Nelle classifiche compaiono solo gli account registrati: crea un account dal tuo profilo ed entri con tutto quello che hai già.',
     'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': 'Le partite da ospite senza accessi per 60 giorni vengono eliminate; crea un account per non perdere la tua.',
     'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'L\'aiuto «Come si gioca» del menu spiega la forma di ogni mossa e le meccaniche delle arene.',
+    'Estás aquí': 'Sei qui',
+    'Nueva': 'Nuova',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'Puoi ripetere qualsiasi lotta e continuare a catturare sui percorsi.',
+    'Ruta abierta · capturados': 'Percorso aperto · catturati',
+    'Ruta nueva': 'Nuovo percorso',
+    'Rutas nuevas': 'Nuovi percorsi',
+    'Siguiente reto': 'Prossima sfida',
+    'Tu objetivo': 'Il tuo obiettivo',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': 'I tuoi Pokémon di {r} salgono fino al Lv.{n}',
+    'Vence a {who}': 'Sconfiggi {who}',
+    '¡Has completado {r}!': 'Hai completato {r}!',
+    'Mapa más claro y medallas en el mapa': 'Mappa più chiara con le medaglie',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': 'Le palestre sulla mappa mostrano la medaglia, a colori se ce l’hai già.',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': 'La mappa indica dove sei, il tuo obiettivo, i nuovi percorsi, cosa hai catturato in ciascuno e cosa è ancora bloccato.',
     'Sprite': 'Sprite',
     'Animación': 'Animazione',
     'Renders 3D, iconos y animaciones': 'Render 3D, icone e animazioni',
@@ -1037,6 +1051,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': 'In Impostazioni puoi scegliere il colore del cursore; colora anche il mirino in lotta.',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': 'I filtri di tipo e ordine di I miei Pokémon e del Pokédex hanno lo stile del gioco, con l\'icona di ogni tipo.',
     'Cursor a tu gusto': 'Il cursore che vuoi',
+    'Gestionar equipo': 'Gestisci squadra',
+    'Añadir': 'Aggiungi',
+    'Añadir al equipo': 'Aggiungi alla squadra',
   },
 
   patterns: [

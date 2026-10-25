@@ -296,26 +296,74 @@ export class UI {
       stage.append(c);
     }
     const nodes = R.nodes;
-    // Camino: une cada líder con el anterior pasando por sus rutas (en orden)
+    const leaders = nodes.filter(n => n.kind !== 'route');
+    const allDone = prog >= leaders.length;
+    const nextLeader = leaders.find(n => n.index === prog);
+    // Dónde estás: la ciudad del último líder vencido, o el pueblo de salida
+    const lastBeaten = leaders.find(n => n.index === prog - 1);
+    const here = lastBeaten ? { x: lastBeaten.x, y: lastBeaten.y } : { x: art.cities[0][1], y: art.cities[0][2] };
+    // A dónde puedes ir: las rutas que abre la última medalla y el siguiente líder
+    const fresh = nodes.filter(n => n.kind === 'route' && n.req === prog);
+    const targets = [...fresh, ...(nextLeader ? [nextLeader] : [])];
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
+    svg.innerHTML = targets.map(n => `<line class="leg${n === nextLeader ? ' goal' : ''}" x1="${here.x}" y1="${here.y}" x2="${n.x}" y2="${n.y}" vector-effect="non-scaling-stroke"/>`).join('');
     stage.append(svg);
+    const pin = el('div', 'you-pin');
+    pin.style.left = here.x + '%'; pin.style.top = here.y + '%';
+    pin.append(this.avatar(26), el('span', '', t('Estás aquí')));
+    stage.append(pin);
     const info = el('div', 'node-info');
+    const buttons = new Map();
     nodes.forEach(n => {
       const isLeader = n.kind !== 'route';
       const unlocked = isLeader ? n.index <= prog : n.req <= prog;
       const done = isLeader && n.index < prog;
-      const b = el('button', `node ${isLeader ? 'gym' : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${isLeader && n.index === prog ? ' next' : ''}`);
+      const isNew = !isLeader && n.req === prog && unlocked;
+      const b = el('button', `node ${isLeader ? 'gym ' + n.kind : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${n === nextLeader ? ' next' : ''}${isNew ? ' new' : ''}`);
       b.style.left = n.x + '%'; b.style.top = n.y + '%';
       if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
       const city = isLeader && cityAt(n);
-      b.innerHTML = `<span>${isLeader ? (n.kind === 'gym' ? n.index + 1 : n.kind === 'champion' ? '♛' : '★') : ''}</span><label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>`;
+      // Gimnasio: su medalla (en color si la tienes); Alto Mando y Campeón, estrella y corona
+      const face = n.kind === 'gym' ? badgeImg(region, n.index, done, 28, 'node-badge') : isLeader ? `<span>${n.kind === 'champion' ? '♛' : '★'}</span>` : '';
+      let extra = '';
+      if (!isLeader && unlocked) {
+        const dexes = [...new Set(n.wild.map(([d]) => d))];
+        const got = dexes.filter(d => p.caught.includes(d)).length;
+        extra = `<em class="caught-count${got === dexes.length ? ' full' : ''}">${got === dexes.length ? '✓' : got + '/' + dexes.length}</em>`;
+      }
+      if (!unlocked) extra = `<em class="lock">${LOCK_SVG}</em>`;
+      if (isNew) extra += `<em class="new-tag">${t('Nueva')}</em>`;
+      if (n === nextLeader) extra += `<em class="goal-tag">${t('Siguiente reto')}</em>`;
+      b.innerHTML = `${face}<label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>${extra}`;
       if (!isLeader && unlocked && n.wild.length) b.prepend(monIcon(n.wild[0][0], 36));
       b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
+      buttons.set(n.id, b);
       stage.append(b);
     });
-    body.append(map, info);
+    // Objetivo actual y leyenda
+    const goal = el('div', 'map-goal');
+    const cap = Data.levelCap(p, region);
+    if (allDone) goal.innerHTML = `<b>${t('¡Has completado {r}!', { r: R.name })}</b><small>${t('Puedes repetir cualquier combate y seguir capturando en las rutas.')}</small>`;
+    else {
+      const where = nextLeader.kind === 'gym' ? (cityAt(nextLeader) ? t(cityAt(nextLeader)[0]) : nextLeader.name) : nextLeader.kind === 'champion' ? t('Campeón de {r}', { r: R.name }) : t('Alto Mando de {r}', { r: R.name });
+      goal.innerHTML = `<small>${t('Tu objetivo')}</small><b>${t('Vence a {who}', { who: nextLeader.leader })} <span class="where">· ${where}</span></b><small>${t('Tus Pokémon de {r} suben hasta el Nv.{n}', { r: R.name, n: cap })}</small>`;
+    }
+    if (fresh.length) {
+      const row = el('div', 'goal-routes', `<small>${t('Rutas nuevas')}:</small>`);
+      for (const n of fresh) { const c = el('button', 'chip', n.name); c.onclick = () => buttons.get(n.id).click(); row.append(c); }
+      goal.append(row);
+    }
+    map.append(el('div', 'map-legend', [
+      `<span><i class="lg you"></i>${t('Estás aquí')}</span>`,
+      `<span><i class="lg goal"></i>${t('Siguiente reto')}</span>`,
+      `<span><i class="lg new"></i>${t('Ruta nueva')}</span>`,
+      `<span><i class="lg route"></i>${t('Ruta abierta · capturados')}</span>`,
+      `<span><i class="lg locked">${LOCK_SVG}</i>${t('Bloqueado')}</span>`].join('')));
+    const side = el('div', 'story-side');
+    side.append(goal, info);
+    body.append(map, side);
     wrap.append(body);
     this.root.append(wrap);
     const next = map.querySelector('.node.next') || map.querySelector('.node.route:not(.locked)');
@@ -374,9 +422,34 @@ export class UI {
         box.append(go);
       }
     }
-    box.append(el('h4', '', t('Tu equipo')));
+    // Tu equipo de la región: se gestiona desde aquí (botón, cada Pokémon o un hueco libre abren Mis Pokémon en esta región)
+    const manage = () => { this.teamRegion = n.region; this.openFrom('team'); };
+    const mb = el('button', 'manage-team', `${itemImg('pokeball', 22)}<span>${t('Gestionar equipo')}</span>`);
+    mb.onclick = manage;
+    if (unlocked) box.append(mb);
+    const head = el('div', 'team-head', `<h4>${t('Tu equipo')}</h4>`);
+    const edit = el('button', 'link', t('Cambiar'));
+    edit.onclick = manage;
+    head.append(edit);
+    box.append(head);
     const team = el('div', 'mini-team');
-    for (const uid of (p.teams && p.teams[n.region]) || []) { const m = p.mons.find(x => x.uid === uid); if (!m) continue; const c = el('div', 'mini'); c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) })); c.append(el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); team.append(c); }
+    const uids = ((p.teams && p.teams[n.region]) || []).filter(uid => p.mons.some(x => x.uid === uid));
+    for (const uid of uids) {
+      const m = p.mons.find(x => x.uid === uid);
+      const c = el('button', 'mini pick');
+      c.title = t('Gestionar equipo');
+      c.append(portrait(m.dex, 48, { shiny: Data.looksShiny(m) }), el('small', '', `${SPECIES[m.dex].name}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`));
+      c.onclick = manage;
+      team.append(c);
+    }
+    // Huecos libres (máximo 3): invitan a completar el equipo
+    for (let i = uids.length; i < 3; i++) {
+      const c = el('button', 'mini pick empty', `<span class="plus">+</span><small>${t('Añadir')}</small>`);
+      c.title = t('Añadir al equipo');
+      c.onclick = manage;
+      team.append(c);
+    }
+    if (!unlocked) box.append(mb);
     box.append(team);
   }
 

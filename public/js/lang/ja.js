@@ -12,13 +12,27 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.13.0 ----------
+    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '検索と色違いの見た目を自由に',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「マイポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '色違いのポケモンにボタンが付き、バトル中も含めて通常の色で表示できます。色違いとしてのカウントはそのままです。',
     'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': 'ランキングには登録済みのアカウントだけが表示されます。プロフィールからアカウントを作れば、今の記録のまま参加できます。',
     'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '60日間ログインのないゲストのデータは削除されます。消えないようにアカウントを作りましょう。',
     'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': 'メニューの「遊び方」で、わざの形とアリーナのギミックを説明するようになりました。',
+    'Estás aquí': '現在地',
+    'Nueva': 'NEW',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': 'どのバトルも再挑戦でき、道路で捕まえ続けられる。',
+    'Ruta abierta · capturados': '開放済みの道路・捕獲数',
+    'Ruta nueva': '新しい道路',
+    'Rutas nuevas': '新しい道路',
+    'Siguiente reto': '次の挑戦',
+    'Tu objetivo': '目標',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '{r}のポケモンはLv.{n}まで上がる',
+    'Vence a {who}': '{who}に勝つ',
+    '¡Has completado {r}!': '{r}をクリアした！',
+    'Mapa más claro y medallas en el mapa': 'わかりやすい地図とバッジ表示',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '地図のジムにバッジを表示。持っていればカラーで。',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '地図に現在地、目標、新しい道路、各道路の捕獲数、まだ行けない場所を表示。',
     'Sprite': 'ドット',
     'Animación': 'アニメ',
     'Renders 3D, iconos y animaciones': '3Dレンダー、アイコン、アニメーション',
@@ -1037,6 +1051,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '設定でカーソルの色を選べるようになりました。バトルの照準の色も変わります。',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '「マイポケモン」と図鑑のタイプ・並び順フィルターがゲームのデザインになり、各タイプのアイコンが付きました。',
     'Cursor a tu gusto': '好きな色のカーソル',
+    'Gestionar equipo': 'チームを編集',
+    'Añadir': '追加',
+    'Añadir al equipo': 'チームに追加',
   },
 
   patterns: [

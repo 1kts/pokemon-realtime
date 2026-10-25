@@ -1270,3 +1270,68 @@ label.cursor-opt.sel { border-color: var(--yellow); }
 .dex-card .tys .type-ico { border-radius: 4px; box-shadow: none; }
 .dex-sheet-top .type { display: inline-flex; align-items: center; gap: 4px; }
 .dex-sheet-top .type .type-ico { border-radius: 3px; box-shadow: none; }
+
+/* ---------- Gestionar el equipo desde el mapa ---------- */
+.node-info button.manage-team { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 8px; padding: 10px 14px; font-weight: 700; border-color: rgba(255,203,5,.4); }
+.node-info button.manage-team:hover:not(:disabled) { border-color: var(--yellow); color: var(--yellow); }
+.manage-team img { image-rendering: pixelated; }
+.node-info .team-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 6px; }
+.node-info .team-head h4 { margin: 0; }
+.node-info .team-head .link { font-size: 12px; }
+button.mini.pick { font: inherit; font-size: 12px; color: inherit; }
+button.mini.pick:hover:not(:disabled) { border-color: var(--yellow); transform: translateY(-2px); }
+button.mini.pick.empty { justify-content: center; min-height: 82px; border-style: dashed; background: rgba(0,0,0,.15); color: var(--muted); }
+.mini.pick.empty .plus { font: 800 24px/1 var(--display); color: var(--yellow); }
+/* Mapa de historia: medallas en los nodos, dónde estás y a dónde puedes ir */
+.node.gym.gym { background: radial-gradient(circle at 50% 40%, #2a3358, #141a33); border: 3px solid var(--tc); }
+.node.gym .node-badge { width: 28px; height: 28px; pointer-events: none; }
+.node.gym:not(.done) .node-badge { filter: brightness(0) invert(1) opacity(.35); }
+.node.gym.next .node-badge { filter: brightness(0) invert(1) opacity(.85); }
+.node.gym.done { box-shadow: 0 0 10px var(--tc), 0 3px 8px rgba(0,0,0,.35); }
+.node.elite span, .node.champion span { color: #ffe680; font-size: 16px; text-shadow: 0 1px 2px #000; }
+.node.locked { filter: grayscale(1) brightness(.55); }
+.node.locked label { display: none; }
+.node em { position: absolute; font-style: normal; pointer-events: none; white-space: nowrap; }
+.node .lock { right: -8px; top: -8px; font-size: 11px; filter: grayscale(0); }
+.node .caught-count { left: 50%; top: -15px; transform: translateX(-50%); font-size: 9px; font-weight: 800; padding: 0 5px; border-radius: 6px; background: rgba(20,26,51,.85); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+.node .caught-count.full { background: var(--green); border-color: transparent; }
+.node.route.new { box-shadow: 0 0 0 3px #ffcb05, 0 0 14px #ffcb05; animation: pulse 1.3s infinite; }
+.node.route.new label { display: block; }
+.node .new-tag, .node .goal-tag { left: 50%; transform: translateX(-50%); bottom: calc(100% + 14px); font-size: 9px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; padding: 1px 6px; border-radius: 6px; color: #1a1300; background: #ffcb05; box-shadow: 0 2px 4px rgba(0,0,0,.4); }
+.node.gym .goal-tag { bottom: calc(100% + 6px); background: #fff; }
+.node.next { z-index: 3; }
+.map .paths .leg { stroke: #ffcb05; stroke-width: 2.5; stroke-dasharray: 6 6; stroke-linecap: round; opacity: .85; animation: legMarch 1s linear infinite; filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); }
+.map .paths .leg.goal { stroke: #fff; }
+@keyframes legMarch { to { stroke-dashoffset: -12; } }
+.map .paths { z-index: 0; pointer-events: none; }
+.you-pin { position: absolute; transform: translate(-50%, -100%); margin-top: -18px; z-index: 4; display: flex; flex-direction: column; align-items: center; pointer-events: none; animation: pinBob 1.6s ease-in-out infinite; }
+.you-pin .ava { --s: 26px; border-width: 2px; --ring: #fff; background: #141a33; box-shadow: 0 3px 8px rgba(0,0,0,.5); }
+.you-pin .ava-fx { display: none; }
+.you-pin span { margin-top: 2px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; padding: 1px 6px; border-radius: 6px; background: #fff; color: #141a33; box-shadow: 0 2px 4px rgba(0,0,0,.4); }
+.you-pin::after { content: ''; width: 0; height: 0; border: 6px solid transparent; border-top-color: #fff; margin-top: -1px; }
+@keyframes pinBob { 50% { transform: translate(-50%, calc(-100% - 4px)); } }
+.map-goal { position: absolute; left: 12px; top: 12px; z-index: 5; max-width: min(46%, 340px); display: grid; gap: 2px; padding: 9px 13px; border-radius: 14px; background: rgba(14,20,42,.88); border: 1px solid rgba(255,203,5,.5); box-shadow: 0 6px 18px rgba(0,0,0,.4); backdrop-filter: blur(6px); }
+.map-goal small { color: var(--muted); font-size: 11px; }
+.map-goal > small:first-child { color: #ffcb05; text-transform: uppercase; letter-spacing: .6px; font-weight: 800; font-size: 10px; }
+.map-goal b { font: 800 15px var(--display); }
+.map-goal .where { font-weight: 600; font-size: 12px; color: var(--muted); }
+.goal-routes { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; }
+.goal-routes .chip { padding: 2px 8px; font-size: 11px; }
+.map-legend { position: absolute; left: 12px; bottom: 10px; z-index: 5; display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 5px 10px; border-radius: 10px; background: rgba(14,20,42,.78); font-size: 10.5px; color: #e8ecf8; max-width: calc(100% - 24px); }
+.map-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.lg { display: inline-block; width: 11px; height: 11px; border-radius: 50%; font-style: normal; font-size: 9px; line-height: 11px; text-align: center; }
+.lg.you { background: #fff; }
+.lg.goal { background: #141a33; border: 2px solid #fff; animation: pulse 1.3s infinite; }
+.lg.new { background: #8fd36a; box-shadow: 0 0 0 2px #ffcb05; }
+.lg.route { background: #8fd36a; }
+.lg.locked { background: none; }
+
+.story-side { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.story-side .node-info { flex: 1; min-height: 0; }
+.story-side .map-goal { position: static; max-width: none; }
+.node .lock { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: #3a3f52; box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.lg.locked { display: inline-grid; place-items: center; width: 15px; height: 15px; background: #3a3f52; }
+.lg.locked svg { width: 8px; height: 10px; }
+.node .lock svg { width: 10px; height: 10px; color: #fff; }
+.lg.locked svg { color: #fff; }
+.you-pin span { white-space: nowrap; }

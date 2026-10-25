@@ -11,13 +11,27 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.13.0 ----------
+    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '搜索与随心切换异色',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '在“我的宝可梦”中可以按名字或编号搜索，按属性、异色或传说筛选盒子，并随意排序。',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '你的异色宝可梦有一个按钮，可以用普通配色显示（对战中也是）；它们仍然算作异色。',
     'En los rankings solo salen las cuentas registradas: crea una cuenta desde tu perfil y entras con todo lo que ya tienes.': '排行榜上只显示已注册的账号：在个人资料中创建账号，就能带着现有的一切上榜。',
     'Las partidas de invitado que pasan 60 días sin conectarse se borran; crea una cuenta para no perder la tuya.': '游客存档连续 60 天未登录将被删除；创建账号即可保留你的进度。',
     'La ayuda «Cómo se juega» del menú explica la forma de cada ataque y las mecánicas de las arenas.': '菜单里的“玩法说明”现在会讲解每个招式的形状和场地机制。',
+    'Estás aquí': '你在这里',
+    'Nueva': '新',
+    'Puedes repetir cualquier combate y seguir capturando en las rutas.': '可以重打任何对战，并继续在道路上捕捉。',
+    'Ruta abierta · capturados': '已开放道路 · 已捕获',
+    'Ruta nueva': '新道路',
+    'Rutas nuevas': '新道路',
+    'Siguiente reto': '下一个挑战',
+    'Tu objetivo': '你的目标',
+    'Tus Pokémon de {r} suben hasta el Nv.{n}': '你的{r}宝可梦最高可升到Lv.{n}',
+    'Vence a {who}': '击败{who}',
+    '¡Has completado {r}!': '你已完成{r}！',
+    'Mapa más claro y medallas en el mapa': '更清晰的地图与徽章',
+    'Los gimnasios del mapa muestran su medalla, en color si ya la tienes.': '地图上的道馆会显示徽章，已获得的为彩色。',
+    'El mapa marca dónde estás, tu objetivo, las rutas nuevas, lo que llevas capturado en cada una y lo que sigue bloqueado.': '地图会显示你的位置、目标、新道路、每条道路的捕获进度以及仍未解锁的地点。',
     'Sprite': '像素',
     'Animación': '动画',
     'Renders 3D, iconos y animaciones': '3D渲染、图标与动画',
@@ -1026,6 +1040,9 @@ export default {
     'En Ajustes puedes elegir el color del cursor; también tiñe la retícula del combate.': '现在可以在设置中选择光标颜色，对战中的瞄准圈也会随之变色。',
     'Los filtros de tipo y de orden de Mis Pokémon y la Pokédex tienen el estilo del juego, con el icono de cada tipo.': '“我的宝可梦”和图鉴中的属性与排序筛选改为游戏风格，并带有各属性图标。',
     'Cursor a tu gusto': '自定义光标',
+    'Gestionar equipo': '管理队伍',
+    'Añadir': '添加',
+    'Añadir al equipo': '加入队伍',
   },
 
   patterns: [
