@@ -21,9 +21,11 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.leader-head .leader-sprite')?.naturalWidth > 0`);
   ok((await page.eval(`document.querySelector('.leader-head .leader-sprite').getAttribute('src')`)) === 'trainers/erika.png', 'el panel de Erika enseña su sprite');
 
+  // Se espera directamente a lo que se comprueba (en un paso): la presentación dura poco y en una
+  // máquina lenta, como la del CI, puede haber desaparecido entre «ya está» y «léela»
   await page.click('.node-info button.primary');
-  await page.waitFor(`document.querySelector('.leader-intro')`);
-  ok((await page.eval(`document.querySelector('.leader-intro b').textContent`)) === 'Erika', 'al desafiarla se presenta antes del combate');
-  await page.waitFor(`!document.querySelector('.leader-intro')`);
-  ok(await page.eval(`!!document.querySelector('.tname .tname-face[src="trainers/erika.png"]')`), 'su cara queda junto a su nombre en el marcador');
+  await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Erika'`);
+  ok(true, 'al desafiarla se presenta antes del combate');
+  await page.waitFor(`!document.querySelector('.leader-intro') && !!document.querySelector('.tname .tname-face[src="trainers/erika.png"]')`);
+  ok(true, 'su cara queda junto a su nombre en el marcador');
 };

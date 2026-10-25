@@ -143,7 +143,15 @@ async function setup(name) {
     return { token: m.p.token, id: m.p.id, client: c, profile: m.p };
   }
 
-  const teardown = () => { try { cdp.close(); } catch {} chrome.kill('SIGKILL'); server.kill('SIGKILL'); fs.rmSync(tmp, { recursive: true, force: true }); };
+  // Limpiar nunca hace fallar una prueba: se espera a que Chrome y el servidor terminen de verdad (si no,
+  // Chrome puede seguir escribiendo en su carpeta mientras se borra) y el borrado se reintenta
+  const gone = p => new Promise(r => { if (p.exitCode !== null || p.signalCode) return r(); p.once('exit', r); setTimeout(r, 5000).unref(); });
+  const teardown = async () => {
+    try { cdp.close(); } catch {}
+    chrome.kill('SIGKILL'); server.kill('SIGKILL');
+    await Promise.all([gone(chrome), gone(server)]);
+    try { fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch (e) { console.log(`    (no se pudo borrar ${tmp}: ${e.code})`); }
+  };
   return { page, client, player, env, tmp, teardown, serverErr: () => serverErr };
 }
 
@@ -167,7 +175,7 @@ async function run(files) {
     } catch (e) {
       t.ok(false, 'error: ' + e.message);
       if (ctx) { const shot = path.join(os.tmpdir(), `e2e-${name}.png`); try { await ctx.page.shot(shot); console.log(`    captura: ${shot}`); } catch {} }
-    } finally { if (ctx) ctx.teardown(); }
+    } finally { if (ctx) await ctx.teardown(); }
     if (results.some(r => !r[0]) || !results.length) failed++;
   }
   console.log(failed ? `\n${failed} de ${files.length} pruebas e2e fallan` : `\nTodas las pruebas e2e correctas (${files.length})`);
