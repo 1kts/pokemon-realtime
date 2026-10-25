@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas è un <b>fan game non ufficiale, gratuito e senza scopo di lucro</b>: niente pubblicità e donare non dà vantaggi. Non è affiliato, sponsorizzato né approvato da Nintendo, The Pokémon Company, Creatures Inc. o GAME FREAK inc. Pokémon e i nomi dei personaggi sono marchi dei rispettivi titolari. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprite di <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
+    'Créditos': 'Crediti',
+    'Aviso legal y privacidad': 'Note legali e privacy',
+    'Retirada de contenido': 'Rimozione di contenuti',
+    'Hecho por {who}': 'Creato da {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Proiettili come sempre',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'I proiettili tornano al loro aspetto di sempre, un nucleo luminoso con un alone colorato, anche nelle arene di ghiaccio e neve, invece di apparire diversi.',
@@ -496,6 +501,8 @@ export default {
 
     // ---------- Menu ----------
     'Aventura': 'Avventura',
+    'Pantalla completa': 'Schermo intero',
+    'Tu colección': 'La tua collezione',
     'Tu viaje por las regiones y los retos de la Torre': 'Il tuo viaggio nelle regioni e le sfide della Torre',
     'Online': 'Online',
     'Contra otros entrenadores y sus rankings': 'Contro altri Allenatori, e le loro classifiche',

@@ -12,7 +12,7 @@ module.exports = async ({ page, ok }) => {
   await page.eval(`localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
   await page.reload();
   await page.waitFor(`document.querySelector('.title-panel')`);
-  await page.click('aviso legal');
+  await page.click('Créditos');   // el botón de la barra legal
   await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`);
   ok(true, 'el aviso del juego enlaza a la página legal');
 };

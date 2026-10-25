@@ -110,6 +110,12 @@ async function setup(name) {
       if (!ok) throw new Error('No encuentro el campo: ' + sel);
       await sleep(100);
     },
+    // Cambia el tamaño de la ventana (una pantalla estrecha, un móvil…); resize() sin argumentos la deja como estaba
+    async resize(width, height) {
+      if (width) await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+      else await call('Emulation.clearDeviceMetricsOverride');
+      await sleep(300);
+    },
     async shot(file) { const r = await call('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(file, Buffer.from(r.data, 'base64')); },
     // Entra al menú con una sesión ya hecha (el perfil se crea por WebSocket y aquí se usa su token),
     // pulsando «Continuar como…» en la portada como haría el jugador

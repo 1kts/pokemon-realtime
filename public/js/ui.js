@@ -9,6 +9,7 @@ import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
 import { missionViews } from './missions.js';
+import { legalBarViews } from './legalbar.js';
 import { dropdown, typeDropdown } from './dropdown.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
@@ -51,6 +52,7 @@ export class UI {
     this.board = [];
     this.view = 'title';
     this.lastMode = null;
+    this.legalBar();   // aviso legal fijo abajo, en todas las pantallas menos el combate
   }
 
   get net() { return this.app.net; }
@@ -89,6 +91,7 @@ export class UI {
     if (track) this.app.music.play(track);
     this.root.hidden = false;
     this.root.innerHTML = '';
+    this.refreshLegalBar();   // idioma y aviso de novedades al día
     document.querySelectorAll('body > .dd-menu').forEach(m => m.remove());   // desplegables que quedaran abiertos
     const fn = this['view_' + view];
     if (fn) fn.call(this);
@@ -162,13 +165,14 @@ export class UI {
   // ---------- Menú ----------
   view_menu() {
     const p = this.profile;
-    const wrap = el('div', 'menu');
-    wrap.append(this.topbar(t('¡Hola, {name}!', { name: escapeHtml(p.name) })));
-    const top = el('div', 'menu-top');
-    const main = el('div', 'menu-main');
+    const wrap = el('div', 'menu hub');
+    wrap.append(this.hubBar());
+    const body = el('div', 'hub-body');
+    const main = el('div', 'hub-main');
+    const side = el('div', 'hub-side');
     // Cada sección: cabecera y su rejilla de tarjetas
-    const section = (title, sub) => {
-      const sec = el('section', 'menu-sec');
+    const section = (title, sub, cls = '') => {
+      const sec = el('section', 'menu-sec ' + cls);
       sec.append(el('div', 'sec-head', `<h3>${title}</h3><small>${sub}</small>`));
       const grid = el('div', 'menu-grid');
       sec.append(grid);
@@ -176,62 +180,99 @@ export class UI {
       return grid;
     };
     const CARD_ICON = { story: 'town-map', tower: 'relic-crown', ranked: 'master-ball', casual: 'vs-seeker', practice: 'tm-normal', ladder: 'medal-box' };
-    const card = (grid, title, desc, cls, art, onClick) => {
+    const card = (grid, title, desc, cls, art, onClick, artSize = 120) => {
       const ic = CARD_ICON[cls.split(' ')[0]];
       const c = el('button', 'menu-card ' + cls, `<b>${ic ? itemImg(ic, 40, 'card-ico') : ''}${title}</b><span>${desc}</span><i class="go">${t('Jugar')} ›</i>`);
-      const a = animatedPortrait(art, 120, 'Idle');
+      const a = animatedPortrait(art, artSize, 'Idle');
       a.classList.add('art');
       c.prepend(a);
       c.onclick = onClick;
       grid.append(c);
+      return c;
     };
     const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0] || null;
     const regs = Data.REGION_IDS.map(r => `${Data.REGIONS[r].name} ${Data.progOf(p, r) >= 13 ? '♛' : Math.min(8, Data.progOf(p, r)) + '/8'}`).join(' · ');
     const tw = p.tower;
-    const adventure = section(t('Aventura'), t('Tu viaje por las regiones y los retos de la Torre'));
-    card(adventure, t('Historia'), p.mons.length ? `${regs} · ${t('{n} Pokémon', { n: p.mons.length })}` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story wide', lead ? lead.dex : 25, () => this.show('story'));
-    card(adventure, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
+    // Historia: la gran tarjeta de la portada
+    const story = el('div', 'hub-hero');
+    card(story, t('Historia'), p.mons.length ? `${regs} · ${t('{n} Pokémon', { n: p.mons.length })}` : t('Elige tu primer Pokémon y viaja por Kanto y Johto'), 'story hero', lead ? lead.dex : 25, () => this.show('story'), 190);
+    main.append(story);
     const online = section(t('Online'), t('Contra otros entrenadores y sus rankings'));
     const ready = this.claimable().length;
-    card(online, t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => this.show('online'));
+    card(online, t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked feature' + (ready ? ' has-ready' : ''), 149, () => this.show('online'), 150);
     card(online, t('Partida rápida'), t('Online sin ELO: elige 3 y a combatir'), 'casual', 6, () => { this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
-    const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
-    card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
-    const side = el('div', 'menu-side');
-    side.append(this.profilePanel(lead));
-    if (p.missions) side.append(this.missionsWidget());
-    top.append(main, side);
-    wrap.append(top, this.howTo(), this.menuLegal());
-    this.root.append(wrap);
-  }
-
-
-  profilePanel(lead) {
-    const p = this.profile;
-    const total = Object.keys(SPECIES).length;
-    const box = el('div', 'panel profile');
-    const who = el('button', 'who');
-    who.title = t('Ver perfil');
-    who.onclick = () => this.show('profile');
-    who.append(this.avatar(84, true), el('div', '', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(t(p.title))}</span> ` : ''}<span class="elo">${t(p.league)} · ${p.elo}</span>`));
-    box.append(who);
+    const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
+    card(training, t('Torre Batalla'), tw.team ? t('Racha en curso: {s} · bloque {b}', { s: tw.streak, b: tw.block }) : t('Combates seguidos a Nv.50 · récord {n}', { n: tw.best }), 'tower', 248, () => this.show('tower'));
+    card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
+    // Lateral: aviso a invitados, misiones y accesos a lo tuyo
     if (!p.account) {
       const reg = el('button', 'guest-cta', `<b>${t('Juegas como invitado')}</b><small>${t('Crea una cuenta para no perder tu partida')}</small>`);
       reg.onclick = () => this.show('profile');
-      box.append(reg);
+      side.append(reg);
     }
-    box.append(el('div', 'rows', `
-      <div class="stat"><small>${t('Dinero')}</small><b>${coins(p.coins)}</b></div>
-      <div class="stat"><small>${t('Medallas')}</small><b>${Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0)}/${8 * Data.REGION_IDS.length}</b></div>
-      <div class="stat"><small>${t('Pokémon')}</small><b>${p.mons.length}${p.mons.some(m => m.shiny) ? ` <i class="shiny-star">✦${p.mons.filter(m => m.shiny).length}</i>` : ''}</b></div>
-      <div class="stat"><small>${t('Clasificatoria')}</small><b>${wl(p.wins, p.losses)}</b></div>
-      <div class="stat"><small>${t('Torre: récord')}</small><b>${p.tower.best}${p.tower.team ? ` <small class="small">${t('racha {n}', { n: p.tower.streak })}</small>` : ''}</b></div>`));
-    const dexBtn = el('button', 'stat dexlink', `<small>${t('Pokédex')}</small><b>${p.caught.length} / ${total}</b><div class="dexbar"><div style="width:${p.caught.length / total * 100}%"></div></div>`);
-    dexBtn.title = t('Abrir la Pokédex');
-    dexBtn.onclick = () => this.openFrom('dex');
-    box.append(dexBtn);
+    if (p.missions) side.append(this.missionsWidget());
+    side.append(this.collectionTiles());
+    body.append(main, side);
+    wrap.append(body, this.howTo());
+    this.root.append(wrap);
+  }
+
+  // Cabecera de la portada: idioma y pantalla completa a la izquierda, tu perfil, dinero y novedades a la derecha
+  hubBar() {
+    const p = this.profile;
+    const bar = el('header', 'hub-bar');
+    const tools = el('div', 'hub-mod hub-tools');
+    tools.append(this.langPicker(), this.fullscreenButton(), this.supportButton());
+    const logo = el('h1', 'hub-logo', 'Poké<b>Arenas</b>');
+    const me = el('div', 'hub-mod hub-me');
+    const ava = el('button', 'hub-ava');
+    ava.setAttribute('aria-label', t('Perfil'));
+    ava.append(this.avatar(56, true));
+    if (this.claimable().length || !p.account) ava.append(el('i', 'ndot'));
+    ava.onclick = () => this.show('profile');
+    const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
+    const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
+    this.coinBump = false;
+    me.append(this.hoverTip(ava, `<b>${escapeHtml(p.name)}</b><span class="tip-sub">${t(p.league)} · ${p.elo} ELO</span><p>${t('Tu perfil: tarjeta de entrenador, historial, títulos, marcos y cuenta.')}</p>`),
+      info,
+      this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
+      this.newsIcon(), this.settingsButton());
+    bar.append(tools, logo, me);
+    return bar;
+  }
+
+  // Pantalla completa: solo si el navegador la permite
+  fullscreenButton() {
+    const b = el('button', 'tb-btn icon fs-btn', svg('<path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'));
+    b.setAttribute('aria-label', t('Pantalla completa'));
+    b.title = t('Pantalla completa');
+    b.hidden = !document.fullscreenEnabled;
+    b.onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {});
+    const sync = () => b.classList.toggle('on', !!document.fullscreenElement);
+    document.onfullscreenchange = sync;   // una sola escucha: se pisa al repintar
+    sync();
+    return b;
+  }
+
+  // Accesos a lo tuyo con su cuenta: Pokémon, mochila, tienda y Pokédex
+  collectionTiles() {
+    const p = this.profile;
+    const box = el('section', 'panel hub-coll');
+    box.append(el('h3', '', t('Tu colección')));
+    const grid = el('div', 'coll-grid');
+    const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
+    const tile = (ico, label, sub, view) => {
+      const b = el('button', 'coll-tile', `${itemImg(ico, 40)}<b>${label}</b><small>${sub}</small>`);
+      b.onclick = () => this.openFrom(view);
+      grid.append(b);
+    };
+    tile('pokeball', t('Mis Pokémon'), t('{n} Pokémon', { n: p.mons.length }), 'team');
+    tile('seal-bag', t('Mochila'), t('{n} objetos', { n: items }), 'bag');
+    tile('forage-bag', t('Tienda'), coins(p.coins), 'shop');
+    tile('rotom-catalog', t('Pokédex'), `${p.caught.length} / ${Object.keys(SPECIES).length}`, 'dex');
+    box.append(grid);
     return box;
   }
 
@@ -1110,4 +1151,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews);
+Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews);

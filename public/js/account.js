@@ -128,7 +128,7 @@ export const accountViews = {
     render();
     const lang = this.langPicker();
     lang.classList.add('corner');
-    box.append(lang, this.footer());
+    box.append(lang);
     this.root.append(box);
   },
 
@@ -160,26 +160,6 @@ export const accountViews = {
       <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`, 'support-tip');
   },
 
-
-  // Pie del menú principal: aviso legal, enlace a los créditos y versión
-  menuLegal() {
-    const f = el('div', 'menu-legal');
-    f.append(el('p', '', t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')));
-    const legal = el('button', 'link', t('Ver créditos y datos que guardamos'));
-    legal.onclick = () => this.legal();
-    f.append(legal, el('small', '', `PokéArenas v${VERSION}`));
-    return f;
-  },
-
-  footer() {
-    const f = el('div', 'footer');
-    const v = el('button', 'link', `v${VERSION}${this.hasNews() ? ' <i class="ndot news"></i>' : ''} · ${t('Novedades')}`);
-    v.onclick = () => this.patchNotes();
-    const legal = el('button', 'link', t('Créditos y aviso legal'));
-    legal.onclick = () => this.legal();
-    f.append(v, legal);
-    return f;
-  },
 
   // Selector de idioma: cambia los textos y vuelve a pintar la pantalla actual
   // Selector de idioma de la portada: botón con la bandera y el código que abre la lista de idiomas

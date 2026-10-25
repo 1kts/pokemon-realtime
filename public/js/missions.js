@@ -183,8 +183,8 @@ export const missionViews = {
   // Tarjeta del menú: las diarias con su progreso y el aviso de lo que hay por recoger
   missionsWidget() {
     const ms = this.profile.missions;
-    const box = el('div', 'panel missions-widget');
     const ready = this.readyCount();
+    const box = el('div', 'panel missions-widget' + (ready ? ' has-ready' : ''));
     const head = el('button', 'mw-head', `<b>${t('Misiones diarias')}</b>${ready ? `<span class="m-ready">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</span>` : ''}<i class="go">${t('Ver todas')} ›</i>`);
     head.onclick = () => this.show('missions');
     box.append(head);

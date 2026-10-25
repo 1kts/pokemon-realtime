@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas est un <b>fan-game non officiel, gratuit et à but non lucratif</b> : sans publicité, et faire un don ne donne aucun avantage. Il n’est ni affilié, ni parrainé, ni approuvé par Nintendo, The Pokémon Company, Creatures Inc. ou GAME FREAK inc. Pokémon et les noms des personnages sont des marques de leurs propriétaires respectifs. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
+    'Créditos': 'Crédits',
+    'Aviso legal y privacidad': 'Mentions légales et confidentialité',
+    'Retirada de contenido': 'Retrait de contenu',
+    'Hecho por {who}': 'Créé par {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Les projectiles comme avant',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Les projectiles retrouvent leur aspect habituel, un noyau brillant avec un halo de couleur, même dans les arènes de glace et de neige, au lieu d’avoir un autre aspect.',
@@ -488,6 +493,8 @@ export default {
 
     // ---------- Menu ----------
     'Aventura': 'Aventure',
+    'Pantalla completa': 'Plein écran',
+    'Tu colección': 'Ta collection',
     'Tu viaje por las regiones y los retos de la Torre': 'Ton voyage à travers les régions et les défis de la Tour',
     'Online': 'En ligne',
     'Contra otros entrenadores y sus rankings': 'Contre d\'autres Dresseurs, et leurs classements',

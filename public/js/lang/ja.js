@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenasは<b>非公式・無料・非営利のファンゲーム</b>です。広告はなく、寄付しても有利にはなりません。任天堂、株式会社ポケモン、株式会社クリーチャーズ、株式会社ゲームフリークとは提携・後援・承認の関係にありません。ポケモンおよびキャラクター名はそれぞれの権利者の商標です。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. スプライト：<a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
+    'Créditos': 'クレジット',
+    'Aviso legal y privacidad': '法的通知とプライバシー',
+    'Retirada de contenido': 'コンテンツの削除',
+    'Hecho por {who}': '制作：{who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'いつもの弾に戻った',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弾はいつもの見た目、光る芯と色つきのハローに戻った。氷や雪のアリーナでも違って見えなくなった。',
@@ -496,6 +501,8 @@ export default {
 
     // ---------- メニュー ----------
     'Aventura': 'ぼうけん',
+    'Pantalla completa': '全画面',
+    'Tu colección': 'コレクション',
     'Tu viaje por las regiones y los retos de la Torre': '地方を めぐる 旅と、タワーの 挑戦',
     'Online': 'オンライン',
     'Contra otros entrenadores y sus rankings': 'ほかの トレーナーとの バトルと ランキング',

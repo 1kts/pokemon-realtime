@@ -9,9 +9,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   ok(await page.eval(`document.querySelectorAll('.missions-widget .mission').length`) === 3, 'el menú enseña las 3 misiones diarias');
-  ok(await page.eval(`+(document.querySelector('.tb-btn.quest .nbadge') || {}).textContent >= 1`), 'la barra avisa de que hay algo por recoger');
+  ok(await page.eval(`!!document.querySelector('.missions-widget.has-ready .m-ready')`), 'el panel de misiones avisa de que hay algo por recoger');
 
-  await page.click('.tb-btn.quest');
+  await page.click('.mw-head');
   await page.waitFor(`window.__app.ui.view === 'missions'`);
   ok(await page.eval(`document.querySelectorAll('.missions.daily .mission').length === 3 && document.querySelectorAll('.missions.weekly .mission').length === 3`), '3 diarias y 3 semanales');
 

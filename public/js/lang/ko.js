@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas는 <b>비공식·무료·비영리 팬 게임</b>이야. 광고가 없고, 후원해도 이점은 없어. 닌텐도, 포켓몬 컴퍼니, 크리처스, 게임프리크와는 제휴, 후원, 승인 관계가 없어. 포켓몬과 캐릭터 이름은 각 소유자의 상표야. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. 스프라이트: <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).',
+    'Créditos': '크레딧',
+    'Aviso legal y privacidad': '법적 고지 및 개인정보',
+    'Retirada de contenido': '콘텐츠 삭제',
+    'Hecho por {who}': '제작: {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '예전 그대로의 투사체',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '투사체가 얼음과 눈 아레나에서도 다르게 보이지 않고, 빛나는 중심과 색이 있는 빛무리라는 평소 모습으로 돌아왔어.',
@@ -496,6 +501,8 @@ export default {
 
     // ---------- 메뉴 ----------
     'Aventura': '모험',
+    'Pantalla completa': '전체 화면',
+    'Tu colección': '내 컬렉션',
     'Tu viaje por las regiones y los retos de la Torre': '여러 지방을 도는 여행과 타워의 도전',
     'Online': '온라인',
     'Contra otros entrenadores y sus rankings': '다른 트레이너와의 배틀과 랭킹',

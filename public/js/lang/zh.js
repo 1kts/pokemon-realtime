@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    'PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).': 'PokéArenas 是<b>非官方、免费、非营利的同人游戏</b>：没有广告，捐赠也不会带来任何优势。本游戏与任天堂、The Pokémon Company、Creatures Inc. 和 GAME FREAK inc. 没有隶属、赞助或认可关系。宝可梦及角色名称是其各自所有者的商标。© 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. 精灵图来自 <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a>（<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>）。',
+    'Créditos': '致谢',
+    'Aviso legal y privacidad': '法律声明与隐私',
+    'Retirada de contenido': '内容移除',
+    'Hecho por {who}': '作者：{who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '弹射物恢复原样',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弹射物恢复为一贯的样子：发光的核心加彩色光晕，在冰雪场地中也不再显得不同。',
@@ -566,6 +571,8 @@ export default {
     '✦ shiny': '✦ 异色',
     'parry {n} ms': '弹反 {n} 毫秒',
     'Aventura': '冒险',
+    'Pantalla completa': '全屏',
+    'Tu colección': '我的收藏',
     'Tu viaje por las regiones y los retos de la Torre': '你在各地区的旅程和对战塔的挑战',
     'Online': '在线',
     'Contra otros entrenadores y sus rankings': '与其他训练家对战，以及排行榜',
