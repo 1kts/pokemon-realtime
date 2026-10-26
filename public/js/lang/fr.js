@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': 'Retouches de la carte et de la Boutique',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'La Ligue Pokémon est maintenant un bâtiment violet avec son nom et le Plateau Indigo en dessous, comme les arènes, et la couronne se trouve sur le toit.',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': 'Après avoir battu le Champion, les Pokémon de la Boutique arrivent au N.50 au lieu du niveau maximum.',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': 'Le « Tu es ici » de la carte montre ton avatar avec son cadre, et les compteurs rouges des récompenses s\'affichent devant.',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'Dresseurs de l\'IA',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'En Classé et en Partie rapide, si personne n\'arrive en 20 secondes environ, tu affrontes un dresseur de l\'IA de ton niveau, marqué « IA ».',
@@ -1817,7 +1822,7 @@ export default {
     noche: [null, 'Fait évoluer Cornèbre, Feuforêve…'],
     alba: [null, 'Fait évoluer Kirlia (mâle), Stalgamin (femelle)…'],
     dia: [null, 'Fait évoluer Togetic, Rosélia, Chinchidou…'],
-    cordon: ['Fil de Liaison', 'Un étrange fil qui semble relier deux Pokémon. Certains réagissent à son contact…'],
+    cordon: ['Fil de Liaison', 'Un étrange cordon qui semble simuler un échange. Certains Pokémon réagissent à son contact…'],
     revestimiento: ['Peau Métal', 'Une pellicule métallique spéciale. Que se passerait-il si tu la donnais à un certain Pokémon ?'],
     rocarey: ['Roche Royale', 'Une roche en forme de couronne. On dit qu\'elle va très bien à certains Pokémon…'],
     escamadragon: ['Écaille Draco', 'Une écaille très dure et brillante. Quelque chose s\'éveille chez qui la porte…'],

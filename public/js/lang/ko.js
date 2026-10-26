@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': '지도와 상점 다듬기',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': '포켓몬리그가 이제 체육관처럼 이름과 석영고원이 아래에 나오는 보라색 건물이 되었고, 왕관은 지붕 위에 나와요.',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': '챔피언을 이긴 뒤에는 상점의 포켓몬이 레벨 한도 대신 Lv.50으로 와요.',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': '지도의 「현재 위치」에 테두리가 있는 아바타가 보이고, 받을 보상의 빨간 숫자가 앞에 보여요.',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'AI 트레이너',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': '랭크전과 빠른 대전에서 약 20초 동안 상대가 없으면 「AI」 표시가 붙은 내 수준의 AI 트레이너와 대전해요.',
@@ -1836,7 +1841,7 @@ export default {
     noche: [null, '니로우, 무우마 등이 진화한다'],
     alba: [null, '킬리아(♂), 눈꼬마(♀) 등이 진화한다'],
     dia: [null, '토게틱, 로젤리아, 치라미 등이 진화한다'],
-    cordon: ['연결의끈', '두 포켓몬을 이어 주는 듯한 신기한 끈. 닿으면 반응하는 포켓몬도 있다는데…'],
+    cordon: ['연결의끈', '통신교환을 흉내 내는 듯한 신기한 끈. 닿으면 반응하는 포켓몬이 있다…'],
     revestimiento: ['금속코트', '특수한 금속 막. 어떤 포켓몬에게 주면 무슨 일이 일어날까?'],
     rocarey: ['왕의징표석', '왕관 모양의 돌. 일부 포켓몬에게 아주 잘 어울린다고 한다…'],
     escamadragon: ['용의비늘', '아주 단단하고 반짝이는 비늘. 지닌 자 안에서 무언가가 깨어난다…'],

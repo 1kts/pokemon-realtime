@@ -1073,6 +1073,10 @@
     if (prog >= LEAGUE_FROM) { const league = leaders.slice(LEAGUE_FROM); return Math.round(league.reduce((a, n) => a + avgLevel(n), 0) / league.length); }
     return Math.round(avgLevel(leaders[prog]));
   }
+  // Nivel de los Pokémon de la tienda: tu tope de nivel, y Nv.50 cuando ya has vencido al Campeón (el tope pasa a 100
+  // y comprarlos a Nv.100 se saltaría el entrenamiento)
+  const SHOP_POSTGAME_LEVEL = 50;
+  const shopLevel = (p, region = 'kanto') => progOf(p, region) >= leadersOf(region).length ? SHOP_POSTGAME_LEVEL : levelCap(p, region);
   // Iniciales de cada región (al empezar una región eliges uno nuevo: los Pokémon no viajan)
   const REGION_STARTERS = { kanto: [1, 4, 7], johto: [152, 155, 158] };
   // Iniciales de las 9 generaciones (solo los que tienen sprites)
@@ -1156,7 +1160,7 @@
     { id: 'alba', name: 'Piedra Alba', price: 2500, stone: true, desc: 'Evoluciona a Kirlia (macho), Snorunt (hembra)…', req: 6 },
     { id: 'dia', name: 'Piedra Día', price: 2500, stone: true, desc: 'Evoluciona a Togetic, Roselia, Minccino…', req: 6 },
     // Objetos de intercambio: como en los juegos, la descripción no dice para qué son
-    { id: 'cordon', name: 'Cordón Unión', price: 3000, stone: true, desc: 'Un cordón extraño que parece unir a dos Pokémon. Algunos reaccionan al tocarlo…', req: 4 },
+    { id: 'cordon', name: 'Cordón Unión', price: 3000, stone: true, desc: 'Un cordón extraño que parece simular un intercambio. Algunos Pokémon reaccionan al tocarlo…', req: 4 },
     { id: 'revestimiento', name: 'Revestimiento Metálico', price: 3000, stone: true, desc: 'Una capa metálica especial. ¿Qué pasará si se la das a cierto Pokémon?', req: 5 },
     { id: 'rocarey', name: 'Roca del Rey', price: 3000, stone: true, desc: 'Una roca con forma de corona. Dicen que a algunos Pokémon les sienta muy bien…', req: 5 },
     { id: 'escamadragon', name: 'Escama Dragón', price: 3500, stone: true, desc: 'Una escama muy dura y brillante. Algo despierta en quien la lleva…', req: 6 },
@@ -1475,7 +1479,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

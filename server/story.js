@@ -147,7 +147,7 @@ function action(p, msg) {
     p.coins -= item.price * qty;
     if (item.daily) {
       p.shopBought.ids.push(item.id);
-      addMon(p, item.dex, Math.min(MAX_LEVEL, D.levelCap(p, region)), { region, iv: { ...D.PERFECT_IVS } });
+      addMon(p, item.dex, Math.min(MAX_LEVEL, D.shopLevel(p, region)), { region, iv: { ...D.PERFECT_IVS } });
     } else if (item.dex) addMon(p, item.dex, item.level, { region });
     else p.items[item.id] = (p.items[item.id] || 0) + qty;
   } else if (a === 'use') {

@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': '地图和商店的调整',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': '宝可梦联盟现在是紫色建筑，和道馆一样在下方显示名字和石英高原，王冠位于屋顶上。',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': '打败冠军后，商店的宝可梦会以Lv.50送达，而不是等级上限。',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': '地图上的“你在这里”会显示带相框的头像，可领取奖励的红色数字也显示在前面。',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'AI训练家',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': '在排位赛和快速对战中，如果约20秒内没人匹配，你会对战一位和你水平相当、标有“AI”的AI训练家。',
@@ -1828,7 +1833,7 @@ export default {
     noche: [null, '可让黑暗鸦、梦妖等进化…'],
     alba: [null, '可让奇鲁莉安（♂）、雪童子（♀）等进化…'],
     dia: [null, '可让波克基古、毒蔷薇、泡沫栗鼠等进化…'],
-    cordon: ['联结绳', '一条似乎能将两只宝可梦连在一起的奇特绳子。有些宝可梦碰到它会有反应……'],
+    cordon: ['联结绳', '一条奇怪的绳子，好像能模拟交换。有些宝可梦碰到它会有反应……'],
     revestimiento: ['金属膜', '特殊的金属薄膜。如果把它交给某只宝可梦会发生什么呢？'],
     rocarey: ['王者之证', '王冠形状的石头。据说很适合某些宝可梦……'],
     escamadragon: ['龙之鳞片', '非常坚硬、闪闪发光的鳞片。持有者体内有什么正在觉醒……'],

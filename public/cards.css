@@ -797,7 +797,10 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 .story .node .goal-tag { color: #2a1c00; background: #fff; }
 .story .node.sel { outline: 3px solid var(--gold); outline-offset: 4px; }
 /* «Estás aquí»: el fondo blanco es solo de la etiqueta, no del hueco del avatar (que es otro span) */
-.you-pin .ava { --s: 34px !important; border: 3px solid #fff; border-radius: 50%; overflow: hidden; background: #141a33; box-shadow: 0 0 0 2px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.5); }
+/* El borde es el de su marco (bronce, oro, maestro…); sin marco, blanco para que se vea sobre el mapa */
+.you-pin .ava { --s: 34px !important; border-width: 3px; border-radius: 50%; overflow: hidden; }
+.you-pin .ava.frame-none { --ring: #fff; background: #141a33; box-shadow: 0 0 0 2px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.5); }
+.you-pin .ava:not(.frame-maestro) { background-color: #141a33; }
 .you-pin .ava .ava-pic { margin: 0; padding: 0; background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.2), transparent 70%); border-radius: 50%; box-shadow: none; width: 100%; height: 100%; display: grid; place-items: center; }
 
 /* Ficha del líder o la ruta */
@@ -1537,3 +1540,10 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 @media (prefers-reduced-motion: reduce) { .hub-me .support svg, .hub-me .support img, .hub-me .support canvas { animation: none; } }
 /* Entrenador de la IA (Clasificatoria): etiqueta «IA» junto al nombre */
 .ia-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 6px; font: 900 10px/16px var(--display); letter-spacing: .5px; color: #0b1220; background: #7ae8ff; vertical-align: middle; }
+/* Liga en el mapa: la etiqueta como la de los gimnasios (con la ciudad debajo) y la corona sobre el tejado */
+.node.league-hq label { top: 100%; margin-top: 2px; }
+.node.league-hq .crown { top: -16px; left: 50%; transform: translateX(-50%); font-size: 20px; line-height: 1; z-index: 3; filter: drop-shadow(0 0 4px rgba(255,203,5,.8)); }
+/* Contadores rojos (premios por recoger…): siempre por delante del brillo y del parpadeo de su tarjeta, y dentro
+   de ella (las tarjetas recortan lo que sobresale) */
+.nbadge { z-index: 6; }
+.coll-tile .nbadge, .menu-card .nbadge { top: 6px; right: 6px; }

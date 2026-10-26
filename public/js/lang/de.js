@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': 'Feinschliff an Karte und Laden',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'Die Pokémon-Liga ist jetzt ein lila Gebäude mit ihrem Namen und Indigo-Plateau darunter, wie die Arenen, und die Krone sitzt auf dem Dach.',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': 'Nachdem du den Champ besiegt hast, kommen die Pokémon aus dem Laden auf Lv.50 statt auf die Levelgrenze.',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': '„Du bist hier“ auf der Karte zeigt deinen Avatar mit seinem Rahmen, und die roten Zähler für Belohnungen sind vorne zu sehen.',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'KI-Trainer',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'Wenn in Ranglisten und Schnellem Match in etwa 20 Sekunden niemand auftaucht, kämpfst du gegen einen KI-Trainer deines Niveaus, markiert mit „KI“.',
@@ -1822,7 +1827,7 @@ export default {
     noche: [null, 'Lässt Kramurx, Traunfugil… sich entwickeln'],
     alba: [null, 'Lässt Kirlia (männlich), Schneppke (weiblich)… sich entwickeln'],
     dia: [null, 'Lässt Togetic, Roselia, Picochilla… sich entwickeln'],
-    cordon: ['Verbindungsschnur', 'Eine seltsame Schnur, die zwei Pokémon zu verbinden scheint. Manche reagieren, wenn sie sie berühren…'],
+    cordon: ['Verbindungsschnur', 'Ein seltsames Kabel, das einen Tausch zu simulieren scheint. Manche Pokémon reagieren, wenn sie es berühren…'],
     revestimiento: ['Metallmantel', 'Ein besonderer Metallüberzug. Was passiert wohl, wenn du ihn einem bestimmten Pokémon gibst?'],
     rocarey: ['King-Stein', 'Ein kronenförmiger Stein. Man sagt, er stehe manchen Pokémon sehr gut…'],
     escamadragon: ['Drachenschuppe', 'Eine sehr harte, glänzende Schuppe. In ihrem Träger erwacht etwas…'],

@@ -1322,7 +1322,7 @@ button.mini.pick.empty { justify-content: center; min-height: 82px; border-style
 @keyframes legMarch { to { stroke-dashoffset: -12; } }
 .map .paths { z-index: 0; pointer-events: none; }
 .you-pin { position: absolute; transform: translate(-50%, -100%); margin-top: -18px; z-index: 4; display: flex; flex-direction: column; align-items: center; pointer-events: none; animation: pinBob 1.6s ease-in-out infinite; }
-.you-pin .ava { --s: 26px; border-width: 2px; --ring: #fff; background: #141a33; box-shadow: 0 3px 8px rgba(0,0,0,.5); }
+.you-pin .ava { --s: 26px; border-width: 2px; background: #141a33; box-shadow: 0 3px 8px rgba(0,0,0,.5); }
 .you-pin .ava-fx { display: none; }
 .you-pin span { margin-top: 2px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; padding: 1px 6px; border-radius: 6px; background: #fff; color: #141a33; box-shadow: 0 2px 4px rgba(0,0,0,.4); }
 .you-pin::after { content: ''; width: 0; height: 0; border: 6px solid transparent; border-top-color: #fff; margin-top: -1px; }

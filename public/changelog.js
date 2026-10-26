@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.29.1', date: '2026-10-26', title: 'Retoques del mapa y la Tienda',
+      items: [
+        ['cambio', 'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.'],
+        ['cambio', 'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.'],
+        ['arreglo', 'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.'],
+      ],
+    },
+    {
       v: '0.29.0', date: '2026-10-26', title: 'Entrenadores de la IA',
       items: [
         ['nuevo', 'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».'],

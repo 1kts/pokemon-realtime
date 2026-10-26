@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': 'マップとショップの調整',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'ポケモンリーグが紫の建物になり、ジムと同じように名前とセキエイこうげんが下に出て、王冠は屋根の上に出ます。',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': 'チャンピオンを倒したあと、ショップのポケモンはレベル上限ではなくLv.50で届きます。',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': 'マップの「現在地」に枠つきのアバターが出るようになり、受け取れるごほうびの赤い数字が手前に表示されます。',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'AIトレーナー',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'ランクマッチとクイック対戦で、約20秒たっても相手が来ないと、あなたと同じくらいの強さの「AI」マークつきトレーナーと対戦します。',
@@ -1836,7 +1841,7 @@ export default {
     noche: [null, 'ヤミカラス、ムウマ など が 進化する'],
     alba: [null, 'キルリア（♂）、ユキワラシ（♀）など が 進化する'],
     dia: [null, 'トゲチック、ロゼリア、チラーミィ など が 進化する'],
-    cordon: ['つながりのヒモ', '2匹のポケモンをつなぐような不思議なヒモ。触れると反応するポケモンもいるらしい…'],
+    cordon: ['つながりのヒモ', '通信交換をまねしているような ふしぎな ひも。ふれると 反応する ポケモンが いる…'],
     revestimiento: ['メタルコート', '特殊な金属の膜。あるポケモンに渡したら何が起こるだろう？'],
     rocarey: ['おうじゃのしるし', '王冠の形をした石。一部のポケモンにとてもよく似合うという…'],
     escamadragon: ['りゅうのウロコ', 'とても硬く輝くウロコ。持つ者の中で何かが目覚める…'],

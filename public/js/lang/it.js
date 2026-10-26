@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': 'Ritocchi a mappa e Negozio',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'La Lega Pokémon ora è un edificio viola con il suo nome e Altopiano Blu sotto, come le palestre, e la corona sta sul tetto.',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': 'Dopo aver battuto il Campione, i Pokémon del Negozio arrivano al Lv.50 invece che al livello massimo.',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': 'Il «Sei qui» della mappa mostra il tuo avatar con la sua cornice, e i contatori rossi dei premi da ritirare si vedono davanti.',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'Allenatori dell\'IA',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'In Classificata e Partita rapida, se nessuno arriva in circa 20 secondi, affronti un allenatore dell\'IA del tuo livello, segnato con «IA».',
@@ -1835,7 +1840,7 @@ export default {
     noche: [null, 'Fa evolvere Murkrow, Misdreavus…'],
     alba: [null, 'Fa evolvere Kirlia (maschio), Snorunt (femmina)…'],
     dia: [null, 'Fa evolvere Togetic, Roselia, Minccino…'],
-    cordon: ['Cordone Unione', 'Uno strano cordone che sembra unire due Pokémon. Alcuni reagiscono quando lo toccano…'],
+    cordon: ['Cordone Unione', 'Uno strano cavo che sembra simulare uno scambio. Alcuni Pokémon reagiscono quando lo toccano…'],
     revestimiento: ['Metalcoperta', 'Una speciale pellicola metallica. Cosa succederebbe se la dessi a un certo Pokémon?'],
     rocarey: ['Roccia di Re', 'Una roccia a forma di corona. Si dice che stia molto bene ad alcuni Pokémon…'],
     escamadragon: ['Squamadrago', 'Una squama durissima e lucente. Qualcosa si risveglia in chi la porta…'],

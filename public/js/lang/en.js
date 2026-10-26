@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.1 ----------
+    'Retoques del mapa y la Tienda': 'Map and Shop touch-ups',
+    'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'The Pokémon League is now a purple building with its name and Indigo Plateau below, like the gyms, and the crown sits on its roof.',
+    'Tras vencer al Campeón, los Pokémon de la Tienda llegan a Nv.50 en vez de al tope de nivel.': 'After beating the Champion, Shop Pokémon arrive at Lv.50 instead of the level cap.',
+    'El «Estás aquí» del mapa enseña tu avatar con su marco, y los contadores rojos de premios por recoger se ven por delante.': 'The map\'s “You are here” shows your avatar with its frame, and the red counters for rewards to claim show in front.',
     // ---------- Novedades v0.29.0 ----------
     'Entrenadores de la IA': 'AI trainers',
     'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'In Ranked and Quick match, if nobody shows up within about 20 seconds, you face an AI trainer of your level, marked “AI”.',
@@ -1840,7 +1845,7 @@ export default {
     noche: ['Dusk Stone', 'Evolves Murkrow, Misdreavus…'],
     alba: ['Dawn Stone', 'Evolves Kirlia (male), Snorunt (female)…'],
     dia: ['Shiny Stone', 'Evolves Togetic, Roselia, Minccino…'],
-    cordon: ['Linking Cord', 'A strange cord that seems to link two Pokémon. Some react when they touch it…'],
+    cordon: ['Linking Cord', 'A strange cord that seems to simulate a trade. Some Pokémon react when they touch it…'],
     revestimiento: ['Metal Coat', 'A special metallic film. What would happen if you gave it to a certain Pokémon?'],
     rocarey: ['King\'s Rock', 'A crown-shaped rock. They say it suits some Pokémon very well…'],
     escamadragon: ['Dragon Scale', 'A very tough, shiny scale. Something awakens in whoever holds it…'],

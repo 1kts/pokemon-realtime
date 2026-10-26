@@ -437,6 +437,8 @@ export class UI {
     const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
     for (const city of art.cities) {
       if (leaderCities.has(city)) continue;
+      // Meseta Añil (o la ciudad de la Liga): su nombre va en la etiqueta del edificio, como en los gimnasios
+      if (/Meseta|Liga/.test(city[0]) && R.nodes.some(n => n.kind !== 'route' && n.index >= Data.LEAGUE_FROM)) continue;
       const [name, x, y] = city;
       const c = el('div', 'city', `<span>${t(name)}</span>`);
       c.style.left = x + '%'; c.style.top = y + '%';
@@ -501,7 +503,7 @@ export class UI {
       const open = prog >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
       const plateau = art.cities.find(([name]) => /Meseta|Liga/.test(name));
       const x = plateau ? plateau[1] : lg.reduce((a, n) => a + n.x, 0) / lg.length, y = plateau ? plateau[2] : lg.reduce((a, n) => a + n.y, 0) / lg.length;
-      const hq = el('button', 'node league-hq' + (open ? '' : ' locked') + (cleared ? ' done' : '') + (open && !cleared ? ' next' : ''), `${LEAGUE_SVG}<label>${t('Liga Pokémon')}</label>${open ? (cleared ? '<i class="crown">♛</i>' : `<em class="ord">${Data.LEAGUE_FROM + 1}</em>`) : `<em class="lock">${LOCK_SVG}</em>`}${open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM ? `<em class="goal-tag">${t('Siguiente reto')}</em>` : ''}`);
+      const hq = el('button', 'node league-hq' + (open ? '' : ' locked') + (cleared ? ' done' : '') + (open && !cleared ? ' next' : ''), `${LEAGUE_SVG}<label>${t('Liga Pokémon')}${plateau ? `<small>${t(plateau[0])}</small>` : ''}</label>${open ? (cleared ? '<i class="crown">♛</i>' : `<em class="ord">${Data.LEAGUE_FROM + 1}</em>`) : `<em class="lock">${LOCK_SVG}</em>`}${open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM ? `<em class="goal-tag">${t('Siguiente reto')}</em>` : ''}`);
       hq.style.left = x + '%'; hq.style.top = y + '%';
       hq.title = t('Liga Pokémon');
       hq.onclick = () => { this.leagueRegion = region; this.show('league'); };
@@ -1246,7 +1248,7 @@ export class UI {
         if (item.dex) typeTint(c, item.dex);
         const pic = item.dex ? portrait(item.dex, 64) : el('span', 'item-pic', itemImg(item.id, 48));
         c.append(pic);
-        const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.levelCap(p, this.region || 'kanto') }) : item.desc;
+        const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.shopLevel(p, this.region || 'kanto') }) : item.desc;
         c.append(el('div', 'si', `<b>${item.name}</b><small>${desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
         const acts = el('div', 'acts');
         if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));

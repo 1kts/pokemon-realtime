@@ -185,6 +185,12 @@ class Client {
   ok(bought && D.STAT_KEYS.every(k => bought.iv[k] === D.IV_MAX) && bought.level === D.levelCap(prof, 'kanto'), 'Pokémon del día: IV perfectos y al tope de nivel');
   err = a2.wait('error'); a2.send({ t: 'story', a: 'buy', id: daily.id });
   ok(!!(await err), 'el Pokémon del día solo se compra una vez al día');
+  // Con el Campeón vencido el tope pasa a 100, pero los de la tienda llegan a Nv.50
+  const daily2 = D.shopMons()[1], prog0 = prof.prog.kanto, badges0 = prof.badges;
+  prof.prog.kanto = D.leadersOf('kanto').length; prof.badges = 8;
+  m = await a2.req({ t: 'story', a: 'buy', id: daily2.id });
+  ok(D.shopLevel(prof, 'kanto') === 50 && m.p.mons.some(x => x.dex === daily2.dex && x.level === 50), 'tras vencer al Campeón, los Pokémon de la tienda llegan a Nv.50');
+  prof.prog.kanto = prog0; prof.badges = badges0;
   ok(D.shopMons('2030-01-01').map(i => i.dex).join() !== D.shopMons('2030-01-02').map(i => i.dex).join(), 'los Pokémon de la tienda cambian cada día');
   require('../server/story.js').devAddMon(prof, 133, 20, false, 'kanto');
   m = await a2.req({ t: 'story', a: 'buy', id: 'trueno' });
