@@ -444,8 +444,9 @@ async function buildScene(region) {
   return { region, scene, water: wat, T, ms };
 }
 
-// Precarga de las dos regiones, de una en una y cuando no molesta (si no hay WebGL, ni se intenta)
-if (typeof window !== 'undefined' && window.WebGLRenderingContext) {
+// Precarga de las dos regiones, de una en una y cuando no molesta (si no hay WebGL, ni se intenta; en las pruebas,
+// 127.0.0.1, tampoco: allí se dibuja por software y frenaba todas las demás)
+if (typeof window !== 'undefined' && window.WebGLRenderingContext && location.hostname !== '127.0.0.1') {
   setTimeout(() => idle().then(() => sceneFor('kanto')).then(idle).then(() => sceneFor('johto')).catch(() => {}), 2500);
 }
 

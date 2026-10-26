@@ -192,9 +192,10 @@ async function runOne(file) {
     const test = require(path.resolve(file));
     ctx = await setup(name, test.env);
     Object.assign(t, ctx);
-    // Como mucho 3 minutos por prueba (con varias a la vez van más lentas): un test colgado no bloquea el CI
+    // Como mucho 5 minutos por prueba (con varias a la vez y el 3D por software del CI van más lentas): un test
+    // colgado no bloquea el CI
     await Promise.race([test(t),
-      new Promise((_, j) => setTimeout(() => j(new Error('más de 3 minutos: algo se ha quedado esperando')), 180e3).unref())]);
+      new Promise((_, j) => setTimeout(() => j(new Error('más de 5 minutos: algo se ha quedado esperando')), 300e3).unref())]);
     if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
     const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
     if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));
