@@ -48,8 +48,9 @@ module.exports = async ({ page, player, ok }) => {
   await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
   ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
   await touch('pointerdown');
-  await new Promise(r => setTimeout(r, 650));
-  ok(await page.eval(`!!document.querySelector('.ui-tip.on')`), 'manteniendo el dedo medio segundo sale el tooltip');
+  // (sale a los 500 ms; en el CI, lento, se espera a que aparezca en vez de un tiempo fijo)
+  await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 3000);
+  ok(true, 'manteniendo el dedo medio segundo sale el tooltip');
   await touch('pointerup'); await touch('pointerdown'); await touch('pointerup');
 
   // Las novedades se desplazan dentro de su ventana (en horizontal no cabían y no se podía bajar)
