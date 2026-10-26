@@ -9,6 +9,7 @@ const WebSocket = require('ws');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-test-'));
 process.env.DB_FILE = path.join(tmp, 'arena.db');
+process.env.ARENA_NPCS = '0';   // sin entrenadores IA: estas pruebas miran el ranking con jugadores concretos
 const { start } = require('../server/index.js');
 const D = require('../public/data.js');
 

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'AI训练家',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': '在排位赛和快速对战中，如果约20秒内没人匹配，你会对战一位和你水平相当、标有“AI”的AI训练家。',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': '排行榜上有20位从青铜到大师的AI训练家，都标有“AI”：和他们对战时他们的ELO会升降。',
+    // ---------- Entrenadores IA ----------
+    'IA': 'AI',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'AI训练家：排位赛中几秒内没人匹配时会和你对战',
+    'Es un entrenador de la IA': '这是AI训练家',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': '跳动的心',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': '菜单上方支持按钮里的心现在会跳动，鼠标移上去时跳得更快。',

@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'AIトレーナー',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'ランクマッチとクイック対戦で、約20秒たっても相手が来ないと、あなたと同じくらいの強さの「AI」マークつきトレーナーと対戦します。',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': 'ランキングにブロンズからマスターまで20人のAIトレーナーが「AI」マークつきでいます。対戦するとELOが上下します。',
+    // ---------- Entrenadores IA ----------
+    'IA': 'AI',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'AIトレーナー：ランクマッチで数秒たっても相手が来ないと対戦します',
+    'Es un entrenador de la IA': 'AIトレーナーです',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': '鼓動するハート',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'メニュー上の応援ボタンのハートが鼓動するようになりました。マウスを乗せると速くなります。',

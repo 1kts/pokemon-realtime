@@ -310,7 +310,7 @@ export const towerViews = {
       dex: [['Especies', r => `<b>${r.caught}</b>`], ['Shiny', r => r.shinies || '—'], ['Medallas', r => r.badges]],
     }[msg.board];
     const head = `<tr><th>#</th><th>${t('Entrenador')}</th>${cols.map(c => `<th>${t(c[0])}</th>`).join('')}</tr>`;
-    const row = r => `<tr data-id="${r.id}" class="${r.id === me ? 'me' : ''}"><td class="rank r${r.rank}">${r.rank}</td><td class="who"><i class="dot${r.online ? ' on' : ''}" title="${r.online ? t('En línea') : t('Desconectado')}"></i>${tagName(r.name, r.tag)}${r.id === me ? ` <span class="you">${t('tú')}</span>` : ''}</td>${cols.map(c => `<td>${c[1](r)}</td>`).join('')}</tr>`;
+    const row = r => `<tr data-id="${r.id}" class="${r.id === me ? 'me' : ''}"><td class="rank r${r.rank}">${r.rank}</td><td class="who"><i class="dot${r.online ? ' on' : ''}" title="${r.online ? t('En línea') : t('Desconectado')}"></i>${tagName(r.name, r.tag, r.npc)}${r.id === me ? ` <span class="you">${t('tú')}</span>` : ''}</td>${cols.map(c => `<td>${c[1](r)}</td>`).join('')}</tr>`;
     const info = el('div', 'ladder-info');
     info.innerHTML = `<span>${msg.total === 1 ? t('1 entrenador') : t('{n} entrenadores', { n: msg.total })}${msg.q ? ` · ${t('{n} con «{q}»', { n: msg.found, q: escapeHtml(msg.q) })}` : ''}</span>` + (msg.me ? `<span class="pill">${t('Tu puesto: <b>#{n}</b>', { n: msg.me.rank })}</span>` : `<span class="small">${this.profile.account ? t('Aún no apareces en esta tabla') : t('Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.')}</span>`);
     box.append(info);
@@ -351,8 +351,8 @@ export const towerViews = {
     const head = el('div', 'ficha-head');
     if (u.team[0]) head.append(animatedPortrait(u.team[0].dex, 110, 'Idle', !!u.team[0].shiny));
     const since = u.created ? new Date(u.created).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' }) : null;
-    head.append(el('div', '', `<h3>${tagName(u.name, u.tag)}${u.id === this.profile.id ? ` <span class="you">${t('tú')}</span>` : ''}</h3>
-      <p class="small"><i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}</p>
+    head.append(el('div', '', `<h3>${tagName(u.name, u.tag, u.npc)}${u.id === this.profile.id ? ` <span class="you">${t('tú')}</span>` : ''}</h3>
+      <p class="small">${u.npc ? t('Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos') : `<i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}`}</p>
       <span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>${showcaseHtml(u.showcase, 40)}`));
     box.append(head);
     const rank = r => r ? `#${r}` : '—';

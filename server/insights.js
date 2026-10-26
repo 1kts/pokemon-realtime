@@ -19,7 +19,7 @@ const lastSeen = p => Math.max(p.seen || 0, ...Object.keys(p.act || {}).map(k =>
 function pick(profiles, who) {
   const now = Date.now();
   // El personal (admins con «Desbloquear todo») no cuenta: lo tiene todo y falsearía los datos
-  const all = [...profiles].filter(p => !p.staff);   // (store.all() es un iterador: su filter no da una lista)
+  const all = [...profiles].filter(p => !p.staff && !p.npc);   // ni el personal ni los entrenadores IA   // (store.all() es un iterador: su filter no da una lista)
   if (who === 'activos') return all.filter(p => now - lastSeen(p) < 30 * DAY);
   if (who === 'cuentas') return all.filter(p => p.account);
   return all;

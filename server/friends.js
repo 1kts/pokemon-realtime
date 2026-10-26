@@ -30,6 +30,7 @@ function action(p, msg) {
   if (!o) return { error: a === 'add' ? 'No hay ningún entrenador con ese nombre y etiqueta' : 'Ese entrenador ya no existe' };
   ensure(o);
   if (o === p) return { error: 'No puedes añadirte a ti mismo' };
+  if (o.npc) return { error: 'Es un entrenador de la IA' };
   if (a === 'add') {
     if (!o.account) return { error: 'Ese entrenador juega como invitado: necesita una cuenta para tener amigos' };
     if (p.friends.includes(o.id)) return { error: 'Ya sois amigos' };

@@ -846,7 +846,7 @@ export const accountViews = {
     this.board.forEach((b, i) => {
       const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
       li.onclick = () => this.userModal(b.id);
-      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${tagName(b.name, b.tag)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${tagName(b.name, b.tag, b.npc)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
       ol.append(li);
     });
     board.append(ol);

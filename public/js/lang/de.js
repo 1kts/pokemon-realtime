@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'KI-Trainer',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'Wenn in Ranglisten und Schnellem Match in etwa 20 Sekunden niemand auftaucht, kämpfst du gegen einen KI-Trainer deines Niveaus, markiert mit „KI“.',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': 'Die Rangliste hat 20 KI-Trainer von Bronze bis Meister mit „KI“-Markierung: Ihr ELO steigt und fällt, wenn gegen sie gespielt wird.',
+    // ---------- Entrenadores IA ----------
+    'IA': 'KI',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'KI-Trainer: Du triffst in Ranglisten auf ihn, wenn in ein paar Sekunden niemand auftaucht',
+    'Es un entrenador de la IA': 'Das ist ein KI-Trainer',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': 'Ein schlagendes Herz',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'Das Herz am Unterstützen-Button oben im Menü schlägt jetzt, und schneller, wenn du mit der Maus darüberfährst.',

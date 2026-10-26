@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.29.0', date: '2026-10-26', title: 'Entrenadores de la IA',
+      items: [
+        ['nuevo', 'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».'],
+        ['nuevo', 'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.'],
+      ],
+    },
+    {
       v: '0.28.2', date: '2026-10-26', title: 'Un corazón que late',
       items: [
         ['cambio', 'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.'],

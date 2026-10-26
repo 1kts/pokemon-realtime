@@ -1535,3 +1535,5 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .hub-me .support:hover svg, .hub-me .support:hover img, .hub-me .support:hover canvas { animation-duration: .8s; }
 @keyframes heartBeat { 0%, 40%, 100% { transform: scale(1); } 10% { transform: scale(1.22); } 20% { transform: scale(1.02); } 30% { transform: scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .hub-me .support svg, .hub-me .support img, .hub-me .support canvas { animation: none; } }
+/* Entrenador de la IA (Clasificatoria): etiqueta «IA» junto al nombre */
+.ia-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 6px; font: 900 10px/16px var(--display); letter-spacing: .5px; color: #0b1220; background: #7ae8ff; vertical-align: middle; }

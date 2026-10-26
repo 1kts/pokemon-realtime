@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'AI trainers',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'In Ranked and Quick match, if nobody shows up within about 20 seconds, you face an AI trainer of your level, marked “AI”.',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': 'The ladder has 20 AI trainers, from Bronze to Master, with their “AI” tag: their ELO goes up and down as people play them.',
+    // ---------- Entrenadores IA ----------
+    'IA': 'AI',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'AI trainer: you face them in Ranked if nobody shows up within a few seconds',
+    'Es un entrenador de la IA': 'That\'s an AI trainer',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': 'A beating heart',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'The heart on the Support button at the top of the menu now beats, and faster when you hover over it.',

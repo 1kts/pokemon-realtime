@@ -131,7 +131,7 @@ export const friendViews = {
   // Botón de amistad en la ficha de otro entrenador (Añadir, Pendiente o Amigos)
   friendAction(u) {
     const p = this.profile;
-    if (!p.account || u.id === p.id) return null;
+    if (!p.account || u.id === p.id || u.npc) return null;   // (a un entrenador de la IA no se le añade)
     if ((p.friends || []).includes(u.id)) return el('span', 'fr-tag', `✓ ${t('Amigos')}`);
     if ((p.friendOut || []).includes(u.id)) return el('span', 'fr-tag', t('Solicitud enviada'));
     const b = el('button', '', (p.friendIn || []).some(x => x.id === u.id) ? t('Aceptar solicitud') : t('Añadir amigo'));

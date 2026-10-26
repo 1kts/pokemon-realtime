@@ -21,6 +21,7 @@ const limits = require('./limits.js');
 const bugs = require('./bugs.js');
 const usage = require('./usage.js');
 const friends = require('./friends.js');
+const npc = require('./npc.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
@@ -108,7 +109,7 @@ function startBattle(clientsBySide, opts, onEnd) {
       return onEnd(result, b);
     },
   });
-  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile) metrics.battle(c.profile); } });
+  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); } });
   return battle;
 }
 
@@ -174,6 +175,20 @@ function matchmake(mode) {
   }
 }
 
+// Si nadie aparece en la cola en NPC_WAIT, te toca un entrenador IA de ELO parecido (sale en la ladder como «IA»)
+function npcMatch() {
+  if (maintenance) return;
+  const now = Date.now();
+  for (const mode of ['ranked', 'casual']) for (const c of [...queues[mode]]) {
+    if (now - c.queuedAt < npc.WAIT_MS) continue;
+    const o = npc.pick(c.profile.elo);
+    if (!o) continue;
+    leaveQueue(c);
+    finishDraft({ mode, players: [c, { profile: o, npc: true }], teams: [D.pvpTeam(c.profile.pvpTeam), D.pvpTeam(o.pvpTeam)],
+      picks: [D.pvpTeam(c.profile.pvpTeam).map(x => x.dex), o.pvpTeam.map(x => x.dex)], bans: [] });
+  }
+}
+
 // Sin draft: cada uno combate con el equipo de 3 que se preparó (Pokémon y movimientos, a Nv.50)
 function startDuel(players, mode) {
   const teams = players.map(c => D.pvpTeam(c.profile.pvpTeam));
@@ -187,7 +202,7 @@ function finishDraft(draft) {
   try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
   }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
@@ -206,7 +221,7 @@ function finishDraft(draft) {
     const progress = draft.players.map((c, i) => missions.diff(c.profile, before[i]));
     if (draft.mode !== 'ranked') {
       store.save();
-      setTimeout(() => draft.players.forEach(sendProfile), 50);
+      setTimeout(() => draft.players.filter(c => !c.npc).forEach(sendProfile), 50);
       return progress.map((m, i) => ({ missions: m, ...(i === result.winner ? { mastery } : {}) }));
     }
     // ELO con K=32
@@ -233,7 +248,7 @@ function finishDraft(draft) {
       rewards.afterRanked(pb, { won: !sa, delta: -da, foe: store.fullName(pa), foeElo: ea0, team: draft.picks[1], foeTeam: draft.picks[0] }),
     ];
     store.save();
-    setTimeout(() => draft.players.forEach(sendProfile), 50);
+    setTimeout(() => draft.players.filter(c => !c.npc).forEach(sendProfile), 50);
     return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
       eloCapped: !eloOk, league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
@@ -595,6 +610,8 @@ function start(port = PORT) {
   // Limpieza de invitados abandonados: al arrancar y cada 6 h
   const purge = () => { const n = store.purgeGuests(); if (n) audit.log('sistema.invitados', { borrados: n, dias: store.GUEST_DAYS }); };
   purge();
+  if (process.env.ARENA_NPCS !== '0') npc.ensure();   // los entrenadores IA de Clasificatoria (las pruebas del ranking los quitan)
+  setInterval(npcMatch, 2000).unref();
   setInterval(purge, 6 * 3600e3).unref();
   return new Promise(resolve => server.listen(port, HOST, () => { console.log(`Servidor en http://localhost:${server.address().port}`); resolve(server); }));
 }

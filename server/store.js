@@ -125,6 +125,13 @@ function byNameTag(name, tag) {
   return null;
 }
 
+// Perfil de un entrenador IA (server/npc.js): normal, con lo que se le pase encima
+function addNpc(name, fields) {
+  const p = Object.assign(addProfile(name), fields);
+  save();
+  return p;
+}
+
 function addProfile(name) {
   const p = newProfile(name);
   p.tag = freeTag(name, p);
@@ -250,7 +257,7 @@ function purgeGuests(now = Date.now()) {
   const limit = now - GUEST_DAYS * 864e5;
   let n = 0;
   for (const p of [...profiles.values()]) {
-    if (p.account || inUse.has(p) || (p.seen || p.created || now) >= limit) continue;
+    if (p.account || p.npc || inUse.has(p) || (p.seen || p.created || now) >= limit) continue;
     remove(p);
     n++;
   }
@@ -294,7 +301,7 @@ function leaderboard(n = 10) {
     if (top.length > n) top.pop();
   }
   return top
-    .map(p => ({ id: p.id, name: p.name, tag: p.tag, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
+    .map(p => ({ id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
 }
 
 // ---------- Ladder ----------
@@ -312,7 +319,8 @@ const BOARDS = {
 // En los rankings solo salen cuentas registradas (un invitado se puede crear y tirar sin más, y con
 // varios se podría inflar el ELO de otro): ni invitados, ni suspendidos, ni cuentas del equipo con
 // todo desbloqueado (staff). Al registrarse, el invitado entra con lo que ya tenía.
-for (const b of Object.values(BOARDS)) { const has = b.has; b.has = p => !!p.account && !banned(p) && !p.staff && has(p); }
+// Los entrenadores IA (npc) salen en la de Clasificatoria, marcados como «IA»
+for (const [k, b] of Object.entries(BOARDS)) { const has = b.has; b.has = p => (!!p.account || (k === 'ranked' && !!p.npc)) && !banned(p) && !p.staff && has(p); }
 const PAGE = 20;
 const sorted = board => [...profiles.values()].filter(BOARDS[board].has).sort(BOARDS[board].cmp);
 
@@ -325,7 +333,7 @@ function ladder(board, { page = 0, q = '', me = null, online = new Set() } = {})
   const list = needle ? all.filter(x => x.p.name.toLowerCase().includes(needle)) : all;
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   page = Math.max(0, Math.min(pages - 1, page | 0));
-  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, tag: p.tag, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
+  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
   const mine = me && all.find(x => x.p === me);
   return { board, page, pages, total: all.length, found: list.length, q: needle, rows: list.slice(page * PAGE, (page + 1) * PAGE).map(row), me: mine ? row(mine) : null };
 }
@@ -337,9 +345,10 @@ function publicUser(id, online = new Set()) {
   const rankIn = board => { const i = BOARDS[board].has(p) ? sorted(board).indexOf(p) : -1; return i >= 0 ? i + 1 : null; };
   const team = Object.values(p.teams || {}).flat().map(u => (p.mons || []).find(m => m.uid === u)).filter(Boolean)
     .sort((a, b) => b.level - a.level).slice(0, 6).map(m => ({ dex: m.dex, nick: m.nick, level: m.level, shiny: !!(m.shiny && !m.plain) }));
+  if (p.npc) team.push(...(p.pvpTeam || []).map(x => ({ dex: x.dex, level: D.RANKED_LEVEL, shiny: false })));   // el equipo de 3 de un entrenador IA
   const t = tw(p);
   return {
-    id: p.id, name: p.name, tag: p.tag, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
+    id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
     elo: p.elo, wins: p.wins, losses: p.losses, ranked: p.ranked,
     tower: { best: t.best || 0, streak: t.team ? t.streak : 0, symbols: t.symbols || [], wins: t.wins || 0, team: t.bestTeam || [] },
     caught: D.dexCount(p), shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},
@@ -357,4 +366,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, onRemove, byNameTag, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };
+  check, setPassword, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

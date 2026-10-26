@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'AI 트레이너',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': '랭크전과 빠른 대전에서 약 20초 동안 상대가 없으면 「AI」 표시가 붙은 내 수준의 AI 트레이너와 대전해요.',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': '랭킹에 브론즈부터 마스터까지 「AI」 표시가 붙은 AI 트레이너 20명이 있어요. 대전하면 ELO가 오르내려요.',
+    // ---------- Entrenadores IA ----------
+    'IA': 'AI',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'AI 트레이너: 랭크전에서 몇 초 동안 상대가 없으면 대전해요',
+    'Es un entrenador de la IA': 'AI 트레이너예요',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': '두근거리는 하트',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': '메뉴 위쪽 후원 버튼의 하트가 이제 두근거려요. 마우스를 올리면 더 빨라져요.',

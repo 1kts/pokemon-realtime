@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.0 ----------
+    'Entrenadores de la IA': 'Allenatori dell\'IA',
+    'En Clasificatoria y Partida rápida, si nadie aparece en unos 20 segundos, te enfrentas a un entrenador de la IA de tu nivel, marcado con «IA».': 'In Classificata e Partita rapida, se nessuno arriva in circa 20 secondi, affronti un allenatore dell\'IA del tuo livello, segnato con «IA».',
+    'La ladder tiene 20 entrenadores de la IA, de Bronce a Maestro, con su etiqueta «IA»: su ELO sube y baja al jugar contra ellos.': 'La classifica ha 20 allenatori dell\'IA, da Bronzo a Maestro, con l\'etichetta «IA»: il loro ELO sale e scende quando li si affronta.',
+    // ---------- Entrenadores IA ----------
+    'IA': 'IA',
+    'Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos': 'Allenatore dell\'IA: lo affronti in Classificata se nessuno arriva in pochi secondi',
+    'Es un entrenador de la IA': 'È un allenatore dell\'IA',
     // ---------- Novedades v0.28.2 ----------
     'Un corazón que late': 'Un cuore che batte',
     'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'Il cuore del pulsante Sostieni, in alto nel menu, ora batte, e più veloce quando ci passi sopra con il mouse.',

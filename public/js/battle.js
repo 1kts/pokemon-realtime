@@ -507,7 +507,7 @@ export class BattleClient {
     for (const i of [this.you, this.foeIdx]) {
       const box = this.teamsEl[i === this.you ? 0 : 1];
       const ld = i !== this.you && this.mode === 'trainer' && leaderByName(this.sides[i].name);
-      box.innerHTML = `<div class="tname">${ld ? trainerImg(ld.id, 'tname-face') : ''}${escapeHtml(tServer(this.sides[i].name))}</div>`;
+      box.innerHTML = `<div class="tname">${ld ? trainerImg(ld.id, 'tname-face') : ''}${escapeHtml(tServer(this.sides[i].name))}${this.sides[i].npc ? `<small class="ia-tag">${t('IA')}</small>` : ''}</div>`;
       this.sides[i].team.forEach((m, slot) => {
         const row = el('div', 'tm' + (slot === this.act[i] ? ' active' : ''));
         row.append(face(m.dex, 40, 'Normal', !!m.shiny) || portrait(m.dex, 40, { shiny: !!m.shiny }));
@@ -674,7 +674,8 @@ export class BattleClient {
 }
 
 // Nombre con su etiqueta (Ash#4821): distingue a entrenadores que se llaman igual
-export const tagName = (name, tag) => `${escapeHtml(name)}${tag ? `<small class="ntag">#${tag}</small>` : ''}`;
+// npc: entrenador de la IA (Clasificatoria): se marca con «IA», nunca pasa por una persona
+export const tagName = (name, tag, npc) => `${escapeHtml(name)}${tag ? `<small class="ntag">#${tag}</small>` : ''}${npc ? `<small class="ia-tag">${t('IA')}</small>` : ''}`;
 
 export function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -203,7 +203,7 @@ function createAdmin(ctx) {
     const reply = (data) => send(c, { t: msg.t, rid: msg.rid, ...data });
     switch (msg.t) {
       case 'admin.overview': return reply(overview());
-      case 'admin.metrics': return reply({ ...metrics.compute(store.all(), Date.now(), Math.max(7, Math.min(35, msg.days | 0 || 14))), usage: usage.summary(Math.max(7, Math.min(35, msg.days | 0 || 14))) });
+      case 'admin.metrics': return reply({ ...metrics.compute([...store.all()].filter(p => !p.npc), Date.now(), Math.max(7, Math.min(35, msg.days | 0 || 14))), usage: usage.summary(Math.max(7, Math.min(35, msg.days | 0 || 14))) });
       // Para mejorar el juego: hasta dónde llega la gente, qué Pokémon tiene y usa, y cómo va la economía
       case 'admin.progress': return reply(insights.progress(store.all(), String(msg.who || '')));
       case 'admin.collection': return reply(insights.collection(store.all(), String(msg.who || '')));
