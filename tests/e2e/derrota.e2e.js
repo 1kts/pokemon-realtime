@@ -24,6 +24,8 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
   await page.eval(`window.__app.ui.openCollection('mastery'); true`);
   await page.waitFor(`window.__app.ui.view === 'collection'`);
+  // En el CI, Logros puede tardar un poco en pintar su cabecera: esperar al botón antes de pulsarlo
+  await page.waitFor(`[...document.querySelectorAll('button')].some(b => b.offsetParent && /Volver/.test(b.textContent))`, 10000);
   await page.click('Volver');
   await page.waitFor(`window.__app.ui.view === 'story' && window.__app.ui.root.children.length > 0`);
   ok(true, 'ir a Logros desde los resultados y volver lleva a la Historia');

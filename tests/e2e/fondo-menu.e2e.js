@@ -8,7 +8,9 @@ module.exports = async ({ page, ok }) => {
   const sample = () => page.eval(`(() => { const p = window.__app.camera.position; return [p.x, p.y, p.z]; })()`);
   // Esperar a que el bucle de render haya colocado ya la cámara del menú (en CI la portada puede salir
   // antes del primer fotograma y la primera muestra quedaría en otro sitio)
+  // (en el CI, lento, a veces tarda más de dos fotogramas: se deja asentar un segundo y medio)
   await page.eval(`new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))`);
+  await new Promise(r => setTimeout(r, 1500));
   const first = await sample();
   const angles = [], moves = [];
   for (let i = 0; i < 12; i++) {
