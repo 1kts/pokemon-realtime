@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.28.2', date: '2026-10-26', title: 'Un corazón que late',
+      items: [
+        ['cambio', 'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.'],
+      ],
+    },
+    {
       v: '0.28.1', date: '2026-10-26', title: 'Busca a tus amigos',
       items: [
         ['cambio', 'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.'],

@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.2 ----------
+    'Un corazón que late': '두근거리는 하트',
+    'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': '메뉴 위쪽 후원 버튼의 하트가 이제 두근거려요. 마우스를 올리면 더 빨라져요.',
     // ---------- Novedades v0.28.1 ----------
     'Busca a tus amigos': '친구를 찾아보세요',
     'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': '친구 화면에서 이름을 입력해 트레이너를 검색하면, 일치하는 트레이너가 포켓몬과 ELO와 함께 나오고 탭 한 번으로 추가할 수 있어요.',

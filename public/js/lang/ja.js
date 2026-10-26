@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.2 ----------
+    'Un corazón que late': '鼓動するハート',
+    'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'メニュー上の応援ボタンのハートが鼓動するようになりました。マウスを乗せると速くなります。',
     // ---------- Novedades v0.28.1 ----------
     'Busca a tus amigos': 'フレンドを探そう',
     'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'フレンド画面で名前を入力するとトレーナーを検索でき、一致した人がポケモンとELOつきで表示されます。タップ1回で追加できます。',

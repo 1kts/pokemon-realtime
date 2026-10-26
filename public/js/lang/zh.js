@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.2 ----------
+    'Un corazón que late': '跳动的心',
+    'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': '菜单上方支持按钮里的心现在会跳动，鼠标移上去时跳得更快。',
     // ---------- Novedades v0.28.1 ----------
     'Busca a tus amigos': '寻找你的好友',
     'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': '在好友中输入名字即可搜索训练家：匹配的训练家会和他们的宝可梦及ELO一起显示，点一下就能添加。',

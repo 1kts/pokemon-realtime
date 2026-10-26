@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.2 ----------
+    'Un corazón que late': 'Un cuore che batte',
+    'El corazón del botón Apoyar, arriba en el menú, ahora late; si pasas el ratón por encima, más deprisa.': 'Il cuore del pulsante Sostieni, in alto nel menu, ora batte, e più veloce quando ci passi sopra con il mouse.',
     // ---------- Novedades v0.28.1 ----------
     'Busca a tus amigos': 'Trova i tuoi amici',
     'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'In Amici cerchi un allenatore scrivendo il suo nome: compaiono quelli che corrispondono con il loro Pokémon e ELO, e lo aggiungi con un tocco.',
