@@ -54,6 +54,9 @@ export function initTouchDevice() {
   }, { capture: true });
 }
 
+// Nombre de un movimiento para un botón pequeño: cada palabra en su línea (como mucho dos), recortada a 8 letras
+const shortName = s => s.trim().split(/\s+/).slice(0, 2).map(w => w.length > 8 ? w.slice(0, 7) + '.' : w).join('<br>');
+
 const capture = (node, id) => { try { node.setPointerCapture(id); } catch {} };   // el dedo sigue siendo de ese botón aunque se salga
 const el = (tag, cls, html = '') => { const e = document.createElement(tag); e.className = cls; e.innerHTML = html; return e; };
 
@@ -114,6 +117,9 @@ export class TouchControls {
     b.movesEl.querySelectorAll('.mv').forEach((btn, slot) => {
       if (btn.dataset.touch) return;
       btn.dataset.touch = '1';
+      // En el botón redondo, el nombre en corto (una palabra por línea, las largas recortadas) en vez del icono
+      const name = btn.querySelector('b');
+      if (name) btn.append(el('span', 'tc-name', shortName(name.textContent)));
       if (btn.classList.contains('protect')) {
         btn.addEventListener('pointerdown', e => { e.preventDefault(); b.castQueue = 4; btn.classList.add('press'); });
         btn.addEventListener('pointerup', () => btn.classList.remove('press'));
@@ -150,14 +156,15 @@ export class TouchControls {
       row.dataset.touch = '1';
       row.addEventListener('pointerdown', e => { e.preventDefault(); b.swapQueue = +row.dataset.slot; });
     });
+    // Poké Balls: tocar una que no está elegida la elige; tocar la elegida (la grande, con «Lanzar») la lanza al rival
     if (b.ballEl) b.ballEl.onpointerdown = e => {
       const ball = e.target.closest('.ball');
       if (!ball || ball.classList.contains('none')) return;
       e.preventDefault();
-      b.ballType = ball.dataset.ball;
-      b.updateBallHud();
+      if (b.ballType !== ball.dataset.ball) { b.ballType = ball.dataset.ball; b.updateBallHud(); return; }
       this.autoAim();
       b.castQueue = 5;
+      ball.classList.add('press'); setTimeout(() => ball.classList.remove('press'), 150);
     };
   }
 

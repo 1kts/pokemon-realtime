@@ -1448,3 +1448,52 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 @media (max-height: 500px) {
   .modal-box .notes-list, .modal-box .scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 }
+
+/* ---------- Combate táctil (v2): cada movimiento con su nombre sobre el color de su tipo, la energía en vertical
+   junto a los botones, Poké Balls que se eligen y se lanzan, y la bandera de rendirse bien visible ---------- */
+.balls .bgo { display: none; }
+#hud.touch .mv { background: radial-gradient(circle at 35% 25%, color-mix(in srgb, var(--tc) 55%, #fff), var(--tc) 55%, color-mix(in srgb, var(--tc) 55%, #000));
+  box-shadow: 0 4px 12px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.25); }
+#hud.touch .mv::before { display: none; }
+#hud.touch .mv .mv-ico { display: none; }
+#hud.touch .mv .tc-name { position: relative; z-index: 1; font: 900 10.5px/1.05 var(--display); color: #fff; text-align: center; text-shadow: 0 1px 0 rgba(0,0,0,.7), 0 0 3px rgba(0,0,0,.6); padding: 0 3px; }
+#hud.touch .mv:nth-child(1) .tc-name { font-size: 13px; }
+#hud.touch .mv.protect .tc-name { font-size: 9.5px; }
+#hud.touch .mv.noenergy { opacity: 1; filter: grayscale(.85) brightness(.65); }
+#hud.touch .mv .cdt { z-index: 2; }
+/* Energía: barra vertical a la izquierda de los botones, que se llena de abajo arriba */
+#hud.touch .energy { left: -14px; right: auto; bottom: 4px; top: auto; width: 12px; height: 176px; max-width: none; border-radius: 6px; }
+#hud.touch .energy .fill { position: absolute; left: 0; right: 0; bottom: 0; width: 100% !important; height: var(--en, 0%); transition: height .1s; background: linear-gradient(0deg, #2f8fff, #7ae8ff); }
+#hud.touch .energy span { display: none; }
+/* Poké Balls: la elegida, grande y con «Lanzar»; las demás, pequeñas para cambiar */
+#hud.touch .balls { right: 262px; bottom: 14px; align-items: flex-end; }
+#hud.touch .balls .ball { width: 40px; height: 40px; }
+#hud.touch .balls .ball i { width: 22px; height: 22px; }
+#hud.touch .balls .ball.sel { width: 58px; height: 58px; box-shadow: 0 3px 12px rgba(0,0,0,.5), inset 0 0 0 3px var(--yellow, #ffcb05); }
+#hud.touch .balls .ball.sel i { width: 34px; height: 34px; }
+#hud.touch .balls .ball.press { transform: scale(.9); }
+#hud.touch .balls .bgo { display: block; position: absolute; left: 50%; top: -15px; transform: translateX(-50%); padding: 0 6px; border-radius: 6px; background: var(--yellow, #ffcb05); color: #2a1c00; font: 900 9px/14px var(--display); font-style: normal; text-transform: uppercase; white-space: nowrap; }
+/* Rendirse: bandera blanca sobre rojo, más grande */
+#hud.touch .tc-quit { width: 44px; height: 44px; margin-left: -100px; border-radius: 14px; color: #fff; background: linear-gradient(180deg, #ff5a4a, #c8302a); border: 2px solid rgba(255,255,255,.55); box-shadow: 0 4px 12px rgba(0,0,0,.45); }
+#hud.touch .tc-quit svg { width: 24px; height: 24px; }
+@media (max-height: 500px) { #hud.touch .tc-quit { top: 6px; margin-left: -96px; width: 40px; height: 40px; } }
+/* Victoria y derrota en pantallas bajas (móvil en horizontal): sin la fila de equipos (ya salen arriba), las
+   estadísticas en una fila, y dinero y gemas uno al lado del otro */
+@media (max-height: 500px) {
+  .results .rs-vs { display: none; }
+  .results .res-sum { margin: 2px 0 6px; padding: 6px; }
+  .results .rs-stats { flex-wrap: nowrap; gap: 5px; }
+  .results .rs-stat { min-width: 0; flex: 1 1 0; padding: 4px 6px; }
+  .results .rs-stat b { font-size: 15px; }
+  .results .rs-stat small, .results .rs-stat span { font-size: 9px; }
+  .results .res-hero { gap: 6px; margin-bottom: 4px; }
+  .results .rh-side small { font-size: 11px; }
+  .results .rh-mid p { font-size: 12px; }
+  .results p.reward { display: inline-flex; align-items: center; gap: 4px; margin: 2px 10px; font-size: 18px; }
+  .results p.reward img, .results p.reward svg { width: 20px; height: 20px; }
+  .results > p.small, .results .res-tip { font-size: 11px; margin: 4px 0; }
+  .results .xp-list { gap: 4px; margin: 4px 0; }
+  .results .xp-row { padding: 3px 8px; }
+  .results .acts { margin-top: 6px; }
+  .results .acts button { padding: 8px 16px; }
+}

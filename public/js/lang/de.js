@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.2 ----------
+    'Controles del móvil más claros': 'Klarere Handy-Steuerung',
+    'En el móvil cada movimiento lleva su nombre sobre el color de su tipo, y la energía es una barra vertical al lado de los botones.': 'Auf dem Handy zeigt jede Attacke ihren Namen auf der Farbe ihres Typs, und die Energie ist ein senkrechter Balken neben den Buttons.',
+    'En el móvil eliges la Poké Ball tocándola y la lanzas tocándola otra vez; la bandera de rendirse se ve mejor.': 'Auf dem Handy wählst du den Pokéball durch Antippen und wirfst ihn durch erneutes Antippen; die Aufgabe-Flagge ist besser zu sehen.',
+    'La pantalla de victoria es más compacta en el móvil: todo cabe sin bajar, con el botón de seguir a la vista.': 'Der Siegesbildschirm ist auf dem Handy kompakter: Alles passt ohne Scrollen, der Weiter-Button ist zu sehen.',
+    // ---------- Combate táctil: lanzar Ball ----------
+    'Lanzar': 'Werfen',
     // ---------- Novedades v0.27.1 ----------
     'Más pixel art en combate': 'Mehr Pixel-Art im Kampf',
     'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': 'Nahkampfangriffe hinterlassen ihre Klaue, ihren Biss oder ihre Faust in Pixel-Art, und Strahlen versprühen Kristalle, Ringe oder Funken ihres Typs.',

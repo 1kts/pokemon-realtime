@@ -558,7 +558,7 @@ export class BattleClient {
     if (!this.ballEl) return;
     this.ballEl.innerHTML = '<div class="bt">Poké Balls · <kbd>F</kbd> lanzar · <kbd>R</kbd> cambiar</div>' + BALLS.map(b => {
       const item = SHOP.find(s => s.id === b);
-      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}" data-ball="${b}"><i class="${b}"></i><span class="bn">${item.name}</span> <b class="bq">×${this.balls[b] || 0}</b><small class="pct"></small></div>`;
+      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}" data-ball="${b}"><i class="${b}"></i><span class="bn">${item.name}</span> <b class="bq">×${this.balls[b] || 0}</b><small class="pct"></small>${b === this.ballType ? `<em class="bgo">${t('Lanzar')}</em>` : ''}</div>`;
     }).join('');
   }
 
@@ -601,6 +601,7 @@ export class BattleClient {
       pe.classList.toggle('on', !!(me.f & F.PROTECT));
     }
     this.energyEl.firstChild.style.width = (me.e / ENERGY.max * 100) + '%';
+    this.energyEl.style.setProperty('--en', (me.e / ENERGY.max * 100) + '%');   // (barra vertical en el móvil)
     // Probabilidad de captura de cada Ball con la vida y el estado actuales del salvaje
     if (this.ballEl) {
       const fs = ps[this.foeIdx], fm = this.sides[this.foeIdx].team[fs.act];

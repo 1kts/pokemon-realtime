@@ -23,6 +23,8 @@ module.exports = async ({ page, ok }) => {
     'con pantalla táctil salen el joystick y el botón de rendirse, y los movimientos sin teclas');
   const fits = await page.eval(`[...document.querySelectorAll('.mv, .team .tm, .tc-quit')].every(e => { const r = e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })`);
   ok(fits, 'en 844×390 los movimientos, el equipo y el botón de rendirse caben en pantalla');
+  ok(await page.eval(`[...document.querySelectorAll('.mv .tc-name')].every(n => n.textContent.trim().length > 0) && getComputedStyle(document.querySelector('.mv .mv-ico')).display === 'none'`),
+    'cada movimiento lleva su nombre (en corto) sobre el color de su tipo, sin el icono');
 
   const ptr = (sel, type, x, y) => page.eval(`(() => { const t = document.querySelector('${sel}'), r = t.getBoundingClientRect();
     t.dispatchEvent(new PointerEvent('${type}', { pointerId: 7, pointerType: 'touch', bubbles: true, cancelable: true, clientX: ${x === null ? 'r.left + r.width / 2' : x}, clientY: ${y === null ? 'r.top + r.height / 2' : y} })); return true; })()`);

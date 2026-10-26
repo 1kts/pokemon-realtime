@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.27.2', date: '2026-10-26', title: 'Controles del móvil más claros',
+      items: [
+        ['cambio', 'En el móvil cada movimiento lleva su nombre sobre el color de su tipo, y la energía es una barra vertical al lado de los botones.'],
+        ['cambio', 'En el móvil eliges la Poké Ball tocándola y la lanzas tocándola otra vez; la bandera de rendirse se ve mejor.'],
+        ['cambio', 'La pantalla de victoria es más compacta en el móvil: todo cabe sin bajar, con el botón de seguir a la vista.'],
+      ],
+    },
+    {
       v: '0.27.1', date: '2026-10-26', title: 'Más pixel art en combate',
       items: [
         ['cambio', 'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.'],

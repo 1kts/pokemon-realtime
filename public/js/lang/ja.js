@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.2 ----------
+    'Controles del móvil más claros': 'スマホの操作がわかりやすく',
+    'En el móvil cada movimiento lleva su nombre sobre el color de su tipo, y la energía es una barra vertical al lado de los botones.': 'スマホでは、わざの名前がタイプの色の上に表示され、エネルギーはボタンの横の縦のバーになりました。',
+    'En el móvil eliges la Poké Ball tocándola y la lanzas tocándola otra vez; la bandera de rendirse se ve mejor.': 'スマホでは、モンスターボールはタップで選び、もう一度タップで投げます。降参の旗も見やすくなりました。',
+    'La pantalla de victoria es más compacta en el móvil: todo cabe sin bajar, con el botón de seguir a la vista.': 'スマホの勝利画面がコンパクトになり、スクロールせずに全部見えて、続けるボタンもすぐ押せます。',
+    // ---------- Combate táctil: lanzar Ball ----------
+    'Lanzar': 'なげる',
     // ---------- Novedades v0.27.1 ----------
     'Más pixel art en combate': 'バトルにもっとドット絵を',
     'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': '近接攻撃でドット絵のひっかき・かみつき・パンチが出て、光線からはタイプに合った結晶やリング、火花が飛び散ります。',
