@@ -2,6 +2,7 @@
 // la solicitud. Hace falta cuenta (los invitados se borran solos a los 60 días). En cada perfil:
 //   friends: [ids]  ·  friendIn: [{ id, at }] (solicitudes recibidas)  ·  friendOut: [ids] (enviadas)
 const store = require('./store.js');
+const D = require('../public/data.js');
 
 const MAX = 100, MAX_IN = 30;
 
@@ -93,7 +94,9 @@ function search(p, q, doing) {
   hits.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
   return hits.slice(0, 8).map(([, , o]) => {
     const team = Object.values(o.teams || {}).flat().map(u => (o.mons || []).find(m => m.uid === u)).filter(Boolean).sort((a, b) => b.level - a.level)[0];
+    // (y algo más para reconocerle: título, medallas, Pokédex y victorias en Clasificatoria)
     return { id: o.id, name: o.name, tag: o.tag, elo: o.elo, ranked: o.ranked || 0, dex: team ? team.dex : null, shiny: !!(team && team.shiny && !team.plain), doing: doing(o.id),
+      title: o.title || null, badges: D.REGION_IDS.reduce((n, r) => n + Math.min(8, D.progOf(o, r)), 0), caught: D.dexCount(o), wins: o.wins || 0,
       rel: p.friends.includes(o.id) ? 'friend' : p.friendOut.includes(o.id) ? 'out' : p.friendIn.some(x => x.id === o.id) ? 'in' : null };
   });
 }

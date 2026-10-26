@@ -10,8 +10,8 @@ let ok = 0;
 const check = (name, fn) => { fn(); ok++; console.log('✓', name); };
 
 // Combate de prueba sin temporizador: avanza a mano con tick()
-function battle(map, a = [{ dex: 25, level: 30 }], b = [{ dex: 74, level: 30 }]) {
-  const bt = new Battle({ mode: 'trainer', map, sides: [{ name: 'A', team: a }, { name: 'B', team: b }], onEnd: () => {} });
+function battle(map, a = [{ dex: 25, level: 30 }], b = [{ dex: 74, level: 30 }], mod = null) {
+  const bt = new Battle({ mode: 'trainer', map, mod, sides: [{ name: 'A', team: a }, { name: 'B', team: b }], onEnd: () => {} });
   bt.stop();
   bt.state = 'fight';
   return bt;
@@ -26,6 +26,15 @@ check('cada líder pelea en la arena de su tipo y el Alto Mando en su sala', () 
   for (const [id, a] of Object.entries(D.ARENAS)) {
     assert.strictEqual(a.rows.length, S.ROWS, id);
     for (const r of a.rows) assert.strictEqual(r.length, S.COLS, id);
+  }
+});
+
+check('el haz del faro empieza en vertical: no pasa por donde salen los Pokémon', () => {
+  for (const [id, a] of Object.entries(D.ARENAS)) {
+    if (!a.mech.beam) continue;
+    const bt = battle(id);
+    assert(Math.abs(bt.arena.beamA - Math.PI / 2) < 1e-9, id);
+    for (const s of bt.sides) { assert(Math.abs(s.x - S.COLS * S.CELL / 2) > a.mech.beam.width + 30, id + ': sale lejos de la vertical del centro'); }
   }
 });
 
@@ -327,6 +336,121 @@ check('datos de equilibrio: el combate cuenta usos, aciertos, daño y KOs de cad
   a.inputs.push({ mx: 0, my: 0, a: Math.PI, tx: 0, ty: 300, c: 0, s: 2 });   // hacia atrás: falla
   run(bt, 1.5);
   assert(bt.stats.moves[0].impactrueno.casts >= 1 && bt.stats.moves[0].impactrueno.landed <= bt.stats.moves[0].impactrueno.casts, 'los fallos cuentan como uso sin acierto');
+});
+
+// ---------- Mecánicas nuevas ----------
+const evs = bt => { const out = []; const ev = bt.ev.bind(bt); bt.ev = e => { out.push(e); ev(e); }; return out; };
+const place = (s, x, y) => { s.x = x; s.y = y; s.vx = s.vy = 0; };
+const runUntil = (bt, cond, secs = 30) => { for (let i = 0; i < secs * S.TICK && !cond(); i++) { for (const s of bt.sides) s.inputs.push({ mx: 0, my: 0 }); bt.tick(); } return cond(); };
+
+check('géiseres: avisan, hacen daño y lanzan hacia fuera', () => {
+  const bt = battle('g-agua', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+  const [a] = bt.sides, hp0 = bt.mon(a).hp;
+  bt.arena.timers.geyser = 0;
+  bt.arena.update(0.01);
+  const w = out.find(e => e.k === 'warn' && e.ty === 'agua');
+  assert(w, 'aviso');
+  place(a, w.x + 10, w.y); a.invuln = 0;
+  for (let i = 0; i < 40; i++) bt.arena.update(0.05);
+  assert(out.some(e => e.k === 'geyser'), 'chorro');
+  assert(bt.mon(a).hp < hp0 && a.kb && a.kb.vx > 0, 'daño y empuje hacia fuera');
+});
+
+check('hielo que se rompe: quieto encima, la casilla pasa a agua y luego vuelve a ser hielo', () => {
+  const bt = battle('g-hielo');
+  const [a] = bt.sides, i = bt.terrain.indexOf(T.ICE), c = S.cellCenter(i);
+  place(a, c.x, c.y);
+  for (let k = 0; k < 30; k++) bt.arena.update(0.05);
+  assert.strictEqual(bt.terrain[i], T.WATER, 'agua');
+  place(a, 480, 20);
+  run(bt, 7);
+  assert.strictEqual(bt.terrain[i], T.ICE, 'vuelve el hielo');
+});
+
+check('cintas transportadoras: arrastran en su sentido', () => {
+  const p = { x: 300, y: 20 }, q = { x: 300, y: 13 * 40 + 20 };
+  const env = { map: 'g-electrico', terrain: new Array(S.COLS * S.ROWS).fill(T.NONE) };
+  S.arenaStep(p, 0, 0, 200, S.DT, [], 22, env); S.arenaStep(q, 0, 0, 200, S.DT, [], 22, env);
+  assert(p.x > 300 && q.x < 300);
+});
+
+check('pilares: se turnan y sacan de dentro a quien estuviera encima', () => {
+  const bt = battle('g-lucha'), out = evs(bt);
+  const up0 = bt.obstacles.filter(o => o.kind === 'pillar').map(o => o.x + ',' + o.y).join();
+  const spot = S.pillarSpots(D.ARENAS['g-lucha'].mech.pillars).find(p => p.g === 1);
+  place(bt.sides[0], spot.x, spot.y);
+  bt.arena.timers.pillars = 0;
+  for (let k = 0; k < 30; k++) bt.arena.update(0.05);
+  const up1 = bt.obstacles.filter(o => o.kind === 'pillar').map(o => o.x + ',' + o.y).join();
+  assert(up0 && up1 && up0 !== up1, 'cambian');
+  assert(out.some(e => e.k === 'warn' && e.ty === 'roca'), 'avisan');
+  assert(Math.hypot(bt.sides[0].x - spot.x, bt.sides[0].y - spot.y) >= 26, 'fuera del pilar');
+});
+
+check('gravedad: avisa, atrae hacia el centro, curva los proyectiles y en el centro hace daño', () => {
+  const bt = battle('g-siniestro');
+  bt.arena.timers.gravity = 0;
+  for (let k = 0; k < 30 && !bt.arena.pull; k++) bt.arena.update(0.05);
+  assert(bt.arena.pull > 0, 'late');
+  const p = { x: 200, y: 300 };
+  S.arenaStep(p, 0, 0, 200, S.DT, [], 22, bt.arena.env(bt.sides[0]));
+  assert(p.x > 200, 'atrae');
+  const pr = { x: 480, y: 100, vx: 300, vy: 0 };
+  bt.arena.bend(pr, 0.1);
+  assert(pr.vy > 0 && Math.abs(Math.hypot(pr.vx, pr.vy) - 300) < 0.01, 'curva sin acelerar');
+  const [a] = bt.sides, hp0 = bt.mon(a).hp;
+  place(a, 480, 300); a.invuln = 0;
+  bt.arena.update(0.05);
+  assert(bt.mon(a).hp < hp0, 'daño en el centro');
+});
+
+check('espejos: un proyectil que choca con uno rebota', () => {
+  const bt = battle('g-psiquico'), [x1, y1, x2] = S.mirrorSegs({})[0];
+  const pr = { x: (x1 + x2) / 2, y: y1 + 9, vx: 0, vy: -400, r: 8 };
+  assert(bt.arena.bounce(pr) && pr.vy > 0);
+});
+
+check('tormenta: el rayo que cae junto al agua electrifica a quien está en ella', () => {
+  const bt = battle('lago', [{ dex: 74, level: 30 }], [{ dex: 74, level: 30 }], 'storm'), out = evs(bt);
+  const w = bt.terrain.indexOf(T.WATER), c = S.cellCenter(w);
+  const [a, b2] = bt.sides;
+  place(b2, c.x, c.y); b2.invuln = 0;
+  const hp0 = bt.mon(b2).hp;
+  // (el rayo de verdad, pero forzado a caer junto al agua)
+  bt.arena.timers.storm = 0;
+  const realWarn = bt.arena.warnAt.bind(bt.arena);
+  bt.arena.warnAt = (x, y, r, warn, ty, onHit) => realWarn(c.x + 30, c.y, r, 0.01, ty, onHit);
+  bt.arena.update(0.01); bt.arena.update(0.05);
+  assert(out.some(e => e.k === 'zapwater'), 'electrifica');
+  assert(bt.mon(b2).hp < hp0, 'daña al del agua');
+});
+
+check('niebla: dentro de un banco no se le ve de lejos', () => {
+  const bt = battle('pradera', undefined, undefined, 'fog');
+  const z = S.fogZones(D.MODIFIERS.fog)[0], [a, b2] = bt.sides;
+  place(a, z.x, z.y); place(b2, 900, 560); a.sinceAct = 5;
+  run(bt, 0.1);
+  assert(a.hidden && bt.startMsg(a).mod === 'fog');
+});
+
+check('flores: las rosas curan y las moradas adormecen', () => {
+  const bt = battle('g-planta', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]);
+  const fl = S.parseMap('g-planta').flowers, heal = fl.find(f => f.k === 'heal'), sleep = fl.find(f => f.k === 'sleep');
+  const [a, b2] = bt.sides;
+  bt.mon(a).hp = Math.round(bt.mon(a).maxHp / 2);
+  const hp0 = bt.mon(a).hp;
+  place(a, heal.x, heal.y); place(b2, sleep.x, sleep.y);
+  for (let k = 0; k < 40; k++) bt.arena.update(0.05);
+  assert(bt.mon(a).hp > hp0, 'cura');
+  assert(b2.slow > 0, 'adormece');
+});
+
+check('los modificadores funcionan en cualquier arena', () => {
+  for (const mod of Object.keys(D.MODIFIERS)) {
+    const bt = battle('pradera', undefined, undefined, mod);
+    assert(bt.arena.active && bt.arena.m[mod], mod);
+    run(bt, 12);
+  }
 });
 
 console.log(`\n${ok} pruebas de arenas correctas`);

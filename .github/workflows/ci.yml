@@ -35,15 +35,16 @@ jobs:
         run: node tools/require-tests.js ${{ github.event.before }} ${{ github.sha }} ${{ github.ref }}
       - run: npm test
 
-  # El juego en un navegador (Chrome ya viene en los runners de GitHub), repartido en 3 máquinas a la vez y 2
-  # pruebas a la vez en cada una (más, en una máquina del CI, les quita CPU y las que miden tiempos fallan)
+  # El juego en un navegador (Chrome ya viene en los runners de GitHub), repartido en 6 máquinas a la vez por lo que
+  # tarda cada prueba (tests/e2e/times.json) y 2 pruebas a la vez en cada una (más, en una máquina del CI, les quita
+  # CPU y las que miden tiempos fallan)
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -53,7 +54,7 @@ jobs:
       - run: npm ci
       - run: npm run test:e2e
         env:
-          E2E_SHARD: ${{ matrix.shard }}/3
+          E2E_SHARD: ${{ matrix.shard }}/6
           E2E_JOBS: 2
           E2E_TIMES: 1
 

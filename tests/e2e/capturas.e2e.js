@@ -42,6 +42,10 @@ module.exports = async ({ page, player, ok, log }) => {
     await page.waitFor(`window.__app.battle && window.__app.battle.sides`, 15000);
     const r = await page.eval(`(() => { const s = window.__app.battle.sides[1]; return { line: Data.lineOf(s.team[0].dex), perfect: !!s.perfect }; })()`);
     if (r.line === await page.eval(`Data.lineOf(${dex})`)) { seen = true; ok(r.perfect, 'un salvaje de esa línea sale con IV perfectos'); }
+    if (i === 0) {   // encima del salvaje, sus Poké Balls del reto
+      await page.waitFor(`document.querySelector('.plate.foe .catch-pips')`);
+      ok(await page.eval(`document.querySelectorAll('.plate.foe .catch-pips i').length === 5 && !document.querySelector('.plate.mine .catch-pips')`), 'en el combate salvaje, encima del rival salen las 5 Poké Balls de su reto de capturas');
+    }
     await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
     await page.waitFor(`!window.__app.battle`, 15000);
   }

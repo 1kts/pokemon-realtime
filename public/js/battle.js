@@ -31,7 +31,10 @@ export class BattleClient {
     this.foeIdx = 1 - start.you;
     this.mode = start.mode;
     this.mapName = start.map;
-    this.arena = Data.ARENAS[start.map] || null;   // arena de gimnasio con mecánicas
+    // Arena de gimnasio con mecánicas, o una normal con una mecánica extra (Práctica)
+    this.mod = start.mod || null;
+    this.mech = Shared.mechFor(start.map, this.mod);
+    this.arena = Data.ARENAS[start.map] || (this.mod ? { name: Data.MODIFIERS[this.mod].name, desc: MOD_DESC[this.mod] } : null);
     this.sides = start.sides;
     this.balls = start.balls ? { ...start.balls } : null;
     this.ballType = this.balls ? BALLS.find(b => this.balls[b] > 0) || 'pokeball' : null;
@@ -42,7 +45,7 @@ export class BattleClient {
     this.keys = {}; this.mouse = { x: 0, y: 0 }; this.aim = { x: 480, y: 300 };
     this.ghostT = 0; this.over = false;
     this.lastPos = [{ x: 140, y: 300 }, { x: 820, y: 300 }];
-    this.world.loadMap(start.map, start.terrain);
+    this.world.loadMap(start.map, start.terrain, this.mod);
     this.fx.clear(); this.p.clear();
     this.actors = this.sides.map((s, i) => new Actor(this.world.scene, this.world.camera, s.team[0].dex, !!s.team[0].shiny, i === this.you, s.team[0].skin, s.team[0].parts));
     preload(this.sides.flatMap(s => s.team.map(m => ({ dex: m.dex, shiny: !!m.shiny }))));
@@ -121,7 +124,8 @@ export class BattleClient {
     if (!this.arena) return Shared.stepMove(p, inp.mx, inp.my, speed, DT, obstacles, r);
     const wd = this.latest && this.latest.ar && this.latest.ar.wd;
     const wind = wd && !SPECIES[this.dexOf(this.you)].types.includes('volador') ? wd : null;
-    Shared.arenaStep(p, inp.mx || 0, inp.my || 0, speed, DT, obstacles, r, { map: this.mapName, terrain: this.world.types, wind });
+    const pull = (this.latest && this.latest.ar && this.latest.ar.gv) || 0;
+    Shared.arenaStep(p, inp.mx || 0, inp.my || 0, speed, DT, obstacles, r, { map: this.mapName, mech: this.mech, terrain: this.world.types, wind, pull });
   }
 
   dexOf(i) { return this.sides[i].team[this.act[i]].dex; }
@@ -152,6 +156,8 @@ export class BattleClient {
         this.app.sfx.cast(m, s === this.you);
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
+        if (this.fx.v3 && m.kind === 'dash') this.fx.dashTrail(actor.group, m.type, m.dur || 0.25);   // estilo 3D
+        if (this.fx.v3 && (m.kind === 'heal' || m.kind === 'buff')) this.fx.aura(w, m.kind === 'heal' ? '#70ffa8' : m.power ? '#ff8a50' : '#8ad8ff');   // estilo 3D
         if (m.kind === 'heal') this.p.emit(w.x, 0.1, w.z, { n: 40, colors: ['#ffffff', '#b0ffd0', '#70f0ff'], dir: [0, 1, 0], spread: 0.4, speed: 2.5, life: 1, size: 0.18, jitter: 1 });
         if (m.kind === 'buff') this.p.emit(w.x, 0.1, w.z, { n: 30, colors: m.power ? ['#ff8060', '#ffd040'] : ['#ffffff', '#a0e0ff'], dir: [0, 1, 0], spread: 0.2, speed: 3, life: 0.8, size: 0.16, jitter: 1 });
         if (m.kind === 'smoke') { const c = toWorld(e.x, e.y); this.p.emit(c.x, 0.4, c.z, { n: 60, colors: ['#e0e4ea', '#c8ccd2'], layer: 'soft', speed: 3, life: 1.2, size: 1.2, grow: 1, alpha: 0.7 }); }
@@ -204,7 +210,7 @@ export class BattleClient {
         break;
       case 'heal': this.floatText(pos.x, pos.y, '+' + e.n, 'heal'); break;
       case 'buff': if (e.splash) this.floatText(pos.x, pos.y, t('¡Pero no pasó nada!'), 'info'); break;
-      case 'blink': { const w = toWorld(e.x, e.y, 0.6); actor.ghost('#ff90d0'); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2, life: 0.5, size: 0.2 }); break; }
+      case 'blink': { const w = toWorld(e.x, e.y, 0.6); actor.ghost('#ff90d0'); if (this.fx.v3) this.fx.blink(w); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2, life: 0.5, size: 0.2 }); break; }
       case 'zap': this.fx.zap(e.cells); this.floatText(this.posOf(this.foeIdx).x, this.posOf(this.foeIdx).y - 30, t('¡Descarga en el agua!'), 'info'); break;
       case 'capture': {
         // El Pokémon entra en la Ball; las sacudidas se anuncian una a una
@@ -231,6 +237,13 @@ export class BattleClient {
         this.banner(t('¡Ráfaga de viento! {arrow}', { arrow }), 'info');
         break;
       }
+      // Mecánicas nuevas: géiseres, tormenta sobre el agua, gravedad, pilares, hielo que se rompe y espejos
+      case 'geyser': this.fx.geyser(e); break;
+      case 'zapwater': this.fx.zapWater(this.world.types); this.banner(t('¡El agua está electrificada!'), 'bad'); break;
+      case 'gravity': if (e.ph === 'warn') { this.fx.gravity(e.d, e.dur); this.banner(t('¡Pozo de gravedad! Aléjate del centro'), 'bad'); } break;
+      case 'pillar': this.fx.shake = Math.max(this.fx.shake, 0.12); break;
+      case 'crack': this.fx.crack(e); break;
+      case 'mirror': this.fx.mirrorFlash(e); break;
       case 'warp': {
         for (const [x, y] of [[e.x1, e.y1], [e.x2, e.y2]]) { const w = toWorld(x, y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2.4, life: 0.5, size: 0.2 }); }
         actor.ghost('#ff90d0');
@@ -636,6 +649,8 @@ export class BattleClient {
     if (f & F.POWER) icons.push(`<i class="st power">${t('ATQ')}</i>`);
     if (f & F.HIDDEN) icons.push(`<i class="st hidden">${t('OCULTO')}</i>`);
     plate.innerHTML = `<div class="pn">${monLabel(mon)}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
+    // Salvaje: cuántas veces has atrapado su línea (las Poké Balls del reto de las 25 capturas)
+    if (this.balls && i !== this.you && this.app.ui.profile) { const pips = this.app.ui.catchPips(mon.dex); pips.title = this.app.ui.catchText(mon.dex); plate.append(pips); }
   }
 
   floatText(x, y, text, cls = '', sub = '', big = false) {
@@ -675,7 +690,8 @@ export class BattleClient {
 
 // Nombre con su etiqueta (Ash#4821): distingue a entrenadores que se llaman igual
 // npc: entrenador de la IA (Clasificatoria): se marca con «IA», nunca pasa por una persona
-export const tagName = (name, tag, npc) => `${escapeHtml(name)}${tag ? `<small class="ntag">#${tag}</small>` : ''}${npc ? `<small class="ia-tag">${t('IA')}</small>` : ''}`;
+// (los entrenadores de la IA, sin etiqueta: son únicos y llevan la suya de «IA»)
+export const tagName = (name, tag, npc) => `${escapeHtml(name)}${tag && !npc ? `<small class="ntag">#${tag}</small>` : ''}${npc ? `<small class="ia-tag">${t('IA')}</small>` : ''}`;
 
 export function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -697,6 +713,15 @@ export function moveStatsHtml(m) {
   for (const [cls, label] of moveEffects(m)) out.push(`<span class="mfx ${cls}">${label}</span>`);
   return `<div class="mstats">${out.join('')}</div>`;
 }
+
+// Qué hace cada mecánica extra de Práctica (sale en la etiqueta de la arena)
+const MOD_DESC = {
+  geyser: 'Géiseres que avisan y luego lanzan por los aires.',
+  storm: 'Tormenta: caen rayos con aviso, y si caen en el agua la electrifican.',
+  gravity: 'A ratos, un pozo de gravedad en el centro lo atrae todo.',
+  fog: 'Bancos de niebla: dentro no se te ve.',
+  pillars: 'Pilares de piedra que suben y bajan: la cobertura cambia de sitio.',
+};
 
 const MOVE_KINDS = m => ({ proj: m.explode ? 'Proyectil que estalla donde apuntas' : 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida',
   area: m.at === 'self' ? 'Área a tu alrededor' : m.pattern === 'line' ? 'Impactos en fila hacia el cursor' : m.count ? 'Impactos alrededor del cursor' : 'Área en el cursor',

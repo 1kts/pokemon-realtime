@@ -1,6 +1,6 @@
 // Proyectiles en pixel art (formas de PokéSurvivor): cada uno con su forma (llama, gota, hoja, rayo…) en la paleta de
 // su tipo, sobre un halo pequeño de su color, igual en una sala clara (la de Lorelei) y en una normal (la pradera).
-// Sobre suelo claro el halo no puede ser aditivo (no se vería), así que usa el color intenso del tipo con mezcla normal
+// El halo es el mismo en todas las arenas (aditivo y del color del tipo), también sobre suelo claro
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'proyectiles' });
   await page.loginAs(me.token);
@@ -20,8 +20,7 @@ module.exports = async ({ page, player, ok }) => {
   const bright = await look('e-lorelei', 'ascuas'), normal = await look('pradera', 'ascuas');
   ok(bright.parts === 2 && normal.parts === 2 && bright.pixel && normal.pixel, 'Ascuas es una llama en pixel art (sprite nítido) con su halo, en las dos arenas');
   ok(bright.w === normal.w, 'el mismo tamaño en una arena clara y en una normal');
-  ok(normal.blending === 2 && bright.blending === 1, 'halo aditivo en la normal y de mezcla normal en la clara (el aditivo no se ve sobre blanco)');
-  ok(bright.haloSat > 0.7, 'sobre suelo claro el halo lleva el color intenso del tipo');
+  ok(normal.blending === 2 && bright.blending === 2 && Math.abs(bright.haloSat - normal.haloSat) < 0.01, 'el halo es igual en las dos: aditivo y del mismo color');
   const leaf = await look('pradera', 'hojaAfilada'), drop = await look('pradera', 'pistolaAgua');
   ok(leaf.pixel && drop.pixel && leaf.img !== bright.img, 'cada movimiento con su forma: Hoja Afilada una hoja y Pistola Agua una gota');
 };

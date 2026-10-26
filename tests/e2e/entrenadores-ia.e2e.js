@@ -17,6 +17,10 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.user-modal h3 .ia-tag')`);
   ok(await page.eval(`/Entrenador de la IA/.test(document.querySelector('.user-modal').textContent) && document.querySelectorAll('.user-modal .mini-team .mini').length === 3 && !document.querySelector('.user-modal .acts button:not(.primary)')`),
     'su ficha dice que es de la IA, enseña su equipo de 3 y no se puede añadir de amigo');
+  // Son líderes y campeones, con su sprite de entrenador (cargado, no roto) y sin etiqueta #
+  await page.waitFor(`(() => { const i = document.querySelector('.user-modal .npc-face img'); return i && i.complete && i.naturalWidth > 0; })()`);
+  ok(await page.eval(`/trainers\\//.test(document.querySelector('.user-modal .npc-face img').src) && !/poke-ball/.test(document.querySelector('.user-modal .npc-face img').src) && !document.querySelector('.user-modal .ntag')`),
+    'su ficha lleva el sprite de su entrenador y no lleva etiqueta #');
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
 
   // Buscar partida sin nadie más: a los ~20 s toca un entrenador IA
@@ -29,4 +33,5 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`!window.__app.battle && window.__app.ui.view === 'results'`, 15000);
   await page.waitFor(`window.__app.ui.profile.elo !== ${elo0}`);
   ok(await page.eval(`window.__app.ui.profile.elo`) < elo0, 'el resultado cuenta para el ELO');
+  ok(await page.eval(`!/undefined|NaN/.test(document.querySelector('.results').textContent) && !document.querySelector('.results .league-res, .results .league-box')`), 'y los resultados no muestran la Liga Pokémon ni «undefined»');
 };

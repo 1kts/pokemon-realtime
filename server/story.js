@@ -34,7 +34,13 @@ function migrate(p) {
     if (!m.nat) m.nat = D.randomNature();
     if (m.shiny === undefined) m.shiny = false;
     if (!m.region) m.region = 'kanto';   // los Pokémon de antes de las regiones eran de Kanto
+    // Evolucionado a una generación aún cerrada (se podía antes): vuelve a la forma de la que venía
+    while (D.OUT_EVO_FROM[m.dex] && m.met !== 'admin') m.dex = D.OUT_EVO_FROM[m.dex];
   }
+  // Los de generaciones cerradas que vendió la Tienda por error se quitan y se devuelve lo que costaron
+  for (const m of p.mons.filter(m => m.met !== 'admin' && !D.inDex(m.dex))) { p.coins = (p.coins || 0) + D.shopPrice(m.dex); p.mons = p.mons.filter(x => x !== m); }
+  // Los legendarios que daba antes «Desbloquear todo» de generaciones cerradas o de otra región se quitan
+  p.mons = p.mons.filter(m => m.met !== 'admin' || (D.inDex(m.dex) && D.SPECIES[m.dex].gen === D.REGION_IDS.indexOf(m.region) + 1));
   // Equipo por región (antes: uno solo)
   if (!p.teams) p.teams = { kanto: (p.team || []).slice() };
   for (const r of D.REGION_IDS) {

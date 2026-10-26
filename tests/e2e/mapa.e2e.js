@@ -1,5 +1,5 @@
 // Mapa de Historia: medallas en los gimnasios (en color las conseguidas), «Estás aquí» en la ciudad del
-// último líder vencido, líneas hacia las rutas nuevas y el siguiente líder, y caminos sin línea discontinua
+// último líder vencido, líneas hacia las rutas nuevas y el siguiente líder, el mapa en 3D y la Liga en su rascacielos
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'mapa' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
@@ -20,7 +20,17 @@ module.exports = async ({ page, player, ok }) => {
   ok(px === sx, '«Estás aquí» está en la ciudad de Lt. Surge');
   const fresh = await page.eval(`document.querySelectorAll('.node.route.new').length`);
   ok(fresh === 2 && await page.eval(`document.querySelectorAll('.paths .leg').length`) === fresh + 1, 'una línea a cada ruta nueva y otra al siguiente líder');
-  ok(await page.eval(`document.querySelectorAll('.mapart polyline').length`) > 0, 'las carreteras siguen dibujadas');
-  ok(await page.eval(`document.querySelectorAll('.mapart [stroke-dasharray]').length`) === 0, 'sin línea discontinua en los caminos: solo las de a dónde puedes ir');
+  // El mapa es la maqueta 3D (el navegador de las pruebas tiene WebGL por software): sale sin pasar por el SVG
+  await page.waitFor(`document.querySelector('.map.map3d-on .map3d-canvas')`, 60000);
+  // (si la maqueta tarda más de 4 s, como en un CI cargado, se ve el SVG mientras tanto; ya con el 3D, queda oculto)
+  ok(await page.eval(`(() => { const s = document.querySelector('.mapart'); return !s || getComputedStyle(s).visibility === 'hidden'; })()`), 'con el 3D no se ve el mapa SVG');
+  ok(await page.eval(`(() => { const c = document.querySelector('.map3d-canvas'); return c.width > 100 && c.height > 100; })()`), 'el lienzo 3D ocupa el mapa');
+  // La Liga: su nodo queda encima del rascacielos, transparente y del tamaño del edificio, y se puede pulsar
+  ok(await page.eval(`(() => { const b = document.querySelector('.node.league-hq').getBoundingClientRect(); return b.height > b.width && b.width > 10; })()`), 'el nodo de la Liga cubre su rascacielos');
+  // Volver a Historia: la maqueta ya está montada y sale al instante
+  await page.eval(`window.__app.ui.show('menu'); window.__app.ui.show('story'); true`);
+  ok(await page.eval(`!!document.querySelector('.map.map3d-on') && !document.querySelector('.mapart')`), 'al volver, el mapa 3D sale ya montado, sin pasar por el SVG');
   ok(await page.eval(`document.querySelectorAll('.map-goal .goal-routes .chip').length`) === fresh, 'el objetivo lista las rutas nuevas');
+  await page.eval(`document.querySelector('.node.league-hq').click(); true`);
+  await page.waitFor(`window.__app.ui.view === 'league'`);
 };

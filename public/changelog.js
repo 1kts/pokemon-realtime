@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.30.0', date: '2026-10-27', title: 'Ataques y mapa en 3D, y arenas nuevas',
+      items: [
+        ['nuevo', 'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.'],
+        ['nuevo', 'El mapa de Historia es una maqueta en 3D de Kanto y Johto, con sus ciudades, gimnasios del color de su tipo y el rascacielos de la Liga.'],
+        ['nuevo', 'Nueve mecánicas nuevas en los gimnasios, de géiseres a pozos de gravedad, y en Práctica eliges la arena por su foto y le puedes añadir una mecánica extra.'],
+        ['nuevo', 'Cada arena tiene su entorno propio alrededor del campo, y hay música nueva de HydroGene, con un tema para cada tipo de gimnasio.'],
+        ['cambio', 'Los rankings tienen podio para los tres primeros, los entrenadores de la IA son ahora líderes y campeones, y las fichas de entrenador enseñan más.'],
+        ['arreglo', 'Ya no salen Pokémon de generaciones cerradas al evolucionar ni en la Tienda; los que se consiguieron así vuelven a su forma anterior o se devuelve su precio.'],
+      ],
+    },
+    {
       v: '0.29.2', date: '2026-10-26', title: 'Música sin cortes',
       items: [
         ['arreglo', 'La música del Alto Mando ya no vuelve a empezar a mitad del combate: ahora suena el tema largo del Campeón.'],

@@ -152,13 +152,14 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   ok(/propia cuenta/.test((await adm.ask('admin.action', { a: 'unlockall', id: normal.p.id })).ok), 'no se puede desbloquear la cuenta de otro jugador');
   const un = await adm.ask('admin.action', { a: 'unlockall', id: boss.p.id });
   const me = store.byId(boss.p.id);
-  const legs = Object.values(D.SPECIES).filter(sp => sp.leg).length;
-  const mine = me.mons.filter(m => m.met === 'admin');
-  ok(/desbloqueado/.test(un.ok) && mine.length === legs * D.REGION_IDS.length, `${mine.length} legendarios (${legs} en cada región)`);
+  const ofGen = r => Object.values(D.SPECIES).filter(sp => sp.gen === D.REGION_IDS.indexOf(r) + 1).length;
+  const mine = me.mons.filter(m => m.met === 'admin'), legs = D.REGION_IDS.reduce((n, r) => n + ofGen(r), 0);
+  ok(/desbloqueado/.test(un.ok) && mine.length === legs && legs === D.DEX_TOTAL, `${mine.length} Pokémon: uno de cada especie de la generación de cada región (${D.REGION_IDS.map(r => r + ' ' + ofGen(r)).join(', ')})`);
+  ok(mine.every(m => D.inDex(m.dex) && D.SPECIES[m.dex].gen === D.REGION_IDS.indexOf(m.region) + 1), 'ninguno de generaciones cerradas ni de otra región');
   ok(mine.every(m => m.shiny && m.level === 100 && Object.values(m.iv).every(v => v === D.IV_MAX)
     && Object.values(m.ev).reduce((a, b) => a + b, 0) === 510 && Math.max(...Object.values(m.ev)) === 252 && ['firme', 'modesta'].includes(m.nat)),
     'todos shiny, nivel 100, IV perfectos, EV al tope (510) y naturaleza que sube su ataque');
-  ok(me.caught.length === Object.keys(D.SPECIES).length && me.shinies.length === me.caught.length, 'Pokédex completa, también la shiny');
+  ok(me.caught.length === D.DEX_TOTAL && me.shinies.length === me.caught.length, 'Pokédex completa, también la shiny');
   ok(D.REGION_IDS.every(r => me.prog[r] === D.leadersOf(r).length && D.levelCap(me, r) === 100) && me.badges === 8, 'todas las medallas, Alto Mando y Campeón; sin tope de nivel');
   ok(me.coins === 999999999 && D.SHOP.every(i => me.items[i.id] === 999), 'dinero y objetos de sobra');
   ok(Object.values(D.RANKED_REWARDS).every(r => me.cosmetics.titles.includes(r.title) && me.cosmetics.frames.includes(r.frame)) && me.tower.symbols.length === 2,

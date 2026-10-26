@@ -107,7 +107,8 @@ export class Actor {
       uPal0: { value: new THREE.Color() }, uPal1: { value: new THREE.Color() }, uPal2: { value: new THREE.Color() }, uPal3: { value: new THREE.Color() } };
     this.mat.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, this.skinU);
-      sh.fragmentShader = SKIN_PARS + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>' + SKIN_GLSL);
+      // (solo con textura: si se pinta antes de que llegue el sprite, el shader sin mapa no compilaría)
+      sh.fragmentShader = SKIN_PARS + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n#ifdef USE_MAP\n' + SKIN_GLSL + '\n#endif\n');
     };
     this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.mat);
     this.mesh.castShadow = true;

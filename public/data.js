@@ -442,7 +442,7 @@
         '...o................o...',
         '........................',
       ] },
-    'g-agua': { name: 'Piscina Celeste', desc: 'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.', mech: { tide: { every: 9 } },
+    'g-agua': { name: 'Piscina Celeste', desc: 'La marea sube y baja cada pocos segundos, y los géiseres avisan y luego lanzan por los aires. En el agua estás mojado (más daño eléctrico y de hielo).', mech: { tide: { every: 9 }, geyser: { every: 5, warn: 1, r: 44, dmg: 0.06, knock: 150 } },
       rows: [
         '........................',
         '........................',
@@ -460,7 +460,7 @@
         '........................',
         '........................',
       ] },
-    'g-electrico': { name: 'Central de Carmín', desc: 'Las placas del suelo se electrifican por turnos: cuando parpadean, sal de ellas. A los de tipo eléctrico no les afecta.', mech: { shock: { every: 3.2, warn: 1, dmg: 0.07, stun: 0.6 } },
+    'g-electrico': { name: 'Central de Carmín', desc: 'Las placas del suelo se electrifican por turnos: cuando parpadean, sal de ellas. Arriba y abajo, cintas transportadoras que te arrastran.', mech: { shock: { every: 3.2, warn: 1, dmg: 0.07, stun: 0.6 }, belts: { speed: 110, rows: [[0, 1, 1], [13, 14, -1]] } },
       rows: [
         '........................',
         '........................',
@@ -478,25 +478,25 @@
         '........................',
         '........................',
       ] },
-    'g-planta': { name: 'Jardín Azulona', desc: 'La hierba alta vuelve a crecer poco después de quemarse: escóndete en ella o quémala.', mech: { regrow: 7 },
+    'g-planta': { name: 'Jardín Azulona', desc: 'La hierba alta vuelve a crecer tras quemarse. Las flores rosas curan poco a poco y las moradas adormecen.', mech: { regrow: 7, flowers: { heal: 0.02, sleep: 0.6 } },
       rows: [
         '........................',
         '..####....####....####..',
         '..####....####....####..',
-        '........................',
+        '..FF................FF..',
         '.....##..........##.....',
         '.....##...####...##.....',
         '..........####..........',
-        '........................',
+        '.......ff......ff.......',
         '..........####..........',
         '.....##...####...##.....',
         '.....##..........##.....',
-        '........................',
+        '..FF................FF..',
         '..####....####....####..',
         '..####....####....####..',
         '........................',
       ] },
-    'g-veneno': { name: 'Dojo Fucsia', desc: 'Charcos tóxicos que envenenan y se extienden, y muros invisibles que solo se notan al chocar.', mech: { toxic: { every: 5, ttl: 7 } },
+    'g-veneno': { name: 'Dojo Fucsia', desc: 'Charcos tóxicos que se extienden, muros invisibles y bancos de niebla: dentro no se te ve.', mech: { toxic: { every: 5, ttl: 7 }, fog: { n: 4, r: 85 } },
       rows: [
         '........................',
         '...pp..............pp...',
@@ -514,7 +514,7 @@
         '...pp..............pp...',
         '........................',
       ] },
-    'g-psiquico': { name: 'Sala Azafrán', desc: 'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.', mech: { warp: { cd: 1.8 } },
+    'g-psiquico': { name: 'Sala Azafrán', desc: 'Baldosas de teletransporte por parejas, y espejos que hacen rebotar los proyectiles.', mech: { warp: { cd: 1.8 }, mirrors: {} },
       rows: [
         '........................',
         '...........C............',
@@ -568,7 +568,7 @@
         '........................',
         '........................',
       ] },
-    'g-volador': { name: 'Torre Malva', desc: 'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.', mech: { wind: { every: 7, warn: 1.2, dur: 2.6, force: 95 } },
+    'g-volador': { name: 'Torre Malva', desc: 'Ráfagas de viento que te arrastran (a los voladores no) y tormenta: caen rayos con aviso, y si caen en el agua la electrifican.', mech: { wind: { every: 7, warn: 1.2, dur: 2.6, force: 95 }, storm: { every: 4, warn: 1, r: 42, dmg: 0.07, stun: 0.4 } },
       rows: [
         '........................',
         '........................',
@@ -622,7 +622,7 @@
         '........................',
         '........................',
       ] },
-    'g-fantasma': { name: 'Torre Iris', desc: 'Oscuridad: solo ves al rival de cerca o justo cuando ataca.', mech: { dark: 230 },
+    'g-fantasma': { name: 'Torre Iris', desc: 'Oscuridad: solo ves al rival de cerca o justo cuando ataca.', mech: { dark: 320 },
       rows: [
         '........................',
         '....o..............o....',
@@ -640,7 +640,7 @@
         '....o..............o....',
         '........................',
       ] },
-    'g-siniestro': { name: 'Sala Nocturna', desc: 'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.', mech: { dark: 260 },
+    'g-siniestro': { name: 'Sala Nocturna', desc: 'Noche cerrada: solo ves al rival de cerca o justo cuando ataca. A ratos, un pozo de gravedad en el centro lo atrae todo.', mech: { dark: 340, gravity: { every: 10, warn: 1.2, dur: 3, force: 85, r: 46, dmg: 0.05 } },
       rows: [
         '........................',
         '........................',
@@ -658,7 +658,7 @@
         '........................',
         '........................',
       ] },
-    'g-lucha': { name: 'Cascadas Orquídea', desc: 'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.', mech: { flow: 115 },
+    'g-lucha': { name: 'Cascadas Orquídea', desc: 'Dos cascadas con corriente que te arrastran, y pilares de piedra que suben y bajan: la cobertura cambia de sitio.', mech: { flow: 115, pillars: { every: 6, warn: 1 } },
       rows: [
         '.......vv......^^.......',
         '.......vv......^^.......',
@@ -694,7 +694,7 @@
         '........................',
         '........................',
       ] },
-    'g-hielo': { name: 'Pista Caoba', desc: 'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.', mech: { ice: true },
+    'g-hielo': { name: 'Pista Caoba', desc: 'Suelo helado: resbalas y cuesta frenar. Si te quedas quieto encima, el hielo se agrieta y se rompe.', mech: { ice: true, crack: { hold: 1.3, ttl: 6 } },
       rows: [
         '........................',
         '..iiiiiiiiiiiiiiiiiiii..',
@@ -767,7 +767,7 @@
         '..o..................o..',
         '........................',
       ] },
-    'e-agatha': { name: 'Cripta Espectral', desc: 'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.', mech: { dark: 200, warp: { cd: 1.5 }, toxic: { every: 6, ttl: 6 } },
+    'e-agatha': { name: 'Cripta Espectral', desc: 'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.', mech: { dark: 290, warp: { cd: 1.5 }, toxic: { every: 6, ttl: 6 } },
       rows: [
         '........................',
         '...o................o...',
@@ -839,7 +839,7 @@
         '....b..............a....',
         '........................',
       ] },
-    'e-kogaj': { name: 'Dojo Ninja', desc: 'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.', mech: { dark: 270, toxic: { every: 3.5, ttl: 9 } },
+    'e-kogaj': { name: 'Dojo Ninja', desc: 'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.', mech: { dark: 340, toxic: { every: 3.5, ttl: 9 } },
       rows: [
         '........................',
         '..pp....x......x....pp..',
@@ -875,7 +875,7 @@
         '......vv........^^......',
         '......vv........^^......',
       ] },
-    'e-karen': { name: 'Sala de las Sombras', desc: 'Alto Mando. Oscuridad y emboscadas desde las sombras.', mech: { dark: 200, rockfall: { every: 3, warn: 0.9, r: 46, dmg: 0.08, ttl: 5, ty: 'siniestro' } },
+    'e-karen': { name: 'Sala de las Sombras', desc: 'Alto Mando. Oscuridad y emboscadas desde las sombras.', mech: { dark: 290, rockfall: { every: 3, warn: 0.9, r: 46, dmg: 0.08, ttl: 5, ty: 'siniestro' } },
       rows: [
         '........................',
         '...##..............##...',
@@ -911,6 +911,14 @@
         'LL....................LL',
         'LLLL................LLLL',
       ] },
+  };
+  // Modificadores de Práctica: una mecánica más, encima de cualquier arena (las que no necesitan marcas en el mapa)
+  const MODIFIERS = {
+    geyser: { every: 5, warn: 1, r: 44, dmg: 0.06, knock: 150, name: 'Géiseres' },
+    storm: { every: 4, warn: 1, r: 42, dmg: 0.07, stun: 0.4, name: 'Tormenta' },
+    gravity: { every: 10, warn: 1.2, dur: 3, force: 85, r: 46, dmg: 0.05, name: 'Gravedad' },
+    fog: { n: 4, r: 85, name: 'Niebla' },
+    pillars: { every: 6, warn: 1, name: 'Pilares' },
   };
 
   // ---------- Modo historia: regiones reales ----------
@@ -1031,15 +1039,21 @@
   // Llegan con IV perfectos al tope de nivel de tu región y son muy caros; cada uno, una vez al día.
   const SHOP_TIERS = [[300, 430, 1, 15000], [430, 500, 3, 25000], [500, 560, 5, 40000], [560, 620, 7, 65000]];
   const shopCache = new Map();
+  // Precio de un Pokémon del día según su total de estadísticas (también para devolverlo si hace falta)
+  function shopPrice(dex) {
+    const sp = SPECIES[dex], tier = SHOP_TIERS.find(([lo, hi]) => sp.bst >= lo && sp.bst < hi) || SHOP_TIERS[SHOP_TIERS.length - 1];
+    return Math.round((tier[3] + (sp.bst - tier[0]) * 120) / 500) * 500;
+  }
   function shopMons(day = dayKey()) {
     if (shopCache.has(day)) return shopCache.get(day);
     const r = seeded('tienda:' + day);
-    const all = Object.values(SPECIES).filter(sp => !sp.leg && sp.dex < 1000);
+    // (solo de las generaciones abiertas: antes salían también de la 3.ª en adelante)
+    const all = Object.values(SPECIES).filter(sp => !sp.leg && inDex(sp.dex));
     const list = SHOP_TIERS.map(([lo, hi, req, base]) => {
       const pool = all.filter(sp => sp.bst >= lo && sp.bst < hi);
       const sp = pool[Math.floor(r() * pool.length)];
       return { id: 'daily' + sp.dex, name: sp.name, dex: sp.dex, daily: true, perfect: true, req,
-        price: Math.round((base + (sp.bst - lo) * 120) / 500) * 500, desc: 'IV perfectos · llega a tu tope de nivel' };
+        price: shopPrice(sp.dex), desc: 'IV perfectos · llega a tu tope de nivel' };
     });
     shopCache.set(day, list);
     return list;
@@ -1222,6 +1236,16 @@
   // La Pokédex cuenta solo las generaciones con región abierta (una por región: Kanto = Gen 1, Johto = Gen 2…)
   const DEX_GENS = REGION_IDS.length;
   const inDex = dex => !!SPECIES[dex] && SPECIES[dex].gen <= DEX_GENS;
+  // Las evoluciones a generaciones que aún no están abiertas (Magneton → Magnezone, Eevee → Leafeon, Togetic →
+  // Togekiss…) no se pueden hacer todavía: se quitan de la especie. Se recuerda de quién venían (OUT_EVO_FROM)
+  // para devolver a su forma a los que ya hubieran evolucionado así
+  const OUT_EVO_FROM = {};
+  for (const sp of Object.values(SPECIES)) {
+    if (!sp.evo || sp.gen > DEX_GENS) continue;
+    const opts = Array.isArray(sp.evo[0]) ? sp.evo : [sp.evo], ok = opts.filter(([to]) => inDex(to));
+    for (const [to] of opts) if (!inDex(to) && !OUT_EVO_FROM[to]) OUT_EVO_FROM[to] = sp.dex;
+    sp.evo = !ok.length ? undefined : ok.length === 1 ? ok[0] : ok;
+  }
   const DEX_TOTAL = Object.values(SPECIES).filter(s => s.gen <= DEX_GENS).length;
   const dexCount = p => (p.caught || []).filter(inDex).length;
   const shinyCount = p => Math.max((p.shinies || []).length, (p.mons || []).filter(m => m.shiny).length);
@@ -1479,7 +1503,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

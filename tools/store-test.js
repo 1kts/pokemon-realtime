@@ -93,6 +93,24 @@ r = run(`const { DatabaseSync } = require('node:sqlite');
   return { a: t(after, 'aaa') > t(before, 'aaa'), b: t(after, 'bbb') === t(before, 'bbb') };`);
 ok(r.a && r.b, 'solo se reescribe el perfil que ha cambiado');
 
+// Evoluciones: ninguna lleva a una generación aún cerrada (Magneton → Magnezone, Eevee → Leafeon…), y quien ya
+// tuviera uno así vuelve a la forma de la que venía
+{
+  const D = require('../public/data.js'), story = require('../server/story.js');
+  const evos = s => !s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo];
+  const bad = Object.values(D.SPECIES).filter(sp => D.inDex(sp.dex)).flatMap(sp => evos(sp).filter(([to]) => !D.inDex(to)).map(([to]) => sp.name + '→' + D.SPECIES[to].name));
+  ok(!bad.length, `ninguna evolución lleva a una generación cerrada (${bad.join(', ') || 'ninguna'})`);
+  const pr = { mons: [{ uid: 1, dex: 462, level: 50, moves: ['impactrueno'], region: 'kanto' }, { uid: 2, dex: 470, level: 30, moves: ['placaje'], region: 'kanto' }], teams: { kanto: [1, 2] }, caught: [], items: {} };
+  story.migrate(pr);
+  ok(pr.mons[0].dex === 82 && pr.mons[1].dex === 133, `un Magnezone vuelve a Magneton y un Leafeon a Eevee (${pr.mons.map(m => m.dex).join(', ')})`);
+  // La Tienda solo vende de las generaciones abiertas (miramos 60 días), y quien compró uno de otra lo pierde con su dinero de vuelta
+  const out = []; for (let d = 0; d < 60; d++) for (const m of D.shopMons('2026-01-' + d)) if (!D.inDex(m.dex)) out.push(m.name);
+  ok(!out.length, `la Tienda no vende Pokémon de generaciones cerradas (${out.join(', ') || 'ninguno'})`);
+  const pq = { mons: [{ uid: 1, dex: 25, level: 20, moves: ['impactrueno'], region: 'kanto' }, { uid: 2, dex: 632, level: 50, moves: ['placaje'], region: 'kanto' }], teams: { kanto: [1, 2] }, caught: [], items: {}, coins: 100 };
+  story.migrate(pq);
+  ok(pq.mons.length === 1 && pq.coins === 100 + D.shopPrice(632) && pq.teams.kanto.join() === '1', `un Heatmor comprado se quita y se devuelve su precio (${pq.coins})`);
+}
+
 fs.rmSync(tmp, { recursive: true, force: true });
 console.log(failures ? `\n${failures} fallos` : '\nTodo correcto');
 process.exit(failures ? 1 : 0);

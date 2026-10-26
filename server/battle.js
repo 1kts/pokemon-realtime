@@ -43,6 +43,7 @@ class Battle {
     this.mode = opts.mode;
     this.tutorial = !!opts.tutorial;
     this.mapName = opts.map || 'pradera';
+    this.mod = opts.mod && D.MODIFIERS[opts.mod] ? opts.mod : null;   // mecánica extra (Práctica)
     this.onEnd = opts.onEnd || (() => {});
     const { terrain, rocks } = S.parseMap(this.mapName);
     this.terrain = terrain;
@@ -89,7 +90,7 @@ class Battle {
 
   startMsg(side) {
     return {
-      t: 'start', you: side.idx, mode: this.mode, map: this.mapName,
+      t: 'start', you: side.idx, mode: this.mode, map: this.mapName, mod: this.mod || undefined,
       sides: this.sides.map(s => ({ name: s.name, npc: s.npc || undefined, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
@@ -297,6 +298,8 @@ class Battle {
     side.hidden = (cell === T.GRASS || cell === T.STEAM) && side.sinceAct > 0.8 && dist > (cell === T.STEAM ? 70 : 120);
     // Arena a oscuras: de lejos no se ve al rival salvo justo cuando ataca
     if (this.arena.dark && dist > this.arena.dark && side.sinceAct > 0.6) side.hidden = true;
+    // En un banco de niebla no se le ve, salvo de cerca o justo cuando ataca
+    if (this.arena.inFog(side) && dist > 90 && side.sinceAct > 0.6) side.hidden = true;
   }
 
   doSwap(side, to, forced) {
@@ -563,13 +566,16 @@ class Battle {
   // ---------- Proyectiles ----------
   updateProjectiles(dt) {
     for (const p of this.projectiles) {
+      this.arena.bend(p, dt);
       const steps = 2;   // dos subpasos para que los rápidos no atraviesen nada
       for (let k = 0; k < steps && p.left > 0; k++) {
         p.x += p.vx * dt / steps; p.y += p.vy * dt / steps;
         p.left -= Math.hypot(p.vx, p.vy) * dt / steps;
         if (p.wide) { this.updateWave(p); continue; }
+        // Espejos: rebota (y la gravedad del pozo lo curva mientras late)
+        if (this.arena.bounce(p)) continue;
         // Obstáculos
-        const o = this.obstacles.find(o => Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
+        const o = this.obstacles.find(o => o.kind !== 'mirror' && Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
         if (o) { this.damageObstacle(o, p.m.dmg || 1); this.projectileEnd(p, true); break; }
         // Interacciones con el terreno al pasar
         const i = S.cellIndex(p.x, p.y);

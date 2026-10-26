@@ -39,6 +39,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 #screen { position: fixed; inset: 0; overflow: auto; padding: 18px 18px calc(18px + var(--legal-h, 0px)); display: flex; flex-direction: column; align-items: center;
   background: radial-gradient(ellipse at 50% 0%, rgba(30, 60, 120, .35), transparent 60%), linear-gradient(180deg, rgba(6,10,20,.6), rgba(6,10,20,.25) 40%, rgba(6,10,20,.7)); }
 #screen > * { width: min(1560px, 100%); animation: enter .28s ease-out; }
+#screen.repaint > * { animation: none; }
 @keyframes enter { from { opacity: 0; transform: translateY(8px); } }
 .title-panel { margin: auto; width: min(460px, 100%) !important; text-align: center; display: flex; flex-direction: column; gap: 12px; padding: 30px 28px; }
 .title-panel .emblem { width: 74px; height: 74px; margin: -66px auto 0; border-radius: 50%; background: linear-gradient(180deg, #ff4a3d 47%, #1d1d1d 47% 53%, #f6f6f6 53%); box-shadow: inset 0 0 0 5px #1d1d1d, 0 10px 30px rgba(0,0,0,.5); position: relative; animation: bob 3s ease-in-out infinite; }
@@ -1681,3 +1682,37 @@ body.in-battle .legal-bar { display: none; }
 .loot-box.tz-loot h2 { color: var(--rc); }
 @media (max-width: 1000px) { .tz-body { grid-template-columns: 1fr; } .tz-side { max-height: none; } }
 @media (max-width: 520px) { .tz-prize { width: 19%; border-radius: 16px; } .tz-center { width: 52%; } .tz-count b { font-size: 22px; } .tz-go { padding: 10px 20px; font-size: 16px; } }
+
+/* ---------- Entrar con Google o con el correo ---------- */
+/* Debajo de los formularios de la portada y de la cuenta: separador «o también» y dos botones con el
+   relieve de los botones del juego (blanco el de Google, como pide su marca; azul el del correo) */
+.alt-login { display: flex; flex-direction: column; gap: 8px; }
+.alt-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .8px; }
+.alt-or::before, .alt-or::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line-hi), transparent); }
+.alt-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 10px; }
+button.alt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 8px 10px; border: 0; font-size: 14px; font-weight: 800; line-height: 1.15; }
+button.alt-btn svg { width: 18px; height: 18px; flex: none; }
+button.alt-btn.google { background: linear-gradient(180deg, #ffffff, #e9eef6); color: #1f1f1f; box-shadow: 0 4px 0 #9aa6b8, 0 8px 22px rgba(0, 0, 0, .25); }
+button.alt-btn.google:hover:not(:disabled) { background: linear-gradient(180deg, #ffffff, #f4f7fb); box-shadow: 0 4px 0 #9aa6b8, 0 10px 26px rgba(255, 255, 255, .18); }
+button.alt-btn.mail { background: linear-gradient(180deg, #6db4ff, #3b78d8); color: #fff; box-shadow: 0 4px 0 #234f99, 0 8px 22px rgba(59, 120, 216, .3); text-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+button.alt-btn.mail:hover:not(:disabled) { background: linear-gradient(180deg, #8cc4ff, #4a88e6); box-shadow: 0 4px 0 #234f99, 0 10px 28px rgba(59, 120, 216, .45); }
+button.alt-btn.go { width: 100%; font-size: 15px; background: linear-gradient(180deg, #ffe066, #f5b800); color: #2a1d00; box-shadow: 0 4px 0 #a87a00, 0 8px 22px rgba(245, 184, 0, .3); text-shadow: none; }
+button.alt-btn.go:hover:not(:disabled) { background: linear-gradient(180deg, #ffe88a, #ffc414); box-shadow: 0 4px 0 #a87a00, 0 10px 28px rgba(245, 184, 0, .45); }
+button.alt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #6b7688; }
+.account .alt-login { margin-top: 2px; }
+/* La ventana: estrecha, centrada, con el campo del código en grande */
+.modal-box.login-modal { width: min(420px, 100%); gap: 10px; padding-bottom: 20px; }
+.login-modal > p { margin: 0; }
+.login-modal input { width: 100%; }
+.login-modal input.code-input { font: 700 30px/1.2 var(--display); letter-spacing: .5em; text-align: center; padding: 10px 0 10px .5em; }
+.login-modal button.primary { width: 100%; }
+.login-modal .alt-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.gsi-slot { display: flex; justify-content: center; align-items: center; min-height: 48px; color: var(--muted); }
+@media (max-width: 480px) { button.alt-btn { min-height: 44px; } .login-modal input.code-input { font-size: 26px; } }
+/* En pantallas bajas (portátiles de 720 px, móviles en horizontal) la portada se aprieta un poco para que los
+   botones de entrar se vean sin tanto scroll */
+@media (max-height: 800px) {
+  .title-panel { gap: 9px; padding-top: 24px; padding-bottom: 22px; }
+  .title-panel .title-mons { zoom: .8; }
+  .title-panel .auth { gap: 8px; }
+}

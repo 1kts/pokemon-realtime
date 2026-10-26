@@ -36,7 +36,8 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 const world = new World(renderer);
 const particles = new Particles(world.scene);
 const effects = new Effects(world, particles);
-world.onTheme = bright => { particles.setBright(bright); effects.setBright(bright); };
+// (las partículas, iguales en todas las arenas de momento: sin su versión para suelo claro)
+world.onTheme = bright => { particles.setBright(false); effects.setBright(bright); };
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(world.scene, world.camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.6, 0.45, 1.1);  // umbral > 1: solo brillan los efectos, no los sprites
@@ -149,7 +150,10 @@ net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 friendNotices(net, ui);
 net.on('bugok', () => { if (ui.onBugSent) { ui.onBugSent(); ui.onBugSent = null; } });
-net.on('authok', m => { ui.authError(''); ui.toast(tServer(m.msg)); });
+net.on('authok', m => { ui.authError(''); ui.closeLogin(); ui.toast(tServer(m.msg)); });
+// Entrar con el correo: el código ya va de camino; y cuenta nueva sin partida de invitado: falta el nombre
+net.on('mailsent', () => ui.onMailSentMsg());
+net.on('authname', () => ui.onAuthName());
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'));
 net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); });

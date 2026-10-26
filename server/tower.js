@@ -21,8 +21,8 @@ const CLASSES = ['Entrenador Guay', 'Entrenadora Guay', 'Dama', 'Caballero', 'Mo
   'Ornitólogo', 'Nadadora', 'Motorista', 'Bella', 'Médium', 'Experto', 'Pokéfan', 'Ranger', 'Psíquico', 'Dragonauta'];
 const NAMES = ['Álex', 'Bruno', 'Carla', 'Diego', 'Elena', 'Fabio', 'Gala', 'Hugo', 'Irene', 'Jaime', 'Lola', 'Marco',
   'Nora', 'Óscar', 'Paula', 'Quique', 'Rita', 'Sergio', 'Tina', 'Úrsula', 'Víctor', 'Yago', 'Zoe'];
-// Especies de los rivales: totalmente evolucionadas y no legendarias
-const POOL = Object.values(D.SPECIES).filter(s => !s.leg && !s.evo);
+// Especies de los rivales: totalmente evolucionadas, no legendarias y de las generaciones abiertas
+const POOL = Object.values(D.SPECIES).filter(s => !s.leg && !s.evo && D.inDex(s.dex));
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
 const blockOf = n => Math.floor((n - 1) / BLOCK);   // 0 = combates 1-7, 1 = 8-14…

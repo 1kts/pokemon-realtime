@@ -4,7 +4,8 @@
 import { confirmBox } from './dialog.js';
 import { portrait, monIcon, animatedPortrait, trainerImg, typeTint, face, hasAnim } from './sprites.js';
 import { escapeHtml, describeMove, monLabel } from './battle.js';
-import { REGION_ART, regionMapSVG } from './regionmap.js';
+import { REGION_ART } from './regionmap.js';
+import { mountMap3D } from './map3d.js';
 import { towerViews } from './tower.js';
 import { friendViews } from './friends.js';
 import { pokedexViews } from './pokedex.js';
@@ -122,6 +123,8 @@ export class UI {
     // pestaña…) no te sube arriba: se guarda dónde estaba la página y cada caja con scroll y se deja igual
     const same = keepScroll || view === this.view;
     const scrolls = same ? this.saveScroll() : null;
+    // (y sin la animación de entrada: si no, cada repintado parece que la página se recarga)
+    this.root.classList.toggle('repaint', !!same);
     this.view = view;
     this.sendView(view);
     // Durante un combate (y el momento final antes de los resultados) la música la pone el combate:
@@ -428,9 +431,11 @@ export class UI {
     // Los nodos, etiquetas y marcas se adaptan al tamaño del mapa: a su tamaño en un mapa de 860 px de ancho o más (un portátil)
     // y más pequeños cuanto más pequeño se vea (en el móvil), sin bajar de la mitad para que se puedan tocar
     if (window.ResizeObserver) new ResizeObserver(([e]) => map.style.setProperty('--ms', Math.max(0.5, Math.min(1, e.contentRect.width / 860)).toFixed(3))).observe(map);
-    // Lienzo con la proporción del mapa (16:10), centrado; el mar del SVG rellena lo que sobre
-    const stage = el('div', 'map-stage', regionMapSVG(region));
+    // Lienzo con la proporción del mapa (16:10), centrado: la maqueta 3D (map3d.js), con el mar rellenando lo que
+    // sobre; sin WebGL, el mapa SVG
+    const stage = el('div', 'map-stage');
     map.append(stage);
+    mountMap3D(map, stage, region);
     const art = REGION_ART[region];
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
     const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
@@ -774,6 +779,11 @@ export class UI {
       team.append(c);
     }
     box.append(team);
+    // Bajo «¡Desafiar!» o «Explorar», la Tienda: prepararse (Balls, objetos) antes del reto sin salir al menú; Volver regresa aquí
+    const shop = el('button', 'coll-tile story-shop', `${itemImg('forage-bag', 40)}<span class="coll-txt"><b>${t('Tienda')}</b><small>${coins(p.coins)}</small></span>`);
+    shop.onclick = () => this.openFrom('shop');
+    const go = box.querySelector('button.primary');
+    if (go) go.after(shop); else box.append(shop);
   }
 
   startStory(a, id) {
@@ -964,7 +974,7 @@ export class UI {
     const boxList = mine.filter(m => !team.includes(m.uid)).sort(SORTS[f.sort] || SORTS.level);
     const grids = {};
     let boxTitle = null;
-    for (const [key, title, list] of [['team', t('Equipo ({n}/3)', { n: inTeamList.length }), inTeamList], ['box', t('Caja ({n})', { n: boxList.length }), boxList]]) {
+    for (const [key, title, list] of [['team', t('Equipo ({n}/3)', { n: inTeamList.length }), inTeamList], ['box', t('Caja: {n} Pokémon', { n: boxList.length }), boxList]]) {
       if (!list.length) continue;
       const h = el('h3', 'sec-title', title);
       if (key === 'box') boxTitle = h;
@@ -1033,7 +1043,8 @@ export class UI {
         total++;
         if (ok) shown++;
       }
-      if (boxTitle) boxTitle.textContent = shown === total ? t('Caja ({n})', { n: total }) : t('Caja ({n} de {total})', { n: shown, total });
+      // (la caja no tiene tope: es cuántos tienes; con filtros, además, cuántos se ven)
+      if (boxTitle) boxTitle.textContent = shown === total ? t('Caja: {n} Pokémon', { n: total }) : t('Caja: {total} Pokémon · se ven {n}', { n: shown, total });
       empty.hidden = shown > 0 || !total;
     };
     apply();
@@ -1313,6 +1324,27 @@ export class UI {
       slots.append(b);
     }
     box.append(slots);
+    // Movimientos del Pokémon del hueco elegido (hasta 4), justo debajo del equipo: tarjetas con su tipo, daño,
+    // energía y recarga; las elegidas, encendidas
+    const cur = team[sel];
+    if (cur) {
+      const mvBox = el('div', 'pvp-mvbox');
+      mvBox.append(el('h4', '', `${t('Movimientos de {m} ({n}/4)', { m: SPECIES[cur.dex].name, n: cur.moves.length })} <small>${t('Toca para añadir o quitar')}</small>`));
+      const mv = el('div', 'pvp-mvlist');
+      for (const k of Data.learnedAt(cur.dex, Data.RANKED_LEVEL)) {
+        const M = MOVES[k];
+        if (!M) continue;
+        const on = cur.moves.includes(k);
+        const c = el('button', 'pvp-mv' + (on ? ' on' : ''), `<span class="mv-ico">${typeIcon(M.type, 18)}</span><span class="mv-txt"><b>${M.name}</b><small>${M.dmg ? `${t('Daño')} ${M.dmg}` : M.kind === 'heal' ? t('Cura') : t('Apoyo')} · ${M.cost ? `${M.cost} ⚡` : t('Gratis')} · ${M.cd}s</small></span><i class="mv-check">${on ? '✓' : '+'}</i>`);
+        c.style.setProperty('--tc', TYPE_COLOR[M.type]);
+        c.title = describeMove(M).split('\n').join(' · ');
+        c.disabled = !on && cur.moves.length >= 4;
+        c.onclick = () => { cur.moves = on ? cur.moves.filter(x => x !== k) : [...cur.moves, k]; if (!cur.moves.length) cur.moves = [k]; save(); };
+        mv.append(c);
+      }
+      mvBox.append(mv);
+      box.append(mvBox);
+    }
     // Pool: tocar uno lo pone en el hueco elegido (si ya está en otro hueco, se cambian)
     box.append(el('h4', '', t('Pokémon')));
     const pool = el('div', 'pvp-pool');
@@ -1331,40 +1363,68 @@ export class UI {
       pool.append(c);
     }
     box.append(pool);
-    // Movimientos del Pokémon del hueco elegido: hasta 4
-    const cur = team[sel];
-    if (cur) {
-      box.append(el('h4', '', t('Movimientos de {m} ({n}/4)', { m: SPECIES[cur.dex].name, n: cur.moves.length })));
-      const mv = el('div', 'pvp-mvlist');
-      for (const k of Data.learnedAt(cur.dex, Data.RANKED_LEVEL)) {
-        if (!MOVES[k]) continue;
-        const on = cur.moves.includes(k);
-        const c = el('button', 'pvp-mv' + (on ? ' on' : ''), `${typeIcon(MOVES[k].type, 14)}${MOVES[k].name}`);
-        c.style.setProperty('--tc', TYPE_COLOR[MOVES[k].type]);
-        c.title = describeMove(MOVES[k]).split('\n').join(' · ');
-        c.disabled = !on && cur.moves.length >= 4;
-        c.onclick = () => { cur.moves = on ? cur.moves.filter(x => x !== k) : [...cur.moves, k]; if (!cur.moves.length) cur.moves = [k]; save(); };
-        mv.append(c);
-      }
-      box.append(mv);
-    }
     if (team.filter(Boolean).length < 3) box.append(el('p', 'small', t('Elige 3 Pokémon distintos: se guarda solo.')));
     return box;
   }
 
+  // Buscando rival: Poké Ball con ondas de radar, tu equipo, el tiempo y mensajes que van rotando (consejos y una
+  // invitación a compartir el juego)
   view_queue() {
-    const box = el('div', 'panel center-panel');
-    const mode = this.queueMode === 'ranked' ? t('Buscando rival para clasificatoria…') : t('Buscando rival para partida rápida…');
-    box.innerHTML = `<div class="spinner"></div><h3>${mode}</h3><p class="small qtime">0:00</p>`;
-    const cancel = el('button', '', t('Cancelar'));
+    const ranked = this.queueMode === 'ranked';
+    const box = el('div', 'panel center-panel queue-box');
+    box.append(el('span', 'q-mode', ranked ? t('Clasificatoria') : t('Partida rápida')),
+      el('div', 'q-radar', '<i></i><i></i><i></i><div class="q-ball"></div>'),
+      el('div', 'q-title', ranked ? t('Buscando rival para clasificatoria…') : t('Buscando rival para partida rápida…')),
+      el('div', 'q-time', '0:00'));
+    const team = (Data.pvpTeam(this.profile.pvpTeam) || []).filter(Boolean);
+    if (team.length) {
+      const row = el('div', 'q-team');
+      for (const m of team) row.append(this.skinned(portrait(m.dex, 52), m.dex));
+      box.append(row);
+    }
+    if (ranked) box.append(el('p', 'q-note', t('Si nadie aparece en unos segundos, te toca un entrenador de la IA.')));
+    const tip = el('div', 'q-tip');
+    box.append(tip);
+    const cancel = el('button', 'q-cancel', t('Cancelar'));
     cancel.onclick = () => this.net.send({ t: 'unqueue' });
     box.append(cancel);
     this.root.append(box);
+    const TIPS = [
+      'share',
+      t('Escóndete en la hierba alta: si no atacas, el rival no te ve.'),
+      t('Los ataques de agua mojan: un rival mojado recibe más daño eléctrico y de hielo.'),
+      t('Detrás de una roca te cubres de los proyectiles y del terremoto.'),
+      t('Cambia de Pokémon (1-3) para aprovechar las ventajas de tipo.'),
+      t('El fuego quema la hierba alta y el agua apaga el fuego.'),
+      t('Añade amigos desde su ficha en la ladder y mira cuándo están en línea.'),
+      t('Cada temporada de Clasificatoria da premios según tu mejor liga.'),
+    ];
+    let k = Math.floor(Math.random() * TIPS.length);
+    const showTip = () => {
+      const tp = TIPS[k++ % TIPS.length];
+      tip.classList.remove('on');
+      setTimeout(() => {
+        if (tp === 'share') {
+          tip.innerHTML = `<b class="q-heart">❤</b><span>${t('¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!')}</span>`;
+          const sh = el('button', 'q-share', t('Compartir'));
+          sh.onclick = () => {
+            const url = 'https://pokearenas.com/';
+            if (navigator.share) navigator.share({ title: 'PokéArenas', url }).catch(() => {});
+            else navigator.clipboard && navigator.clipboard.writeText(url).then(() => { sh.textContent = t('¡Enlace copiado!'); });
+          };
+          tip.append(sh);
+        } else tip.innerHTML = `<b class="q-bulb">!</b><span>${tp}</span>`;
+        tip.classList.add('on');
+      }, 250);
+    };
+    showTip();
     const t0 = Date.now();
+    let last = 0;
     const tick = () => {
-      if (this.view !== 'queue') return;
+      if (this.view !== 'queue' || !box.isConnected) return;
       const s = Math.floor((Date.now() - t0) / 1000);
-      box.querySelector('.qtime').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+      box.querySelector('.q-time').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+      if (s - last >= 6) { last = s; showTip(); }
       setTimeout(tick, 500);
     };
     tick();
@@ -1448,11 +1508,45 @@ export class UI {
       b.onclick = () => { skill = v; diff.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
       diff.append(b);
     }
-    start.onclick = () => {
-      this.lastMode = { kind: 'practice', dexes: [...chosen], skill };
-      this.net.send({ t: 'practice', dexes: chosen, skill });
+    // Arena: al azar, una de las 4 de siempre o la de un gimnasio o del Alto Mando (con sus mecánicas), en tarjetas
+    // con un plano en miniatura y lo que tiene de especial; se recuerda
+    let map = storage.get('arena.practiceMap') || '';
+    if (map && !Data.MAPS[map] && !Data.ARENAS[map]) map = '';
+    const arenas = el('div', 'practice-arenas');
+    const card = (key, name, info, mech) => {
+      const c = el('button', 'arena-card' + (key === map ? ' sel' : '') + (mech ? ' mech' : ''));
+      c.dataset.map = key;
+      // (la foto de la arena con la cámara del combate, de tools/arena-thumbs.e2e.js; si faltara, el plano)
+      let pic = el('div', 'arena-rand', '?');
+      if (key) { pic = el('img', 'arena-prev'); pic.src = `img/arenas/${key}.webp`; pic.alt = ''; pic.loading = 'lazy'; pic.onerror = () => pic.replaceWith(arenaPreview(key)); }
+      c.append(pic, el('b', '', name), el('small', '', info));
+      if (mech) c.title = info;
+      c.onclick = () => { map = key; storage.set('arena.practiceMap', key); arenas.querySelectorAll('.arena-card').forEach(x => x.classList.toggle('sel', x === c)); };
+      return c;
     };
-    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, start);
+    const group = (title, cards) => { const g = el('div', 'pool arena-pool'); g.append(...cards); arenas.append(el('h4', '', title), g); };
+    group(t('Arena'), [card('', t('Al azar'), t('Una de las 4 de siempre'), false),
+      ...Object.keys(Data.MAPS).map(k => card(k, t(k[0].toUpperCase() + k.slice(1)), t('Sin mecánicas'), false))]);
+    const ar = k => card(k, t(Data.ARENAS[k].name), t(Data.ARENAS[k].desc), true);
+    group(t('Gimnasios'), Object.keys(Data.ARENAS).filter(k => k.startsWith('g-')).map(ar));
+    group(t('Alto Mando'), Object.keys(Data.ARENAS).filter(k => k.startsWith('e-')).map(ar));
+    // Mecánica extra encima de la arena elegida (géiseres, tormenta, gravedad, niebla o pilares), al azar o ninguna
+    let mod = storage.get('arena.practiceMod') || '';
+    if (mod && mod !== 'random' && !Data.MODIFIERS[mod]) mod = '';
+    const mods = el('div', 'diff practice-mods');
+    mods.append(el('span', '', t('Mecánica extra:')));
+    for (const [k, label] of [['', t('Ninguna')], ['random', t('Al azar')], ...Object.entries(Data.MODIFIERS).map(([k, m]) => [k, t(m.name)])]) {
+      const b = el('button', k === mod ? 'sel' : '', label);
+      b.dataset.mod = k;
+      b.onclick = () => { mod = k; storage.set('arena.practiceMod', k); mods.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
+      mods.append(b);
+    }
+    arenas.append(mods);
+    start.onclick = () => {
+      this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod };
+      this.net.send({ t: 'practice', dexes: chosen, skill, map, mod });
+    };
+    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, arenas, start);
     this.root.append(wrap);
   }
 
@@ -1533,7 +1627,7 @@ export class UI {
       up.append(go);
       box.append(up);
     }
-    if (r.league) {
+    if (r.league && typeof r.league === 'object') {
       const L = r.league;
       box.append(el('div', 'league-res' + (L.failed ? ' failed' : L.done ? ' done' : ''), L.done ? `<b>${t('¡Has superado la Liga!')}</b><small>${t('{n} combates seguidos sin caer.', { n: L.total })}</small>`
         : L.failed ? `<b>${t('Desafío de la Liga: {n}/{m}', { n: L.step, m: L.total })}</b><small>${t('Vuelves a empezar desde {who}. Tu equipo empezará curado del todo.', { who: L.first })}</small>`
@@ -1549,7 +1643,7 @@ export class UI {
     const lm = this.lastMode;
     const lost = !won && !draw && !msg.captured;
     // Liga: tras cada victoria, seguir con el siguiente (el desafío no se pierde si sales)
-    if (r.league && !r.league.done && !r.league.failed) {
+    if (r.league && typeof r.league === 'object' && !r.league.done && !r.league.failed) {
       const next = el('button', 'primary', t('Siguiente: {who} ({n}/{m})', { who: r.league.next, n: r.league.step + 1, m: r.league.total }));
       next.onclick = () => this.startStory('gym', r.league.nextId);
       acts.append(next);
@@ -1567,7 +1661,7 @@ export class UI {
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
-      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill }) : this.startStory(lm.a, lm.id);
+      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod }) : this.startStory(lm.a, lm.id);
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
@@ -1651,3 +1745,26 @@ export class UI {
 }
 
 Object.assign(UI.prototype, friendViews, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews, treasureViews, monSheetViews);
+
+// Plano en miniatura de una arena (para elegirla en Práctica): suelo del color de su tipo, hierba, agua, hielo,
+// veneno, telarañas y lava, rocas, baldosas de curación, placas eléctricas, teletransportes y el haz del faro
+const PREVIEW_FLOOR = { pradera: '#7cc45a', bosque: '#4f9a45', cueva: '#8a6a48', lago: '#e6d49a' };
+const PREVIEW_CELL = { '#': '#2f6b2a', '~': '#3d8ee0', v: '#3d8ee0', '^': '#3d8ee0', i: '#bfeaff', p: '#9a4ac8', w: '#d8d8d8', L: '#ff6a20', H: '#7dffa8', E: '#ffd23a' };
+function arenaPreview(key) {
+  const rows = Data.MAPS[key] || Data.ARENAS[key].rows, k = 5, H = rows.length, W = rows[0].length;
+  const c = document.createElement('canvas');
+  c.width = W * k; c.height = H * k; c.className = 'arena-prev';
+  const g = c.getContext('2d');
+  const ty = key.startsWith('g-') ? key.slice(2) : null;
+  g.fillStyle = PREVIEW_FLOOR[key] || (ty ? Data.TYPE_COLOR[ty] : '#9a96b0');
+  g.fillRect(0, 0, c.width, c.height);
+  if (!PREVIEW_FLOOR[key]) { g.fillStyle = 'rgba(30,30,40,.45)'; g.fillRect(0, 0, c.width, c.height); }
+  rows.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (PREVIEW_CELL[ch]) { g.fillStyle = PREVIEW_CELL[ch]; g.fillRect(x * k, y * k, k, k); }
+    else if (ch === 'o') { g.fillStyle = '#5a5a5a'; g.beginPath(); g.arc(x * k + k / 2, y * k + k / 2, k * 0.75, 0, Math.PI * 2); g.fill(); }
+    else if (/[ABC]/i.test(ch)) { g.fillStyle = '#ff7ae0'; g.beginPath(); g.arc(x * k + k / 2, y * k + k / 2, k * 0.6, 0, Math.PI * 2); g.fill(); }
+  }));
+  const mech = (Data.ARENAS[key] || {}).mech || {};
+  if (mech.beam) { g.strokeStyle = 'rgba(255,240,160,.9)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, c.height / 2); g.lineTo(c.width, c.height / 2); g.stroke(); }
+  return c;
+}

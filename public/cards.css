@@ -1547,3 +1547,301 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
    de ella (las tarjetas recortan lo que sobresale) */
 .nbadge { z-index: 6; }
 .coll-tile .nbadge, .menu-card .nbadge { top: 6px; right: 6px; }
+
+/* Reto de capturas encima del Pokémon salvaje */
+.plate .catch-pips { display: flex; margin: 3px auto 0; width: max-content; }
+.story-shop { width: 100%; margin: 8px 0 4px; }
+
+/* El mapa de Historia como maqueta 3D (map3d.js). El lienzo va debajo de los nodos y ocupa todo el mapa (lo que
+   sobra alrededor del lienzo 16:10 es mar). Mientras se monta la primera vez, fondo del color del mar con un
+   indicador, y luego entra con un fundido; el SVG solo sale si el 3D no puede */
+.map .map3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .35s; }
+.map.map3d-on .map3d-canvas { opacity: 1; }
+.map.map3d-on .mapart { visibility: hidden; }
+.map.map3d-wait { background: #477ebd; }
+.map.map3d-wait::before { content: ''; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; z-index: 3; pointer-events: none;
+  border-radius: 50%; border: 3px solid rgba(255,255,255,.25); border-top-color: rgba(255,255,255,.85); animation: map3dSpin .9s linear infinite; }
+@keyframes map3dSpin { to { transform: rotate(360deg); } }
+/* Marco doble de Town Map por dentro del borde del mapa, solo con la maqueta 3D */
+.map.map3d-on::before { content: ''; position: absolute; inset: 5px; z-index: 4; pointer-events: none; border-radius: 15px;
+  border: 2px solid rgba(255,248,225,.8); box-shadow: 0 0 0 2px rgba(22,52,110,.55), inset 0 0 0 2px rgba(22,52,110,.35); }
+
+/* Práctica: elegir la arena en tarjetas con su plano en miniatura */
+.practice-arenas { text-align: left; }
+.practice-arenas h4 { margin: 10px 4px 4px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+.arena-pool { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); padding-bottom: 4px; }
+.arena-card { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 7px; border-radius: 12px; background: var(--panel); border: 2px solid transparent; text-align: left; transition: transform .15s, border-color .15s; }
+.arena-card:hover { transform: translateY(-2px); }
+.arena-card.sel { border-color: var(--yellow, #ffcb05); box-shadow: 0 0 0 1px var(--yellow, #ffcb05), 0 6px 16px rgba(0,0,0,.35); }
+.arena-card .arena-prev, .arena-card .arena-rand { width: 100%; height: auto; aspect-ratio: 8 / 5; border-radius: 7px; image-rendering: pixelated; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+.arena-card .arena-rand { display: grid; place-items: center; font-size: 34px; font-weight: 900; background: linear-gradient(135deg, #3a4a8a, #6a3a8a); }
+.arena-card b { font-size: 13px; line-height: 1.15; }
+.arena-card small { font-size: 11px; line-height: 1.25; opacity: .75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.arena-card.mech small { color: #ffd98a; opacity: .95; }
+/* Con las arenas debajo, la Práctica se desplaza entera (la rejilla de Pokémon no se aplasta) */
+.draft:has(.practice-arenas) { height: auto; min-height: 100%; }
+.draft:has(.practice-arenas) > .pool.scroll { flex: none; overflow: visible; max-height: none; }
+.draft:has(.practice-arenas) > button.primary { position: sticky; bottom: 14px; z-index: 5; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+/* Con la maqueta 3D, nodos y etiquetas con más contraste (sobre el relieve se perdían): borde y sombra marcados,
+   etiquetas más opacas, rutas algo más grandes y las bloqueadas, visibles (gris oscuro con borde y candado) */
+.story .map.map3d-on .node.route { width: 34px; height: 34px; border: 3px solid #fff; box-shadow: 0 0 0 2.5px #141a33, 0 4px 10px rgba(0,0,0,.6); }
+.story .map.map3d-on .node.route.new { box-shadow: 0 0 0 2.5px #141a33, 0 0 0 6px #ffd23f, 0 4px 12px rgba(0,0,0,.6), 0 0 18px #ffd23f; }
+.story .map.map3d-on .node.gym { box-shadow: 0 0 0 2.5px #141a33, 0 4px 10px rgba(0,0,0,.6); }
+.story .map.map3d-on.focus .node.locked:not(.league-hq) { width: 18px !important; height: 18px !important; opacity: 1; filter: none; border-radius: 50%;
+  background: #3a3f52 !important; border: 2px solid #fff !important; box-shadow: 0 0 0 2px #141a33, 0 3px 7px rgba(0,0,0,.6) !important; }
+.story .map.map3d-on.focus .node.locked:not(.league-hq) .lock { position: absolute; inset: 0; margin: auto; transform: scale(.85); background: none; box-shadow: none; }
+.story .map.map3d-on .node label, .story .map.map3d-on .city span { background: rgba(10,13,30,.94); border: 1px solid rgba(255,255,255,.35); box-shadow: 0 3px 8px rgba(0,0,0,.6); color: #fff; }
+.story .map.map3d-on .node label { font-size: 12px; }
+.story .map.map3d-on .node .caught-count { background: #141a33; border: 1.5px solid #fff; font-size: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.6); }
+.story .map.map3d-on .node .caught-count.full { background: var(--green); }
+.story .map.map3d-on .node .new-tag, .story .map.map3d-on .node .goal-tag, .story .map.map3d-on .you-pin span { border: 1.5px solid #141a33; box-shadow: 0 3px 8px rgba(0,0,0,.6); font-size: 10px; }
+/* La Liga con la maqueta 3D: el edificio es el rascacielos. El nodo, transparente y del tamaño del edificio
+   (map3d.js lo pone encima), se pulsa sobre él y solo enseña su etiqueta y sus marcas (candado, siguiente reto…) */
+.story .map.map3d-on .node.league-hq { background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 8px !important;
+  opacity: 1; filter: none; scale: 1; cursor: pointer; }
+.story .map.map3d-on .node.league-hq .league-ico, .story .map.map3d-wait .node.league-hq .league-ico { display: none !important; }
+.story .map.map3d-on .node.league-hq:hover, .story .map.map3d-on .node.league-hq.sel { outline: 2px solid rgba(255,255,255,.55); outline-offset: 2px; }
+.story .map.map3d-on.focus .node.league-hq.locked > label { display: block !important; }
+/* (el nodo va sin escalar para cubrir el edificio, así que su etiqueta se escala como las de los demás nodos) */
+.story .map.map3d-on .node.league-hq label { scale: max(var(--ms, 1), .72); }
+/* «Entrar» y «Crear cuenta y jugar», con la misma forma que «Entrar con email» (sin inclinar ni flecha) */
+.title-panel .auth button.primary.alt-btn.go { align-self: stretch; width: 100%; min-width: 0; margin-top: 4px; padding: 8px 10px; border-radius: 12px; transform: none; font: inherit; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; font-style: normal; }
+.title-panel .auth button.primary.alt-btn.go::after { content: none; }
+.title-panel .auth button.primary.alt-btn.go:hover { transform: none; }
+.title-panel .auth button.primary.alt-btn.go:active { transform: translateY(3px); box-shadow: 0 1px 0 #a87a00; }
+
+/* Ficha pública: medallas región a región */
+.user-badges { display: grid; gap: 6px; margin: 4px 0 10px; }
+.user-badges .ub-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.user-badges .ub-row > b { min-width: 72px; font-size: 13px; }
+.user-badges .ub-badge { filter: grayscale(1) brightness(.45); opacity: .7; }
+.user-badges .ub-badge.got { filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); opacity: 1; }
+.user-card .ficha-head .ava { flex: none; }
+
+/* Amigos: resultados de búsqueda con más datos */
+/* Una columna centrada, como el menú: «Añadir amigo» arriba y la lista debajo */
+.friends-view > .inner-bar ~ .friends-body { grid-template-columns: 1fr; width: min(720px, 100%); }
+.fr-card.hit { align-items: center; flex-wrap: wrap; row-gap: 8px; }
+.fr-card.hit .fr-info { flex: 1 1 160px; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.fr-card.hit .title-chip { align-self: flex-start; font-size: 11px; }
+.fr-stats { display: flex; flex-wrap: wrap; gap: 4px; }
+.fr-stats em { font-style: normal; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,.08); display: inline-flex; align-items: center; gap: 3px; }
+.fr-card.hit .fr-acts { margin-left: auto; }
+
+/* Ficha de un entrenador: aire entre la cabecera (liga y ELO) y lo de debajo, y el sprite de clase de los de la IA */
+.user-card { padding-top: 22px; }
+.user-card .ficha-head { margin-bottom: 14px; align-items: center; gap: 16px; }
+.user-card .ficha-head .elo { display: inline-block; margin-top: 4px; }
+.user-card .npc-face { flex: none; width: 104px; height: 104px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.14), rgba(0,0,0,.25)); box-shadow: inset 0 0 0 2px rgba(255,255,255,.15); }
+.user-card .npc-face .trainer-img { width: 92px; height: 92px; image-rendering: pixelated; }
+
+/* Podio de los rankings: los 3 primeros en tarjetas grandes de oro, plata y bronce */
+.podium { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 10px; }
+.pod-card { position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 10px; border-radius: 16px; text-align: left; border: 2px solid; color: #fff; overflow: hidden; isolation: isolate; transition: transform .15s; }
+.pod-card:hover { transform: translateY(-2px); }
+.pod-card::before { content: ''; position: absolute; inset: 0; z-index: -1; background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 8px, transparent 8px 16px); }
+.pod-card.p1 { border-color: #ffd23f; background: linear-gradient(90deg, rgba(255,203,5,.32), rgba(120,80,0,.25) 60%, rgba(20,24,50,.6)); box-shadow: 0 0 18px rgba(255,203,5,.25); }
+.pod-card.p2 { border-color: #cdd6e4; background: linear-gradient(90deg, rgba(205,214,228,.26), rgba(80,90,110,.25) 60%, rgba(20,24,50,.6)); }
+.pod-card.p3 { border-color: #d98a4a; background: linear-gradient(90deg, rgba(217,138,74,.3), rgba(110,60,20,.25) 60%, rgba(20,24,50,.6)); }
+.pod-card.me { outline: 2px solid #7ad0ff; outline-offset: 2px; }
+.pod-card .pod-rank { position: absolute; left: 4px; top: 4px; z-index: 2; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font: 900 13px var(--display); color: #2a1d00; box-shadow: 0 2px 4px rgba(0,0,0,.5), inset 0 -2px 0 rgba(0,0,0,.2); }
+.pod-card.p1 .pod-rank { background: linear-gradient(180deg, #ffe680, #f0b400); }
+.pod-card.p2 .pod-rank { background: linear-gradient(180deg, #f2f5fa, #aab4c4); }
+.pod-card.p3 .pod-rank { background: linear-gradient(180deg, #f0b07a, #b8692e); }
+/* En la ladder completa, el podio de lado: 2.º, 1.º (más alto) y 3.º */
+.ladder-table .podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 10px; }
+.ladder-table .pod-card { flex-direction: column; text-align: center; padding: 18px 10px 12px; gap: 6px; }
+.ladder-table .pod-card.p1 { order: 2; padding-top: 28px; }
+.ladder-table .pod-card.p2 { order: 1; }
+.ladder-table .pod-card.p3 { order: 3; }
+.ladder-table .pod-card .pod-who, .ladder-table .pod-card .pod-val { align-items: center; text-align: center; width: 100%; }
+.ladder-table .pod-card .pod-who .title-chip { align-self: center; }
+.ladder-table .pod-card .ava { --s: 72px; }
+.ladder-table .pod-card .pod-npc { width: 76px; height: 76px; }
+.ladder-table .pod-card .pod-npc .trainer-img { width: 70px; height: 70px; }
+@media (max-width: 640px) { .ladder-table .podium { grid-template-columns: 1fr; } .ladder-table .pod-card { order: 0 !important; } }
+.pod-card .ava, .pod-card .pod-npc { flex: none; }
+.pod-card .pod-npc { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.18), rgba(0,0,0,.3)); }
+.pod-card .pod-npc .trainer-img { width: 54px; height: 54px; image-rendering: pixelated; }
+.pod-card .pod-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pod-card .pod-who b { font: 800 17px var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pod-card .pod-who .title-chip { align-self: flex-start; font-size: 11px; }
+.pod-card .pod-val { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.pod-card .pod-val b { font: 900 24px var(--display); line-height: 1; }
+.pod-card .pod-val small { color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700; }
+.pod-card.p1 .pod-val b { color: #ffe27a; }
+
+/* ---------- Podio premium ---------- */
+@keyframes podShine { 0%, 60% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(260%) skewX(-20deg); } }
+@keyframes podGlow { 0%, 100% { box-shadow: 0 0 18px rgba(255,203,5,.28), inset 0 0 22px rgba(255,203,5,.12); } 50% { box-shadow: 0 0 32px rgba(255,203,5,.5), inset 0 0 30px rgba(255,203,5,.2); } }
+.pod-card::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; z-index: 1; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent); animation: podShine 4.5s ease-in-out infinite; }
+.pod-card.p2::after { animation-delay: 1.5s; } .pod-card.p3::after { animation-delay: 3s; }
+.pod-card.p1 { animation: podGlow 3s ease-in-out infinite; padding-top: 14px; padding-bottom: 14px; }
+.pod-card.p1 .pod-who b { font-size: 22px; } .pod-card.p1 .pod-val b { font-size: 32px; }
+.pod-card.p2 .pod-who b { font-size: 18px; } .pod-card.p2 .pod-val b { font-size: 26px; }
+.pod-card.p3 { padding-top: 6px; padding-bottom: 6px; } .pod-card.p3 .pod-who b { font-size: 16px; } .pod-card.p3 .pod-val b { font-size: 22px; }
+.pod-card .ava, .pod-card .pod-npc { position: relative; z-index: 2; }
+.pod-card .pod-npc { width: var(--s, 58px); height: var(--s, 58px); }
+.pod-card .pod-npc .trainer-img { width: 92%; height: 92%; }
+.pod-card.p1 .pod-npc { box-shadow: 0 0 0 3px #ffd23f, 0 0 16px rgba(255,203,5,.5); }
+.pod-card.p2 .pod-npc { box-shadow: 0 0 0 3px #cdd6e4; }
+.pod-card.p3 .pod-npc { box-shadow: 0 0 0 3px #d98a4a; }
+.pod-crown { position: absolute; top: -16px; left: 50%; transform: translateX(-50%) rotate(-8deg); z-index: 3; font-style: normal; font-size: 22px; color: #ffd23f; text-shadow: 0 2px 0 #9a6a00, 0 0 10px rgba(255,203,5,.7); }
+.ladder-table .podium { grid-template-columns: 1fr 1.3fr .9fr; }
+.ladder-table .pod-card.p1 { padding-top: 34px; }
+.ladder-table .pod-card.p1 .ava, .ladder-table .pod-card.p1 .pod-npc { --s: 104px !important; }
+.ladder-table .pod-card.p2 .ava, .ladder-table .pod-card.p2 .pod-npc { --s: 84px !important; }
+.ladder-table .pod-card.p3 .ava, .ladder-table .pod-card.p3 .pod-npc { --s: 70px !important; }
+/* Foto en las filas de los rankings */
+.row-face { display: inline-grid; vertical-align: middle; margin-right: 8px; flex: none; }
+.row-face.npc { width: 34px; height: 34px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.08); overflow: hidden; }
+.row-face.npc .trainer-img { width: 32px; height: 32px; image-rendering: pixelated; }
+.board li .who { display: flex; align-items: center; }
+.board .row-face.npc { width: 30px; height: 30px; }
+/* En la columna de Clasificatoria, el puesto a la izquierda del avatar (no encima) */
+.board .pod-card { padding-left: 36px; }
+.board .pod-card .pod-rank { top: 50%; left: 8px; transform: translateY(-50%); }
+
+/* ---------- Podio: tarjetas trabajadas ---------- */
+@keyframes podSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes podTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+@keyframes podFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+/* Borde de metal con relieve (doble fondo: el de dentro y el del borde) */
+.pod-card { border: 2px solid transparent; --metal: linear-gradient(135deg, #fff6c8, #ffd23f 30%, #9a6a00 55%, #ffe680 80%, #b8860b); }
+.pod-card.p2 { --metal: linear-gradient(135deg, #ffffff, #cdd6e4 30%, #6f7a8c 55%, #eef2f8 80%, #8a96aa); }
+.pod-card.p3 { --metal: linear-gradient(135deg, #ffd9b8, #d98a4a 30%, #7a3e12 55%, #f0b07a 80%, #9a5420); }
+.pod-card.p1 { background: radial-gradient(120% 140% at 15% 50%, rgba(255,210,63,.35), transparent 55%), linear-gradient(90deg, #3a2a08, #1c1a30 70%) padding-box, var(--metal) border-box; }
+.pod-card.p2 { background: radial-gradient(120% 140% at 15% 50%, rgba(205,214,228,.28), transparent 55%), linear-gradient(90deg, #2a3040, #1c1a30 70%) padding-box, var(--metal) border-box; }
+.pod-card.p3 { background: radial-gradient(120% 140% at 15% 50%, rgba(217,138,74,.3), transparent 55%), linear-gradient(90deg, #3a2414, #1c1a30 70%) padding-box, var(--metal) border-box; }
+.ladder-table .pod-card.p1 { background: radial-gradient(90% 70% at 50% 30%, rgba(255,210,63,.38), transparent 70%), linear-gradient(180deg, #3a2a08, #1c1a30 75%) padding-box, var(--metal) border-box; }
+.ladder-table .pod-card.p2 { background: radial-gradient(90% 70% at 50% 30%, rgba(205,214,228,.3), transparent 70%), linear-gradient(180deg, #2a3040, #1c1a30 75%) padding-box, var(--metal) border-box; }
+.ladder-table .pod-card.p3 { background: radial-gradient(90% 70% at 50% 30%, rgba(217,138,74,.32), transparent 70%), linear-gradient(180deg, #3a2414, #1c1a30 75%) padding-box, var(--metal) border-box; }
+/* Escenario del avatar: rayos que giran y un halo debajo */
+.pod-stage { position: relative; display: grid; place-items: center; flex: none; z-index: 2; animation: podFloat 3.2s ease-in-out infinite; }
+.pod-rays { position: absolute; left: 50%; top: 50%; width: 190%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; z-index: -1; opacity: .55;
+  background: repeating-conic-gradient(from 0deg, rgba(255,226,122,.55) 0 8deg, transparent 8deg 22deg); -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%); animation: podSpin 14s linear infinite; }
+.p2 .pod-rays { background: repeating-conic-gradient(from 0deg, rgba(230,238,250,.45) 0 8deg, transparent 8deg 22deg); opacity: .45; }
+.p3 .pod-rays { background: repeating-conic-gradient(from 0deg, rgba(240,176,122,.45) 0 8deg, transparent 8deg 22deg); opacity: .4; }
+.pod-halo { position: absolute; left: 50%; bottom: -6px; width: 110%; height: 14px; transform: translateX(-50%); border-radius: 50%; z-index: -1; background: radial-gradient(closest-side, rgba(255,226,122,.6), transparent); filter: blur(1px); }
+.p2 .pod-halo { background: radial-gradient(closest-side, rgba(230,238,250,.5), transparent); }
+.p3 .pod-halo { background: radial-gradient(closest-side, rgba(240,176,122,.5), transparent); }
+/* Destellos */
+.pod-sparks { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.pod-sparks i { position: absolute; left: var(--x); top: var(--y); width: 8px; height: 8px; opacity: 0; animation: podTwinkle 2.6s ease-in-out infinite; animation-delay: var(--d);
+  background: radial-gradient(circle, #fff 0 20%, transparent 22%), linear-gradient(0deg, transparent 42%, rgba(255,255,255,.9) 42% 58%, transparent 58%), linear-gradient(90deg, transparent 42%, rgba(255,255,255,.9) 42% 58%, transparent 58%); }
+.p3 .pod-sparks i:nth-child(n+5), .p2 .pod-sparks i:nth-child(n+6) { display: none; }
+/* Medalla del puesto con su cinta */
+.pod-card .pod-rank { width: 26px; height: 26px; background: var(--metal) !important; box-shadow: 0 2px 6px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.35); }
+.pod-card .pod-rank b { font: 900 14px var(--display); color: #2a1d00; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+.pod-card .pod-rank::before { content: ''; position: absolute; top: 18px; left: 50%; width: 16px; height: 14px; transform: translateX(-50%); z-index: -1; background: linear-gradient(90deg, #c0392b 0 50%, #2e64c8 50%); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); }
+/* Nombre en metal */
+.pod-name { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 0 rgba(0,0,0,.45)); }
+.pod-name .ia-tag { -webkit-text-fill-color: initial; color: initial; }
+.pod-card .pod-val b { background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent !important; filter: drop-shadow(0 2px 0 rgba(0,0,0,.5)); }
+.pod-card .pod-val small { letter-spacing: .3px; }
+.pod-card::before { content: none; }   /* (sin las rayas: el top 3 va liso) */
+.pod-card .pod-rank::before { content: none; }
+@keyframes podTwinkle2 { 0%, 100% { opacity: 0; transform: scale(.3); } 50% { opacity: .9; transform: scale(1); } }
+.pod-sparks i { width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px 2px rgba(255,236,170,.75); animation-name: podTwinkle2; }
+.p2 .pod-sparks i { box-shadow: 0 0 6px 2px rgba(230,238,250,.7); }
+.p3 .pod-sparks i { box-shadow: 0 0 6px 2px rgba(240,176,122,.7); }
+
+/* ---------- Buscando rival ---------- */
+@keyframes qPing { 0% { transform: scale(.35); opacity: .8; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes qBall { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
+.queue-box { width: min(460px, 94vw); display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 22px 18px; text-align: center; }
+.queue-box .q-mode { font: 800 12px var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--yellow, #ffcb05); padding: 4px 12px; border-radius: 999px; background: rgba(255,203,5,.12); border: 1px solid rgba(255,203,5,.35); }
+.q-radar { position: relative; width: 120px; height: 120px; display: grid; place-items: center; margin: 4px 0; }
+.q-radar i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(122,208,255,.6); animation: qPing 2.4s ease-out infinite; }
+.q-radar i:nth-child(2) { animation-delay: .8s; } .q-radar i:nth-child(3) { animation-delay: 1.6s; }
+.q-ball { width: 64px; height: 64px; border-radius: 50%; position: relative; animation: qBall 1.2s ease-in-out infinite; transform-origin: 50% 90%;
+  background: linear-gradient(180deg, #ff4a3d 0 46%, #1d1d1d 46% 54%, #f4f4f4 54%); box-shadow: inset 0 0 0 3px #1d1d1d, inset -6px -8px 0 rgba(0,0,0,.18), 0 6px 18px rgba(0,0,0,.45); }
+.q-ball::after { content: ''; position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; transform: translate(-50%, -50%); border-radius: 50%; background: #f4f4f4; box-shadow: 0 0 0 4px #1d1d1d, 0 0 10px 4px rgba(122,208,255,.55); }
+.q-title { font: 800 20px var(--display); }
+.q-time { font: 900 34px var(--display); line-height: 1; letter-spacing: .04em; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+.q-team { display: flex; gap: 8px; }
+.q-team > * { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 14px; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+.q-note { margin: 0; font-size: 12px; color: var(--muted); }
+.q-tip { width: 100%; min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid var(--line); font-size: 13px; line-height: 1.35; opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s; }
+.q-tip.on { opacity: 1; transform: none; }
+.q-tip .q-heart { color: #ff5a7a; font-size: 18px; animation: heartBeat 1.2s ease-in-out infinite; }
+.q-tip .q-share { padding: 5px 12px; font-size: 12px; background: linear-gradient(180deg, #ff7a9a, #e0446a); color: #fff; border: 0; box-shadow: 0 3px 0 #9a2846; }
+.q-cancel { margin-top: 2px; min-width: 140px; }
+.q-tip { flex-wrap: nowrap; text-align: left; }
+.q-tip span { flex: 1; }
+.q-tip .q-bulb { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; font: 900 14px var(--display); color: #2a1d00; background: linear-gradient(180deg, #ffe066, #f5b800); box-shadow: 0 2px 0 #a87a00; }
+.q-tip:has(.q-share) { flex-wrap: wrap; justify-content: center; text-align: center; }
+
+/* Clasificatoria: movimientos entre el equipo y la lista de Pokémon, en tarjetas claras */
+.pvp-mvbox { margin: 12px 0 4px; padding: 12px; border-radius: 16px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,203,5,.35); }
+.pvp-mvbox h4 { margin: 0 0 10px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.pvp-mvbox h4 small { font-weight: 600; color: var(--muted); text-transform: none; letter-spacing: 0; font-size: 12px; }
+.pvp-mvbox .pvp-mvlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.pvp-mvbox .pvp-mv { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 12px; text-align: left; border: 1px solid rgba(255,255,255,.12); border-left: 5px solid var(--tc); background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 18%, transparent), rgba(0,0,0,.2)); transition: transform .12s, box-shadow .12s, opacity .12s; }
+.pvp-mvbox .pvp-mv:hover:not(:disabled) { transform: translateY(-1px); }
+.pvp-mvbox .pvp-mv.on { background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 45%, transparent), color-mix(in srgb, var(--tc) 15%, rgba(0,0,0,.2))); border-color: color-mix(in srgb, var(--tc) 70%, white); box-shadow: 0 0 0 1px color-mix(in srgb, var(--tc) 60%, transparent), 0 4px 14px rgba(0,0,0,.35); }
+.pvp-mvbox .pvp-mv:disabled { opacity: .4; }
+.pvp-mvbox .mv-ico { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.3); }
+.pvp-mvbox .mv-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pvp-mvbox .mv-txt b { font: 800 14px var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pvp-mvbox .mv-txt small { font-size: 11px; color: rgba(255,255,255,.75); }
+.pvp-mvbox .mv-check { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-weight: 900; font-size: 13px; background: rgba(255,255,255,.12); }
+.pvp-mvbox .pvp-mv.on .mv-check { background: #5fe08a; color: #0b2a14; }
+
+/* ---------- Móvil en horizontal (poca altura): lo nuevo, compacto ---------- */
+@media (max-height: 500px) {
+  /* Buscando rival: en dos columnas (radar y tiempo a la izquierda, mensaje y cancelar a la derecha) */
+  .queue-box { width: min(700px, 96vw); display: grid; grid-template-columns: 150px 1fr; grid-template-areas: 'mode title' 'radar title' 'radar time' 'radar note' 'team tip' 'team cancel'; column-gap: 18px; row-gap: 6px; padding: 14px 18px; text-align: left; align-items: center; }
+  .queue-box .q-mode { grid-area: mode; justify-self: center; }
+  .q-radar { grid-area: radar; width: 96px; height: 96px; justify-self: center; margin: 0; }
+  .q-ball { width: 50px; height: 50px; }
+  .q-title { grid-area: title; font-size: 17px; }
+  .q-time { grid-area: time; font-size: 26px; }
+  .q-note { grid-area: note; }
+  .q-team { grid-area: team; justify-content: center; }
+  .q-team > * { width: 40px; height: 40px; }
+  .q-tip { grid-area: tip; min-height: 0; padding: 7px 10px; font-size: 12px; }
+  .q-cancel { grid-area: cancel; justify-self: start; min-width: 120px; padding: 6px 14px; }
+  /* Podios más bajos */
+  .podium { gap: 6px; }
+  .pod-card { padding: 5px 10px 5px 34px !important; gap: 10px; }
+  .pod-card .ava, .pod-card .pod-npc { --s: 44px !important; width: 44px; height: 44px; }
+  .pod-card.p1 .ava, .pod-card.p1 .pod-npc { --s: 52px !important; width: 52px; height: 52px; }
+  .pod-card .pod-who b { font-size: 15px !important; }
+  .pod-card .pod-val b { font-size: 20px !important; }
+  .pod-card.p1 .pod-val b { font-size: 24px !important; }
+  .pod-crown { font-size: 16px; top: -12px; }
+  .pod-rays { width: 160%; }
+  .ladder-table .podium { grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+  .ladder-table .pod-card { flex-direction: row; text-align: left; padding: 6px 8px 6px 30px !important; }
+  .ladder-table .pod-card .pod-who, .ladder-table .pod-card .pod-val { align-items: flex-start; text-align: left; width: auto; }
+  .ladder-table .pod-card .pod-val { margin-left: auto; align-items: flex-end; text-align: right; }
+  .ladder-table .pod-card .pod-val small { display: none; }
+  .ladder-table .pod-card .pod-rank { top: 50%; left: 6px; transform: translateY(-50%); }
+  /* Práctica: Pokémon y arenas más pequeños */
+  .draft:has(.practice-arenas) > .pool { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+  .draft:has(.practice-arenas) .pool-card { padding: 4px 2px; gap: 1px; }
+  .draft:has(.practice-arenas) .pool-card canvas, .draft:has(.practice-arenas) .pool-card img { max-width: 44px; max-height: 44px; }
+  .draft:has(.practice-arenas) .pool-card b { font-size: 12px; }
+  .draft:has(.practice-arenas) .pool-card .types { transform: scale(.85); }
+  .arena-pool { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 6px; }
+  .arena-card { padding: 5px; }
+  .arena-card small { -webkit-line-clamp: 1; }
+  .draft:has(.practice-arenas) > button.primary { bottom: 40px; padding: 8px 20px; min-width: 200px; }
+  /* Movimientos de Clasificatoria: tarjetas más bajas */
+  .pvp-mvbox { padding: 8px; margin: 8px 0 2px; }
+  .pvp-mvbox .pvp-mvlist { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; }
+  .pvp-mvbox .pvp-mv { padding: 6px 8px; gap: 8px; }
+  .pvp-mvbox .mv-ico { width: 24px; height: 24px; }
+  /* Ficha de un entrenador */
+  .user-card { padding-top: 14px; }
+  .user-card .ficha-head { margin-bottom: 8px; }
+  .user-card .ficha-head .ava, .user-card .npc-face { --s: 72px !important; width: 72px; height: 72px; }
+  .user-badges .ub-badge { width: 20px; height: 20px; }
+}
+.q-tip:has(.q-share) span { flex: 1 1 180px; }
+.draft:has(.practice-arenas) > button.primary:disabled { opacity: 1; filter: grayscale(.6) brightness(.7); }
+@media (max-height: 500px) {
+  .draft:has(.practice-arenas) .pool-card .types { display: flex; flex-wrap: nowrap; gap: 2px; transform: none; }
+  .draft:has(.practice-arenas) .pool-card .types > * { font-size: 9px; padding: 1px 4px; }
+}

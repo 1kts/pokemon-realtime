@@ -3,7 +3,8 @@
 // va lo que cambia: como mucho una vez por segundo se reescriben, en una transacción, los perfiles
 // en uso (los de los jugadores conectados) que hayan cambiado. Cada navegador guarda su token en
 // localStorage y con él recupera su partida. Un invitado puede registrar usuario y contraseña
-// para entrar desde otro dispositivo (la contraseña se guarda con scrypt y sal).
+// para entrar desde otro dispositivo (la contraseña se guarda con scrypt y sal), o entrar con Google
+// o con un código por correo: entonces la cuenta guarda solo el correo y, con Google, su id (sub).
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -52,9 +53,17 @@ const newId = () => crypto.randomBytes(5).toString('hex');
 const ids = new Map([...profiles.values()].filter(p => p.id).map(p => [p.id, p]));
 const byId = id => ids.get(id) || null;
 
-// Índice usuario (en minúsculas) -> token
-const accounts = new Map();
-for (const p of profiles.values()) if (p.account) accounts.set(p.account.user.toLowerCase(), p.token);
+// Índices usuario (en minúsculas) -> token, correo -> token e id de Google -> token. Las cuentas de antes
+// cuyo usuario es un correo también se encuentran por ese correo (al entrar con él se entra en ellas)
+const accounts = new Map(), emails = new Map(), googles = new Map();
+function index(p) {
+  const a = p.account;
+  if (!a) return;
+  if (a.user) accounts.set(a.user.toLowerCase(), p.token);
+  const mail = a.email || (a.user && EMAIL_RE.test(a.user) ? a.user.toLowerCase() : null);
+  if (mail && !emails.has(mail)) emails.set(mail, p.token);
+  if (a.google) googles.set(a.google, p.token);
+}
 
 // Perfiles en uso: perfil -> { json: lo último escrito, refs: conexiones que lo usan }
 const inUse = new Map();
@@ -159,6 +168,7 @@ function get(token, name) {
 // no sale en la ladder ni en las fichas públicas.
 const USER_RE = /^[A-Za-z0-9_.-]{3,24}$/;
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;
+for (const p of profiles.values()) index(p);
 const validUser = u => typeof u === 'string' && u.length <= 64 && (USER_RE.test(u) || EMAIL_RE.test(u));
 // Nombre de entrenador (público) para un perfil nuevo: si el usuario es un correo, solo lo de antes de la @
 const trainerName = u => u.split('@')[0].slice(0, 16) || 'Entrenador';
@@ -177,23 +187,48 @@ async function register(p, user, pass) {
   const err = checkCredentials(user, pass);
   if (err) return { err };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
-  if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
+  if (accounts.has(user.toLowerCase()) || emails.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
   const salt = crypto.randomBytes(16).toString('hex');
   const h = await hash(pass, salt);
   // Mientras se calculaba el hash otro ha podido registrar el mismo usuario o este perfil
-  if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
+  if (accounts.has(user.toLowerCase()) || emails.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
   if (!p) p = use(addProfile(trainerName(user)));
   p.account = { user, salt, hash: h, since: Date.now() };
-  accounts.set(user.toLowerCase(), p.token);
+  index(p);
   save();
   return { p };
+}
+
+// ---------- Google y correo ----------
+// Cuenta de quien ha demostrado que es dueño de un correo (con el código o con Google): primero por su
+// id de Google, luego por el correo. null si no tiene.
+function byIdentity({ email, sub }) {
+  return profiles.get((sub && googles.get(sub)) || emails.get(email)) || null;
+}
+// Apunta en la cuenta el correo y el id de Google que aún no tenga (las de usuario y contraseña quedan
+// vinculadas y desde entonces se puede entrar también así)
+function linkIdentity(p, { email, sub }) {
+  const a = p.account;
+  if (!a.email && (emails.get(email) || p.token) === p.token) a.email = email;
+  if (sub && !a.google && !googles.has(sub)) a.google = sub;
+  index(p);
+  persist(p);
+}
+// Cuenta nueva para esa identidad: en el perfil de invitado p (conserva su partida) o, sin él, en uno
+// nuevo con ese nombre de entrenador, en uso por quien lo pide. Devuelve el perfil.
+function identityAccount(p, { email, sub }, name) {
+  if (!p) p = use(addProfile(name || 'Entrenador'));
+  p.account = { email, ...(sub ? { google: sub } : {}), since: Date.now() };
+  index(p);
+  persist(p);
+  return p;
 }
 
 async function check(user, pass) {
   if (typeof user !== 'string' || typeof pass !== 'string' || pass.length > 72) return null;
   const p = profiles.get(accounts.get(user.toLowerCase()));
-  if (!p || !p.account) return null;
+  if (!p || !p.account || !p.account.hash) return null;
   const a = Buffer.from(await hash(pass, p.account.salt), 'hex'), b = Buffer.from(p.account.hash, 'hex');
   return crypto.timingSafeEqual(a, b) ? p : null;
 }
@@ -207,6 +242,7 @@ async function login(user, pass) {
 // Contraseña nueva sin pedir la actual (el admin la resetea por soporte)
 async function setPassword(p, pass) {
   if (!p.account) return 'Este perfil no tiene cuenta';
+  if (!p.account.user) return NO_PASS;
   const salt = crypto.randomBytes(16).toString('hex');
   p.account.hash = await hash(pass, salt);
   p.account.salt = salt;
@@ -214,8 +250,10 @@ async function setPassword(p, pass) {
   return null;
 }
 
+const NO_PASS = 'Esta cuenta no tiene contraseña: entra con Google o con tu correo';
 async function changePassword(p, oldPass, newPass) {
   if (!p.account) return 'Este perfil no tiene cuenta';
+  if (!p.account.user) return NO_PASS;
   if (!await check(p.account.user, String(oldPass || ''))) return 'La contraseña actual no es correcta';
   const err = checkCredentials(p.account.user, newPass);
   if (err) return err;
@@ -246,7 +284,10 @@ function remove(p) {
   for (const f of removeHooks) try { f(p); } catch (e) { console.error('Al borrar un perfil:', e.message); }
   profiles.delete(p.token);
   ids.delete(p.id);
-  if (p.account) accounts.delete(p.account.user.toLowerCase());
+  if (p.account) {
+    if (p.account.user) accounts.delete(p.account.user.toLowerCase());
+    for (const m of [emails, googles]) for (const [k, tok] of m) if (tok === p.token) m.delete(k);
+  }
   inUse.delete(p);
   db.prepare('DELETE FROM profiles WHERE token = ?').run(p.token);
 }
@@ -263,7 +304,7 @@ function purgeGuests(now = Date.now()) {
   }
   return n;
 }
-const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase())) || null;
+const byUser = user => profiles.get(accounts.get(String(user || '').toLowerCase()) || emails.get(String(user || '').toLowerCase())) || null;
 // Busca por nombre de entrenador, usuario o id (los registrados primero)
 // kind: 'cuentas' (solo registradas), 'invitados' o cualquier otra cosa para todos
 function search(q, limit = 50, kind = '') {
@@ -272,7 +313,7 @@ function search(q, limit = 50, kind = '') {
   for (const p of profiles.values()) {
     if (kind === 'cuentas' && !p.account) continue;
     if (kind === 'invitados' && p.account) continue;
-    if (needle && !(p.name.toLowerCase().includes(needle) || p.id === needle || (p.account && p.account.user.toLowerCase().includes(needle)))) continue;
+    if (needle && !(p.name.toLowerCase().includes(needle) || p.id === needle || (p.account && (p.account.user || '').toLowerCase().includes(needle)))) continue;
     list.push(p);
   }
   return list.sort((a, b) => !!b.account - !!a.account || (b.seen || b.created || 0) - (a.seen || a.created || 0)).slice(0, limit);
@@ -291,6 +332,15 @@ function stats() {
 // ---------- Ranking ----------
 // Top n de clasificatoria y puesto de un jugador: se piden en cada envío de perfil, así que se
 // calculan con una sola pasada por los perfiles en vez de ordenarlos todos
+// Cara de un entrenador para los podios de los rankings: su avatar con marco, brillo y efecto (o, si no ha elegido,
+// el primero de su equipo), y el sprite de su clase si es de la IA
+function face(p) {
+  const lead = Object.values(p.teams || {}).flat().map(u => (p.mons || []).find(m => m.uid === u)).filter(Boolean).sort((a, b) => b.level - a.level)[0];
+  return { avatar: p.avatar || null, avatarShiny: !!p.avatarShiny, avatarArt: !!p.avatarArt, aura: p.aura || null,
+    effect: (p.cosmetics && p.cosmetics.effects || []).includes(p.effect) ? p.effect : null, npcKey: p.npc ? p.npcSprite || 'ia/rojo' : null,
+    team: lead ? [{ dex: lead.dex, shiny: !!(lead.shiny && !lead.plain) }] : p.npc && p.pvpTeam ? [{ dex: p.pvpTeam[0].dex, shiny: false }] : [] };
+}
+
 function leaderboard(n = 10) {
   const { has, cmp } = BOARDS.ranked, top = [];
   for (const p of profiles.values()) {
@@ -301,7 +351,7 @@ function leaderboard(n = 10) {
     if (top.length > n) top.pop();
   }
   return top
-    .map(p => ({ id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null }));
+    .map(p => ({ id: p.id, name: p.name, tag: p.npc ? null : p.tag, npc: !!p.npc, elo: p.elo, wins: p.wins, losses: p.losses, title: p.title || null, frame: p.frame || null, ...face(p) }));
 }
 
 // ---------- Ladder ----------
@@ -333,7 +383,8 @@ function ladder(board, { page = 0, q = '', me = null, online = new Set() } = {})
   const list = needle ? all.filter(x => x.p.name.toLowerCase().includes(needle)) : all;
   const pages = Math.max(1, Math.ceil(list.length / PAGE));
   page = Math.max(0, Math.min(pages - 1, page | 0));
-  const row = ({ p, rank }) => ({ rank, id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
+  // (con su cara: entera en el podio y solo la foto en las demás filas)
+  const row = ({ p, rank }) => ({ rank, ...face(p), id: p.id, name: p.name, tag: p.npc ? null : p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), ...BOARDS[board].row(p) });
   const mine = me && all.find(x => x.p === me);
   return { board, page, pages, total: all.length, found: list.length, q: needle, rows: list.slice(page * PAGE, (page + 1) * PAGE).map(row), me: mine ? row(mine) : null };
 }
@@ -348,7 +399,11 @@ function publicUser(id, online = new Set()) {
   if (p.npc) team.push(...(p.pvpTeam || []).map(x => ({ dex: x.dex, level: D.RANKED_LEVEL, shiny: false })));   // el equipo de 3 de un entrenador IA
   const t = tw(p);
   return {
-    id: p.id, name: p.name, tag: p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
+    id: p.id, name: p.name, tag: p.npc ? null : p.tag, npc: !!p.npc, npcKey: p.npc ? p.npcSprite || 'ia/rojo' : null, title: p.title || null, frame: p.frame || null, showcase: p.showcase || [], online: online.has(p.id), created: p.created,
+    // su avatar tal como lo ve él (Pokémon, retrato o medalla, con su marco, brillo y efecto)
+    avatar: p.avatar || null, avatarShiny: !!p.avatarShiny, avatarArt: !!p.avatarArt, aura: p.aura || null,
+    effect: (p.cosmetics && p.cosmetics.effects || []).includes(p.effect) ? p.effect : null,
+    peakElo: p.peakElo || p.elo, achievements: Object.keys(p.achievements || {}).length,
     elo: p.elo, wins: p.wins, losses: p.losses, ranked: p.ranked,
     tower: { best: t.best || 0, streak: t.team ? t.streak : 0, symbols: t.symbols || [], wins: t.wins || 0, team: t.bestTeam || [] },
     caught: D.dexCount(p), shinies: (p.shinies || []).length, mons: (p.mons || []).length, badges: badgesOf(p), prog: p.prog || {},
@@ -366,4 +421,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };
+  check, setPassword, byIdentity, linkIdentity, identityAccount, use, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

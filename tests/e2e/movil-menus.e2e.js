@@ -1,4 +1,4 @@
-// Menús en el móvil: en horizontal (844×390) y en vertical (390×844) ninguna pantalla se sale de ancho, la
+// Menús en el móvil: en horizontal (844×390) ninguna pantalla se sale de ancho, la
 // barra legal ocupa poco (una línea de texto, que se despliega al tocarla) y la cabecera cabe; el mapa de la
 // Historia se ve entero en horizontal y la ficha de un Pokémon cabe en la pantalla
 module.exports = async ({ page, player, ok }) => {
@@ -15,7 +15,8 @@ module.exports = async ({ page, player, ok }) => {
   })()`);
   ok(/manifest\+json/.test(app.type) && app.display === 'fullscreen' && app.orientation === 'landscape' && app.icons.every(t => t === 'image/png') && app.ios === 'yes',
     'se puede añadir a la pantalla de inicio: se abre como app, en horizontal y a pantalla completa, con su icono');
-  for (const [W, H] of [[844, 390], [390, 844]]) {
+  // (en vertical, las mismas comprobaciones en movil-menus-vertical.e2e.js: juntas pasaban de 3 minutos en el CI)
+  for (const [W, H] of [[844, 390]]) {
     await page.resize(W, H);
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);

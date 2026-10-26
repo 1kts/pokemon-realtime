@@ -57,8 +57,29 @@ if [ -n "${TELEGRAM_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT:-}" ]; then
   install -m 600 /dev/null /etc/arena-alerts.env
   printf 'TELEGRAM_TOKEN=%s\nTELEGRAM_CHAT=%s\n' "$TELEGRAM_TOKEN" "$TELEGRAM_CHAT" > /etc/arena-alerts.env
 fi
+# Entrar con Google y por correo: GOOGLE_CLIENT_ID=… SMTP_HOST=… SMTP_PORT=… SMTP_USER=… SMTP_PASS=… MAIL_FROM=…
+# bash setup.sh (cualquiera de ellas; las que no se den se quedan como estaban en /etc/arena-login.env, que
+# solo lee root; una vacía, p. ej. GOOGLE_CLIENT_ID=, la quita). Ver «Entrar con Google o por correo» en el README
+LOGIN_VARS="GOOGLE_CLIENT_ID SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS MAIL_FROM"
+LOGIN_CHANGED=
+if env | grep -qE "^($(echo $LOGIN_VARS | tr ' ' '|'))="; then
+  (
+    umask 077
+    touch /etc/arena-login.env
+    for v in $LOGIN_VARS; do
+      if [ -n "${!v+x}" ]; then
+        grep -v "^$v=" /etc/arena-login.env > /etc/arena-login.env.new || true
+        if [ -n "${!v}" ]; then printf '%s=%s\n' "$v" "${!v}" >> /etc/arena-login.env.new; fi
+        mv /etc/arena-login.env.new /etc/arena-login.env
+      fi
+    done
+  )
+  LOGIN_CHANGED=1
+fi
 systemctl daemon-reload
 systemctl enable arena            # arranca con el primer despliegue
+# (el juego lee las variables al arrancar: se reinicia, esperando a los combates en curso como al desplegar)
+if [ -n "$LOGIN_CHANGED" ]; then systemctl try-restart arena || true; fi
 systemctl enable --now arena-backup.timer arena-watchdog.timer
 # arena-admin alta|baja|lista: administradores del panel (como el usuario arena, con su base de datos)
 printf '%s\n' '#!/bin/sh' 'exec sudo -u arena DB_FILE=/var/lib/arena/arena.db /usr/bin/node /srv/arena/current/tools/admin.js "$@"' > /usr/local/bin/arena-admin

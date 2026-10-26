@@ -7,37 +7,41 @@ const store = require('./store.js');
 
 const WAIT_MS = 20e3;   // espera en la cola antes de que te toque un entrenador IA
 
-// [id, nombre, ELO inicial, equipo (del pool de Clasificatoria)]
+// [id, nombre, ELO inicial, equipo (del pool de Clasificatoria), sprite (public/trainers)]: líderes de gimnasio y
+// campeones de Kanto y Johto, de menos a más ELO, cada uno con un equipo de su tipo
 const NPCS = [
-  ['ia-01', 'Joven Tomás', 960, [18, 26, 143]],
-  ['ia-02', 'Chica Poké Ana', 990, [38, 135, 121]],
-  ['ia-03', 'Pescador Ramón', 1020, [130, 9, 131]],
-  ['ia-04', 'Caza bichos Leo', 1050, [123, 3, 18]],
-  ['ia-05', 'Montañero Rubén', 1080, [76, 112, 68]],
-  ['ia-06', 'Nadadora Irene', 1110, [121, 131, 9]],
-  ['ia-07', 'Ornitólogo Gael', 1150, [18, 6, 149]],
-  ['ia-08', 'Karateka Hugo', 1190, [68, 143, 76]],
-  ['ia-09', 'Médium Celia', 1230, [94, 65, 121]],
-  ['ia-10', 'Científico Iván', 1270, [26, 135, 65]],
-  ['ia-11', 'Motorista Dani', 1300, [34, 94, 59]],
-  ['ia-12', 'Domador Bruno', 1340, [59, 38, 6]],
-  ['ia-13', 'Esquiadora Noa', 1380, [131, 121, 135]],
-  ['ia-14', 'Recluta Rocket', 1420, [94, 34, 130]],
-  ['ia-15', 'Ninja Kenji', 1460, [94, 123, 135]],
-  ['ia-16', 'Dragona Vera', 1500, [149, 130, 6]],
-  ['ia-17', 'Entrenadora Guay', 1550, [3, 6, 9]],
-  ['ia-18', 'Experto Max', 1600, [149, 65, 112]],
-  ['ia-19', 'Rival Azul', 1660, [65, 59, 130]],
-  ['ia-20', 'Campeón Rojo', 1740, [26, 143, 6]],
+  ['ia-01', 'Antón', 960, [123, 3, 18], 'bugsy'],
+  ['ia-02', 'Pegaso', 990, [18, 6, 130], 'falkner'],
+  ['ia-03', 'Brock', 1020, [76, 112, 34], 'brock'],
+  ['ia-04', 'Misty', 1050, [121, 9, 131], 'misty'],
+  ['ia-05', 'Blanca', 1080, [143, 18, 26], 'whitney'],
+  ['ia-06', 'Erika', 1110, [3, 94, 34], 'erika'],
+  ['ia-07', 'Lt. Surge', 1150, [26, 135, 143], 'surge'],
+  ['ia-08', 'Morti', 1190, [94, 65, 143], 'morty'],
+  ['ia-09', 'Aníbal', 1230, [68, 76, 130], 'chuck'],
+  ['ia-10', 'Koga', 1270, [94, 34, 3], 'koga'],
+  ['ia-11', 'Yasmina', 1300, [112, 76, 131], 'jasmine'],
+  ['ia-12', 'Sabrina', 1340, [65, 121, 94], 'sabrina'],
+  ['ia-13', 'Fredo', 1380, [131, 9, 112], 'pryce'],
+  ['ia-14', 'Blaine', 1420, [59, 38, 6], 'blaine'],
+  ['ia-15', 'Débora', 1460, [149, 130, 6], 'clair'],
+  ['ia-16', 'Giovanni', 1500, [34, 112, 76], 'giovanni'],
+  ['ia-17', 'Karen', 1550, [94, 143, 59], 'karen'],
+  ['ia-18', 'Lance', 1600, [149, 130, 6], 'lance'],
+  ['ia-19', 'Azul', 1660, [65, 59, 130], 'azul'],
+  ['ia-20', 'Rojo', 1740, [26, 143, 6], 'ia/rojo'],
 ];
 
 // Crea (una vez) los perfiles de los entrenadores IA que falten
 function ensure() {
-  for (const [key, name, elo, team] of NPCS) {
-    if ([...store.all()].some(p => p.npc === key)) continue;
+  for (const [key, name, elo, team, sprite] of NPCS) {
+    const pvpTeam = team.map(dex => ({ dex, moves: D.defaultMoves(dex, D.RANKED_LEVEL) }));
+    const old = [...store.all()].find(p => p.npc === key);
+    // Los que ya existían (antes eran clases de entrenador: Joven, Pescador…) pasan a ser el líder, con su ELO
+    if (old) { if (old.name !== name || old.npcSprite !== sprite) { store.setName(old, name); Object.assign(old, { npcSprite: sprite, pvpTeam, avatar: team[0] }); store.persist(old); } continue; }
     const p = store.addNpc(name, {
-      npc: key, elo, peakElo: elo, ranked: 20, wins: 10 + Math.round((elo - 900) / 40), losses: 10,
-      pvpTeam: team.map(dex => ({ dex, moves: D.defaultMoves(dex, D.RANKED_LEVEL) })), avatar: team[0],
+      npc: key, npcSprite: sprite, elo, peakElo: elo, ranked: 20, wins: 10 + Math.round((elo - 900) / 40), losses: 10,
+      pvpTeam, avatar: team[0],
     });
     store.persist(p);
   }

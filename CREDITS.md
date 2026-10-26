@@ -1,9 +1,31 @@
 # Créditos
 
+## Música
+
+Grabaciones en `public/music/` (cuál suena en cada sitio: `public/js/music.js`). Todas con el volumen igualado (-16 LUFS).
+
+- `pueblo.mp3` y `lider.mp3`: «[A Pokémon Tale in Three Parts](https://jannetty.itch.io/a-pokemon-tale-in-three-parts)»,
+  de **jannetty** (partes 1 y 3), con su permiso.
+- `desierto.mp3`: «[Desert Battle](https://rckbtm.itch.io/pokemon-desert-battle)», de **rckbtm**, con su permiso.
+- `campeon.mp3`: «[Face The Champion!](https://opengameart.org/content/face-the-champion)». Produced by Julie
+  Damsgaard/Spring Spring/Spring Enterprises @ https://spring-enterprises.neocities.org. Licencia
+  [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- Del pack «[High Quality 16-bit RPG Music](https://hydrogene.itch.io/high-quality-16-bit-music)», de **HydroGene**, con
+  licencia [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (dominio público; el crédito es voluntario):
+  `aldea.mp3` («Peaceful Village»), `ciudad.mp3` («Lively City») y `bosque.mp3` («Wood Forest Town»), en el menú tras el de
+  jannetty; `duelo.mp3` («Battle Theme II»), Clasificatoria y Partida rápida; `torre.mp3` («Battle Theme IV») y
+  `maligno.mp3` («The Evil One»), Torre Batalla; `viaje.mp3` («Long Journey») y `ruta.mp3` («Battle Theme I»), salvajes de Kanto y Johto; `gimnasio.mp3`
+  («Battle Theme III»), gimnasios de Johto sin tema propio. Y uno por tipo de gimnasio (luego enlazan con los de los
+  líderes): `caverna.mp3` («Hidden Cavern», roca), `isla.mp3` («Unknown Island», agua), `base.mp3` («Military Base»,
+  eléctrico), `espiritus.mp3` («Spirits Forest», planta), `fabrica.mp3` («Dark Factory», veneno), `templo.mp3`
+  («Magic Temple», psíquico), `volcan.mp3` («Volcanic Crater», fuego), `complot.mp3` («Malicious Scheme», tierra),
+  `cielo.mp3` («Traveling the Sky», volador), `castillo.mp3` («Demon King Castle», fantasma), `mina.mp3`
+  («Dwarven Mine», acero) y `santuario.mp3` («Holy Sanctuary», dragón). Convertidos a MP3 de 128 kbps sin más cambios.
+
 ## Mapas de región
 
-Los mapas de región son dibujos propios en SVG (`public/js/regionmap.js`), aproximados a la geografía
-de los juegos. No se usa ningún mapa oficial.
+Los mapas de región son dibujos propios (`public/js/regionmap.js`: sus datos, y el SVG que se ve si no hay 3D),
+aproximados a la geografía de los juegos. No se usa ningún mapa oficial.
 
 ## Iconos e imágenes de objetos
 
@@ -28,6 +50,8 @@ de los juegos. No se usa ningún mapa oficial.
   [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js` y `js/entities/vfx.js`), de JPTER78 y colaboradores, con
   licencia [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
   (texto completo en `LICENSES/PolyForm-Noncommercial-1.0.0.md`). Uso no comercial.
+- Los entrenadores de la IA de Clasificatoria usan esos mismos sprites de líderes y campeones; el de Rojo
+  (`public/trainers/ia/rojo.png`) es también de la colección de Pokémon Showdown.
 
   Required Notice: Copyright 2026 JPTER78 (https://github.com/JPTER78/pokesurvivor)
 
@@ -331,3 +355,35 @@ Las rocas de los montes, los árboles, las flores, las palmeras y el edificio de
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modificado: recortes, y el gimnasio teñido de
 morado (`public/tiles/`).
 
+
+## Decorado 3D de las arenas
+
+Los árboles, matas, hierba, flores, rocas, vallas, columnas, juncos, nenúfares, canoas y bloques de roca del entorno
+de las arenas son del [Nature Kit](https://kenney.nl/assets/nature-kit) (2.1), y la verja, las lápidas y las criptas
+del cementerio, del [Graveyard Kit](https://kenney.nl/assets/graveyard-kit) (5.0), los dos de **Kenney**
+([kenney.nl](https://www.kenney.nl)), con licencia [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+Solo los modelos que se usan, en `public/models/kenney/nature/` y `public/models/kenney/graveyard/` (cada uno con su
+`License.txt`); los colores se cambian en el juego según el tema de cada arena.
+
+## Mapa 3D de la Historia
+
+El mapa de Historia es una maqueta 3D de cada región (`public/js/map3d.js`) con modelos de
+**Kenney** ([kenney.nl](https://www.kenney.nl)), todos con licencia [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+(dominio público; el crédito es voluntario). Solo los modelos que se usan, en GLB y con el `License.txt` de cada pack:
+- [Nature Kit](https://kenney.nl/assets/nature-kit) (2.1), en `public/models/kenney/nature-kit/`: árboles, pinos, palmeras
+  y rocas, con los colores cambiados en el juego (algo más apagados).
+- [City Kit (Industrial)](https://kenney.nl/assets/city-kit-industrial) (2.0), en `public/models/kenney/city-kit-industrial/`:
+  los gimnasios (la nave de tejado curvo `building-j`, ensanchada y con el tejado del color de su tipo).
+- [City Kit (Commercial)](https://kenney.nl/assets/city-kit-commercial) (2.1), en `public/models/kenney/city-kit-commercial/`:
+  el rascacielos de la Liga Pokémon (`building-skyscraper-c`).
+
+Las losas rojas de las ciudades son geometría propia; el
+emblema de cada gimnasio es el icono de su tipo (`public/types/`, ver arriba).
+
+El cargador de modelos (`public/vendor/three/examples/jsm/loaders/GLTFLoader.js` y `utils/BufferGeometryUtils.js`) es el
+de three.js r160 (licencia MIT, como el resto de `public/vendor/three`).
+
+## Efectos de los ataques
+- La librería de partículas [wawa-vfx](https://github.com/wass08/wawa-vfx) (`public/vendor/wawa-vfx/`), de Wawa Sensei, con licencia MIT.
+- Las texturas de partículas (`public/vfx/`) son del [Particle Pack de Kenney](https://kenney.nl/assets/particle-pack), con licencia CC0.
+- Los efectos 3D hechos a mano de `public/js/vfxhd.js` (rayos, ondas, géiseres, el pozo de gravedad…) son propios del juego.

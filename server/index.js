@@ -26,6 +26,8 @@ const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
 const names = require('./names.js');
+const google = require('./google.js');
+const mail = require('./mail.js');
 const STARTED = Date.now();
 const crypto = require('crypto');
 
@@ -40,25 +42,38 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 // Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: todo
 // (scripts, Three.js y fuentes en public/vendor) se carga de este servidor, más los scripts en línea
 // de la propia página (por su hash: uno inyectado no se ejecutaría), y solo se conecta a él.
+// Con el inicio de sesión de Google configurado, también su script, su botón (un iframe) y su ventana:
+// se cargan solo cuando el jugador pulsa «Continuar con Google» (ver gsi() en account.js), y la ventana
+// emergente de Google necesita que la página no corte la relación con ella (same-origin-allow-popups).
 const SECURITY = { 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Cross-Origin-Opener-Policy': 'same-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
+const GSI = 'https://accounts.google.com/gsi/';
+const withGoogle = () => !!google.clientId() && !google.testMode();
 function csp(html, host) {
   const hashes = [...html.toString().matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)]
     .map(m => `'sha256-${crypto.createHash('sha256').update(m[1]).digest('base64')}'`);
   const h = /^[A-Za-z0-9.:[\]-]+$/.test(host || '') ? host : '';
-  return [`default-src 'self'`, `script-src 'self' ${hashes.join(' ')}`,
-    `style-src 'self' 'unsafe-inline'`, `font-src 'self'`,
-    `img-src 'self' data: blob:`, `connect-src 'self'${h ? ` ws://${h} wss://${h}` : ''}`, `worker-src 'self' blob:`,
+  const g = withGoogle();
+  return [`default-src 'self'`, `script-src 'self' ${hashes.join(' ')}${g ? ` ${GSI}client` : ''}`,
+    `style-src 'self' 'unsafe-inline'${g ? ` ${GSI}style` : ''}`, `font-src 'self'`,
+    `img-src 'self' data: blob:`, `connect-src 'self'${h ? ` ws://${h} wss://${h}` : ''}${g ? ` ${GSI}` : ''}`, `worker-src 'self' blob:`,
+    ...(g ? [`frame-src ${GSI}`] : []),
     `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`].join('; ');
 }
 
 const server = http.createServer((req, res) => {
   for (const [k, v] of Object.entries(SECURITY)) res.setHeader(k, v);
+  if (withGoogle()) res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   let url;
   try { url = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); return res.end(); }
   // Para el hosting: comprobación de vida y versión desplegada
   if (url === '/healthz') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ ok: true, version: VERSION, players: clients.size })); }
   if (art.handle(url, res)) return;
+  // Qué formas de entrar hay (el cliente enseña los botones de Google y del correo solo si están configurados)
+  if (url === '/auth/config') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+    return res.end(JSON.stringify({ google: google.clientId(), googleTest: google.testMode(), mail: mail.enabled() }));
+  }
   if (url === '/admin' || url === '/admin/') url = '/admin/index.html';
   if (url === '/legal' || url === '/legal/') url = '/legal/index.html';
   if (url === '/legal/en') url = '/legal/en.html';
@@ -87,7 +102,8 @@ function sendProfile(c) {
 }
 function publicProfile(p) {
   const { account, act, ...rest } = p;
-  return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p),
+  // (el correo solo se lo enseña a su dueño: no sale en la ladder, ni en las fichas, ni en el panel de admin)
+  return { ...rest, account: account ? { user: account.user || null, email: account.email || null, google: !!account.google, pass: !!account.hash, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p),
     daily: daily.view(p) };
 }
 // Qué está haciendo un jugador conectado (para su lista de amigos), o null si no está
@@ -250,7 +266,8 @@ function finishDraft(draft) {
     store.save();
     setTimeout(() => draft.players.filter(c => !c.npc).forEach(sendProfile), 50);
     return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
-      eloCapped: !eloOk, league: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
+      // (tier, no league: en los resultados 'league' es el desafío de la Liga Pokémon, y el cliente lo confundía)
+      eloCapped: !eloOk, tier: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
 
@@ -270,12 +287,16 @@ function startPractice(c, msg) {
   // Tutorial: un muñeco que ni se mueve ni ataca, para aprender los controles sin presión
   const tut = !!msg.tutorial;
   startBattle([c, null], {
-    mode: 'practice', tutorial: tut, map: tut ? Object.keys(D.MAPS)[0] : maps[Math.floor(Math.random() * maps.length)],
+    // (la arena elegida: una de las de siempre o la de un gimnasio o del Alto Mando; si no, al azar)
+    // (y una mecánica extra si se pide: una concreta o 'random')
+    mod: tut ? null : msg.mod === 'random' ? Object.keys(D.MODIFIERS)[Math.floor(Math.random() * Object.keys(D.MODIFIERS).length)] : msg.mod,
+    mode: 'practice', tutorial: tut, map: tut ? Object.keys(D.MAPS)[0] : D.MAPS[msg.map] || D.ARENAS[msg.map] ? msg.map : maps[Math.floor(Math.random() * maps.length)],
     sides: [
       { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) },
       // (el muñeco es un Snorlax: Normal, así que ningún ataque del tutorial le hace poco efecto)
       tut ? { name: 'Muñeco', team: [{ dex: TUTORIAL_DUMMY, level: D.RANKED_LEVEL }], ai: 0, passive: true, hpMult: TUTORIAL_HP }
-        : { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill },
+        // (en desarrollo, passive deja al bot quieto: los tests de controles no pueden perder a medias en un CI lento)
+        : { name: 'Bot', team: shuffle(D.RANKED_POOL).slice(0, list.length).map(dex => ({ dex, level: D.RANKED_LEVEL })), ai: skill, passive: !!(msg.passive && process.env.ARENA_DEV) },
     ],
   }, () => []);
 }
@@ -386,6 +407,10 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
+  if (msg.t === 'mailcode') return mailCode(c, msg);
+  if (msg.t === 'mailverify' || msg.t === 'google' || msg.t === 'authname') return identityAuth(c, msg);
+  // Modo de prueba del correo: el último que se ha «mandado» a esa dirección (las pruebas leen ahí el código)
+  if (msg.t === 'devmail' && mail.testMode()) return send(c, { t: 'devmail', rid: msg.rid, mail: mail.lastTo(mail.cleanEmail(msg.to)) });
   if (!c.profile) return;
   if (msg.t === 'in') {
     if (!c.battle) return;
@@ -573,6 +598,91 @@ async function auth(c, msg) {
   if (r.p !== c.profile) setProfile(c, r.p);
   else if (msg.t === 'login') store.release(r.p);   // ya lo tenía: que no cuente dos veces
   send(c, { t: 'authok', msg: msg.t === 'login' ? `¡Hola de nuevo, ${c.profile.name}!` : 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' });
+  sendProfile(c);
+}
+
+// ---------- Google y correo ----------
+// Pedir un código por correo. La respuesta es la misma tenga cuenta ese correo o no (no sirve para
+// averiguar quién juega): el código vale igual para entrar en una cuenta que para crearla.
+async function mailCode(c, msg) {
+  if (!mail.enabled()) return send(c, { t: 'autherr', msg: 'Entrar con el correo no está disponible' });
+  const email = mail.cleanEmail(msg.email);
+  if (!email) return send(c, { t: 'autherr', msg: 'Ese correo no es válido' });
+  const limit = limits.mailSend(c.ip, email);
+  if (limit) {
+    audit.logNoisy('limite.correo', c.ip, { tope: limit });
+    return send(c, { t: 'autherr', msg: limit === 'ip' ? 'Demasiados correos desde tu red: espera un rato' : 'Ya te hemos mandado un código: mira tu correo (también el spam) o espera un poco para pedir otro' });
+  }
+  const lang = typeof msg.lang === 'string' ? msg.lang : 'en';
+  try {
+    await mail.send(email, mail.codeMail(lang, mail.newCode(email)));
+  } catch (e) {
+    console.error('No se ha podido mandar un código por correo:', e.message);
+    return send(c, { t: 'autherr', msg: 'No se ha podido mandar el correo: inténtalo más tarde' });
+  }
+  send(c, { t: 'mailsent' });
+}
+
+// Quien demuestra que es dueño de un correo (con el código o con Google) entra en la cuenta de ese correo;
+// si no la hay, la crea: con la partida de invitado que tenga abierta (o la de este navegador, por su token)
+// o, sin ella, con un perfil nuevo, para el que antes se le pide el nombre de entrenador ('authname').
+const PENDING_MS = 10 * 60e3;
+async function identityAuth(c, msg) {
+  if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
+  let ident, via;
+  if (msg.t === 'authname') {
+    ident = c.pendingIdent && Date.now() - c.pendingIdent.at < PENDING_MS ? c.pendingIdent : null;
+    if (!ident) return send(c, { t: 'autherr', msg: 'La verificación ha caducado: vuelve a empezar' });
+    via = ident.via;
+  } else if (msg.t === 'google') {
+    if (!google.clientId()) return send(c, { t: 'autherr', msg: 'Entrar con Google no está disponible' });
+    if (!limits.googleAttempt(c.ip)) { audit.logNoisy('limite.google', c.ip); return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' }); }
+    c.authing = true;
+    try { ident = await google.verify(msg.credential); } finally { c.authing = false; }
+    if (!ident) { audit.log('cuenta.fallo', { ip: c.ip, via: 'google' }); return send(c, { t: 'autherr', msg: 'No se ha podido comprobar tu cuenta de Google: vuelve a intentarlo' }); }
+    via = 'google';
+  } else {
+    if (!mail.enabled()) return send(c, { t: 'autherr', msg: 'Entrar con el correo no está disponible' });
+    if (!limits.mailTry(c.ip)) { audit.logNoisy('limite.intentos', c.ip); return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' }); }
+    const email = mail.cleanEmail(msg.email);
+    if (!email || !mail.useCode(email, String(msg.code || ''))) {
+      audit.log('cuenta.fallo', { ip: c.ip, via: 'correo' });
+      return send(c, { t: 'autherr', msg: 'Código incorrecto o caducado' });
+    }
+    ident = { email };
+    via = 'correo';
+  }
+  if (!clients.has(c)) return;
+  let p = store.byIdentity(ident), created = false;
+  if (p) store.linkIdentity(p, ident);
+  else {
+    // La partida de invitado que pasa a ser la cuenta: la de la conexión o, desde la portada, la de este
+    // navegador (se demuestra que es suya con su token, como al continuar la partida)
+    let guest = c.profile && !c.profile.account ? c.profile : null;
+    if (!guest && !c.profile && store.has(msg.token)) {
+      const g = store.get(msg.token);
+      if (g.account) store.release(g); else { setProfile(c, g); guest = g; }
+    }
+    if (guest && store.banned(guest)) return refuseBanned(c, guest);
+    let name = null;
+    if (!guest) {
+      // Sin partida de invitado hace falta un nombre de entrenador (con el mismo filtro que los demás)
+      const checked = msg.t === 'authname' ? names.trainerName(msg.name) : {};
+      if (!checked.name || checked.error) {
+        c.pendingIdent = { ...ident, via, at: Date.now() };
+        return send(c, msg.t === 'authname' ? { t: 'autherr', msg: checked.error || 'Escribe tu nombre de entrenador' } : { t: 'authname', via });
+      }
+      if (!limits.newProfile(c.ip)) return send(c, { t: 'autherr', msg: 'Demasiados perfiles nuevos desde tu red: espera un rato' });
+      name = checked.name;
+    }
+    p = store.identityAccount(guest, ident, name);   // (uno nuevo ya queda en uso por esta conexión)
+    created = true;
+  }
+  c.pendingIdent = null;
+  if (store.banned(p)) return refuseBanned(c, p);
+  audit.log(created ? 'cuenta.registro' : 'cuenta.entra', { actor: p.id, ip: c.ip, via });
+  if (p !== c.profile) setProfile(c, created ? p : store.use(p));
+  send(c, { t: 'authok', msg: created ? 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' : `¡Hola de nuevo, ${p.name}!` });
   sendProfile(c);
 }
 

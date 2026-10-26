@@ -1,6 +1,6 @@
 // Prueba de integración del servidor por WebSocket: perfil, historia, tienda, objetos,
 // combates (rendición), gimnasios en orden, clasificatoria con draft y ELO, recompensas de
-// liga y temporada, cuentas con usuario y contraseña, Torre Batalla y ladder.
+// liga y temporada, cuentas con usuario y contraseña, con Google y con código por correo, Torre Batalla y ladder.
 //   node tools/server-test.js        (arranca su propio servidor en un puerto libre)
 const path = require('path');
 const os = require('os');
@@ -10,6 +10,20 @@ const WebSocket = require('ws');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-test-'));
 process.env.DB_FILE = path.join(tmp, 'arena.db');
 process.env.ARENA_NPCS = '0';   // sin entrenadores IA: estas pruebas miran el ranking con jugadores concretos
+// Entrar con el correo y con Google: los correos se quedan en memoria y los tokens de «Google» los firma una
+// clave de prueba (su parte pública hace de claves de Google)
+const crypto = require('crypto');
+const googleKey = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+process.env.MAIL_TEST = '1';
+process.env.GOOGLE_CLIENT_ID = 'prueba.apps.googleusercontent.com';
+process.env.GOOGLE_TEST_JWKS = JSON.stringify({ keys: [{ ...googleKey.publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256', use: 'sig' }] });
+function googleToken(claims = {}, key = googleKey.privateKey, kid = 'k1') {
+  const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url');
+  const now = Math.floor(Date.now() / 1000);
+  const data = b64({ alg: 'RS256', kid, typ: 'JWT' }) + '.' + b64({ iss: 'https://accounts.google.com', aud: process.env.GOOGLE_CLIENT_ID, sub: '1001',
+    email: 'misty@example.com', email_verified: true, iat: now, exp: now + 3600, ...claims });
+  return data + '.' + crypto.sign('RSA-SHA256', Buffer.from(data), key).toString('base64url');
+}
 const { start } = require('../server/index.js');
 const D = require('../public/data.js');
 
@@ -424,6 +438,158 @@ class Client {
   for (let i = 0; i < 8; i++) uc.send({ t: 'login', user: 'Nuevo', pass: 'x' });
   uc.send({ t: 'login', user: 'Nuevo', pass: 'abcdef' });
   ok(!!(await limited), 'límite de intentos de contraseña');
+
+  // ---------- Entrar con el correo (código de 6 cifras) ----------
+  {
+    const mail = require('../server/mail.js');
+    const peek = tok => [...store.all()].find(p => p.token === tok);   // (sin ponerlo en uso, como haría store.get)
+    const codeOf = to => { const x = mail.lastTo(to); return x && /(\d{6})/.exec(x.text)[1]; };
+    const cfg = await (await fetch(`http://localhost:${port}/auth/config`)).json();
+    ok(cfg.mail === true && cfg.google === process.env.GOOGLE_CLIENT_ID, '/auth/config dice qué formas de entrar hay');
+    const m1 = new Client(port); await m1.open();
+    m = await m1.req({ t: 'mailcode', email: 'no es correo' }, 'autherr');
+    ok(/no es válido/.test(m.msg), 'un correo mal escrito no recibe código');
+    // La misma respuesta tenga cuenta o no (no se puede averiguar quién juega)
+    const r1 = await m1.req({ t: 'mailcode', email: 'Brock@Example.com', lang: 'es' }, 'mailsent');
+    const r2 = await m1.req({ t: 'mailcode', email: 'ash.ketchum@pueblo-paleta.com', lang: 'en' }, 'mailsent');
+    ok(JSON.stringify(r1) === JSON.stringify(r2), 'pedir un código responde igual exista la cuenta o no');
+    const code = codeOf('brock@example.com');
+    ok(/^\d{6}$/.test(code) && /PokéArenas/.test(mail.lastTo('brock@example.com').subject) && /Your code/.test(mail.lastTo('ash.ketchum@pueblo-paleta.com').text), 'el correo lleva el código, en el idioma del jugador');
+    const row = store.db.prepare('SELECT * FROM mail_codes WHERE email = ?').get('brock@example.com');
+    ok(row && !JSON.stringify(row).includes(code) && row.expires - Date.now() <= mail.CODE_MS && row.expires - Date.now() > 9 * 60e3, 'el código se guarda solo como huella y caduca a los 10 minutos');
+    m = await m1.req({ t: 'mailcode', email: 'brock@example.com' }, 'autherr');
+    ok(/espera/.test(m.msg), 'no se puede pedir otro código al mismo correo enseguida');
+    // Sin perfil (desde la portada): tras el código pide el nombre de entrenador, con el filtro de siempre
+    m = await m1.req({ t: 'mailverify', email: 'brock@example.com', code: code === '000000' ? '111111' : '000000' }, 'autherr');
+    ok(/incorrecto/.test(m.msg), 'un código equivocado no entra');
+    await m1.req({ t: 'mailverify', email: 'BROCK@example.com', code }, 'authname');
+    m = await m1.req({ t: 'authname', name: 'hijoputa' }, 'autherr');
+    ok(/no está permitido/.test(m.msg), 'el nombre de la cuenta nueva pasa el filtro de nombres');
+    m = await m1.req({ t: 'authname', name: 'Brock' });
+    const brockTok = m.p.token;
+    ok(m.p.name === 'Brock' && m.p.account.email === 'brock@example.com' && !m.p.account.user && !m.p.account.pass && m.p.coins === 500, 'cuenta nueva con el correo, sin usuario ni contraseña');
+    const m2 = new Client(port); await m2.open();
+    m = await m2.req({ t: 'mailverify', email: 'brock@example.com', code }, 'autherr');
+    ok(/incorrecto/.test(m.msg), 'el código sirve una sola vez');
+    // Volver a entrar desde otro dispositivo
+    await m2.req({ t: 'mailcode', email: 'brock@example.com' }, 'autherr');   // (aún dentro de los 30 s)
+    store.db.prepare('DELETE FROM mail_codes').run();
+    mail.outbox.length = 0;
+    const fresh = mail.newCode('brock@example.com');
+    m = await m2.req({ t: 'mailverify', email: 'brock@example.com', code: fresh });
+    ok(m.p.token === brockTok, 'entrar otra vez con el correo recupera la misma cuenta');
+    // 5 fallos gastan el código
+    const five = mail.newCode('cinco@example.com');
+    for (let i = 0; i < 5; i++) await m2.req({ t: 'mailverify', email: 'cinco@example.com', code: String((+five + 1 + i) % 1e6).padStart(6, '0') }, 'autherr');
+    m = await m2.req({ t: 'mailverify', email: 'cinco@example.com', code: five }, 'autherr');
+    ok(/incorrecto/.test(m.msg), 'tras 5 intentos fallidos el código deja de valer');
+    const old = mail.newCode('tarde@example.com');
+    store.db.prepare('UPDATE mail_codes SET expires = ? WHERE email = ?').run(Date.now() - 1, 'tarde@example.com');
+    m = await m2.req({ t: 'mailverify', email: 'tarde@example.com', code: old }, 'autherr');
+    ok(/caducado/.test(m.msg), 'un código caducado no vale');
+    // Un invitado conectado: su partida pasa a la cuenta (como al registrarse)
+    const m3 = new Client(port); await m3.open();
+    m = await m3.req({ t: 'hello', name: 'Gary' });
+    const garyTok = m.p.token;
+    await m3.req({ t: 'story', a: 'starter', dex: 7 });
+    m = await m3.req({ t: 'mailverify', email: 'gary@example.com', code: mail.newCode('gary@example.com') });
+    ok(m.p.token === garyTok && m.p.mons.length === 1 && m.p.account.email === 'gary@example.com' && m.p.name === 'Gary', 'un invitado que entra con el correo se lleva su partida a la cuenta nueva');
+    // Desde la portada, con el token de invitado de ese navegador
+    const m4 = new Client(port); await m4.open();
+    m = await m4.req({ t: 'hello', name: 'Erika' });
+    const erikaTok = m.p.token; m4.ws.close();
+    const m5 = new Client(port); await m5.open();
+    m = await m5.req({ t: 'mailverify', email: 'erika@example.com', code: mail.newCode('erika@example.com'), token: erikaTok });
+    ok(m.p.token === erikaTok && m.p.name === 'Erika' && m.p.account.email === 'erika@example.com', 'desde la portada, la partida de invitado de ese navegador pasa a la cuenta');
+    // Una cuenta de antes con el correo como usuario: se entra en ella
+    const m6 = new Client(port); await m6.open();
+    m = await m6.req({ t: 'mailverify', email: 'Ash.Ketchum@pueblo-paleta.com', code: mail.newCode('ash.ketchum@pueblo-paleta.com') });
+    ok(m.p.account.user === 'ash.ketchum@pueblo-paleta.com' && m.p.account.pass && m.p.account.email === 'ash.ketchum@pueblo-paleta.com', 'con el correo se entra en la cuenta de antes que lo tiene de usuario');
+    const m7 = new Client(port); await m7.open();
+    m = await m7.req({ t: 'register', user: 'Gary@Example.com', pass: 'clave-gary' }, 'autherr');
+    ok(/existe/.test(m.msg), 'no se puede registrar de usuario el correo de otra cuenta');
+    m = await m2.req({ t: 'passwd', old: 'x', pass: 'nueva123' }, 'autherr');
+    ok(/no tiene contraseña/.test(m.msg), 'una cuenta sin contraseña no la puede cambiar');
+    ok(!JSON.stringify(store.ladder('ranked')).includes('@example') && !JSON.stringify(store.publicUser(peek(brockTok).id)).includes('@example')
+      && !JSON.stringify(require('../server/audit.js').query({ limit: 500 })).includes('@example'), 'el correo no sale en la ladder, ni en la ficha pública, ni en la auditoría');
+    for (const x of [m1, m2, m3, m5, m6, m7]) x.ws.close();   // (como mucho 20 conexiones a la vez por IP)
+  }
+
+  // ---------- Entrar con Google ----------
+  {
+    const g1 = new Client(port); await g1.open();
+    const bad = async (tok, msg) => { const r = await g1.req({ t: 'google', credential: tok }, 'autherr'); ok(/Google/.test(r.msg), msg); };
+    await bad(googleToken({ aud: 'otra-app' }), 'Google: un token para otra aplicación no vale (aud)');
+    await bad(googleToken({ iss: 'https://evil.example.com' }), 'Google: un token de otro emisor no vale (iss)');
+    await bad(googleToken({ exp: Math.floor(Date.now() / 1000) - 3600 }), 'Google: un token caducado no vale (exp)');
+    await bad(googleToken({ email_verified: false }), 'Google: con el correo sin verificar no se entra');
+    await bad(googleToken({}, crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey), 'Google: un token firmado por otra clave no vale');
+    await bad(googleToken({}, googleKey.privateKey, 'otra'), 'Google: una clave desconocida (kid) no vale');
+    const t0 = googleToken().split('.');
+    await bad([t0[0], Buffer.from(JSON.stringify({ ...JSON.parse(Buffer.from(t0[1], 'base64url')), sub: '666' })).toString('base64url'), t0[2]].join('.'), 'Google: un token retocado no vale');
+    await bad('basura', 'Google: algo que no es un token no vale');
+    await g1.req({ t: 'google', credential: googleToken() }, 'authname');
+    m = await g1.req({ t: 'authname', name: 'Misty' });
+    const mistyTok = m.p.token;
+    ok(m.p.account.google && m.p.account.email === 'misty@example.com' && !m.p.account.user && m.p.name === 'Misty', 'Google: cuenta nueva con el correo y su id de Google');
+    ok([...store.all()].find(p => p.token === mistyTok).account.google === '1001', 'Google: se guarda su id (sub)');
+    const g2 = new Client(port); await g2.open();
+    m = await g2.req({ t: 'google', credential: googleToken({ email: 'misty.nuevo@example.com' }) });
+    ok(m.p.token === mistyTok, 'Google: con la misma cuenta de Google se entra aunque haya cambiado el correo');
+    // Con Google y el correo de una cuenta que entraba por código: es la misma cuenta, y queda vinculada
+    const g3 = new Client(port); await g3.open();
+    m = await g3.req({ t: 'google', credential: googleToken({ sub: '2002', email: 'brock@example.com' }) });
+    ok(m.p.name === 'Brock' && m.p.account.google, 'Google: si el correo ya tiene cuenta, se entra en ella (y queda vinculada a Google)');
+    // Un invitado conectado que entra con Google se lleva su partida
+    const g4 = new Client(port); await g4.open();
+    m = await g4.req({ t: 'hello', name: 'Sabrina' });
+    const sabTok = m.p.token;
+    m = await g4.req({ t: 'google', credential: googleToken({ sub: '3003', email: 'sabrina@example.com' }) });
+    ok(m.p.token === sabTok && m.p.account.email === 'sabrina@example.com', 'Google: un invitado se lleva su partida a la cuenta nueva');
+    // Sin el nombre a tiempo, la verificación caduca
+    const g5 = new Client(port); await g5.open();
+    m = await g5.req({ t: 'authname', name: 'Nadie' }, 'autherr');
+    ok(/caducado/.test(m.msg), 'sin verificar antes el correo, no se puede crear la cuenta');
+    const adminView = require('../server/admin.js');
+    ok(!JSON.stringify(store.search('Misty').map(p => ({ user: p.account && p.account.user }))).includes('@'), 'el panel de admin no ve el correo de las cuentas de Google');
+    ok(adminView.grant && (() => { try { adminView.grant('sabrina@example.com'); return false; } catch (e) { return /usuario y contraseña/.test(e.message); } })(), 'una cuenta sin contraseña no puede ser admin (el panel pide contraseña y 2FA)');
+    for (const x of [g1, g2, g3, g4, g5]) x.ws.close();
+  }
+
+  // ---------- Cliente SMTP (contra un servidor SMTP de pruebas en esta máquina) ----------
+  {
+    const mail = require('../server/mail.js');
+    const got = [];
+    const smtp = require('net').createServer(sock => {
+      let data = null, buf = '';
+      sock.write('220 prueba ESMTP\r\n');
+      sock.on('data', d => {
+        buf += d;
+        let i;
+        while ((i = buf.indexOf('\r\n')) >= 0) {
+          const line = buf.slice(0, i); buf = buf.slice(i + 2);
+          if (data !== null) { if (line === '.') { got.push(data); data = null; sock.write('250 OK\r\n'); } else data += line + '\n'; continue; }
+          got.push(line);
+          if (/^EHLO/.test(line)) sock.write('250-prueba\r\n250 AUTH PLAIN\r\n');
+          else if (/^AUTH PLAIN/.test(line)) sock.write('235 OK\r\n');
+          else if (/^(MAIL|RCPT)/.test(line)) sock.write('250 OK\r\n');
+          else if (line === 'DATA') { data = ''; sock.write('354 Adelante\r\n'); }
+          else if (line === 'QUIT') sock.end('221 Adiós\r\n');
+        }
+      });
+    }).listen(0);
+    await new Promise(r => smtp.once('listening', r));
+    await mail.smtpSend({ host: '127.0.0.1', port: smtp.address().port, user: 'yo', pass: 'secreto', from: 'PokéArenas <no-reply@pokearenas.com>' },
+      'brock@example.com', 'Tu código de PokéArenas: 123456', 'Tu código es 123456');
+    const msgData = got.find(x => typeof x === 'string' && x.includes('Subject:')) || '';
+    ok(got.includes('AUTH PLAIN ' + Buffer.from('\0yo\0secreto').toString('base64')) && got.includes('MAIL FROM:<no-reply@pokearenas.com>') && got.includes('RCPT TO:<brock@example.com>'), 'SMTP: se identifica y manda del remitente al destinatario');
+    const body = /\n\n([\s\S]*)$/.exec(msgData);
+    ok(/=\?UTF-8\?B\?/.test(msgData) && body && Buffer.from(body[1].replace(/\s/g, ''), 'base64').toString().includes('123456'), 'SMTP: asunto con acentos codificado y el texto en base64');
+    let refused = null;
+    await mail.smtpSend({ host: 'localhost.invalid', port: 1, from: 'a@b.cd' }, 'x@y.zz', 's', 't').catch(e => { refused = e; });
+    ok(!!refused, 'SMTP: un servidor al que no se llega da error (y no cuelga)');
+    smtp.close();
+  }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
 

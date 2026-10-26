@@ -12,6 +12,11 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.waitFor(`window.__app.music.running && window.__app.music.sounding`);
   ok(await page.eval(`window.__app.music.source`) === 'archivo', 'al tocar la página suena la grabación del menú (public/music/pueblo.mp3, de jannetty)');
+  // Fuera de combate, al de jannetty le siguen tres de HydroGene, en su orden (por la duración de cada uno)
+  await page.waitFor(`window.__app.music.file && window.__app.music.file.list.filter(Boolean).length === 4`, 20000);
+  const menuDurs = await page.eval(`window.__app.music.file.list.map(b => Math.round(b.duration))`);
+  ok(menuDurs.length === 4 && Math.abs(menuDurs[0] - 41) < 3 && Math.abs(menuDurs[1] - 86) < 3 && Math.abs(menuDurs[2] - 65) < 3 && Math.abs(menuDurs[3] - 119) < 3,
+    `el tema del menú enlaza con «Peaceful Village», «Lively City» y «Wood Forest Town» (${menuDurs.join(', ')} s)`);
 
   // Fuera de combate suena siempre el mismo tema: moverse por los menús no la corta
   const starts0 = await page.eval(`window.__app.music.starts`);
@@ -44,14 +49,4 @@ module.exports = async ({ page, ok }) => {
   ok(await page.eval(`+localStorage.getItem('arena.music')`) > 0, '«Sin música» la vuelve a encender');
   await page.reload();
   ok(await page.eval(`window.__app.music.volume`) > 0 && await page.eval(`window.__app.music.volume`) === await page.eval(`+localStorage.getItem('arena.music')`), 'el volumen se mantiene al recargar');
-
-  // El Alto Mando y el Campeón suenan con el tema largo del Campeón (6 min: no se repite en un combate de 3)
-  const tracks = await page.eval(`import('/js/music.js').then(m => { const by = k => Object.values(Data.NODES).find(n => n.kind === k);
-    return ['elite', 'champion', 'gym'].map(k => m.trackForBattle({ mode: 'trainer', map: by(k).map }, Data)); })`);
-  ok(tracks.join() === 'champion,champion,leader', `el Alto Mando y el Campeón usan el tema del Campeón; los gimnasios, el de los líderes (${tracks.join(', ')})`);
-  // El de los líderes (menos de un minuto) enlaza con el de combate en vez de volver a empezar
-  await page.realClick('body');
-  await page.eval(`window.__app.music.play('leader'); true`);
-  await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 20000);
-  ok(true, 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
 };

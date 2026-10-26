@@ -3,18 +3,22 @@
 import * as THREE from 'three';
 import { U, toWorld, softDisc } from './world.js';
 import { pixelTexture, isDir, spins, frames, sizeOf } from './pixvfx.js';
+import { Vfx3D, vfxStyle } from './vfx3d.js';
+import { hdProjectile, hdImpact, hdSlash, hdBreath, hdBoom, hdAura, hdBeam, hdQuake, hdDash, hdBlink, hdThunder, hdWaveMaterial, hdWake, hdGeyser, hdGravity, hdCrack, hdZapWater, hdMirrorFlash } from './vfxhd.js';
 import { PALETTE, SMOKE, DUST, vivid } from './particles.js';
 
-// Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve; los colores
-// pasan a su versión intensa (vivid) en vez de apagarse
+// Suelo claro (lo decide World.applyTheme): los avisos propios pasan a tinta oscura (el blanco no se vería). Las
+// partículas y los halos de los ataques, en cambio, son iguales en todas las arenas (CONTRAST: la versión de mezcla
+// normal y color intenso para suelo claro, apagada de momento para que todas se vean igual)
 let BRIGHT = false;
+const CONTRAST = false;
 const INK = '#1b2a52';   // color de los avisos propios sobre suelo claro
 
 const { MOVES, TYPE_COLOR } = Data;
 const glowTex = softDisc('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
 
 function additive(color, opacity = 1) {
-  if (BRIGHT) {
+  if (CONTRAST && BRIGHT) {
     const c = new THREE.Color(color);
     c.multiplyScalar(1 / Math.max(c.r, c.g, c.b, 1));   // los «sobre-brillantes» (bright()) sin quemarse a blanco
     return new THREE.MeshBasicMaterial({ color: vivid('#' + c.getHexString()), transparent: true, opacity: Math.min(1, opacity * 1.15), depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
@@ -47,15 +51,14 @@ const PIX_MOVE = { ascuas: 'fire', llamarada: 'fire', fuegoFatuo: 'ball', pistol
   impactrueno: 'bolt', ondaTrueno: 'bolt', tornado: 'wind', aireAfilado: 'crescent', confusion: 'ring', furiaDragon: 'fire', ciclon: 'wind',
   pulsoDragon: 'ball', acido: 'blob', bombaLodo: 'blob', toxico: 'bubble', lanzaMugre: 'blob', bolaSombra: 'shadow', pulsoUmbrio: 'crescent',
   fuerzaLunar: 'star', disparoDemora: 'web' };
-// Golpe cuerpo a cuerpo (forma donde pega) y formas que salen de los rayos, por tipo
+// Golpe cuerpo a cuerpo: la forma pixel donde pega, por tipo
 const MELEE_PIX = { siniestro: 'jaws', bicho: 'jaws', dragon: 'claw', acero: 'claw', normal: 'claw', volador: 'claw', fantasma: 'claw', lucha: 'impact', roca: 'impact', tierra: 'impact' };
-const BEAM_PIX = { hielo: 'shard', electrico: 'bolt', psiquico: 'ring', fuego: 'fire', planta: 'leaf', agua: 'bubble', dragon: 'fire', hada: 'star',
-  fantasma: 'shadow', acero: 'shard', veneno: 'bubble', normal: 'star', siniestro: 'crescent', bicho: 'note', volador: 'wind', roca: 'rock', tierra: 'rock', lucha: 'impact' };
 const PIX_TYPE = { fuego: 'fire', agua: 'drop', planta: 'leaf', electrico: 'bolt', psiquico: 'ring', hielo: 'shard', lucha: 'ball', veneno: 'blob',
   tierra: 'blob', volador: 'wind', bicho: 'needle', fantasma: 'shadow', dragon: 'fire', siniestro: 'crescent', acero: 'shard', hada: 'star', normal: 'star' };
 
 export class Effects {
   constructor(world, particles) {
+    this.v3 = vfxStyle() === '3d' ? new Vfx3D(world.scene) : null;   // estilo 3D de los ataques (vfx3d.js), solo si se elige
     this.world = world;
     this.scene = world.scene;
     this.p = particles;
@@ -73,7 +76,42 @@ export class Effects {
     });
   }
 
-  setBright(on) { BRIGHT = !!on; }
+  // Aura 3D al curarse o mejorarse (solo en el estilo 3D)
+  aura(w, color) { hdAura(this, w, color); }
+  // ---------- Mecánicas de las arenas ----------
+  geyser(e) {
+    const pos = toWorld(e.x, e.y, 0);
+    if (this.v3) hdGeyser(this, pos, e.r * U);
+    else this.p.emit(pos.x, 0.3, pos.z, { n: 60, colors: PALETTE.agua, dir: [0, 1, 0], spread: 0.35, speed: 7, life: 0.8, size: 0.18, grav: 9 });
+    this.shake = Math.max(this.shake, 0.15);
+  }
+  gravity(warn, dur) {
+    const c = toWorld(Shared.ARENA.w / 2, Shared.ARENA.h / 2, 0);
+    if (this.v3) hdGravity(this, c, warn, dur);
+    else this.p.emit(c.x, 0.4, c.z, { n: 50, colors: PALETTE.siniestro || ['#6a40c8'], speed: 2, life: warn + dur, size: 0.2, jitter: 3 });
+  }
+  crack(e) {
+    const pos = toWorld(e.x, e.y, 0);
+    if (this.v3) hdCrack(this, pos);
+    else this.p.emit(pos.x, 0.2, pos.z, { n: 24, colors: ['#ffffff', '#cfefff'], layer: 'solid', speed: 3, life: 0.5, size: 0.1, grav: 8 });
+  }
+  zapWater(types) {
+    const cells = [];
+    for (let i = 0; i < types.length; i++) if (types[i] === Shared.T.WATER) { const c = Shared.cellCenter(i); cells.push(toWorld(c.x, c.y, 0)); }
+    if (this.v3) hdZapWater(this, cells);
+    else for (const c of cells.slice(0, 30)) this.p.emit(c.x, 0.2, c.z, { n: 4, colors: ['#ffffff', '#ffe04a'], speed: 3, life: 0.25, size: 0.1 });
+  }
+  mirrorFlash(e) {
+    const pos = toWorld(e.x, e.y, 0);
+    if (this.v3) hdMirrorFlash(this, pos);
+    else this.p.emit(pos.x, 0.65, pos.z, { n: 12, colors: ['#ffffff', '#cfefff'], speed: 2.5, life: 0.25, size: 0.12 });
+  }
+
+  // Estela 3D de una embestida, siguiendo al Pokémon
+  dashTrail(obj, ty, dur) { hdDash(this, obj, ty, dur); }
+  blink(w) { hdBlink(this, w); }
+
+  setBright(on) { BRIGHT = !!on; if (this.v3) this.v3.bright = CONTRAST && BRIGHT; }
 
   addTemp(obj, life, update) {
     this.scene.add(obj);
@@ -206,6 +244,8 @@ export class Effects {
     const m = MOVES[pr.mk];
     const ty = m.type, pal = PALETTE[ty] || ['#ffffff'];
     if (pr.w) return this.makeWave(pr);
+    // (la liana y los anillos de Hipnosis, hechos a mano en 3D, se quedan también en el estilo 3D)
+    if (this.v3 && m.fx !== 'vine' && m.fx !== 'hypno') return hdProjectile(this.scene, ty, pr.r * U);   // estilo 3D (librería de partículas)
     const r = pr.r * U;
     const g = new THREE.Group();
     const trail = (rate, o = {}) => (pr2, pos, dt) => p.trickle(rate, dt, pos.x, pos.y, pos.z, { colors: pal, layer: 'glow', speed: 0.6, life: 0.35, size: r * 2.2, jitter: r, ...o });
@@ -259,9 +299,9 @@ export class Effects {
     // blanco y halo del color del tipo); sobre suelo claro el halo, que no puede ser aditivo, usa el color
     // intenso del tipo con mezcla normal y se ve igual de saturado que el aditivo sobre hierba
     const core = new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.07, r * 0.7), 12, 10), new THREE.MeshBasicMaterial({ color: bright(pal[1], 2.2), toneMapped: false }));
-    const halo = glowSprite(BRIGHT ? vivid(TYPE_COLOR[ty]) : bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
-    if (BRIGHT) { halo.material.blending = THREE.NormalBlending; halo.scale.multiplyScalar(1.4); }   // el aditivo se ve más ancho: se compensa
-    if (BRIGHT) core.material.color.lerp(vivid(TYPE_COLOR[ty]), 0.4);   // un blanco puro se perdería sobre blanco
+    const halo = glowSprite(CONTRAST && BRIGHT ? vivid(TYPE_COLOR[ty]) : bright(TYPE_COLOR[ty], 1.6), r * 5 + 0.3);
+    if (CONTRAST && BRIGHT) { halo.material.blending = THREE.NormalBlending; halo.scale.multiplyScalar(1.4); }   // el aditivo se ve más ancho: se compensa
+    if (CONTRAST && BRIGHT) core.material.color.lerp(vivid(TYPE_COLOR[ty]), 0.4);   // un blanco puro se perdería sobre blanco
     g.add(core, halo);
     if (ty === 'fantasma' || ty === 'veneno') core.material.color = bright(pal[2], 1.2);
     const big = (m.dmg || 0) >= 15;
@@ -304,7 +344,9 @@ export class Effects {
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     geo.setIndex(idx);
-    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, transparent: true, opacity: 0.93, roughness: 0.15, metalness: 0.1, side: THREE.DoubleSide, emissive: '#0b3a7a', emissiveIntensity: 0.35 }));
+    // (en el estilo 3D, agua con textura que fluye, brillos en el borde y espuma viva, y una estela de espuma)
+    const mesh = new THREE.Mesh(geo, this.v3 ? hdWaveMaterial() : new THREE.MeshStandardMaterial({ vertexColors: true, transparent: true, opacity: 0.93, roughness: 0.15, metalness: 0.1, side: THREE.DoubleSide, emissive: '#0b3a7a', emissiveIntensity: 0.35 }));
+    const wake = this.v3 ? hdWake(this.scene, W * 0.45) : null;
     const holder = new THREE.Group();
     holder.add(mesh);
     const wg = new THREE.Group();
@@ -333,6 +375,7 @@ export class Effects {
         const now = performance.now();
         holder.rotation.y = -pr2.a - Math.PI / 2;
         shape(now);
+        if (wake) { mesh.material.uniforms.uTime.value = (now - t0) / 1000; wake.push(new THREE.Vector3(wpos.x, 0.06, wpos.z)); }
         const ca = Math.cos(pr2.a), sa = Math.sin(pr2.a);
         // Espuma que salta del labio, hacia delante y arriba
         for (let k = 0; k < 5; k++) {
@@ -342,7 +385,7 @@ export class Effects {
         // Rocío suave por delante, a ras de suelo
         p.trickle(18, dt, wpos.x + ca * 0.7, 0.2, wpos.z + sa * 0.7, { colors: ['#ffffff', '#cfefff'], layer: 'soft', speed: 0.5, life: 0.35, size: 0.22, grow: 1.2, alpha: 0.22, jitter: W * 0.4 });
       },
-      dispose: () => { geo.dispose(); mesh.material.dispose(); },
+      dispose: () => { geo.dispose(); mesh.material.dispose(); if (wake) wake.dispose(); },
     };
   }
 
@@ -381,8 +424,8 @@ export class Effects {
     spr.scale.set(w * px, h * px, 1);
     spr.renderOrder = 4;
     // Halo pequeño y suave: con el brillo de la escena, uno grande tapaba la forma
-    const halo = glowSprite(BRIGHT ? vivid(TYPE_COLOR[ty]) : TYPE_COLOR[ty], Math.max(w, h) * px * 0.9);
-    if (BRIGHT) halo.material.blending = THREE.NormalBlending;
+    const halo = glowSprite(CONTRAST && BRIGHT ? vivid(TYPE_COLOR[ty]) : TYPE_COLOR[ty], Math.max(w, h) * px * 0.9);
+    if (CONTRAST && BRIGHT) halo.material.blending = THREE.NormalBlending;
     halo.material.opacity = 0.35;
     const g = new THREE.Group();
     g.add(halo, spr);
@@ -412,6 +455,12 @@ export class Effects {
     const col = TYPE_COLOR[e.ty], pal = PALETTE[e.ty];
     const w = e.w * U;
     const g = new THREE.Group();
+    if (this.v3) {   // estilo 3D: núcleo con espirales (o, el eléctrico, con descargas en zigzag)
+      hdBeam(this, a, b, w, e.ty);
+      this.flashLight(b, col, 4, 200);
+      this.shake = Math.max(this.shake, e.w >= 28 ? 0.25 : 0.12);
+      return;
+    }
     if (e.ty === 'electrico') {
       // Rayo en zigzag: segmentos finos con desvíos aleatorios
       const pts = [a];
@@ -433,13 +482,6 @@ export class Effects {
       const pt = a.clone().addScaledVector(dir, k);
       this.p.emit(pt.x, pt.y, pt.z, { n: 2, colors: pal, layer: e.ty === 'agua' ? 'solid' : 'glow', speed: 1.5, life: 0.4, size: e.ty === 'agua' ? 0.1 : 0.25, grav: e.ty === 'agua' ? 6 : 0 });
     }
-    // Formas pixel de su tipo a lo largo del rayo (cristales en Rayo Hielo, anillos en Psicorrayo…), que salen despedidas
-    const shape = BEAM_PIX[e.ty] || 'star';
-    for (let k = 0.4; k < len; k += 0.7) {
-      const pt = a.clone().addScaledVector(dir, k);
-      const out = new THREE.Vector3((Math.random() - 0.5) * 1.6, 0.6 + Math.random(), (Math.random() - 0.5) * 1.6);
-      this.pixPuff(shape, e.ty, pt, { size: 0.45 + Math.random() * 0.2, vel: out, life: 380 + Math.random() * 200, angle: -Math.atan2(dir.z, dir.x), spin: shape === 'star' || shape === 'leaf' ? 6 : 0, grav: 3 });
-    }
     this.flashLight(b, col, 4, 200);
     this.shake = Math.max(this.shake, e.w >= 28 ? 0.25 : 0.12);
   }
@@ -451,6 +493,7 @@ export class Effects {
     m.position.copy(toWorld(pos.x, pos.y, 0.4));
     this.addTemp(m, 200, f => { m.material.opacity = 0.8 * (1 - f); m.scale.setScalar(1 + f * 0.3); });
     // Y su forma pixel donde pega: zarpazo, mordisco o puño (según el tipo)
+    if (this.v3) return hdSlash(this, toWorld(pos.x, pos.y, 0.45), e.a, (e.r + 14) * U, e.arc, e.ty);   // estilo 3D: hoja de energía
     const shape = MELEE_PIX[e.ty] || 'impact', d = (e.r + 14) * U;
     const at = toWorld(pos.x, pos.y, 0.6).add(new THREE.Vector3(Math.cos(e.a) * d, 0, Math.sin(e.a) * d));
     this.pixPuff(shape, e.ty, at, { size: 0.95, life: 260, angle: shape === 'claw' ? -e.a : 0, grow: 1.25 });
@@ -490,6 +533,9 @@ export class Effects {
       const wave = new THREE.Mesh(new THREE.TorusGeometry(r * 0.8, 0.22, 8, 48), new THREE.MeshStandardMaterial({ color: '#4a90e8', transparent: true, opacity: 0.8, roughness: 0.1 }));
       wave.rotation.x = -Math.PI / 2; wave.position.copy(pos);
       this.addTemp(wave, 600, f => { wave.scale.setScalar(0.7 + f * 0.6); wave.position.y = 0.1 + Math.sin(f * Math.PI) * 0.4; wave.material.opacity = 0.8 * (1 - f); });
+    } else if (ty === 'electrico' && this.v3) {
+      hdThunder(this, pos, r);   // estilo 3D: rayo grueso con ramas que parpadea y descargas por el suelo
+      this.flashLight(pos, '#fff6a0', 14, 260);
     } else if (ty === 'electrico') {
       // Rayo que cae del cielo
       const bolt = new THREE.Group();
@@ -527,6 +573,7 @@ export class Effects {
       if (ty === 'fuego') this.p.emit(pos.x, 0.6, pos.z, { n: 40, colors: SMOKE, layer: 'soft', dir: [0, 1, 0], spread: 0.6, speed: 2, life: 1.4, size: 0.9, grow: 1.5, alpha: 0.4, jitter: r });
       this.flashLight(pos, TYPE_COLOR[ty], 8, 250);
     }
+    if (this.v3) hdBoom(this, pos, r, ty);   // estilo 3D: onda de choque y bola de energía
     this.shake = Math.max(this.shake, Math.min(0.5, 0.15 + r * 0.08));
   }
 
@@ -540,6 +587,7 @@ export class Effects {
       ring.rotation.x = -Math.PI / 2;
       ring.position.copy(pos);
       const maxR = 1200 * U, life = 1200 / e.sp * 1000;
+      if (this.v3) hdQuake(this, pos, maxR, life);   // estilo 3D: grietas y picos de roca
       this.addTemp(ring, life, f => {
         const R = Math.max(0.05, f * maxR);
         ring.scale.set(R, R, 1 + f * 2);
@@ -570,6 +618,7 @@ export class Effects {
       this.p.emit(pos.x, 0.5, pos.z, o);
     }
     if (ty === 'fuego') this.flashLight(toWorld(e.x + Math.cos(e.a) * e.r * 0.5, e.y + Math.sin(e.a) * e.r * 0.5, 1), '#ff8a30', 8, 300);
+    if (this.v3) hdBreath(this, pos, e.a, r, e.arc, ty);   // estilo 3D: ráfaga de orbes
     if (ty === 'bicho') {   // ondas de sonido
       for (let k = 0; k < 3; k++) {
         const ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 32, 1, -e.arc / 2, e.arc), additive(bright(TYPE_COLOR[ty], 1.4), 0.6));
@@ -646,7 +695,8 @@ export class Effects {
     else if (e.ty === 'roca' || e.ty === 'tierra') this.p.emit(pos.x, pos.y, pos.z, { n, colors: DUST, layer: 'soft', speed: 3, life: 0.7, size: 0.4, alpha: 0.7 });
     else this.p.emit(pos.x, pos.y, pos.z, { n, colors: pal, speed: big ? 5 : 3.5, life: 0.4, size: big ? 0.3 : 0.2, grav: e.ty === 'fuego' ? -3 : 0 });
     // Chispa blanca de impacto
-    this.pixPuff('impact', e.ty || 'normal', pos, { size: big ? 1.1 : 0.75, life: 220, grow: 1.3 });
+    if (this.v3) hdImpact(this, e.ty || 'normal', pos, big);
+    else this.pixPuff('impact', e.ty || 'normal', pos, { size: big ? 1.1 : 0.75, life: 220, grow: 1.3 });
     const star = glowSprite(new THREE.Color('#ffffff').multiplyScalar(2), big ? 1.6 : 1);
     star.position.copy(pos);
     this.addTemp(star, 120, f => { star.material.opacity = 1 - f; star.scale.setScalar((big ? 1.6 : 1) * (1 + f)); });
@@ -761,6 +811,7 @@ export class Effects {
   }
 
   update(dt) {
+    if (this.v3) this.v3.update(dt);
     const now = performance.now();
     this.temp = this.temp.filter(t => {
       const f = (now - t.t0) / t.life;

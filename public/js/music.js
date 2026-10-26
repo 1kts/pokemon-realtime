@@ -20,12 +20,49 @@ const FILE_WAIT = 2500;                          // ms que se espera a un archiv
 // poco a poco en FADE_IN s (al cambiar de pantalla o entrar y salir de un combate no corta de golpe)
 const FADE_OUT = 1.5, GAP = 0.8, FADE_IN = 2.5;
 // Tema -> grabación. pueblo y lider: "A Pokémon Tale in Three Parts" de jannetty (partes 1 y 3);
-// desierto: "Desert Battle" de rckbtm; salvaje: "The Wild Duel" de Navet56 (OPMon Lazuli, CC-BY 4.0);
-// campeon: "Face The Champion!" de Spring Spring (CC-BY 3.0). Se suben con el volumen igualado (-16 LUFS).
-const FILES = { menu: 'pueblo', battle: 'desierto', wild: 'salvaje', leader: 'lider', champion: 'campeon' };
-// Temas que, al acabar, enlazan con otro en vez de volver a empezar (el de los líderes dura menos de un minuto y un
-// combate, hasta tres: así no se oye «reiniciarse» a medias)
-const CHAIN = { leader: ['leader', 'battle'] };
+// desierto: "Desert Battle" de rckbtm;
+// campeon: "Face The Champion!" de Spring Spring (CC-BY 3.0). Del pack "High Quality 16-bit RPG Music" de
+// HydroGene (CC0, https://hydrogene.itch.io/high-quality-16-bit-music): aldea ("Peaceful Village"), ciudad
+// ("Lively City"), bosque ("Wood Forest Town"), duelo ("Battle Theme II"), torre ("Battle Theme IV"),
+// maligno ("The Evil One"), viaje ("Long Journey"), ruta ("Battle Theme I") y gimnasio ("Battle Theme III"); y los de cada tipo de
+// gimnasio (GYM_THEMES): caverna ("Hidden Cavern"), isla ("Unknown Island"), base ("Military Base"), espiritus
+// ("Spirits Forest"), fabrica ("Dark Factory"), templo ("Magic Temple"), volcan ("Volcanic Crater"), complot
+// ("Malicious Scheme"), cielo ("Traveling the Sky"), castillo ("Demon King Castle"), mina ("Dwarven Mine") y
+// santuario ("Holy Sanctuary"). Se suben con el volumen igualado (-16 LUFS).
+const FILES = {
+  menu: 'pueblo', town: 'aldea', city: 'ciudad', forest: 'bosque',   // fuera de combate (encadenados)
+  battle: 'desierto',                                                 // Práctica
+  ranked: 'duelo',                                                    // Clasificatoria y Partida rápida
+  tower: 'torre', towerBoss: 'maligno',                               // Torre Batalla
+  wild: 'viaje', wildJohto: 'ruta',                                   // salvajes de Kanto y de Johto
+  leader: 'lider', leaderJohto: 'gimnasio',                           // gimnasios de Kanto y de Johto
+  champion: 'campeon',                                                // Alto Mando y Campeón
+};
+// Temas que, al acabar, enlazan con otro en vez de volver a empezar (así no se oye «reiniciarse» a medias, y fuera
+// de combate, donde se pasa más rato, no se repite cada minuto). El primero es el propio tema; los demás solo
+// suenan enlazados (no tienen versión sintetizada).
+const CHAIN = {
+  menu: ['menu', 'town', 'city', 'forest'],          // 41 s + 1:25 + 1:04 + 1:58
+  leader: ['leader', 'battle'],                      // el de los líderes dura menos de un minuto y un combate, hasta tres
+  leaderJohto: ['leaderJohto', 'leader'],
+  wild: ['wild', 'wildJohto'],                       // 46 s + 1:00
+  wildJohto: ['wildJohto', 'wild'],
+  tower: ['tower', 'towerBoss'],
+};
+// Gimnasios con tema propio, según su tipo (el de su arena, 'g-' + tipo): suena primero el del gimnasio y luego
+// enlaza con los de los líderes de su región. Los tipos que no están aquí usan el de los líderes tal cual.
+const GYM_THEMES = {
+  // Kanto
+  roca: 'caverna', agua: 'isla', electrico: 'base', planta: 'espiritus',
+  veneno: 'fabrica', psiquico: 'templo', fuego: 'volcan', tierra: 'complot',
+  // Johto
+  volador: 'cielo', fantasma: 'castillo', acero: 'mina', dragon: 'santuario',
+};
+const GYM_REGION = { volador: 'johto', fantasma: 'johto', acero: 'johto', dragon: 'johto' };
+for (const [type, file] of Object.entries(GYM_THEMES)) {
+  FILES['gym-' + type] = file;
+  CHAIN['gym-' + type] = ['gym-' + type, ...(GYM_REGION[type] === 'johto' ? CHAIN.leaderJohto : CHAIN.leader)];
+}
 
 // ---------- Notas y acordes ----------
 const PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -142,7 +179,13 @@ const TRACKS = {
 const VARIANTS = {
   wild: { track: 'battle', transpose: 2 },
   champion: { track: 'leader', transpose: 1, bpm: 1.05 },
+  // Por si falta la grabación de los temas de HydroGene
+  ranked: { track: 'battle', transpose: -2, bpm: 1.04 },
+  tower: { track: 'leader', transpose: -2 },
+  wildJohto: { track: 'battle', transpose: 4 },
+  leaderJohto: { track: 'leader', transpose: 3 },
 };
+for (const type of Object.keys(GYM_THEMES)) VARIANTS['gym-' + type] = VARIANTS[GYM_REGION[type] === 'johto' ? 'leaderJohto' : 'leader'] || { track: 'leader' };
 
 // Cada tema, compilado una vez: por cada semicorchea, las notas que empiezan en ella
 const compiled = new Map();
@@ -186,9 +229,11 @@ export class Music {
     this.starts = 0;        // veces que se ha empezado un tema (para las pruebas)
     this.bytes = new Map(); // archivo -> promesa con sus bytes (o null si no está)
     this.buffers = new Map();
-    // El del menú se pide ya (suena primero); el resto, cuando la página está tranquila
+    // El del menú se pide ya (suena primero); el resto, cuando la página está tranquila. Los que solo suenan
+    // enlazados se piden al empezar el primero de su cadena (da tiempo de sobra) y los de cada gimnasio, al
+    // entrar en su combate (son muchos y cada jugador oye pocos; si tarda, suena antes el sintetizado)
     this.preload('menu');
-    setTimeout(() => Object.keys(FILES).forEach(n => this.preload(n)), 4000);
+    setTimeout(() => Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-')).forEach(n => this.preload(n)), 4000);
     // Los navegadores no dejan sonar nada hasta que el jugador toca la página
     const unlock = () => { this.start(); };
     addEventListener('pointerdown', unlock, { capture: true });
@@ -286,8 +331,9 @@ export class Music {
   startFile(name, buf) {
     const bus = this.fadeInBus();
     const f = this.file = { name, bus, buf, list: [buf], pass: 0, loop: true, next: this.ctx.currentTime + 0.05, srcs: [] };
-    // Los que se enlazan: se cargan mientras suena el primero y entran en su turno
-    for (const other of (CHAIN[name] || []).slice(1)) this.decode(other).then(b => { if (b && this.file === f) f.list.push(b); });
+    // Los que se enlazan: se cargan mientras suena el primero y entran en su turno (cada uno en su sitio de la
+    // cadena, aunque se carguen desordenados)
+    (CHAIN[name] || []).slice(1).forEach((other, i) => this.decode(other).then(b => { if (b && this.file === f) f.list[i + 1] = b; }));
     this.fileTick();
   }
   // Programa la siguiente pasada de la grabación cuando se acerca su momento
@@ -295,7 +341,8 @@ export class Music {
     const f = this.file;
     if (!f || !this.running) return;
     while (f.next < this.ctx.currentTime + 0.4) {
-      const buf = f.list[f.pass++ % f.list.length];   // (con CHAIN, alterna los temas enlazados)
+      const ready = f.list.filter(Boolean);
+      const buf = ready[f.pass++ % ready.length];   // (con CHAIN, va pasando por los temas enlazados)
       const t = f.next, dur = buf.duration;
       const src = this.ctx.createBufferSource(), g = this.ctx.createGain();
       src.buffer = buf;
@@ -443,16 +490,28 @@ export async function renderTrack(name, seconds = 20, sampleRate = 44100) {
 }
 
 // Fuera de combate suena siempre el mismo tema (portada, menú, mapa, equipo, tienda, resultados…), así que
-// moverse por los menús no corta la música.
+// moverse por los menús no corta la música (y la cadena del menú sigue su curso).
 export function trackForView() {
   return 'menu';
 }
+// Combates: start.mode ('wild', 'trainer', 'ranked', 'casual', 'tower' o 'practice') y start.map (en los
+// salvajes, 'r:' + la ruta; contra líderes, la sala o la arena del nodo, que es única de cada uno)
 export function trackForBattle(start, Data) {
-  if (start.mode === 'wild') return 'wild';
-  const node = Object.values(Data.NODES || {}).find(n => n.kind !== 'route' && n.map === start.map);
+  const nodes = Data.NODES || {};
+  if (start.mode === 'wild') {
+    const route = nodes[String(start.map || '').replace(/^r:/, '')];
+    return route && route.region === 'johto' ? 'wildJohto' : 'wild';
+  }
+  if (start.mode === 'ranked' || start.mode === 'casual') return 'ranked';
+  if (start.mode === 'tower') return 'tower';
+  // Práctica (y lo demás que no es de la Historia): el tema de combate, aunque le toque la arena de un gimnasio
+  if (start.mode !== 'trainer') return 'battle';
+  const node = Object.values(nodes).find(n => n.kind !== 'route' && n.map === start.map);
   // El Alto Mando y el Campeón, con el tema largo del Campeón (6 min: no se repite en un combate)
-  if (node) return node.kind === 'champion' || node.kind === 'elite' ? 'champion' : 'leader';
+  if (node && (node.kind === 'champion' || node.kind === 'elite')) return 'champion';
+  // Los gimnasios, con el tema de su tipo si lo tiene, y si no con el de los líderes de su región
+  if (node) return GYM_THEMES[node.type] ? 'gym-' + node.type : node.region === 'johto' ? 'leaderJohto' : 'leader';
   return 'battle';
 }
 
-export { TRACKS, VARIANTS, DEFAULT_VOLUME, compile };
+export { TRACKS, VARIANTS, FILES, CHAIN, GYM_THEMES, DEFAULT_VOLUME, compile };

@@ -98,7 +98,7 @@
   function parseMap(name) {
     if (!parsed.has(name)) {
       const terrain = new Array(COLS * ROWS).fill(T.NONE);
-      const rocks = [], ghost = [], heal = [], panels = [], pairs = {}, flow = new Map();
+      const rocks = [], ghost = [], heal = [], panels = [], pairs = {}, flow = new Map(), flowers = [];
       rowsOf(name).forEach((row, y) => [...row].forEach((ch, x) => {
         const i = y * COLS + x, cx = x * CELL + CELL / 2, cy = y * CELL + CELL / 2;
         if (CHAR_T[ch] !== undefined) terrain[i] = CHAR_T[ch];
@@ -107,15 +107,30 @@
         else if (ch === 'x') ghost.push({ x: cx, y: cy, r: 20 });
         else if (ch === 'H') heal.push({ i, x: cx, y: cy });
         else if (ch === 'E') panels.push(i);
+        else if (ch === 'F' || ch === 'f') flowers.push({ i, x: cx, y: cy, k: ch === 'F' ? 'heal' : 'sleep' });   // flores: curan (F) o adormecen (f)
         else if (/[ABC]/i.test(ch)) (pairs[ch.toUpperCase()] = pairs[ch.toUpperCase()] || [])[ch === ch.toUpperCase() ? 0 : 1] = { x: cx, y: cy };
       }));
       const pads = Object.values(pairs).filter(p => p[0] && p[1]);
-      parsed.set(name, { terrain, rocks, ghost, heal, panels, pads, flow });
+      parsed.set(name, { terrain, rocks, ghost, heal, panels, pads, flow, flowers });
     }
     const m = parsed.get(name);
     return { ...m, terrain: m.terrain.slice(), rocks: m.rocks.map(r => ({ ...r })) };
   }
   const mechOf = name => (Data.ARENAS && Data.ARENAS[name] && Data.ARENAS[name].mech) || {};
+  // Mecánicas de un combate: las de su arena más un modificador (Práctica), si lo hay
+  const mechFor = (name, mod) => {
+    const m = mechOf(name);
+    return mod && Data.MODIFIERS[mod] ? { ...m, [mod]: Data.MODIFIERS[mod] } : m;
+  };
+  // Sitios fijos de las mecánicas que no van marcadas en el mapa (los mismos en servidor y cliente), en simetría
+  // de espejo para que ningún lado salga ganando
+  const W = ARENA.w, H = ARENA.h;
+  const fogZones = o => [[W * 0.3, H * 0.28], [W * 0.7, H * 0.72], [W * 0.3, H * 0.72], [W * 0.7, H * 0.28]].slice(0, o.n || 4).map(([x, y]) => ({ x, y, r: o.r || 90 }));
+  const pillarSpots = o => [[W * 0.35, H * 0.3, 0], [W * 0.65, H * 0.7, 0], [W * 0.35, H * 0.7, 1], [W * 0.65, H * 0.3, 1], [W * 0.5, H * 0.5, 0], [W * 0.5, H * 0.18, 1], [W * 0.5, H * 0.82, 1]]
+    .slice(0, o.n || 7).map(([x, y, g]) => ({ x, y, g }));
+  // Espejos: segmentos [x1, y1, x2, y2] que hacen rebotar los proyectiles
+  const mirrorSegs = o => o.list || [[W * 0.5 - 60, H * 0.22, W * 0.5 + 60, H * 0.22], [W * 0.5 - 60, H * 0.78, W * 0.5 + 60, H * 0.78],
+    [W * 0.3, H * 0.4, W * 0.3, H * 0.6], [W * 0.7, H * 0.4, W * 0.7, H * 0.6]];
 
   // Empuja un círculo fuera de los obstáculos (también circulares).
   function pushOut(p, r, obstacles) {
@@ -156,12 +171,19 @@
       p.vy = (p.vy || 0) + (vy - (p.vy || 0)) * k;
       vx = p.vx; vy = p.vy;
     } else { p.vx = vx; p.vy = vy; }
-    const mech = env.map ? mechOf(env.map) : {};
+    const mech = env.mech || (env.map ? mechOf(env.map) : {});
     if (mech.flow && cell === T.WATER) {
       const f = parseMap.flowOf(env.map).get(i);
       if (f) { vx += f[0] * mech.flow; vy += f[1] * mech.flow; }
     }
     if (env.wind) { vx += env.wind[0]; vy += env.wind[1]; }
+    // Cintas transportadoras: franjas de filas [y0, y1] (casillas) que arrastran hacia dir (+1 derecha, -1 izquierda)
+    if (mech.belts) for (const [y0, y1, dir] of mech.belts.rows) {
+      const cy = Math.floor(p.y / CELL), cx = Math.floor(p.x / CELL);
+      if (cy >= y0 && cy <= y1 && cx >= 2 && cx < COLS - 2) vx += dir * mech.belts.speed;
+    }
+    // Gravedad: mientras late el pozo del centro, atrae (env.pull = fuerza)
+    if (env.pull) { const dx = W / 2 - p.x, dy = H / 2 - p.y, d = Math.hypot(dx, dy) || 1; vx += dx / d * env.pull; vy += dy / d * env.pull; }
     p.x += vx * dt;
     p.y += vy * dt;
     pushOut(p, r, obstacles || []);
@@ -197,7 +219,7 @@
 
   parseMap.flowOf = name => { parseMap(name); return parsed.get(name).flow; };
   const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
-    parseMap, rowsOf, hashStr, mechOf, pushOut, stepMove, arenaStep, speedOf, monStats };
+    parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, pushOut, stepMove, arenaStep, speedOf, monStats };
   if (node) module.exports = api;
   else root.Shared = api;
 })(this);

@@ -89,7 +89,7 @@ export const friendViews = {
     }
     const sec = el('section', 'panel fr-sec');
     sec.append(el('h3', '', `${t('Tus amigos')} <small>${m.friends.filter(f => f.doing).length} ${t('en línea')} · ${m.friends.length}</small>`));
-    if (!m.friends.length) sec.append(el('p', 'small', t('Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.')));
+    if (!m.friends.length) sec.append(el('p', 'small', t('Todavía no tienes amigos. Búscalos por su nombre aquí arriba, o añádelos desde su ficha en los rankings.')));
     for (const f of m.friends) sec.append(person(f, [[t('Ver perfil'), '', () => this.userModal(f.id)],
       [t('Quitar'), 'danger', () => confirmBox({ title: t('¿Quitar amigo?'), text: t('¿Quitar a {name} de tus amigos?', { name: f.name }), ok: t('Quitar'), cancel: t('Cancelar'), danger: true }).then(y => { if (y) act('remove', f.id); })]]));
     box.append(sec);
@@ -110,8 +110,11 @@ export const friendViews = {
     for (const f of m.rows) {
       const r = el('div', 'fr-card hit' + (f.doing ? ' on' : ''));
       const ava = el('span', 'fr-ava');
-      if (f.dex) ava.append(monIcon(f.dex, 36, { shiny: f.shiny })); else ava.innerHTML = itemImg('pokeball', 24);
-      r.append(ava, el('div', 'fr-info', `<b>${tagName(f.name, f.tag)}</b><small><i class="dot${f.doing ? ' on' : ''}"></i> ${f.doing ? t('En línea') : t('Desconectado')}${f.ranked ? ` · ${f.elo} ELO` : ''}</small>`));
+      if (f.dex) ava.append(monIcon(f.dex, 44, { shiny: f.shiny })); else ava.innerHTML = itemImg('pokeball', 28);
+      // Nombre (y título), si está en línea, y una fila de datos: liga y ELO, medallas, Pokédex y victorias
+      r.append(ava, el('div', 'fr-info', `<b>${tagName(f.name, f.tag)}</b>${f.title ? `<span class="title-chip">${escapeHtml(t(f.title))}</span>` : ''}
+        <small><i class="dot${f.doing ? ' on' : ''}"></i> ${f.doing ? t('En línea') : t('Desconectado')}</small>
+        <span class="fr-stats"><em>${t(Data.leagueOf(f.elo))} · ${f.elo}</em><em>${t('Medallas')} ${f.badges ?? 0}</em><em>Pokédex ${f.caught ?? 0}</em>${f.wins ? `<em>${t('{n} victorias', { n: f.wins })}</em>` : ''}</span>`));
       const acts = el('div', 'fr-acts');
       const see = el('button', '', t('Ver perfil'));
       see.onclick = () => this.userModal(f.id);

@@ -1,14 +1,14 @@
 // Torre Batalla (elegir equipo, progreso de la racha, siguiente rival en silueta) y Ladder
 // (tablas de clasificatoria, Torre y Pokédex con buscador, y ficha pública de cada entrenador).
 // Se añaden como métodos de UI (ver ui.js).
-import { portrait, monIcon, animatedPortrait, typeTint } from './sprites.js';
+import { portrait, monIcon, animatedPortrait, typeTint, trainerImg } from './sprites.js';
 import { escapeHtml, monLabel, tagName } from './battle.js';
 import { el, typeChips, coins, lv, ICON } from './ui.js';
 import { showcaseHtml } from './achievements.js';
 import { t, tServer, locale } from './i18n.js';
 import { prizeHtml } from './missions.js';
 import { confirmBox } from './dialog.js';
-import { icon } from './pixicons.js';
+import { icon, badgeImg } from './pixicons.js';
 
 const { SPECIES, RANKED_POOL, REGIONS, LEAGUES } = Data;
 const { level: LEVEL, block: BLOCK, brainEvery: BRAIN_EVERY } = Data.TOWER;
@@ -289,9 +289,11 @@ export const towerViews = {
     if (!box) return;
     box.innerHTML = `<h3>${t('Ranking de la Torre')}</h3>`;
     if (!msg.rows.length) return box.append(el('p', 'small', t('Todavía nadie ha ganado un combate en la Torre. ¡Sé el primero!')));
+    box.append(this.podium(msg.rows, r => [r.best, `${t('Mejor racha')}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}`]));
     const ol = el('ol');
-    for (const r of msg.rows.slice(0, 10)) {
-      const li = el('li', 'clickable' + (r.id === this.profile.id ? ' me' : ''), `<b>${tagName(r.name, r.tag)}</b><span>${r.best}</span><small>${r.streak ? t('en racha: {n}', { n: r.streak }) : ''}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}</small>`);
+    ol.start = 4;
+    for (const r of msg.rows.slice(3, 10)) {
+      const li = el('li', 'clickable' + (r.id === this.profile.id ? ' me' : ''), `<b>${this.rowFace(r, 26)}${tagName(r.name, r.tag)}</b><span>${r.best}</span><small>${r.streak ? t('en racha: {n}', { n: r.streak }) : ''}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}</small>`);
       li.onclick = () => this.userModal(r.id);
       ol.append(li);
     }
@@ -310,14 +312,21 @@ export const towerViews = {
       dex: [['Especies', r => `<b>${r.caught}</b>`], ['Shiny', r => r.shinies || '—'], ['Medallas', r => r.badges]],
     }[msg.board];
     const head = `<tr><th>#</th><th>${t('Entrenador')}</th>${cols.map(c => `<th>${t(c[0])}</th>`).join('')}</tr>`;
-    const row = r => `<tr data-id="${r.id}" class="${r.id === me ? 'me' : ''}"><td class="rank r${r.rank}">${r.rank}</td><td class="who"><i class="dot${r.online ? ' on' : ''}" title="${r.online ? t('En línea') : t('Desconectado')}"></i>${tagName(r.name, r.tag, r.npc)}${r.id === me ? ` <span class="you">${t('tú')}</span>` : ''}</td>${cols.map(c => `<td>${c[1](r)}</td>`).join('')}</tr>`;
+    const row = r => `<tr data-id="${r.id}" class="${r.id === me ? 'me' : ''}"><td class="rank r${r.rank}">${r.rank}</td><td class="who"><i class="dot${r.online ? ' on' : ''}" title="${r.online ? t('En línea') : t('Desconectado')}"></i>${this.rowFace(r)}${tagName(r.name, r.tag, r.npc)}${r.id === me ? ` <span class="you">${t('tú')}</span>` : ''}</td>${cols.map(c => `<td>${c[1](r)}</td>`).join('')}</tr>`;
     const info = el('div', 'ladder-info');
     info.innerHTML = `<span>${msg.total === 1 ? t('1 entrenador') : t('{n} entrenadores', { n: msg.total })}${msg.q ? ` · ${t('{n} con «{q}»', { n: msg.found, q: escapeHtml(msg.q) })}` : ''}</span>` + (msg.me ? `<span class="pill">${t('Tu puesto: <b>#{n}</b>', { n: msg.me.rank })}</span>` : `<span class="small">${this.profile.account ? t('Aún no apareces en esta tabla') : t('Los invitados no salen en los rankings: crea una cuenta en tu perfil y conservas tu partida.')}</span>`);
     box.append(info);
     if (!msg.rows.length) box.append(el('p', 'small', msg.q ? t('Nadie con ese nombre.') : t('Esta tabla todavía está vacía.')));
     else {
+      // En la primera página (sin buscar), los 3 primeros en el podio y la tabla desde el 4.º
+      const top = msg.page === 0 && !msg.q;
+      if (top) box.append(this.podium(msg.rows, {
+        ranked: r => [r.elo, `${t(leagueOf(r.elo))} · ${t('{w}V {l}D', { w: r.wins, l: r.losses })}`],
+        tower: r => [r.best, t('Mejor racha')],
+        dex: r => [r.caught, `${r.shinies ? `✦${r.shinies} · ` : ''}${t('{n} medallas', { n: r.badges })}`],
+      }[msg.board]));
       const table = el('table', 'ladder-rows');
-      table.innerHTML = `<thead>${head}</thead><tbody>${msg.rows.map(row).join('')}${msg.me && !msg.rows.some(r => r.id === me) && !msg.q ? `<tr class="gap"><td colspan="${cols.length + 2}">…</td></tr>${row(msg.me)}` : ''}</tbody>`;
+      table.innerHTML = `<thead>${head}</thead><tbody>${(top ? msg.rows.slice(3) : msg.rows).map(row).join('')}${msg.me && !msg.rows.some(r => r.id === me) && !msg.q ? `<tr class="gap"><td colspan="${cols.length + 2}">…</td></tr>${row(msg.me)}` : ''}</tbody>`;
       table.querySelectorAll('tr[data-id]').forEach(tr => { tr.onclick = () => this.userModal(tr.dataset.id); });
       table.querySelectorAll('.tdex').forEach(s => s.append(monIcon(+s.dataset.dex, 40, { shiny: !!s.dataset.shiny })));
       const scroll = el('div', 'scroll');
@@ -349,22 +358,40 @@ export const towerViews = {
     const back = el('div', 'modal user-modal');
     const box = el('div', 'panel modal-box user-card');
     const head = el('div', 'ficha-head');
-    if (u.team[0]) head.append(animatedPortrait(u.team[0].dex, 110, 'Idle', !!u.team[0].shiny));
+    // Su avatar con su marco, brillo y efecto (como lo ve él); los de la IA, su Pokémon
+    // (los de la IA, el sprite de su clase de entrenador: Joven, Pescador, Montañero…)
+    head.append(u.npc ? el('div', 'npc-face', trainerImg(u.npcKey)) : this.avatar(104, true, undefined, undefined, undefined, u));
     const since = u.created ? new Date(u.created).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' }) : null;
     head.append(el('div', '', `<h3>${tagName(u.name, u.tag, u.npc)}${u.id === this.profile.id ? ` <span class="you">${t('tú')}</span>` : ''}</h3>
       <p class="small">${u.npc ? t('Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos') : `<i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}`}</p>
-      <span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>${showcaseHtml(u.showcase, 40)}`));
+      ${u.title ? `<span class="title-chip">${escapeHtml(t(u.title))}</span> ` : ''}<span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>${u.peakElo > u.elo ? ` <span class="small">${t('máx. {n}', { n: u.peakElo })}</span>` : ''}${showcaseHtml(u.showcase, 40)}`));
     box.append(head);
+    // Sus medallas, región a región (en color las conseguidas)
+    if (!u.npc) {
+      const badges = el('div', 'user-badges');
+      for (const r of Data.REGION_IDS) {
+        const got = Math.min(8, Data.progOf(u, r)), champ = Data.progOf(u, r) >= Data.leadersOf(r).length;
+        const row = el('div', 'ub-row', `<b>${REGIONS[r].name}${champ ? ' <i class="crown">♛</i>' : ''}</b>`);
+        for (let i = 0; i < 8; i++) row.insertAdjacentHTML('beforeend', badgeImg(r, i, i < got, 26, 'ub-badge' + (i < got ? ' got' : '')));
+        badges.append(row);
+      }
+      box.append(badges);
+    }
     const rank = r => r ? `#${r}` : '—';
-    const regs = Data.REGION_IDS.map(r => `${REGIONS[r].name} ${Data.progOf(u, r) >= Data.leadersOf(r).length ? '♛' : Math.min(8, Data.progOf(u, r)) + '/8'}`).join(' · ');
-    box.append(el('div', 'rows user-stats', `
-      <div class="stat"><small>${t('Clasificatoria')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}</b></div>
+    const games = u.wins + u.losses, wr = games ? Math.round(u.wins / games * 100) : null;
+    // De la IA solo cuenta la Clasificatoria (no juegan la Torre ni la Historia)
+    if (u.npc) box.append(el('div', 'rows user-stats', `
+      <div class="stat"><small>${t('Clasificatoria')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
+      <div class="stat"><small>ELO</small><b>${u.elo}${u.peakElo > u.elo ? ` <small class="small">${t('máx. {n}', { n: u.peakElo })}</small>` : ''}</b></div>`));
+    else box.append(el('div', 'rows user-stats', `
+      <div class="stat"><small>${t('Clasificatoria')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
       <div class="stat"><small>${t('Torre: mejor racha')} ${rank(u.ranks.tower)}</small><b>${u.tower.best}${u.tower.streak ? ` <small class="small">(${t('en racha: {n}', { n: u.tower.streak })})</small>` : ''}</b></div>
       <div class="stat"><small>Pokédex ${rank(u.ranks.dex)}</small><b>${u.caught}${u.shinies ? ` <i class="shiny-star">✦${u.shinies}</i>` : ''}</b></div>
-      <div class="stat"><small>${t('Medallas')}</small><b>${u.badges}</b></div>`));
-    box.append(el('p', 'small', regs));
+      <div class="stat"><small>${t('Medallas')}</small><b>${u.badges}</b></div>
+      <div class="stat"><small>${t('Logros')}</small><b>${u.achievements || 0}</b></div><div class="stat"><small>${t('Pokémon')}</small><b>${u.mons || 0}</b></div>`));
+
     if (u.team.length) {
-      box.append(el('h4', '', t('Sus Pokémon de equipo')));
+      box.append(el('h4', '', u.npc ? t('Su equipo de Clasificatoria') : t('Sus Pokémon de equipo')));
       const row = el('div', 'mini-team');
       for (const m of u.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: m.shiny })); c.append(el('small', '', `${monLabel(m)}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); row.append(c); }
       box.append(row);

@@ -30,10 +30,12 @@ const IDLE_MS = 30 * 60e3, MAX_MS = 12 * 3600e3;
 const BAN_HOURS = [1, 24, 24 * 7, 24 * 30, 0];   // 0 = para siempre
 const sanitize = (s, n) => String(s || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n);
 
-// Lo que el panel enseña de un perfil: todo menos el token y el hash de la contraseña
+// Lo que el panel enseña de un perfil: todo menos el token y el hash de la contraseña. De las cuentas que
+// entran con Google o con el correo no se enseña el correo: solo cómo entran
+const userOf = a => a.user || `(${a.google ? 'Google' : 'correo'}, sin usuario)`;
 function adminView(p, online) {
   const { token, account, ...rest } = p;
-  return { ...rest, account: account ? { user: account.user, since: account.since } : null, banned: store.banned(p), online };
+  return { ...rest, account: account ? { user: userOf(account), since: account.since } : null, banned: store.banned(p), online };
 }
 
 // ctx: lo que el panel necesita del servidor (index.js)
@@ -181,6 +183,7 @@ function createAdmin(ctx) {
     },
     async resetpass(c, msg, p) {
       if (!p.account) return 'Es un invitado: no tiene contraseña';
+      if (!p.account.user) return 'Entra con Google o con su correo: no tiene contraseña';
       // Se enseña una vez al admin para que se la pase al jugador; no se guarda en ningún sitio
       const temp = crypto.randomBytes(9).toString('base64url');
       await store.setPassword(p, temp);
@@ -212,7 +215,7 @@ function createAdmin(ctx) {
       // Jugadores: con texto busca; sin texto, la lista entera (cuentas primero, por última conexión)
       case 'admin.search': {
         const rows = store.search(msg.q, msg.q ? 50 : 5000, String(msg.kind || ''));
-        return reply({ total: store.stats(), rows: rows.map(p => ({ id: p.id, name: p.name, user: p.account ? p.account.user : null,
+        return reply({ total: store.stats(), rows: rows.map(p => ({ id: p.id, name: p.name, user: p.account ? userOf(p.account) : null,
           created: p.created, seen: p.seen || null, elo: p.elo, ranked: p.ranked, banned: store.banned(p), online: conns(p.id).length > 0 })) });
       }
       case 'admin.player': return reply({ player: player(String(msg.id)) });
@@ -271,14 +274,16 @@ function unlockAll(p) {
   story.migrate(p);
   rewards.migrate(p);
   tower.state(p);
-  const all = Object.keys(D.SPECIES).map(Number).sort((a, b) => a - b);
+  const all = Object.keys(D.SPECIES).map(Number).filter(D.inDex).sort((a, b) => a - b);
   p.caught = [...new Set([...p.caught, ...all])];
   p.shinies = [...new Set([...(p.shinies || []), ...all])];
   let added = 0;
   for (const r of D.REGION_IDS) {
     p.prog[r] = D.leadersOf(r).length;
     if (!p.starters[r] && D.REGION_STARTERS[r]) p.starters[r] = D.REGION_STARTERS[r][0];
-    for (const dex of all.filter(d => D.SPECIES[d].leg)) {
+    // Uno de cada especie de la generación de esta región (Kanto la 1, Johto la 2…), legendarios incluidos
+    const gen = D.REGION_IDS.indexOf(r) + 1;
+    for (const dex of all.filter(d => D.SPECIES[d].gen === gen)) {
       if (p.mons.some(m => m.region === r && m.dex === dex && m.met === 'admin')) continue;
       const sp = D.SPECIES[dex], physical = !sp.base || sp.base[1] >= sp.base[3];
       const mon = story.devAddMon(p, dex, 100, true, r);
@@ -335,6 +340,8 @@ function unlockAll(p) {
 function grant(user, note = '') {
   const p = store.byUser(user);
   if (!p) throw new Error(`No hay ninguna cuenta registrada con el usuario «${user}»`);
+  // El panel pide usuario, contraseña y código: una cuenta que entra con Google o con el correo no puede
+  if (!p.account.user) throw new Error(`«${user}» entra con Google o con su correo: para ser admin necesita usuario y contraseña`);
   const secret = totp.newSecret();
   db.prepare(`INSERT INTO admins (id, secret, last_counter, created, note) VALUES (?, ?, 0, ?, ?)
     ON CONFLICT (id) DO UPDATE SET secret = excluded.secret, last_counter = 0, note = excluded.note`).run(p.id, secret, Date.now(), note);
@@ -349,6 +356,6 @@ function revoke(user) {
   return p;
 }
 const list = () => db.prepare('SELECT id, created, note FROM admins ORDER BY created').all()
-  .map(r => { const p = store.byId(r.id); return { ...r, name: p ? p.name : '?', user: p && p.account ? p.account.user : '?' }; });
+  .map(r => { const p = store.byId(r.id); return { ...r, name: p ? p.name : '?', user: p && p.account ? userOf(p.account) : '?' }; });
 
 module.exports = { createAdmin, grant, revoke, list, adminRow, unlockAll, BAN_HOURS };

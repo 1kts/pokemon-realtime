@@ -65,7 +65,7 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
     ok(/contact@pokearenas\.com/.test(lp.body) && lp.body.includes(`lang="${lang}"`) && /CC BY-NC 4\.0/.test(lp.body) && /<tr><td>CHUNSOFT<\/td>/.test(lp.body)
       && /default-src 'self'/.test(lp.h['content-security-policy'] || ''), `${url}: aviso legal, privacidad y artistas, con CSP`);
   }
-  ok(!/(src|href)="https?:\/\/(?!creativecommons|github|polyform|pokeapi|threejs|ko-fi|www\.aepd|[a-z0-9-]+\.itch\.io|opengameart\.org)/.test((await get('/legal')).body + (await get('/')).body),
+  ok(!/(src|href)="https?:\/\/(?!creativecommons|github|polyform|pokeapi|threejs|ko-fi|www\.aepd|policies\.google\.com|[a-z0-9-]+\.itch\.io|opengameart\.org)/.test((await get('/legal')).body + (await get('/')).body),
     'ni el juego ni la página legal cargan nada de terceros (solo enlaces)');
 
   // ---------- Inundar de mensajes ----------

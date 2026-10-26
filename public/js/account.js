@@ -2,7 +2,7 @@
 // (estadísticas, historial, títulos, marcos, avatar, contraseña), recompensas de clasificatoria,
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
 import { confirmBox } from './dialog.js';
-import { portrait, animatedPortrait, monIcon, face } from './sprites.js';
+import { portrait, animatedPortrait, monIcon, face, trainerImg } from './sprites.js';
 import { escapeHtml, tagName } from './battle.js';
 import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
@@ -21,8 +21,26 @@ const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_P
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
-// Cómo se enseña el usuario de la cuenta: @nombre, o el correo tal cual
+// Cómo se enseña el usuario de la cuenta: @nombre, o el correo tal cual (las cuentas que entran con
+// Google o con el correo no tienen usuario: su correo, que solo ve su dueño)
 const handle = u => (u.includes('@') ? u : '@' + u);
+const accountName = a => (a.user ? handle(a.user) : a.email || '');
+// Formas de entrar que tiene el servidor ({ google: id de cliente, googleTest, mail }): se piden una vez
+let authCfg = null;
+const authConfig = () => authCfg || (authCfg = fetch('/auth/config').then(r => r.json()).catch(() => { authCfg = null; return {}; }));
+// El script de Google solo se carga al pulsar «Continuar con Google»: hasta entonces el navegador no se
+// conecta a Google (ni a nadie más)
+let gsiLoad = null, gsiReady = false;
+const gsi = () => gsiLoad || (gsiLoad = new Promise((ok, ko) => {
+  const s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.async = true;
+  s.onload = () => (window.google && window.google.accounts ? ok(window.google) : ko());
+  s.onerror = () => { gsiLoad = null; s.remove(); ko(); };
+  document.head.append(s);
+}));
+const G_SVG = '<svg class="g-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 7l7.4 5.7c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.6 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
+const MAIL_SVG = '<svg class="m-logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6.2L20 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 const GEAR_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm5.6 3.6.9.7-1.3 2.3-1.1-.4a5 5 0 0 1-1.4.8l-.2 1.2H7.9l-.2-1.2a5 5 0 0 1-1.4-.8l-1.1.4-1.3-2.3.9-.7a5 5 0 0 1 0-1.6l-.9-.7 1.3-2.3 1.1.4a5 5 0 0 1 1.4-.8l.2-1.2h2.6l.2 1.2a5 5 0 0 1 1.4.8l1.1-.4 1.3 2.3-.9.7a5 5 0 0 1 0 1.6Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
 const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.5a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2v-9Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 11.5a2 2 0 0 1 2-2h7.5M6 5h4M6 7h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
 const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
@@ -110,7 +128,8 @@ export const accountViews = {
         form.append(fu, fp);
         let pass2;
         if (reg) { const [f2, p2] = field('Repite la contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' }); pass2 = p2; form.append(f2); }
-        const go = el('button', 'primary', reg ? t('Crear cuenta y jugar') : t('Entrar'));
+        // (con la misma forma que «Continuar con Google» y «Entrar con email», en el amarillo del juego)
+        const go = el('button', 'primary alt-btn go', reg ? t('Crear cuenta y jugar') : t('Entrar'));
         submit = () => {
           if (reg && pass.value !== pass2.value) return this.authError(t('Las contraseñas no coinciden'));
           this.authError('');
@@ -124,7 +143,7 @@ export const accountViews = {
         else if (Net.hasSession()) form.append(el('p', 'warn', t('Si entras con otra cuenta, este navegador dejará de recordar tu partida de invitado. Regístrala antes desde tu perfil.')));
         setTimeout(() => user.focus(), 50);
       }
-      form.append(this.authMsg);
+      form.append(this.authMsg, this.altLogin());
       form.querySelectorAll('input').forEach(i => { i.onkeydown = e => { if (e.key === 'Enter') submit(); }; });
     };
     render();
@@ -137,6 +156,154 @@ export const accountViews = {
   authError(msg) {
     if (this.authMsg) { this.authMsg.textContent = msg; this.authMsg.className = 'auth-msg' + (msg ? ' bad' : ''); }
     if (this.authBtn) this.authBtn.disabled = false;
+  },
+
+  // ---------- Entrar con Google o con el correo ----------
+  // Botones «Continuar con Google» y «Entrar con email» (solo los que tenga configurados el servidor). Sirven
+  // para entrar en una cuenta o crearla: un invitado que lo hace se lleva su partida a la cuenta nueva.
+  altLogin() {
+    const box = el('div', 'alt-login');
+    authConfig().then(cfg => {
+      if (!cfg.google && !cfg.mail) return box.remove();
+      box.append(el('div', 'alt-or', `<span>${t('o también')}</span>`));
+      const row = el('div', 'alt-btns');
+      if (cfg.google) {
+        const g = el('button', 'alt-btn google', `${G_SVG}<span>${t('Continuar con Google')}</span>`);
+        g.onclick = () => this.googleLogin(cfg);
+        row.append(g);
+      }
+      if (cfg.mail) {
+        const m = el('button', 'alt-btn mail', `${MAIL_SVG}<span>${t('Entrar con email')}</span>`);
+        m.onclick = () => this.mailLogin();
+        row.append(m);
+      }
+      box.append(row);
+    });
+    return box;
+  },
+
+  // Ventana para entrar: cada paso (correo, código, nombre) sustituye al anterior debajo del título.
+  // Mientras está abierta, los errores del servidor salen en ella
+  loginModal(cls, title, build) {
+    this.closeLogin();
+    const prevMsg = this.authMsg;
+    this.loginClose = modal('login-modal ' + cls, box => {
+      box.append(el('h3', '', title));
+      this.loginBox = box;
+      build(box);
+    }, () => { this.loginClose = this.loginBox = this.onMailSent = null; this.authMsg = prevMsg; this.authBtn = null; });
+  },
+  closeLogin() { if (this.loginClose) this.loginClose(); },
+  // Vacía la ventana (menos el título) para el paso siguiente y prepara su línea de errores
+  loginStep(box) {
+    while (box.children.length > 1) box.lastChild.remove();
+    this.authMsg = el('p', 'auth-msg');
+    return this.authMsg;
+  },
+  // Desde la portada va también el token de este navegador: si el correo aún no tiene cuenta, su
+  // partida de invitado pasa a ser la cuenta (como al registrarse desde el perfil)
+  identitySend(msg) {
+    if (!this.profile && Net.token() && msg.t !== 'mailcode') msg.token = Net.token();
+    this.net.auth(msg);
+  },
+
+  mailLogin() {
+    this.loginModal('mail', t('Entrar con email'), box => {
+      const askEmail = (value = '') => {
+        const msg = this.loginStep(box);
+        const [f, input] = field('Tu correo', 'email', { maxLength: 254, autocomplete: 'email', spellcheck: false, autocapitalize: 'off', value });
+        const go = el('button', 'primary', t('Mandarme un código'));
+        const submit = () => {
+          const email = input.value.trim();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return this.authError(t('Escribe un correo válido'));
+          this.authError('');
+          go.disabled = true;
+          this.authBtn = go;
+          this.onMailSent = () => askCode(email);
+          this.identitySend({ t: 'mailcode', email, lang: getLang() });
+        };
+        go.onclick = submit;
+        input.onkeydown = e => { if (e.key === 'Enter') submit(); };
+        box.append(el('p', 'small', t('Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.')), f, go, msg);
+        setTimeout(() => input.focus(), 50);
+      };
+      const askCode = email => {
+        const msg = this.loginStep(box);
+        const [f, code] = field('Código', 'text', { maxLength: 6, inputMode: 'numeric', autocomplete: 'one-time-code', spellcheck: false });
+        code.classList.add('code-input');
+        const go = el('button', 'primary', t('Entrar'));
+        const submit = () => {
+          const v = code.value.replace(/\D/g, '');
+          if (v.length !== 6) return this.authError(t('El código tiene 6 cifras'));
+          this.authError('');
+          go.disabled = true;
+          this.authBtn = go;
+          this.identitySend({ t: 'mailverify', email, code: v });
+        };
+        go.onclick = submit;
+        // Al escribir (o pegar) la sexta cifra se manda solo
+        code.oninput = () => { const v = code.value.replace(/\D/g, '').slice(0, 6); if (v !== code.value) code.value = v; if (v.length === 6 && !go.disabled) submit(); };
+        code.onkeydown = e => { if (e.key === 'Enter') submit(); };
+        const other = el('button', 'link', t('Usar otro correo'));
+        other.onclick = () => askEmail(email);
+        const again = el('button', 'link', t('Reenviar el código'));
+        again.onclick = () => { this.authError(''); this.onMailSent = () => this.toast(t('Código reenviado')); this.identitySend({ t: 'mailcode', email, lang: getLang() }); };
+        const links = el('div', 'alt-links');
+        links.append(other, again);
+        box.append(el('p', '', t('Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.', { email: escapeHtml(email) })), f, go, msg, links);
+        setTimeout(() => code.focus(), 50);
+      };
+      askEmail();
+    });
+  },
+
+  // Google: en la ventana se carga su botón oficial (abre la elección de cuenta de Google) y su respuesta,
+  // un token firmado, la comprueba el servidor
+  googleLogin(cfg) {
+    this.loginModal('google', t('Continuar con Google'), box => {
+      const msg = this.loginStep(box);
+      const slot = el('div', 'gsi-slot');
+      box.append(el('p', 'small', t('Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.')), slot, msg);
+      if (cfg.googleTest) return slot.append(el('small', '', 'Google (pruebas)'));   // en las pruebas no se carga nada de Google
+      slot.append(el('small', '', t('Cargando…')));
+      gsi().then(g => {
+        if (!slot.isConnected) return;
+        if (!gsiReady) { g.accounts.id.initialize({ client_id: cfg.google, callback: r => this.googleCredential(r.credential), ux_mode: 'popup' }); gsiReady = true; }
+        slot.innerHTML = '';
+        g.accounts.id.renderButton(slot, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left', width: Math.min(320, slot.clientWidth || 280), locale: getLang() });
+      }).catch(() => { slot.innerHTML = ''; this.authError(t('No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.')); });
+    });
+  },
+  googleCredential(credential) {
+    if (this.authMsg) { this.authMsg.textContent = t('Conectando…'); this.authMsg.className = 'auth-msg'; }
+    this.identitySend({ t: 'google', credential });
+  },
+
+  // El servidor ha comprobado el correo y no hay cuenta ni partida de invitado: falta el nombre de entrenador
+  onAuthName() {
+    const show = box => {
+      const msg = this.loginStep(box);
+      const [f, name] = field('Nombre de entrenador', 'text', { maxLength: 16, value: Net.savedName(), autocomplete: 'nickname' });
+      const go = el('button', 'primary', t('Crear cuenta y jugar'));
+      const submit = () => {
+        if (!name.value.trim()) return this.authError(t('Escribe tu nombre de entrenador'));
+        this.authError('');
+        go.disabled = true;
+        this.authBtn = go;
+        this.net.send({ t: 'authname', name: name.value.trim() });
+      };
+      go.onclick = submit;
+      name.onkeydown = e => { if (e.key === 'Enter') submit(); };
+      box.append(el('p', '', t('¡Bienvenido a PokéArenas! Elige tu nombre de entrenador: es el que verán los demás.')), f, go, msg);
+      setTimeout(() => name.focus(), 50);
+    };
+    if (this.loginBox) show(this.loginBox); else this.loginModal('name', t('Cuenta nueva'), show);
+  },
+  onMailSentMsg() {
+    if (this.authBtn) this.authBtn.disabled = false;
+    const f = this.onMailSent;
+    this.onMailSent = null;
+    if (f) f();
   },
 
   // Botón de apoyo con corazón para la barra superior (mismo enlace a Ko-fi)
@@ -247,11 +414,11 @@ export const accountViews = {
         <p>${t('PokéArenas es un <b>proyecto de fans sin ánimo de lucro</b>. No está afiliado, patrocinado ni aprobado por Nintendo, Game Freak, Creatures Inc. ni The Pokémon Company. Pokémon y sus nombres son marcas de sus respectivos propietarios.')}</p>
         <p>${t('Los sprites proceden de la comunidad de <i>Pokémon Mundo Misterioso</i> (PMD Sprite Collab) y se usan con atribución a sus artistas. Los datos de especies vienen de PokéAPI. Los mapas de región son dibujos propios.')}</p>
         <p>${t('Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).')}</p>
-        <p>${t('La música de los menús y los combates es de jannetty, rckbtm, Navet56 (OPMon Lazuli) y Spring Spring, con su permiso o con licencia CC BY.')}</p>
+        <p>${t('La música de los menús y los combates es de jannetty, rckbtm, Spring Spring y HydroGene, con su permiso o con licencia CC BY o CC0.')}</p>
         <p>${t('Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.', { url: getLang() === 'es' ? '/legal' : '/legal/en' })}</p>
         <p>${t('El juego es gratis y lo seguirá siendo. Si quieres ayudar a pagar el servidor, puedes invitarme a un café en <a href="{url}" target="_blank" rel="noopener noreferrer">Ko-fi</a>. Donar no da ninguna ventaja en el juego.', { url: KOFI_URL })}</p>
         <h4>${t('Datos que guardamos')}</h4>
-        <p class="small">${t('Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.')}</p>`));
+        <p class="small">${t('Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal), o tu correo si entras con Google o con un código por correo; y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.')}</p>`));
       const acts = el('div', 'acts');
       const ok = el('button', 'primary', t('Cerrar'));
       ok.onclick = close;
@@ -308,9 +475,11 @@ export const accountViews = {
 
   // ---------- Avatar con marco ----------
   // { dex, shiny }: el elegido, o si no el primero del equipo tal como se ve
-  avatarDex() {
-    const p = this.profile;
+  // (who: la ficha pública de otro entrenador; sin su equipo completo, el primero de su equipo que se ve)
+  avatarDex(who) {
+    const p = who || this.profile;
     if (p.avatar && SPECIES[p.avatar]) return { dex: p.avatar, shiny: !!p.avatarShiny };
+    if (who) return who.team && who.team[0] ? { dex: who.team[0].dex, shiny: !!who.team[0].shiny } : { dex: 25, shiny: false };
     const leadUid = p.teams && (p.teams[this.region || 'kanto'] || [])[0];
     const lead = p.mons.find(m => m.uid === leadUid) || p.mons[0];
     return lead ? { dex: lead.dex, shiny: Data.looksShiny(lead) } : { dex: 25, shiny: false };
@@ -318,11 +487,12 @@ export const accountViews = {
 
   // frame / aura: para previsualizar otro marco o brillo (undefined = el del perfil)
   // Avatar: la imagen (Pokémon, retrato, medalla…), su efecto por encima, el marco alrededor y el brillo
-  avatar(size, animated, frame, aura, effect) {
-    const p = this.profile;
+  // who: el de otro entrenador (su ficha pública trae avatar, marco, brillo y efecto)
+  avatar(size, animated, frame, aura, effect, who) {
+    const p = who || this.profile;
     const f = frame === undefined ? p.frame || null : frame;
     const au = aura === undefined ? p.aura || null : aura;
-    const fx = effect === undefined ? ((p.cosmetics && p.cosmetics.effects || []).includes(p.effect) ? p.effect : null) : effect;
+    const fx = effect === undefined ? (who ? who.effect : (p.cosmetics && p.cosmetics.effects || []).includes(p.effect) ? p.effect : null) : effect;
     const a = el('div', 'ava frame-' + (f || 'none'));
     a.style.setProperty('--s', size + 'px');
     if (frameRing(f)) a.style.setProperty('--ring', frameRing(f));
@@ -334,7 +504,7 @@ export const accountViews = {
       a.insertAdjacentHTML('beforeend', frameFx(f));
       return a;
     }
-    const { dex, shiny } = this.avatarDex();
+    const { dex, shiny } = this.avatarDex(who);
     const pic = el('span', 'ava-pic');
     const sprite = () => animated ? animatedPortrait(dex, size, 'Idle', shiny) : portrait(dex, size, { shiny });
     if (p.avatar && p.avatarArt) {
@@ -344,7 +514,7 @@ export const accountViews = {
       pic.append(img);
     } else {
       pic.append(sprite());
-      applySkin(pic, Data.skinOf(p, dex), dex, Data.particlesOf(p, dex));
+      if (!who) applySkin(pic, Data.skinOf(p, dex), dex, Data.particlesOf(p, dex));
     }
     pic.insertAdjacentHTML('beforeend', effectHtml(fx));
     a.append(pic);
@@ -447,7 +617,7 @@ export const accountViews = {
     const me = el('div', 'panel');
     me.append(el('h3', '', t('Perfil y cuenta')));
     const who = el('button', 'who settings-who');
-    who.append(this.avatar(64), el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${t(p.league)} · ${p.elo}</span><small>${p.account ? t('Cuenta <b>{user}</b>', { user: escapeHtml(handle(p.account.user)) }) : t('Invitado')}</small>`));
+    who.append(this.avatar(64), el('div', '', `<b>${escapeHtml(p.name)}</b><span class="elo">${t(p.league)} · ${p.elo}</span><small>${p.account ? t('Cuenta <b>{user}</b>', { user: escapeHtml(accountName(p.account)) }) : t('Invitado')}</small>`));
     who.onclick = () => this.show('profile');
     me.append(who);
     if (!p.account) me.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
@@ -526,7 +696,7 @@ export const accountViews = {
     info.append(nameRow);
     if (p.title) info.append(el('span', 'title-chip', escapeHtml(t(p.title))));
     info.append(el('p', 'small', p.account
-      ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(handle(p.account.user)), date: fmtDate(p.account.since) })
+      ? t('Cuenta <b>{user}</b> · desde {date}', { user: escapeHtml(accountName(p.account)), date: fmtDate(p.account.since) })
       : `<span class="warn">${t('Invitado')}</span> · ${t('jugando desde {date}', { date: fmtDate(p.created) })}`));
     info.append(el('div', 'tc-league', `<span class="league">${t(p.league)}</span><span class="elo">${p.elo} ELO</span>${this.rank ? `<span class="pill">${t('#{n} del ranking', { n: this.rank })}</span>` : ''}`));
     // Progreso hacia la siguiente liga
@@ -758,7 +928,11 @@ export const accountViews = {
       };
       go.onclick = submit;
       [user, pass, pass2].forEach(i => { i.onkeydown = e => { if (e.key === 'Enter') submit(); }; });
-      box.append(fu, fp, f2, go, msg);
+      box.append(fu, fp, f2, go, msg, this.altLogin());
+    } else if (!p.account.pass) {
+      // Cuenta sin contraseña: entra con Google o con un código por correo
+      box.append(el('p', '', p.account.google ? t('Entras con Google (<b>{email}</b>) desde cualquier dispositivo.', { email: escapeHtml(p.account.email || '') })
+        : t('Entras con tu correo (<b>{email}</b>): te mandamos un código cada vez, desde cualquier dispositivo.', { email: escapeHtml(p.account.email || '') })), msg);
     } else {
       box.append(el('p', '', t('Tu usuario: <b>{user}</b>. Entra con él desde cualquier dispositivo.', { user: escapeHtml(handle(p.account.user)) })));
       const d = el('details', 'pw');
@@ -837,16 +1011,53 @@ export const accountViews = {
     return box;
   },
 
+  // Podio de un ranking: los 3 primeros en tarjetas grandes (oro, plata y bronce) con su avatar, su marco, su título
+  // y su marca; value(r) da [cifra grande, texto pequeño]. Los de la IA, con el sprite de su clase
+  podium(rows, value) {
+    const box = el('div', 'podium');
+    rows.slice(0, 3).forEach((r, i) => {
+      const card = el('button', `pod-card p${i + 1}${r.id === this.profile.id ? ' me' : ''}`);
+      // Su avatar entero (animado, con marco, brillo y efecto), más grande cuanto más arriba; corona al primero
+      const size = [84, 68, 58][i];
+      const pic = r.npcKey ? el('div', 'pod-npc', trainerImg(r.npcKey)) : this.avatar(size, true, undefined, undefined, undefined, r);
+      pic.style.setProperty('--s', size + 'px');
+      if (i === 0) pic.insertAdjacentHTML('beforeend', '<i class="pod-crown">♛</i>');
+      const [big, small] = value(r);
+      // Capas: rayos que giran detrás del avatar, destellos, un pedestal de luz bajo el avatar y el puesto en una
+      // medalla con cinta; el nombre en metal (oro, plata o bronce)
+      const stage = el('span', 'pod-stage');
+      stage.append(el('span', 'pod-rays'), el('span', 'pod-halo'), pic);
+      const sparks = el('span', 'pod-sparks', Array.from({ length: 7 }, (_, k) => `<i style="--x:${(k * 37 + 11) % 100}%;--y:${(k * 53 + 7) % 100}%;--d:${(k * 0.43).toFixed(2)}s"></i>`).join(''));
+      card.append(sparks, el('span', 'pod-rank', `<b>${i + 1}</b>`), stage,
+        el('span', 'pod-who', `<b class="pod-name">${tagName(r.name, r.tag, r.npc)}</b>${r.title ? `<small class="title-chip">${escapeHtml(t(r.title))}</small>` : ''}`),
+        el('span', 'pod-val', `<b>${big}</b><small>${small}</small>`));
+      card.onclick = () => this.userModal(r.id);
+      box.append(card);
+    });
+    return box;
+  },
+
+  // Foto de un entrenador en una fila de ranking: solo la imagen, sin marco ni efectos
+  rowFace(r, size = 34) {
+    if (r.npcKey) return `<span class="row-face npc">${trainerImg(r.npcKey)}</span>`;
+    const a = this.avatar(size, false, null, null, null, r);
+    a.classList.add('row-face');
+    return a.outerHTML;
+  },
+
   boardPanel() {
     const p = this.profile;
     const board = el('div', 'panel board');
     board.append(el('h3', '', t('Mejores entrenadores')));
     if (!this.board.length) { board.append(el('p', 'small', t('Todavía nadie ha jugado una clasificatoria. ¡Sé el primero!'))); return board; }
+    board.append(this.podium(this.board, b => [b.elo, `${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}`]));
     const ol = el('ol');
+    ol.start = 4;
     this.board.forEach((b, i) => {
-      const li = el('li', 'clickable' + (b.id === p.id ? ' me' : '') + (i < 3 ? ' top' + (i + 1) : ''));
+      if (i < 3) return;   // (los 3 primeros, en el podio)
+      const li = el('li', 'clickable' + (b.id === p.id ? ' me' : ''));
       li.onclick = () => this.userModal(b.id);
-      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${swatch(b.frame)}<b>${tagName(b.name, b.tag, b.npc)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
+      li.innerHTML = `<span class="pos">${i + 1}</span><span class="who">${this.rowFace(b, 30)}<b>${tagName(b.name, b.tag, b.npc)}</b>${b.title ? `<small class="title-chip">${escapeHtml(t(b.title))}</small>` : ''}</span><span class="pts">${b.elo}<small>${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}</small></span>`;
       ol.append(li);
     });
     board.append(ol);

@@ -2,7 +2,8 @@
 // temporal y ARENA_DEV para el gancho de pruebas), abre Chromium sin ventana y lo maneja por el
 // protocolo de depuración (sin dependencias: usa el Chrome que haya en la máquina). Cada archivo
 // tests/e2e/*.e2e.js exporta async (t) => { … } y usa la API de abajo; cualquier error de JavaScript
-// o violación de la CSP en la página hace fallar el test.
+// o violación de la CSP en la página hace fallar el test. Si exporta también `env` ({ VARIABLE: valor }),
+// su servidor arranca con esas variables de más (p. ej. las de entrar con Google en pruebas).
 //   node tools/e2e.js                       todos
 //   node tools/e2e.js tests/e2e/portada.e2e.js   uno
 // Chrome: variable CHROME, o google-chrome / chromium / el de Playwright si está en la caché.
@@ -37,10 +38,10 @@ async function waitHttp(url, ms = 10000) {
 }
 
 // ---------- Servidor y navegador de una prueba ----------
-async function setup(name) {
+async function setup(name, extraEnv = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-e2e-'));
   const port = await freePort(), dbg = await freePort();
-  const env = { ...process.env, PORT: String(port), DB_FILE: path.join(tmp, 'arena.db'), ARENA_DEV: '1', HOST: '127.0.0.1' };
+  const env = { ...process.env, ...extraEnv, PORT: String(port), DB_FILE: path.join(tmp, 'arena.db'), ARENA_DEV: '1', HOST: '127.0.0.1' };
   const server = spawn(process.execPath, ['--no-warnings', 'server.js'], { cwd: ROOT, env, stdio: ['ignore', 'ignore', 'pipe'] });
   let serverErr = '';
   server.stderr.on('data', d => { serverErr += d; });
@@ -188,10 +189,11 @@ async function runOne(file) {
   let ctx, results = [];
   const t = { ok: (cond, msg) => { results.push([!!cond, msg]); out.push(`  ${cond ? '✓' : '✗'} ${msg}`); }, log: msg => out.push('    ' + msg) };
   try {
-    ctx = await setup(name);
+    const test = require(path.resolve(file));
+    ctx = await setup(name, test.env);
     Object.assign(t, ctx);
     // Como mucho 3 minutos por prueba (con varias a la vez van más lentas): un test colgado no bloquea el CI
-    await Promise.race([require(path.resolve(file))(t),
+    await Promise.race([test(t),
       new Promise((_, j) => setTimeout(() => j(new Error('más de 3 minutos: algo se ha quedado esperando')), 180e3).unref())]);
     if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
     const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
@@ -219,9 +221,20 @@ if (require.main === module) {
   const dir = path.join(ROOT, 'tests', 'e2e');
   let files = process.argv.slice(2).length ? process.argv.slice(2)
     : fs.readdirSync(dir).filter(f => f.endsWith('.e2e.js')).sort().map(f => path.join(dir, f));
-  // Trozo i de n (1..n): las pruebas se reparten alternando, así cada trozo lleva de las lentas y de las rápidas
+  // Lo que tarda cada una (tests/e2e/times.json; las nuevas, 60 s): primero las lentas, para que al final no quede una
+  // larga sola mientras los demás hilos ya han acabado
+  let times = {};
+  try { times = JSON.parse(fs.readFileSync(path.join(dir, 'times.json'), 'utf8')); } catch {}
+  const cost = f => times[path.basename(f).replace(/\.e2e\.js$/, '')] || 60;
+  files.sort((a, b) => cost(b) - cost(a));
+  // Trozo i de n (1..n): se reparten por tiempo, la siguiente más lenta al trozo que menos lleva, para que todas las
+  // máquinas del CI acaben a la vez
   const shard = String(process.env.E2E_SHARD || '').match(/^(\d+)\/(\d+)$/);
-  if (shard) files = files.filter((_, k) => k % +shard[2] === +shard[1] - 1);
+  if (shard) {
+    const n = +shard[2], load = new Array(n).fill(0), mine = [];
+    for (const f of files) { const k = load.indexOf(Math.min(...load)); load[k] += cost(f); if (k === +shard[1] - 1) mine.push(f); }
+    files = mine;
+  }
   run(files).then(f => process.exit(f ? 1 : 0), e => { console.error(e); process.exit(1); });
 }
 

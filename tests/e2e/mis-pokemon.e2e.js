@@ -15,7 +15,7 @@ module.exports = async ({ page, player, ok }) => {
 
   await page.type('.mon-filters input', 'mew');
   ok(await page.eval(visible) === 2, 'buscar «mew» deja a Mew y Mewtwo');
-  ok(/2 de 3/.test(await page.eval(`document.querySelectorAll('.sec-title')[1].textContent`)), 'el título de la caja dice cuántos se ven');
+  ok(/3 Pokémon · se ven 2/.test(await page.eval(`document.querySelectorAll('.sec-title')[1].textContent`)), 'el título de la caja dice cuántos tienes (sin tope) y cuántos se ven');
 
   await page.type('.mon-filters input', '');
   await page.click('✦ Shiny');

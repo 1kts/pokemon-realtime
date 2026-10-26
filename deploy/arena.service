@@ -10,6 +10,9 @@ Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 DB_FILE=/var/lib/arena/
 # Bugs que reportan los jugadores: avisan por el mismo bot de Telegram que los vigilantes (TELEGRAM_TOKEN y
 # TELEGRAM_CHAT; el archivo lo crea setup.sh y es opcional)
 EnvironmentFile=-/etc/arena-alerts.env
+# Entrar con Google y con un código por correo: GOOGLE_CLIENT_ID y SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS y
+# MAIL_FROM (el archivo lo crea setup.sh y es opcional: sin él no salen esos botones)
+EnvironmentFile=-/etc/arena-login.env
 ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server.js
 Restart=always
 RestartSec=2

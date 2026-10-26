@@ -83,6 +83,88 @@ Qué hay en el panel:
   jugador, IP y fechas, y exportación a CSV. Se guarda 40 días; las acciones de los admins, siempre.
 - **Servidor**: anuncio a todos los conectados y modo mantenimiento (no se empiezan combates nuevos).
 
+## Entrar con Google o por correo
+
+En la portada y en la cuenta de un invitado salen **«Continuar con Google»** y **«Entrar con email»** (con un
+código de 6 cifras, sin contraseña). Cada botón sale solo si está configurado: sin las variables de abajo el juego
+funciona como siempre, con usuario y contraseña. Las cuentas de antes siguen igual; si alguien entra con Google o
+con un correo que ya es de una cuenta (también si ese correo es su usuario), entra en esa cuenta. Las variables
+van en `/etc/arena-login.env` (solo lo lee root), que crea `setup.sh`.
+
+### 1. Google (gratis)
+
+1. Entra en [Google Cloud Console](https://console.cloud.google.com/) con tu cuenta de Google y crea un
+   proyecto (arriba, selector de proyectos → **Proyecto nuevo** → «PokeArenas»).
+2. **Pantalla de consentimiento** (menú → *APIs y servicios* → *Pantalla de consentimiento de OAuth*, o *Google
+   Auth Platform* → *Branding*):
+   - Tipo de usuario: **Externo**.
+   - Nombre de la aplicación: `PokéArenas`; correo de asistencia y de contacto: `contact@pokearenas.com` (o el tuyo).
+   - Logotipo: opcional (si lo pones, Google lo revisa y tarda unos días; sin logo no hace falta revisión).
+   - Dominios autorizados: `pokearenas.com`. Página principal: `https://pokearenas.com`; política de
+     privacidad: `https://pokearenas.com/legal#privacidad`.
+   - Permisos (*scopes*): no añadas ninguno; bastan los básicos (`openid`, `email`, `profile`), que no necesitan
+     verificación.
+   - En **Público** (*Audience*) pulsa **Publicar la aplicación** (pasar a «En producción»): en «Prueba» solo
+     podrían entrar las cuentas que añadas a mano.
+3. **Credenciales** → **Crear credenciales** → **ID de cliente de OAuth**:
+   - Tipo de aplicación: **Aplicación web**. Nombre: `PokéArenas web`.
+   - **Orígenes de JavaScript autorizados**: `https://pokearenas.com` y `http://localhost:3000` (para probar en
+     tu PC; Google pide además `http://localhost` para algunos navegadores: añádelo también).
+   - URIs de redirección: ninguna (el botón usa una ventana emergente).
+   - Crear. Copia el **ID de cliente** (acaba en `.apps.googleusercontent.com`). No hace falta el *secreto* del
+     cliente: el juego no lo usa.
+
+### 2. Correo (SMTP)
+
+Recomendado: **[Brevo](https://www.brevo.com)** (antes Sendinblue): empresa francesa (datos en la UE, es la que
+nombra la política de privacidad), gratis hasta 300 correos al día y sin tarjeta. Alternativas: Resend (3000 al
+mes gratis, EE. UU.) o Amazon SES (~0,10 $ por 1000, más trabajo de alta). Si eliges otra, cambia «Brevo» en
+`public/legal/index.html` y `en.html` (apartado *Con quién se comparten*).
+
+1. Crea la cuenta en Brevo. En **Senders, Domains & Dedicated IPs → Domains → Add a domain**: `pokearenas.com`.
+2. Brevo te da unos registros DNS: añádelos en Cloudflare (DNS → *Add record*), todos en **solo DNS (nube
+   gris)**:
+   - **TXT** `brevo-code:…` en `@` (demuestra que el dominio es tuyo).
+   - **DKIM**: los registros que indique Brevo (un TXT o dos CNAME `brevo1._domainkey` / `brevo2._domainkey`).
+   - **SPF**: un TXT en `@` con `v=spf1 include:spf.brevo.com ~all`. Si ya tienes un SPF (Cloudflare Email
+     Routing pone uno con `include:_spf.mx.cloudflare.net`), no crees otro: añade `include:spf.brevo.com` al
+     mismo, p. ej. `v=spf1 include:_spf.mx.cloudflare.net include:spf.brevo.com ~all`.
+   - **DMARC** (recomendado): TXT en `_dmarc` con `v=DMARC1; p=none; rua=mailto:contact@pokearenas.com`.
+
+   Vuelve a Brevo y pulsa **Authenticate**: los cuatro tienen que salir en verde (puede tardar unos minutos).
+3. **Senders → Add a sender**: nombre `PokéArenas`, correo `no-reply@pokearenas.com`.
+4. **SMTP & API → SMTP → Generate a new SMTP key**. Apunta el servidor (`smtp-relay.brevo.com`), el puerto (`587`),
+   el *login* (algo como `8a1b2c001@smtp-brevo.com`) y la clave (solo se ve una vez).
+
+### 3. Ponerlo en el servidor
+
+En **tu terminal** (las claves son secretas: no las pegues en ningún chat). Cambia los valores por los tuyos:
+```bash
+ssh root@IP "GOOGLE_CLIENT_ID='1234-abcd.apps.googleusercontent.com' \
+  SMTP_HOST='smtp-relay.brevo.com' SMTP_PORT='587' SMTP_USER='8a1b2c001@smtp-brevo.com' SMTP_PASS='xsmtpsib-…' \
+  MAIL_FROM='PokéArenas <no-reply@pokearenas.com>' bash /root/arena-deploy/setup.sh"
+```
+`setup.sh` guarda las variables en `/etc/arena-login.env`, instala el servicio (que ahora lee ese archivo) y
+reinicia el juego (como en un despliegue: espera a que acaben los combates en curso, como mucho 5 min). Antes,
+copia la carpeta `deploy` actualizada al servidor (`scp -r deploy root@IP:/root/arena-deploy`).
+
+- Se pueden poner solo las de Google o solo las del correo. Para cambiar una, repite la orden solo con ella; para
+  quitarla, pásala vacía (`GOOGLE_CLIENT_ID=`).
+- `SMTP_PORT`: `587` (STARTTLS, lo normal) o `465` (TLS directo). El juego se niega a mandar la contraseña
+  por una conexión sin cifrar.
+- Comprobar: `curl -s https://pokearenas.com/auth/config` tiene que decir `"google":"…","mail":true`. Si un correo no
+  sale, `journalctl -u arena -n 50` dice por qué (sin el correo del jugador). En Brevo, *Transactional → Logs*
+  muestra cada envío.
+
+Límites: como mucho 5 códigos por correo y hora (y 30 s entre dos), 10 por IP y hora, y 5 intentos por código.
+Los códigos caducan a los 10 minutos, sirven una vez y solo se guarda su huella. Ni el panel de admin ni la
+auditoría ni los registros muestran los correos (en el panel, la cuenta sale como «Google» o «correo»). Una cuenta
+sin contraseña no puede ser admin del panel: para eso, usuario y contraseña.
+
+**En tu PC:** `GOOGLE_CLIENT_ID=… npm start` (con `http://localhost:3000` en los orígenes autorizados). Con
+`ARENA_DEV=1` y sin `SMTP_HOST`, los correos no salen: se quedan en memoria (los e2e leen el código con el
+mensaje `devmail`).
+
 ## Vigilancia
 
 Dos vigilantes que avisan por **Telegram** (bot @PokeArenasBot) solo cuando algo pasa a ir mal y cuando

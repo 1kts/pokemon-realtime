@@ -14,6 +14,16 @@
 //   dark      oscuridad: el rival no se ve de lejos
 //   flow      corriente en el agua (se aplica en Shared.arenaStep)
 //   beam      haz giratorio desde el centro (faro, aliento de dragón, haz psíquico)
+//   geyser    géiseres: aviso y chorro que hace daño y lanza hacia fuera
+//   crack     el hielo se agrieta si te quedas encima y se rompe en agua un rato
+//   belts     cintas transportadoras (se aplican en Shared.arenaStep)
+//   pillars   pilares de piedra que suben y bajan por turnos (la cobertura cambia de sitio)
+//   gravity   a ratos, un pozo en el centro atrae a todos y curva los proyectiles; en el centro hace daño
+//   mirrors   espejos que hacen rebotar los proyectiles
+//   storm     tormenta: rayos con aviso; si caen junto al agua, electrifican a quien esté en ella
+//   fog       bancos de niebla: quien está dentro no se ve de lejos
+//   flowers   flores que curan poco a poco (F) o adormecen, que ralentiza (f)
+// Geiseres, tormenta, gravedad, niebla y pilares también pueden ir de modificador en Práctica (Data.MODIFIERS)
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
 
@@ -26,7 +36,7 @@ class Arena {
     this.b = battle;
     this.name = battle.mapName;
     this.def = D.ARENAS[this.name] || null;
-    this.m = S.mechOf(this.name);
+    this.m = S.mechFor(this.name, battle.mod);
     this.marks = S.parseMap(this.name);
     this.base = battle.base;   // compartido con el combate (la marea lo cambia)
     this.danger = [];          // zonas avisadas (la IA las esquiva): { x, y, r, t }
@@ -35,19 +45,68 @@ class Arena {
     this.dark = this.m.dark || 0;
     const m = this.m;
     this.timers = {};
-    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
+    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind', 'geyser', 'storm', 'gravity', 'pillars']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
     if (m.shock) { this.shock = { g: 0, phase: 'idle', t: 0 }; this.panelGroup = this.marks.panels.map(i => (((i % COLS) >> 1) + ((Math.floor(i / COLS)) >> 1)) % 2); }
     if (m.tide) { this.tideUp = false; this.tideCells = this.ringCells(); }
     if (m.regrow) this.regrowT = new Float32Array(COLS * ROWS);
     if (m.heal) this.pads = this.marks.heal.map(p => ({ ...p, c: 1, cd: 0 }));
-    if (m.beam) { this.beamA = 0; this.beamCd = [0, 0]; }
+    // (el haz empieza en vertical: en horizontal pasaría justo por donde salen los Pokémon al empezar)
+    if (m.beam) { this.beamA = Math.PI / 2; this.beamCd = [0, 0]; }
     if (m.warp) this.warpCd = [0, 0];
     this.quakes = [];
+    this.fog = m.fog ? S.fogZones(m.fog) : [];
+    this.mirrors = m.mirrors ? S.mirrorSegs(m.mirrors) : null;
+    this.flowers = m.flowers ? new Map(this.marks.flowers.map(f => [f.i, f.k])) : null;
+    this.pull = 0;
+    // Espejos: también cortan el paso (círculos pequeños a lo largo del cristal, que los proyectiles ignoran)
+    if (this.mirrors) for (const [x1, y1, x2, y2] of this.mirrors) {
+      const n = Math.max(2, Math.round(Math.hypot(x2 - x1, y2 - y1) / 16));
+      for (let k = 0; k <= n; k++) battle.obstacles.push({ id: battle.newId(), kind: 'mirror', x: x1 + (x2 - x1) * k / n, y: y1 + (y2 - y1) * k / n, r: 9, hp: Infinity, ttl: Infinity });
+    }
+    // Pilares: empieza arriba el grupo 0
+    if (m.pillars) { this.pillars = S.pillarSpots(m.pillars); this.pillarUp = 0; this.raisePillars(0); }
     // Muros invisibles: obstáculos que no se dibujan (el cliente los recibe para chocar con ellos)
     for (const g of this.marks.ghost) battle.obstacles.push({ id: battle.newId(), ...g, hp: Infinity, ttl: Infinity, kind: 'ghost' });
   }
 
-  get active() { return !!this.def; }
+  get active() { return !!this.def || !!this.b.mod; }
+
+  inFog(side) { return this.fog.some(z => Math.hypot(side.x - z.x, side.y - z.y) < z.r); }
+
+  // Sube los pilares del grupo g (y quita los del otro), sacando de dentro a quien estuviera encima
+  raisePillars(g) {
+    const b = this.b;
+    b.obstacles = b.obstacles.filter(o => o.kind !== 'pillar');
+    for (const p of this.pillars) if (p.g === g) b.obstacles.push({ id: b.newId(), kind: 'pillar', x: p.x, y: p.y, r: 26, hp: Infinity, ttl: Infinity });
+    for (const s of b.sides) S.pushOut(s, b.rad(s), b.obstacles);
+  }
+
+  // Espejos: si el proyectil toca un cristal, rebota (refleja la velocidad sobre la normal del espejo)
+  bounce(p) {
+    if (!this.mirrors) return false;
+    for (const [x1, y1, x2, y2] of this.mirrors) {
+      const ex = x2 - x1, ey = y2 - y1, L2 = ex * ex + ey * ey;
+      const t = S.clamp(((p.x - x1) * ex + (p.y - y1) * ey) / L2, 0, 1);
+      const qx = x1 + ex * t, qy = y1 + ey * t, dx = p.x - qx, dy = p.y - qy, d = Math.hypot(dx, dy);
+      if (d >= p.r + 4 || d < 0.001) continue;
+      const nx = dx / d, ny = dy / d, dot = p.vx * nx + p.vy * ny;
+      if (dot >= 0) continue;   // ya se aleja
+      p.vx -= 2 * dot * nx; p.vy -= 2 * dot * ny;
+      p.x = qx + nx * (p.r + 5); p.y = qy + ny * (p.r + 5);
+      this.b.ev({ k: 'mirror', x: Math.round(qx), y: Math.round(qy) });
+      return true;
+    }
+    return false;
+  }
+
+  // Gravedad: mientras late el pozo, los proyectiles se curvan hacia el centro (sin ganar velocidad)
+  bend(p, dt) {
+    if (!this.pull || p.wide) return;
+    const sp = Math.hypot(p.vx, p.vy), dx = CX - p.x, dy = CY - p.y, d = Math.hypot(dx, dy) || 1;
+    p.vx += dx / d * this.pull * 9 * dt; p.vy += dy / d * this.pull * 9 * dt;
+    const k = sp / (Math.hypot(p.vx, p.vy) || 1);
+    p.vx *= k; p.vy *= k;
+  }
 
   // Viento que afecta a un bando (los voladores no lo notan)
   windFor(side) {
@@ -56,7 +115,7 @@ class Arena {
     return [this.wind.vx, this.wind.vy];
   }
 
-  env(side) { return { map: this.name, terrain: this.b.terrain, wind: this.windFor(side) }; }
+  env(side) { return { map: this.name, mech: this.m, terrain: this.b.terrain, wind: this.windFor(side), pull: this.pull }; }
 
   // Casillas que la marea alta cubre: las vecinas del agua del mapa
   ringCells() {
@@ -84,7 +143,7 @@ class Arena {
   }
 
   update(dt) {
-    if (!this.def) return;
+    if (!this.active) return;
     const b = this.b, m = this.m;
     for (const d of this.danger) d.t -= dt;
     this.danger = this.danger.filter(d => d.t > 0);
@@ -259,6 +318,95 @@ class Arena {
         if (along > 40 && along < o.len && across < o.width + b.rad(s)) { this.beamCd[s.idx] = 1.1; b.hazard(s, o.dmg, ty, extra); }
       }
     }
+    // Géiseres: uno cerca de cada Pokémon; el chorro hace daño y lanza hacia fuera
+    if (m.geyser && this.tick('geyser', dt)) {
+      const o = m.geyser;
+      for (const s of b.sides) {
+        const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 90;
+        const x = S.clamp(s.x + Math.cos(a) * d, 40, S.ARENA.w - 40), y = S.clamp(s.y + Math.sin(a) * d, 40, S.ARENA.h - 40);
+        this.warnAt(x, y, o.r, o.warn, 'agua', p => {
+          b.ev({ k: 'geyser', x: Math.round(p.x), y: Math.round(p.y), r: p.r });
+          for (const t of b.sides) {
+            const dx = t.x - p.x, dy = t.y - p.y, dd = Math.hypot(dx, dy);
+            if (dd >= p.r + b.rad(t)) continue;
+            b.hazard(t, o.dmg, 'agua', {});
+            if (t.prot < 0 && t.invuln <= 0) { const ka = dd > 1 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2; t.kb = { vx: Math.cos(ka), vy: Math.sin(ka), speed: o.knock / 0.18, t: 0.18 }; t.wind = null; }
+          }
+        });
+      }
+    }
+    // Tormenta: un rayo cerca de cada Pokémon; si cae junto al agua, electrifica a quien esté en ella
+    if (m.storm && this.tick('storm', dt)) {
+      const o = m.storm;
+      for (const s of b.sides) {
+        const a = Math.random() * Math.PI * 2, d = 20 + Math.random() * 100;
+        const x = S.clamp(s.x + Math.cos(a) * d, 40, S.ARENA.w - 40), y = S.clamp(s.y + Math.sin(a) * d, 40, S.ARENA.h - 40);
+        this.warnAt(x, y, o.r, o.warn, 'electrico', p => {
+          for (const t of b.sides) if (Math.hypot(t.x - p.x, t.y - p.y) < p.r + b.rad(t) && !typesOf(b.mon(t)).includes('electrico')) b.hazard(t, o.dmg, 'electrico', { stun: o.stun });
+          const c0 = S.cellIndex(p.x, p.y), cx = c0 % COLS, cy = Math.floor(c0 / COLS);
+          let wet = false;
+          for (let yy = cy - 1; yy <= cy + 1; yy++) for (let xx = cx - 1; xx <= cx + 1; xx++) if (xx >= 0 && yy >= 0 && xx < COLS && yy < ROWS && b.terrain[yy * COLS + xx] === T.WATER) wet = true;
+          if (!wet) return;
+          b.ev({ k: 'zapwater', x: Math.round(p.x), y: Math.round(p.y) });
+          for (const t of b.sides) if (b.terrain[S.cellIndex(t.x, t.y)] === T.WATER && !typesOf(b.mon(t)).includes('electrico')) b.hazard(t, o.dmg * 0.8, 'electrico', { stun: o.stun });
+        });
+      }
+    }
+    // Gravedad: aviso, y luego el pozo atrae un rato; en el centro hace daño
+    if (m.gravity) {
+      const o = m.gravity;
+      if (this.grav) {
+        if ((this.grav.t -= dt) <= 0) {
+          if (this.grav.ph === 'warn') { this.grav = { ph: 'pull', t: o.dur, cd: [0, 0] }; this.pull = o.force; }
+          else { this.grav = null; this.pull = 0; b.ev({ k: 'gravity', ph: 'end' }); }
+        } else if (this.grav.ph === 'pull') {
+          for (const s of b.sides) {
+            this.grav.cd[s.idx] = Math.max(0, this.grav.cd[s.idx] - dt);
+            if (this.grav.cd[s.idx] <= 0 && Math.hypot(s.x - CX, s.y - CY) < o.r + b.rad(s)) { this.grav.cd[s.idx] = 0.8; b.hazard(s, o.dmg, 'siniestro', {}); }
+          }
+        }
+      } else if (this.tick('gravity', dt)) {
+        this.grav = { ph: 'warn', t: o.warn };
+        this.danger.push({ x: CX, y: CY, r: o.r * 2, t: o.warn + o.dur });
+        b.ev({ k: 'gravity', ph: 'warn', d: o.warn, dur: o.dur });
+      }
+    }
+    // Pilares: aviso donde van a subir y cambio de grupo
+    if (m.pillars) {
+      const o = m.pillars;
+      if (this.pil) {
+        if ((this.pil.t -= dt) <= 0) { this.pillarUp = this.pil.g; this.raisePillars(this.pil.g); b.ev({ k: 'pillar', ph: 'up', g: this.pil.g }); this.pil = null; }
+      } else if (this.tick('pillars', dt)) {
+        const g = 1 - this.pillarUp;
+        this.pil = { g, t: o.warn };
+        for (const p of this.pillars) if (p.g === g) { this.danger.push({ x: p.x, y: p.y, r: 34, t: o.warn }); b.ev({ k: 'warn', x: Math.round(p.x), y: Math.round(p.y), r: 30, d: o.warn, ty: 'roca' }); }
+      }
+    }
+    // Hielo que se rompe: quedarse sobre la misma casilla helada la agrieta; al rato es agua
+    if (m.crack) {
+      for (const s of b.sides) {
+        const i = S.cellIndex(s.x, s.y);
+        if (b.terrain[i] !== T.ICE || b.mon(s).fainted) { s.crackI = -1; continue; }
+        if (s.crackI !== i) { s.crackI = i; s.crackT = 0; }
+        if ((s.crackT += dt) >= m.crack.hold) {
+          s.crackT = 0;
+          b.setCell(i, T.WATER, m.crack.ttl);
+          b.ev({ k: 'crack', x: Math.round(S.cellCenter(i).x), y: Math.round(S.cellCenter(i).y) });
+        }
+      }
+    }
+    // Flores: las rosas curan poco a poco; las moradas adormecen (ralentizan; a los de tipo planta no)
+    if (this.flowers) {
+      const o = m.flowers;
+      for (const s of b.sides) {
+        const mon = b.mon(s), k = this.flowers.get(S.cellIndex(s.x, s.y));
+        if (!k || mon.fainted || b.terrain[S.cellIndex(s.x, s.y)] === T.FIRE) continue;
+        if (k === 'sleep') { if (!typesOf(mon).includes('planta')) s.slow = Math.max(s.slow, o.sleep); continue; }
+        if (b.sudden || mon.hp >= mon.maxHp) continue;
+        s.healAcc = (s.healAcc || 0) + o.heal * mon.maxHp * dt;
+        if (s.healAcc >= 3) { const n = Math.floor(s.healAcc); s.healAcc -= n; mon.hp = Math.min(mon.maxHp, mon.hp + n); b.ev({ k: 'heal', s: s.idx, n }); }
+      }
+    }
   }
 
   // ¿Hay un obstáculo sólido entre el epicentro y el Pokémon? (su centro, en la sombra de la roca)
@@ -276,10 +424,11 @@ class Arena {
 
   // Lo que el cliente necesita cada snapshot (solo si cambia algo continuo)
   snap() {
-    if (!this.def) return undefined;
+    if (!this.active) return undefined;
     const o = {};
     if (this.wind) o.wd = [Math.round(this.wind.vx), Math.round(this.wind.vy)];
     if (this.m.beam) o.ba = +this.beamA.toFixed(3);
+    if (this.pull) o.gv = this.pull;
     if (this.pads) o.hl = this.pads.map(p => (p.cd > 0 ? -1 : +p.c.toFixed(2)));
     return Object.keys(o).length ? o : undefined;
   }

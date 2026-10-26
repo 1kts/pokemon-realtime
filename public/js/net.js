@@ -22,10 +22,13 @@ export class Net {
     if (name) storage.set(NAME_KEY, name);
     this.joined = true;
     this.closedByUs = false;
-    this.open();
+    // Con la conexión ya abierta (p. ej. tras pedir un código por correo desde la portada) no se abre otra
+    if (this.ws && this.ws.readyState === 1) return this.send({ t: 'hello', token: storage.get(TOKEN_KEY), name });
+    if (!this.ws || this.ws.readyState > 1) this.open();
   }
 
-  // Iniciar sesión o registrarse ({ t: 'login' | 'register', user, pass }). Sin conexión abierta,
+  // Iniciar sesión o registrarse ({ t: 'login' | 'register', user, pass }, o con Google o el correo:
+  // 'google', 'mailcode', 'mailverify'). Sin conexión abierta,
   // se conecta y lo manda en lugar del saludo con token.
   auth(msg) {
     if (this.ws && this.ws.readyState === 1) return this.send(msg);
@@ -82,4 +85,5 @@ export class Net {
 
   static savedName() { return storage.get(NAME_KEY) || ''; }
   static hasSession() { return !!storage.get(TOKEN_KEY); }
+  static token() { return storage.get(TOKEN_KEY); }
 }

@@ -17,7 +17,7 @@ module.exports = async ({ page, ok }) => {
   // Lo que se manda al servidor: el último movimiento lanzado y el último cambio
   await page.eval(`(() => { const net = window.__app.net, send = net.send.bind(net);
     net.send = m => { if (m.t === 'in') { if (m.c >= 0) { const b = window.__app.battle, f = b.renderPos[b.foeIdx]; window.__cast = { ...m, foe: { x: f.x, y: f.y } }; } if (m.sw >= 0) window.__swap = m; } return send(m); };
-    net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0], Data.RANKED_POOL[1]], skill: 0 }); return true; })()`);
+    net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0], Data.RANKED_POOL[1]], skill: 0, passive: true }); return true; })()`);
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 15000);
   ok(await page.eval(`!!document.querySelector('#hud.touch .tc-zone') && !!document.querySelector('#hud.touch .tc-quit') && getComputedStyle(document.querySelector('.mv kbd')).display === 'none'`),
     'con pantalla táctil salen el joystick y el botón de rendirse, y los movimientos sin teclas');
@@ -33,7 +33,8 @@ module.exports = async ({ page, ok }) => {
   const x0 = await page.eval(`window.__app.battle.pred.x`);
   await ptr('.tc-zone', 'pointerdown', 120, 280);
   await ptr('.tc-zone', 'pointermove', 190, 280);
-  await new Promise(r => setTimeout(r, 700));
+  // (hasta que avance: en un CI cargado los fotogramas van lentos)
+  await page.waitFor(`window.__app.battle.pred.x > ${x0} + 40`, 8000).catch(() => {});
   const x1 = await page.eval(`window.__app.battle.pred.x`);
   await ptr('.tc-zone', 'pointerup', 190, 280);
   ok(x1 > x0 + 40, `el joystick a la derecha lo mueve a la derecha (${Math.round(x0)} → ${Math.round(x1)})`);

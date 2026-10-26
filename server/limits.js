@@ -5,6 +5,8 @@
 //   - Conexiones a la vez y conexiones nuevas por minuto, por IP.
 //   - Intentos de contraseña por IP y fallos por cuenta (la cuenta se bloquea un rato).
 //   - Perfiles nuevos (invitados o registros desde la portada) por IP y hora.
+//   - Entrar con el correo: códigos enviados por IP y por correo (y 30 s entre dos al mismo correo) y
+//     códigos probados por IP; entrar con Google, intentos por IP.
 // Los topes dejan de sobra a varias personas detrás de la misma IP (casa, móvil con CGNAT).
 
 const LIMITS = {
@@ -12,6 +14,9 @@ const LIMITS = {
   newProfiles: 30, newProfilesMs: 3600e3,
   authPerIp: 30, authPerIpMs: 600e3,
   failsPerUser: 10, failsPerUserMs: 900e3,
+  mailsPerIp: 10, mailsPerEmail: 5, mailsMs: 3600e3, mailTriesPerIp: 30, googlePerIp: 30,
+  // (los e2e piden varios códigos seguidos al mismo correo: fuera de producción MAIL_GAP_MS lo acorta)
+  mailGapMs: process.env.NODE_ENV !== 'production' && process.env.MAIL_GAP_MS ? +process.env.MAIL_GAP_MS : 30e3,
   dropsToKick: 300,
 };
 
@@ -94,4 +99,14 @@ const authAttempt = ip => !hit('auth:' + ip, LIMITS.authPerIp, LIMITS.authPerIpM
 const userLocked = user => full('fail:' + user.toLowerCase(), LIMITS.failsPerUser, LIMITS.failsPerUserMs);
 const userFailed = user => { hit('fail:' + user.toLowerCase(), LIMITS.failsPerUser, LIMITS.failsPerUserMs); };
 
-module.exports = { LIMITS, clientIp, forConn, allow, connOpen, connClose, newProfile, authAttempt, userLocked, userFailed };
+// Correo: null si se puede mandar otro código, o qué tope se ha pasado ('ip' o 'correo')
+function mailSend(ip, email) {
+  if (full('mailip:' + ip, LIMITS.mailsPerIp, LIMITS.mailsMs)) return 'ip';
+  if (full('mail:' + email, LIMITS.mailsPerEmail, LIMITS.mailsMs) || full('mailgap:' + email, 1, LIMITS.mailGapMs)) return 'correo';
+  for (const [k, max, ms] of [['mailip:' + ip, LIMITS.mailsPerIp, LIMITS.mailsMs], ['mail:' + email, LIMITS.mailsPerEmail, LIMITS.mailsMs], ['mailgap:' + email, 1, LIMITS.mailGapMs]]) hit(k, max, ms);
+  return null;
+}
+const mailTry = ip => !hit('mailtry:' + ip, LIMITS.mailTriesPerIp, LIMITS.authPerIpMs);
+const googleAttempt = ip => !hit('google:' + ip, LIMITS.googlePerIp, LIMITS.authPerIpMs);
+
+module.exports = { LIMITS, clientIp, forConn, allow, connOpen, connClose, newProfile, authAttempt, userLocked, userFailed, mailSend, mailTry, googleAttempt };
