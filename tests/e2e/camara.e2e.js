@@ -8,6 +8,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); window.__app.ui.startStory('route', 'k-ruta1'); true`);
   await page.waitFor(`!!window.__app.battle && !!document.querySelector('.moves .mv')`);
+  // Que el combate ya haya pintado (la cámara se coloca en cada fotograma; en el CI, lento, el primero tarda)
+  await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.renderPos`, 15000);
+  await page.eval(`new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(() => r(true), 300))))`);
 
   // Esquinas del campo en pantalla (la cámara ya está colocada para el combate)
   const r = await page.eval(`(() => {

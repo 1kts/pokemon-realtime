@@ -201,6 +201,27 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   const removed = audit.prune();
   ok(removed >= 1 && store.db.prepare("SELECT COUNT(*) n FROM audit WHERE at = ? AND type = 'admin.ban'").get(old).n === 1, 'a los 40 días se borra todo menos las acciones de admin');
 
+  // ---------- Datos para mejorar el juego ----------
+  const pr = await adm.ask('admin.progress', {});
+  ok(pr.players >= 1 && pr.funnel[0].label === 'Han entrado' && pr.funnel[0].n === pr.players && pr.byRegion.length >= 1 && pr.byRegion[0].dist[0].next,
+    'Progreso: el embudo empieza con todos los jugadores y por región dice el líder que le toca a cada uno');
+  const co = await adm.ask('admin.collection', { who: 'cuentas' });
+  ok(Array.isArray(co.owned) && co.who === 'cuentas' && typeof co.mons === 'number', 'Colección: los Pokémon que tienen y usan, filtrando solo cuentas');
+  const ec = await adm.ask('admin.economy', {});
+  ok(ec.coins && ec.coins.dist.length === 5 && Array.isArray(ec.items), 'Economía: dinero, gemas y objetos en tramos');
+  // Uso: aparato, idioma y pantallas (cada una una vez por conexión), y los minutos al cerrar
+  const u1 = connect(); await u1.open;
+  u1.send({ t: 'ctx', device: 'movil', lang: 'fr', app: true });
+  for (const v of ['menu', 'story', 'menu', 'story', 'mal nombre']) u1.send({ t: 'view', v });
+  await sleep(150); u1.ws.close(); await sleep(150);
+  const met = await adm.ask('admin.metrics', { days: 7 });
+  const T = met.usage.total;
+  ok(T.sesiones >= 1 && T['aparato:movil'] === 1 && T['idioma:fr'] === 1 && T.app === 1 && T['pantalla:menu'] === 1 && T['pantalla:story'] === 1 && !Object.keys(T).some(k => /mal/.test(k)) && T.minutos > 0,
+    'Actividad: sesiones, aparato, idioma, como app y pantallas (una vez por sesión), y minutos al cerrar');
+  ok(met.days.length === 7, 'Actividad: se eligen los días');
+  const pl = await adm.ask('admin.player', { id: normal.p.id });
+  ok(pl.player && typeof pl.player.names === 'object', 'la ficha del jugador trae los nombres de sus Pokémon');
+
   // ---------- Bugs que reportan los jugadores ----------
   // Telegram de mentira: un servidor local que apunta lo que le llega
   const tg = [];
@@ -223,6 +244,10 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   normal.send({ t: 'bug', text: 'Uno más que ya no entra' });
   ok(/espera un rato/.test((await normal.wait(m => m.t === 'error')).msg), 'como mucho 5 reportes por hora y jugador');
   tgSrv.close();
+  // Borrar a un jugador borra también sus reportes (derecho de supresión)
+  const before = (await adm.ask('admin.bugs', {})).rows.filter(b => b.player === normal.p.id).length;
+  store.remove(store.byId(normal.p.id) || { id: normal.p.id, token: '' });
+  ok(before > 0 && (await adm.ask('admin.bugs', {})).rows.filter(b => b.player === normal.p.id).length === 0, 'al borrar a un jugador se borran sus reportes');
   delete process.env.TELEGRAM_TOKEN;
 
   // ---------- Bajas y sesión ----------

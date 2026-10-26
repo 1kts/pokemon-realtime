@@ -28,8 +28,9 @@ module.exports = async ({ page, player, env, ok }) => {
 
   // Métricas: jugadores de hoy, nuevos y cuántos vuelven, día a día
   await page.click('[data-tab=metricas]');
-  await page.waitFor(`document.querySelectorAll('#metricas tbody tr').length === 14`);
-  const todayRow = await page.eval(`[...document.querySelectorAll('#metricas tbody tr')[0].children].map(td => td.textContent)`);
+  const daysRows = `[...document.querySelectorAll('#met .card')].find(c => /Últimos/.test(c.textContent)).querySelectorAll('tbody tr')`;
+  await page.waitFor(`document.querySelector('#met .card') && ${daysRows}.length === 14`);
+  const todayRow = await page.eval(`[...${daysRows}[0].children].map(td => td.textContent)`);
   ok(+todayRow[1] >= 2 && +todayRow[2] >= 2 && await page.eval(`[...document.querySelectorAll('#metricas .stat span')].some(s => /vuelven al día siguiente/.test(s.textContent))`),
     `Métricas: los últimos 14 días con los jugadores y los nuevos de hoy (${todayRow.slice(1, 3).join(' / ')}) y cuántos vuelven`);
 
@@ -46,6 +47,30 @@ module.exports = async ({ page, player, env, ok }) => {
     'Balance: el combate cuenta para Charizard (1 partida, 0 % de victorias, con aviso de pocos datos)');
   await page.eval(`[...document.querySelectorAll('#bal th')].find(th => /% victoria/.test(th.textContent)).click(); true`);
   ok(await page.eval(`!!document.querySelector('#bal th.sort.on')`), 'las columnas se ordenan al tocarlas');
+  ok(await page.eval(`[...document.querySelectorAll('#bal h2')].some(h => /Por tipo/.test(h.textContent)) && [...document.querySelectorAll('#bal h2')].some(h => /Torre Batalla/.test(h.textContent))`),
+    'Combate: además por tipo y la Torre combate a combate');
+
+  // Actividad: desde qué aparato y en qué idioma, y qué pantallas (lo manda el juego al conectar y al cambiar de pantalla)
+  pr.client.send({ t: 'ctx', device: 'pc', lang: 'es' }); pr.client.send({ t: 'view', v: 'menu' });
+  await new Promise(r => setTimeout(r, 200));
+  await page.click('[data-tab=metricas]');
+  await page.waitFor(`[...document.querySelectorAll('#met .dist')].some(d => /aparato/.test(d.textContent) && /PC/.test(d.textContent))`);
+  ok(true, 'Actividad: sesiones por aparato, idioma y pantallas visitadas');
+  // Progreso: el viaje del jugador y dónde está cada uno en la historia
+  await page.click('[data-tab=progreso]');
+  await page.waitFor(`document.querySelector('#progreso .funnel tr')`);
+  ok(await page.eval(`/Han entrado/.test(document.querySelector('#progreso .funnel').textContent) && [...document.querySelectorAll('#progreso .dist h2')].some(h => /Kanto: dónde están/.test(h.textContent))`),
+    'Progreso: el embudo del jugador y en qué medalla está cada uno, con el líder que le toca');
+  await page.eval(`document.querySelector('#progreso .who-f [name=who]').value = 'cuentas'; document.querySelector('#progreso .who-f').dispatchEvent(new Event('change')); true`);
+  await page.waitFor(`/tienen cuenta/.test(document.querySelector('#progreso .stat span').textContent)`);
+  ok(true, 'Progreso: se filtra por los que tienen cuenta');
+  // Colección y Economía
+  await page.click('[data-tab=coleccion]');
+  await page.waitFor(`[...document.querySelectorAll('#coleccion .dist h2')].some(h => /Los que más gente tiene/.test(h.textContent)) && /Pokémon en total/.test(document.querySelector('#coleccion .stats').textContent)`);
+  ok(true, 'Colección: qué Pokémon tiene la gente y cuáles usa');
+  await page.click('[data-tab=economia]');
+  await page.waitFor(`[...document.querySelectorAll('#economia .dist h2')].some(h => /Dinero de cada jugador/.test(h.textContent))`);
+  ok(true, 'Economía: dinero, gemas, objetos y logros de los jugadores');
 
   await page.click('[data-tab=jugadores]');
   await page.waitFor(`document.querySelectorAll('#results tr.click').length >= 2`);

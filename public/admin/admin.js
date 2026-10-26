@@ -83,6 +83,9 @@ function show(tab) {
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
   if (tab === 'bugs') loadBugs();
+  if (tab === 'progreso') loadProgress();
+  if (tab === 'coleccion') loadCollection();
+  if (tab === 'economia') loadEconomy();
 }
 for (const b of document.querySelectorAll('#tabs button')) b.addEventListener('click', () => show(b.dataset.tab));
 // El resumen se actualiza solo cada 5 s mientras se mira
@@ -126,25 +129,126 @@ async function overview(onlyServer) {
 const pct = ([n, back]) => n ? `${Math.round(back / n * 100)} % (${back}/${n})` : '—';
 const bar = (v, max) => h('div', { class: 'mbar' }, h('i', { style: `width:${max ? Math.round(v / max * 100) : 0}%` }), h('span', {}, String(v)));
 async function loadMetrics() {
-  const m = await ask('admin.metrics');
+  const days = +new FormData($('#met-f')).get('days') || 14;
+  const m = await ask('admin.metrics', { days });
   if (!m.days) return;
-  const s = m.summary;
+  const s = m.summary, u = m.usage || { total: {}, byDay: {} }, T = u.total;
   const max = k => Math.max(1, ...m.days.map(d => d[k]));
   const sum = k => m.days.reduce((a, d) => a + d[k], 0);
   const cohort = k => m.days.reduce((a, d) => [a[0] + d[k][0], a[1] + d[k][1]], [0, 0]);
-  $('#metricas').replaceChildren(
+  const ses = T.sesiones || 0;
+  const keys = prefix => Object.entries(T).filter(([k]) => k.startsWith(prefix)).map(([k, n]) => ({ label: k.slice(prefix.length), n }));
+  const DEV = { movil: 'Móvil', tablet: 'Tablet', pc: 'PC' };
+  const VIEWS = { menu: 'Menú', story: 'Historia (mapa)', team: 'Mis Pokémon', online: 'Clasificatoria', tower: 'Torre', practice: 'Práctica', shop: 'Tienda', bag: 'Mochila', dex: 'Pokédex',
+    profile: 'Perfil', settings: 'Ajustes', missions: 'Misiones', collection: 'Logros', treasure: 'Lucky Spin', ladder: 'Ladder', league: 'Liga', results: 'Resultados', title: 'Portada', queue: 'Cola' };
+  $('#met').replaceChildren(
     h('div', { class: 'stats' },
       stat('jugadores hoy', s.dau), stat('últimos 7 días', s.wau), stat('últimos 30 días', s.mau),
       stat('perfiles · con cuenta', `${s.total} · ${s.accounts}`),
-      stat('vuelven al día siguiente (14 días)', pct(cohort('d1'))), stat('vuelven a la semana (14 días)', pct(cohort('d7'))),
-      stat('combates (14 días)', sum('battles')), stat('combates por jugador y día', (sum('battles') / Math.max(1, sum('active'))).toFixed(1))),
-    h('div', { class: 'card scroll' }, h('h2', {}, 'Últimos 14 días'),
-      table(['Día', 'Jugadores', 'Nuevos', 'Combates', 'Vuelven al día siguiente', 'Vuelven a los 7 días'], m.days.map(d => h('tr', {},
-        h('td', {}, d.day), h('td', {}, bar(d.active, max('active'))), h('td', {}, bar(d.fresh, max('fresh'))), h('td', {}, bar(d.battles, max('battles'))),
-        h('td', {}, pct(d.d1)), h('td', {}, pct(d.d7)))))),
-    h('p', { class: 'small' }, 'Un jugador cuenta como activo el día que entra al juego. «Vuelven» se mide sobre los perfiles creados ese día; los días cuya vuelta aún no ha llegado salen con —.'),
+      stat(`vuelven al día siguiente (${days} días)`, pct(cohort('d1'))), stat(`vuelven a la semana (${days} días)`, pct(cohort('d7'))),
+      stat(`combates (${days} días)`, sum('battles')), stat('combates por jugador y día', (sum('battles') / Math.max(1, sum('active'))).toFixed(1)),
+      stat(`sesiones (${days} días)`, ses), stat('minutos por sesión', ses && T.minutos ? (T.minutos / ses).toFixed(1) : '—'),
+      stat('horas jugadas', Math.round((T.minutos || 0) / 60)), stat('abren como app', ses ? Math.round((T.app || 0) / ses * 100) + ' %' : '—')),
+    h('div', { class: 'cols' },
+      dist('Desde qué aparato', keys('aparato:').map(r => ({ ...r, label: DEV[r.label] || r.label })), ses),
+      dist('Idioma del juego', keys('idioma:').map(r => ({ ...r, label: r.label.toUpperCase() })), ses),
+      dist('Pantallas que visitan (en cuántas sesiones)', keys('pantalla:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses)),
+    h('div', { class: 'card scroll' }, h('h2', {}, `Últimos ${days} días`),
+      table(['Día', 'Jugadores', 'Nuevos', 'Combates', 'Sesiones', 'Min./sesión', 'Vuelven al día siguiente', 'Vuelven a los 7 días'], m.days.map(d => {
+        const ud = u.byDay[d.day] || {};
+        return h('tr', {}, h('td', {}, d.day), h('td', {}, bar(d.active, max('active'))), h('td', {}, bar(d.fresh, max('fresh'))), h('td', {}, bar(d.battles, max('battles'))),
+          h('td', {}, ud.sesiones || 0), h('td', {}, ud.sesiones && ud.minutos ? (ud.minutos / ud.sesiones).toFixed(1) : '—'), h('td', {}, pct(d.d1)), h('td', {}, pct(d.d7)));
+      }))),
+    h('p', { class: 'small' }, 'Un jugador cuenta como activo el día que entra al juego. «Vuelven» se mide sobre los perfiles creados ese día; los días cuya vuelta aún no ha llegado salen con —. Sesiones, minutos, aparatos, idiomas y pantallas son solo contadores del día, sin saber de quién (desde la v0.27).'),
   );
 }
+$('#met-f').addEventListener('change', loadMetrics);
+
+// ---------- Repartos y embudo (Actividad, Progreso, Colección y Economía) ----------
+// Una lista de [etiqueta, cuántos] con barras y el % sobre `total` (si se da)
+function dist(title, rows, total, note) {
+  const max = Math.max(1, ...rows.map(r => r.n));
+  return h('div', { class: 'card scroll dist' }, h('h2', {}, title), note ? h('p', { class: 'small' }, note) : null,
+    rows.length ? h('table', {}, h('tbody', {}, rows.map(r => h('tr', {}, h('td', {}, r.label, r.sub ? h('small', {}, ' ' + r.sub) : null), h('td', { class: 'w' }, bar(r.n, max)),
+      h('td', { class: 'pc' }, total ? Math.round(r.n / total * 1000) / 10 + ' %' : ''))))) : h('p', { class: 'small' }, 'Sin datos todavía.'));
+}
+// Embudo: cada paso con el % sobre el primero y cuánto se pierde desde el anterior
+function funnel(title, steps, note) {
+  const first = Math.max(1, steps[0] ? steps[0].n : 1);
+  return h('div', { class: 'card scroll funnel' }, h('h2', {}, title), note ? h('p', { class: 'small' }, note) : null,
+    h('table', {}, h('tbody', {}, steps.map((s, i) => {
+      // Lo que se pierde respecto al paso anterior (solo si baja: no todos los pasos van en orden)
+      const prev = i ? steps[i - 1].n : s.n, lost = prev && s.n < prev ? Math.round((prev - s.n) / prev * 100) : 0;
+      return h('tr', {}, h('td', {}, s.label), h('td', { class: 'w' }, h('div', { class: 'fbar' }, h('i', { style: `width:${Math.round(s.n / first * 100)}%` }), h('span', {}, `${s.n} · ${Math.round(s.n / first * 100)} %`))),
+        h('td', { class: 'pc' + (lost >= 40 ? ' warn' : '') }, i && lost ? `−${lost} %` : ''));
+    }))));
+}
+// Nombres de los tipos de cosmético y de premio (en los datos van por su clave)
+const KINDS = { titles: 'Títulos', frames: 'Marcos', avatars: 'Avatares', effects: 'Efectos', auras: 'Glows', glows: 'Glows', skins: 'Skins', particles: 'Partículas',
+  item: 'Objetos', coins: 'Dinero', glow: 'Glows', aura: 'Glows', pt: 'Retratos', skin: 'Skins', effect: 'Efectos', frame: 'Marcos', title: 'Títulos', gems: 'Gemas', elemental: 'Elemental', oro: 'Oro', holo: 'Holo', galaxia: 'Galaxia', prisma: 'Prisma' };
+const whoOf = id => new FormData($(`#${id} .who-f`)).get('who') || '';
+const WHO = { '': 'todos los jugadores', activos: 'los activos en 30 días', cuentas: 'los que tienen cuenta' };
+
+// ---------- Progreso: hasta dónde llegan y dónde lo dejan ----------
+async function loadProgress() {
+  const who = whoOf('progreso');
+  const p = await ask('admin.progress', { who });
+  if (!p.funnel) return;
+  const n = p.players;
+  $('#progreso .out').replaceChildren(
+    h('div', { class: 'stats' }, stat(`jugadores (${WHO[who]})`, n), stat('llevan 7 días o más sin entrar', `${p.gone} (${n ? Math.round(p.gone / n * 100) : 0} %)`),
+      stat('Pokédex (mediana · 10 % mejor)', `${p.dex.median} · ${p.dex.p90} / ${p.dex.total}`), stat('nivel más alto (mediana)', p.level.median),
+      stat('han jugado la Torre · mejor racha (mediana)', `${p.tower.players} · ${p.tower.median}`), stat('online · clasificatoria', `${p.ranked.online} · ${p.ranked.players}`),
+      stat('días jugados (mediana)', p.days.median)),
+    funnel('El viaje del jugador', p.funnel, 'Cuántos llegan a cada paso (sobre los que han entrado) y cuántos se pierden respecto al anterior: en rojo si se pierde el 40 % o más.'),
+    h('div', { class: 'cols' }, p.byRegion.map(r => dist(`${r.name}: dónde están`, r.dist.map(d => ({ label: d.label, sub: d.next ? `→ ${d.next}` : '', n: d.n })), n,
+      'Medallas de cada jugador y el líder que le toca (→). Si mucha gente se queda en uno, ese líder es un muro.'))),
+    h('div', { class: 'cols' }, p.byRegion.map(r => dist(`${r.name}: dónde lo dejan`, r.dist.filter(d => d.gone).map(d => ({ label: d.label, sub: d.next ? `→ ${d.next}` : '', n: d.gone })), p.gone,
+      'De los que llevan 7 días o más sin entrar: en qué punto se quedaron.'))),
+    h('div', { class: 'cols' }, dist('Pokédex', p.dex.dist, n), dist('Nivel más alto de su equipo', p.level.dist, n), dist('Mejor racha en la Torre', p.tower.dist, n)),
+    h('div', { class: 'cols' }, dist('Ligas de Clasificatoria', p.ranked.leagues, p.ranked.players), dist('Días que han jugado (últimos 35)', p.days.dist, n), dist('Racha del premio diario', p.streak, n)),
+    h('div', { class: 'card scroll' }, h('h2', {}, 'Misiones de ahora'), h('p', { class: 'small' }, 'De las misiones que tiene la gente esta vez: cuántos la tienen, cuántos la han completado y cuántos han recogido el premio. Una que casi nadie completa es demasiado difícil.'),
+      table(['Misión', 'Tipo', 'Objetivo', 'La tienen', 'Completada', 'Recogida'], p.missions.map(m => h('tr', {}, h('td', {}, m.label), h('td', {}, m.kind), h('td', {}, m.goal), h('td', {}, m.given),
+        h('td', {}, `${m.done} (${m.given ? Math.round(m.done / m.given * 100) : 0} %)`), h('td', {}, `${m.claimed} (${m.given ? Math.round(m.claimed / m.given * 100) : 0} %)`))))),
+  );
+}
+
+// ---------- Colección: qué Pokémon tienen y usan ----------
+async function loadCollection() {
+  const who = whoOf('coleccion');
+  const c = await ask('admin.collection', { who });
+  if (!c.owned) return;
+  const n = c.players;
+  const mons = (title, rows, total, note) => dist(title, rows.map(r => ({ label: r.name, sub: '#' + r.dex, n: r.n })), total, note);
+  $('#coleccion .out').replaceChildren(
+    h('div', { class: 'stats' }, stat(`jugadores (${WHO[who]})`, n), stat('Pokémon en total', c.mons), stat('por jugador', c.perPlayer), stat('shiny', c.shiny), stat('con mote', c.nick)),
+    h('div', { class: 'cols' },
+      mons('Los que más gente tiene', c.owned, n, '% de jugadores que lo tienen.'),
+      mons('Los que más se usan en el equipo', c.inTeam, n, 'Equipos de la historia (todas las regiones).'),
+      mons('Equipo de Clasificatoria', c.pvp, null, 'Cuántos lo llevan en su equipo de 3.')),
+    h('div', { class: 'cols' },
+      mons('Inicial elegido', c.starters, null),
+      mons('Líneas con más victorias (Logros)', c.mastery, null, 'Victorias sumadas de todos los jugadores con esa línea evolutiva.'),
+      mons('Shiny que más hay', c.shinies, null)),
+    h('div', { class: 'cols' }, dist('Skins conseguidas (por tipo)', c.skins.map(r => ({ ...r, label: KINDS[r.label] || r.label })), null)),
+  );
+}
+
+// ---------- Economía: dinero, gemas, objetos, premios y logros ----------
+async function loadEconomy() {
+  const who = whoOf('economia');
+  const e = await ask('admin.economy', { who });
+  if (!e.coins) return;
+  const n = e.players, k = v => v >= 1e6 ? (v / 1e6).toFixed(1) + ' M' : v >= 1e4 ? Math.round(v / 1e3) + ' k' : String(v);
+  $('#economia .out').replaceChildren(
+    h('div', { class: 'stats' }, stat(`jugadores (${WHO[who]})`, n), stat('dinero (mediana · 10 % más rico)', `${k(e.coins.median)} · ${k(e.coins.p90)}`), stat('dinero en total', k(e.coins.total)),
+      stat('gemas (mediana · 10 % más)', `${e.gems.median} · ${e.gems.p90}`), stat('gemas en total', k(e.gems.total)), stat('premios de Lucky Spin', e.gems.spins)),
+    h('div', { class: 'cols' }, dist('Dinero de cada jugador', e.coins.dist, n), dist('Gemas de cada jugador', e.gems.dist, n), dist('Premios de Lucky Spin (por tipo)', e.prizes.map(r => ({ ...r, label: KINDS[r.label] || r.label })), e.gems.spins)),
+    h('div', { class: 'cols' }, dist('Objetos guardados (unidades)', e.items, null), dist('Cosméticos conseguidos', e.cosmetics.map(r => ({ ...r, label: KINDS[r.label] || r.label })), null),
+      dist('Logros conseguidos', e.achievements, n, '% de jugadores que lo tienen. Uno que casi nadie consigue puede ser demasiado difícil.')),
+  );
+}
+for (const id of ['progreso', 'coleccion', 'economia']) $(`#${id} .who-f`).addEventListener('change', () => ({ progreso: loadProgress, coleccion: loadCollection, economia: loadEconomy })[id]());
 
 // ---------- Balance ----------
 // Datos de equilibrio (server/balance.js): por Pokémon, movimiento y líder, en los días y el modo elegidos.
@@ -191,15 +295,32 @@ async function loadBalance() {
     h('h2', {}, 'Pokémon'),
     h('p', { class: 'small' }, `De los jugadores (la IA no cuenta). «Fuerte» o «flojo» a partir de ${MIN.mon} partidas: 58 % de victorias o más, o 42 % o menos. Elegido y vetado, en el draft online.`),
     sortable('mon', [['name', 'Pokémon'], ['games', 'Partidas'], ['wr', '% victoria', pctTxt], ['pick', '% elegido', pctTxt], ['ban', '% vetado', pctTxt], ['dmgG', 'Daño/partida'], ['takenG', 'Recibido/partida'], ['kosG', 'KOs/partida'], ['faintP', '% debilitado', pctTxt], ['note', '', note]], mons, 'games'),
+    h('h2', {}, 'Por tipo'),
+    h('p', { class: 'small' }, 'Los Pokémon de cada tipo sumados (uno de dos tipos cuenta en los dos): si un tipo entero gana mucho más o mucho menos que el resto, hay que mirar sus movimientos o sus debilidades.'),
+    sortable('type', [['type', 'Tipo'], ['games', 'Partidas'], ['wr', '% victoria', pctTxt], ['dmgG', 'Daño/partida'], ['kosG', 'KOs/partida'], ['species', 'Especies'], ['note', '', note]], byType(b.mons), 'games'),
     h('h2', {}, 'Movimientos'),
     h('p', { class: 'small' }, `Usos, en cuántos da (al menos un golpe) y daño medio por uso. A partir de ${MIN.move} usos se marca si acierta menos del 30 % o hace más del doble de daño por uso que la mediana.`),
     sortable('move', [['name', 'Movimiento'], ['type', 'Tipo'], ['casts', 'Usos'], ['hit', '% acierto', pctTxt], ['dpu', 'Daño/uso'], ['kos', 'KOs'], ['note', '', note]], moves, 'casts'),
+    h('h2', {}, 'Torre Batalla, combate a combate'),
+    h('p', { class: 'small' }, 'Cuántos llegan a cada combate de la racha y cuántos lo ganan. Donde el % de victoria cae de golpe hay un salto de dificultad (el 21 y el 49 son el Cerebro).'),
+    sortable('tower', [['n', 'Combate'], ['tries', 'Llegan'], ['wins', 'Lo ganan'], ['wr', '% victoria', pctTxt], ['note', '', note]],
+      (b.tower || []).map(t => { const wr = pc(t.wins, t.tries), few = t.tries < MIN.leader; return { ...t, wr, few, note: few ? ['', 'pocos datos'] : wr < 50 ? ['fallo', 'aquí caen'] : null }; }), 'n'),
     h('h2', {}, 'Líderes de la historia'),
     h('p', { class: 'small' }, `Intentos y victorias contra cada líder. A partir de ${MIN.leader} intentos: «muro» si se gana menos del 35 %, «muy fácil» si más del 90 %.`),
     sortable('leader', [['name', 'Líder'], ['region', 'Región'], ['index', 'Orden'], ['tries', 'Intentos'], ['wr', '% victoria', pctTxt], ['note', '', note]], leaders, 'index'),
   );
 }
 $('#bal-f').addEventListener('change', loadBalance);
+// Suma por tipo de los datos de cada Pokémon
+function byType(mons) {
+  const t = {};
+  for (const m of mons) for (const ty of m.types || []) {
+    const r = t[ty] || (t[ty] = { type: ty, games: 0, wins: 0, dmg: 0, kos: 0, species: 0 });
+    r.games += m.games; r.wins += m.wins; r.dmg += m.dmg; r.kos += m.kos; r.species++;
+  }
+  return Object.values(t).map(r => { const wr = pc(r.wins, r.games), few = r.games < MIN.mon;
+    return { ...r, wr, few, dmgG: per(r.dmg, r.games), kosG: per(r.kos, r.games), note: few ? ['', 'pocos datos'] : wr >= 56 ? ['fallo', 'fuerte'] : wr <= 44 ? ['on', 'flojo'] : null }; });
+}
 
 const table = (heads, rows) => h('table', {}, h('thead', {}, h('tr', {}, heads.map(x => h('th', {}, x)))), h('tbody', {}, rows));
 function typeTag(type) {
@@ -232,6 +353,7 @@ async function openPlayer(id) {
   if (!player) return box.replaceChildren(h('p', { class: 'err' }, 'No existe.'));
   const p = player.profile;
   const tw = p.tower || {};
+  const nm = d => (player.names || {})[d] || '#' + d;
   const act = (a, extra = {}) => async () => {
     const r = await ask('admin.action', { a, id: p.id, ...extra });
     if (r.err) return toast(r.err, true);
@@ -250,9 +372,23 @@ async function openPlayer(id) {
         ['Clasificatoria', `${p.elo} ELO · ${p.wins || 0} V / ${p.losses || 0} D · ${p.ranked || 0} combates`], ['Dinero', `₽ ${(p.coins || 0).toLocaleString('es-ES')}`],
         ['Pokémon', `${(p.mons || []).length} · Pokédex ${(p.caught || []).length} · shinies ${(p.shinies || []).length}`],
         ['Motes', (p.mons || []).filter(m => m.nick).map(m => `${m.nick} (nº ${m.dex})`).join(' · ')],
-        ['Torre', `mejor racha ${tw.best || 0}${tw.team ? ` · en curso ${tw.streak || 0}` : ''}`],
+        ['Torre', `mejor racha ${tw.best || 0}${tw.team ? ` · en curso ${tw.streak || 0}` : ''} · ${tw.runs || 0} intentos · ${tw.wins || 0} combates ganados`],
+        ['Historia', Object.entries(p.prog || {}).map(([r, n]) => `${r} ${n} medalla${n === 1 ? '' : 's'}`).join(' · ')],
+        ['Gemas', (p.gems || 0).toLocaleString('es-ES')],
+        ['Actividad', `${Object.keys(p.act || {}).length} días en los últimos 35 · última vez ${fmtDate(p.seen)} · racha diaria ${(p.daily && p.daily.streak) || 0}`],
+        ['Tutorial', p.tutorial ? 'hecho' : 'sin hacer'],
+        ['Logros', `${Object.keys(p.achievements || {}).length} conseguidos`],
         ['Suspensión', p.ban ? `${p.ban.reason} · ${p.ban.until ? 'hasta ' + fmtDate(p.ban.until) : 'para siempre'} · desde ${fmtDate(p.ban.at)}${p.banned ? '' : ' (ya terminó)'}` : 'no'],
       ].filter(([, v]) => v).flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])),
+    // Sus equipos (por región) y sus últimas partidas online
+    h('h3', {}, 'Equipos'),
+    h('dl', { class: 'kv' }, ...Object.entries(p.teams || {}).flatMap(([r, uids]) => {
+      const mons = (uids || []).map(u => (p.mons || []).find(m => m.uid === u)).filter(Boolean);
+      return mons.length ? [h('dt', {}, r), h('dd', {}, mons.map(m => `${m.nick ? m.nick + ' (' + nm(m.dex) + ')' : nm(m.dex)} Nv.${m.level}${m.shiny ? ' ✦' : ''}`).join(' · '))] : [];
+    })),
+    (p.history || []).length ? h('div', {}, h('h3', {}, 'Últimas partidas online'), table(['Fecha', 'Resultado', 'ELO', 'Rival', 'Su equipo', 'Equipo rival'], (p.history || []).slice(0, 10).map(x => h('tr', {},
+      h('td', {}, fmtDate(x.at)), h('td', {}, h('span', { class: 'tag ' + (x.won ? 'on' : 'fallo') }, x.won ? 'victoria' : 'derrota')), h('td', {}, `${x.elo} (${x.delta > 0 ? '+' : ''}${x.delta})`),
+      h('td', {}, `${x.foe || '—'} (${x.foeElo || '—'})`), h('td', {}, (x.team || []).map(nm).join(', ')), h('td', {}, (x.foeTeam || []).map(nm).join(', ')))))) : null,
     h('h3', {}, 'Moderación'),
     h('div', { class: 'actions' },
       h('label', {}, 'Motivo', reason), h('label', {}, 'Duración', hours),

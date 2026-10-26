@@ -50,6 +50,11 @@ function setStatus(id, status) {
   if (!STATUS.includes(status)) return false;
   return db.prepare('UPDATE bugs SET status = ? WHERE id = ?').run(status, Number(id) | 0).changes > 0;
 }
+// Si se borra un jugador (lo pide él o es un invitado viejo), sus reportes también
+store.onRemove(p => db.prepare('DELETE FROM bugs WHERE player = ?').run(p.id));
+
+// Los reportes se guardan un año (lo que dice la política de privacidad); se repasa cada 6 h
+setInterval(() => db.prepare('DELETE FROM bugs WHERE at < ?').run(Date.now() - 365 * 864e5), 6 * 3600e3).unref();
 const countNew = () => db.prepare("SELECT COUNT(*) AS n FROM bugs WHERE status = 'nuevo'").get().n;
 
 module.exports = { report, list, setStatus, countNew, telegram, MIN, MAX };

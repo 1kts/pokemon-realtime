@@ -122,6 +122,7 @@ export class UI {
     const same = keepScroll || view === this.view;
     const scrolls = same ? this.saveScroll() : null;
     this.view = view;
+    this.sendView(view);
     // Durante un combate (y el momento final antes de los resultados) la música la pone el combate:
     // repintar el menú de debajo, p. ej. al llegar el perfil nuevo, no debe cortar la fanfarria
     const track = !this.app.battle && trackForView(view);
@@ -133,6 +134,14 @@ export class UI {
     const fn = this['view_' + view];
     if (fn) fn.call(this);
     if (scrolls) this.restoreScroll(scrolls);
+  }
+
+  // Qué pantallas se visitan (para el panel; cada una se manda una vez por conexión)
+  sendView(view) {
+    if (!this.viewsSent) this.viewsSent = new Set();
+    if (this.viewsSent.has(view) || !this.net) return;
+    this.viewsSent.add(view);
+    this.net.send({ t: 'view', v: view });
   }
 
   // Scroll de la página y de las cajas con scroll propio, por su clase y su orden entre las de esa clase

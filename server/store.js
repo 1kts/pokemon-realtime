@@ -226,7 +226,11 @@ function persist(p) {
 }
 // Borra un perfil del todo (derecho de supresión): memoria, índices y base de datos. Quien lo esté
 // usando tiene que estar ya desconectado.
+// Lo que otros módulos guardan de un jugador (sus reportes de bugs…) se borra con él
+const removeHooks = [];
+const onRemove = f => removeHooks.push(f);
 function remove(p) {
+  for (const f of removeHooks) try { f(p); } catch (e) { console.error('Al borrar un perfil:', e.message); }
   profiles.delete(p.token);
   ids.delete(p.id);
   if (p.account) accounts.delete(p.account.user.toLowerCase());
@@ -347,4 +351,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };
+  check, setPassword, banned, persist, remove, onRemove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

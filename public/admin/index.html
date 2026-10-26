@@ -13,8 +13,11 @@
   <b>PokéArenas · Admin</b>
   <nav id="tabs">
     <button data-tab="resumen" class="sel">Resumen</button>
-    <button data-tab="metricas">Métricas</button>
-    <button data-tab="balance">Balance</button>
+    <button data-tab="metricas">Actividad</button>
+    <button data-tab="progreso">Progreso</button>
+    <button data-tab="balance">Combate</button>
+    <button data-tab="coleccion">Colección</button>
+    <button data-tab="economia">Economía</button>
     <button data-tab="jugadores">Jugadores</button>
     <button data-tab="bugs">Bugs <i id="bugs-n" hidden></i></button>
     <button data-tab="auditoria">Auditoría</button>
@@ -36,7 +39,23 @@
   </form>
 
   <section id="resumen" class="tab" hidden></section>
-  <section id="metricas" class="tab" hidden></section>
+  <section id="metricas" class="tab" hidden>
+    <form id="met-f" class="row wrap"><label>Días <select name="days"><option>7</option><option selected>14</option><option>30</option></select></label></form>
+    <div id="met"></div>
+  </section>
+  <!-- Progreso, Colección y Economía: de todos los jugadores, de los activos en 30 días o solo de las cuentas -->
+  <section id="progreso" class="tab" hidden>
+    <form class="row wrap who-f"><label>Jugadores <select name="who"><option value="">Todos</option><option value="activos">Activos (30 días)</option><option value="cuentas">Con cuenta</option></select></label></form>
+    <div class="out"></div>
+  </section>
+  <section id="coleccion" class="tab" hidden>
+    <form class="row wrap who-f"><label>Jugadores <select name="who"><option value="">Todos</option><option value="activos">Activos (30 días)</option><option value="cuentas">Con cuenta</option></select></label></form>
+    <div class="out"></div>
+  </section>
+  <section id="economia" class="tab" hidden>
+    <form class="row wrap who-f"><label>Jugadores <select name="who"><option value="">Todos</option><option value="activos">Activos (30 días)</option><option value="cuentas">Con cuenta</option></select></label></form>
+    <div class="out"></div>
+  </section>
   <section id="balance" class="tab" hidden>
     <form id="bal-f" class="row wrap">
       <label>Días <select name="days"><option>7</option><option selected>14</option><option>30</option><option>90</option></select></label>

@@ -69,3 +69,12 @@ tr.few td { opacity: .55; }
 .bug.nuevo { border-left: 4px solid #ff6a4a; }
 .bug.resuelto { opacity: .6; }
 #bugs-n { font-style: normal; background: #ff4a3d; color: #fff; border-radius: 99px; padding: 0 6px; font-size: 11px; margin-left: 4px; }
+/* Repartos y embudo */
+.dist table, .funnel table { width: 100%; }
+.dist td.w, .funnel td.w { width: 55%; }
+.dist td.pc, .funnel td.pc { text-align: right; white-space: nowrap; color: var(--muted, #9fb0cc); font-variant-numeric: tabular-nums; }
+.funnel td.pc.warn { color: #ff8a7a; font-weight: 700; }
+.dist td small { color: var(--muted, #9fb0cc); }
+.fbar { position: relative; height: 22px; border-radius: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
+.fbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #3a6fe0, #5fd0ff); }
+.fbar span { position: relative; padding: 0 8px; line-height: 22px; font-size: 12px; font-weight: 700; }

@@ -40,10 +40,12 @@ module.exports = async ({ page, player, ok }) => {
   const tipSel = await page.eval(`(() => { const n = [...document.querySelectorAll('#screen [title], #screen [data-tip]')].find(e => e.offsetParent && !e.closest('#hud')); n.id = n.id || 'tip-e2e'; return '#' + n.id; })()`);
   const touch = (type) => page.eval(`(() => { const n = document.querySelector('${tipSel}'), r = n.getBoundingClientRect();
     n.dispatchEvent(new PointerEvent('${type}', { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); return true; })()`);
-  await touch('pointerover'); await touch('pointerdown');
-  await page.eval(`document.querySelector('${tipSel}').focus(); true`);
-  await touch('pointerup');
-  await new Promise(r => setTimeout(r, 150));
+  // Un toque corto: todo en la misma consulta (en el CI cada consulta tarda y parecería una pulsación larga)
+  await page.eval(`(() => { const n = document.querySelector('${tipSel}'), r = n.getBoundingClientRect();
+    for (const type of ['pointerover', 'pointerdown']) n.dispatchEvent(new PointerEvent(type, { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 }));
+    n.focus();
+    n.dispatchEvent(new PointerEvent('pointerup', { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); return true; })()`);
+  await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
   ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
   await touch('pointerdown');
   await new Promise(r => setTimeout(r, 650));

@@ -15,6 +15,8 @@ const rewards = require('./rewards.js');
 const tower = require('./tower.js');
 const metrics = require('./metrics.js');
 const bugs = require('./bugs.js');
+const insights = require('./insights.js');
+const usage = require('./usage.js');
 const D = require('../public/data.js');
 
 const { db } = store;
@@ -105,6 +107,9 @@ function createAdmin(ctx) {
       connections: live.map(c => ({ ip: c.ip, doing: c.battle ? c.battle.mode : c.draft ? 'draft' : c.queue ? 'cola' : 'menú' })),
       admin: !!adminRow(id), ips, alts: [...alts.values()].slice(0, 20),
       events: audit.query({ who: id, limit: 100 }).map(withNames),
+      // Nombres de las especies que salen en su ficha (sus Pokémon y sus partidas)
+      names: Object.fromEntries([...new Set([...(p.mons || []).map(m => m.dex), ...(p.history || []).flatMap(x => [...(x.team || []), ...(x.foeTeam || [])])])]
+        .filter(d => D.SPECIES[d]).map(d => [d, D.SPECIES[d].name])),
     };
   }
 
@@ -198,7 +203,11 @@ function createAdmin(ctx) {
     const reply = (data) => send(c, { t: msg.t, rid: msg.rid, ...data });
     switch (msg.t) {
       case 'admin.overview': return reply(overview());
-      case 'admin.metrics': return reply(metrics.compute(store.all()));
+      case 'admin.metrics': return reply({ ...metrics.compute(store.all(), Date.now(), Math.max(7, Math.min(35, msg.days | 0 || 14))), usage: usage.summary(Math.max(7, Math.min(35, msg.days | 0 || 14))) });
+      // Para mejorar el juego: hasta dónde llega la gente, qué Pokémon tiene y usa, y cómo va la economía
+      case 'admin.progress': return reply(insights.progress(store.all(), String(msg.who || '')));
+      case 'admin.collection': return reply(insights.collection(store.all(), String(msg.who || '')));
+      case 'admin.economy': return reply(insights.economy(store.all(), String(msg.who || '')));
       case 'admin.balance': return reply(balance.summary(msg.days, String(msg.mode || '')));
       // Jugadores: con texto busca; sin texto, la lista entera (cuentas primero, por última conexión)
       case 'admin.search': {

@@ -19,6 +19,7 @@ const metrics = require('./metrics.js');
 const balance = require('./balance.js');
 const limits = require('./limits.js');
 const bugs = require('./bugs.js');
+const usage = require('./usage.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
@@ -31,7 +32,7 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.png': 'image/png', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
   '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8', '.mp3': 'audio/mpeg' };
 
 // Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: todo
@@ -66,7 +67,7 @@ const server = http.createServer((req, res) => {
     if (err) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
     if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' });
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' || ext === '.jpg' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' });
     res.end(data);
   });
 });
@@ -281,6 +282,7 @@ function startTower(c) {
   startBattle([c, null], setup.opts, (result, b) => {
     const before = missions.snapshot(c.profile);
     const reward = tower.applyResult(c.profile, setup, result);
+    try { balance.tower(setup.foe.n, result.winner === 0); } catch (e) { console.error('Datos de equilibrio:', e); }
     if (result.winner === 0) {
       reward.mastery = rewards.addMastery(c.profile, b.sides[0].team.map(m => m.dex));
       rewards.addLineStat(c.profile, b.sides[0].team.map(m => m.dex), 'tower', reward.tower.streak, true);
@@ -319,6 +321,7 @@ wss.on('connection', (ws, req) => {
     limits.connClose(ip);
     clients.delete(c);
     leaveQueue(c);
+    usage.close(c);
     if (c.battle) c.battle.leave(c.battle.sides[c.side], true);
     if (c.profile) store.release(c.profile);
   });
@@ -334,6 +337,9 @@ function refuseBanned(c, p) {
 function handle(c, msg) {
   if (msg.t === 'ping') return send(c, { t: 'pong', ts: msg.ts });
   if (msg.t.startsWith('admin.')) return adminPanel.handle(c, msg);
+  // Uso del juego para el panel (solo contadores del día): aparato, idioma y pantallas que se visitan
+  if (msg.t === 'ctx') return usage.session(c, msg);
+  if (msg.t === 'view') return usage.view(c, msg);
   // Reportar un bug desde el juego (se guarda y avisa al admin)
   if (msg.t === 'bug') {
     const err = bugs.report(c, msg);

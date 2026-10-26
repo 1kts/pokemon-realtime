@@ -62,16 +62,21 @@ function leader(node, won) {
   add('lider', [['leader', node.id, 'tries', 1], ['leader', node.id, 'wins', won ? 1 : 0]]);
 }
 
+// Torre Batalla: cada combate (por su número en la racha), un intento y si se gana. Así se ve en qué piso cae la gente
+function tower(n, won) {
+  add('tower', [['tower', n, 'tries', 1], ['tower', n, 'wins', won ? 1 : 0]]);
+}
+
 // Resumen para el panel: los últimos `days` días, de un modo o de todos ('')
 function summary(days = 14, mode = '') {
   const from = D.dayKey(Date.now() - (Math.max(1, Math.min(KEEP_DAYS, days | 0)) - 1) * DAY);
   const rows = mode
     ? db.prepare('SELECT kind, key, f, SUM(n) AS n FROM balance WHERE day >= ? AND mode = ? GROUP BY kind, key, f').all(from, mode)
     : db.prepare('SELECT kind, key, f, SUM(n) AS n FROM balance WHERE day >= ? GROUP BY kind, key, f').all(from);
-  const by = { mon: {}, move: {}, leader: {}, all: {} };
+  const by = { mon: {}, move: {}, leader: {}, tower: {}, all: {} };
   for (const r of rows) ((by[r.kind] || (by[r.kind] = {}))[r.key] || (by[r.kind][r.key] = {}))[r.f] = r.n;
   const all = { battles: (by.all.battles || {}).n || 0, drafts: (by.all.drafts || {}).n || 0 };
-  const mons = Object.entries(by.mon).map(([dex, s]) => ({ dex: +dex, name: (D.SPECIES[dex] || { name: dex }).name, games: s.games || 0, wins: s.wins || 0,
+  const mons = Object.entries(by.mon).map(([dex, s]) => ({ dex: +dex, name: (D.SPECIES[dex] || { name: dex }).name, types: (D.SPECIES[dex] || {}).types || [], games: s.games || 0, wins: s.wins || 0,
     out: s.out || 0, dmg: s.dmg || 0, taken: s.taken || 0, kos: s.kos || 0, fainted: s.fainted || 0, picked: s.picked || 0, banned: s.banned || 0 }));
   const moves = Object.entries(by.move).map(([key, s]) => ({ key, name: (D.MOVES[key] || { name: key }).name, type: (D.MOVES[key] || {}).type || null,
     casts: s.casts || 0, landed: s.landed || 0, dmg: s.dmg || 0, kos: s.kos || 0 }));
@@ -79,7 +84,8 @@ function summary(days = 14, mode = '') {
     const node = D.NODES[id] || {};
     return { id, name: node.leader || id, region: node.region || null, index: node.index ?? null, tries: s.tries || 0, wins: s.wins || 0 };
   });
-  return { days, mode, from, all, mons, moves, leaders };
+  const towerRows = Object.entries(by.tower || {}).map(([n, s]) => ({ n: +n, tries: s.tries || 0, wins: s.wins || 0 })).sort((a, b) => a.n - b.n);
+  return { days, mode, from, all, mons, moves, leaders, tower: towerRows };
 }
 
 // Los días viejos se borran (cada 6 h)
@@ -88,4 +94,4 @@ function purge() {
 }
 setInterval(purge, 6 * 3600e3).unref();
 
-module.exports = { battle, draft, leader, summary, purge };
+module.exports = { battle, draft, leader, tower, summary, purge };

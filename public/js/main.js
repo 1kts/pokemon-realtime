@@ -15,7 +15,7 @@ import { initTouchDevice } from './touch.js';
 import './tips.js';
 import { confirmBox } from './dialog.js';
 import { Net, storage } from './net.js';
-import { t, tServer } from './i18n.js';
+import { t, tServer, getLang } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
 import { Sfx } from './sfx.js';
 
@@ -103,7 +103,14 @@ const net = app.net;
 const ui = app.ui;
 const overlay = document.getElementById('conn');
 
-net.on('connected', () => { overlay.hidden = true; });
+net.on('connected', () => {
+  overlay.hidden = true;
+  // Para las estadísticas de uso del panel (solo contadores, sin decir quién): aparato, idioma y si va como app
+  const touch = matchMedia('(pointer: coarse)').matches, small = Math.min(screen.width, screen.height) < 600;
+  net.send({ t: 'ctx', device: touch ? (small ? 'movil' : 'tablet') : 'pc', lang: getLang(), app: matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || !!navigator.standalone });
+  ui.viewsSent = new Set();
+  if (ui.view) ui.sendView(ui.view);
+});
 net.on('disconnected', () => {
   if (!ui.profile) return;
   overlay.hidden = false;
