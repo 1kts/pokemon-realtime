@@ -287,6 +287,27 @@ function unlockAll(p) {
   // Todos los avatares de colección: iconos de logros y medallas
   p.cosmetics.avatars = [...new Set([...(p.cosmetics.avatars || []), ...D.avatarIds(),
     ...D.REGION_IDS.flatMap(r => Array.from({ length: 8 }, (_, i) => D.badgeAvatar(r, i)))])];
+  // Todo lo cosmético: glows, efectos, marcos de tipo, y en cada línea evolutiva sus retos (con las skins de
+  // maestría), la Elemental, sus partículas y su retrato
+  const lines = [...new Set(all.filter(d => D.inDex(d)).map(D.lineOf))];
+  for (const g of D.AURAS) rewards.unlock(p, 'auras', g);
+  for (const fx of D.EFFECTS) rewards.unlock(p, 'effects', fx);
+  for (const ty of D.TYPE_NAMES) rewards.unlock(p, 'frames', 'tipo-' + ty);
+  p.lineStats = p.lineStats || {};
+  for (const stat of ['pvp', 'tower']) p.lineStats[stat] = p.lineStats[stat] || {};
+  for (const root of lines) {
+    p.mastery[root] = Math.max(p.mastery[root] || 0, 500);
+    p.lineStats.pvp[root] = Math.max(p.lineStats.pvp[root] || 0, 25);
+    p.lineStats.tower[root] = Math.max(p.lineStats.tower[root] || 0, 50);
+    p.masteryClaimed[root] = D.MASTERY_TIERS.map((_, i) => i);
+    rewards.unlock(p, 'skins', 'elemental:' + root);
+    rewards.unlock(p, 'particles', root);
+    rewards.unlock(p, 'avatars', 'pt:' + root);
+    rewards.unlock(p, 'titles', D.masteryTitle(root));
+  }
+  rewards.unlock(p, 'auras', 'prisma');
+  p.gems = Math.max(p.gems || 0, 99999);
+  if (!D.pvpTeam(p.pvpTeam)) p.pvpTeam = D.pvpTeam(D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })));
   p.staff = true;
   story.migrate(p);   // medallas a partir del progreso
   return added;

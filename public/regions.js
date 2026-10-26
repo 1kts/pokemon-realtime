@@ -94,7 +94,7 @@
     "req": 0,
     "map": "bosque",
     "x": 18,
-    "y": 42,
+    "y": 48,
     "parts": [
      "Ruta 2",
      "Bosque Verde"

@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.2 ----------
+    'Un mapa con más vida': 'Una mappa più viva',
+    'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'La mappa della Storia ha montagne di rocce, boschi di pini, alberi sparsi, aiuole fiorite e palme sulla costa.',
+    'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.': 'La Lega Pokémon ha il suo edificio dorato sulla mappa, e lo vedi all\'Altopiano Blu anche prima di averla sbloccata.',
+    'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».': 'Niente più linee tratteggiate sulla mappa: le etichette «Nuova» e «Prossima sfida» ti indicano dove andare.',
     // ---------- Novedades v0.23.1 ----------
     'La sede de la Liga': 'La sede della Lega',
     'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': 'La Lega è un edificio sulla mappa: dentro vedi i 5 allenatori in ordine, quello che ti aspetta con la sua squadra, e da lì inizi o continui la sfida.',

@@ -165,6 +165,9 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
     'todos los títulos, marcos y símbolos');
   ok(D.ACHIEVEMENTS.every(a => me.achievements[a.id] && (!a.reward.title || me.cosmetics.titles.includes(a.reward.title)) && (!a.reward.frame || me.cosmetics.frames.includes(a.reward.frame)))
     && me.tower.best === 0 && !me.wins, 'todos los logros con sus títulos y marcos, sin inventar rachas ni victorias');
+  ok(D.AURAS.every(g => me.cosmetics.auras.includes(g)) && D.EFFECTS.every(fx => me.cosmetics.effects.includes(fx)) && me.cosmetics.frames.includes('tipo-fuego')
+    && D.hasSkin(me, 6, 'oro') && D.hasSkin(me, 6, 'galaxia') && D.hasSkin(me, 6, 'elemental') && D.hasParticles(me, 6) && me.cosmetics.avatars.includes('pt:4')
+    && !D.masteryReady(me, 4).length && me.gems >= 99999 && !!D.pvpTeam(me.pvpTeam), 'también glows, efectos, marcos de tipo, skins, partículas, retratos, retos de línea, gemas y equipo de PvP');
   me.coins = 5;
   const un2 = await adm.ask('admin.action', { a: 'unlockall', id: boss.p.id });
   ok(/rellenados/.test(un2.ok) && me.coins === 999999999 && me.mons.filter(m => m.met === 'admin').length === mine.length, 'repetirlo rellena el dinero sin duplicar Pokémon');

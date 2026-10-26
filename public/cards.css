@@ -1166,3 +1166,15 @@ body.in-battle .ui-confirm { cursor: auto; }
 
 /* Etiqueta del nombre (Ash#4821): discreta, para distinguir a quien se llama igual */
 .ntag { margin-left: 2px; font-size: .62em; font-weight: 700; color: #8d9bbb; letter-spacing: .3px; }
+
+/* Liga Pokémon en el mapa: su edificio (dorado), sin recuadro; bloqueada se ve en gris, sin nombre */
+.node.league-hq { width: 56px !important; height: 56px !important; background: none !important; border: 0 !important; box-shadow: none !important; }
+.node.league-hq .league-ico { width: 56px; height: 56px; image-rendering: pixelated; filter: drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
+.node.league-hq.next .league-ico { filter: drop-shadow(0 0 6px var(--gold, #ffcb05)) drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
+.map.focus .node.league-hq.locked > .league-ico { display: block !important; filter: grayscale(1) brightness(.8); opacity: .8; }
+.map.focus .node.league-hq.locked > .lock { position: absolute; bottom: -4px; right: -4px; }
+.sl-ico .league-ico { image-rendering: pixelated; }
+.map.focus .node.league-hq.locked { width: 44px !important; height: 44px !important; opacity: 1; filter: none; }
+.map.focus .node.league-hq.locked .league-ico { width: 44px; height: 44px; }
+/* Sin líneas discontinuas hacia lo nuevo: ya lo marcan las etiquetas «Nueva» y «Siguiente reto» */
+.map .paths .leg { display: none; }

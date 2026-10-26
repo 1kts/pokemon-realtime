@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.23.2', date: '2026-10-26', title: 'Un mapa con más vida',
+      items: [
+        ['cambio', 'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.'],
+        ['cambio', 'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.'],
+        ['cambio', 'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».'],
+      ],
+    },
+    {
       v: '0.23.1', date: '2026-10-26', title: 'La sede de la Liga',
       items: [
         ['cambio', 'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.'],

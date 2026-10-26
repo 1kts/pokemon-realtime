@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.2 ----------
+    'Un mapa con más vida': 'Eine lebendigere Karte',
+    'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'Die Story-Karte hat jetzt Felsberge, Kiefernwälder, einzelne Bäume, Blumenbeete und Palmen an der Küste.',
+    'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.': 'Die Pokémon-Liga hat ein eigenes goldenes Gebäude auf der Karte, und du siehst es auf dem Indigo Plateau, auch bevor du sie freischaltest.',
+    'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».': 'Keine gestrichelten Linien mehr auf der Karte: Die Markierungen «Neu» und «Nächste Herausforderung» zeigen dir, wohin es geht.',
     // ---------- Novedades v0.23.1 ----------
     'La sede de la Liga': 'Das Liga-Gebäude',
     'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': 'Die Liga ist ein Gebäude auf der Karte: Drinnen siehst du die 5 Trainer der Reihe nach, den nächsten mit seinem Team, und dort startest oder setzt du die Herausforderung fort.',

@@ -1,5 +1,5 @@
-// Mapa de región genérico en SVG (arte propio, no el mapa oficial): mar, costa con playa, tierra,
-// montes, bosques, lagos, caminos, rutas marinas y ciudades. Al ser vectorial se ve nítido a
+// Mapa de región genérico en SVG (arte propio, con rocas, árboles, flores y palmeras del tileset de Scarloxy):
+// mar, costa con playa, tierra, montes, bosques, lagos, caminos, rutas marinas y ciudades. Al ser vectorial se ve nítido a
 // cualquier tamaño. Se dibuja en un lienzo de 160x100 que la UI encaja sin deformarlo; el mar se
 // extiende más allá para rellenar el hueco que sobre. Los nombres y nodos van en HTML encima.
 // Coordenadas en % (las mismas que los nodos de tools/regions-src.js).
@@ -88,21 +88,51 @@ export function regionMapSVG(region) {
   out.push(`<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#000" stroke-opacity=".22" stroke-width="4.4" transform="translate(.25 .35)">${roads}</g><g stroke="#5a3a1a" stroke-width="3.6">${roads}</g><g stroke="#c9974e" stroke-width="2.8">${roads}</g><g stroke="#f8de98" stroke-width="2.1">${roads}</g></g>`);
   // Iconos ordenados de arriba abajo: árboles, montes y ciudades
   const icons = [];
+  // Árboles y montes con los dibujos del tileset de Scarloxy (CC BY 4.0): pinos y árboles en los bosques, y cada
+  // monte, un montón de rocas apiladas (las de delante, más grandes)
+  const sprite = (src, x, y, w, h) => `<image href="tiles/${src}.png" x="${f(x - w / 2)}" y="${f(y - h)}" width="${f(w)}" height="${f(h)}" style="image-rendering:pixelated"/>`;
   for (const [x, y, n] of a.forests) {
-    for (let i = 0; i < n * 8; i++) {
+    for (let i = 0; i < n * 6; i++) {
       const ang = r() * Math.PI * 2, d = Math.sqrt(r()) * n * 0.95;
-      const tx = X(x) + Math.cos(ang) * d * 1.7, ty = y + Math.sin(ang) * d * 1.2, s = 1.1 + r() * 0.55;
-      const dark = r() < 0.5 ? '#2f8a39' : '#26773a';
-      icons.push([ty, `<g transform="translate(${f(tx)} ${f(ty)})"><ellipse cx=".35" cy="${f(s * 0.95)}" rx="${f(s * 0.95)}" ry="${f(s * 0.32)}" fill="#000" fill-opacity=".22"/><rect x="-.18" y="0" width=".36" height="${f(s * 0.8)}" fill="#6b4a2b"/><circle cy="${f(-s * 0.2)}" r="${f(s)}" fill="${dark}" stroke="#1d5a2b" stroke-width=".18"/><circle cx="${f(-s * 0.32)}" cy="${f(-s * 0.55)}" r="${f(s * 0.42)}" fill="#8fd86e" fill-opacity=".55"/></g>`]);
+      const tx = X(x) + Math.cos(ang) * d * 1.7, ty = y + Math.sin(ang) * d * 1.2 + 2, s = 0.85 + r() * 0.4;
+      icons.push([ty, sprite(r() < 0.6 ? 'pine' : 'tree', tx, ty, 3.4 * s, 5.1 * s)]);
     }
   }
   for (const [x, y, k] of a.mountains) {
-    const peaks = [[0, 0, 1], [-3.6 * k, 1.2 * k, 0.65], [3.4 * k, 1 * k, 0.72]];
-    for (const [dx, dy, s] of peaks) {
-      const cx = X(x) + dx, by = y + 3.4 * k + dy, w = 4.6 * k * s, h = 7 * k * s;
-      const sn = h * 0.32;
-      icons.push([by, `<g filter="url(#drop-${region})" stroke="#5e4c39" stroke-width=".22" stroke-linejoin="round"><path d="M${f(cx - w)},${f(by)} L${f(cx)},${f(by - h)} L${f(cx + w)},${f(by)} Z" fill="#b39a74"/><path d="M${f(cx)},${f(by - h)} L${f(cx + w)},${f(by)} L${f(cx + w * 0.15)},${f(by)} Z" fill="#8c7458" stroke="none"/>` +
-        (s > 0.7 ? `<path d="M${f(cx - w * 0.32)},${f(by - h + sn)} L${f(cx)},${f(by - h)} L${f(cx + w * 0.32)},${f(by - h + sn)} L${f(cx + w * 0.12)},${f(by - h + sn * 0.75)} L${f(cx - w * 0.06)},${f(by - h + sn)} L${f(cx - w * 0.2)},${f(by - h + sn * 0.8)} Z" fill="#f7f9ff" stroke="none"/>` : '') + `</g>`]);
+    for (const [row, cnt] of [[0, 1], [1, 2], [2, 3]]) for (let i = 0; i < cnt; i++) {   // de arriba abajo: 1, 2 y 3 rocas
+      const w = (4.6 + cnt * 0.6) * k, cx = X(x) + (i - (cnt - 1) / 2) * w * 0.6, by = y + row * 2.2 * k;
+      icons.push([by, sprite(r() < 0.5 ? 'rock1' : 'rock2', cx, by, w, w)]);
+    }
+  }
+  // Relleno por el campo: árboles sueltos, flores y, en la costa, palmeras; nunca sobre caminos, ciudades,
+  // lagos, bosques ni montes (para no tapar nada ni amontonarse)
+  if (typeof document !== 'undefined') {
+    const g = document.createElement('canvas').getContext('2d'), shape = new Path2D(scalePath(a.shape));
+    const onLand = (x, y) => g.isPointInPath(shape, x, y) || a.islands.some(([ix, iy, rx, ry]) => ((x - X(ix)) / (rx * 1.6)) ** 2 + ((y - iy) / (ry * 2.24)) ** 2 <= 1);
+    const segDist = (px, py, [x0, y0], [x1, y1]) => {
+      const ax = X(x0), bx = X(x1), dx = bx - ax, dy = y1 - y0, l = dx * dx + dy * dy;
+      const k = l ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - y0) * dy) / l)) : 0;
+      return Math.hypot(px - ax - k * dx, py - y0 - k * dy);
+    };
+    const free = (x, y) => onLand(x, y) &&
+      a.roads.every(l => l.every((q, i) => !i || segDist(x, y, l[i - 1], q) > 3.2)) &&
+      a.cities.every(([, cx, cy]) => Math.hypot(x - X(cx), y - cy) > 7) &&
+      a.lakes.every(([lx, ly, rx, ry]) => Math.hypot((x - X(lx)) / (rx * 1.6 + 2), (y - ly) / (ry * 2.24 + 2)) > 1) &&
+      a.forests.every(([fx, fy, n]) => Math.hypot((x - X(fx)) / (n * 1.9 + 1), (y - fy) / (n * 1.4 + 1)) > 1) &&
+      a.mountains.every(([mx, my, k]) => Math.hypot((x - X(mx)) / (9 * k), (y - my - 2 * k) / (6 * k)) > 1);
+    const coast = (x, y) => [[4, 0], [-4, 0], [0, 4], [0, -4]].some(([dx, dy]) => !onLand(x + dx, y + dy));
+    for (let i = 0, placed = 0; i < 900 && placed < 60; i++) {
+      const x = r() * MAP_W, y = 4 + r() * (MAP_H - 6);
+      if (!free(x, y)) continue;
+      placed++;
+      const c = r();
+      if (coast(x, y)) { if (c < 0.6) icons.push([y, sprite('palm', x, y, 3.2, 4.8)]); continue; }
+      if (c < 0.3) icons.push([y, r() < 0.4 ? sprite('pine-s', x, y, 2.2, 4.4) : sprite(r() < 0.6 ? 'pine' : 'tree', x, y, 3.2, 4.8)]);
+      else if (c < 0.5) for (let t = 0; t < 3; t++) icons.push([y + (t % 2) * 1.2, sprite(['pine', 'tree'][t % 2], x + (t - 1) * 2.2, y + (t % 2) * 1.2, 3.2, 4.8)]);
+      else for (let t = 0, col = Math.floor(r() * 3); t < 3 + Math.floor(r() * 3); t++) {   // macizo de flores de un color
+        const fx = x + (r() - 0.5) * 3.4, fy = y + (r() - 0.5) * 2;
+        icons.push([fy, sprite('flower' + (1 + col + (r() < 0.5 ? 3 : 0)), fx, fy, 2.4, 2.4)]);
+      }
     }
   }
   for (const [, x, y, size] of a.cities) {

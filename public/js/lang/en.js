@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.2 ----------
+    'Un mapa con más vida': 'A livelier map',
+    'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'The Story map now has rocky mountains, pine forests, scattered trees, flower beds and palm trees along the coast.',
+    'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.': 'The Pokémon League has its own golden building on the map, and you can see it at Indigo Plateau even before you unlock it.',
+    'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».': 'No more dashed lines on the map: the «New» and «Next challenge» tags show you where to go.',
     // ---------- Novedades v0.23.1 ----------
     'La sede de la Liga': 'The League headquarters',
     'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': 'The League is a building on the map: inside you see the 5 trainers in order, who\'s next with their team, and from there you start or continue the challenge.',

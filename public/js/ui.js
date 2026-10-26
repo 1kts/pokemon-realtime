@@ -66,7 +66,8 @@ export const ICON = {
 // Color de cada región en su pestaña
 const REGION_COLOR = { kanto: '#ff5a3a', johto: '#e8b020' };
 // Edificio de la Liga en el mapa: un pórtico con columnas y tejado dorado
-const LEAGUE_SVG = '<svg class="league-ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12 16 4l13 8Z" fill="#ffcb05" stroke="#5a3a00" stroke-width="1.6" stroke-linejoin="round"/><rect x="5" y="12" width="22" height="3" fill="#ffe27a" stroke="#5a3a00" stroke-width="1.2"/><g fill="#f4ecd8" stroke="#5a3a00" stroke-width="1.1"><rect x="7" y="15" width="3" height="10"/><rect x="12" y="15" width="3" height="10"/><rect x="17" y="15" width="3" height="10"/><rect x="22" y="15" width="3" height="10"/></g><rect x="4" y="25" width="24" height="3.5" rx="1" fill="#ffcb05" stroke="#5a3a00" stroke-width="1.2"/><circle cx="16" cy="9" r="1.8" fill="#e8403a" stroke="#5a3a00" stroke-width=".8"/></svg>';
+// El edificio de la Liga: el gimnasio del tileset de Scarloxy (CC BY 4.0), en dorado
+const LEAGUE_SVG = '<img class="league-ico" src="tiles/league.png" alt="" draggable="false">';
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 
 export class UI {

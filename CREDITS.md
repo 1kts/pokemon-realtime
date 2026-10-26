@@ -322,3 +322,11 @@ Este es un proyecto de fans sin ánimo de lucro y no está afiliado a ellos.
 ## Datos
 
 Nombres, tipos, estadísticas base y evoluciones de [PokeAPI](https://pokeapi.co) (datos abiertos).
+
+## Mapa de la Historia
+
+Las rocas de los montes, los árboles, las flores, las palmeras y el edificio de la Liga Pokémon (su gimnasio) son del tileset
+[MyPixelWorld Special Packs #01](https://scarloxy.itch.io/mpwsp01), de **Scarloxy**, con licencia
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modificado: recortes, y el gimnasio teñido de
+dorado (`public/tiles/`).
+

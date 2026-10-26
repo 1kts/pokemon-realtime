@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.2 ----------
+    'Un mapa con más vida': '더 생생해진 지도',
+    'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': '스토리 지도에 바위산, 소나무 숲, 흩어진 나무, 꽃밭, 해안의 야자수가 생겼어요.',
+    'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.': '포켓몬리그가 지도에서 황금색 전용 건물이 되었고, 아직 해금하지 않았어도 석영고원에서 볼 수 있어요.',
+    'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».': '지도에 점선이 사라졌어요. 어디로 갈지는 「NEW」와 「다음 도전」 표시가 알려 줘요.',
     // ---------- Novedades v0.23.1 ----------
     'La sede de la Liga': '리그 본부',
     'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': '리그는 지도의 건물입니다. 안에서는 트레이너 5명이 순서대로 보이고, 다음 상대와 그 팀을 확인한 뒤 도전을 시작하거나 이어갈 수 있습니다.',

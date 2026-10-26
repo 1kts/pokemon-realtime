@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.23.2 ----------
+    'Un mapa con más vida': '更热闹的地图',
+    'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': '故事地图上新增了岩石山、松树林、零散的树木、花丛和海岸边的棕榈树。',
+    'La Liga Pokémon tiene su propio edificio dorado en el mapa, y lo ves en Meseta Añil aunque aún no la hayas desbloqueado.': '宝可梦联盟在地图上有了专属的金色建筑，即使还没解锁，也能在石英高原看到它。',
+    'El mapa ya no tiene líneas discontinuas: a dónde ir te lo marcan las etiquetas «Nueva» y «Siguiente reto».': '地图上不再有虚线：“新”和“下一个挑战”标签会告诉你该去哪里。',
     // ---------- Novedades v0.23.1 ----------
     'La sede de la Liga': '联盟总部',
     'La Liga es un edificio en el mapa: al entrar ves a los 5 entrenadores en orden, el que te toca con su equipo, y desde ahí empiezas o sigues el desafío.': '联盟成了地图上的一座建筑：进入后可按顺序看到 5 位训练家、下一位对手及其队伍，并在此开始或继续挑战。',
