@@ -77,7 +77,7 @@
     nitrocarga: { name: 'Nitrocarga', type: 'fuego', kind: 'dash', cost: 20, cd: 5, wind: 0.12, rec: 0.15, dmg: 14, dist: 260, dur: 0.22, haste: 2 },
     punoFuego: { name: 'Puño Fuego', type: 'fuego', kind: 'melee', cost: 20, cd: 4, wind: 0.25, rec: 0.2, dmg: 18, range: 70, arc: 1.4, burn: 3 },
     hidrobomba: { name: 'Hidrobomba', type: 'agua', kind: 'beam', cost: 40, cd: 6, wind: 0.55, rec: 0.3, dmg: 22, len: 540, width: 26, knock: 130, terrain: 'agua' },
-    surf: { name: 'Surf', type: 'agua', kind: 'wave', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 20, speed: 340, range: 560, width: 260, thick: 22, knock: 150, terrain: 'agua', wet: 4 },
+    surf: { name: 'Surf', type: 'agua', kind: 'wave', cost: 45, cd: 9, wind: 0.45, rec: 0.3, dmg: 20, speed: 340, range: 560, width: 260, thick: 22, knock: 150, terrain: 'agua', wet: 4 },
     acuaJet: { name: 'Acua Jet', type: 'agua', kind: 'dash', cost: 15, cd: 4, wind: 0.06, rec: 0.12, dmg: 10, dist: 220, dur: 0.15 },
     acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.16, selfStun: 1.2 },
     latigoCepa: { name: 'Látigo Cepa', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.2, rec: 0.2, dmg: 14, speed: 850, range: 230, radius: 14, pull: 110, fx: 'vine' },

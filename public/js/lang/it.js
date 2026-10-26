@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.1 ----------
+    'Surf, una ola de verdad': 'Surf, un\'onda vera',
+    'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': 'Surf ora è un\'onda che si infrange, con cresta e schiuma, e ci mette un po\' di più a partire (0,45 s): l\'avversario la vede arrivare e può schivarla.',
+    'Al elegir Pokémon o movimientos en Clasificatoria, Misiones, Logros y otras pantallas, la página se queda donde estabas en vez de subir arriba.': 'Quando scegli Pokémon o mosse in Classificata, Missioni, Obiettivi e altre schermate, la pagina resta dov\'eri invece di tornare in cima.',
     // ---------- Novedades v0.24.0 ----------
     'Juega desde el móvil': 'Gioca dal telefono',
     'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'Puoi giocare dal telefono: joystick a sinistra per muoverti e le mosse a destra. Toccale per lanciarle all\'avversario o trascinale per mirare.',

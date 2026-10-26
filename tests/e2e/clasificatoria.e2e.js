@@ -20,4 +20,15 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.profile.pvpTeam[0].moves.length === 3`);
   ok(await page.eval(`![...document.querySelectorAll('.online button.primary')].find(b => /Buscar partida/.test(b.textContent)).disabled`), 'se le cambian los movimientos y ya se puede buscar partida');
   ok(await page.eval(`!/otra pestaña/.test(document.body.textContent)`), 'sin el consejo de abrir otra pestaña');
+
+  // Elegir movimientos con la página bajada no la sube arriba (antes cada toque la repintaba desde el principio)
+  await page.resize(1280, 560);
+  await page.eval(`document.querySelector('.pvp-mvlist').scrollIntoView({ block: 'center' }); true`);
+  const y0 = await page.eval(`document.getElementById('screen').scrollTop`);
+  await page.eval(`document.querySelector('.pvp-mv:not(.on):not(:disabled)').click(); true`);
+  await page.waitFor(`window.__app.ui.profile.pvpTeam[0].moves.length === 4`);
+  await new Promise(r => setTimeout(r, 200));
+  const y1 = await page.eval(`document.getElementById('screen').scrollTop`);
+  ok(y0 > 50 && Math.abs(y1 - y0) <= 2, `al elegir un movimiento la página se queda donde estaba (${Math.round(y0)} → ${Math.round(y1)} px)`);
+  await page.resize();
 };

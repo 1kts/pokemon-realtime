@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.1 ----------
+    'Surf, una ola de verdad': '冲浪，真正的海浪',
+    'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': '冲浪现在是一道翻涌的海浪，有浪尖和浪花，出招也稍微慢一点（0.45秒）：对手能看到它过来并躲开。',
+    'Al elegir Pokémon o movimientos en Clasificatoria, Misiones, Logros y otras pantallas, la página se queda donde estabas en vez de subir arriba.': '在排位赛、任务、成就等界面选择宝可梦或招式时，页面会停在原来的位置，不会跳回顶部。',
     // ---------- Novedades v0.24.0 ----------
     'Juega desde el móvil': '用手机来玩',
     'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': '现在可以用手机玩了：左边的摇杆用来移动，右边是招式。点按即对对手使用，拖动可以瞄准。',

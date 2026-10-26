@@ -117,7 +117,10 @@ export class UI {
     // La pantalla de resultados no se puede volver a pintar: quien vuelve a ella (p. ej. «Volver» en Logros
     // tras «Recoger en Logros») va adonde lleva su «Continuar»
     if (view === 'results') view = this.afterBattleView();
-    const scroll = keepScroll ? (this.root.querySelector('.scroll') || {}).scrollTop : 0;
+    // Volver a pintar la pantalla en la que ya estás (llega el perfil nuevo, eliges un movimiento, cambias de
+    // pestaña…) no te sube arriba: se guarda dónde estaba la página y cada caja con scroll y se deja igual
+    const same = keepScroll || view === this.view;
+    const scrolls = same ? this.saveScroll() : null;
     this.view = view;
     // Durante un combate (y el momento final antes de los resultados) la música la pone el combate:
     // repintar el menú de debajo, p. ej. al llegar el perfil nuevo, no debe cortar la fanfarria
@@ -129,8 +132,25 @@ export class UI {
     document.querySelectorAll('body > .dd-menu').forEach(m => m.remove());   // desplegables que quedaran abiertos
     const fn = this['view_' + view];
     if (fn) fn.call(this);
-    const sc = this.root.querySelector('.scroll');
-    if (sc && scroll) sc.scrollTop = scroll;
+    if (scrolls) this.restoreScroll(scrolls);
+  }
+
+  // Scroll de la página y de las cajas con scroll propio, por su clase y su orden entre las de esa clase
+  saveScroll() {
+    const out = [[null, 0, this.root.scrollTop, this.root.scrollLeft]];
+    for (const e of this.root.querySelectorAll('*')) {
+      if (!e.scrollTop && !e.scrollLeft) continue;
+      const key = e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).map(c => CSS.escape(c)).join('.') : e.tagName;
+      out.push([key, [...this.root.querySelectorAll(key)].indexOf(e), e.scrollTop, e.scrollLeft]);
+    }
+    return out;
+  }
+
+  restoreScroll(list) {
+    for (const [key, i, top, left] of list) {
+      const e = key ? this.root.querySelectorAll(key)[i] : this.root;
+      if (e) { e.scrollTop = top; e.scrollLeft = left; }
+    }
   }
 
   // Abre Mis Pokémon o la Tienda recordando de dónde se viene para que "Volver" regrese allí

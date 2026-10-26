@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.1 ----------
+    'Surf, una ola de verdad': 'なみのり、本物の波に',
+    'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': 'なみのりが、波頭としぶきのある砕ける波になり、出るまで少し時間がかかるようになりました（0.45秒）。相手は来るのが見えて、よけられます。',
+    'Al elegir Pokémon o movimientos en Clasificatoria, Misiones, Logros y otras pantallas, la página se queda donde estabas en vez de subir arriba.': 'ランクマッチ、ミッション、実績などの画面でポケモンやわざを選んでも、ページが一番上に戻らず、そのままの位置に残ります。',
     // ---------- Novedades v0.24.0 ----------
     'Juega desde el móvil': 'スマホで遊べる',
     'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'スマホで遊べるようになりました。左のジョイスティックで移動し、右のわざをタップすると相手に使い、ドラッグするとねらえます。',

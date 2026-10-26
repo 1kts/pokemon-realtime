@@ -192,28 +192,7 @@ export class Effects {
     }
     const m = MOVES[pr.mk];
     const ty = m.type, pal = PALETTE[ty] || ['#ffffff'];
-    if (pr.w) {
-      // Ola: un rodillo de agua tumbado a lo largo del frente (se ve desde cualquier ángulo) con cresta de espuma
-      const W = pr.w * 2 * U;
-      const holder = new THREE.Group();
-      const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, W, 16, 1), new THREE.MeshStandardMaterial({ color: '#3f8fe0', transparent: true, opacity: 0.82, roughness: 0.12, metalness: 0.15 }));
-      roll.rotation.z = Math.PI / 2; roll.scale.set(1, 1, 0.75);
-      const foam = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, W * 0.96, 10, 1), new THREE.MeshStandardMaterial({ color: '#f2fbff', transparent: true, opacity: 0.9, roughness: 0.6 }));
-      foam.rotation.z = Math.PI / 2; foam.position.set(0, 0.28, 0.12);
-      holder.add(roll, foam);
-      const wg = new THREE.Group();
-      wg.add(holder);
-      return {
-        obj: wg, h: 0.4,
-        update: (pr2, pos, dt) => {
-          holder.rotation.y = -pr2.a - Math.PI / 2;   // el rodillo, perpendicular a la dirección en que avanza
-          for (let k = 0; k < 3; k++) {
-            const o = (Math.random() - 0.5) * W, ca = Math.cos(pr2.a), sa = Math.sin(pr2.a);
-            p.emit(pos.x - sa * o, 0.8, pos.z + ca * o, { n: 1, colors: ['#ffffff', '#cfefff'], layer: 'solid', dir: [ca, 1, sa], spread: 0.4, speed: 2, life: 0.4, size: 0.1, grav: 9 });
-          }
-        },
-      };
-    }
+    if (pr.w) return this.makeWave(pr);
     const r = pr.r * U;
     const g = new THREE.Group();
     const trail = (rate, o = {}) => (pr2, pos, dt) => p.trickle(rate, dt, pos.x, pos.y, pos.z, { colors: pal, layer: 'glow', speed: 0.6, life: 0.35, size: r * 2.2, jitter: r, ...o });
@@ -294,6 +273,70 @@ export class Effects {
         if (ty === 'electrico' && Math.random() < 0.5) p.emit(pos.x, pos.y, pos.z, { n: 1, colors: ['#ffffff', '#fff060'], speed: 3, life: 0.1, size: 0.08 });
         if (big && ty === 'fuego') p.trickle(15, dt, pos.x, pos.y + 0.3, pos.z, { colors: SMOKE, layer: 'soft', dir: [0, 1, 0], speed: 0.6, life: 1, size: 0.5, grow: 1.5, alpha: 0.35 });
       },
+    };
+  }
+
+  // Ola (Surf): una ola rompiendo de verdad, no un tubo. Perfil de ola (rampa por detrás, cresta alta y labio que
+  // se curva hacia delante) a lo largo de todo el frente, más baja en los extremos para que no parezca cortada, y
+  // con la cresta ondulando mientras avanza; azul oscuro abajo, celeste arriba y espuma blanca en el labio, que
+  // además salpica por delante y por los lados
+  makeWave(pr) {
+    const p = this.p;
+    const W = pr.w * 2 * U;                       // ancho del frente
+    // Perfil: [adelante, alto] (adelante = hacia donde avanza), de la base de atrás al labio
+    const PROF = [[-1.1, 0], [-0.75, 0.18], [-0.45, 0.42], [-0.15, 0.7], [0.1, 0.92], [0.32, 1], [0.5, 0.9], [0.58, 0.72], [0.52, 0.55]];
+    const SEG = 28, NP = PROF.length;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array((SEG + 1) * NP * 3), col = new Float32Array((SEG + 1) * NP * 3), idx = [];
+    const deep = new THREE.Color('#1d5fbf'), light = new THREE.Color('#7fd0ff'), foam = new THREE.Color('#f2fbff'), c = new THREE.Color();
+    for (let i = 0; i <= SEG; i++) for (let j = 0; j < NP; j++) {
+      const k = i * NP + j, h = PROF[j][1];
+      if (j >= NP - 3) c.copy(foam); else c.copy(deep).lerp(light, h);
+      col.set([c.r, c.g, c.b], k * 3);
+      if (i < SEG && j < NP - 1) { const a0 = k, a1 = k + 1, b0 = k + NP, b1 = k + NP + 1; idx.push(a0, b0, a1, a1, b0, b1); }
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    geo.setIndex(idx);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, transparent: true, opacity: 0.93, roughness: 0.15, metalness: 0.1, side: THREE.DoubleSide, emissive: '#0b3a7a', emissiveIntensity: 0.35 }));
+    const holder = new THREE.Group();
+    holder.add(mesh);
+    const wg = new THREE.Group();
+    wg.add(holder);
+    const t0 = performance.now(), HGT = 1.05, DEPTH = 1.5;
+    const shape = now => {
+      const t = (now - t0) / 1000, grow = Math.min(1, 0.35 + t * 3);   // nace baja y se levanta enseguida
+      for (let i = 0; i <= SEG; i++) {
+        const u = i / SEG * 2 - 1;                                     // -1..1 a lo ancho
+        const taper = Math.pow(Math.max(0, 1 - u * u), 0.45);          // más baja hacia los extremos
+        const ripple = 1 + 0.13 * Math.sin(u * 7 + t * 6) + 0.06 * Math.sin(u * 17 - t * 9);
+        const hh = HGT * taper * ripple * grow, curl = 0.85 + 0.15 * Math.sin(u * 5 - t * 4);
+        for (let j = 0; j < NP; j++) {
+          const [f, h] = PROF[j], k = (i * NP + j) * 3;
+          // local x: a lo ancho · y: alto · z: hacia atrás (el grupo mira con -z hacia donde avanza)
+          pos[k] = u * W / 2; pos[k + 1] = h * hh; pos[k + 2] = -f * DEPTH * (j >= NP - 3 ? curl : 1) * (0.6 + 0.4 * taper);
+        }
+      }
+      geo.attributes.position.needsUpdate = true;
+      geo.computeVertexNormals();
+    };
+    shape(t0);
+    return {
+      obj: wg, h: 0,
+      update: (pr2, wpos, dt) => {
+        const now = performance.now();
+        holder.rotation.y = -pr2.a - Math.PI / 2;
+        shape(now);
+        const ca = Math.cos(pr2.a), sa = Math.sin(pr2.a);
+        // Espuma que salta del labio, hacia delante y arriba
+        for (let k = 0; k < 5; k++) {
+          const o = (Math.random() - 0.5) * W * 0.9, taper = Math.pow(Math.max(0, 1 - (2 * o / W) ** 2), 0.45);
+          p.emit(wpos.x - sa * o + ca * 0.45, HGT * taper * 0.95, wpos.z + ca * o + sa * 0.45, { n: 1, colors: ['#ffffff', '#e4f6ff', '#bfe8ff'], layer: 'solid', dir: [ca, 1.3, sa], spread: 0.5, speed: 2.2, life: 0.45, size: 0.09 + Math.random() * 0.06, grav: 9 });
+        }
+        // Rocío suave por delante, a ras de suelo
+        p.trickle(18, dt, wpos.x + ca * 0.7, 0.2, wpos.z + sa * 0.7, { colors: ['#ffffff', '#cfefff'], layer: 'soft', speed: 0.5, life: 0.35, size: 0.22, grow: 1.2, alpha: 0.22, jitter: W * 0.4 });
+      },
+      dispose: () => { geo.dispose(); mesh.material.dispose(); },
     };
   }
 

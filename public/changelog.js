@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.24.1', date: '2026-10-26', title: 'Surf, una ola de verdad',
+      items: [
+        ['cambio', 'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.'],
+        ['arreglo', 'Al elegir Pokémon o movimientos en Clasificatoria, Misiones, Logros y otras pantallas, la página se queda donde estabas en vez de subir arriba.'],
+      ],
+    },
+    {
       v: '0.24.0', date: '2026-10-26', title: 'Juega desde el móvil',
       items: [
         ['nuevo', 'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.'],
