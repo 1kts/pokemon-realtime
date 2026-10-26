@@ -52,6 +52,12 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`!!document.querySelector('.ui-tip.on')`), 'manteniendo el dedo medio segundo sale el tooltip');
   await touch('pointerup'); await touch('pointerdown'); await touch('pointerup');
 
+  // Las novedades se desplazan dentro de su ventana (en horizontal no cabían y no se podía bajar)
+  await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); window.__app.ui.patchNotes(); true`);
+  await page.waitFor(`document.querySelector('.notes-list')`);
+  ok(await page.eval(`(() => { const l = document.querySelector('.notes-list'); l.scrollTop = 400; const b = document.querySelector('.modal-box').getBoundingClientRect(); return l.scrollTop > 100 && b.bottom <= innerHeight + 1; })()`), 'las novedades se desplazan dentro de su ventana, que cabe en la pantalla');
+  await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
+
   // La barra legal: en una línea, y al tocar el texto se ve entero
   await page.resize(844, 390);
   const h1 = await page.eval(`document.querySelector('.legal-bar').getBoundingClientRect().height`);

@@ -47,6 +47,10 @@ const PIX_MOVE = { ascuas: 'fire', llamarada: 'fire', fuegoFatuo: 'ball', pistol
   impactrueno: 'bolt', ondaTrueno: 'bolt', tornado: 'wind', aireAfilado: 'crescent', confusion: 'ring', furiaDragon: 'fire', ciclon: 'wind',
   pulsoDragon: 'ball', acido: 'blob', bombaLodo: 'blob', toxico: 'bubble', lanzaMugre: 'blob', bolaSombra: 'shadow', pulsoUmbrio: 'crescent',
   fuerzaLunar: 'star', disparoDemora: 'web' };
+// Golpe cuerpo a cuerpo (forma donde pega) y formas que salen de los rayos, por tipo
+const MELEE_PIX = { siniestro: 'jaws', bicho: 'jaws', dragon: 'claw', acero: 'claw', normal: 'claw', volador: 'claw', fantasma: 'claw', lucha: 'impact', roca: 'impact', tierra: 'impact' };
+const BEAM_PIX = { hielo: 'shard', electrico: 'bolt', psiquico: 'ring', fuego: 'fire', planta: 'leaf', agua: 'bubble', dragon: 'fire', hada: 'star',
+  fantasma: 'shadow', acero: 'shard', veneno: 'bubble', normal: 'star', siniestro: 'crescent', bicho: 'note', volador: 'wind', roca: 'rock', tierra: 'rock', lucha: 'impact' };
 const PIX_TYPE = { fuego: 'fire', agua: 'drop', planta: 'leaf', electrico: 'bolt', psiquico: 'ring', hielo: 'shard', lucha: 'ball', veneno: 'blob',
   tierra: 'blob', volador: 'wind', bicho: 'needle', fantasma: 'shadow', dragon: 'fire', siniestro: 'crescent', acero: 'shard', hada: 'star', normal: 'star' };
 
@@ -342,6 +346,30 @@ export class Effects {
     };
   }
 
+  // Partícula en pixel art (formas de PokéSurvivor): sale en pos, se mueve con vel (unidades/s), gira si spin, crece
+  // de scale0 a scale1 y se desvanece en life ms. Para golpes, rayos e iconos de estado
+  pixPuff(shape, ty, pos, { size = 0.6, vel = null, life = 380, spin = 0, angle = 0, grow = 1, alpha = 1, grav = 0 } = {}) {
+    const [w, h] = sizeOf(shape), k = size / Math.max(w, h);
+    const mat = new THREE.SpriteMaterial({ map: pixelTexture(shape, ty), transparent: true, depthWrite: false, toneMapped: false });
+    mat.rotation = angle;
+    const s = new THREE.Sprite(mat);
+    s.scale.set(w * k, h * k, 1);
+    s.renderOrder = 5;
+    s.position.copy(pos);
+    const v = vel ? vel.clone() : null, x0 = s.scale.x, y0 = s.scale.y;
+    let last = 0;
+    this.addTemp(s, life, f => {
+      const dt = (f - last) * life / 1000; last = f;
+      if (v) { if (grav) v.y -= grav * dt; s.position.addScaledVector(v, dt); }
+      if (spin) mat.rotation += spin * dt;
+      const g = 1 + (grow - 1) * f;
+      s.scale.set(x0 * g, y0 * g, 1);
+      mat.opacity = alpha * (f < 0.6 ? 1 : 1 - (f - 0.6) / 0.4);
+      if (f >= 1) mat.dispose();
+    });
+    return s;
+  }
+
   // Proyectil en pixel art: un sprite que mira a la cámara, girado hacia donde va (o dando vueltas, la hoja), con
   // sus fotogramas si los tiene (la llama parpadea, la burbuja late), un halo de su color detrás y su estela
   pixelProjectile(pr, m, shape, r, pal) {
@@ -405,6 +433,13 @@ export class Effects {
       const pt = a.clone().addScaledVector(dir, k);
       this.p.emit(pt.x, pt.y, pt.z, { n: 2, colors: pal, layer: e.ty === 'agua' ? 'solid' : 'glow', speed: 1.5, life: 0.4, size: e.ty === 'agua' ? 0.1 : 0.25, grav: e.ty === 'agua' ? 6 : 0 });
     }
+    // Formas pixel de su tipo a lo largo del rayo (cristales en Rayo Hielo, anillos en Psicorrayo…), que salen despedidas
+    const shape = BEAM_PIX[e.ty] || 'star';
+    for (let k = 0.4; k < len; k += 0.7) {
+      const pt = a.clone().addScaledVector(dir, k);
+      const out = new THREE.Vector3((Math.random() - 0.5) * 1.6, 0.6 + Math.random(), (Math.random() - 0.5) * 1.6);
+      this.pixPuff(shape, e.ty, pt, { size: 0.45 + Math.random() * 0.2, vel: out, life: 380 + Math.random() * 200, angle: -Math.atan2(dir.z, dir.x), spin: shape === 'star' || shape === 'leaf' ? 6 : 0, grav: 3 });
+    }
     this.flashLight(b, col, 4, 200);
     this.shake = Math.max(this.shake, e.w >= 28 ? 0.25 : 0.12);
   }
@@ -415,6 +450,10 @@ export class Effects {
     m.rotation.z = -e.a;
     m.position.copy(toWorld(pos.x, pos.y, 0.4));
     this.addTemp(m, 200, f => { m.material.opacity = 0.8 * (1 - f); m.scale.setScalar(1 + f * 0.3); });
+    // Y su forma pixel donde pega: zarpazo, mordisco o puño (según el tipo)
+    const shape = MELEE_PIX[e.ty] || 'impact', d = (e.r + 14) * U;
+    const at = toWorld(pos.x, pos.y, 0.6).add(new THREE.Vector3(Math.cos(e.a) * d, 0, Math.sin(e.a) * d));
+    this.pixPuff(shape, e.ty, at, { size: 0.95, life: 260, angle: shape === 'claw' ? -e.a : 0, grow: 1.25 });
   }
 
   // Zona marcada (Surf, Trueno, Terremoto…): crece un anillo hasta que estalla
@@ -607,6 +646,7 @@ export class Effects {
     else if (e.ty === 'roca' || e.ty === 'tierra') this.p.emit(pos.x, pos.y, pos.z, { n, colors: DUST, layer: 'soft', speed: 3, life: 0.7, size: 0.4, alpha: 0.7 });
     else this.p.emit(pos.x, pos.y, pos.z, { n, colors: pal, speed: big ? 5 : 3.5, life: 0.4, size: big ? 0.3 : 0.2, grav: e.ty === 'fuego' ? -3 : 0 });
     // Chispa blanca de impacto
+    this.pixPuff('impact', e.ty || 'normal', pos, { size: big ? 1.1 : 0.75, life: 220, grow: 1.3 });
     const star = glowSprite(new THREE.Color('#ffffff').multiplyScalar(2), big ? 1.6 : 1);
     star.position.copy(pos);
     this.addTemp(star, 120, f => { star.material.opacity = 1 - f; star.scale.setScalar((big ? 1.6 : 1) * (1 + f)); });
@@ -726,7 +766,7 @@ export class Effects {
       const f = (now - t.t0) / t.life;
       if (f >= 1) {
         this.scene.remove(t.obj);
-        t.obj.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map && o.material.map.isCanvasTexture) o.material.map.dispose(); });
+        t.obj.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map && o.material.map.isCanvasTexture && !o.material.map.userData.shared) o.material.map.dispose(); });
         return false;
       }
       t.update && t.update(f);

@@ -307,6 +307,7 @@ function pixelTexture(shape, type, frame = 0) {
   tex = new THREE.CanvasTexture(sprite(shape, pal, f));
   tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
   tex.colorSpace = THREE.SRGBColorSpace;
+  tex.userData.shared = true;   // la comparten todas las formas iguales: no se libera al quitar un efecto
   texCache.set(k, tex);
   return tex;
 }

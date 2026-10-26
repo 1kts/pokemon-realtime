@@ -457,6 +457,20 @@ export class BattleClient {
     if (f & F.SLOW) p.trickle(5, dt, w.x, 0.1, w.z, { colors: ['#8a6a40', '#5a8a30'], layer: 'solid', speed: 0.3, life: 0.6, size: 0.1, jitter: 0.8 });
     if (f & F.HASTE) p.trickle(10, dt, w.x, 0.3, w.z, { colors: ['#ffffff', '#c0e8ff'], layer: 'soft', speed: 0.3, life: 0.4, size: 0.15, jitter: 0.8, alpha: 0.6 });
     if (f & F.POWER) p.trickle(10, dt, w.x, 0.2, w.z, { colors: ['#ff6040', '#ffb040'], dir: [0, 1, 0], spread: 0.2, speed: 1.5, life: 0.5, size: 0.14, jitter: 0.8 });
+    // Y cada poco, su icono en pixel art: llamita si quema, burbuja si está envenenado, gota si está mojado, hoja con
+    // drenadoras, estrellas si está aturdido y flecha con más velocidad o más daño
+    this.pixT = this.pixT || [0, 0];
+    if ((this.pixT[i] += dt) < 0.4) return;
+    this.pixT[i] = 0;
+    const V = (x, y, z) => new THREE.Vector3(x, y, z), j = () => (Math.random() - 0.5) * 0.6, at = y => V(w.x + j(), y, w.z + j());
+    const puff = (shape, ty, y, o) => this.fx.pixPuff(shape, ty, at(y), { size: 0.38, life: 700, ...o });
+    if (f & F.BURN) puff('fire', 'fuego', 0.8, { vel: V(0, 1.2, 0), angle: Math.PI / 2 });
+    if (f & F.POISON) puff('bubble', 'veneno', 0.9, { vel: V(0, 0.9, 0) });
+    if (f & F.WET) puff('drop', 'agua', 1.5, { vel: V(0, -0.4, 0), grav: 3, angle: -Math.PI / 2 });
+    if (f & F.SEED) puff('leaf', 'planta', 0.6, { vel: V(0, 0.8, 0), spin: 5 });
+    if (f & F.STUN) for (let k = 0; k < 2; k++) this.fx.pixPuff('star', 'electrico', V(w.x + Math.cos(k * Math.PI + performance.now() / 300) * 0.45, 1.9, w.z + Math.sin(k * Math.PI + performance.now() / 300) * 0.45), { size: 0.32, life: 420, spin: 8 });
+    if (f & F.HASTE) puff('arrow', 'volador', 0.7, { vel: V(0, 1.4, 0), size: 0.32 });
+    if (f & F.POWER) puff('arrow', 'lucha', 0.7, { vel: V(0, 1.4, 0), size: 0.32 });
   }
 
   // ---------- Interfaz ----------

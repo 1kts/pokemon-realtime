@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': 'バトルにもっとドット絵を',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': '近接攻撃でドット絵のひっかき・かみつき・パンチが出て、光線からはタイプに合った結晶やリング、火花が飛び散ります。',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': '状態異常がポケモンの上にドット絵のアイコンで出ます。やけどはほのお、どくはあわ、気絶は星です。',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': 'スマホの横向きで、お知らせの画面がまた指でスクロールでき、最後まで読めます。',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': '捕獲でごほうび',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '同じ進化系統のポケモンを25匹つかまえて実績で「個体値パーフェクト」を受け取ると、その系統の野生はいつも個体値が最高になります。',

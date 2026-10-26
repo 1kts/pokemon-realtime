@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': '배틀에 더 많은 도트 그래픽',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': '근접 공격에 도트 그래픽 할퀴기, 물기, 주먹이 나오고, 광선에서는 타입에 맞는 결정, 고리, 불꽃이 흩어져요.',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': '상태 이상이 포켓몬 위에 도트 아이콘으로 보여요. 화상은 불꽃, 독은 거품, 기절은 별이에요.',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': '휴대폰 가로 화면에서 새 소식 창을 다시 손가락으로 스크롤해 끝까지 읽을 수 있어요.',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': '포획에 보상이',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '같은 진화 계열 포켓몬을 25마리 잡고 업적에서 「완벽한 개체값」을 받으면, 그 계열의 야생 포켓몬은 항상 개체값이 완벽해요.',

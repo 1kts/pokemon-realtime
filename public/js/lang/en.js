@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': 'More pixel art in battle',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': 'Melee hits leave their pixel-art claw, bite or punch, and beams scatter crystals, rings or sparks of their type.',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': 'Status conditions show over the Pokémon as pixel icons: flames when burned, bubbles when poisoned and stars when stunned.',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': 'On mobile in landscape, the What\'s New window scrolls with your finger again so you can read it all.',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': 'Catches with a reward',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Catch 25 Pokémon of the same evolution line and claim “Perfect IVs” in Achievements: from then on, wild Pokémon of that line always have perfect IVs.',

@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': '战斗中更多像素风',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': '近身攻击会留下像素风的爪痕、咬痕或拳头，光线会迸出对应属性的晶体、光环或火花。',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': '异常状态会以像素图标显示在宝可梦上方：灼伤是火焰，中毒是泡泡，眩晕是星星。',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': '手机横屏时，“新内容”窗口又可以用手指滑动，完整阅读。',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': '捕捉有奖励',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '捕捉同一进化系的25只宝可梦，并到成就领取“完美个体值”：之后该系的野生宝可梦总是完美个体值。',

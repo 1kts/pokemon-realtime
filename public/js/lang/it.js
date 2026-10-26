@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': 'Più pixel art in lotta',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': 'Gli attacchi corpo a corpo lasciano il loro artiglio, morso o pugno in pixel art, e i raggi sprigionano cristalli, anelli o scintille del loro tipo.',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': 'Gli stati si vedono sopra il Pokémon con icone pixel: fiamme se è scottato, bolle se è avvelenato e stelle se è stordito.',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': 'Sul telefono in orizzontale, la finestra Novità torna a scorrere con il dito per leggerla tutta.',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': 'Catture con premio',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Cattura 25 Pokémon della stessa linea evolutiva e ritira «VI perfetti» in Obiettivi: da allora i selvatici di quella linea hanno sempre VI perfetti.',

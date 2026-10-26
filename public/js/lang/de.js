@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.1 ----------
+    'Más pixel art en combate': 'Mehr Pixel-Art im Kampf',
+    'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.': 'Nahkampfangriffe hinterlassen ihre Klaue, ihren Biss oder ihre Faust in Pixel-Art, und Strahlen versprühen Kristalle, Ringe oder Funken ihres Typs.',
+    'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.': 'Statusprobleme erscheinen über dem Pokémon als Pixel-Symbole: Flammen bei Verbrennung, Blasen bei Vergiftung und Sterne bei Betäubung.',
+    'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.': 'Auf dem Handy im Querformat lässt sich das Neuigkeiten-Fenster wieder mit dem Finger scrollen, um alles zu lesen.',
     // ---------- Novedades v0.27.0 ----------
     'Capturas con premio': 'Fangen lohnt sich',
     'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Fange 25 Pokémon derselben Entwicklungslinie und hol dir „Perfekte DVs“ bei den Erfolgen: Danach haben wilde Pokémon dieser Linie immer perfekte DVs.',

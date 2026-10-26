@@ -1273,7 +1273,7 @@ body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-
 @media (max-height: 500px) {
   .story, .teamview, .shop, .draft, .profile-view, .dexview, .missions-view, .bagview, .collection, .settings-view, .league-view { height: auto; min-height: 100%; }
   .story-body, .pv-body, .bag-body, .tz-body { flex: none; min-height: auto; }
-  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .bag-list, .bag-detail, .tower-pools, .ladder-table .scroll, .notes-list, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
+  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .bag-list, .bag-detail, .tower-pools, .ladder-table .scroll, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
   .inner-bar + * { margin-top: 0; }
   #screen > :has(> .inner-bar) > :last-child:not(.inner-bar) { margin-bottom: 0; }
 }
@@ -1444,3 +1444,7 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .route-list .mini { display: flex; flex-direction: column; align-items: center; }
 .catch-prog { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #c9d4ea; }
 .catch-prog .catch-pips i { width: 12px; height: 12px; }
+/* Ventanas en pantallas bajas: lo de dentro (novedades, créditos…) con su propio scroll, también con el dedo */
+@media (max-height: 500px) {
+  .modal-box .notes-list, .modal-box .scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+}

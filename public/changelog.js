@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.27.1', date: '2026-10-26', title: 'Más pixel art en combate',
+      items: [
+        ['cambio', 'Los golpes cuerpo a cuerpo dejan su zarpazo, mordisco o puño en pixel art, y los rayos sueltan cristales, anillos o chispas de su tipo.'],
+        ['cambio', 'Los estados se ven sobre el Pokémon con iconos pixel: llamas si quema, burbujas si está envenenado y estrellas si está aturdido.'],
+        ['arreglo', 'En el móvil en horizontal, la ventana de Novedades vuelve a bajar con el dedo para leerlas enteras.'],
+      ],
+    },
+    {
       v: '0.27.0', date: '2026-10-26', title: 'Capturas con premio',
       items: [
         ['nuevo', 'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.'],
