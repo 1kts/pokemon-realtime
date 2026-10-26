@@ -12,9 +12,18 @@ en local al subir: `LOCAL_TESTS=1 git push` (los e2e relacionados con lo que cam
 (todos).
 
 ```bash
-npm run test:e2e                              # todos
+npm run test:e2e                              # todos (4 a la vez)
 node tools/e2e.js tests/e2e/admin.e2e.js      # uno
+E2E_JOBS=1 npm run test:e2e                   # uno detrás de otro
+E2E_SHARD=2/3 npm run test:e2e                # solo el trozo 2 de 3 (el CI reparte la tanda en 3 máquinas)
+E2E_TIMES=1 npm run test:e2e                  # con lo que tarda cada prueba
+E2E_SLOW=4 node tools/e2e.js tests/e2e/x.e2e.js   # con el navegador 4 veces más lento (para lo que solo falla en el CI)
 ```
+
+Cada prueba tiene su propio servidor y su propio Chrome, así que se pasan varias a la vez: no compartas nada
+entre pruebas ni dependas del orden. Lo que quieras escribir en la salida, con `log('…')` (no `console.log`, que
+se mezclaría con las demás). Con varias a la vez todo va algo más lento: espera a que pase algo con `waitFor`,
+no con pausas fijas.
 
 **Cada novedad para el jugador lleva su test e2e** (lo exige el hook de pre-push y el CI): uno que use la
 novedad como lo haría un jugador, de principio a fin, y compruebe lo que ve.

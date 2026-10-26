@@ -81,8 +81,9 @@ async function setup(name) {
       if (r.exceptionDetails) throw new Error('En la página: ' + (r.exceptionDetails.exception?.description || r.exceptionDetails.text).split('\n')[0]);
       return r.result.value;
     },
-    async goto(p) { await call('Page.navigate', { url: base + p }); await page.waitFor('document.readyState === "complete"'); },
-    async reload() { await call('Page.reload'); await sleep(200); await page.waitFor('document.readyState === "complete"'); },
+    // (cargar la página puede tardar con varias pruebas a la vez: hasta 30 s)
+    async goto(p) { await call('Page.navigate', { url: base + p }); await page.waitFor('document.readyState === "complete"', 30000); },
+    async reload() { await call('Page.reload'); await sleep(200); await page.waitFor('document.readyState === "complete"', 30000); },
     // Espera a que una expresión sea verdadera
     async waitFor(expr, ms = 8000) {
       const t0 = Date.now();
@@ -129,9 +130,9 @@ async function setup(name) {
       await page.eval(`(() => { localStorage.setItem('arena.token', ${JSON.stringify(token)}); localStorage.setItem('arena.name', 'e2e');
         localStorage.setItem('arena.lang', ${JSON.stringify(lang)}); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); return true; })()`);
       await page.reload();
-      await page.waitFor(`document.querySelector('.title-panel button.primary')`);
+      await page.waitFor(`document.querySelector('.title-panel button.primary')`, 20000);
       await page.click('.title-panel button.primary');
-      await page.waitFor(`window.__app.ui.view === 'menu'`);
+      await page.waitFor(`window.__app.ui.view === 'menu'`, 20000);
     },
     problems, requests,
   };
@@ -177,36 +178,50 @@ async function setup(name) {
 }
 
 // ---------- Runner ----------
+// Cada prueba tiene su servidor y su Chrome (puertos y carpetas propios), así que se pasan varias a la vez:
+//   E2E_JOBS=n    cuántas a la vez (por defecto 4, o 1 con E2E_SLOW)
+//   E2E_SHARD=i/n solo el trozo i de n (el CI reparte las pruebas en varias máquinas)
+// Lo que escribe cada prueba se guarda y sale junto al terminar, para que no se mezclen.
+async function runOne(file) {
+  const name = path.basename(file).replace(/\.e2e\.js$/, '');
+  const out = [`▶ ${name}`], t0 = Date.now();
+  let ctx, results = [];
+  const t = { ok: (cond, msg) => { results.push([!!cond, msg]); out.push(`  ${cond ? '✓' : '✗'} ${msg}`); }, log: msg => out.push('    ' + msg) };
+  try {
+    ctx = await setup(name);
+    Object.assign(t, ctx);
+    // Como mucho 3 minutos por prueba (con varias a la vez van más lentas): un test colgado no bloquea el CI
+    await Promise.race([require(path.resolve(file))(t),
+      new Promise((_, j) => setTimeout(() => j(new Error('más de 3 minutos: algo se ha quedado esperando')), 180e3).unref())]);
+    if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
+    const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
+    if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));
+  } catch (e) {
+    t.ok(false, 'error: ' + e.message);
+    if (ctx) { const shot = path.join(os.tmpdir(), `e2e-${name}.png`); try { await ctx.page.shot(shot); out.push(`    captura: ${shot}`); } catch {} }
+  } finally { if (ctx) await ctx.teardown(); }
+  if (process.env.E2E_TIMES) out[0] += ` (${((Date.now() - t0) / 1000).toFixed(1)} s)`;
+  return { name, out, failed: results.some(r => !r[0]) || !results.length };
+}
+
 async function run(files) {
-  let failed = 0;
-  for (const file of files) {
-    const name = path.basename(file).replace(/\.e2e\.js$/, '');
-    let ctx, results = [];
-    const t = { ok: (cond, msg) => { results.push([!!cond, msg]); console.log(`  ${cond ? '✓' : '✗'} ${msg}`); } };
-    console.log(`▶ ${name}`);
-    try {
-      ctx = await setup(name);
-      Object.assign(t, ctx);
-      // Como mucho 2 minutos por prueba: un test colgado no puede bloquear el push
-      await Promise.race([require(path.resolve(file))(t),
-        new Promise((_, j) => setTimeout(() => j(new Error('más de 2 minutos: algo se ha quedado esperando')), 120e3).unref())]);
-      if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
-      const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
-      if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));
-    } catch (e) {
-      t.ok(false, 'error: ' + e.message);
-      if (ctx) { const shot = path.join(os.tmpdir(), `e2e-${name}.png`); try { await ctx.page.shot(shot); console.log(`    captura: ${shot}`); } catch {} }
-    } finally { if (ctx) await ctx.teardown(); }
-    if (results.some(r => !r[0]) || !results.length) failed++;
-  }
-  console.log(failed ? `\n${failed} de ${files.length} pruebas e2e fallan` : `\nTodas las pruebas e2e correctas (${files.length})`);
-  return failed;
+  const jobs = Math.max(1, +process.env.E2E_JOBS || (+process.env.E2E_SLOW > 1 ? 1 : 4));
+  const queue = [...files], done = [];
+  const worker = async () => { while (queue.length) { const r = await runOne(queue.shift()); console.log(r.out.join('\n')); done.push(r); } };
+  await Promise.all(Array.from({ length: Math.min(jobs, files.length) }, worker));
+  const failed = done.filter(r => r.failed);
+  if (failed.length > 1 || (failed.length && files.length > 1)) console.log(`\nFallan: ${failed.map(r => r.name).join(', ')}`);
+  console.log(failed.length ? `\n${failed.length} de ${files.length} pruebas e2e fallan` : `\nTodas las pruebas e2e correctas (${files.length})`);
+  return failed.length;
 }
 
 if (require.main === module) {
   const dir = path.join(ROOT, 'tests', 'e2e');
-  const files = process.argv.slice(2).length ? process.argv.slice(2)
+  let files = process.argv.slice(2).length ? process.argv.slice(2)
     : fs.readdirSync(dir).filter(f => f.endsWith('.e2e.js')).sort().map(f => path.join(dir, f));
+  // Trozo i de n (1..n): las pruebas se reparten alternando, así cada trozo lleva de las lentas y de las rápidas
+  const shard = String(process.env.E2E_SHARD || '').match(/^(\d+)\/(\d+)$/);
+  if (shard) files = files.filter((_, k) => k % +shard[2] === +shard[1] - 1);
   run(files).then(f => process.exit(f ? 1 : 0), e => { console.error(e); process.exit(1); });
 }
 

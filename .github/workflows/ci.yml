@@ -19,7 +19,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,11 +34,31 @@ jobs:
         if: github.event_name == 'push' && !startsWith(github.event.before, '0000000')
         run: node tools/require-tests.js ${{ github.event.before }} ${{ github.sha }} ${{ github.ref }}
       - run: npm test
-      # El juego en un navegador (Chrome ya viene en los runners de GitHub)
+
+  # El juego en un navegador (Chrome ya viene en los runners de GitHub), repartido en 3 máquinas a la vez y 2
+  # pruebas a la vez en cada una (más, en una máquina del CI, les quita CPU y las que miden tiempos fallan)
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
       - run: npm run test:e2e
+        env:
+          E2E_SHARD: ${{ matrix.shard }}/3
+          E2E_JOBS: 2
+          E2E_TIMES: 1
 
   deploy:
-    needs: test
+    needs: [test, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     # Parar el servidor espera a los combates en curso (hasta 5 min)

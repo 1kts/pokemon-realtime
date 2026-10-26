@@ -3,7 +3,7 @@
 // el premio se recoge a mano una sola vez
 const Data = require('../../public/data.js');
 
-module.exports = async ({ page, player, ok }) => {
+module.exports = async ({ page, player, ok, log }) => {
   const me = await player({ user: 'aprendiz' });
   const coins0 = me.profile.coins;
   await page.loginAs(me.token);
@@ -53,7 +53,7 @@ module.exports = async ({ page, player, ok }) => {
     b.castQueue = [0, 1, 2, 3][Math.floor(Math.random() * 4)]; }, 250); true`);
   const t0 = Date.now();
   await page.waitFor(`document.querySelector('.tutorial-done .claim-btn')`, 60000);
-  console.log(`    (muñeco vencido en ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+  log(`(muñeco vencido en ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   await page.eval(`clearInterval(window.__tut); true`);
   ok(!(await page.eval(`!!document.querySelector('.tutorial-card')`)), 'al ganar se quita la tarjeta y sale «¡Tutorial completado!» con su premio');
   await page.click('.tutorial-done .claim-btn');

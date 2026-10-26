@@ -1,7 +1,7 @@
 // Reto de capturas: cada línea evolutiva cuenta lo que atrapas de ella; en la ficha de la ruta, una Poké Ball llena
 // cada 5. A las 25 sale para recoger en Logros «IV perfectos» y desde entonces los de esa línea salen salvajes siempre
 // con IV perfectos (las bolas, en dorado)
-module.exports = async ({ page, player, ok }) => {
+module.exports = async ({ page, player, ok, log }) => {
   const me = await player({ user: 'capturador' });
   me.client.send({ t: 'dev', dex: 4, level: 12, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
@@ -45,5 +45,5 @@ module.exports = async ({ page, player, ok }) => {
     await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
     await page.waitFor(`!window.__app.battle`, 15000);
   }
-  if (!seen) console.log('    (no salió ninguno de su línea en 14 encuentros; se comprueba en el resto)');
+  if (!seen) log('(no salió ninguno de su línea en 14 encuentros; se comprueba en el resto)');
 };
