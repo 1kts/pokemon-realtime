@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.2 ----------
+    'Música sin cortes': '끊기지 않는 음악',
+    'La música del Alto Mando ya no vuelve a empezar a mitad del combate: ahora suena el tema largo del Campeón.': '사천왕 배틀의 음악이 이제 배틀 도중에 처음부터 다시 시작되지 않아요. 챔피언의 긴 테마가 나와요.',
+    'En los gimnasios, el tema de los líderes enlaza con el de combate en vez de reiniciarse a mitad de la pelea.': '체육관에서는 관장 테마가 배틀 도중 다시 시작하지 않고 일반 배틀 테마로 이어져요.',
     // ---------- Novedades v0.29.1 ----------
     'Retoques del mapa y la Tienda': '지도와 상점 다듬기',
     'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': '포켓몬리그가 이제 체육관처럼 이름과 석영고원이 아래에 나오는 보라색 건물이 되었고, 왕관은 지붕 위에 나와요.',

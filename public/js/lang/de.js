@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.2 ----------
+    'Música sin cortes': 'Musik ohne Unterbrechung',
+    'La música del Alto Mando ya no vuelve a empezar a mitad del combate: ahora suena el tema largo del Campeón.': 'Die Musik der Top Vier beginnt nicht mehr mitten im Kampf von vorn: Jetzt läuft das lange Thema des Champs.',
+    'En los gimnasios, el tema de los líderes enlaza con el de combate en vez de reiniciarse a mitad de la pelea.': 'In den Arenen geht das Thema der Arenaleiter ins Kampfthema über, statt mitten im Kampf neu zu beginnen.',
     // ---------- Novedades v0.29.1 ----------
     'Retoques del mapa y la Tienda': 'Feinschliff an Karte und Laden',
     'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': 'Die Pokémon-Liga ist jetzt ein lila Gebäude mit ihrem Namen und Indigo-Plateau darunter, wie die Arenen, und die Krone sitzt auf dem Dach.',

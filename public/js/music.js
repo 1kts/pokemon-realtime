@@ -23,6 +23,9 @@ const FADE_OUT = 1.5, GAP = 0.8, FADE_IN = 2.5;
 // desierto: "Desert Battle" de rckbtm; salvaje: "The Wild Duel" de Navet56 (OPMon Lazuli, CC-BY 4.0);
 // campeon: "Face The Champion!" de Spring Spring (CC-BY 3.0). Se suben con el volumen igualado (-16 LUFS).
 const FILES = { menu: 'pueblo', battle: 'desierto', wild: 'salvaje', leader: 'lider', champion: 'campeon' };
+// Temas que, al acabar, enlazan con otro en vez de volver a empezar (el de los líderes dura menos de un minuto y un
+// combate, hasta tres: así no se oye «reiniciarse» a medias)
+const CHAIN = { leader: ['leader', 'battle'] };
 
 // ---------- Notas y acordes ----------
 const PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -282,7 +285,9 @@ export class Music {
   }
   startFile(name, buf) {
     const bus = this.fadeInBus();
-    this.file = { name, bus, buf, loop: true, next: this.ctx.currentTime + 0.05, srcs: [] };
+    const f = this.file = { name, bus, buf, list: [buf], pass: 0, loop: true, next: this.ctx.currentTime + 0.05, srcs: [] };
+    // Los que se enlazan: se cargan mientras suena el primero y entran en su turno
+    for (const other of (CHAIN[name] || []).slice(1)) this.decode(other).then(b => { if (b && this.file === f) f.list.push(b); });
     this.fileTick();
   }
   // Programa la siguiente pasada de la grabación cuando se acerca su momento
@@ -290,9 +295,10 @@ export class Music {
     const f = this.file;
     if (!f || !this.running) return;
     while (f.next < this.ctx.currentTime + 0.4) {
-      const t = f.next, dur = f.buf.duration;
+      const buf = f.list[f.pass++ % f.list.length];   // (con CHAIN, alterna los temas enlazados)
+      const t = f.next, dur = buf.duration;
       const src = this.ctx.createBufferSource(), g = this.ctx.createGain();
-      src.buffer = f.buf;
+      src.buffer = buf;
       const fade = Math.min(FADE, dur / 3);
       g.gain.setValueAtTime(0, t);
       g.gain.linearRampToValueAtTime(1, t + (f.srcs.length ? fade : 0.05));   // la entrada la hace el bus
@@ -444,7 +450,8 @@ export function trackForView() {
 export function trackForBattle(start, Data) {
   if (start.mode === 'wild') return 'wild';
   const node = Object.values(Data.NODES || {}).find(n => n.kind !== 'route' && n.map === start.map);
-  if (node) return node.kind === 'champion' ? 'champion' : 'leader';
+  // El Alto Mando y el Campeón, con el tema largo del Campeón (6 min: no se repite en un combate)
+  if (node) return node.kind === 'champion' || node.kind === 'elite' ? 'champion' : 'leader';
   return 'battle';
 }
 

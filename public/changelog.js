@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.29.2', date: '2026-10-26', title: 'Música sin cortes',
+      items: [
+        ['arreglo', 'La música del Alto Mando ya no vuelve a empezar a mitad del combate: ahora suena el tema largo del Campeón.'],
+        ['arreglo', 'En los gimnasios, el tema de los líderes enlaza con el de combate en vez de reiniciarse a mitad de la pelea.'],
+      ],
+    },
+    {
       v: '0.29.1', date: '2026-10-26', title: 'Retoques del mapa y la Tienda',
       items: [
         ['cambio', 'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.'],

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.29.2 ----------
+    'Música sin cortes': '不中断的音乐',
+    'La música del Alto Mando ya no vuelve a empezar a mitad del combate: ahora suena el tema largo del Campeón.': '四天王战的音乐不再在对战中途重新开始：现在播放冠军的长版主题曲。',
+    'En los gimnasios, el tema de los líderes enlaza con el de combate en vez de reiniciarse a mitad de la pelea.': '在道馆中，馆主主题曲会接上对战主题曲，而不是在对战中途重新开始。',
     // ---------- Novedades v0.29.1 ----------
     'Retoques del mapa y la Tienda': '地图和商店的调整',
     'La Liga Pokémon es ahora un edificio morado con su nombre y el de Meseta Añil debajo, como los gimnasios, y la corona sale sobre el tejado.': '宝可梦联盟现在是紫色建筑，和道馆一样在下方显示名字和石英高原，王冠位于屋顶上。',
