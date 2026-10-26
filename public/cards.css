@@ -1187,45 +1187,51 @@ body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-
 #hud.touch .tc-base.on { opacity: 1; }
 #hud.touch .tc-knob { position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c9d6ee); box-shadow: 0 3px 10px rgba(0,0,0,.45); }
 #hud.touch .tc-quit { top: 10px; left: 50%; margin-left: -92px; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: var(--panel); border: 1px solid var(--line); pointer-events: auto; touch-action: none; }
-/* Movimientos: botones grandes abajo a la derecha, en dos filas; la energía encima */
-#hud.touch .bottom { left: auto; right: 12px; bottom: 12px; transform: none; align-items: flex-end; }
-#hud.touch .energy { width: 100%; max-width: 330px; }
-#hud.touch .moves { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; direction: rtl; }
-#hud.touch .mv { direction: ltr; width: auto; min-height: 62px; padding: 6px 8px; pointer-events: auto; touch-action: none; cursor: default; }
-#hud.touch .mv kbd { display: none; }
-#hud.touch .mv.press { transform: scale(.94); box-shadow: 0 0 0 2px #fff, 0 6px 18px rgba(0,0,0,.35), inset 0 3px 0 var(--tc); }
-#hud.touch .mv:first-child { grid-row: span 2; min-height: 132px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-#hud.touch .mv:first-child .mv-ico { width: 44px; height: 44px; }
+/* Movimientos: botones redondos con solo su icono, en abanico abajo a la derecha (el básico, el grande de la
+   esquina, bajo el pulgar); la energía, una barra fina encima */
+#hud.touch .bottom { left: auto; right: 14px; bottom: 14px; transform: none; display: block; width: 214px; height: 186px; }
+#hud.touch .energy { position: absolute; right: 0; bottom: 176px; width: 150px; height: 8px; border-radius: 4px; }
+#hud.touch .energy span, #hud.touch .energy::after { display: none; }
+#hud.touch .moves { position: absolute; inset: 0; display: block; }
+#hud.touch .mv { position: absolute; width: 56px; height: 56px; min-height: 0; padding: 0; border-radius: 50%; display: grid; place-items: center; overflow: hidden;
+  pointer-events: auto; touch-action: none; cursor: default; box-shadow: 0 4px 12px rgba(0,0,0,.45), inset 0 0 0 2px var(--tc); }
+#hud.touch .mv::before { opacity: .45; }
+#hud.touch .mv kbd, #hud.touch .mv b, #hud.touch .mv small { display: none; }
+#hud.touch .mv .mv-ico { width: 28px; height: 28px; margin: 0; }
+#hud.touch .mv .cd { border-radius: 50%; }
+#hud.touch .mv .cdt { font-size: 16px; }
+#hud.touch .mv:nth-child(1) { right: 0; bottom: 0; width: 80px; height: 80px; }
+#hud.touch .mv:nth-child(1) .mv-ico { width: 40px; height: 40px; }
+#hud.touch .mv:nth-child(2) { right: 92px; bottom: 2px; }
+#hud.touch .mv:nth-child(3) { right: 80px; bottom: 72px; }
+#hud.touch .mv:nth-child(4) { right: 12px; bottom: 94px; }
+#hud.touch .mv.protect { right: 158px; bottom: 6px; width: 48px; height: 48px; }
+#hud.touch .mv.protect .mv-ico { width: 24px; height: 24px; }
+#hud.touch .mv.press { transform: scale(.9); box-shadow: 0 0 0 3px #fff, 0 4px 12px rgba(0,0,0,.45), inset 0 0 0 2px var(--tc); }
 /* Equipo: tocar una cara cambia de Pokémon */
 #hud.touch .team.mine .tm { pointer-events: auto; touch-action: none; }
 #hud.touch .team kbd { display: none; }
-/* Poké Balls: fila de botones abajo, en el centro */
-#hud.touch .balls { right: auto; left: 50%; bottom: auto; top: 58px; transform: translateX(-50%); flex-direction: row; min-width: 0; padding: 5px; gap: 5px; pointer-events: auto; }
-#hud.touch .balls .bt { display: none; }
-#hud.touch .balls .ball { padding: 6px 9px; font-size: 12px; white-space: nowrap; }
-/* Pantalla de móvil en horizontal: todo más compacto */
+/* Poké Balls: un botón redondo por cada una que tengas, en fila abajo junto a los movimientos, con cuántas quedan */
+#hud.touch .balls { left: auto; top: auto; right: 240px; bottom: 16px; transform: none; flex-direction: row; gap: 8px; min-width: 0; padding: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; pointer-events: auto; }
+#hud.touch .balls .bt, #hud.touch .balls .ball.none, #hud.touch .balls .bn, #hud.touch .balls .pct { display: none; }
+#hud.touch .balls .ball { position: relative; width: 48px; height: 48px; padding: 0; justify-content: center; border-radius: 50%; background: rgba(10,14,30,.8); outline: 0; box-shadow: 0 3px 10px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.18); touch-action: none; }
+#hud.touch .balls .ball.sel { box-shadow: 0 3px 10px rgba(0,0,0,.45), inset 0 0 0 2px var(--yellow, #ffcb05); }
+#hud.touch .balls i { width: 28px; height: 28px; }
+#hud.touch .balls .bq { position: absolute; right: -4px; bottom: -3px; padding: 0 5px; border-radius: 8px; background: rgba(0,0,0,.8); font-size: 11px; font-weight: 800; }
+/* Pantalla de móvil en horizontal: el equipo y el tiempo, más compactos */
 @media (max-height: 500px) {
   #hud.touch .team { width: 150px; gap: 3px; }
   #hud.touch .team .tm img { width: 30px; height: 30px; }
   #hud.touch .team .tinfo b { font-size: 11px; }
   #hud.touch .timer { font-size: 18px; padding: 2px 12px; top: 8px; }
   #hud.touch .tc-quit { top: 6px; margin-left: -80px; }
-  #hud.touch .moves { grid-template-columns: repeat(3, 84px); gap: 6px; }
-  #hud.touch .mv { min-height: 52px; font-size: 11px; padding: 5px 6px; }
-  #hud.touch .mv small { display: none; }
-  #hud.touch .mv:first-child { min-height: 110px; }
-  #hud.touch .mv .mv-ico { width: 24px; height: 24px; }
-  #hud.touch .mv:first-child .mv-ico { width: 36px; height: 36px; }
-  #hud.touch .energy { height: 11px; }
-  #hud.touch .energy span { font-size: 9px; line-height: 11px; }
-  #hud.touch .balls { top: 44px; }
 }
-#hud.touch .mv:first-child b { white-space: normal; font-size: 12px; line-height: 1.15; }
-#hud.touch .mv:first-child .cdt { font-size: 18px; }
-#hud.touch .tc-rotate { display: none; }
+/* Móvil en vertical: un aviso tapa todo hasta girarlo (el juego va en horizontal) */
+.rotate-gate { display: none; }
 @media (orientation: portrait) {
-  #hud.touch .tc-rotate { display: flex; inset: 0; z-index: 50; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; background: rgba(8,12,26,.94); font: 700 18px var(--text); pointer-events: auto; }
-  #hud.touch .tc-rotate b { font-size: 54px; color: var(--yellow, #ffcb05); animation: tcTurn 1.6s ease-in-out infinite; }
+  body.touch .rotate-gate { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center;
+    background: radial-gradient(circle at 50% 40%, #232a58, #0b0f24); color: #fff; font: 800 20px var(--display); }
+  body.touch .rotate-gate b { font-size: 64px; color: var(--yellow, #ffcb05); animation: tcTurn 1.6s ease-in-out infinite; }
 }
 @keyframes tcTurn { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(90deg); } }
 
@@ -1316,3 +1322,29 @@ body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-
 }
 @media (max-height: 500px) { .ms-stage canvas { width: 110px !important; height: 110px !important; } }
 @media (max-width: 900px) and (min-height: 501px) { .ms-stage canvas { width: 160px !important; height: 160px !important; } }
+/* Historia en el móvil en horizontal: el mapa arriba (las regiones y el objetivo, debajo) y la ficha del sitio a su
+   lado, de su misma altura y con su propio scroll; el botón de jugar siempre a la vista, abajo. Los nodos, más
+   pequeños para que se vea el mapa */
+@media (max-height: 500px) {
+  .story > .inner-bar { order: -2; }
+  .story > .story-body { order: -1; margin-bottom: 10px; }
+  .story-body { grid-template-columns: min(calc((100vh - var(--legal-h, 0px) - 76px) * 1.6), calc(100% - 250px)) minmax(0, 1fr); gap: 8px; align-items: stretch; }
+  .story .story-body .map { width: 100%; margin: 0; }
+  .story-side { height: 0; min-height: 100%; }   /* tan alta como el mapa, sin estirar la fila */
+  .story-side .node-info { overflow: auto; flex: 1 1 auto; min-height: 0; padding: 10px 12px; }
+  .story-side .node-info .leader-head { margin: -10px -12px 6px; padding: 10px 12px 0; }
+  .story-side .node-info h3 { font-size: 16px; }
+  .story-side .leader-head .leader-sprite { width: 52px; height: 52px; }
+  .story-side .node-info h4, .story-side .node-info .team-head { margin-top: 8px; }
+  .story-side .node-info .mini { min-width: 52px; }
+  .story-side .node-info .mini canvas, .story-side .node-info .mini img.portrait { width: 36px !important; height: 36px !important; }
+  .story-side .node-info button.primary { position: sticky; bottom: -10px; z-index: 3; margin-top: 8px; padding: 8px 14px; box-shadow: 0 -8px 14px rgba(14,18,40,.9), 0 4px 0 #b97a00; }
+  .story .map .node, .story .map .city, .story .map .you-pin { scale: .62; }
+  .story .map .node label, .story .map .city span { font-size: 15px; }
+  .story-list { max-height: calc(100vh - var(--legal-h, 0px) - 76px); }
+}
+
+/* Las pantallas no se encogen para caber en la ventana (los resultados recortaban su final y no había scroll para
+   llegar al botón de seguir): si no caben, se desplaza la página */
+#screen > * { flex-shrink: 0; }
+.balls .bq { font-weight: inherit; }

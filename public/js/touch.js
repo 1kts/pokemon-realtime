@@ -21,6 +21,28 @@ export function touchMode() {
   return matchMedia('(pointer: coarse)').matches;
 }
 
+// En un móvil o una tablet, desde que se abre la página: el juego va en horizontal (en vertical, un aviso tapa
+// todo hasta girarlo) y a pantalla completa (se pide al primer toque, que es cuando el navegador lo deja; si
+// luego sales de ella no se vuelve a forzar: queda el botón de pantalla completa de la portada)
+export function initTouchDevice() {
+  if (!touchMode()) return;
+  document.body.classList.add('touch');
+  const gate = el('div', 'rotate-gate', '<b>⟳</b><span></span>');
+  const text = () => { gate.querySelector('span').textContent = t('Gira el móvil para jugar en horizontal'); };
+  text();
+  addEventListener('resize', text);
+  document.body.append(gate);
+  let left = false;
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) left = true; });
+  const standalone = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+  addEventListener('pointerdown', () => {
+    if (left || standalone || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
+    document.documentElement.requestFullscreen({ navigationUI: 'hide' })
+      .then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}))
+      .catch(() => {});
+  }, { capture: true });
+}
+
 const capture = (node, id) => { try { node.setPointerCapture(id); } catch {} };   // el dedo sigue siendo de ese botón aunque se salga
 const el = (tag, cls, html = '') => { const e = document.createElement(tag); e.className = cls; e.innerHTML = html; return e; };
 
@@ -38,9 +60,6 @@ export class TouchControls {
     const quit = this.quit = el('button', 'tc-quit', '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 3v18M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>');
     quit.onpointerdown = e => { e.preventDefault(); dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' })); };
     this.root.append(quit);
-    // En vertical no cabe la arena: aviso para girar el móvil
-    this.rotate = el('div', 'tc-rotate', `<b>⟳</b><span>${t('Gira el móvil para jugar en horizontal')}</span>`);
-    this.root.append(this.rotate);
   }
 
   buildStick() {
@@ -153,6 +172,6 @@ export class TouchControls {
 
   dispose() {
     document.body.classList.remove('touch-battle');
-    this.zone.remove(); this.quit.remove(); this.rotate.remove();
+    this.zone.remove(); this.quit.remove();
   }
 }

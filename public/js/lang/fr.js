@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.2 ----------
+    'Mejor en el móvil': 'Mieux sur téléphone',
+    'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.': 'Sur téléphone, les capacités sont des boutons ronds près du pouce, l\'énergie une fine barre et les Poké Balls des boutons en bas avec combien il t\'en reste.',
+    'En el móvil el mapa de la Historia va arriba con nodos más pequeños y la ficha de cada sitio al lado, con el botón de jugar siempre a la vista.': 'Sur téléphone, la carte de l\'Histoire est en haut avec des nœuds plus petits et la fiche de chaque lieu à côté, avec le bouton pour jouer toujours visible.',
+    'En el móvil el juego se pone a pantalla completa al primer toque y, si lo tienes en vertical, te pide girarlo desde el principio.': 'Sur téléphone, le jeu passe en plein écran au premier toucher et, si tu le tiens à la verticale, te demande de le tourner dès le début.',
+    'Tras un combate en una pantalla pequeña puedes bajar hasta el botón de seguir: los resultados ya no se recortan.': 'Après un combat sur un petit écran, tu peux descendre jusqu\'au bouton pour continuer : les résultats ne sont plus coupés.',
     // ---------- Novedades v0.24.1 ----------
     'Surf, una ola de verdad': 'Surf, une vraie vague',
     'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': 'Surf est maintenant une vague qui déferle, avec sa crête et son écume, et met un peu plus de temps à partir (0,45 s) : l\'adversaire la voit venir et peut l\'esquiver.',

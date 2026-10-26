@@ -10,6 +10,10 @@ module.exports = async ({ page, ok }) => {
   await page.type('.title-panel input', 'Movil');
   await page.realClick('.title-panel button.primary');
   await page.waitFor(`window.__app.ui.view === 'menu'`);
+  // Ya en el menú, en vertical un aviso tapa todo hasta girar el móvil
+  await page.resize(390, 844);
+  ok(await page.eval(`document.body.classList.contains('touch') && getComputedStyle(document.querySelector('.rotate-gate')).display !== 'none'`), 'desde el menú, en vertical pide girar el móvil');
+  await page.resize(844, 390);
   // Lo que se manda al servidor: el último movimiento lanzado y el último cambio
   await page.eval(`(() => { const net = window.__app.net, send = net.send.bind(net);
     net.send = m => { if (m.t === 'in') { if (m.c >= 0) { const b = window.__app.battle, f = b.renderPos[b.foeIdx]; window.__cast = { ...m, foe: { x: f.x, y: f.y } }; } if (m.sw >= 0) window.__swap = m; } return send(m); };
@@ -60,9 +64,9 @@ module.exports = async ({ page, ok }) => {
 
   // En vertical no cabe la arena: aviso para girar el móvil
   await page.resize(390, 844);
-  ok(await page.eval(`getComputedStyle(document.querySelector('.tc-rotate')).display !== 'none'`), 'en vertical pide girar el móvil');
+  ok(await page.eval(`getComputedStyle(document.querySelector('.rotate-gate')).display !== 'none'`), 'en vertical pide girar el móvil');
   await page.resize(844, 390);
-  ok(await page.eval(`getComputedStyle(document.querySelector('.tc-rotate')).display === 'none'`), 'en horizontal no sale el aviso');
+  ok(await page.eval(`getComputedStyle(document.querySelector('.rotate-gate')).display === 'none'`), 'en horizontal no sale el aviso');
 
   // Sin tecla Esc: el botón abre la ventana de rendirse
   await ptr('.tc-quit', 'pointerdown', null, null);
@@ -71,5 +75,9 @@ module.exports = async ({ page, ok }) => {
   await page.click('Rendirse');
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
   ok(await page.eval(`!document.querySelector('.tc-zone') && !document.body.classList.contains('touch-battle')`), 'al acabar, los controles táctiles se quitan');
+  // Los resultados no caben en 390 px de alto: se puede bajar hasta el botón de seguir (antes se recortaban)
+  await page.eval(`(() => { const s = document.getElementById('screen'); s.scrollTop = s.scrollHeight; return true; })()`);
+  ok(await page.eval(`(() => { const b = [...document.querySelectorAll('.results button.primary')].pop(), r = b.getBoundingClientRect(), legal = document.querySelector('.legal-bar').getBoundingClientRect().height;
+    return r.bottom <= innerHeight - legal + 1 && r.top >= 0; })()`), 'tras el combate se puede bajar hasta el botón de seguir');
   await page.resize();
 };

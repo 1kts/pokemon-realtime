@@ -544,7 +544,7 @@ export class BattleClient {
     if (!this.ballEl) return;
     this.ballEl.innerHTML = '<div class="bt">Poké Balls · <kbd>F</kbd> lanzar · <kbd>R</kbd> cambiar</div>' + BALLS.map(b => {
       const item = SHOP.find(s => s.id === b);
-      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}" data-ball="${b}"><i class="${b}"></i>${item.name} ×${this.balls[b] || 0}<small class="pct"></small></div>`;
+      return `<div class="ball${b === this.ballType ? ' sel' : ''}${this.balls[b] > 0 ? '' : ' none'}" data-ball="${b}"><i class="${b}"></i><span class="bn">${item.name}</span> <b class="bq">×${this.balls[b] || 0}</b><small class="pct"></small></div>`;
     }).join('');
   }
 

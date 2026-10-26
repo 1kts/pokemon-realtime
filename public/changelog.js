@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.24.2', date: '2026-10-26', title: 'Mejor en el móvil',
+      items: [
+        ['cambio', 'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.'],
+        ['cambio', 'En el móvil el mapa de la Historia va arriba con nodos más pequeños y la ficha de cada sitio al lado, con el botón de jugar siempre a la vista.'],
+        ['cambio', 'En el móvil el juego se pone a pantalla completa al primer toque y, si lo tienes en vertical, te pide girarlo desde el principio.'],
+        ['arreglo', 'Tras un combate en una pantalla pequeña puedes bajar hasta el botón de seguir: los resultados ya no se recortan.'],
+      ],
+    },
+    {
       v: '0.24.1', date: '2026-10-26', title: 'Surf, una ola de verdad',
       items: [
         ['cambio', 'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.'],

@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.2 ----------
+    'Mejor en el móvil': '手机上更好玩',
+    'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.': '在手机上，招式变成拇指旁的圆形按钮，能量是一条细条，精灵球是底部的按钮并显示剩余数量。',
+    'En el móvil el mapa de la Historia va arriba con nodos más pequeños y la ficha de cada sitio al lado, con el botón de jugar siempre a la vista.': '在手机上，故事地图在上方且节点更小，每个地点的信息在旁边，开始按钮始终可见。',
+    'En el móvil el juego se pone a pantalla completa al primer toque y, si lo tienes en vertical, te pide girarlo desde el principio.': '在手机上，第一次点击时游戏会进入全屏，如果你竖着拿手机，一开始就会提示你横过来。',
+    'Tras un combate en una pantalla pequeña puedes bajar hasta el botón de seguir: los resultados ya no se recortan.': '在小屏幕上战斗结束后，可以向下滚动到继续按钮：结果不再被截断。',
     // ---------- Novedades v0.24.1 ----------
     'Surf, una ola de verdad': '冲浪，真正的海浪',
     'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': '冲浪现在是一道翻涌的海浪，有浪尖和浪花，出招也稍微慢一点（0.45秒）：对手能看到它过来并躲开。',

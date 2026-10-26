@@ -11,6 +11,7 @@ import { BattleClient } from './battle.js';
 import { UI } from './ui.js';
 import { faceSrc } from './sprites.js';
 import { applyCursor } from './cursor.js';
+import { initTouchDevice } from './touch.js';
 import './tips.js';
 import { confirmBox } from './dialog.js';
 import { Net, storage } from './net.js';
@@ -192,4 +193,5 @@ addEventListener('keydown', e => {
 });
 
 applyCursor();   // el color de cursor elegido en Ajustes
+initTouchDevice();   // en móvil: horizontal y pantalla completa
 ui.show('title');

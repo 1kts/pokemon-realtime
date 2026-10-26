@@ -39,6 +39,8 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.story .map')`);
   const mapH = await page.eval(`Math.round(document.querySelector('.story .map').getBoundingClientRect().height)`);
   ok(mapH <= 390 - h1, `en horizontal el mapa se ve entero (${mapH} px de alto)`);
+  ok(await page.eval(`(() => { const m = document.querySelector('.story .map').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
+    return b.left >= m.right && b.bottom <= innerHeight && b.top >= 0 && document.getElementById('screen').scrollTop === 0; })()`), 'la ficha del sitio va al lado del mapa, con el botón de jugar a la vista sin bajar');
 
   // La ficha de un Pokémon cabe, con el sprite dentro de su recuadro
   await page.eval(`window.__app.ui.show('team'); true`);

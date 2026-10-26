@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.2 ----------
+    'Mejor en el móvil': '휴대폰에서 더 편하게',
+    'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.': '휴대폰에서는 기술이 엄지 옆의 동그란 버튼이 되고, 에너지는 얇은 바, 몬스터볼은 남은 개수가 보이는 아래쪽 버튼이 돼요.',
+    'En el móvil el mapa de la Historia va arriba con nodos más pequeños y la ficha de cada sitio al lado, con el botón de jugar siempre a la vista.': '휴대폰에서는 스토리 지도가 더 작은 아이콘과 함께 위에 있고, 각 장소 정보가 옆에 있으며 플레이 버튼이 항상 보여요.',
+    'En el móvil el juego se pone a pantalla completa al primer toque y, si lo tienes en vertical, te pide girarlo desde el principio.': '휴대폰에서는 처음 탭할 때 전체 화면이 되고, 세로로 들고 있으면 처음부터 가로로 돌리라고 알려 줘요.',
+    'Tras un combate en una pantalla pequeña puedes bajar hasta el botón de seguir: los resultados ya no se recortan.': '작은 화면에서 배틀 후 계속 버튼까지 스크롤할 수 있어요. 결과가 더 이상 잘리지 않아요.',
     // ---------- Novedades v0.24.1 ----------
     'Surf, una ola de verdad': '파도타기, 진짜 파도',
     'Surf es ahora una ola que rompe, con su cresta y espuma, y tarda un poco más en salir (0,45 s): el rival lo ve venir y puede apartarse.': '파도타기가 이제 물마루와 거품이 있는 부서지는 파도가 되었고, 나오는 데 조금 더 걸려요(0.45초). 상대가 오는 걸 보고 피할 수 있어요.',
