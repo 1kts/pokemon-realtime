@@ -398,6 +398,9 @@ export class UI {
     // En el mapa, lo que toca (siguiente líder, rutas nuevas y el camino hasta ellos) resalta y lo bloqueado se
     // apaga; lo ya abierto se ve normal, para repetirlo cuando quieras
     const map = el('div', 'map focus region-' + region);
+    // Los nodos, etiquetas y marcas se adaptan al tamaño del mapa: a su tamaño en un mapa de 860 px de ancho o más (un portátil)
+    // y más pequeños cuanto más pequeño se vea (en el móvil), sin bajar de la mitad para que se puedan tocar
+    if (window.ResizeObserver) new ResizeObserver(([e]) => map.style.setProperty('--ms', Math.max(0.5, Math.min(1, e.contentRect.width / 860)).toFixed(3))).observe(map);
     // Lienzo con la proporción del mapa (16:10), centrado; el mar del SVG rellena lo que sobre
     const stage = el('div', 'map-stage', regionMapSVG(region));
     map.append(stage);

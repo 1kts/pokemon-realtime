@@ -6,6 +6,15 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', dex: 8, level: 30, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   const views = ['menu', 'story', 'team', 'online', 'treasure', 'settings', 'profile', 'collection', 'missions', 'ladder', 'tower', 'practice', 'dex', 'bag'];
   const wide = () => page.eval(`(() => { const s = document.getElementById('screen'); return s.scrollWidth <= innerWidth + 1; })()`);
+  // Como app (Añadir a pantalla de inicio): manifest en horizontal y a pantalla completa, con sus iconos, y las
+  // etiquetas que pide el iPhone
+  await page.goto('/');
+  const app = await page.eval(`(async () => { const r = await fetch(document.querySelector('link[rel=manifest]').href), m = await r.json();
+    const icons = await Promise.all([...m.icons.map(i => i.src), document.querySelector('link[rel=apple-touch-icon]').getAttribute('href')].map(async u => (await fetch(u)).headers.get('content-type')));
+    return { type: r.headers.get('content-type'), display: m.display, orientation: m.orientation, icons, ios: document.querySelector('meta[name=apple-mobile-web-app-capable]')?.content };
+  })()`);
+  ok(/manifest\+json/.test(app.type) && app.display === 'fullscreen' && app.orientation === 'landscape' && app.icons.every(t => t === 'image/png') && app.ios === 'yes',
+    'se puede añadir a la pantalla de inicio: se abre como app, en horizontal y a pantalla completa, con su icono');
   for (const [W, H] of [[844, 390], [390, 844]]) {
     await page.resize(W, H);
     await page.loginAs(me.token);
@@ -25,6 +34,21 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`document.querySelector('.hub-bar .hub-me')`);
     ok(await page.eval(`(() => { const r = document.querySelector('.hub-bar .hub-me').getBoundingClientRect(); return r.right <= innerWidth + 1 && r.left >= -1; })()`), `${W}×${H}: la cabecera del menú cabe`);
   }
+
+  // Tooltips con el dedo: tocar no los saca (se quedaban pegados); mantener medio segundo, sí
+  await page.eval(`window.__app.ui.show('menu'); true`);
+  const tipSel = await page.eval(`(() => { const n = [...document.querySelectorAll('#screen [title], #screen [data-tip]')].find(e => e.offsetParent && !e.closest('#hud')); n.id = n.id || 'tip-e2e'; return '#' + n.id; })()`);
+  const touch = (type) => page.eval(`(() => { const n = document.querySelector('${tipSel}'), r = n.getBoundingClientRect();
+    n.dispatchEvent(new PointerEvent('${type}', { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); return true; })()`);
+  await touch('pointerover'); await touch('pointerdown');
+  await page.eval(`document.querySelector('${tipSel}').focus(); true`);
+  await touch('pointerup');
+  await new Promise(r => setTimeout(r, 150));
+  ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
+  await touch('pointerdown');
+  await new Promise(r => setTimeout(r, 650));
+  ok(await page.eval(`!!document.querySelector('.ui-tip.on')`), 'manteniendo el dedo medio segundo sale el tooltip');
+  await touch('pointerup'); await touch('pointerdown'); await touch('pointerup');
 
   // La barra legal: en una línea, y al tocar el texto se ve entero
   await page.resize(844, 390);

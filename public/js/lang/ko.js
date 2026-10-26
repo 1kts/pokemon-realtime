@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.25.0 ----------
+    'PokéArenas como app': '앱처럼 쓰는 PokéArenas',
+    'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'PokéArenas를 휴대폰 홈 화면에 추가할 수 있어요. 전체 화면, 가로 모드로 전용 아이콘과 함께 앱처럼 열려요.',
+    'Los nodos del mapa de la Historia se adaptan al tamaño del mapa: en pantallas pequeñas se ven más pequeños y el mapa se entiende mejor.': '스토리 지도의 아이콘이 지도 크기에 맞춰져요. 작은 화면에서는 더 작게 보여서 지도를 보기 쉬워요.',
+    'En el móvil, manteniendo el dedo sobre algo ves su descripción; el editor de avatar y Lucky Spin caben mejor en la pantalla.': '휴대폰에서 손가락으로 길게 누르면 설명을 볼 수 있어요. 아바타 편집과 Lucky Spin이 화면에 더 잘 맞아요.',
+    'En el móvil, tocar un botón ya no deja su descripción pegada en pantalla, ni el iPhone hace zoom al tocar dos veces o al escribir.': '휴대폰에서 버튼을 눌러도 설명이 화면에 남지 않고, iPhone에서 두 번 탭하거나 입력할 때 확대되지 않아요.',
+    // ---------- Móvil: añadir a pantalla de inicio ----------
+    'Para jugar a pantalla completa, como una app: pulsa Compartir y luego «Añadir a pantalla de inicio».': '앱처럼 전체 화면으로 플레이하려면 공유를 누른 다음 「홈 화면에 추가」를 선택하세요.',
     // ---------- Novedades v0.24.2 ----------
     'Mejor en el móvil': '휴대폰에서 더 편하게',
     'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.': '휴대폰에서는 기술이 엄지 옆의 동그란 버튼이 되고, 에너지는 얇은 바, 몬스터볼은 남은 개수가 보이는 아래쪽 버튼이 돼요.',

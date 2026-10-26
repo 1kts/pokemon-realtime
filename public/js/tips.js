@@ -30,9 +30,24 @@ function hide() {
 }
 
 const findTip = e => e.target instanceof Element && e.target.closest('[title], [data-tip]');
-document.addEventListener('pointerover', e => { const n = findTip(e); if (n && n !== target) show(n); else if (!n) hide(); });
-document.addEventListener('focusin', e => { const n = findTip(e); if (n) show(n); });
+// Con el dedo no hay «pasar por encima»: tocar no saca el tooltip (se quedaba pegado al enfocar el botón) y se ve
+// manteniendo el dedo medio segundo, como en las apps. En el combate no: ahí mantener sirve para apuntar
+let touchAt = 0, hold = null, holdAt = null;
+const byTouch = () => performance.now() - touchAt < 800;
+document.addEventListener('pointerover', e => { if (e.pointerType === 'touch') return; const n = findTip(e); if (n && n !== target) show(n); else if (!n) hide(); });
+document.addEventListener('focusin', e => { if (byTouch()) return; const n = findTip(e); if (n) show(n); });
 document.addEventListener('focusout', hide);
-document.addEventListener('pointerdown', hide);
+document.addEventListener('pointerdown', e => {
+  hide();
+  clearTimeout(hold);
+  if (e.pointerType !== 'touch') return;
+  touchAt = performance.now();
+  const n = findTip(e);
+  if (n && !n.closest('#hud')) { holdAt = [e.clientX, e.clientY]; hold = setTimeout(() => show(n), 500); }
+});
+const stopHold = () => { clearTimeout(hold); hold = holdAt = null; };
+document.addEventListener('pointerup', stopHold);
+document.addEventListener('pointercancel', stopHold);
+document.addEventListener('pointermove', e => { if (holdAt && Math.hypot(e.clientX - holdAt[0], e.clientY - holdAt[1]) > 10) stopHold(); });
 addEventListener('scroll', hide, true);
 addEventListener('blur', hide);

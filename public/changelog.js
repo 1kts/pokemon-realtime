@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.25.0', date: '2026-10-26', title: 'PokéArenas como app',
+      items: [
+        ['nuevo', 'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.'],
+        ['cambio', 'Los nodos del mapa de la Historia se adaptan al tamaño del mapa: en pantallas pequeñas se ven más pequeños y el mapa se entiende mejor.'],
+        ['cambio', 'En el móvil, manteniendo el dedo sobre algo ves su descripción; el editor de avatar y Lucky Spin caben mejor en la pantalla.'],
+        ['arreglo', 'En el móvil, tocar un botón ya no deja su descripción pegada en pantalla, ni el iPhone hace zoom al tocar dos veces o al escribir.'],
+      ],
+    },
+    {
       v: '0.24.2', date: '2026-10-26', title: 'Mejor en el móvil',
       items: [
         ['cambio', 'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.'],

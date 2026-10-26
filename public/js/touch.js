@@ -32,10 +32,21 @@ export function initTouchDevice() {
   text();
   addEventListener('resize', text);
   document.body.append(gate);
+  // iPhone/iPad en Safari: no deja pantalla completa en una web; como app (Añadir a pantalla de inicio) sí. Se
+  // explica una vez, con una ✕ para no volver a verlo
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let seen = false;
+  try { seen = !!localStorage.getItem('arena.iosTip'); } catch {}
+  if (ios && !navigator.standalone && !seen) {
+    const tip = el('div', 'ios-tip', `<span>${t('Para jugar a pantalla completa, como una app: pulsa Compartir y luego «Añadir a pantalla de inicio».')}</span><button aria-label="${t('Cerrar')}">✕</button>`);
+    tip.querySelector('button').onclick = () => { tip.remove(); try { localStorage.setItem('arena.iosTip', '1'); } catch {} };
+    document.body.append(tip);
+  }
   let left = false;
   document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) left = true; });
   const standalone = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
-  addEventListener('pointerdown', () => {
+  addEventListener('pointerdown', e => {
+    if (e.target instanceof Element && e.target.closest('.fs-btn')) return;   // ese botón ya la pone o la quita
     if (left || standalone || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
     document.documentElement.requestFullscreen({ navigationUI: 'hide' })
       .then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}))

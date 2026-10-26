@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.25.0 ----------
+    'PokéArenas como app': 'PokéArenasをアプリのように',
+    'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'PokéArenasをスマホのホーム画面に追加できます。アプリのように、全画面・横向きで、専用アイコンから開きます。',
+    'Los nodos del mapa de la Historia se adaptan al tamaño del mapa: en pantallas pequeñas se ven más pequeños y el mapa se entiende mejor.': 'ストーリーのマップのアイコンがマップの大きさに合わせて変わります。小さい画面では小さく表示され、マップが見やすくなります。',
+    'En el móvil, manteniendo el dedo sobre algo ves su descripción; el editor de avatar y Lucky Spin caben mejor en la pantalla.': 'スマホでは、指で長押しすると説明が見られます。アバター編集とLucky Spinが画面に収まりやすくなりました。',
+    'En el móvil, tocar un botón ya no deja su descripción pegada en pantalla, ni el iPhone hace zoom al tocar dos veces o al escribir.': 'スマホでボタンをタップしても説明が画面に残らなくなり、iPhoneでダブルタップや入力のときにズームしなくなりました。',
+    // ---------- Móvil: añadir a pantalla de inicio ----------
+    'Para jugar a pantalla completa, como una app: pulsa Compartir y luego «Añadir a pantalla de inicio».': 'アプリのように全画面で遊ぶには、共有をタップしてから「ホーム画面に追加」を選んでね。',
     // ---------- Novedades v0.24.2 ----------
     'Mejor en el móvil': 'スマホでもっと遊びやすく',
     'En el móvil los movimientos son botones redondos junto al pulgar, la energía una barra fina y las Poké Balls botones abajo con cuántas te quedan.': 'スマホでは、わざが親指の近くの丸いボタンに、エネルギーが細いバーに、モンスターボールが残り数つきの下のボタンになりました。',
