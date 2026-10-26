@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': 'Find your friends',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'In Friends you search for a trainer by typing their name: matching trainers show up with their Pokémon and ELO, and you add them with one tap.',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': 'The Friends button at the top has a new icon, and if you play as a guest the screen explains how to create your account to have friends.',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': 'You don\'t have friends yet. Search for them by name right here, or add them from their profile in the rankings.',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': 'You\'re playing as a guest. Friends are saved with your account: create it in your Profile and you keep everything you already have.',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': 'Search for a trainer by name and tap “Add”. Your name is <b>{me}</b>.',
+    'Buscar': 'Search',
+    'Crear mi cuenta': 'Create my account',
+    'Nadie con cuenta se llama así.': 'Nobody with an account has that name.',
+    'Nombre del entrenador': 'Trainer name',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': 'Friends',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'In Friends you see who\'s online and what they\'re doing, open their profile and accept the requests you get. An account is required.',
@@ -21,16 +34,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': 'Add friends and see if they\'re online and their profile.',
     'Añadir amigo': 'Add friend',
     'Crea una cuenta para tener amigos': 'Create an account to have friends',
-    'Enviar solicitud': 'Send request',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': 'Type their name with the tag, as shown on their profile: Ash#4821. Your name is <b>{me}</b>.',
-    'Ir a mi Perfil': 'Go to my Profile',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': 'Friends are saved with your account. Create it in your Profile: you keep everything you already have.',
     'Rechazar': 'Decline',
     'Solicitud enviada': 'Request sent',
     'Solicitudes de amistad': 'Friend requests',
     'Solicitudes enviadas': 'Sent requests',
     'Tienes {n} solicitudes de amistad.': 'You have {n} friend requests.',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': 'You don\'t have friends yet. Ask someone for their name with the tag, or add them from their profile in the rankings.',
     'Tus amigos': 'Your friends',
     'en línea': 'online',
     '{name} quiere ser tu amigo': '{name} wants to be your friend',

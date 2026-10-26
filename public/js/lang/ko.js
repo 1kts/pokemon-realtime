@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': '친구를 찾아보세요',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': '친구 화면에서 이름을 입력해 트레이너를 검색하면, 일치하는 트레이너가 포켓몬과 ELO와 함께 나오고 탭 한 번으로 추가할 수 있어요.',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': '위쪽 친구 버튼의 아이콘이 바뀌었고, 게스트로 플레이 중이면 친구를 사귀기 위한 계정 만드는 방법을 알려 줘요.',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': '아직 친구가 없어요. 여기서 이름으로 찾거나 랭킹의 프로필에서 추가하세요.',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': '지금은 게스트로 플레이 중이에요. 친구는 계정에 저장돼요: 프로필에서 만들면 지금 가진 건 그대로 남아요.',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': '이름으로 트레이너를 찾아 「추가」를 누르세요. 내 이름은 <b>{me}</b>예요.',
+    'Buscar': '검색',
+    'Crear mi cuenta': '계정 만들기',
+    'Nadie con cuenta se llama así.': '그 이름의 계정이 없어요.',
+    'Nombre del entrenador': '트레이너 이름',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': '친구',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': '친구 화면에서 누가 접속 중이고 무엇을 하는지 보고, 프로필을 열고, 받은 신청을 수락할 수 있어요. 계정이 필요해요.',
@@ -22,16 +35,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': '친구를 추가하고 접속 여부와 프로필을 확인하세요.',
     'Añadir amigo': '친구 추가',
     'Crea una cuenta para tener amigos': '친구를 사귀려면 계정을 만드세요',
-    'Enviar solicitud': '신청 보내기',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': '프로필에 나온 이름과 태그를 입력하세요: Ash#4821. 내 이름은 <b>{me}</b>예요.',
-    'Ir a mi Perfil': '내 프로필로',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': '친구는 계정에 저장돼요. 프로필에서 만드세요: 지금 가진 건 그대로 남아요.',
     'Rechazar': '거절',
     'Solicitud enviada': '신청을 보냈어요',
     'Solicitudes de amistad': '친구 신청',
     'Solicitudes enviadas': '보낸 신청',
     'Tienes {n} solicitudes de amistad.': '친구 신청이 {n}건 있어요.',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': '아직 친구가 없어요. 이름과 태그를 물어보거나 랭킹의 프로필에서 추가하세요.',
     'Tus amigos': '내 친구',
     'en línea': '접속 중',
     '{name} quiere ser tu amigo': '{name} 님이 친구가 되고 싶어 해요',

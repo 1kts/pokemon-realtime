@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': 'フレンドを探そう',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'フレンド画面で名前を入力するとトレーナーを検索でき、一致した人がポケモンとELOつきで表示されます。タップ1回で追加できます。',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': '上のフレンドボタンのアイコンが新しくなりました。ゲストで遊んでいると、フレンドを作るためのアカウントの作り方が表示されます。',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': 'まだフレンドがいません。ここで名前で探すか、ランキングのプロフィールから追加しよう。',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': '今はゲストで遊んでいます。フレンドはアカウントに保存されます。プロフィールで作成すれば、今あるものはそのまま残ります。',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': '名前でトレーナーを探して「追加」を押してね。あなたの名前は <b>{me}</b> です。',
+    'Buscar': 'さがす',
+    'Crear mi cuenta': 'アカウントを作る',
+    'Nadie con cuenta se llama así.': 'その名前のアカウントはいません。',
+    'Nombre del entrenador': 'トレーナーの名前',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': 'フレンド',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'フレンド画面では、誰がオンラインで何をしているかを見たり、プロフィールを開いたり、届いた申請を承認したりできます。アカウントが必要です。',
@@ -22,16 +35,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': 'フレンドを追加して、オンラインかどうかやプロフィールを見よう。',
     'Añadir amigo': 'フレンドを追加',
     'Crea una cuenta para tener amigos': 'フレンドを作るにはアカウントを作成してね',
-    'Enviar solicitud': '申請を送る',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': 'プロフィールに出ている名前とタグを入力してね：Ash#4821。あなたの名前は <b>{me}</b> です。',
-    'Ir a mi Perfil': 'プロフィールへ',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': 'フレンドはアカウントに保存されます。プロフィールで作成してね。今あるものはそのまま残ります。',
     'Rechazar': '断る',
     'Solicitud enviada': '申請を送りました',
     'Solicitudes de amistad': 'フレンド申請',
     'Solicitudes enviadas': '送った申請',
     'Tienes {n} solicitudes de amistad.': 'フレンド申請が{n}件あります。',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': 'まだフレンドがいません。名前とタグを聞くか、ランキングのプロフィールから追加しよう。',
     'Tus amigos': 'フレンド',
     'en línea': 'オンライン',
     '{name} quiere ser tu amigo': '{name}がフレンドになりたがっています',

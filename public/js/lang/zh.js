@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': '寻找你的好友',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': '在好友中输入名字即可搜索训练家：匹配的训练家会和他们的宝可梦及ELO一起显示，点一下就能添加。',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': '上方的好友按钮换了新图标；如果你是游客，界面会说明如何创建账号来拥有好友。',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': '你还没有好友。在这里按名字搜索，或在排行榜的资料中添加。',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': '你现在是游客。好友会保存在账号中：在资料中创建账号，你现有的一切都会保留。',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': '按名字搜索训练家，然后点“添加”。你的名字是 <b>{me}</b>。',
+    'Buscar': '搜索',
+    'Crear mi cuenta': '创建我的账号',
+    'Nadie con cuenta se llama así.': '没有叫这个名字的账号。',
+    'Nombre del entrenador': '训练家名字',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': '好友',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': '在好友中可以看到谁在线、在做什么，打开对方资料并接受收到的申请。需要账号。',
@@ -21,16 +34,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': '添加好友，查看他们是否在线以及个人资料。',
     'Añadir amigo': '添加好友',
     'Crea una cuenta para tener amigos': '创建账号才能拥有好友',
-    'Enviar solicitud': '发送申请',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': '输入对方的名字和标签，和资料上显示的一样：Ash#4821。你的名字是 <b>{me}</b>。',
-    'Ir a mi Perfil': '前往我的资料',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': '好友会保存在你的账号中。在资料中创建账号：你现有的一切都会保留。',
     'Rechazar': '拒绝',
     'Solicitud enviada': '已发送申请',
     'Solicitudes de amistad': '好友申请',
     'Solicitudes enviadas': '已发送的申请',
     'Tienes {n} solicitudes de amistad.': '你有{n}个好友申请。',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': '你还没有好友。向别人要名字和标签，或在排行榜的资料中添加。',
     'Tus amigos': '你的好友',
     'en línea': '在线',
     '{name} quiere ser tu amigo': '{name}想成为你的好友',

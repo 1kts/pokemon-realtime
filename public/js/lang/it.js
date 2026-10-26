@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': 'Trova i tuoi amici',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'In Amici cerchi un allenatore scrivendo il suo nome: compaiono quelli che corrispondono con il loro Pokémon e ELO, e lo aggiungi con un tocco.',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': 'Il pulsante Amici in alto ha una nuova icona, e se giochi come ospite la schermata ti spiega come creare il tuo account per avere amici.',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': 'Non hai ancora amici. Cercali per nome qui accanto, o aggiungili dalla loro scheda nelle classifiche.',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': 'Stai giocando come ospite. Gli amici si salvano con il tuo account: crealo nel tuo Profilo e tieni tutto ciò che hai già.',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': 'Cerca un allenatore per nome e tocca «Aggiungi». Il tuo nome è <b>{me}</b>.',
+    'Buscar': 'Cerca',
+    'Crear mi cuenta': 'Crea il mio account',
+    'Nadie con cuenta se llama así.': 'Nessuno con un account si chiama così.',
+    'Nombre del entrenador': 'Nome dell\'allenatore',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': 'Amici',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'In Amici vedi chi è online e cosa fa, apri il suo profilo e accetti le richieste che ricevi. Serve un account.',
@@ -22,16 +35,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': 'Aggiungi amici e guarda se sono online e il loro profilo.',
     'Añadir amigo': 'Aggiungi amico',
     'Crea una cuenta para tener amigos': 'Crea un account per avere amici',
-    'Enviar solicitud': 'Invia richiesta',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': 'Scrivi il suo nome con l\'etichetta, come nella sua scheda: Ash#4821. Il tuo nome è <b>{me}</b>.',
-    'Ir a mi Perfil': 'Vai al mio Profilo',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': 'Gli amici si salvano con il tuo account. Crealo nel tuo Profilo: tieni tutto ciò che hai già.',
     'Rechazar': 'Rifiuta',
     'Solicitud enviada': 'Richiesta inviata',
     'Solicitudes de amistad': 'Richieste di amicizia',
     'Solicitudes enviadas': 'Richieste inviate',
     'Tienes {n} solicitudes de amistad.': 'Hai {n} richieste di amicizia.',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': 'Non hai ancora amici. Chiedi a qualcuno il suo nome con l\'etichetta, o aggiungilo dalla sua scheda nelle classifiche.',
     'Tus amigos': 'I tuoi amici',
     'en línea': 'online',
     '{name} quiere ser tu amigo': '{name} vuole essere tuo amico',

@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.28.1', date: '2026-10-26', title: 'Busca a tus amigos',
+      items: [
+        ['cambio', 'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.'],
+        ['cambio', 'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.'],
+      ],
+    },
+    {
       v: '0.28.0', date: '2026-10-26', title: 'Amigos',
       items: [
         ['nuevo', 'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.'],

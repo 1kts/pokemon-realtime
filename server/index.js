@@ -492,6 +492,7 @@ function handle(c, msg) {
   if (msg.t === 'user') return send(c, { t: 'user', u: store.publicUser(String(msg.id), onlineIds()) });
   // Amigos: la lista (con quién está en línea y qué hace) y añadir, aceptar, rechazar, cancelar o quitar
   if (msg.t === 'friends' && c.profile) return send(c, { t: 'friends', ...friends.list(c.profile, doingOf) });
+  if (msg.t === 'friendsearch' && c.profile) return send(c, { t: 'friendsearch', q: String(msg.q || '').slice(0, 30), rows: c.profile.account ? friends.search(c.profile, msg.q, doingOf) : [] });
   if (msg.t === 'friend' && c.profile) {
     const r = friends.action(c.profile, msg);
     if (r.error) return send(c, { t: 'error', msg: r.error });

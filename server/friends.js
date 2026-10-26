@@ -75,6 +75,28 @@ function list(p, doing) {
   return { friends, in: p.friendIn.map(x => card(x.id)).filter(Boolean), out: p.friendOut.map(card).filter(Boolean) };
 }
 
+// Buscar entrenadores por nombre para añadirlos (solo los que tienen cuenta): primero los que empiezan así, y
+// cada uno con su Pokémon, su ELO, si está en línea y cómo estáis (amigos, solicitud enviada o recibida)
+function search(p, q, doing) {
+  ensure(p);
+  const s = String(q || '').replace(/#\d*$/, '').trim().toLowerCase().slice(0, 20);
+  if (s.length < 2) return [];
+  const hits = [];
+  for (const o of store.all()) {
+    if (o === p || !o.account || o.staff) continue;
+    const n = o.name.toLowerCase(), at = n.indexOf(s);
+    if (at < 0) continue;
+    hits.push([at === 0 ? 0 : 1, o.seen || 0, o]);
+    if (hits.length > 400) break;
+  }
+  hits.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+  return hits.slice(0, 8).map(([, , o]) => {
+    const team = Object.values(o.teams || {}).flat().map(u => (o.mons || []).find(m => m.uid === u)).filter(Boolean).sort((a, b) => b.level - a.level)[0];
+    return { id: o.id, name: o.name, tag: o.tag, elo: o.elo, ranked: o.ranked || 0, dex: team ? team.dex : null, shiny: !!(team && team.shiny && !team.plain), doing: doing(o.id),
+      rel: p.friends.includes(o.id) ? 'friend' : p.friendOut.includes(o.id) ? 'out' : p.friendIn.some(x => x.id === o.id) ? 'in' : null };
+  });
+}
+
 // Si se borra un jugador, desaparece de las listas de los demás
 store.onRemove(gone => {
   for (const o of store.all()) {
@@ -86,4 +108,4 @@ store.onRemove(gone => {
   }
 });
 
-module.exports = { action, list, ensure, MAX };
+module.exports = { action, list, search, ensure, MAX };

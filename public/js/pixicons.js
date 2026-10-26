@@ -134,6 +134,10 @@ const PIX = (() => {
     crown: { pal: { y: '#ffd23f', o: '#c08a10', r: '#ff5f6d' }, rows: [
       '............', '............', 'k....k....k.', 'kk..kyk..kk.', 'kyk.kyk.kyk.', 'kyykyyykyyk.',
       'kyyyyyyyyyk.', 'kyyryyyryyk.', 'kyyyyyyyyyk.', 'koooooooook.', 'kkkkkkkkkkk.', '............'] },
+    // Amigos: dos entrenadores, uno detrás de otro (azul y amarillo)
+    buddies: { pal: { a: '#7fb4ff', b: '#3d6fd0', y: '#ffd23f', o: '#c08a10' }, rows: [
+      '..kkk.......', '.kaaak......', '.kaaak..kkk.', '..kkk..kyyyk', '.kkkkk.kyyyk', 'kaaaaak.kkk.',
+      'kaaaak.kkkkk', 'kaaakkyyyyyk', 'kbbbkkyyyyyk', 'kkkkkyyyyyyk', '....kooooook', '....kkkkkkkk'] },
     user: { pal: { u: '#b9cbf0', d: '#7f93c0' }, rows: [
       '............', '....kkkk....', '...kuuuuk...', '...kuuuuk...', '...kuuuuk...', '....kuuk....',
       '..kkkuukkk..', '.kuuuuuuuuk.', '.kuuuuuuuuk.', '.kdduuuuddk.', '.kkkkkkkkkk.', '............'] },

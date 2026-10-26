@@ -8,15 +8,19 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(ana.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
+  ok(await page.eval(`!!document.querySelector('.hub-bar .friends-btn svg, .hub-bar .friends-btn img, .hub-bar .friends-btn canvas, .hub-bar .friends-btn i')`), 'arriba está el botón de Amigos');
   await page.click('.hub-bar .friends-btn');
   await page.waitFor(`window.__app.ui.view === 'friends' && document.querySelector('.fr-add input')`);
   ok(true, 'el botón de la barra de arriba abre Amigos');
 
-  // Añadir a Beto por su nombre con la etiqueta; Beto acepta
-  await page.type('.fr-add input', `${beto.profile.name}#${beto.profile.tag}`);
-  await page.eval(`document.querySelector('.fr-add').requestSubmit(); true`);
+  // Buscar a Beto escribiendo parte de su nombre (sin etiqueta): sale en los resultados y se añade desde ahí
+  await page.type('.fr-add input', 'betoam');
+  await page.waitFor(`[...document.querySelectorAll('.fr-hits .fr-card')].some(c => c.textContent.includes('${beto.profile.name}'))`);
+  ok(true, 'al escribir parte del nombre salen los entrenadores que coinciden');
+  if (process.env.SHOT) await page.shot(process.env.SHOT);
+  await page.eval(`[...document.querySelectorAll('.fr-hits .fr-card')].find(c => c.textContent.includes('${beto.profile.name}')).querySelector('button.primary').click(); true`);
   await page.waitFor(`document.querySelector('.fr-sec.out .fr-card')`);
-  ok(true, 'enviar la solicitud por nombre y etiqueta la deja en «Solicitudes enviadas»');
+  ok(true, '«Añadir» en el resultado envía la solicitud y sale en «Solicitudes enviadas»');
   const req = await beto.client.wait(m => m.t === 'friendreq');
   ok(req.name === ana.profile.name, 'a Beto le llega el aviso al momento');
   beto.client.send({ t: 'friend', a: 'accept', id: ana.id });
@@ -36,7 +40,6 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval(`document.querySelector('.fr-sec.in .fr-card button.primary').click(); true`);
   await page.waitFor(`!document.querySelector('.fr-sec.in') && document.querySelectorAll('.fr-sec:not(.out) .fr-card').length === 2`);
   ok(true, 'aceptarla la pasa a tus amigos');
-  if (process.env.SHOT) await page.shot(process.env.SHOT);
 
   // Quitar a Beto
   await page.eval(`[...document.querySelectorAll('.fr-card')].find(c => c.textContent.includes('${beto.profile.name}')).querySelector('button.danger').click(); true`);

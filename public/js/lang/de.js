@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.28.1 ----------
+    'Busca a tus amigos': 'Finde deine Freunde',
+    'En Amigos buscas a un entrenador escribiendo su nombre: salen los que coinciden con su Pokémon y su ELO, y lo añades con un toque.': 'Bei Freunde suchst du einen Trainer, indem du seinen Namen eintippst: Passende Trainer erscheinen mit Pokémon und ELO, und du fügst sie mit einem Tippen hinzu.',
+    'El botón de Amigos de arriba tiene un icono nuevo, y si juegas como invitado la pantalla te explica cómo crear tu cuenta para tener amigos.': 'Der Freunde-Button oben hat ein neues Symbol, und wenn du als Gast spielst, erklärt dir der Bildschirm, wie du ein Konto für Freunde erstellst.',
+    // ---------- Amigos: sin amigos ----------
+    'Todavía no tienes amigos. Búscalos por su nombre aquí al lado, o añádelos desde su ficha en los rankings.': 'Du hast noch keine Freunde. Suche sie hier nach Namen oder füge sie über ihr Profil in den Ranglisten hinzu.',
+    // ---------- Amigos: buscador ----------
+    'Ahora juegas como invitado. Los amigos se guardan con tu cuenta: créala en tu Perfil y te quedas con todo lo que ya tienes.': 'Du spielst als Gast. Freunde werden mit deinem Konto gespeichert: Erstelle es in deinem Profil, du behältst alles, was du hast.',
+    'Busca a un entrenador por su nombre y pulsa «Añadir». Tu nombre es <b>{me}</b>.': 'Suche einen Trainer nach Namen und tippe auf „Hinzufügen“. Dein Name ist <b>{me}</b>.',
+    'Buscar': 'Suchen',
+    'Crear mi cuenta': 'Konto erstellen',
+    'Nadie con cuenta se llama así.': 'Niemand mit Konto heißt so.',
+    'Nombre del entrenador': 'Name des Trainers',
     // ---------- Novedades v0.28.0 ----------
     'Amigos': 'Freunde',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'Bei Freunde siehst du, wer online ist und was er macht, öffnest sein Profil und nimmst Anfragen an. Dafür brauchst du ein Konto.',
@@ -21,16 +34,11 @@ export default {
     'Añade amigos, mira si están en línea y su perfil.': 'Füge Freunde hinzu und sieh, ob sie online sind, und ihr Profil.',
     'Añadir amigo': 'Freund hinzufügen',
     'Crea una cuenta para tener amigos': 'Erstelle ein Konto, um Freunde zu haben',
-    'Enviar solicitud': 'Anfrage senden',
-    'Escribe su nombre con la etiqueta, como sale en su ficha: Ash#4821. Tu nombre es <b>{me}</b>.': 'Gib den Namen mit der Kennung ein, wie in seinem Profil: Ash#4821. Dein Name ist <b>{me}</b>.',
-    'Ir a mi Perfil': 'Zu meinem Profil',
-    'Los amigos se guardan con tu cuenta. Créala en tu Perfil: te quedas con todo lo que ya tienes.': 'Freunde werden mit deinem Konto gespeichert. Erstelle es in deinem Profil: Du behältst alles, was du schon hast.',
     'Rechazar': 'Ablehnen',
     'Solicitud enviada': 'Anfrage gesendet',
     'Solicitudes de amistad': 'Freundschaftsanfragen',
     'Solicitudes enviadas': 'Gesendete Anfragen',
     'Tienes {n} solicitudes de amistad.': 'Du hast {n} Freundschaftsanfragen.',
-    'Todavía no tienes amigos. Pídele a alguien su nombre con la etiqueta, o añádelo desde su ficha en los rankings.': 'Du hast noch keine Freunde. Frag jemanden nach seinem Namen mit Kennung oder füge ihn über sein Profil in den Ranglisten hinzu.',
     'Tus amigos': 'Deine Freunde',
     'en línea': 'online',
     '{name} quiere ser tu amigo': '{name} möchte dein Freund sein',
