@@ -12,7 +12,7 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   // Lo que se manda al servidor: el último movimiento lanzado y el último cambio
   await page.eval(`(() => { const net = window.__app.net, send = net.send.bind(net);
-    net.send = m => { if (m.t === 'in') { if (m.c >= 0) window.__cast = m; if (m.sw >= 0) window.__swap = m; } return send(m); };
+    net.send = m => { if (m.t === 'in') { if (m.c >= 0) { const b = window.__app.battle, f = b.renderPos[b.foeIdx]; window.__cast = { ...m, foe: { x: f.x, y: f.y } }; } if (m.sw >= 0) window.__swap = m; } return send(m); };
     net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0], Data.RANKED_POOL[1]], skill: 0 }); return true; })()`);
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 15000);
   ok(await page.eval(`!!document.querySelector('#hud.touch .tc-zone') && !!document.querySelector('#hud.touch .tc-quit') && getComputedStyle(document.querySelector('.mv kbd')).display === 'none'`),
@@ -37,7 +37,8 @@ module.exports = async ({ page, ok }) => {
   await ptr('.mv', 'pointerdown', null, null);
   await ptr('.mv', 'pointerup', null, null);
   await page.waitFor(`window.__cast && window.__cast.c === 0`);
-  const auto = await page.eval(`(() => { const b = window.__app.battle, f = b.renderPos[b.foeIdx]; return Math.hypot(window.__cast.tx - f.x, window.__cast.ty - f.y); })()`);
+  // (contra dónde estaba el rival al lanzarlo: luego se sigue moviendo)
+  const auto = await page.eval(`Math.hypot(window.__cast.tx - window.__cast.foe.x, window.__cast.ty - window.__cast.foe.y)`);
   ok(auto < 40, `tocar un movimiento lo lanza al rival (apuntado a ${Math.round(auto)} de él)`);
 
   // Arrastrarlo hacia la izquierda: apunta a la izquierda de tu Pokémon y sale al soltar
