@@ -6,6 +6,7 @@ import { portrait, monIcon, animatedPortrait, trainerImg, typeTint, face, hasAni
 import { escapeHtml, describeMove, monLabel } from './battle.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
 import { towerViews } from './tower.js';
+import { friendViews } from './friends.js';
 import { pokedexViews } from './pokedex.js';
 import { bagViews } from './bag.js';
 import { achievementViews } from './achievements.js';
@@ -103,7 +104,7 @@ export class UI {
       // Primera vez en esta versión: enseñar las novedades; si no, el premio diario si está por recoger
       if (this.hasNews() && !p.inbox?.length) setTimeout(() => this.patchNotes(), 400);
       else this.dailyAuto();
-    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions', 'collection', 'treasure'].includes(this.view) && !this.tzSpin) this.show(this.view, true);
+    } else if (!this.root.hidden && ['menu', 'story', 'team', 'shop', 'bag', 'online', 'tower', 'profile', 'settings', 'missions', 'collection', 'treasure', 'friends'].includes(this.view) && !this.tzSpin) this.show(this.view, true);
     if (!this.root.hidden) this.showInbox();
   }
 
@@ -317,7 +318,7 @@ export class UI {
       info,
       this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
       this.hoverTip(gemPill, `<b>${t('Gemas')}</b><span class="tip-sub">${(p.gems || 0).toLocaleString()}</span><p>${t('Para las ruletas de Lucky Spin. Salen de misiones, líderes, la Torre, la primera victoria online del día y los salvajes raros.')}</p>`),
-      el('i', 'hub-sep'), this.newsIcon(), this.bugButton(), this.supportButton(), this.settingsButton());
+      el('i', 'hub-sep'), this.friendsButton(), this.newsIcon(), this.bugButton(), this.supportButton(), this.settingsButton());
     return me;
   }
 
@@ -1647,4 +1648,4 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews, treasureViews, monSheetViews);
+Object.assign(UI.prototype, friendViews, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews, treasureViews, monSheetViews);

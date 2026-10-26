@@ -1497,3 +1497,27 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
   .results .acts { margin-top: 6px; }
   .results .acts button { padding: 8px 16px; }
 }
+
+/* ---------- Amigos ---------- */
+.friends-body { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 14px; align-items: start; width: min(1100px, 100%); margin-inline: auto; }
+.fr-add h3, .fr-sec h3, .fr-noacc h3 { margin: 0 0 6px; }
+.fr-row { display: flex; gap: 8px; margin-top: 8px; }
+.fr-row input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid var(--line); color: #fff; font: inherit; }
+.fr-lists { display: flex; flex-direction: column; gap: 14px; }
+.fr-sec { display: flex; flex-direction: column; gap: 8px; }
+.fr-sec h3 small { color: var(--muted); font-weight: 700; font-size: 13px; margin-left: 6px; }
+.fr-sec.in { border-color: rgba(255,203,5,.55); }
+.fr-card { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
+.fr-card.on { border-color: rgba(95,224,138,.45); }
+.fr-ava { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: rgba(255,255,255,.06); }
+.fr-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.fr-info b { font: 800 15px var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fr-info small { color: var(--muted); font-weight: 700; }
+.fr-info .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6a7090; }
+.fr-info .dot.on { background: #5fe08a; box-shadow: 0 0 6px #5fe08a; }
+.fr-acts { display: flex; gap: 6px; flex: none; }
+.fr-acts button { padding: 6px 12px; }
+.fr-tag { align-self: center; font-weight: 800; color: #9fe0b0; }
+.friends-btn { position: relative; }
+.friends-btn .nbadge { position: absolute; top: -4px; right: -4px; }
+@media (max-width: 760px), (max-height: 500px) { .friends-body { grid-template-columns: 1fr; } }

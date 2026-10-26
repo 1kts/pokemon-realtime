@@ -20,6 +20,7 @@ const balance = require('./balance.js');
 const limits = require('./limits.js');
 const bugs = require('./bugs.js');
 const usage = require('./usage.js');
+const friends = require('./friends.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
@@ -87,6 +88,11 @@ function publicProfile(p) {
   const { account, act, ...rest } = p;
   return { ...rest, account: account ? { user: account.user, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p),
     daily: daily.view(p) };
+}
+// Qué está haciendo un jugador conectado (para su lista de amigos), o null si no está
+function doingOf(id) {
+  for (const x of clients) if (x.profile && x.profile.id === id) return x.battle ? 'combate' : x.queue ? 'cola' : x.draft ? 'combate' : 'menu';
+  return null;
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
 const busy = c => c.battle || c.queue;
@@ -484,6 +490,19 @@ function handle(c, msg) {
     return send(c, { t: 'ladder', ...store.ladder(String(msg.board), { page: msg.page | 0, q, me: c.profile, online: onlineIds() }) });
   }
   if (msg.t === 'user') return send(c, { t: 'user', u: store.publicUser(String(msg.id), onlineIds()) });
+  // Amigos: la lista (con quién está en línea y qué hace) y añadir, aceptar, rechazar, cancelar o quitar
+  if (msg.t === 'friends' && c.profile) return send(c, { t: 'friends', ...friends.list(c.profile, doingOf) });
+  if (msg.t === 'friend' && c.profile) {
+    const r = friends.action(c.profile, msg);
+    if (r.error) return send(c, { t: 'error', msg: r.error });
+    for (const p of r.touched) {
+      store.persist(p);
+      for (const x of clients) if (x.profile === p) { sendProfile(x); send(x, { t: 'friends', ...friends.list(p, doingOf) }); }
+    }
+    // Aviso al momento a quien recibe la solicitud, si está conectado
+    if (r.request) for (const x of clients) if (x.profile === r.request) send(x, { t: 'friendreq', name: c.profile.name, tag: c.profile.tag });
+    return send(c, { t: 'friendok', msg: r.ok });
+  }
   if (msg.t === 'queue' && (msg.mode === 'ranked' || msg.mode === 'casual')) return joinQueue(c, msg.mode);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);

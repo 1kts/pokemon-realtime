@@ -118,6 +118,12 @@ function setName(p, name) {
   p.name = name;
 }
 const fullName = p => `${p.name}#${p.tag}`;
+// El entrenador con ese nombre (sin distinguir mayúsculas) y esa etiqueta, o null
+function byNameTag(name, tag) {
+  const lower = String(name).toLowerCase();
+  for (const p of profiles.values()) if (p.tag === String(tag) && p.name.toLowerCase() === lower) return p;
+  return null;
+}
 
 function addProfile(name) {
   const p = newProfile(name);
@@ -351,4 +357,4 @@ function rankOf(p) {
 }
 
 module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, banned, persist, remove, onRemove, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };
+  check, setPassword, banned, persist, remove, onRemove, byNameTag, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };

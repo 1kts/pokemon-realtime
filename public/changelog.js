@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.28.0', date: '2026-10-26', title: 'Amigos',
+      items: [
+        ['nuevo', 'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.'],
+        ['nuevo', 'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.'],
+      ],
+    },
+    {
       v: '0.27.2', date: '2026-10-26', title: 'Controles del móvil más claros',
       items: [
         ['cambio', 'En el móvil cada movimiento lleva su nombre sobre el color de su tipo, y la energía es una barra vertical al lado de los botones.'],

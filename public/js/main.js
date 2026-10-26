@@ -12,6 +12,7 @@ import { UI } from './ui.js';
 import { faceSrc } from './sprites.js';
 import { applyCursor } from './cursor.js';
 import { initTouchDevice } from './touch.js';
+import { friendNotices } from './friends.js';
 import './tips.js';
 import { confirmBox } from './dialog.js';
 import { Net, storage } from './net.js';
@@ -146,6 +147,7 @@ net.on('banned', m => {
 });
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
+friendNotices(net, ui);
 net.on('bugok', () => { if (ui.onBugSent) { ui.onBugSent(); ui.onBugSent = null; } });
 net.on('authok', m => { ui.authError(''); ui.toast(tServer(m.msg)); });
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });

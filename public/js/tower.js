@@ -376,6 +376,8 @@ export const towerViews = {
       box.append(row);
     }
     const acts = el('div', 'acts');
+    const fr = this.friendAction(u);   // Añadir amigo / Solicitud enviada / Amigos
+    if (fr) acts.append(fr);
     const close = el('button', 'primary', t('Cerrar'));
     close.onclick = () => back.remove();
     acts.append(close);
