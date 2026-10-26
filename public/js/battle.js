@@ -668,23 +668,44 @@ export function escapeHtml(s) {
 // Nombre de un Pokémon para meterlo en HTML: su mote (escapado, lo escribe el jugador) o el de la especie
 export const monLabel = m => (m.nick ? escapeHtml(m.nick) : SPECIES[m.dex].name);
 
+// Datos de un movimiento a la vista (ficha del Pokémon): qué es, el daño con una barra (llena a partir de 40, lo
+// que ya pega fuerte), energía, recarga y preparación con su icono, y cada efecto como etiqueta de su color
+const STRONG = 40;
+export function moveStatsHtml(m) {
+  const total = (m.dmg || 0) * (m.count || 1);
+  const chip = (cls, ico, val, tip, extra = '') => `<span class="mst ${cls}" title="${tip}"><i>${ico}</i><b>${val}</b>${extra}</span>`;
+  const out = [`<span class="mst-kind">${t(MOVE_KINDS(m))}</span>`];
+  if (m.dmg) out.push(chip('dmg', '⚔', m.dmg + (m.count > 1 ? '×' + m.count : ''), t('Daño'), `<u style="--p:${Math.max(6, Math.min(100, Math.round(total / STRONG * 100)))}%"></u>`));
+  out.push(chip('en', '⚡', m.cost || 0, t('Energía')), chip('cd', '⟳', m.cd + ' s', t('Recarga')));
+  if (m.wind) out.push(chip('wind', '◔', m.wind + ' s', t('Preparación')));
+  for (const [cls, label] of moveEffects(m)) out.push(`<span class="mfx ${cls}">${label}</span>`);
+  return `<div class="mstats">${out.join('')}</div>`;
+}
+
+const MOVE_KINDS = m => ({ proj: m.explode ? 'Proyectil que estalla donde apuntas' : 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida',
+  area: m.at === 'self' ? 'Área a tu alrededor' : m.pattern === 'line' ? 'Impactos en fila hacia el cursor' : m.count ? 'Impactos alrededor del cursor' : 'Área en el cursor',
+  cone: 'Cono delante de ti', wave: 'Ola que avanza',
+  blink: 'Teletransporte', heal: 'Curación', buff: 'Mejora', smoke: 'Nube que oculta', wall: 'Muro' }[m.kind]);
+
+// Efectos de un movimiento: [clase para su color, texto]
+function moveEffects(m) {
+  const fx = [];
+  if (m.burn) fx.push(['burn', t('quema')]); if (m.poison) fx.push(['poison', t('envenena')]); if (m.wet) fx.push(['wet', t('moja')]); if (m.slow) fx.push(['slow', t('ralentiza')]);
+  if (m.stun) fx.push(['stun', t('aturde {n} s', { n: m.stun })]); if (m.knock) fx.push(['knock', t('empuja')]); if (m.pull) fx.push(['knock', t('atrae')]); if (m.drain) fx.push(['heal', t('drena PS')]);
+  if (m.terrain) fx.push(['terrain', t('deja {terrain} en el suelo', { terrain: t(m.terrain) })]); if (m.heal) fx.push(['heal', t('cura {n} %', { n: Math.round(m.heal * 100) })]);
+  if (m.selfStun) fx.push(['bad', t('te deja aturdido {s} s', { s: m.selfStun })]);
+  if (m.cure) fx.push(['heal', t('quita quemadura, veneno y drenadoras')]);
+  if (m.haste) fx.push(['buff', t('más velocidad')]); if (m.power) fx.push(['buff', t('más daño')]); if (m.invuln) fx.push(['buff', t('invulnerable bajo tierra')]);
+  if (m.puddle) fx.push(['poison', t('deja un charco tóxico')]); if (m.back) fx.push(['buff', t('vuelve a su sitio')]);
+  if (m.selfKO) fx.push(['bad', t('¡te debilita!')]); if (m.rockWall) fx.push(['terrain', t('deja una roca')]); if (m.splash) fx.push(['bad', t('no hace nada')]);
+  return fx;
+}
+
 export function describeMove(m) {
-  const kinds = { proj: m.explode ? 'Proyectil que estalla donde apuntas' : 'Proyectil', beam: 'Rayo', melee: 'Cuerpo a cuerpo', dash: 'Embestida',
-    area: m.at === 'self' ? 'Área a tu alrededor' : m.pattern === 'line' ? 'Impactos en fila hacia el cursor' : m.count ? 'Impactos alrededor del cursor' : 'Área en el cursor',
-    cone: 'Cono delante de ti', wave: 'Ola que avanza',
-    blink: 'Teletransporte', heal: 'Curación', buff: 'Mejora', smoke: 'Nube que oculta', wall: 'Muro' };
-  const parts = [`${t(kinds[m.kind])} · ${Data.TYPE_LABEL[m.type]}`];
+  const parts = [`${t(MOVE_KINDS(m))} · ${Data.TYPE_LABEL[m.type]}`];
   if (m.dmg) parts.push(`${t('Daño {n}', { n: m.dmg })}${m.count > 1 ? ' ×' + m.count : ''}`);
   parts.push(t('Energía {cost} · Recarga {cd} s · Preparación {wind} s', { cost: m.cost, cd: m.cd, wind: m.wind }));
-  const fx = [];
-  if (m.burn) fx.push(t('quema')); if (m.poison) fx.push(t('envenena')); if (m.wet) fx.push(t('moja')); if (m.slow) fx.push(t('ralentiza'));
-  if (m.stun) fx.push(t('aturde {n} s', { n: m.stun })); if (m.knock) fx.push(t('empuja')); if (m.pull) fx.push(t('atrae')); if (m.drain) fx.push(t('drena PS'));
-  if (m.terrain) fx.push(t('deja {terrain} en el suelo', { terrain: t(m.terrain) })); if (m.heal) fx.push(t('cura {n} %', { n: Math.round(m.heal * 100) }));
-  if (m.selfStun) fx.push(t('te deja aturdido {s} s', { s: m.selfStun }));
-  if (m.cure) fx.push(t('quita quemadura, veneno y drenadoras'));
-  if (m.haste) fx.push(t('más velocidad')); if (m.power) fx.push(t('más daño')); if (m.invuln) fx.push(t('invulnerable bajo tierra'));
-  if (m.puddle) fx.push(t('deja un charco tóxico')); if (m.back) fx.push(t('vuelve a su sitio'));
-  if (m.selfKO) fx.push(t('¡te debilita!')); if (m.rockWall) fx.push(t('deja una roca')); if (m.splash) fx.push(t('no hace nada'));
+  const fx = moveEffects(m).map(([, label]) => label);
   if (fx.length) parts.push(fx.join(', '));
   return parts.join('\n');
 }

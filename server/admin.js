@@ -14,6 +14,7 @@ const story = require('./story.js');
 const rewards = require('./rewards.js');
 const tower = require('./tower.js');
 const metrics = require('./metrics.js');
+const bugs = require('./bugs.js');
 const D = require('../public/data.js');
 
 const { db } = store;
@@ -77,7 +78,7 @@ function createAdmin(ctx) {
     const mem = process.memoryUsage();
     const day = Date.now() - 864e5;
     return {
-      version, uptime: Date.now() - startedAt, maintenance: ctx.maintenance(),
+      version, uptime: Date.now() - startedAt, maintenance: ctx.maintenance(), bugsNew: bugs.countNew(),
       online: players.length, admins: [...clients].filter(c => c.admin).length,
       battles: battles.size, byMode, queues: Object.fromEntries(Object.entries(queues).map(([k, q]) => [k, q.length])),
       drafts: players.filter(c => c.draft).length / 2,
@@ -206,6 +207,13 @@ function createAdmin(ctx) {
           created: p.created, seen: p.seen || null, elo: p.elo, ranked: p.ranked, banned: store.banned(p), online: conns(p.id).length > 0 })) });
       }
       case 'admin.player': return reply({ player: player(String(msg.id)) });
+      // Bugs que reportan los jugadores: la lista y marcarlos como vistos o resueltos
+      case 'admin.bugs': return reply({ rows: bugs.list(String(msg.status || '')) });
+      case 'admin.bugstatus': {
+        if (!bugs.setStatus(msg.id, String(msg.status))) return reply({ err: 'Bug o estado desconocidos' });
+        audit.log('admin.bug', { actor: c.admin.id, ip: c.ip, bug: msg.id | 0, status: String(msg.status) });
+        return reply({ ok: 'Hecho' });
+      }
       case 'admin.audit': {
         const rows = audit.query(msg).map(withNames);
         return reply({ rows, more: rows.length === Math.max(1, Math.min(500, msg.limit | 0 || 100)) });

@@ -11,6 +11,31 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.26.0 ----------
+    'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': '在宝可梦详情中，每个招式都会用条显示伤害，并显示能量、冷却和准备时间，效果也用颜色标出。',
+    'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas全新标志，菜单中的“我的宝可梦”以红色突出，更容易找到。',
+    'Avísanos desde el juego': '在游戏中告诉我们',
+    'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': '点按菜单上方的瓢虫按钮，就能告诉我们哪里不正常、发生了什么；我们会立刻收到并修复。',
+    // ---------- Novedades v0.26.0 ----------
+    // ---------- Botón de reportar un bug ----------
+    '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '有什么不正常吗？告诉我们发生了什么，我们会尽快修复。',
+    // ---------- Reportar un bug ----------
+    'Reportar un bug': '报告问题',
+    '¿Algo no funciona?': '有什么不正常吗？',
+    'Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '告诉我们发生了什么，我们会尽快修复。',
+    '¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.': '发生了什么？你当时在做什么？越详细，我们修得越快。',
+    'Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco': '例如：在排位赛中选择招式时页面变成空白',
+    'Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.': '我们还会发送你所在的界面、游戏版本和浏览器信息。',
+    'Enviar': '发送',
+    'Cuéntanos un poco más (al menos 10 letras)': '请再多说一点（至少10个字）',
+    '¡Gracias! Hemos recibido tu reporte.': '谢谢！我们已收到你的报告。',
+    'Entra en el juego para reportar un bug': '请进入游戏后再报告问题',
+    'Ya has mandado varios reportes: espera un rato': '你已经发送了好几次报告：请稍等一会儿',
+    // ---------- Ficha: datos de los movimientos ----------
+    'Daño': '伤害',
+    'Energía': '能量',
+    'Recarga': '冷却',
+    'Preparación': '准备时间',
     // ---------- Novedades v0.25.0 ----------
     'PokéArenas como app': '像应用一样使用PokéArenas',
     'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': '你可以把PokéArenas添加到手机主屏幕：它会像应用一样以全屏、横屏打开，并有自己的图标。',

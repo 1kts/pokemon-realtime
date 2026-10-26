@@ -266,7 +266,7 @@ export class UI {
     tz.onclick = () => this.openTreasure();
     const left = el('div', 'hub-left');
     left.append(tools, this.hoverTip(tz, `<b>${t('Lucky Spin')}</b><p>${t('Ruletas de skins, partículas, efectos y retratos que se giran con gemas.')}</p>`));
-    bar.append(left, el('h1', 'hub-logo', 'Poké<b>Arenas</b>'), this.meModule());
+    bar.append(left, el('h1', 'hub-logo', 'Poké<b data-t="Arenas">Arenas</b>'), this.meModule());
     return bar;
   }
 
@@ -291,7 +291,7 @@ export class UI {
       info,
       this.hoverTip(coinPill, `<b>${t('Dinero')}</b><span class="tip-sub">${coins(p.coins)}</span><p>${t('Se gana en combates, en la Torre y en clasificatoria, y se gasta en la Tienda.')}</p>`),
       this.hoverTip(gemPill, `<b>${t('Gemas')}</b><span class="tip-sub">${(p.gems || 0).toLocaleString()}</span><p>${t('Para las ruletas de Lucky Spin. Salen de misiones, líderes, la Torre, la primera victoria online del día y los salvajes raros.')}</p>`),
-      el('i', 'hub-sep'), this.newsIcon(), this.supportButton(), this.settingsButton());
+      el('i', 'hub-sep'), this.newsIcon(), this.bugButton(), this.supportButton(), this.settingsButton());
     return me;
   }
 
@@ -321,7 +321,7 @@ export class UI {
       grid.append(b);
       return b;
     };
-    tile('pokeball', t('Mis Pokémon'), t('{n} Pokémon', { n: p.mons.length }), 'team');
+    tile('pokeball', t('Mis Pokémon'), t('{n} Pokémon', { n: p.mons.length }), 'team', 'mons');   // en rojo: lo que más se usa
     tile('seal-bag', t('Mochila'), t('{n} objetos', { n: items }), 'bag');
     // La Tienda avisa cuando han rotado los Pokémon del día y aún no la has abierto
     tile('forage-bag', t('Tienda'), coins(p.coins), 'shop', storage.get('arena.shopSeen') === Data.dayKey() ? '' : 'ready');

@@ -12,6 +12,31 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.26.0 ----------
+    'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': '포켓몬 상세 정보에서 기술마다 대미지를 막대로, 에너지·재사용·준비 시간과 효과를 색으로 보여 줘요.',
+    'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas의 새 로고, 그리고 메뉴의 내 포켓몬이 빨갛게 눈에 띄어 더 빨리 찾을 수 있어요.',
+    'Avísanos desde el juego': '게임에서 알려 주세요',
+    'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': '메뉴 위쪽의 무당벌레 버튼으로 뭔가 안 되는 것과 무슨 일이 있었는지 알려 줄 수 있어요. 바로 전달돼서 고칠 수 있어요.',
+    // ---------- Novedades v0.26.0 ----------
+    // ---------- Botón de reportar un bug ----------
+    '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '뭔가 안 되나요? 무슨 일이 있었는지 알려 주시면 최대한 빨리 고칠게요.',
+    // ---------- Reportar un bug ----------
+    'Reportar un bug': '버그 신고',
+    '¿Algo no funciona?': '뭔가 안 되나요?',
+    'Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '무슨 일이 있었는지 알려 주시면 최대한 빨리 고칠게요.',
+    '¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.': '무슨 일이 있었고 무엇을 하고 있었나요? 자세할수록 빨리 고칠 수 있어요.',
+    'Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco': '예: 랭크전에서 기술을 고르면 페이지가 하얗게 돼요',
+    'Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.': '있던 화면, 게임 버전, 브라우저 정보도 함께 보내져요.',
+    'Enviar': '보내기',
+    'Cuéntanos un poco más (al menos 10 letras)': '조금 더 자세히 알려 주세요(10자 이상)',
+    '¡Gracias! Hemos recibido tu reporte.': '고마워요! 신고를 받았어요.',
+    'Entra en el juego para reportar un bug': '버그를 신고하려면 게임에 들어오세요',
+    'Ya has mandado varios reportes: espera un rato': '이미 여러 번 신고했어요. 잠시 기다려 주세요',
+    // ---------- Ficha: datos de los movimientos ----------
+    'Daño': '대미지',
+    'Energía': '에너지',
+    'Recarga': '재사용',
+    'Preparación': '준비 시간',
     // ---------- Novedades v0.25.0 ----------
     'PokéArenas como app': '앱처럼 쓰는 PokéArenas',
     'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'PokéArenas를 휴대폰 홈 화면에 추가할 수 있어요. 전체 화면, 가로 모드로 전용 아이콘과 함께 앱처럼 열려요.',

@@ -18,6 +18,7 @@ const { collectAll } = require('./collect.js');
 const metrics = require('./metrics.js');
 const balance = require('./balance.js');
 const limits = require('./limits.js');
+const bugs = require('./bugs.js');
 const audit = require('./audit.js');
 const { createAdmin } = require('./admin.js');
 const art = require('./art.js');
@@ -333,6 +334,12 @@ function refuseBanned(c, p) {
 function handle(c, msg) {
   if (msg.t === 'ping') return send(c, { t: 'pong', ts: msg.ts });
   if (msg.t.startsWith('admin.')) return adminPanel.handle(c, msg);
+  // Reportar un bug desde el juego (se guarda y avisa al admin)
+  if (msg.t === 'bug') {
+    const err = bugs.report(c, msg);
+    if (!err) audit.log('perfil.bug', { actor: c.profile.id, ip: c.ip });
+    return send(c, err ? { t: 'error', msg: err } : { t: 'bugok' });
+  }
   if (msg.t === 'hello') {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
     if (busy(c) || c.authing) return;

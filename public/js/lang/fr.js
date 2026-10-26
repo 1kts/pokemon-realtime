@@ -11,6 +11,31 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.26.0 ----------
+    'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'Dans la fiche de tes Pokémon, chaque capacité montre ses dégâts avec une barre, son énergie, sa recharge et sa préparation, et ses effets en couleur.',
+    'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'Nouveau logo de PokéArenas, et Mes Pokémon ressort en rouge dans le menu pour le trouver plus vite.',
+    'Avísanos desde el juego': 'Préviens-nous depuis le jeu',
+    'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'Avec le bouton coccinelle en haut du menu, tu peux nous dire si quelque chose ne marche pas et ce qui s\'est passé ; on le reçoit tout de suite pour le corriger.',
+    // ---------- Novedades v0.26.0 ----------
+    // ---------- Botón de reportar un bug ----------
+    '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Quelque chose ne marche pas ? Dis-nous ce qui s\'est passé et on le corrige au plus vite.',
+    // ---------- Reportar un bug ----------
+    'Reportar un bug': 'Signaler un bug',
+    '¿Algo no funciona?': 'Quelque chose ne marche pas ?',
+    'Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Dis-nous ce qui s\'est passé et on le corrige au plus vite.',
+    '¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.': 'Que s\'est-il passé et que faisais-tu ? Plus il y a de détails, plus vite on corrige.',
+    'Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco': 'Ex. : quand je choisis une capacité en Classé, la page devient blanche',
+    'Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.': 'On envoie aussi l\'écran où tu étais, la version du jeu et ton navigateur.',
+    'Enviar': 'Envoyer',
+    'Cuéntanos un poco más (al menos 10 letras)': 'Dis-nous-en un peu plus (au moins 10 lettres)',
+    '¡Gracias! Hemos recibido tu reporte.': 'Merci ! Nous avons bien reçu ton signalement.',
+    'Entra en el juego para reportar un bug': 'Entre dans le jeu pour signaler un bug',
+    'Ya has mandado varios reportes: espera un rato': 'Tu as déjà envoyé plusieurs signalements : attends un peu',
+    // ---------- Ficha: datos de los movimientos ----------
+    'Daño': 'Dégâts',
+    'Energía': 'Énergie',
+    'Recarga': 'Recharge',
+    'Preparación': 'Préparation',
     // ---------- Novedades v0.25.0 ----------
     'PokéArenas como app': 'PokéArenas comme une app',
     'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'Tu peux ajouter PokéArenas à l\'écran d\'accueil de ton téléphone : il s\'ouvre comme une app, en plein écran et à l\'horizontale, avec son icône.',

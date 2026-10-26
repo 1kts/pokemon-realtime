@@ -5,7 +5,7 @@
 // Se queda abierta al llegar el perfil nuevo (cada cambio vuelve del servidor) y con ← → pasa al siguiente.
 import { confirmBox } from './dialog.js';
 import { animatedPortrait, typeTint, portrait } from './sprites.js';
-import { monLabel, describeMove } from './battle.js';
+import { monLabel, describeMove, moveStatsHtml } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg, typeIcon } from './pixicons.js';
 import { usable } from './bag.js';
@@ -209,7 +209,8 @@ export const monSheetViews = {
       const m = MOVES[k], idx = chosen.indexOf(k);
       const row = el('button', 'move-row' + (idx >= 0 ? ' sel' : ''));
       row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-      row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${idx >= 0 ? t(KEYS[idx]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
+      row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${idx >= 0 ? t(KEYS[idx]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em>${moveStatsHtml(m)}`;
+      row.title = describeMove(m).split('\n').join(' · ');
       row.onclick = () => {
         if (idx >= 0) { if (chosen.length > 1) chosen.splice(idx, 1); }
         else if (chosen.length < 4) chosen.push(k);

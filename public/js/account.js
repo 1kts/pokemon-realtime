@@ -67,7 +67,7 @@ export const accountViews = {
   // ---------- Portada ----------
   view_title() {
     const box = el('div', 'panel title-panel');
-    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Poké<br><span>Arenas</span></h1><p class="tag">${t('Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones')}</p>`;
+    box.innerHTML = `<div class="emblem"></div><h1 class="logo">Poké<br><span data-t="Arenas">Arenas</span></h1><p class="tag">${t('Combates Pokémon en tiempo real · 966 Pokémon de 9 generaciones')}</p>`;
     const mons = el('div', 'title-mons');
     for (const d of [...STARTERS].sort(() => Math.random() - 0.5).slice(0, 3)) mons.append(animatedPortrait(d, 96, 'Idle'));
     box.append(mons);
@@ -214,6 +214,32 @@ export const accountViews = {
     });
   },
 
+  // Reportar un bug: qué ha pasado y, solos, la pantalla, la versión, el navegador y el tamaño de pantalla (para
+  // poder reproducirlo). Llega al panel de admin
+  bugReport() {
+    const where = this.view;
+    modal('bug-report', (box, close) => {
+      box.append(el('h3', '', t('Reportar un bug')), el('p', 'small', t('¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.')));
+      const text = el('textarea', 'bug-text');
+      text.maxLength = 1000; text.rows = 5; text.placeholder = t('Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco');
+      box.append(text, el('p', 'small bug-meta', t('Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.')));
+      const acts = el('div', 'acts');
+      const cancel = el('button', '', t('Cancelar'));
+      cancel.onclick = close;
+      const send = el('button', 'primary', t('Enviar'));
+      send.onclick = () => {
+        if (text.value.trim().length < 10) { this.toast(t('Cuéntanos un poco más (al menos 10 letras)'), 'bad'); return; }
+        send.disabled = true;
+        this.onBugSent = () => { close(); this.toast(t('¡Gracias! Hemos recibido tu reporte.')); };
+        this.net.send({ t: 'bug', text: text.value, view: where, version: CHANGELOG[0].v, ua: navigator.userAgent, screen: `${innerWidth}×${innerHeight}` });
+        setTimeout(() => { send.disabled = false; }, 3000);
+      };
+      acts.append(cancel, send);
+      box.append(acts);
+      setTimeout(() => text.focus(), 50);
+    });
+  },
+
   legal() {
     modal('legal', (box, close) => {
       box.append(el('h3', '', t('Créditos y aviso legal')));
@@ -335,6 +361,14 @@ export const accountViews = {
       <p class="${this.hasNews() ? 'tip-good' : ''}">${this.hasNews() ? t('Hay novedades que aún no has leído.') : t('Lo nuevo de cada versión del juego.')}</p>`);
   },
 
+  // Botón de la barra superior para reportar un bug
+  bugButton() {
+    const b = el('button', 'tb-btn icon bug-btn', icon('bug', 24));
+    b.setAttribute('aria-label', t('Reportar un bug'));
+    b.onclick = () => this.bugReport();
+    return this.hoverTip(b, `<b>${t('Reportar un bug')}</b><p>${t('¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.')}</p>`);
+  },
+
   // Botón de la barra superior que lleva a Ajustes
   settingsButton() {
     const b = el('button', 'tb-btn settings-btn', `${icon('gear', 24)}<span>${t('Ajustes')}</span>`);
@@ -438,7 +472,14 @@ export const accountViews = {
     legal.onclick = () => this.legal();
     about.append(legal, el('p', 'small', `PokéArenas v${VERSION}`));
 
-    body.append(lang, mus, cursorBox, me, news, about);
+    // Reportar un bug
+    const bug = el('div', 'panel');
+    bug.append(el('h3', '', t('¿Algo no funciona?')), el('p', 'small', t('Cuéntanos qué ha pasado y lo arreglamos lo antes posible.')));
+    const bugBtn = el('button', 'primary', t('Reportar un bug'));
+    bugBtn.onclick = () => this.bugReport();
+    bug.append(bugBtn);
+
+    body.append(lang, mus, cursorBox, me, news, bug, about);
     wrap.append(body);
     this.root.append(wrap);
   },

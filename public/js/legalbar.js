@@ -45,7 +45,9 @@ export const legalBarViews = {
     const link = (href, text) => Object.assign(el('a', '', text), { href, target: '_blank', rel: 'noopener noreferrer' });
     const mail = el('a', '', CONTACT);
     mail.href = 'mailto:' + CONTACT;
-    nav.append(credits, link(page, t('Aviso legal y privacidad')), link(takedown, t('Retirada de contenido')), mail,
+    const bug = el('button', 'link', t('Reportar un bug'));
+    bug.onclick = () => this.bugReport();
+    nav.append(bug, credits, link(page, t('Aviso legal y privacidad')), link(takedown, t('Retirada de contenido')), mail,
       el('span', '', t('Hecho por {who}', { who: '1kts' })), news);
     bar.append(nav);
     this.legalSize();

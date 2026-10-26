@@ -201,6 +201,30 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   const removed = audit.prune();
   ok(removed >= 1 && store.db.prepare("SELECT COUNT(*) n FROM audit WHERE at = ? AND type = 'admin.ban'").get(old).n === 1, 'a los 40 días se borra todo menos las acciones de admin');
 
+  // ---------- Bugs que reportan los jugadores ----------
+  // Telegram de mentira: un servidor local que apunta lo que le llega
+  const tg = [];
+  const http = require('http');
+  const tgSrv = http.createServer((req, res) => { let b = ''; req.on('data', d => { b += d; }); req.on('end', () => { tg.push({ url: req.url, body: JSON.parse(b) }); res.end('{"ok":true}'); }); });
+  await new Promise(r => tgSrv.listen(0, r));
+  Object.assign(process.env, { TELEGRAM_TOKEN: 'tok', TELEGRAM_CHAT: '42', TELEGRAM_API: `http://localhost:${tgSrv.address().port}` });
+  normal.send({ t: 'bug', text: 'corto' });
+  ok((await normal.wait(m => m.t === 'error')).msg.includes('al menos 10'), 'un reporte demasiado corto no se guarda');
+  normal.send({ t: 'bug', text: 'Al elegir un movimiento la página sube arriba', view: 'online', version: '0.25.0', ua: 'Prueba/1.0', screen: '844×390' });
+  ok(!!(await normal.wait(m => m.t === 'bugok')), 'un jugador reporta un bug');
+  for (let i = 0; i < 50 && !tg.length; i++) await sleep(20);
+  ok(tg.length === 1 && tg[0].url === '/bottok/sendMessage' && tg[0].body.chat_id === '42' && /página sube arriba/.test(tg[0].body.text) && /online · v0\.25\.0/.test(tg[0].body.text),
+    'y llega por Telegram con el texto, la pantalla y la versión');
+  const bl = await adm.ask('admin.bugs', { status: 'nuevo' });
+  ok(bl.rows.length === 1 && bl.rows[0].text.includes('página sube') && bl.rows[0].ua === 'Prueba/1.0' && bl.rows[0].ip === null, 'el panel lo lista como nuevo, sin guardar la IP');
+  ok((await adm.ask('admin.overview')).bugsNew === 1, 'el resumen cuenta los bugs nuevos');
+  ok((await adm.ask('admin.bugstatus', { id: bl.rows[0].id, status: 'resuelto' })).ok && (await adm.ask('admin.bugs', { status: 'nuevo' })).rows.length === 0, 'se marca como resuelto');
+  for (let i = 0; i < 4; i++) { normal.send({ t: 'bug', text: 'Otro reporte de prueba ' + i }); await normal.wait(m => m.t === 'bugok'); }
+  normal.send({ t: 'bug', text: 'Uno más que ya no entra' });
+  ok(/espera un rato/.test((await normal.wait(m => m.t === 'error')).msg), 'como mucho 5 reportes por hora y jugador');
+  tgSrv.close();
+  delete process.env.TELEGRAM_TOKEN;
+
   // ---------- Bajas y sesión ----------
   cli('baja', 'jefa');
   ok((await adm.ask('admin.overview')).t === 'admin.out', 'quitarle el admin desde la consola corta su sesión al momento');

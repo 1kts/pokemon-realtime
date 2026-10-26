@@ -63,3 +63,9 @@ th.sort { cursor: pointer; user-select: none; } th.sort:hover, th.sort.on { colo
 tr.few td { opacity: .55; }
 .bal-t { margin-bottom: 14px; max-height: 60vh; }
 #balance h2 { margin-top: 6px; }
+/* Bugs */
+.bugs { display: flex; flex-direction: column; gap: 10px; }
+.bug .bug-text { white-space: pre-wrap; font-size: 15px; margin: 8px 0; }
+.bug.nuevo { border-left: 4px solid #ff6a4a; }
+.bug.resuelto { opacity: .6; }
+#bugs-n { font-style: normal; background: #ff4a3d; color: #fff; border-radius: 99px; padding: 0 6px; font-size: 11px; margin-left: 4px; }

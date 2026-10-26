@@ -139,6 +139,7 @@ net.on('banned', m => {
 });
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
+net.on('bugok', () => { if (ui.onBugSent) { ui.onBugSent(); ui.onBugSent = null; } });
 net.on('authok', m => { ui.authError(''); ui.toast(tServer(m.msg)); });
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' ? 'online' : 'menu'));

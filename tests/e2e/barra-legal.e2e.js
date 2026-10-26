@@ -41,7 +41,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(true, 'en combate se esconde y no ocupa sitio');
   await page.eval(`document.body.classList.remove('in-battle'); true`);
   await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display !== 'none'`);
-  await page.click('.legal-bar button.link');
+  await page.eval(`[...document.querySelectorAll('.legal-bar button.link')].find(b => /Créditos/.test(b.textContent)).click(); true`);
   await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`);
   ok(true, '«Créditos» abre los créditos, con el enlace al aviso legal completo');
 };

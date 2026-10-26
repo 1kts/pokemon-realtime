@@ -12,6 +12,31 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.26.0 ----------
+    'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'ポケモンの詳細では、わざごとにダメージをバーで、エネルギー・リキャスト・ため時間、効果を色つきで表示します。',
+    'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenasの新しいロゴ。メニューの「マイポケモン」が赤く目立って見つけやすくなりました。',
+    'Avísanos desde el juego': 'ゲームから知らせよう',
+    'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'メニュー上のてんとう虫ボタンから、うまく動かないことや何が起きたかを知らせられます。すぐに届くので直せます。',
+    // ---------- Novedades v0.26.0 ----------
+    // ---------- Botón de reportar un bug ----------
+    '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'うまく動かない？何が起きたか教えてね。できるだけ早く直します。',
+    // ---------- Reportar un bug ----------
+    'Reportar un bug': 'バグを報告',
+    '¿Algo no funciona?': 'うまく動かない？',
+    'Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '何が起きたか教えてね。できるだけ早く直します。',
+    '¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.': '何が起きて、何をしていましたか？詳しいほど早く直せます。',
+    'Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco': '例：ランクマッチでわざを選ぶと画面が真っ白になる',
+    'Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.': 'いた画面、ゲームのバージョン、ブラウザもいっしょに送られます。',
+    'Enviar': '送信',
+    'Cuéntanos un poco más (al menos 10 letras)': 'もう少し詳しく教えてね（10文字以上）',
+    '¡Gracias! Hemos recibido tu reporte.': 'ありがとう！報告を受け取りました。',
+    'Entra en el juego para reportar un bug': 'バグを報告するにはゲームに入ってね',
+    'Ya has mandado varios reportes: espera un rato': 'すでに何件も報告しています。少し待ってね',
+    // ---------- Ficha: datos de los movimientos ----------
+    'Daño': 'ダメージ',
+    'Energía': 'エネルギー',
+    'Recarga': 'リキャスト',
+    'Preparación': 'ため時間',
     // ---------- Novedades v0.25.0 ----------
     'PokéArenas como app': 'PokéArenasをアプリのように',
     'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'PokéArenasをスマホのホーム画面に追加できます。アプリのように、全画面・横向きで、専用アイコンから開きます。',

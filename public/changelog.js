@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.26.0', date: '2026-10-26', title: 'Avísanos desde el juego',
+      items: [
+        ['nuevo', 'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.'],
+        ['cambio', 'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.'],
+        ['cambio', 'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.'],
+      ],
+    },
+    {
       v: '0.25.0', date: '2026-10-26', title: 'PokéArenas como app',
       items: [
         ['nuevo', 'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.'],

@@ -82,6 +82,7 @@ function show(tab) {
   if (tab === 'servidor') overview(true);
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
+  if (tab === 'bugs') loadBugs();
 }
 for (const b of document.querySelectorAll('#tabs button')) b.addEventListener('click', () => show(b.dataset.tab));
 // El resumen se actualiza solo cada 5 s mientras se mira
@@ -93,6 +94,7 @@ async function overview(onlyServer) {
   const o = await ask('admin.overview');
   if (o.t !== 'admin.overview') return;
   $('#maint-state').textContent = o.maintenance ? 'ACTIVADO' : 'desactivado';
+  $('#bugs-n').hidden = !o.bugsNew; $('#bugs-n').textContent = o.bugsNew || '';
   if (onlyServer) return;
   const s = o.store, sv = o.server;
   const modes = Object.entries(o.byMode).map(([k, v]) => `${k}: ${v}`).join(' · ') || 'ninguno';
@@ -340,3 +342,21 @@ for (const [id, on] of [['#maint-on', true], ['#maint-off', false]]) $(id).addEv
 });
 
 connect();
+
+// ---------- Bugs ----------
+// Lo que reportan los jugadores desde el juego (también llega por Telegram si el bot está configurado): qué
+// pasó, quién, en qué pantalla, versión y navegador. Se marcan como vistos o resueltos
+async function loadBugs() {
+  const status = new FormData($('#bugs-f')).get('status');
+  const r = await ask('admin.bugs', { status });
+  if (!r.rows) return;
+  const set = async (id, st) => { const x = await ask('admin.bugstatus', { id, status: st }); if (x.err) toast(x.err, true); loadBugs(); overview(true); };
+  $('#bugs-list').replaceChildren(r.rows.length ? h('div', { class: 'bugs' }, r.rows.map(b => h('div', { class: 'card bug ' + b.status },
+    h('div', { class: 'row wrap' }, h('b', {}, `#${b.id}`), h('span', { class: 'tag' }, b.status), h('span', {}, fmtDate(b.at)),
+      h('a', { href: '#', onclick: e => { e.preventDefault(); openPlayer(b.player); } }, b.name || b.player),
+      h('span', { class: 'small' }, `${b.view || '—'} · v${b.version || '?'} · ${b.screen || '?'}`)),
+    h('p', { class: 'bug-text' }, b.text),
+    h('p', { class: 'small' }, b.ua || ''),
+    h('div', { class: 'row' }, ...['visto', 'resuelto', 'nuevo'].filter(st => st !== b.status).map(st => h('button', { onclick: () => set(b.id, st) }, st === 'nuevo' ? 'Volver a nuevo' : `Marcar ${st}`)))))) : h('p', { class: 'small' }, 'No hay bugs con ese estado.'));
+}
+$('#bugs-f').addEventListener('change', loadBugs);

@@ -11,6 +11,31 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.26.0 ----------
+    'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'In den Infos deiner Pokémon zeigt jede Attacke ihren Schaden mit einem Balken, Energie, Abklingzeit und Vorbereitung sowie ihre Effekte in Farbe.',
+    'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'Neues PokéArenas-Logo, und Meine Pokémon ist im Menü rot hervorgehoben, damit du es schneller findest.',
+    'Avísanos desde el juego': 'Sag uns Bescheid, direkt im Spiel',
+    'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'Mit dem Marienkäfer-Button oben im Menü kannst du uns sagen, wenn etwas nicht funktioniert und was passiert ist; es kommt sofort bei uns an, damit wir es beheben.',
+    // ---------- Novedades v0.26.0 ----------
+    // ---------- Botón de reportar un bug ----------
+    '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Funktioniert etwas nicht? Erzähl uns, was passiert ist, und wir beheben es so schnell wie möglich.',
+    // ---------- Reportar un bug ----------
+    'Reportar un bug': 'Bug melden',
+    '¿Algo no funciona?': 'Funktioniert etwas nicht?',
+    'Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Erzähl uns, was passiert ist, und wir beheben es so schnell wie möglich.',
+    '¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.': 'Was ist passiert und was hast du gerade gemacht? Je mehr Details, desto schneller können wir es beheben.',
+    'Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco': 'Z. B.: Wenn ich in Ranglisten eine Attacke wähle, wird die Seite leer',
+    'Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.': 'Wir senden auch den Bildschirm, auf dem du warst, die Spielversion und deinen Browser.',
+    'Enviar': 'Senden',
+    'Cuéntanos un poco más (al menos 10 letras)': 'Erzähl uns etwas mehr (mindestens 10 Buchstaben)',
+    '¡Gracias! Hemos recibido tu reporte.': 'Danke! Wir haben deine Meldung erhalten.',
+    'Entra en el juego para reportar un bug': 'Betritt das Spiel, um einen Bug zu melden',
+    'Ya has mandado varios reportes: espera un rato': 'Du hast schon mehrere Meldungen geschickt: warte ein bisschen',
+    // ---------- Ficha: datos de los movimientos ----------
+    'Daño': 'Schaden',
+    'Energía': 'Energie',
+    'Recarga': 'Abklingzeit',
+    'Preparación': 'Vorbereitung',
     // ---------- Novedades v0.25.0 ----------
     'PokéArenas como app': 'PokéArenas als App',
     'Puedes añadir PokéArenas a la pantalla de inicio del móvil: se abre como una app, a pantalla completa y en horizontal, con su icono.': 'Du kannst PokéArenas zum Home-Bildschirm deines Handys hinzufügen: Es öffnet sich wie eine App, im Vollbild, quer und mit eigenem Symbol.',

@@ -73,6 +73,10 @@ const PIX = (() => {
     yt: { pal: { r: '#ff2a2a', s: '#b3121a', w: '#ffffff' }, rows: [
       '............', '............', '.kkkkkkkkkk.', 'krrrrrrrrrrk', 'krrrrwrrrrrk', 'krrrrwwrrrrk',
       'krrrrwwwrrrk', 'krrrrwwrrrsk', 'krrrrwrrrrsk', 'kssssssssssk', '.kkkkkkkkkk.', '............'] },
+    // Mariquita: reportar un bug (botón de la barra de arriba)
+    bug: { pal: { r: '#ff4a3d', s: '#b8262a', w: '#ffc2b8', h: '#3a3f5c' }, rows: [
+      '..k......k..', '...k....k...', '....kkkk....', '...khhhhk...', '..krrkkrrk..', '.krwrrkrrrk.',
+      '.krrkrkrkrk.', '.krrrrkrrsk.', '.kkrrrkrkrk.', '..krrrkrrsk.', '...kssksk...', '....kkkk....'] },
     heart: { pal: { r: '#ff5f6d', s: '#c23a4b', w: '#ffd3d8' }, rows: [
       '............', '.kkk....kkk.', 'kwwrk..krrrk', 'kwrrrkkrrrsk', 'krrrrrrrrrsk', 'krrrrrrrrrsk',
       '.krrrrrrrsk.', '..krrrrrsk..', '...krrrsk...', '....krsk....', '.....kk.....', '............'] },

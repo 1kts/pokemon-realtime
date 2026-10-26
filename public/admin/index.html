@@ -16,6 +16,7 @@
     <button data-tab="metricas">Métricas</button>
     <button data-tab="balance">Balance</button>
     <button data-tab="jugadores">Jugadores</button>
+    <button data-tab="bugs">Bugs <i id="bugs-n" hidden></i></button>
     <button data-tab="auditoria">Auditoría</button>
     <button data-tab="servidor">Servidor</button>
   </nav>
@@ -54,6 +55,13 @@
       <div id="results" class="card scroll"></div>
       <div id="player" class="card scroll"><p class="small">Elige un jugador.</p></div>
     </div>
+  </section>
+
+  <section id="bugs" class="tab" hidden>
+    <form id="bugs-f" class="row wrap">
+      <label>Estado <select name="status"><option value="">Todos</option><option value="nuevo" selected>Nuevos</option><option value="visto">Vistos</option><option value="resuelto">Resueltos</option></select></label>
+    </form>
+    <div id="bugs-list"></div>
   </section>
 
   <section id="auditoria" class="tab" hidden>

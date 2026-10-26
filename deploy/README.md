@@ -96,6 +96,10 @@ se resuelve:
   reinicios por error (con las últimas líneas del registro), disco > 85 %, memoria < 300 MB, la copia de la
   base de datos que falta y el certificado HTTPS a menos de 14 días de caducar.
 
+El mismo bot avisa de los **bugs que reportan los jugadores** desde el juego (enlace «Reportar un bug» de la
+barra de abajo y Ajustes): el juego lee `/etc/arena-alerts.env` al arrancar. Los bugs también quedan en el
+panel de administración, pestaña **Bugs**, donde se marcan como vistos o resueltos.
+
 El token del bot es secreto (con él cualquiera escribe como el bot). Para cambiarlo: en @BotFather,
 `/revoke` → elige el bot → copia el token nuevo, y en **tu terminal**:
 ```bash
