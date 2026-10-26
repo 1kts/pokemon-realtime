@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': 'Des captures récompensées',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Attrape 25 Pokémon d\'une même lignée et récupère « IV parfaits » dans Succès : ensuite, les sauvages de cette lignée ont toujours des IV parfaits.',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': 'Dans la fiche de chaque route, ses Pokémon affichent 5 Poké Balls : une se remplit toutes les 5 captures de leur lignée.',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': 'Les attaques à distance sont en pixel art : flammes, gouttes, bulles, feuilles, éclairs et plus, aux couleurs de leur type.',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': 'Anneau Hydro, Synthèse et Rayon Lune soignent 24 % et étourdissent moins ; Repos soigne 45 %.',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Les icônes d\'objets viennent de PokeAPI, et les icônes pixel art de l\'interface et les formes des attaques, de PokéSurvivor (JPTER78, licence PolyForm Noncommercial).',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': 'Attrape {n} Pokémon de la lignée de {m}',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': 'IV parfaits : les sauvages de la lignée ont toujours des IV parfaits',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': 'IV parfaits : les {m} sauvages ont toujours des IV parfaits',
+    'Siempre con IV perfectos': 'Toujours avec des IV parfaits',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '{n}/{g} captures de la lignée : à {g}, IV parfaits',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '{n}/{g} captures ! Récupère « IV parfaits » dans Succès',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'Dans la fiche de tes Pokémon, chaque capacité montre ses dégâts avec une barre, son énergie, sa recharge et sa préparation, et ses effets en couleur.',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'Nouveau logo de PokéArenas, et Mes Pokémon ressort en rouge dans le menu pour le trouver plus vite.',
@@ -661,7 +676,6 @@ export default {
     'En los escenarios claros (hielo, piscina, baldosas) los efectos y los avisos se oscurecen para verse bien.': 'Sur les terrains clairs (glace, piscine, carrelage), les effets et les avertissements s’assombrissent pour rester visibles.',
     'Vence a {who} para conseguirla': 'Bats {who} pour l’obtenir',
     // ---------- Nuevo aspecto (0.8.0) ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Les icônes d\'objets viennent de PokeAPI et les icônes pixel art de l\'interface, de PokéSurvivor (JPTER78, licence PolyForm Noncommercial).',
     'Nuevo aspecto': 'Nouveau look',
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Interface repensée : police arrondie, boutons et fenêtres à rayures, et cartes du menu avec icône.',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Vraies icônes d\'objets dans la boutique, l\'équipe et les récompenses, et pièces en pixel art.',

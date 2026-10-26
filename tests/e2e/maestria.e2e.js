@@ -15,7 +15,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('.coll-tile.wide');
   await page.waitFor(`window.__app.ui.view === 'collection'`);
   ok(await page.eval(`document.querySelectorAll('.lg-card.ready .lg-row.ready').length`) === 5, 'la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 500 victorias)');
-  ok(await page.eval(`document.querySelectorAll('.lg-card .lg-row').length >= 7 && /online/.test(document.querySelector('.lg-row.k-skin:nth-last-child(2) small').textContent)`), 'Holo pide victorias online y Galaxia la Torre, con su progreso');
+  ok(await page.eval(`(() => { const asks = [...document.querySelectorAll('.lg-card .lg-row.k-skin small')].map(s => s.textContent); return document.querySelectorAll('.lg-card .lg-row').length >= 7 && asks.some(x => /online/.test(x)) && asks.some(x => /Torre/.test(x)); })()`), 'Holo pide victorias online y Galaxia la Torre, con su progreso');
   // Se recogen uno a uno, cada uno con su animación
   for (let i = 0; i < 5; i++) {
     await page.eval(`document.querySelector('.lg-row.ready .claim-btn').click(); true`);

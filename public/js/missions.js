@@ -323,6 +323,7 @@ export const missionViews = {
     const addEl = (node, label) => { add('', label); list.lastChild.querySelector('.li-art').append(node); };
     if (r.mastery && r.mastery.kind === 'star') add('<b class="loot-star">★</b>', t('Estrella de bronce'));
     if (r.art) add(`<img class="loot-art" src="art/${r.art}.png" alt="">`, t('Ilustración oficial'));
+    if (r.perfect) add(itemImg('pokeball', 48), t('IV perfectos: los {m} salvajes salen siempre perfectos', { m: Data.SPECIES[r.perfect].name }));
     for (const au of [r.aura, r.aura2].filter(Boolean)) addEl(this.avatar(52, false, undefined, au), auraName(au, t));
     if (r.skin) { addEl(applySkin(portrait(skinDex, 64), r.skin, skinDex), `${t(SKIN_LABEL[r.skin])} · ${Data.SPECIES[skinDex].name}`); }
     if (r.particles) addEl(applySkin(portrait(r.particles, 64), null, r.particles, true), t('Partículas · línea de {m}', { m: Data.SPECIES[r.particles].name }));

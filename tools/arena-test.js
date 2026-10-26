@@ -274,9 +274,9 @@ function heal(key) {
 check('las curas curan menos y dejan aturdido al que se cura', () => {
   const { bt, me, mon } = heal('acuaAro');
   const m = D.MOVES.acuaAro;
-  assert(m.heal <= 0.16 && m.cd >= 20 && m.selfStun >= 1, 'valores nerfeados');
+  assert(m.heal <= 0.25 && m.cd >= 20 && m.selfStun >= 0.8, 'curan con medida: un cuarto como mucho, con recarga larga y aturdido');
   assert(mon.hp > mon.maxHp / 2 && mon.hp <= mon.maxHp / 2 + mon.maxHp * m.heal + 1, 'cura como mucho su %');
-  assert(me.stun > 0.9, 'aturdido tras curarse');
+  assert(me.stun > 0.7, 'aturdido tras curarse');
   assert(me.burn > 0, 'Acua Aro no quita la quemadura');
   const x0 = me.x;
   run(bt, 0.5, { mx: 1, my: 0 });

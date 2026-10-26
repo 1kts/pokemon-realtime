@@ -311,11 +311,12 @@ function unlockAll(p) {
   for (const fx of D.EFFECTS) rewards.unlock(p, 'effects', fx);
   for (const ty of D.TYPE_NAMES) rewards.unlock(p, 'frames', 'tipo-' + ty);
   p.lineStats = p.lineStats || {};
-  for (const stat of ['pvp', 'tower']) p.lineStats[stat] = p.lineStats[stat] || {};
+  for (const stat of ['pvp', 'tower', 'catch']) p.lineStats[stat] = p.lineStats[stat] || {};
   for (const root of lines) {
     p.mastery[root] = Math.max(p.mastery[root] || 0, 500);
     p.lineStats.pvp[root] = Math.max(p.lineStats.pvp[root] || 0, 25);
     p.lineStats.tower[root] = Math.max(p.lineStats.tower[root] || 0, 50);
+    p.lineStats.catch[root] = Math.max(p.lineStats.catch[root] || 0, 25);
     p.masteryClaimed[root] = D.MASTERY_TIERS.map((_, i) => i);
     rewards.unlock(p, 'skins', 'elemental:' + root);
     rewards.unlock(p, 'particles', root);

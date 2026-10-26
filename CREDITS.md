@@ -23,8 +23,9 @@ de los juegos. No se usa ningún mapa oficial.
   Plata SoulSilver (y Rojo Fuego para Lorelei y Agatha), tal como los publica [Pokémon Showdown](https://play.pokemonshowdown.com/sprites/trainers/)
   (© Nintendo / Creatures Inc. / GAME FREAK inc.).
 - Las medallas llevan quitado el borde blanco exterior del original.
-- Los iconos pixel art de la interfaz y los emblemas de los movimientos (`public/js/pixicons.js`) son de
-  [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js`), de JPTER78 y colaboradores, con
+- Los iconos pixel art de la interfaz y los emblemas de los movimientos (`public/js/pixicons.js`) y las formas pixel
+  art de los ataques con sus paletas por tipo (`public/js/pixvfx.js`) son de
+  [PokéSurvivor](https://github.com/JPTER78/pokesurvivor) (`js/ui/icons.js` y `js/entities/vfx.js`), de JPTER78 y colaboradores, con
   licencia [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
   (texto completo en `LICENSES/PolyForm-Noncommercial-1.0.0.md`). Uso no comercial.
 

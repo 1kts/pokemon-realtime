@@ -12,6 +12,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': '捕獲でごほうび',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '同じ進化系統のポケモンを25匹つかまえて実績で「個体値パーフェクト」を受け取ると、その系統の野生はいつも個体値が最高になります。',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': '各ルートの詳細で、ポケモンにモンスターボールが5つ表示されます。系統を5匹つかまえるごとに1つ埋まります。',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': '遠距離のわざがドット絵になりました。ほのお、しずく、あわ、はっぱ、いなずまなどがタイプの色で表示されます。',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': 'アクアリング、こうごうせい、つきのひかりは24 %回復し、動けない時間が短くなりました。ねむるは45 %回復します。',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '道具のアイコンはPokeAPI、画面のドット絵アイコンとわざのエフェクトの形はPokéSurvivor（JPTER78、PolyForm Noncommercialライセンス）のものです。',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': '{m}の系統のポケモンを{n}匹つかまえる',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': '個体値パーフェクト：この系統の野生はいつも個体値が最高',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': '個体値パーフェクト：野生の{m}はいつも個体値が最高',
+    'Siempre con IV perfectos': 'いつも個体値パーフェクト',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '系統の捕獲 {n}/{g}：{g}匹で個体値パーフェクト',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '捕獲 {n}/{g}！実績で「個体値パーフェクト」を受け取ろう',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'ポケモンの詳細では、わざごとにダメージをバーで、エネルギー・リキャスト・ため時間、効果を色つきで表示します。',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenasの新しいロゴ。メニューの「マイポケモン」が赤く目立って見つけやすくなりました。',
@@ -1464,7 +1479,6 @@ export default {
     'Captura con Poké Balls y animación de 3 sacudidas.': 'モンスターボールで 捕獲、3回 ゆれる アニメーション。',
     'IA por utilidad que se adapta al combate.': 'バトルに 合わせて 判断する AI。',
     // ---------- 0.8.0 ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'どうぐの アイコンは PokeAPI、画面の ドット絵アイコンは PokéSurvivor（JPTER78、PolyForm Noncommercial ライセンス）の ものです。',
     'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': 'スプライトごとの 作者、ライセンス、プライバシーポリシーの 全文は <a href="{url}" target="_blank" rel="noopener">法的表示</a> に あります。',
     'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.': 'トレーナー名と ゲームの データ、アカウントを 作った場合は ユーザー名と 暗号化した パスワード（ソルト付き scrypt）、そして 40日間、IP を ふくむ セキュリティ記録を 保存します。広告・クッキー・トラッキングは ありません。アカウントの 削除や お問い合わせ：contact@pokearenas.com。',
     'Nuevo aspecto': '新しい 見た目',

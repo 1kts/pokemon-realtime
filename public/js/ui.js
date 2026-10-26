@@ -136,6 +136,23 @@ export class UI {
     if (scrolls) this.restoreScroll(scrolls);
   }
 
+  // Reto de capturas de una línea: una Poké Ball llena cada 5 (5 en total); con «IV perfectos» ya recogido,
+  // las 5 en dorado. Va en las tarjetas de la ficha de la ruta y en los resultados al atrapar
+  catchPips(dex) {
+    const p = this.profile, tier = Data.MASTERY_TIERS.find(x => x.stat === 'catch'), goal = tier.goal;
+    const n = Data.lineStat(p, dex, 'catch'), full = Math.min(goal, n) / Data.CATCH_STEP | 0, done = Data.perfectLine(p, dex);
+    const box = el('span', 'catch-pips' + (done ? ' perfect' : n >= goal ? ' ready' : ''));
+    for (let i = 0; i < goal / Data.CATCH_STEP; i++) box.append(el('i', i < full || done ? 'on' : ''));
+    return box;
+  }
+
+  catchText(dex) {
+    const p = this.profile, goal = Data.MASTERY_TIERS.find(x => x.stat === 'catch').goal, n = Data.lineStat(p, dex, 'catch');
+    if (Data.perfectLine(p, dex)) return t('Siempre con IV perfectos');
+    if (n >= goal) return t('¡{n}/{g} capturas! Recoge «IV perfectos» en Logros', { n, g: goal });
+    return t('{n}/{g} capturas de la línea: a las {g}, IV perfectos', { n, g: goal });
+  }
+
   // Qué pantallas se visitan (para el panel; cada una se manda una vez por conexión)
   sendView(view) {
     if (!this.viewsSent) this.viewsSent = new Set();
@@ -685,7 +702,8 @@ export class UI {
         c.append(portrait(dex, 56));
         const pct = weight * normal * 100;
         c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} % · ${lv(min === max ? min : min + '-' + max)}`));
-        c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen}`;
+        c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen} · ${this.catchText(dex)}`;
+        c.append(this.catchPips(dex));
         list.append(c);
       }
       box.append(list);
@@ -1473,7 +1491,7 @@ export class UI {
       home.src = `home/${msg.captured.shiny ? 'shiny/' : ''}${msg.captured.dex}.png`; home.alt = ''; home.draggable = false;
       home.onerror = () => home.replaceWith(animatedPortrait(msg.captured.dex, 140, 'Idle', !!msg.captured.shiny));
       c.append(home);
-      c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && r.captured.perfect ? `<br><b class="perfect">${t('¡Con IV perfectos!')}</b>` : ''}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
+      c.append(el('p', '', `${t('¡Has atrapado a <b>{m}</b>{shiny} ({lv})!', { m: SPECIES[msg.captured.dex].name, shiny: msg.captured.shiny ? ` <i class="shiny-star">${t('✦ ¡SHINY!')}</i>` : '', lv: lv(msg.captured.level) })}${r.captured && r.captured.perfect ? `<br><b class="perfect">${t('¡Con IV perfectos!')}</b>` : ''}${r.captured && r.captured.catches ? `<br><span class="catch-prog">${this.catchPips(msg.captured.dex).outerHTML} ${this.catchText(msg.captured.dex)}</span>` : ''}${r.captured && !r.captured.inTeam ? `<br><small>${t('Tu equipo está lleno: lo encontrarás en Equipo.')}</small>` : ''}`));
       box.append(c);
       if (r.captured && r.captured.uid) box.append(this.nickForm(r.captured.uid, msg.captured.dex));
     }

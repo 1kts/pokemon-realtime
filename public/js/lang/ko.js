@@ -12,6 +12,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': '포획에 보상이',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '같은 진화 계열 포켓몬을 25마리 잡고 업적에서 「완벽한 개체값」을 받으면, 그 계열의 야생 포켓몬은 항상 개체값이 완벽해요.',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': '각 도로 정보에서 포켓몬에 몬스터볼 5개가 보여요. 계열을 5마리 잡을 때마다 하나씩 채워져요.',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': '원거리 공격이 도트 그래픽이 됐어요. 불꽃, 물방울, 거품, 잎, 번개 등을 타입 색으로 보여 줘요.',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': '아쿠아링, 광합성, 달빛은 24 % 회복하고 기절 시간이 짧아졌어요. 잠자기는 45 % 회복해요.',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '도구 아이콘은 PokeAPI, 화면의 도트 아이콘과 기술 이펙트 모양은 PokéSurvivor(JPTER78, PolyForm Noncommercial 라이선스)에서 가져왔어요.',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': '{m} 계열 포켓몬을 {n}마리 잡기',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': '완벽한 개체값: 이 계열의 야생 포켓몬은 항상 개체값이 완벽해요',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': '완벽한 개체값: 야생 {m}은(는) 항상 개체값이 완벽해요',
+    'Siempre con IV perfectos': '항상 완벽한 개체값',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '계열 포획 {n}/{g}: {g}마리면 완벽한 개체값',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '포획 {n}/{g}! 업적에서 「완벽한 개체값」을 받으세요',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': '포켓몬 상세 정보에서 기술마다 대미지를 막대로, 에너지·재사용·준비 시간과 효과를 색으로 보여 줘요.',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas의 새 로고, 그리고 메뉴의 내 포켓몬이 빨갛게 눈에 띄어 더 빨리 찾을 수 있어요.',
@@ -516,7 +531,7 @@ export default {
     'La cámara del combate está más lejos: ves el campo entero, también las esquinas de abajo, y el HUD ya no tapa a ningún Pokémon.': '배틀 카메라가 더 멀어졌어. 아래쪽 구석까지 필드 전체가 보이고, HUD가 더 이상 포켓몬을 가리지 않아.',
     // ---------- Novedades v0.15.3 ----------
     'Curarse tiene precio': '회복에는 대가가 따라',
-    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': '아쿠아링, 광합성, 달의불빛은 16% 회복(이전 20-22%), 재사용까지 20초, 사용 후 1.2초 기절해. 상대와 떨어져서 회복해.',
+    'Acua Aro, Síntesis y Luz Lunar curan el 16 % (antes 20-22 %), tardan 20 s en recargarse y te dejan aturdido 1,2 s: cúrate lejos del rival.': '아쿠아링, 광합성, 달빛은 16% 회복(이전 20-22%), 재사용까지 20초, 사용 후 1.2초 기절해. 상대와 떨어져서 회복해.',
     'Descanso cura el 35 % (antes 50 %), tarda 28 s en recargarse y te duerme 2,5 s; es la única cura que quita quemadura, veneno y drenadoras.': '잠자기는 35% 회복(이전 50%), 재사용까지 28초, 2.5초 동안 잠들어. 화상, 독, 씨뿌리기를 없애는 유일한 회복기야.',
     'te deja aturdido {s} s': '사용 후 {s}초 기절',
     'quita quemadura, veneno y drenadoras': '화상, 독, 씨뿌리기를 없앤다',
@@ -1464,7 +1479,6 @@ export default {
     'Captura con Poké Balls y animación de 3 sacudidas.': '몬스터볼로 포획, 3번 흔들리는 애니메이션.',
     'IA por utilidad que se adapta al combate.': '배틀 상황에 맞춰 판단하는 AI.',
     // ---------- 0.8.0 ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '도구 아이콘은 PokeAPI, 화면의 도트 아이콘은 PokéSurvivor(JPTER78, PolyForm Noncommercial 라이선스)의 것입니다.',
     'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': '스프라이트별 제작자, 라이선스, 개인정보 처리방침 전문은 <a href="{url}" target="_blank" rel="noopener">법적 고지</a>에 있습니다.',
     'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.': '트레이너 이름과 진행 상황, 계정을 만들면 아이디와 암호화된 비밀번호(솔트를 친 scrypt), 그리고 40일 동안 IP 가 담긴 보안 기록을 저장합니다. 광고, 쿠키, 추적은 없습니다. 계정 삭제나 문의: contact@pokearenas.com.',
     'Nuevo aspecto': '새로운 모습',

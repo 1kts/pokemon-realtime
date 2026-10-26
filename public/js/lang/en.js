@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': 'Catches with a reward',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Catch 25 Pokémon of the same evolution line and claim “Perfect IVs” in Achievements: from then on, wild Pokémon of that line always have perfect IVs.',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': 'In each route\'s details, its Pokémon show 5 Poké Balls: one fills up every 5 catches of their line.',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': 'Ranged attacks now look like pixel art: flames, drops, bubbles, leaves, bolts and more, in their type\'s colour.',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': 'Aqua Ring, Synthesis and Moonlight heal 24 % and stun you for less; Rest heals 45 %.',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Item icons come from PokeAPI, and the interface\'s pixel art icons and attack shapes from PokéSurvivor (JPTER78, PolyForm Noncommercial license).',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': 'Catch {n} Pokémon of the {m} line',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': 'Perfect IVs: wild Pokémon of the line always have perfect IVs',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': 'Perfect IVs: wild {m} always have perfect IVs',
+    'Siempre con IV perfectos': 'Always with perfect IVs',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '{n}/{g} catches of the line: at {g}, perfect IVs',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '{n}/{g} catches! Claim “Perfect IVs” in Achievements',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'In your Pokémon\'s details, each move shows its damage with a bar, its energy, cooldown and wind-up, and its effects in colour.',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'A new PokéArenas logo, and My Pokémon stands out in red in the menu so you find it sooner.',
@@ -662,7 +677,6 @@ export default {
     'Vence a {who} para conseguirla': 'Beat {who} to earn it',
     'Apoyar': 'Support',
     // ---------- Novedades 0.5 a 0.7 ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Item icons come from PokeAPI and the interface\'s pixel art icons from PokéSurvivor (JPTER78, PolyForm Noncommercial license).',
     'Nuevo aspecto': 'New look',
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': 'Revamped interface: rounded fonts, striped buttons and windows, and menu cards with icons.',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': 'Real item icons in the shop, your team and rewards, plus pixel art coins.',

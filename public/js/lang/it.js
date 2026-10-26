@@ -12,6 +12,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': 'Catture con premio',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': 'Cattura 25 Pokémon della stessa linea evolutiva e ritira «VI perfetti» in Obiettivi: da allora i selvatici di quella linea hanno sempre VI perfetti.',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': 'Nella scheda di ogni percorso, i suoi Pokémon mostrano 5 Poké Ball: se ne riempie una ogni 5 catture della loro linea.',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': 'Gli attacchi a distanza sono in pixel art: fiamme, gocce, bolle, foglie, fulmini e altro, nel colore del loro tipo.',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': 'Acquanello, Sintesi e Lucelunare curano il 24 % e stordiscono meno; Riposo cura il 45 %.',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Le icone degli strumenti vengono da PokeAPI, e le icone pixel art dell\'interfaccia e le forme degli attacchi da PokéSurvivor (JPTER78, licenza PolyForm Noncommercial).',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': 'Cattura {n} Pokémon della linea di {m}',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': 'VI perfetti: i selvatici della linea hanno sempre VI perfetti',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': 'VI perfetti: i {m} selvatici hanno sempre VI perfetti',
+    'Siempre con IV perfectos': 'Sempre con VI perfetti',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '{n}/{g} catture della linea: a {g}, VI perfetti',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '{n}/{g} catture! Ritira «VI perfetti» in Obiettivi',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': 'Nella scheda dei tuoi Pokémon, ogni mossa mostra il danno con una barra, l\'energia, la ricarica e la preparazione, e i suoi effetti a colori.',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'Nuovo logo di PokéArenas, e I miei Pokémon risalta in rosso nel menu per trovarlo prima.',
@@ -1464,7 +1479,6 @@ export default {
     'Captura con Poké Balls y animación de 3 sacudidas.': 'Cattura con le Poké Ball e un\'animazione a 3 scosse.',
     'IA por utilidad que se adapta al combate.': 'Un\'IA basata sull\'utilità che si adatta alla lotta.',
     // ---------- 0.8.0 ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': 'Le icone degli strumenti vengono da PokeAPI e le icone in pixel art dell\'interfaccia da PokéSurvivor (JPTER78, licenza PolyForm Noncommercial).',
     'Los artistas de cada sprite, las licencias y la política de privacidad completa están en el <a href="{url}" target="_blank" rel="noopener">aviso legal</a>.': 'Gli artisti di ogni sprite, le licenze e l\'informativa sulla privacy completa sono nelle <a href="{url}" target="_blank" rel="noopener">note legali</a>.',
     'Guardamos tu nombre de entrenador y tu partida; si creas cuenta, tu usuario y tu contraseña cifrada (scrypt con sal); y, durante 40 días, un registro de seguridad con tu IP. No hay publicidad, cookies ni seguimiento. Para borrar tu cuenta o cualquier duda: contact@pokearenas.com.': 'Conserviamo il tuo nome Allenatore e la tua partita; se crei un account, il tuo nome utente e la password cifrata (scrypt con sale); e, per 40 giorni, un registro di sicurezza con il tuo IP. Niente pubblicità, cookie né tracciamento. Per cancellare il tuo account o per qualsiasi dubbio: contact@pokearenas.com.',
     'Nuevo aspecto': 'Nuovo aspetto',

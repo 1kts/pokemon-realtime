@@ -11,6 +11,21 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.27.0 ----------
+    'Capturas con premio': '捕捉有奖励',
+    'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.': '捕捉同一进化系的25只宝可梦，并到成就领取“完美个体值”：之后该系的野生宝可梦总是完美个体值。',
+    'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.': '在每条道路的详情中，宝可梦会显示5个精灵球：该系每捕捉5只就填满一个。',
+    'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.': '远程攻击变成像素风：火焰、水滴、泡沫、叶子、闪电等，带有属性颜色。',
+    'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.': '水流环、光合作用和月光回复24%并缩短硬直；睡觉回复45%。',
+    // ---------- Créditos: formas de los ataques ----------
+    'Los iconos de objetos vienen de PokeAPI, y los iconos pixel art de la interfaz y las formas de los ataques, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '道具图标来自PokeAPI，界面的像素图标和招式特效形状来自PokéSurvivor（JPTER78，PolyForm Noncommercial许可）。',
+    // ---------- Reto de capturas: IV perfectos ----------
+    'Atrapa {n} Pokémon de la línea de {m}': '捕捉{n}只{m}一系的宝可梦',
+    'IV perfectos: los salvajes de la línea salen siempre perfectos': '完美个体值：这一系的野生宝可梦总是完美个体值',
+    'IV perfectos: los {m} salvajes salen siempre perfectos': '完美个体值：野生的{m}总是完美个体值',
+    'Siempre con IV perfectos': '总是完美个体值',
+    '{n}/{g} capturas de la línea: a las {g}, IV perfectos': '这一系已捕捉 {n}/{g}：满{g}只即完美个体值',
+    '¡{n}/{g} capturas! Recoge «IV perfectos» en Logros': '已捕捉 {n}/{g}！到成就领取“完美个体值”',
     // ---------- Novedades v0.26.0 ----------
     'En la ficha de tus Pokémon, cada movimiento enseña su daño con una barra, su energía, recarga y preparación, y sus efectos en colores.': '在宝可梦详情中，每个招式都会用条显示伤害，并显示能量、冷却和准备时间，效果也用颜色标出。',
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas全新标志，菜单中的“我的宝可梦”以红色突出，更容易找到。',
@@ -910,7 +925,6 @@ export default {
     // ---------- 场景（完全权限） ----------
     'Apoyar': '支持',
     // ---------- Novedades 0.5 a 0.7 ----------
-    'Los iconos de objetos vienen de PokeAPI y los iconos pixel art de la interfaz, de PokéSurvivor (JPTER78, licencia PolyForm Noncommercial).': '道具图标来自PokeAPI，界面像素图标来自PokéSurvivor（JPTER78，PolyForm Noncommercial许可）。',
     'Nuevo aspecto': '全新外观',
     'Interfaz renovada: tipografía redondeada, botones y ventanas con rayas, y tarjetas del menú con icono.': '界面焕新：圆润字体、条纹按钮与窗口，菜单卡片配有图标。',
     'Iconos de objetos reales en la tienda, el equipo y los premios, y monedas pixel art.': '商店、队伍和奖励中显示真实道具图标，金币改为像素风。',

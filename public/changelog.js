@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.27.0', date: '2026-10-26', title: 'Capturas con premio',
+      items: [
+        ['nuevo', 'Atrapa 25 Pokémon de una misma línea evolutiva y recoge en Logros «IV perfectos»: desde entonces los de esa línea salen salvajes siempre perfectos.'],
+        ['nuevo', 'En la ficha de cada ruta, sus Pokémon enseñan 5 Poké Balls: se llena una cada 5 capturas de su línea.'],
+        ['cambio', 'Los ataques a distancia se ven en pixel art: llamas, gotas, burbujas, hojas, rayos y más, con el color de su tipo.'],
+        ['cambio', 'Acua Aro, Síntesis y Luz Lunar curan un 24 % y aturden menos; Descanso cura un 45 %.'],
+      ],
+    },
+    {
       v: '0.26.0', date: '2026-10-26', title: 'Avísanos desde el juego',
       items: [
         ['nuevo', 'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.'],

@@ -3,7 +3,7 @@
 const D = require('../public/data.js');
 const store = require('./store.js');
 const missions = require('./missions.js');
-const { addGems } = require('./rewards.js');
+const { addGems, addLineStat } = require('./rewards.js');
 const names = require('./names.js');
 
 const MAX_LEVEL = 100;
@@ -204,7 +204,8 @@ function battleSetup(p, msg) {
     if (route.req > D.progOf(p, route.region)) return { error: `Necesitas ${route.req} medallas de ${D.REGIONS[route.region].name}` };
     const wild = D.rollWild(route);
     const shiny = wild.shiny || Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);   // el Gyarados rojo del Lago de la Furia siempre
-    const perfect = !!wild.rare && Math.random() < D.RARE_PERFECT;
+    // IV perfectos: algunos especiales y, siempre, los de las líneas con el reto de capturas recogido
+    const perfect = (!!wild.rare && Math.random() < D.RARE_PERFECT) || D.perfectLine(p, wild.dex);
     const balls = Object.fromEntries(D.BALL_IDS.map(k => [k, p.items[k] || 0]));
     return {
       kind: 'route', route,
@@ -248,6 +249,9 @@ function applyResult(p, setup, result, battle) {
       const region = setup.route ? setup.route.region : 'kanto';
       const mon = addMon(p, result.captured.dex, result.captured.level, { region, shiny: !!result.captured.shiny, iv: result.captured.iv, met: setup.route ? setup.route.id : null });
       reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, perfect: D.STAT_KEYS.every(k => mon.iv[k] === D.IV_MAX), inTeam: p.teams[region].includes(mon.uid) };
+      // Reto de capturas de su línea: cuántas lleva (25 = «IV perfectos» para recoger en Logros)
+      addLineStat(p, [mon.dex], 'catch');
+      reward.captured.catches = D.lineStat(p, mon.dex, 'catch');
       reward.coins = 10;
     } else {
       reward.coins = setup.kind === 'gym' ? setup.gym.reward : 30 + foeLevels * 6;

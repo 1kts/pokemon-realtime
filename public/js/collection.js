@@ -18,13 +18,15 @@ const TABS = [['mastery', 'Líneas'], ['retos', 'Retos'], ['skin', 'Skins'], ['f
 const winsFor = kind => (MASTERY_TIERS.find(x => x.kind === kind || x.skin === kind || x.aura === kind) || {}).wins;
 const CAT_LABEL = { progreso: 'Progreso', combate: 'Combate', coleccion: 'Colección', torre: 'Torre', pvp: 'Online' };
 // Qué pide cada reto de línea
-const tierAsk = (x, m) => x.stat === 'pvp' ? t('Gana {n} combates online con la línea de {m}', { n: x.goal, m })
+const tierAsk = (x, m) => x.stat === 'catch' ? t('Atrapa {n} Pokémon de la línea de {m}', { n: x.goal, m })
+  : x.stat === 'pvp' ? t('Gana {n} combates online con la línea de {m}', { n: x.goal, m })
   : x.stat === 'tower' ? t('Llega a una racha de {n} en la Torre con la línea de {m}', { n: x.goal, m }) : t('Gana {n} combates con la línea de {m}', { n: x.wins, m });
 
-// Líneas evolutivas que conoces: las de lo que has atrapado y las que ya tienen victorias
+// Líneas evolutivas que conoces: las de lo que has atrapado, las que ya tienen victorias y las de retos en marcha
 function lineRoots(p) {
   const won = ((p.cosmetics || {}).skins || []).map(s => +s.split(':')[1]);
-  return [...new Set([...(p.caught || []), ...Object.keys(p.mastery || {}).map(Number), ...won].filter(d => SPECIES[d]).map(Data.lineOf))];
+  const stats = Object.values(p.lineStats || {}).flatMap(s => Object.keys(s).map(Number));   // retos en marcha (online, Torre, capturas)
+  return [...new Set([...(p.caught || []), ...Object.keys(p.mastery || {}).map(Number), ...won, ...stats].filter(d => SPECIES[d]).map(Data.lineOf))];
 }
 
 export const collectionViews = {
@@ -115,7 +117,7 @@ export const collectionViews = {
       const row = el('div', 'lg-row k-' + x.kind + (got ? ' got' : ok ? ' ready' : ''));
       const ico = el('span', 'lg-ico');
       if (x.kind === 'skin') ico.append(applySkin(portrait(root, 34), x.skin, root));
-      else ico.innerHTML = x.kind === 'reward' ? itemImg('caramelo', 28) : x.kind === 'art' ? icon('user', 26) : x.kind === 'title' ? icon('crown', 26) : x.kind === 'portrait' ? avatarArt('pt:' + root, 34) : icon('star', 26);
+      else ico.innerHTML = x.kind === 'perfect' ? itemImg('pokeball', 28) : x.kind === 'reward' ? itemImg('caramelo', 28) : x.kind === 'art' ? icon('user', 26) : x.kind === 'title' ? icon('crown', 26) : x.kind === 'portrait' ? avatarArt('pt:' + root, 34) : icon('star', 26);
       row.append(ico, el('div', 'lg-body', `<b>${masteryPrize(x, root, t)}</b><small>${tierAsk(x, name)}</small>${got ? '' : `<div class="m-bar"><i style="width:${cur / Data.tierGoal(x) * 100}%"></i><span>${cur} / ${Data.tierGoal(x)}</span></div>`}`));
       if (ok) {
         const b = el('button', 'primary claim-btn', t('¡Recoger!'));

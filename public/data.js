@@ -79,11 +79,11 @@
     hidrobomba: { name: 'Hidrobomba', type: 'agua', kind: 'beam', cost: 40, cd: 6, wind: 0.55, rec: 0.3, dmg: 22, len: 540, width: 26, knock: 130, terrain: 'agua' },
     surf: { name: 'Surf', type: 'agua', kind: 'wave', cost: 45, cd: 9, wind: 0.45, rec: 0.3, dmg: 20, speed: 340, range: 560, width: 260, thick: 22, knock: 150, terrain: 'agua', wet: 4 },
     acuaJet: { name: 'Acua Jet', type: 'agua', kind: 'dash', cost: 15, cd: 4, wind: 0.06, rec: 0.12, dmg: 10, dist: 220, dur: 0.15 },
-    acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.16, selfStun: 1.2 },
+    acuaAro: { name: 'Acua Aro', type: 'agua', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.24, selfStun: 0.9 },
     latigoCepa: { name: 'Látigo Cepa', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.2, rec: 0.2, dmg: 14, speed: 850, range: 230, radius: 14, pull: 110, fx: 'vine' },
     drenadoras: { name: 'Drenadoras', type: 'planta', kind: 'proj', cost: 25, cd: 7, wind: 0.2, rec: 0.15, dmg: 5, speed: 460, range: 560, radius: 11, slow: 2, drain: 1.5, fx: 'seed' },
     rayoSolar: { name: 'Rayo Solar', type: 'planta', kind: 'beam', cost: 55, cd: 11, wind: 0.9, rec: 0.35, dmg: 32, len: 580, width: 32 },
-    sintesis: { name: 'Síntesis', type: 'planta', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.16, selfStun: 1.2 },
+    sintesis: { name: 'Síntesis', type: 'planta', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.24, selfStun: 0.9 },
     rayo: { name: 'Rayo', type: 'electrico', kind: 'beam', cost: 35, cd: 5, wind: 0.45, rec: 0.25, dmg: 18, len: 480, width: 18, stun: 0.4 },
     trueno: { name: 'Trueno', type: 'electrico', kind: 'area', at: 'cursor', cost: 50, cd: 9, wind: 0.25, rec: 0.3, dmg: 24, radius: 85, delay: 0.7, maxRange: 460, stun: 0.6 },
     ondaTrueno: { name: 'Onda Trueno', type: 'electrico', kind: 'proj', cost: 30, cd: 10, wind: 0.2, rec: 0.2, dmg: 2, speed: 520, range: 500, radius: 10, stun: 1.1 },
@@ -105,7 +105,7 @@
     ataqueRapido: { name: 'Ataque Rápido', type: 'normal', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 8, dist: 210, dur: 0.14 },
     golpeCuerpo: { name: 'Golpe Cuerpo', type: 'normal', kind: 'dash', cost: 25, cd: 6, wind: 0.2, rec: 0.2, dmg: 18, dist: 190, dur: 0.25, stun: 0.35 },
     hiperrayo: { name: 'Hiperrayo', type: 'normal', kind: 'beam', cost: 65, cd: 14, wind: 0.8, rec: 1.1, dmg: 38, len: 600, width: 32 },
-    descanso: { name: 'Descanso', type: 'psiquico', kind: 'heal', cost: 30, cd: 28, wind: 0.2, rec: 0.2, heal: 0.35, selfStun: 2.5, cure: true },
+    descanso: { name: 'Descanso', type: 'psiquico', kind: 'heal', cost: 30, cd: 28, wind: 0.2, rec: 0.2, heal: 0.45, selfStun: 2.2, cure: true },
     autodestruccion: { name: 'Autodestrucción', type: 'normal', kind: 'area', at: 'self', cost: 60, cd: 30, wind: 0.6, rec: 0.1, dmg: 48, radius: 150, delay: 0.25, selfKO: true },
     patadaBaja: { name: 'Patada Baja', type: 'lucha', kind: 'melee', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 17, range: 72, arc: 1.6, stun: 0.45 },
     punoDinamico: { name: 'Puño Dinámico', type: 'lucha', kind: 'melee', cost: 45, cd: 9, wind: 0.5, rec: 0.3, dmg: 28, range: 78, arc: 1.3, stun: 0.9, knock: 120 },
@@ -128,7 +128,7 @@
     vientoFeerico: { name: 'Viento Feérico', type: 'hada', kind: 'cone', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 7, range: 170, arc: 0.8 },
     brilloMagico: { name: 'Brillo Mágico', type: 'hada', kind: 'area', at: 'self', cost: 35, cd: 7, wind: 0.25, rec: 0.25, dmg: 18, radius: 130, delay: 0.45 },
     fuerzaLunar: { name: 'Fuerza Lunar', type: 'hada', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 420, range: 560, radius: 15 },
-    luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.16, selfStun: 1.2 },
+    luzLunar: { name: 'Luz Lunar', type: 'hada', kind: 'heal', cost: 35, cd: 20, wind: 0.35, rec: 0.2, heal: 0.24, selfStun: 0.9 },
     disparoDemora: { name: 'Disparo Demora', type: 'bicho', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 520, range: 440, radius: 8, slow: 0.6 },
     zumbido: { name: 'Zumbido', type: 'bicho', kind: 'cone', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 16, range: 300, arc: 0.95 },
     idaYVuelta: { name: 'Ida y Vuelta', type: 'bicho', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 11, dist: 220, dur: 0.15, back: true },
@@ -1354,7 +1354,11 @@
     { wins: 500, kind: 'skin', skin: 'oro' },
     { stat: 'pvp', goal: 25, kind: 'skin', skin: 'holo' },
     { stat: 'tower', goal: 50, kind: 'skin', skin: 'galaxia', aura: 'prisma' },
+    // Capturar 25 de la línea: desde que se recoge, los de esa línea salen salvajes siempre con IV perfectos
+    // (al final de la lista: los retos se guardan por su posición)
+    { stat: 'catch', goal: 25, kind: 'perfect' },
   ];
+  const CATCH_STEP = 5;   // en la ficha de la ruta, una Poké Ball llena cada 5 capturas de la línea
   const tierGoal = x => x.goal || x.wins;
   const MASTERY = MASTERY_TIERS.filter(x => !x.stat).map(x => x.wins);   // victorias de cada estrella
   const MASTERY_ART = MASTERY_TIERS.find(x => x.kind === 'art').wins;
@@ -1369,6 +1373,8 @@
   // Premios de maestría ya recogidos de una línea (índices de MASTERY_TIERS) y los que se pueden recoger
   const masteryClaimed = (p, dex) => ((p.masteryClaimed || {})[lineOf(dex)] || []);
   const masteryReady = (p, dex) => MASTERY_TIERS.map((x, i) => i).filter(i => lineStat(p, dex, MASTERY_TIERS[i].stat) >= tierGoal(MASTERY_TIERS[i]) && !masteryClaimed(p, dex).includes(i));
+  // Línea con «IV perfectos» recogido: sus salvajes salen perfectos
+  const perfectLine = (p, dex) => hasMastery(p, dex, 'perfect');
   const hasMastery = (p, dex, kind, skin) => masteryClaimed(p, dex).some(i => MASTERY_TIERS[i].kind === kind && (!skin || MASTERY_TIERS[i].skin === skin));
   // Skins de una línea: las de maestría y las ganadas en Tesoros ('elemental:<línea>' en cosmetics.skins)
   const hasSkin = (p, dex, id) => hasMastery(p, dex, 'skin', id) || ((p.cosmetics || {}).skins || []).includes(id + ':' + lineOf(dex));
@@ -1469,7 +1475,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    levelMult, xpToNext, MAPS, ARENAS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

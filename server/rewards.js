@@ -147,6 +147,7 @@ function claimMastery(p, dex, i) {
   if (tier.kind === 'frame') { unlock(p, 'frames', D.typeFrameOf(root)); loot.frame = D.typeFrameOf(root); }
   if (tier.kind === 'skin') loot.skin = tier.skin;
   if (tier.kind === 'title') { unlock(p, 'titles', D.masteryTitle(root)); loot.title = D.masteryTitle(root); }
+  if (tier.kind === 'perfect') loot.perfect = root;   // (el efecto es que ya está recogido: ver D.perfectLine)
   if (tier.aura) { unlock(p, 'auras', tier.aura); loot.aura2 = tier.aura; }
   return { loot };
 }

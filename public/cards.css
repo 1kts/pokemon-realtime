@@ -1434,3 +1434,13 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .bug-report .bug-text { width: 100%; box-sizing: border-box; min-height: 110px; resize: vertical; padding: 10px 12px; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid var(--line); color: #fff; font: inherit; }
 .bug-report .bug-meta { opacity: .75; }
 .bug-report .acts { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* Reto de capturas: 5 Poké Balls (una llena cada 5 capturas de la línea); doradas con «IV perfectos» recogido */
+.catch-pips { display: inline-flex; gap: 2px; justify-content: center; margin-top: 3px; }
+.catch-pips i { width: 9px; height: 9px; border-radius: 50%; background: linear-gradient(180deg, rgba(255,255,255,.18) 45%, rgba(0,0,0,.5) 45% 55%, rgba(255,255,255,.1) 55%); box-shadow: 0 0 0 1px rgba(0,0,0,.45); }
+.catch-pips i.on { background: linear-gradient(180deg, #ff4a3d 45%, #1d1d1d 45% 55%, #f4f4f4 55%); }
+.catch-pips.ready i.on { box-shadow: 0 0 0 1px rgba(0,0,0,.45), 0 0 6px #ffcb05; animation: readyBlink 1.1s ease-in-out infinite; }
+.catch-pips.perfect i { background: linear-gradient(180deg, #ffe14a 45%, #7a5200 45% 55%, #fff7c0 55%); box-shadow: 0 0 0 1px #7a5200, 0 0 5px rgba(255,203,5,.6); }
+.route-list .mini { display: flex; flex-direction: column; align-items: center; }
+.catch-prog { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #c9d4ea; }
+.catch-prog .catch-pips i { width: 12px; height: 12px; }

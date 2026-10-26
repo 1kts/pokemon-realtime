@@ -390,6 +390,7 @@ function handle(c, msg) {
     if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
     if (msg.tutorial === false) delete p.tutorial;
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }
+    if (msg.catches && D.SPECIES[msg.catches.dex] && Number.isInteger(msg.catches.n)) { rewards.migrate(p); (p.lineStats.catch = p.lineStats.catch || {})[D.lineOf(msg.catches.dex)] = msg.catches.n; }
     if (msg.auras) { rewards.migrate(p); for (const g of D.AURAS) rewards.unlock(p, 'auras', g); }
     if (typeof msg.aura === 'string' && D.AURAS.includes(msg.aura)) { rewards.migrate(p); rewards.unlock(p, 'auras', msg.aura); }
     if (msg.missionsDone) { missions.action(p, { a: 'refresh' }); for (const m of p.missions.daily) m.n = D.MISSION_BY_ID[m.id].goal; }

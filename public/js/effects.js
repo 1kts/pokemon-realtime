@@ -2,6 +2,7 @@
 // proyectiles con forma propia, rayos, golpes en arco, explosiones por tipo, Protección, etc.
 import * as THREE from 'three';
 import { U, toWorld, softDisc } from './world.js';
+import { pixelTexture, isDir, spins, frames, sizeOf } from './pixvfx.js';
 import { PALETTE, SMOKE, DUST, vivid } from './particles.js';
 
 // Suelo claro (lo decide World.applyTheme): sin brillo aditivo, que sobre blanco no se ve; los colores
@@ -40,6 +41,14 @@ function ballTexture(top) {
   return t;
 }
 const BALL_COLORS = { pokeball: '#e83030', superball: '#2f6fe0', ultraball: '#303030', masterball: '#7a3cc8' };
+
+// Forma pixel de cada proyectil (las de PokéSurvivor); los que no están, la de su tipo
+const PIX_MOVE = { ascuas: 'fire', llamarada: 'fire', fuegoFatuo: 'ball', pistolaAgua: 'drop', rayoBurbuja: 'bubble', hojaAfilada: 'leaf',
+  impactrueno: 'bolt', ondaTrueno: 'bolt', tornado: 'wind', aireAfilado: 'crescent', confusion: 'ring', furiaDragon: 'fire', ciclon: 'wind',
+  pulsoDragon: 'ball', acido: 'blob', bombaLodo: 'blob', toxico: 'bubble', lanzaMugre: 'blob', bolaSombra: 'shadow', pulsoUmbrio: 'crescent',
+  fuerzaLunar: 'star', disparoDemora: 'web' };
+const PIX_TYPE = { fuego: 'fire', agua: 'drop', planta: 'leaf', electrico: 'bolt', psiquico: 'ring', hielo: 'shard', lucha: 'ball', veneno: 'blob',
+  tierra: 'blob', volador: 'wind', bicho: 'needle', fantasma: 'shadow', dragon: 'fire', siniestro: 'crescent', acero: 'shard', hada: 'star', normal: 'star' };
 
 export class Effects {
   constructor(world, particles) {
@@ -197,11 +206,6 @@ export class Effects {
     const g = new THREE.Group();
     const trail = (rate, o = {}) => (pr2, pos, dt) => p.trickle(rate, dt, pos.x, pos.y, pos.z, { colors: pal, layer: 'glow', speed: 0.6, life: 0.35, size: r * 2.2, jitter: r, ...o });
     // Formas especiales
-    if (pr.mk === 'hojaAfilada') {
-      const leaf = new THREE.Mesh(new THREE.CircleGeometry(0.16, 6).scale(1.9, 0.75, 1), new THREE.MeshStandardMaterial({ color: '#6cc84a', side: THREE.DoubleSide, roughness: 0.6 }));
-      g.add(leaf);
-      return { obj: g, h: 0.55, update: (_, pos, dt) => { leaf.rotation.x += dt * 9; leaf.rotation.z += dt * 15; p.trickle(10, dt, pos.x, pos.y, pos.z, { colors: PALETTE.planta, layer: 'solid', speed: 0.3, life: 0.4, size: 0.08 }); } };
-    }
     if (m.type === 'roca' || pr.mk === 'lanzarrocas') {
       const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(r * 1.1, 0), new THREE.MeshStandardMaterial({ color: '#9a8466', flatShading: true }));
       rock.castShadow = true;
@@ -243,12 +247,10 @@ export class Effects {
       for (let k = 0; k < 3; k++) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.12 + k * 0.08, 0.025, 6, 24), additive(bright('#ff70d0'), 0.8)); rings.push(ring); g.add(ring); }
       return { obj: g, h: 0.6, update: (_, pos, dt) => { const t = performance.now() / 200; rings.forEach((ring, k) => { ring.rotation.x = t + k; ring.rotation.y = t * 0.7 + k; }); } };
     }
-    if (ty === 'volador') {
-      const tw = new THREE.Mesh(new THREE.ConeGeometry(r * 1.4, r * 3.5, 12, 1, true), additive('#e8f0ff', 0.45));
-      tw.rotation.x = Math.PI;
-      g.add(tw);
-      return { obj: g, h: 0.45, update: (_, pos, dt) => { tw.rotation.y += dt * 20; p.trickle(25, dt, pos.x, pos.y, pos.z, { colors: PALETTE.volador, layer: 'soft', speed: 1, life: 0.3, size: 0.12, alpha: 0.7 }); } };
-    }
+    // Pixel art (formas de PokéSurvivor): llamas, gotas, burbujas, hojas, rayos… con la paleta de su tipo, sobre
+    // un halo de su color y con su estela
+    const shape = PIX_MOVE[pr.mk] || PIX_TYPE[ty];
+    if (shape) return this.pixelProjectile(pr, m, shape, r, pal);
     // Genérico: núcleo brillante + halo + estela del tipo. El mismo diseño en todas las arenas (núcleo casi
     // blanco y halo del color del tipo); sobre suelo claro el halo, que no puede ser aditivo, usa el color
     // intenso del tipo con mezcla normal y se ve igual de saturado que el aditivo sobre hierba
@@ -337,6 +339,39 @@ export class Effects {
         p.trickle(18, dt, wpos.x + ca * 0.7, 0.2, wpos.z + sa * 0.7, { colors: ['#ffffff', '#cfefff'], layer: 'soft', speed: 0.5, life: 0.35, size: 0.22, grow: 1.2, alpha: 0.22, jitter: W * 0.4 });
       },
       dispose: () => { geo.dispose(); mesh.material.dispose(); },
+    };
+  }
+
+  // Proyectil en pixel art: un sprite que mira a la cámara, girado hacia donde va (o dando vueltas, la hoja), con
+  // sus fotogramas si los tiene (la llama parpadea, la burbuja late), un halo de su color detrás y su estela
+  pixelProjectile(pr, m, shape, r, pal) {
+    const p = this.p, ty = m.type, big = (m.dmg || 0) >= 15;
+    // Del tamaño de lo que golpea (su radio), sin bajar de ~0.8 casillas para que se distinga la forma
+    const [w, h] = sizeOf(shape), px = Math.max(0.8, r * 4.2) / Math.max(w, h);
+    const mat = new THREE.SpriteMaterial({ map: pixelTexture(shape, ty), transparent: true, depthWrite: false, toneMapped: false });
+    const spr = new THREE.Sprite(mat);
+    spr.scale.set(w * px, h * px, 1);
+    spr.renderOrder = 4;
+    // Halo pequeño y suave: con el brillo de la escena, uno grande tapaba la forma
+    const halo = glowSprite(BRIGHT ? vivid(TYPE_COLOR[ty]) : TYPE_COLOR[ty], Math.max(w, h) * px * 0.9);
+    if (BRIGHT) halo.material.blending = THREE.NormalBlending;
+    halo.material.opacity = 0.35;
+    const g = new THREE.Group();
+    g.add(halo, spr);
+    const nf = frames(shape), dir = isDir(shape), spin = spins(shape);
+    let t = 0, fr = 0;
+    const extra = ty === 'agua' ? { layer: 'solid', grav: 6, speed: 1, life: 0.4, size: 0.09 } : ty === 'fuego' ? { grav: -2, speed: 0.8, life: 0.4, size: 0.22 }
+      : ty === 'electrico' ? { speed: 2.5, life: 0.15, size: 0.1 } : { speed: 0.5, life: 0.35, size: 0.16 };
+    return {
+      obj: g, h: 0.6,
+      update: (pr2, pos, dt) => {
+        t += dt;
+        if (nf > 1 && (fr = Math.floor(t * 10) % nf) !== mat.userData.f) { mat.map = pixelTexture(shape, ty, fr); mat.userData.f = fr; }
+        // La cámara mira de frente al campo: a la derecha es +x y abajo es +y, así que el ángulo en pantalla es -a
+        if (spin) mat.rotation += dt * 12; else if (dir) mat.rotation = -(pr2.a || 0);
+        p.trickle(big ? 40 : 20, dt, pos.x, pos.y, pos.z, { colors: pal, layer: 'solid', jitter: 0.12, ...extra });
+      },
+      dispose: () => mat.dispose(),
     };
   }
 
