@@ -84,8 +84,8 @@ async function setup(name) {
     // (cargar la página puede tardar con varias pruebas a la vez: hasta 30 s)
     async goto(p) { await call('Page.navigate', { url: base + p }); await page.waitFor('document.readyState === "complete"', 30000); },
     async reload() { await call('Page.reload'); await sleep(200); await page.waitFor('document.readyState === "complete"', 30000); },
-    // Espera a que una expresión sea verdadera
-    async waitFor(expr, ms = 8000) {
+    // Espera a que una expresión sea verdadera (15 s por defecto: con varias pruebas a la vez el CI va lento)
+    async waitFor(expr, ms = 15000) {
       const t0 = Date.now();
       while (Date.now() - t0 < ms) { try { if (await page.eval(`!!(${expr})`)) return; } catch {} await sleep(100); }
       throw new Error(`Tiempo agotado esperando: ${expr}`);

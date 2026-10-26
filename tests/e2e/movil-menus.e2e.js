@@ -49,7 +49,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
   await touch('pointerdown');
   // (sale a los 500 ms; en el CI, lento, se espera a que aparezca en vez de un tiempo fijo)
-  await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 3000);
+  await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 15000);
   ok(true, 'manteniendo el dedo medio segundo sale el tooltip');
   await touch('pointerup'); await touch('pointerdown'); await touch('pointerup');
 
