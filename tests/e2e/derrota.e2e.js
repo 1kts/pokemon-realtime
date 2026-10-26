@@ -21,11 +21,11 @@ module.exports = async ({ page, player, ok }) => {
   // Desde los resultados a Logros y «Volver»: se vuelve a la Historia, no a una pantalla vacía
   await page.waitFor(`window.__app.battle.latest`, 15000);
   await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
-  await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
+  // (ui.view sigue en 'results' desde el primer combate: hay que esperar a que este acabe de verdad, o sus
+  // resultados llegan después y tapan Logros)
+  await page.waitFor(`!window.__app.battle && window.__app.ui.view === 'results'`, 15000);
   await page.eval(`window.__app.ui.openCollection('mastery'); true`);
   await page.waitFor(`window.__app.ui.view === 'collection'`);
-  // En el CI, Logros puede tardar un poco en pintar su cabecera: esperar al botón antes de pulsarlo
-  await page.waitFor(`[...document.querySelectorAll('button')].some(b => b.offsetParent && /Volver/.test(b.textContent))`, 10000);
   await page.click('Volver');
   await page.waitFor(`window.__app.ui.view === 'story' && window.__app.ui.root.children.length > 0`);
   ok(true, 'ir a Logros desde los resultados y volver lleva a la Historia');

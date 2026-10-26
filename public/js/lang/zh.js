@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.0 ----------
+    'Juega desde el móvil': '用手机来玩',
+    'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': '现在可以用手机玩了：左边的摇杆用来移动，右边是招式。点按即对对手使用，拖动可以瞄准。',
+    'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.': '在手机上，点按宝可梦的脸即可替换，点一下就能投掷精灵球，按旗子按钮可以认输。',
+    'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': '菜单会适配手机屏幕，横屏竖屏都可以：标题栏更紧凑，故事地图也能完整显示。',
+    // ---------- Combate táctil (móvil) ----------
+    'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': '用摇杆移动 · 点按招式即对对手使用，拖动可瞄准 · 点按队伍可替换',
+    'Gira el móvil para jugar en horizontal': '请把手机横过来游玩',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': '更热闹的地图',
     'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': '故事地图上新增了岩石山、松树林、零散的树木、花丛和海岸边的棕榈树。',

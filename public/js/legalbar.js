@@ -33,7 +33,10 @@ export const legalBarViews = {
     const page = es ? '/legal' : '/legal/en';
     const takedown = page + (es ? '#retirada' : '#takedown');
     bar.innerHTML = '';
-    bar.append(el('p', 'legal-text', t('PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).', { year: new Date().getFullYear(), sc: SPRITECOLLAB, cc: CC })));
+    const text = el('p', 'legal-text', t('PokéArenas es un <b>fan-game no oficial, gratuito y sin ánimo de lucro</b>: sin publicidad y donar no da ventajas. No está afiliado, patrocinado ni respaldado por Nintendo, The Pokémon Company, Creatures Inc. ni GAME FREAK inc. Pokémon y los nombres de los personajes son marcas de sus respectivos titulares. © 1995-{year} Nintendo / Creatures Inc. / GAME FREAK inc. Sprites de <a href="{sc}" target="_blank" rel="noopener noreferrer">PMD SpriteCollab</a> (<a href="{cc}" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>).', { year: new Date().getFullYear(), sc: SPRITECOLLAB, cc: CC }));
+    // En pantallas bajas (móvil en horizontal) el texto va en una línea: tocarlo lo despliega entero
+    text.onclick = e => { if (!e.target.closest('a')) bar.classList.toggle('open'); };
+    bar.append(text);
     const nav = el('nav', 'legal-nav');
     const credits = el('button', 'link', t('Créditos'));
     credits.onclick = () => this.legal();

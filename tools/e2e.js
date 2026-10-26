@@ -67,6 +67,8 @@ async function setup(name) {
   });
   const call = (method, params = {}) => new Promise((resolve, reject) => { const i = ++id; pending.set(i, { resolve, reject }); cdp.send(JSON.stringify({ id: i, method, params })); });
   await call('Runtime.enable'); await call('Log.enable'); await call('Page.enable'); await call('Network.enable');
+  // E2E_SLOW=4: el navegador va 4 veces más lento, para reproducir aquí lo que solo falla en el CI (máquinas lentas)
+  if (+process.env.E2E_SLOW > 1) await call('Emulation.setCPUThrottlingRate', { rate: +process.env.E2E_SLOW });
   // El premio diario se abre solo una vez al día: en las pruebas cuenta como ya visto (si no, taparía la
   // pantalla en todas); la del premio diario lo quita poniendo 'arena.dailySeen' a 'nunca'
   await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('arena.dailySeen')) localStorage.setItem('arena.dailySeen', new Date().toISOString().slice(0, 10)); } catch {}` });

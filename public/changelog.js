@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.24.0', date: '2026-10-26', title: 'Juega desde el móvil',
+      items: [
+        ['nuevo', 'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.'],
+        ['nuevo', 'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.'],
+        ['cambio', 'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.'],
+      ],
+    },
+    {
       v: '0.23.2', date: '2026-10-26', title: 'Un mapa con más vida',
       items: [
         ['cambio', 'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.'],

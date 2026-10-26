@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.0 ----------
+    'Juega desde el móvil': 'スマホで遊べる',
+    'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'スマホで遊べるようになりました。左のジョイスティックで移動し、右のわざをタップすると相手に使い、ドラッグするとねらえます。',
+    'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.': 'スマホでは顔をタップしてポケモンを交代し、タップでモンスターボールを投げ、旗のボタンで降参できます。',
+    'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'メニューがスマホの画面に合わせて表示されます。横向きでも縦向きでも、ヘッダーがコンパクトになり、ストーリーのマップが画面に収まります。',
+    // ---------- Combate táctil (móvil) ----------
+    'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'ジョイスティックで移動 · わざをタップで相手に使い、ドラッグでねらう · チームをタップで交代',
+    'Gira el móvil para jugar en horizontal': 'スマホを横向きにしてプレイしてね',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'にぎやかになったマップ',
     'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'ストーリーのマップに、岩山、松の森、点在する木、花畑、海岸のヤシの木が加わりました。',

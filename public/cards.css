@@ -1178,3 +1178,141 @@ body.in-battle .ui-confirm { cursor: auto; }
 .map.focus .node.league-hq.locked .league-ico { width: 44px; height: 44px; }
 /* Sin líneas discontinuas hacia lo nuevo: ya lo marcan las etiquetas «Nueva» y «Siguiente reto» */
 .map .paths .leg { display: none; }
+
+/* ---------- Combate táctil (móvil y tablet): joystick a la izquierda, movimientos a la derecha ---------- */
+body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#hud.touch .help-hint { display: none; }
+#hud.touch .tc-zone { left: 0; top: 28%; bottom: 0; width: 46%; pointer-events: auto; touch-action: none; }
+#hud.touch .tc-base { position: absolute; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.08), rgba(255,255,255,.16)); border: 2px solid rgba(255,255,255,.35); opacity: .55; transition: opacity .15s; pointer-events: none; }
+#hud.touch .tc-base.on { opacity: 1; }
+#hud.touch .tc-knob { position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #c9d6ee); box-shadow: 0 3px 10px rgba(0,0,0,.45); }
+#hud.touch .tc-quit { top: 10px; left: 50%; margin-left: -92px; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: var(--panel); border: 1px solid var(--line); pointer-events: auto; touch-action: none; }
+/* Movimientos: botones grandes abajo a la derecha, en dos filas; la energía encima */
+#hud.touch .bottom { left: auto; right: 12px; bottom: 12px; transform: none; align-items: flex-end; }
+#hud.touch .energy { width: 100%; max-width: 330px; }
+#hud.touch .moves { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; direction: rtl; }
+#hud.touch .mv { direction: ltr; width: auto; min-height: 62px; padding: 6px 8px; pointer-events: auto; touch-action: none; cursor: default; }
+#hud.touch .mv kbd { display: none; }
+#hud.touch .mv.press { transform: scale(.94); box-shadow: 0 0 0 2px #fff, 0 6px 18px rgba(0,0,0,.35), inset 0 3px 0 var(--tc); }
+#hud.touch .mv:first-child { grid-row: span 2; min-height: 132px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+#hud.touch .mv:first-child .mv-ico { width: 44px; height: 44px; }
+/* Equipo: tocar una cara cambia de Pokémon */
+#hud.touch .team.mine .tm { pointer-events: auto; touch-action: none; }
+#hud.touch .team kbd { display: none; }
+/* Poké Balls: fila de botones abajo, en el centro */
+#hud.touch .balls { right: auto; left: 50%; bottom: auto; top: 58px; transform: translateX(-50%); flex-direction: row; min-width: 0; padding: 5px; gap: 5px; pointer-events: auto; }
+#hud.touch .balls .bt { display: none; }
+#hud.touch .balls .ball { padding: 6px 9px; font-size: 12px; white-space: nowrap; }
+/* Pantalla de móvil en horizontal: todo más compacto */
+@media (max-height: 500px) {
+  #hud.touch .team { width: 150px; gap: 3px; }
+  #hud.touch .team .tm img { width: 30px; height: 30px; }
+  #hud.touch .team .tinfo b { font-size: 11px; }
+  #hud.touch .timer { font-size: 18px; padding: 2px 12px; top: 8px; }
+  #hud.touch .tc-quit { top: 6px; margin-left: -80px; }
+  #hud.touch .moves { grid-template-columns: repeat(3, 84px); gap: 6px; }
+  #hud.touch .mv { min-height: 52px; font-size: 11px; padding: 5px 6px; }
+  #hud.touch .mv small { display: none; }
+  #hud.touch .mv:first-child { min-height: 110px; }
+  #hud.touch .mv .mv-ico { width: 24px; height: 24px; }
+  #hud.touch .mv:first-child .mv-ico { width: 36px; height: 36px; }
+  #hud.touch .energy { height: 11px; }
+  #hud.touch .energy span { font-size: 9px; line-height: 11px; }
+  #hud.touch .balls { top: 44px; }
+}
+#hud.touch .mv:first-child b { white-space: normal; font-size: 12px; line-height: 1.15; }
+#hud.touch .mv:first-child .cdt { font-size: 18px; }
+#hud.touch .tc-rotate { display: none; }
+@media (orientation: portrait) {
+  #hud.touch .tc-rotate { display: flex; inset: 0; z-index: 50; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; background: rgba(8,12,26,.94); font: 700 18px var(--text); pointer-events: auto; }
+  #hud.touch .tc-rotate b { font-size: 54px; color: var(--yellow, #ffcb05); animation: tcTurn 1.6s ease-in-out infinite; }
+}
+@keyframes tcTurn { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(90deg); } }
+
+/* ================= Móvil y pantallas bajas: todo más compacto para que quepa lo importante ================= */
+@media (max-height: 500px), (max-width: 560px) {
+  #screen { padding: 8px 10px calc(8px + var(--legal-h, 0px)); }
+  /* Barra legal: una línea (tocarla la despliega) y los enlaces en otra */
+  .legal-bar { font-size: 9.5px; line-height: 1.35; padding: 2px 8px calc(3px + env(safe-area-inset-bottom)); }
+  .legal-bar .legal-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 1px; cursor: pointer; }
+  .legal-bar.open .legal-text { white-space: normal; }
+  .legal-nav { gap: 1px 10px; }
+  /* Portada: sin logo ni nombre (el avatar ya dice quién eres), botones algo más pequeños */
+  .hub-bar { gap: 8px; margin: 6px 0 10px; }
+  .hub-bar:not(.inner-bar) { display: flex; justify-content: space-between; }
+  .hub-mod { height: 44px; padding: 0 6px; }
+  .hub-logo, .hub-who, .hub-me .support span, .hub-tz span { display: none; }
+  .hub-tz { padding: 0 8px; }
+  .hub-me { margin-left: 8px; gap: 5px; }
+  .hub-me .support { width: 34px; padding: 0; justify-content: center; }
+  .hub-me .tb-btn, .hub-tools .tb-btn, .hub-tools .lang-cur { width: 34px; height: 34px; }
+  .hub-tools .lang-cur { width: auto; }
+  .hub-me .pill.coins, .hub-me .pill.gems { height: 34px; padding: 0 9px; }
+  .hub-bar .hub-ava .ava { --s: 44px !important; }
+  /* Pantallas interiores: cabecera de una línea, sin la descripción */
+  .inner-bar { margin-bottom: 10px; gap: 8px; }
+  .inner-bar .tb-left .back { height: 34px; padding: 0 10px 0 6px; }
+  .feature-sign { min-height: 40px; padding: 4px 14px; }
+  .feature-sign h2 { font-size: 20px; }
+  .feature-sign small { display: none; }
+  .tb-ctx .pill { height: 36px; font-size: 15px; padding: 0 12px 0 9px; }
+}
+@media (max-width: 560px) {
+  .hub-bar { grid-template-columns: 1fr auto; }
+  .hub-left { grid-column: 1; }
+  .hub-me { grid-column: 1 / -1; justify-self: stretch; justify-content: space-between; margin-left: 0; }
+}
+/* En pantallas bajas no caben cajas con scroll propio (se quedan en una rendija): las pantallas crecen con su
+   contenido y se desplaza la página entera */
+@media (max-height: 500px) {
+  .story, .teamview, .shop, .draft, .profile-view, .dexview, .missions-view, .bagview, .collection, .settings-view, .league-view { height: auto; min-height: 100%; }
+  .story-body, .pv-body, .bag-body, .tz-body { flex: none; min-height: auto; }
+  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .bag-list, .bag-detail, .tower-pools, .ladder-table .scroll, .notes-list, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
+  .inner-bar + * { margin-top: 0; }
+  #screen > :has(> .inner-bar) > :last-child:not(.inner-bar) { margin-bottom: 0; }
+}
+/* Regiones: en pantallas bajas, pestañas más pequeñas y sin la lista de «Próximamente» (ya salen en la Pokédex
+   y en el mapa) para que el mapa se vea antes */
+@media (max-height: 500px), (max-width: 560px) {
+  .rg-soon { display: none; }
+  .subbar { padding: 8px 10px; }
+  .subbar .region-tabs button { min-width: 96px; padding: 5px 10px; }
+  .subbar .region-tabs button b { font-size: 14px; }
+  .story-head { margin-bottom: 10px; gap: 10px; }
+  .story-head .map-goal { padding: 8px 12px; }
+  .story-head .map-goal b { font-size: 16px; }
+}
+@media (max-width: 560px) {
+  .hub-bar:not(.inner-bar) { flex-wrap: wrap; row-gap: 8px; }
+  .hub-bar:not(.inner-bar) .hub-me { flex: 1 1 100%; justify-content: space-between; margin-left: 0; }
+  .story-head { grid-template-columns: 1fr; }
+  .story-head .map-goal.has-leader { padding-right: 110px; }
+}
+/* Mapa de la Historia en el móvil: en horizontal, que quepa entero en la pantalla; la leyenda, fuera (tapaba
+   medio mapa) */
+@media (max-height: 500px) {
+  .story .map { width: min(100%, calc((100vh - var(--legal-h, 0px) - 20px) * 1.6)); justify-self: center; margin-inline: auto; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+  .story .map-legend { display: none; }
+}
+/* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
+   sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
+@media (max-height: 500px) {
+  .mon-sheet-back.modal { padding: 6px; }
+  .mon-sheet { grid-template-columns: 250px minmax(0, 1fr); height: calc(100vh - 12px); overflow: hidden; }
+  .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 10px; gap: 8px; }
+  .ms-stage { height: 120px; }
+  .results.is-win, .results.is-lose, .results.is-draw { padding: 12px 16px; }
+  .res-hero { margin-bottom: 8px; }
+  .rh-side .face, .rh-side canvas, .rh-side .rh-trainer { width: 60px; height: 60px; border-radius: 14px; }
+  .rh-mid h1 { font-size: 34px; }
+  .res-sum { gap: 8px; padding: 8px; }
+  .rs-stat { min-width: 76px; padding: 5px 8px; }
+}
+@media (max-width: 560px) {
+  .rh-side .face, .rh-side canvas, .rh-side .rh-trainer { width: 64px; height: 64px; }
+  .rh-mid h1 { font-size: 34px; }
+}
+@media (max-height: 500px) { .ms-stage canvas { width: 110px !important; height: 110px !important; } }
+@media (max-width: 900px) and (min-height: 501px) { .ms-stage canvas { width: 160px !important; height: 160px !important; } }

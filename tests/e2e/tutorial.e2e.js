@@ -45,7 +45,9 @@ module.exports = async ({ page, player, ok }) => {
   ok(/Derrota/.test(await page.eval(`document.querySelector('.tutorial-card p').textContent`)), 'cambiar con 2 cumple el paso 5 y pide derrotar al muñeco');
   ok(await step() === 5, 'el muñeco no ha atacado en todo el tutorial (sigue el combate)');
 
-  // 6. Ganar: premio para recoger
+  // 6. Ganar: premio para recoger (el muñeco aguanta mucho: se le deja con poca vida para no tardar un minuto,
+  // que en el CI pasaba del límite de la prueba)
+  await page.eval(`window.__app.net.send({ t: 'dev', foeHp: 0.04 }); true`);
   await page.eval(`window.__tut = setInterval(() => { const b = window.__app.battle; if (!b) return; const me = b.pred, foe = b.posOf(b.foeIdx);
     b.keys = me && Math.hypot(foe.x - me.x, foe.y - me.y) > 140 ? { [foe.x > me.x ? 'KeyD' : 'KeyA']: true, [foe.y > me.y ? 'KeyS' : 'KeyW']: Math.abs(foe.y - me.y) > 30 } : {};
     b.castQueue = [0, 1, 2, 3][Math.floor(Math.random() * 4)]; }, 250); true`);

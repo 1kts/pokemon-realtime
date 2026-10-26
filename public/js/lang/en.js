@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.0 ----------
+    'Juega desde el móvil': 'Play on your phone',
+    'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'You can play on your phone: a joystick on the left to move and your moves on the right. Tap them to use them on your opponent or drag them to aim.',
+    'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.': 'On your phone you switch Pokémon by tapping their face, throw Poké Balls with a tap and forfeit with the flag button.',
+    'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'Menus adapt to your phone screen, in landscape and portrait: more compact headers, and the Story map fits on screen.',
+    // ---------- Combate táctil (móvil) ----------
+    'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick to move · tap a move to use it on your opponent or drag it to aim · tap your team to switch',
+    'Gira el móvil para jugar en horizontal': 'Turn your phone sideways to play',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'A livelier map',
     'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'The Story map now has rocky mountains, pine forests, scattered trees, flower beds and palm trees along the coast.',

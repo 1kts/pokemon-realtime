@@ -384,6 +384,8 @@ function handle(c, msg) {
     if (msg.elemental) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'skins', 'elemental:' + D.lineOf(m.dex)); }
     if (msg.particles) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'particles', D.lineOf(m.dex)); }
     if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
+    // Rival del combate en curso con esa fracción de vida (las pruebas no esperan a debilitarlo a golpes)
+    if (Number.isFinite(msg.foeHp) && c.battle) for (const m of c.battle.sides[1 - c.side].team) if (!m.fainted) m.hp = Math.max(1, Math.round(m.maxHp * msg.foeHp));
     store.save();
     return sendProfile(c);
   }

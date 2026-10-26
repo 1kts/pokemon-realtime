@@ -8,6 +8,7 @@ import { PALETTE } from './particles.js';
 import { t, tServer } from './i18n.js';
 import { typeIcon } from './pixicons.js';
 import { reticleColor } from './cursor.js';
+import { touchMode, TouchControls } from './touch.js';
 
 const { TICK, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
@@ -50,6 +51,7 @@ export class BattleClient {
     this.buildHud();
     if (this.app.tutorial) this.app.tutorial.attach(this);   // tutorial jugable (tutorial.js)
     this.bindInput();
+    this.touch = touchMode() ? new TouchControls(this) : null;   // en móvil: joystick y botones táctiles
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
     // Contra un líder: su presentación al empezar
@@ -192,6 +194,7 @@ export class BattleClient {
         if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
         this.buildTeams();
         if (s === this.you) this.buildMoves();
+        if (this.touch) this.touch.bindButtons();
         break;
       case 'faint':
         actor.play('Faint');
@@ -313,8 +316,9 @@ export class BattleClient {
 
   sampleInput() {
     const k = this.keys;
-    const mx = (k.KeyD || k.ArrowRight ? 1 : 0) - (k.KeyA || k.ArrowLeft ? 1 : 0);
-    const my = (k.KeyS || k.ArrowDown ? 1 : 0) - (k.KeyW || k.ArrowUp ? 1 : 0);
+    let mx = (k.KeyD || k.ArrowRight ? 1 : 0) - (k.KeyA || k.ArrowLeft ? 1 : 0);
+    let my = (k.KeyS || k.ArrowDown ? 1 : 0) - (k.KeyW || k.ArrowUp ? 1 : 0);
+    if (this.touch && !mx && !my) ({ mx, my } = this.touch.move);
     const from = this.pred || { x: 0, y: 0 };
     const a = +Math.atan2(this.aim.y - from.y, this.aim.x - from.x).toFixed(3);
     const c = this.castQueue, sw = this.swapQueue;
@@ -333,7 +337,7 @@ export class BattleClient {
   frame(now, dt) {
     if (!this.latest) return;
     if (this.app.tutorial) this.app.tutorial.tick(this);
-    this.updateAim();
+    if (this.touch) this.touch.updateAim(); else this.updateAim();
     this.acc += Math.min(250, dt * 1000);
     while (this.acc >= 1000 / TICK) {
       this.acc -= 1000 / TICK;
@@ -478,7 +482,7 @@ export class BattleClient {
     bottom.append(this.energyEl, this.movesEl);
     root.append(this.floatEl, ...this.plates, this.timerEl, this.teamsEl[1], this.teamsEl[0], bottom, this.bannerEl);
     if (this.ballEl) root.append(this.ballEl);
-    const help = el('div', 'help-hint', t('WASD mover · Ratón apuntar · Espacio Protección · 1-3 cambiar') + (this.balls ? ' · ' + t('F lanzar Ball · R cambiar Ball') : '') + ' · ' + t('Esc rendirse'));
+    const help = el('div', 'help-hint', touchMode() ? t('Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar') : t('WASD mover · Ratón apuntar · Espacio Protección · 1-3 cambiar') + (this.balls ? ' · ' + t('F lanzar Ball · R cambiar Ball') : '') + ' · ' + t('Esc rendirse'));
     root.append(help);
     this.buildTeams();
     this.buildMoves();
@@ -644,6 +648,7 @@ export class BattleClient {
     removeEventListener('mousedown', this.onMouseDown);
     removeEventListener('contextmenu', this.onContext);
     removeEventListener('blur', this.onBlur);
+    if (this.touch) this.touch.dispose();
     for (const a of this.actors) a.dispose();
     this.world.scene.remove(this.reticle);
     for (const c of this.reticle.children) { c.geometry.dispose(); c.material.dispose(); }

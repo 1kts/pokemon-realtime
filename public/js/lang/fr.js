@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.0 ----------
+    'Juega desde el móvil': 'Joue sur ton téléphone',
+    'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'Tu peux jouer sur ton téléphone : un joystick à gauche pour te déplacer et tes capacités à droite. Touche-les pour les lancer sur l\'adversaire ou fais-les glisser pour viser.',
+    'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.': 'Sur téléphone, tu changes de Pokémon en touchant son visage, tu lances des Poké Balls d\'un toucher et tu abandonnes avec le bouton du drapeau.',
+    'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'Les menus s\'adaptent à l\'écran du téléphone, à l\'horizontale comme à la verticale : en-têtes plus compacts et la carte de l\'Histoire s\'affiche en entier.',
+    // ---------- Combate táctil (móvil) ----------
+    'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick pour te déplacer · touche une capacité pour la lancer sur l\'adversaire ou fais-la glisser pour viser · touche ton équipe pour changer',
+    'Gira el móvil para jugar en horizontal': 'Tourne ton téléphone à l\'horizontale pour jouer',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'Une carte plus vivante',
     'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'La carte de l\'Histoire a des montagnes rocheuses, des forêts de pins, des arbres isolés, des massifs de fleurs et des palmiers sur la côte.',

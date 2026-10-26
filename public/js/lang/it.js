@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.24.0 ----------
+    'Juega desde el móvil': 'Gioca dal telefono',
+    'Puedes jugar en el móvil: joystick a la izquierda para moverte y los movimientos a la derecha. Tócalos para lanzarlos al rival o arrástralos para apuntar.': 'Puoi giocare dal telefono: joystick a sinistra per muoverti e le mosse a destra. Toccale per lanciarle all\'avversario o trascinale per mirare.',
+    'En el móvil cambias de Pokémon tocando su cara, lanzas Poké Balls con un toque y te rindes con el botón de la bandera.': 'Sul telefono cambi Pokémon toccando il suo volto, lanci le Poké Ball con un tocco e ti arrendi con il pulsante della bandiera.',
+    'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'I menu si adattano allo schermo del telefono, in orizzontale e in verticale: intestazioni più compatte e la mappa della Storia si vede per intero.',
+    // ---------- Combate táctil (móvil) ----------
+    'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick per muoverti · tocca una mossa per lanciarla all\'avversario o trascinala per mirare · tocca la tua squadra per cambiare',
+    'Gira el móvil para jugar en horizontal': 'Gira il telefono in orizzontale per giocare',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'Una mappa più viva',
     'El mapa de la Historia tiene montes de rocas, bosques de pinos, árboles sueltos, macizos de flores y palmeras en la costa.': 'La mappa della Storia ha montagne di rocce, boschi di pini, alberi sparsi, aiuole fiorite e palme sulla costa.',

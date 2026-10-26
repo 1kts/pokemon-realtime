@@ -15,7 +15,7 @@ const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8' }).tr
 // Nombre del archivo → palabras que salen en sus tests (nombres de pantallas, clases, textos)
 const ALIAS = {
   missions: ['misiones', 'mission', 'loot'], treasure: ['tesoros', 'tz-'], collection: ['maestria', 'maestría', 'coll-'],
-  story: ['mapa', 'region'], regionmap: ['mapa'], world: ['camara', 'cámara', 'fondo'], effects: ['proyectil'],
+  story: ['mapa', 'region'], regionmap: ['mapa'], touch: ['movil'], world: ['camara', 'cámara', 'fondo'], effects: ['proyectil'],
   particles: ['proyectil'], music: ['musica', 'música'], sound: ['sonido'], legalbar: ['barra-legal', 'legal'],
   account: ['portada', 'perfil', 'profile'], achievements: ['logro', 'ach-'], frames: ['glow', 'marco'], skinfx: ['glow', 'skin'],
   tower: ['torre', 'tower'], pokedex: ['dex'], bag: ['mochila', 'bag'], rewards: ['misiones', 'tesoros', 'maestria'],
