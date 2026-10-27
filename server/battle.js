@@ -108,10 +108,10 @@ class Battle {
 
   // ---------- Bucle ----------
   tick() {
-    const dt = S.DT;
+    const dt = S.DT, real = dt / S.SPEED;   // dt en tiempo de juego; los relojes que ve el jugador van en tiempo real
     this.t += dt;
     if (this.state === 'countdown') {
-      this.countdown -= dt;
+      this.countdown -= real;
       if (this.countdown <= 0) this.state = 'fight';
     }
     for (const side of this.sides) {
@@ -136,14 +136,14 @@ class Battle {
       this.updateTerrain(dt);
       this.updateObstacles(dt);
       this.checkFaints();
-      this.fightT = (this.fightT || 0) + dt;
+      this.fightT = (this.fightT || 0) + real;
       if (this.fightT >= SUDDEN && !this.sudden) { this.sudden = true; this.ev({ k: 'sudden' }); }
       if (this.fightT >= LIMIT && this.state === 'fight') {
         const left = this.sides.map(s => s.team.reduce((a, m) => a + m.hp / m.maxHp, 0));
         this.finish(left[0] === left[1] ? -1 : left[0] > left[1] ? 0 : 1, { timeout: true });
       }
     } else if (this.state === 'capture') {
-      this.updateCapture(dt);
+      this.updateCapture(real);
     }
     this.broadcast();
   }
@@ -864,7 +864,7 @@ class Battle {
     const terrainDiff = [...this.dirty].map(i => [i, this.terrain[i]]);
     this.dirty.clear();
     const common = {
-      t: 'snap', st: Math.round(this.t * 1000), state: this.state, cd: Math.ceil(this.countdown),
+      t: 'snap', st: Math.round(this.t / S.SPEED * 1000), state: this.state, cd: Math.ceil(this.countdown),
       tl: Math.max(0, Math.ceil(LIMIT - (this.fightT || 0))), sd: this.sudden ? 1 : 0,
       pr: this.projectiles.map(p => ({ id: p.id, x: Math.round(p.x), y: Math.round(p.y), r: p.r, o: p.owner.idx, mk: p.mk, ball: p.ball || undefined, w: p.wide || undefined, a: +Math.atan2(p.vy, p.vx).toFixed(2) })),
       ob: this.obstacles.filter(o => o.kind !== 'rock').map(o => ({ id: o.id, x: Math.round(o.x), y: Math.round(o.y), r: o.r, k: o.kind })),

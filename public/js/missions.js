@@ -41,7 +41,7 @@ export const EMOTION_NAME = { Normal: 'Normal', Happy: 'Contento', Joyous: 'Euf�
   Worried: 'Preocupado', Sigh: 'Resignado', Sad: 'Triste', 'Teary-Eyed': 'Lloroso', Crying: 'Llorando' };
 // Retrato: la cara del Pokémon de cerca (retrato de SpriteCollab, con emoción si la tiene)
 export function portraitArt(dex, size, emo) {
-  return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.png` : `portraits/${dex}.png`}" alt="" draggable="false" onerror="this.src='sprites/${dex}/Idle.png';this.classList.add('pt-miss')"></span>`;
+  return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.png` : `portraits/${dex}.png`}" alt="" draggable="false" data-fallback="sprites/${dex}/Idle.png" data-miss-class="pt-miss"></span>`;
 }
 // Efecto: capa animada por encima de cualquier avatar (llamas, burbujas, chispas, hojas, copos, sombras,
 // estrellas, destellos o aurora). Las partículas salen siempre igual para el mismo efecto.

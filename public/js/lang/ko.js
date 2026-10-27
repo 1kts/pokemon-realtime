@@ -1376,6 +1376,7 @@ export default {
     'Df.Esp': '특방',
     'Vel': '스피드',
     'Evoluciona a {list}': '{list}(으)로 진화',
+    'Evoluciones': '진화',
     'Vender por {price}': '{price}에 팔기',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': '{m}({lv})을(를) {price} ₽ 에 팔까요? 되돌릴 수 없습니다.',
     'Movimientos de {m}': '{m}의 기술',

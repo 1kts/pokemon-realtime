@@ -36,6 +36,21 @@ const SHAPES = {
     '................', '................', '.....1111.......', '...11222211.....', '..1223333221....', '..1233333321....',
     '.122333333221...', '.123333333321...', '.122333333221...', '..1233333321....', '..1122222211....', '....111111......',
     '................', '................', '................', '................'],
+  pebble: [
+    '................', '................', '................', '................', '.....1111.......', '....122221......',
+    '...12333321.....', '...12344321.....', '...12333321.....', '....122221......', '.....1111.......'],
+  feather: [
+    '..........1.....', '.........121....', '........1231....', '.......12331....', '......123321....', '.....1233321....',
+    '....1233321.....', '....123321......', '...123321.......', '...12321........', '..1221..........', '..11............', '.1..............'],
+  heart: [
+    '................', '................', '...111...111....', '..12221.12221...', '.1233321233321..', '.1234433344321..',
+    '.1233444443321..', '..12334443321...', '...123343321....', '....1233321.....', '.....12321......', '......121.......', '.......1........'],
+  ring: [
+    '.....3333.......', '...33....33.....', '..3........3....', '..3........3....', '.3..........3...', '.3..........3...',
+    '.3..........3...', '..3........3....', '..3........3....', '...33....33.....', '.....3333.......'],
+  diamond: [
+    '.......3........', '......343.......', '.....34443......', '....3444443.....', '...344444443....', '....3444443.....',
+    '.....34443......', '......343.......', '.......3........'],
   bolt: [
     '.........44.....', '........44......', '.......44.......', '......44........', '.....4444444....', '..........44....',
     '.........44.....', '........44......', '.......44.......', '......4.........', '.....4..........', '................',
@@ -159,7 +174,7 @@ const C = hex => new THREE.Color(hex);
 
 // Qué suelta cada tipo: [capa, forma, colores, por segundo, ajustes]. h es el alto del sprite en la escena.
 function recipe(type, pal) {
-  const [, mid, hi, top] = pal;
+  const [, mid, hi, top] = pal;   // (pal[0], el más oscuro, lo usa roca)
   switch (type) {
     case 'fuego': return [
       ['norm', 'flame', [hi, hi, top, '#ff4a12'], 34, h => ({ vy: rnd(0.9, 1.5) * h, vx: rnd(-0.08, 0.08) * h, life: rnd(0.35, 0.55), size: rnd(0.13, 0.22) * h, endSize: 0.04 * h, y0: rnd(0.35, 0.85), spread: 0.28 })],
@@ -184,6 +199,40 @@ function recipe(type, pal) {
     case 'fantasma': case 'siniestro': case 'veneno': return [
       ['norm', 'puff', [mid, hi], 12, h => ({ vy: rnd(0.4, 0.7) * h, vx: rnd(-0.15, 0.15) * h, life: rnd(1, 1.4), size: 0.26 * h, endSize: 0.5 * h, y0: rnd(0.1, 0.6), alpha: 0.7 })],
       ['add', 'spark', [top], 6, h => ({ vy: 0.8 * h, life: 0.6, size: 0.12 * h, endSize: 0, y0: rnd(0.3, 0.9) })],
+    ];
+    // (de aquí abajo, las de los tipos que antes usaban las genéricas: lucha, tierra, roca, volador,
+    // psíquico, dragón, acero y hada. Normal sigue con las genéricas)
+    case 'lucha': return [
+      ['add', 'spark', [hi, top, '#ffffff'], 22, h => { const a = rnd(0, Math.PI * 2); return { vx: Math.cos(a) * 1.8 * h, vy: Math.sin(a) * 1.8 * h, life: rnd(0.2, 0.35), size: 0.14 * h, endSize: 0, y0: rnd(0.3, 0.8) }; }],
+      ['add', 'twinkle', [top, '#ffffff'], 6, h => ({ life: 0.3, size: 0.28 * h, endSize: 0, y0: rnd(0.3, 0.9) })],
+    ];
+    case 'tierra': return [
+      ['norm', 'pebble', [mid, hi], 10, h => ({ vy: rnd(0.8, 1.2) * h, vx: rnd(-0.3, 0.3) * h, gravity: 3.5 * h, life: rnd(0.6, 0.9), size: rnd(0.16, 0.22) * h, endSize: 0.12 * h, y0: rnd(0, 0.2) })],
+      ['norm', 'puff', [hi, top], 6, h => ({ vy: rnd(0.15, 0.3) * h, vx: rnd(-0.3, 0.3) * h, life: rnd(0.8, 1.1), size: 0.2 * h, endSize: 0.45 * h, y0: rnd(0, 0.15), alpha: 0.5 })],
+    ];
+    case 'roca': return [
+      ['norm', 'pebble', [pal[0], mid, hi], 10, h => ({ vy: rnd(0.3, 0.6) * h, vx: rnd(-0.4, 0.4) * h, gravity: 2.5 * h, life: rnd(0.7, 1), size: rnd(0.22, 0.3) * h, endSize: 0.18 * h, y0: rnd(0.4, 1) })],
+      ['add', 'spark', [top], 6, h => ({ vy: rnd(0.5, 1) * h, vx: rnd(-0.5, 0.5) * h, life: 0.4, size: 0.1 * h, endSize: 0, y0: rnd(0.2, 0.8) })],
+    ];
+    case 'volador': return [
+      ['norm', 'feather', ['#ffffff', top, hi], 8, h => ({ vy: rnd(-0.35, -0.15) * h, vx: rnd(-0.4, 0.4) * h, life: rnd(1.1, 1.6), size: rnd(0.26, 0.34) * h, endSize: 0.22 * h, y0: rnd(0.8, 1.2), wobble: 3 })],
+      ['add', 'twinkle', ['#ffffff'], 5, h => ({ vx: rnd(0.4, 0.8) * h, life: 0.5, size: 0.14 * h, endSize: 0, y0: rnd(0.2, 1) })],
+    ];
+    case 'psiquico': return [
+      ['add', 'ring', [hi, top], 6, h => ({ life: rnd(0.6, 0.9), size: 0.1 * h, endSize: 0.7 * h, y0: rnd(0.4, 0.8), spread: 0.1 })],
+      ['add', 'twinkle', [top, '#ffffff'], 10, h => ({ vy: rnd(0.2, 0.5) * h, life: rnd(0.5, 0.8), size: 0.18 * h, endSize: 0, y0: rnd(0.2, 1) })],
+    ];
+    case 'dragon': return [
+      ['add', 'diamond', [hi, top], 12, h => ({ vy: rnd(0.6, 1) * h, vx: rnd(-0.4, 0.4) * h, life: rnd(0.6, 0.9), size: rnd(0.14, 0.2) * h, endSize: 0.06 * h, y0: rnd(0.2, 0.8), wobble: 6 })],
+      ['norm', 'flame', [mid, hi, top], 14, h => ({ vy: rnd(0.8, 1.3) * h, vx: rnd(-0.08, 0.08) * h, life: rnd(0.35, 0.5), size: rnd(0.12, 0.2) * h, endSize: 0.04 * h, y0: rnd(0.35, 0.85), spread: 0.28 })],
+    ];
+    case 'acero': return [
+      ['add', 'diamond', ['#ffffff', top], 6, h => ({ life: rnd(0.3, 0.5), size: rnd(0.2, 0.3) * h, endSize: 0, y0: rnd(0.2, 1) })],
+      ['add', 'spark', [hi, top], 10, h => ({ vy: rnd(0.3, 0.7) * h, vx: rnd(-0.3, 0.3) * h, life: rnd(0.4, 0.7), size: 0.1 * h, endSize: 0, y0: rnd(0.2, 0.9) })],
+    ];
+    case 'hada': return [
+      ['norm', 'heart', [hi, top], 8, h => ({ vy: rnd(0.4, 0.7) * h, vx: rnd(-0.2, 0.2) * h, life: rnd(0.8, 1.2), size: rnd(0.18, 0.26) * h, endSize: 0.12 * h, y0: rnd(0.3, 0.9), wobble: 4 })],
+      ['add', 'twinkle', [top, '#ffffff'], 10, h => ({ vy: rnd(0.2, 0.4) * h, life: rnd(0.5, 0.8), size: 0.18 * h, endSize: 0, y0: rnd(0.2, 1.05) })],
     ];
     default: return [
       ['add', 'twinkle', [top, '#ffffff', hi], 12, h => ({ vy: rnd(0.2, 0.5) * h, life: rnd(0.6, 0.9), size: rnd(0.16, 0.24) * h, endSize: 0, y0: rnd(0.15, 1.05) })],
@@ -218,6 +267,11 @@ export function emitFx(scene, type, pal, pos, w, h, dt, vis = 1) {
     }
   }
 }
+
+// Dibujo de la skin Elemental según el tipo de la línea (shader de actors.js y menufx.js): 0 llamas, 1 agua,
+// 2 chispa, 3 naturaleza, 4 espíritu
+export const ELEM_FAMILY = { fuego: 0, dragon: 0, lucha: 0, agua: 1, hielo: 1, volador: 1, electrico: 2, psiquico: 2, acero: 2, hada: 2, normal: 2,
+  planta: 3, bicho: 3, veneno: 3, tierra: 3, roca: 3, fantasma: 4, siniestro: 4 };
 
 // Paleta de 4 colores (de oscuro a claro) para recolorear el sprite: el fuego tiene la suya; el resto
 // sale del color del tipo

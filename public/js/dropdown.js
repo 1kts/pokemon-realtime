@@ -37,7 +37,7 @@ export function dropdown({ options, value, onChange, cls = '', columns = 1, labe
   const away = e => { if (!menu.contains(e.target)) close(); };
   const keys = e => {
     const items = [...menu.querySelectorAll('.dd-item')], i = items.indexOf(document.activeElement);
-    if (e.key === 'Escape') { close(); btn.focus(); }
+    if (e.key === 'Escape') { e.preventDefault(); close(); btn.focus(); }
     else if (['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(e.key)) {
       e.preventDefault();
       const cols = columns > 1 ? getComputedStyle(menu).gridTemplateColumns.split(' ').length : 1;   // en móvil la rejilla tiene menos

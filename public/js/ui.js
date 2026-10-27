@@ -24,7 +24,8 @@ import { t, locale } from './i18n.js';
 import { trackForView } from './music.js';
 import { dailyViews } from './daily.js';
 import { tutorialViews } from './tutorial.js';
-import { monSheetViews } from './monsheet.js';
+import { monSheetViews, upcomingMoves } from './monsheet.js';
+import { evoChips } from './evos.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 // Cara con emoción: si el Pokémon no tiene esa, la más parecida que tenga (contento → feliz → normal…)
@@ -81,7 +82,7 @@ export class UI {
     this.board = [];
     this.view = 'title';
     this.lastMode = null;
-    this.legalBar();   // aviso legal fijo abajo, en todas las pantallas menos el combate
+    this.refreshLegalBar();   // aviso legal al final de cada pantalla, menos en el combate
   }
 
   get net() { return this.app.net; }
@@ -779,11 +780,18 @@ export class UI {
       team.append(c);
     }
     box.append(team);
-    // Bajo «¡Desafiar!» o «Explorar», la Tienda: prepararse (Balls, objetos) antes del reto sin salir al menú; Volver regresa aquí
-    const shop = el('button', 'coll-tile story-shop', `${itemImg('forage-bag', 40)}<span class="coll-txt"><b>${t('Tienda')}</b><small>${coins(p.coins)}</small></span>`);
-    shop.onclick = () => this.openFrom('shop');
+    // Bajo «¡Desafiar!» o «Explorar», la Tienda y la Mochila lado a lado: prepararse (Balls, objetos) antes del
+    // reto sin salir al menú; Volver regresa aquí
+    const items = Object.values(p.items || {}).reduce((a, n) => a + (n > 0 ? n : 0), 0);
+    const tool = (cls, ico, label, sub, view) => {
+      const b = el('button', 'coll-tile story-tool ' + cls, `${itemImg(ico, 28)}<span class="coll-txt"><b>${label}</b><small>${sub}</small></span>`);
+      b.onclick = () => this.openFrom(view);
+      return b;
+    };
+    const tools = el('div', 'story-tools');
+    tools.append(tool('story-shop', 'forage-bag', t('Tienda'), coins(p.coins), 'shop'), tool('story-bag', 'seal-bag', t('Mochila'), t('{n} objetos', { n: items }), 'bag'));
     const go = box.querySelector('button.primary');
-    if (go) go.after(shop); else box.append(shop);
+    if (go) go.after(tools); else box.append(tools);
   }
 
   startStory(a, id) {
@@ -1017,8 +1025,8 @@ export class UI {
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.uid });
         acts.append(b);
       }
-      const evo = SPECIES[m.dex].evo;
-      if (evo && typeof evo[1] === 'number') acts.append(el('small', 'evohint', t('Evoluciona a {m} al Nv.{n}', { m: SPECIES[evo[0]].name, n: evo[1] })));
+      const evos = evoChips(m.dex, { size: 28, compact: true });
+      if (evos) acts.append(evos);
       if (mine.length > 1) {
         const price = Data.sellPrice(m);
         const sell = el('button', 'danger sell-btn', t('Vender por {price}', { price: coins(price) }));
@@ -1161,11 +1169,8 @@ export class UI {
     box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: sp.bst })}</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
     box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')));
-    const evo = sp.evo;
-    if (evo) {
-      const list = Array.isArray(evo[0]) ? evo : [evo];
-      box.append(el('p', 'small', t('Evoluciona a {list}', { list: list.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? lv(c) : (SHOP.find(i => i.id === c) || { name: c }).name})`).join(', ') })));
-    }
+    const evos = evoChips(mon.dex);
+    if (evos) box.append(evos);
     const acts = el('div', 'acts');
     const price = Data.sellPrice(mon);
     const sell = el('button', 'danger', t('Vender por {price}', { price: coins(price) }));
@@ -1207,8 +1212,8 @@ export class UI {
         };
         list.append(row);
       }
-      const upcoming = Data.learnset(mon.dex).filter(([l]) => l > mon.level);
-      if (upcoming.length) list.append(el('p', 'small', t('Próximamente: {list}', { list: upcoming.map(([l, k]) => `${MOVES[k].name} (${lv(l)})`).join(' · ') })));
+      const soon = upcomingMoves(mon.dex, mon.level);
+      if (soon) list.append(soon);
     };
     render();
     const acts = el('div', 'acts');

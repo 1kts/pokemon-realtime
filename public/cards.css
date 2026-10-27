@@ -881,6 +881,9 @@ body.in-battle .ui-confirm { cursor: auto; }
 /* La skin Oro es un filtro fijo (Holo y Galaxia van con animación y ya mandan): gana a la sombra que
    ponen las tarjetas a sus retratos y la conserva */
 .skin-oro.skin-oro.skin-oro.skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) drop-shadow(0 6px 6px rgba(0,0,0,.45)); }
+/* (en los sprites el color va pintado en el canvas: solo el brillo, también por encima de esa sombra) */
+.skinfx-oro.skinfx-oro.skinfx-oro.skinfx-oro { filter: drop-shadow(0 0 3px rgba(255,200,60,.8)) drop-shadow(0 6px 6px rgba(0,0,0,.45)); }
+.skinfx-holo.skinfx-holo.skinfx-holo.skinfx-holo { filter: drop-shadow(0 0 3px rgba(150,220,255,.8)) drop-shadow(0 6px 6px rgba(0,0,0,.45)); }
 
 /* Gente en línea en las tarjetas de PvP; si alguien busca rival en ese modo, se enciende */
 .menu-card .pvp-live { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 6px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; color: #d6e2f5; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); position: relative; z-index: 1; }
@@ -1550,7 +1553,10 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 
 /* Reto de capturas encima del Pokémon salvaje */
 .plate .catch-pips { display: flex; margin: 3px auto 0; width: max-content; }
-.story-shop { width: 100%; margin: 8px 0 4px; }
+.story-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin: 8px 0 4px; }
+.story-tool { gap: 8px; padding: 6px 10px 6px 8px; min-width: 0; }
+.story-tool .coll-txt b { font-size: 13px; }
+.story-tool .coll-txt small { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* El mapa de Historia como maqueta 3D (map3d.js). El lienzo va debajo de los nodos y ocupa todo el mapa (lo que
    sobra alrededor del lienzo 16:10 es mar). Mientras se monta la primera vez, fondo del color del mar con un

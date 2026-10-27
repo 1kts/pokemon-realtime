@@ -1375,6 +1375,7 @@ export default {
     'Df.Esp': 'SpVert',
     'Vel': 'Init',
     'Evoluciona a {list}': 'Entwickelt sich zu {list}',
+    'Evoluciones': 'Entwicklungen',
     'Vender por {price}': 'Für {price} verkaufen',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': '{m} ({lv}) für {price} ₽ verkaufen? Das kann nicht rückgängig gemacht werden.',
     'Movimientos de {m}': 'Attacken von {m}',

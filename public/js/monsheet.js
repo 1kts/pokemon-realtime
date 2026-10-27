@@ -9,6 +9,7 @@ import { monLabel, describeMove, moveStatsHtml } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg, typeIcon } from './pixicons.js';
 import { usable } from './bag.js';
+import { evoChips } from './evos.js';
 import { SKIN_LABEL, applySkin } from './frames.js';
 
 const { SPECIES, MOVES, SHOP, TYPE_COLOR, TYPE_LABEL } = Data;
@@ -17,6 +18,23 @@ const lv = n => t('Nv.{n}', { n });
 // Caramelos, piedras y objetos se usan desde la Mochila; aquí, cómo es, cómo se viste y sus retos
 const TABS = [['stats', 'Estadísticas'], ['moves', 'Movimientos'], ['look', 'Vestuario'], ['retos', 'Retos']];
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
+
+// Movimientos que aprenderá más adelante: como los de la lista, pero apagados (aún no se pueden elegir) y
+// con el nivel al que los aprende bien a la vista. También en el gestor de movimientos (ui.js)
+export function upcomingMoves(dex, level) {
+  const list = Data.learnset(dex).filter(([l, k]) => l > level && MOVES[k]);
+  if (!list.length) return null;
+  const box = el('div', 'move-soon');
+  box.append(el('h4', '', t('Próximamente')));
+  for (const [l, k] of list) {
+    const m = MOVES[k];
+    const row = el('div', 'move-row locked', `<span class="slot">${typeIcon(m.type, 28)}<i>🔒</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em class="soon-lv">${lv(l)}</em>${moveStatsHtml(m)}`);
+    row.style.setProperty('--tc', TYPE_COLOR[m.type]);
+    row.title = describeMove(m).split('\n').join(' · ');
+    box.append(row);
+  }
+  return box;
+}
 
 export const monSheetViews = {
   // Abre (o refresca) la ficha del Pokémon uid; list: los uid por los que se pasa con ← →
@@ -132,7 +150,7 @@ export const monSheetViews = {
     if (keepScroll && this.sheet.keepScroll !== false) body.scrollTop = keepScroll;
     if (!this.sheetKeys) this.sheetKeys = e => {
       if (!this.sheet || e.target.closest('input')) return;
-      if (e.key === 'Escape') this.closeSheet();
+      if (e.key === 'Escape') { e.preventDefault(); this.closeSheet(); }
       if (e.key === 'ArrowRight') back.isConnected && document.querySelector('.ms-nav .tb-btn:nth-of-type(2)').click();
       if (e.key === 'ArrowLeft') back.isConnected && document.querySelector('.ms-nav .tb-btn:nth-of-type(1)').click();
     };
@@ -169,12 +187,9 @@ export const monSheetViews = {
     const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
     body.append(el('h4', '', t('Stats base de la especie (total {n})', { n: sp.bst })),
       el('div', 'base-stats', `<div class="bs">${base.map((v, k) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[k]}</span></div>`).join('')}</div>`));
-    // Cómo evoluciona (los objetos de intercambio no se desvelan: hay que descubrirlo)
-    const evo = sp.evo;
-    if (evo) {
-      const list = Array.isArray(evo[0]) ? evo : [evo];
-      body.append(el('p', 'small', t('Evoluciona a {list}', { list: list.filter(([to]) => SPECIES[to]).map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? lv(c) : Data.STONE_IDS.includes(c) ? (SHOP.find(i => i.id === c) || { name: c }).name : t('¿con algo especial?')})`).join(', ') })));
-    }
+    // Cómo evoluciona: a quién (en gris) y con qué nivel u objeto
+    const evos = evoChips(mon.dex, { size: 160, big: true });
+    if (evos) body.append(evos);
   },
 
   // Movimientos: los 4 de las teclas arriba (en orden) y debajo todos los que sabe; tocar añade o quita
@@ -219,8 +234,8 @@ export const monSheetViews = {
       };
       list.append(row);
     }
-    const upcoming = Data.learnset(mon.dex).filter(([l]) => l > mon.level);
-    if (upcoming.length) list.append(el('p', 'small', t('Próximamente: {list}', { list: upcoming.map(([l, k]) => `${MOVES[k].name} (${lv(l)})`).join(' · ') })));
+    const soon = upcomingMoves(mon.dex, mon.level);
+    if (soon) list.append(soon);
     body.append(list);
   },
 

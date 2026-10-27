@@ -688,7 +688,7 @@ export const accountViews = {
       const save = el('button', 'primary', t('Guardar'));
       const done = () => { const v = input.value.trim(); if (v && v !== p.name) this.net.send({ t: 'name', name: v }); else this.show('profile'); };
       save.onclick = done;
-      input.onkeydown = e => { if (e.key === 'Enter') done(); if (e.key === 'Escape') this.show('profile'); };
+      input.onkeydown = e => { if (e.key === 'Enter') done(); if (e.key === 'Escape') { e.preventDefault(); this.show('profile'); } };
       nameRow.append(input, save);
       input.focus(); input.select();
     };

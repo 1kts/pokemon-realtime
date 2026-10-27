@@ -1376,6 +1376,7 @@ export default {
     'Df.Esp': 'とくぼう',
     'Vel': 'すばやさ',
     'Evoluciona a {list}': '{list}に 進化',
+    'Evoluciones': '進化',
     'Vender por {price}': '{price}で 売る',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': '{m}（{lv}）を {price} ₽ で 売りますか？ 元に もどせません。',
     'Movimientos de {m}': '{m}の わざ',

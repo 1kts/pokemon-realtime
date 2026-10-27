@@ -147,6 +147,29 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .mon-card .acts button.on { background: linear-gradient(180deg, rgba(255,203,5,.3), rgba(255,203,5,.1)); border-color: var(--yellow); }
 .mon-card .acts .evo { border-color: rgba(160,120,255,.6); }
 .evohint { color: var(--muted); font-size: 12px; }
+/* Evoluciones (evos.js): el Pokémon en gris, como aún no desbloqueado, con su nombre y el nivel u objeto */
+.evo-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 8px 0; }
+.evo-title { flex-basis: 100%; color: var(--muted); }
+.evo-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
+.evo-mon { display: grid; place-items: center; filter: grayscale(1) brightness(.6) opacity(.75); }
+.evo-txt { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+.evo-txt b { font-size: 12.5px; color: rgba(255,255,255,.75); }
+.evo-txt small { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+.evo-item, .evo-mon img { image-rendering: pixelated; }
+.evo-chips.compact { margin: 2px 0; gap: 4px; }
+.evo-chips.compact .evo-item { width: 18px; height: 18px; }
+/* Grandes (ficha del Pokémon): el título como los demás encabezados; las fichas se reparten el ancho y el
+   sprite y los textos crecen con la ventana (el sprite se pide a 160 px y aquí se escala sin suavizar) */
+.evo-chips.big { gap: clamp(8px, 1.2vw, 18px); margin: 14px 0 4px; }
+.evo-chips.big .evo-title { flex-basis: 100%; }
+.evo-chips.big .evo-chip { flex: 1 1 260px; max-width: 520px; gap: clamp(10px, 1.4vw, 22px); padding: clamp(8px, 1.2vw, 16px) clamp(14px, 2vw, 28px) clamp(8px, 1.2vw, 16px) clamp(8px, 1.2vw, 16px); border-radius: 18px; }
+.evo-chips.big .evo-mon img, .evo-chips.big .evo-mon canvas { width: clamp(80px, min(9vw, 14vh), 160px); height: auto; }
+.evo-chips.big .evo-txt { gap: 6px; }
+.evo-chips.big .evo-txt b { font: 800 clamp(17px, 1.6vw, 28px) var(--display); }
+.evo-chips.big .evo-txt small { gap: 8px; font-size: clamp(14px, 1.15vw, 20px); font-weight: 700; }
+.evo-chips.big .evo-item { width: clamp(26px, 2.2vw, 40px); height: auto; }
+.evo-chips.compact .evo-chip { padding: 1px 8px 1px 2px; }
+.evo-chips.compact .evo-txt b { font-size: 11px; }
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; padding-bottom: 20px; }
 .shop-item { display: grid; grid-template-columns: 64px 1fr; gap: 6px 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; backdrop-filter: blur(14px); transition: border-color .15s; }
 .shop-item:hover { border-color: var(--line-hi); }
@@ -329,6 +352,15 @@ body:not(.in-battle) #hud { display: none; }
 .move-row em { font-style: normal; color: var(--muted); font-size: 12px; }
 .move-row .slot { grid-row: span 2; font: 12px var(--display); color: var(--yellow); text-align: center; }
 .move-row.sel { background: linear-gradient(90deg, rgba(255,203,5,.2), rgba(255,203,5,.04)); border-color: var(--yellow); border-left-color: var(--tc); }
+/* Próximos movimientos (monsheet.js, upcomingMoves): la misma fila, apagada y con el nivel destacado */
+.move-soon { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.move-row.locked { cursor: default; border: 1px dashed rgba(255,255,255,.2); border-left: 4px solid color-mix(in srgb, var(--tc) 40%, #4a4f63); border-radius: 14px; background: rgba(255,255,255,.025); }
+.move-row.locked .slot img { filter: grayscale(1) brightness(.7); }
+.move-row.locked .slot i { font-size: 12px; opacity: .8; }
+.move-row.locked b { color: rgba(255,255,255,.72); }
+.move-row.locked .type { filter: grayscale(.85); opacity: .65; }
+.move-row.locked .mstats { filter: grayscale(.7); opacity: .6; }
+.move-row.locked .soon-lv { justify-self: end; padding: 2px 10px; border-radius: 99px; font: 800 13px var(--display); color: var(--yellow); background: rgba(255,203,5,.1); border: 1px solid rgba(255,203,5,.35); }
 
 /* Shiny, ficha y vitaminas */
 .shiny-star { font-style: normal; color: #ffd84a; text-shadow: 0 0 8px rgba(255,216,74,.9); font-weight: 700; }
@@ -1386,8 +1418,9 @@ button.mini.pick.empty { justify-content: center; min-height: 82px; border-style
 .music-row .music-label { flex: 0 0 170px; font-weight: 700; }
 @media (max-width: 520px) { .music-row .music-label { flex-basis: 100%; } }
 
-/* Barra legal: fija abajo, centrada y pegada al borde; el texto se ajusta al ancho de la ventana */
-.legal-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 5; box-sizing: border-box; width: min(100%, 1180px);
+/* Barra legal: la última de #screen (order) y empujada abajo (margin-top: auto), detrás del contenido y sin taparlo */
+#screen > .legal-bar { order: 9999; flex-shrink: 0; margin-top: auto; width: min(100%, 1180px); animation: none; }
+.legal-bar { position: relative; box-sizing: border-box;
   padding: 6px clamp(8px, 2vw, 22px) calc(6px + env(safe-area-inset-bottom)); text-align: center; color: rgba(255,255,255,.9);
   font-size: clamp(9px, 0.5vw + 6.5px, 12.5px); line-height: 1.4; background: linear-gradient(0deg, rgba(8,12,28,.94), rgba(8,12,28,.8));
   border-radius: 12px 12px 0 0; backdrop-filter: blur(6px); box-shadow: 0 -4px 18px rgba(0,0,0,.3); }
@@ -1509,12 +1542,17 @@ body.in-battle .legal-bar { display: none; }
 .skin-oro { filter: sepia(1) saturate(3.4) hue-rotate(-6deg) brightness(1.05) contrast(1.2) drop-shadow(0 0 3px rgba(255,200,60,.8)) var(--glowf, contrast(1)); }
 .skin-holo { animation: skin-holo 3.5s linear infinite; }
 @keyframes skin-holo { from { filter: saturate(1.9) hue-rotate(0deg) drop-shadow(0 0 3px rgba(150,220,255,.8)) var(--glowf, contrast(1)); } to { filter: saturate(1.9) hue-rotate(360deg) drop-shadow(0 0 3px rgba(150,220,255,.8)) var(--glowf, contrast(1)); } }
-.skin-galaxia { filter: grayscale(1) sepia(1) hue-rotate(215deg) saturate(3.2) brightness(.85) contrast(1.25) drop-shadow(0 0 4px #9b6bff) var(--glowf, contrast(1)); animation: skin-galaxia 2.6s ease-in-out infinite; }
-@keyframes skin-galaxia { 50% { filter: grayscale(1) sepia(1) hue-rotate(250deg) saturate(3.2) brightness(1) contrast(1.25) drop-shadow(0 0 8px #c08bff) var(--glowf, contrast(1)); } }
+.skin-galaxia { filter: grayscale(1) sepia(1) hue-rotate(185deg) saturate(3) brightness(.75) contrast(1.3) drop-shadow(0 0 4px #33d9ff) var(--glowf, contrast(1)); animation: skin-galaxia 3.2s ease-in-out infinite; }
+@keyframes skin-galaxia { 50% { filter: grayscale(1) sepia(1) hue-rotate(185deg) saturate(3) brightness(.85) contrast(1.3) drop-shadow(0 0 7px #f240bf) var(--glowf, contrast(1)); } }
 /* Elemental en los menús: el sprite arde con el color del tipo (en combate, llamas de verdad en el shader) */
 .skin-elemental { --fx: #ff7a30; filter: drop-shadow(0 -2px 1px var(--fx)) drop-shadow(0 -1px 4px var(--fx)) drop-shadow(0 0 6px color-mix(in srgb, var(--fx) 70%, #fff)); animation: skin-elemental .9s steps(3) infinite; }
 @keyframes skin-elemental { 50% { filter: drop-shadow(0 -3px 1px var(--fx)) drop-shadow(0 -2px 6px var(--fx)) drop-shadow(0 0 9px color-mix(in srgb, var(--fx) 70%, #fff)); } }
-@media (prefers-reduced-motion: reduce) { .ava-aura, .skin-holo, .skin-galaxia, .skin-elemental { animation: none; } }
+/* Con canvas (sprites) el color lo pinta menufx.js en el propio canvas; aquí solo el brillo de alrededor */
+.skinfx-oro { filter: drop-shadow(0 0 3px rgba(255,200,60,.8)) var(--glowf, contrast(1)); }
+.skinfx-holo { filter: drop-shadow(0 0 3px rgba(150,220,255,.8)) var(--glowf, contrast(1)); }
+.skinfx-galaxia { filter: drop-shadow(0 0 4px #33d9ff) var(--glowf, contrast(1)); animation: skinfx-galaxia 3.2s ease-in-out infinite; }
+@keyframes skinfx-galaxia { 50% { filter: drop-shadow(0 0 7px #f240bf) var(--glowf, contrast(1)); } }
+@media (prefers-reduced-motion: reduce) { .ava-aura, .skin-holo, .skin-galaxia, .skin-elemental, .skinfx-galaxia { animation: none; } }
 
 /* ---------- Colección: maestría, ilustraciones, brillos y skins ---------- */
 .collection { display: flex; flex-direction: column; height: 100%; min-height: 0; }

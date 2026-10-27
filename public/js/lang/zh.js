@@ -1404,6 +1404,7 @@ export default {
     'Df.Esp': '特防',
     'Vel': '速度',
     'Evoluciona a {list}': '进化为{list}',
+    'Evoluciones': '进化',
     'Vender por {price}': '以 {price} 卖出',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': '要以 {price} ₽ 卖出{m}（{lv}）吗？此操作无法撤销。',
     'Movimientos de {m}': '{m}的招式',

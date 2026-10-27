@@ -1328,6 +1328,7 @@ export default {
     'Df.Esp': 'Déf.Spé',
     'Vel': 'Vit',
     'Evoluciona a {list}': 'Évolue en {list}',
+    'Evoluciones': 'Évolutions',
     'Vender por {price}': 'Vendre pour {price}',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': 'Vendre {m} ({lv}) pour {price} ₽ ? C\'est irréversible.',
     'Movimientos de {m}': 'Capacités de {m}',

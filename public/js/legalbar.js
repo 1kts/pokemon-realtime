@@ -1,7 +1,7 @@
-// Barra legal fija abajo, centrada y pegada al borde (como en los fan-games de Pokémon): qué es PokéArenas,
-// a quién pertenecen las marcas, de dónde salen los sprites y los enlaces a créditos, aviso legal, retirada de
-// contenido y contacto. Se ve en todas las pantallas menos en el combate. Su altura se publica en --legal-h
-// para que la pantalla le deje sitio y no tape nada, sea cual sea el tamaño de la ventana.
+// Barra legal al final de cada pantalla (como en los fan-games de Pokémon): qué es PokéArenas, a quién
+// pertenecen las marcas, de dónde salen los sprites y los enlaces a créditos, aviso legal, retirada de
+// contenido y contacto. Se ve en todas las pantallas menos en el combate. Va dentro de #screen, después de
+// todo lo demás, así que nunca tapa nada: si la pantalla es más alta que la ventana, queda abajo del scroll.
 import { t, getLang } from './i18n.js';
 
 const CONTACT = 'contact@pokearenas.com';
@@ -10,21 +10,14 @@ const CC = 'https://creativecommons.org/licenses/by-nc/4.0/';
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 
 export const legalBarViews = {
-  // Crea la barra una vez y la deja en el body; las pantallas solo la refrescan (idioma, aviso de novedades)
+  // Crea la barra una vez; cada pantalla vacía #screen, así que se vuelve a poner al refrescarla
   legalBar() {
-    if (this.legalEl) return this.legalEl;
-    const bar = this.legalEl = el('footer', 'legal-bar');
-    bar.setAttribute('role', 'contentinfo');
-    document.body.append(bar);
-    if (window.ResizeObserver) new ResizeObserver(() => this.legalSize()).observe(bar);
-    window.addEventListener('resize', () => this.legalSize());
-    this.refreshLegalBar();
-    return bar;
-  },
-
-  legalSize() {
-    const h = document.body.classList.contains('in-battle') ? 0 : Math.ceil(this.legalEl.getBoundingClientRect().height);
-    document.documentElement.style.setProperty('--legal-h', h + 'px');
+    if (!this.legalEl) {
+      this.legalEl = el('footer', 'legal-bar');
+      this.legalEl.setAttribute('role', 'contentinfo');
+    }
+    if (!this.legalEl.isConnected) this.root.append(this.legalEl);
+    return this.legalEl;
   },
 
   refreshLegalBar() {
@@ -50,6 +43,5 @@ export const legalBarViews = {
     nav.append(bug, credits, link(page, t('Aviso legal y privacidad')), link(takedown, t('Retirada de contenido')), mail,
       el('span', '', t('Hecho por {who}', { who: '1kts' })), news);
     bar.append(nav);
-    this.legalSize();
   },
 };

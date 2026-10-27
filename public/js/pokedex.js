@@ -6,14 +6,13 @@ import { t } from './i18n.js';
 import { masteryHtml } from './frames.js';
 import { typeIcon } from './pixicons.js';
 import { typeDropdown } from './dropdown.js';
+import { evoChips, evosOf } from './evos.js';
 
 const { SPECIES, TYPE_LABEL, TYPE_COLOR, TYPE_NAMES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const num = d => '#' + String(d).padStart(4, '0');
 // evo: [a, condición] o [[a, condición], ...]; condición = nivel o id de piedra u objeto (los de intercambio no
 // se desvelan: como en los juegos, hay que descubrirlo)
-const evosOf = s => !s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo];
-const stoneName = id => { const it = Data.SHOP.find(i => i.id === id); return it ? it.name : id; };
 
 // Rutas donde puede aparecer cada especie (de los encuentros reales, sus especiales y, en Johto, los
 // perros legendarios que vagan por todas)
@@ -165,8 +164,8 @@ export const pokedexViews = {
       const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
       box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: s.bst })}</small><div class="bs">${s.base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     }
-    const evos = evosOf(s).filter(([to]) => SPECIES[to]);
-    if (evos.length) box.append(el('p', 'small', t('Evoluciona a {list}', { list: evos.map(([to, c]) => `${SPECIES[to].name} (${typeof c === 'number' ? t('Nv.{n}', { n: c }) : Data.STONE_IDS.includes(c) ? stoneName(c) : t('¿con algo especial?')})`).join(', ') })));
+    const evos = evoChips(dex);
+    if (evos) box.append(evos);
     const pre = Object.values(SPECIES).find(o => evosOf(o).some(([to]) => to === dex));
     if (pre) box.append(el('p', 'small', t('Evoluciona de {name}', { name: pre.name })));
     // Dónde aparece

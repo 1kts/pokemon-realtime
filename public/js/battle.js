@@ -10,7 +10,7 @@ import { typeIcon } from './pixicons.js';
 import { reticleColor } from './cursor.js';
 import { touchMode, TouchControls } from './touch.js';
 
-const { TICK, DT, F } = Shared;
+const { TICK, SPEED, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
 const INTERP_MS = 100;
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
@@ -136,6 +136,10 @@ export class BattleClient {
   posOf(i) { return i === this.you && this.renderPos ? this.renderPos[i] : this.lastPos[i]; }
 
   onEvent(e) {
+    // Duraciones (d, dur) y velocidades (sp) del servidor van en tiempo de juego: pasarlas a tiempo real
+    if (e.d) e.d /= SPEED;
+    if (e.dur) e.dur /= SPEED;
+    if (e.sp) e.sp *= SPEED;
     if (this.app.tutorial) this.app.tutorial.onEvent(e, this);
     const s = e.s;
     const actor = s !== undefined ? this.actors[s] : null;
@@ -145,7 +149,7 @@ export class BattleClient {
         const m = this.moveOf(s, e.c);
         if (!m) break;
         if (m.wind >= 0.2 && ['proj', 'beam', 'area', 'cone', 'wave'].includes(m.kind)) actor.play('Charge');
-        if (m.wind >= 0.3) this.p.emit(toWorld(pos.x, pos.y).x, 0.2, toWorld(pos.x, pos.y).z, { n: 14, colors: PALETTE[m.type], up: 1, speed: 1.2, life: m.wind, size: 0.18, jitter: 0.8 });
+        if (m.wind >= 0.3) this.p.emit(toWorld(pos.x, pos.y).x, 0.2, toWorld(pos.x, pos.y).z, { n: 14, colors: PALETTE[m.type], up: 1, speed: 1.2, life: m.wind / SPEED, size: 0.18, jitter: 0.8 });
         break;
       }
       case 'cast': {
@@ -156,7 +160,7 @@ export class BattleClient {
         this.app.sfx.cast(m, s === this.you);
         const w = toWorld(e.x + Math.cos(e.a) * 26, e.y + Math.sin(e.a) * 26, 0.6);
         if (m.kind === 'proj' || m.kind === 'beam') this.p.emit(w.x, w.y, w.z, { n: m.cost ? 16 : 5, colors: PALETTE[m.type], dir: [Math.cos(e.a), 0.2, Math.sin(e.a)], spread: 0.5, speed: 3, life: 0.3, size: 0.2 });
-        if (this.fx.v3 && m.kind === 'dash') this.fx.dashTrail(actor.group, m.type, m.dur || 0.25);   // estilo 3D
+        if (this.fx.v3 && m.kind === 'dash') this.fx.dashTrail(actor.group, m.type, (m.dur || 0.25) / SPEED);   // estilo 3D
         if (this.fx.v3 && (m.kind === 'heal' || m.kind === 'buff')) this.fx.aura(w, m.kind === 'heal' ? '#70ffa8' : m.power ? '#ff8a50' : '#8ad8ff');   // estilo 3D
         if (m.kind === 'heal') this.p.emit(w.x, 0.1, w.z, { n: 40, colors: ['#ffffff', '#b0ffd0', '#70f0ff'], dir: [0, 1, 0], spread: 0.4, speed: 2.5, life: 1, size: 0.18, jitter: 1 });
         if (m.kind === 'buff') this.p.emit(w.x, 0.1, w.z, { n: 30, colors: m.power ? ['#ff8060', '#ffd040'] : ['#ffffff', '#a0e0ff'], dir: [0, 1, 0], spread: 0.2, speed: 3, life: 0.8, size: 0.16, jitter: 1 });

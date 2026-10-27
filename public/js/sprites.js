@@ -103,7 +103,19 @@ export const typeTint = (node, dex) => {
   return node;
 };
 // (si faltara la imagen, una Poké Ball en su lugar)
-export const trainerImg = (id, cls = '') => `<img class="trainer-img ${cls}" src="trainers/${id}.png" alt="" draggable="false" onerror="this.onerror=null;this.src='items/poke-ball.png'">`;
+export const trainerImg = (id, cls = '') => `<img class="trainer-img ${cls}" src="trainers/${id}.png" alt="" draggable="false" data-fallback="items/poke-ball.png">`;
+
+// Imágenes de repuesto: la CSP no deja usar onerror="…" en el HTML, así que las <img> con data-fallback
+// cambian a esa imagen si la suya no carga (una vez), y con data-miss-class además se les pone esa clase.
+// Los errores de carga no suben por el DOM: se escuchan en la fase de captura
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || !img.dataset.fallback) return;
+  const src = img.dataset.fallback;
+  delete img.dataset.fallback;
+  if (img.dataset.missClass) img.classList.add(img.dataset.missClass);
+  img.src = src;
+}, true);
 // El nodo del líder por su nombre (los combates solo traen el nombre)
 export const leaderByName = name => Object.values(Data.NODES).find(n => n.kind !== 'route' && n.leader === name) || null;
 

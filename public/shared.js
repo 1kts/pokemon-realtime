@@ -6,7 +6,8 @@
   const HITBOX = node ? require('./hitbox.js') : root.HITBOX;
 
   const TICK = 30;                 // ticks de simulación por segundo
-  const DT = 1 / TICK;
+  const SPEED = 0.8;               // velocidad del juego (1 = normal): escala el tiempo de la simulación
+  const DT = SPEED / TICK;         // segundos de juego que avanza cada tick
   const ARENA = { w: 960, h: 600 };
   const RADIUS = 22;               // radio de colisión por defecto (cada especie tiene el suyo)
   const CELL = 40;                 // celdas de terreno de 40x40
@@ -218,7 +219,7 @@
   }
 
   parseMap.flowOf = name => { parseMap(name); return parsed.get(name).flow; };
-  const api = { TICK, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
+  const api = { TICK, SPEED, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
     parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, pushOut, stepMove, arenaStep, speedOf, monStats };
   if (node) module.exports = api;
   else root.Shared = api;

@@ -71,14 +71,36 @@ function resize() {
 addEventListener('resize', resize);
 resize();
 
+// Calidad automática: si va a menos de 40 FPS durante 3 s, se baja un escalón (resolución interna a 1×, quitar
+// el resplandor, resolución a 0,75×). No vuelve a subir en la sesión, para que la imagen no vaya cambiando.
+const gfx = { step: 0, frames: 0, time: 0, bloom: true };
+const setPR = pr => { renderer.setPixelRatio(pr); composer.setPixelRatio(pr); };
+const DOWNGRADES = [
+  () => renderer.getPixelRatio() > 1 && (setPR(1), true),
+  () => { gfx.bloom = false; return true; },
+  () => { setPR(0.75); return true; },
+];
+function checkFps(raw) {
+  if (gfx.step >= DOWNGRADES.length || raw > 0.5) return;   // saltos largos: pestaña oculta o carga, no cuentan
+  gfx.frames++; gfx.time += raw;
+  if (gfx.time < 3) return;
+  const fps = gfx.frames / gfx.time;
+  gfx.frames = 0; gfx.time = 0;
+  if (fps >= 40) return;
+  while (gfx.step < DOWNGRADES.length && !DOWNGRADES[gfx.step++]());
+  console.info(`[gfx] ${fps.toFixed(0)} FPS: calidad ${gfx.step}/${DOWNGRADES.length} (resolución ${renderer.getPixelRatio()}×, resplandor ${gfx.bloom ? 'sí' : 'no'})`);
+  resize();
+}
+
 // ---------- Bucle ----------
 let last = performance.now();
 const basePos = new THREE.Vector3();
 const calm = matchMedia('(prefers-reduced-motion: reduce)');
 function loop(now) {
   requestAnimationFrame(loop);
-  const dt = Math.min(0.05, (now - last) / 1000);
+  const raw = (now - last) / 1000, dt = Math.min(0.05, raw);
   last = now;
+  checkFps(raw);
   world.placeCamera(innerWidth / innerHeight);
   if (app.battle) {
     app.battle.frame(now, dt);
@@ -96,7 +118,8 @@ function loop(now) {
   world.update(dt, particles);
   effects.update(dt);
   particles.update(dt);
-  composer.render();
+  if (gfx.bloom) composer.render();
+  else renderer.render(world.scene, world.camera);   // sin el composer: el tono y el color los pone el renderer
 }
 requestAnimationFrame(loop);
 
@@ -192,19 +215,30 @@ function endBattle() {
   world.loadMap('pradera', Shared.parseMap('pradera').terrain);
 }
 
+// Esc va hacia atrás: cierra la ventana de encima (como tocar fuera de ella), en combate abre la de rendirse y
+// en las pantallas hace lo de su «Volver». Las que tienen su propio Esc (confirmaciones, ficha del Pokémon,
+// desplegables, campos de texto) lo marcan con preventDefault y aquí ya no se hace nada más.
 addEventListener('keydown', e => {
-  if (e.code === 'Escape' && app.battle && !app.battle.over && !document.querySelector('.ui-confirm')) {
-    const b = app.battle;
-    // Con el mismo aire que la pantalla de derrota: tu Pokémon preocupado frente al rival
-    const pic = (i, emos) => {
-      const m = b.monOf(i), src = emos.map(e => faceSrc(m.dex, e, !!m.shiny)).find(Boolean);
-      return src ? `<img class="face" src="${src}" alt="" draggable="false">` : '';
-    };
-    const hero = `<div class="cf-hero"><span class="me">${pic(b.you, ['Worried', 'Sad', 'Normal'])}</span><b>VS</b><span class="foe">${pic(b.foeIdx, ['Determined', 'Happy', 'Normal'])}</span></div>`;
-    confirmBox({ title: t('¿Rendirte?'), text: t('¿Rendirte y abandonar el combate?'), ok: t('Rendirse'), cancel: t('Seguir combatiendo'), danger: true, hero, cls: 'forfeit' })
-      .then(yes => { if (yes && app.battle === b && !b.over) { b.over = true; net.send({ t: 'forfeit' }); } });
-  }
+  if (e.code !== 'Escape' || e.defaultPrevented || document.querySelector('.ui-confirm')) return;
+  if (e.target.closest && e.target.closest('input, textarea, select')) { e.target.blur(); return; }
+  const pops = [...document.querySelectorAll('body > .modal, body > .loot-pop:not(.out)')];
+  if (pops.length) { pops[pops.length - 1].click(); return; }
+  if (app.battle) { if (!app.battle.over) forfeitBox(); return; }
+  const back = document.querySelector('#screen .inner-bar .tb-btn.back');
+  if (back) back.click();
 });
+
+// Ventana de rendirse, con el mismo aire que la pantalla de derrota: tu Pokémon preocupado frente al rival
+function forfeitBox() {
+  const b = app.battle;
+  const pic = (i, emos) => {
+    const m = b.monOf(i), src = emos.map(e => faceSrc(m.dex, e, !!m.shiny)).find(Boolean);
+    return src ? `<img class="face" src="${src}" alt="" draggable="false">` : '';
+  };
+  const hero = `<div class="cf-hero"><span class="me">${pic(b.you, ['Worried', 'Sad', 'Normal'])}</span><b>VS</b><span class="foe">${pic(b.foeIdx, ['Determined', 'Happy', 'Normal'])}</span></div>`;
+  confirmBox({ title: t('¿Rendirte?'), text: t('¿Rendirte y abandonar el combate?'), ok: t('Rendirse'), cancel: t('Seguir combatiendo'), danger: true, hero, cls: 'forfeit' })
+    .then(yes => { if (yes && app.battle === b && !b.over) { b.over = true; net.send({ t: 'forfeit' }); } });
+}
 
 applyCursor();   // el color de cursor elegido en Ajustes
 initTouchDevice();   // en móvil: horizontal y pantalla completa

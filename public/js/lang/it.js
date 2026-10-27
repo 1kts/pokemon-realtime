@@ -1376,6 +1376,7 @@ export default {
     'Df.Esp': 'Dif.Sp',
     'Vel': 'Vel',
     'Evoluciona a {list}': 'Si evolve in {list}',
+    'Evoluciones': 'Evoluzioni',
     'Vender por {price}': 'Vendi per {price}',
     '¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.': 'Vendere {m} ({lv}) per {price} ₽? Non si può annullare.',
     'Movimientos de {m}': 'Mosse di {m}',
