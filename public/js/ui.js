@@ -406,6 +406,8 @@ export class UI {
     const wrap = el('div', 'story');
     const bar = this.topbar(t('Historia'), 'menu');
     const sb = this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true);
+    // En el móvil, las regiones y las medallas van en la cabecera (a la derecha le sobra sitio) y no bajo el mapa
+    bar.querySelector('.tb-ctx').append(this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true));
     // Bajo las regiones, dos bloques: tu objetivo (más abajo) y la rotación de las rutas con la guía. El
     // «Siguiente: líder · tope» de la barra sobra aquí: lo dice ya «Tu objetivo»
     sb.querySelector('.next-goal').remove();
@@ -900,6 +902,25 @@ export class UI {
     box.append(acts);
     back.append(box);
     document.body.append(back);
+  }
+
+  // Las regiones en pequeño para la cabecera en el móvil (tb-mobile: solo en pantallas bajas): nombre y medallas
+  // de cada una y, con withBadges, las medallas de la elegida
+  regionChips(current, onPick, withBadges) {
+    const p = this.profile;
+    const box = el('div', 'tb-mobile region-chips');
+    for (const rid of Data.REGION_IDS) {
+      const champ = Data.progOf(p, rid) >= Data.leadersOf(rid).length;
+      const b = el('button', 'rgc' + (rid === current ? ' sel' : ''), `<b>${Data.REGIONS[rid].name}</b><small>${champ ? '♛' : Math.min(8, Data.progOf(p, rid)) + '/8'}</small>`);
+      b.style.setProperty('--rc', REGION_COLOR[rid] || '#6f7dff');
+      b.onclick = () => onPick(rid);
+      box.append(b);
+    }
+    if (withBadges) {
+      const prog = Data.progOf(p, current);
+      box.append(el('span', 'badges-mini', Data.leadersOf(current).slice(0, 8).map((g, i) => badgeImg(current, i, i < prog, 18)).join('')));
+    }
+    return box;
   }
 
   regionBar(current, onPick, withBadges) {

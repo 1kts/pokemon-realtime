@@ -66,7 +66,8 @@ export const treasureViews = {
     const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[n], done = n >= N, enough = (p.gems || 0) >= cost;
     const wrap = el('div', 'treasure');
     wrap.style.setProperty('--tc', TYPE_COLOR[cur.type]);
-    wrap.append(this.topbar(t('Lucky Spin'), this.tzBack || 'menu'));
+    const top = this.topbar(t('Lucky Spin'), this.tzBack || 'menu');
+    wrap.append(top);
 
     // Pestañas (una ruleta por tipo) y, a la derecha, cuándo cambian (las gemas van en la cabecera)
     const days = Math.max(1, Math.ceil((Data.treasureEnds() - Date.now()) / 86400e3));
@@ -84,6 +85,18 @@ export const treasureViews = {
     when.title = t('Lo que consigas se queda; lo que falte de estas ruletas se va.');
     tabs.append(when);
     wrap.append(tabs);
+    // En el móvil, las ruletas van en pequeño en la cabecera: la cara, el Pokémon de la línea y lo conseguido
+    const chips = el('div', 'tb-mobile tz-chips');
+    for (const r of list) {
+      const k = (got[r.id] || []).length;
+      const b = el('button', 'tz-chip' + (r === cur ? ' sel' : ''), `${faceHtml(r.line)}<span><b>${r.line ? SPECIES[r.line].name : TYPE_LABEL[r.type]}</b><small>${k}/${r.prizes.length}</small></span>`);
+      b.style.setProperty('--tc', TYPE_COLOR[r.type]);
+      b.title = rouletteName(r);
+      b.disabled = !!this.tzSpin;
+      b.onclick = () => { this.tzSel = r.id; this.tzPick = null; this.show('treasure'); };
+      chips.append(b);
+    }
+    top.querySelector('.tb-ctx').append(chips);
 
     const body = el('div', 'tz-body');
     // El tablero: el gran premio (el más raro) en el centro y los otros 9 en cartas alrededor. Al tirar se
@@ -108,7 +121,13 @@ export const treasureViews = {
       board.append(b);
     }
     const left = el('div', 'tz-left');
-    left.append(board);
+    // En el móvil, en vez del tablero, una tira horizontal con los premios (se desliza con el dedo) y una marca en
+    // el centro: al tirar, la tira corre y frena con el premio bajo la marca, como las cajas de los shooters
+    const strip = el('div', 'tz-strip');
+    const track = el('div', 'tz-track');
+    for (const x of sorted) track.append(this.stripCard(x, mine.includes(x.id), pick === x));
+    strip.append(el('i', 'tz-marker'), track);
+    left.append(board, strip);
 
     // Barra de abajo: lo elegido o el progreso, las probabilidades y el precio con el botón de tirar
     const bar = el('div', 'tz-bar');
@@ -148,6 +167,49 @@ export const treasureViews = {
     this.root.append(wrap);
   },
 
+  // Carta pequeña de la tira del móvil
+  stripCard(x, has = false, sel = false) {
+    const b = el('button', `tz-scard r-${x.rarity}${has ? ' got' : ''}${sel ? ' sel' : ''}`);
+    b.style.setProperty('--rc', RARITY[x.rarity].color);
+    b.dataset.id = x.id;
+    b.append(this.prizeArt(x, 48), el('span', 'tz-name', prizeName(x)));
+    if (has) b.append(el('i', 'tz-check', '✓'));
+    b.title = `${prizeName(x)} · ${t(RARITY[x.rarity].name)}`;
+    b.onclick = () => { if (this.tzSpin) return; this.tzPick = x.id; this.show('treasure'); };
+    return b;
+  },
+
+  // La tirada en la tira del móvil: se llena de premios de los que faltan al azar (más los comunes, como las
+  // probabilidades), con el que sale cerca del final, y corre frenando hasta dejarlo bajo la marca
+  treasureStrip(r, strip, done) {
+    const cur = Data.treasures(this.profile.treasure ? this.profile.treasure.period : undefined).find(x => x.id === r.treasure.roulette) || null;
+    const prize = cur && cur.prizes.find(x => x.id === r.treasure.prize);
+    if (!prize) return done();
+    const got = ((this.profile.treasure && this.profile.treasure.got) || {})[cur.id] || [];
+    const pool = cur.prizes.filter(x => !got.includes(x.id) || x === prize);
+    const weight = { comun: 6, raro: 4, epico: 2, legendario: 1, mitico: 1 };
+    const bag = pool.flatMap(x => Array(weight[x.rarity] || 1).fill(x));
+    const track = strip.querySelector('.tz-track');
+    track.replaceChildren();
+    const N = 46, at = 40;
+    for (let i = 0; i < N; i++) track.append(this.stripCard(i === at ? prize : bag[Math.floor(Math.random() * bag.length)]));
+    strip.classList.add('spinning');
+    const card = track.children[at];
+    const w = card.offsetWidth + parseFloat(getComputedStyle(track).columnGap || 0);
+    const end = -(card.offsetLeft + card.offsetWidth / 2 - strip.clientWidth / 2) + (Math.random() - 0.5) * w * 0.6;
+    const ms = 4600, t0 = performance.now();
+    track.style.transform = 'translateX(0px)';
+    const frame = now => {
+      const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 4);
+      track.style.transform = `translateX(${end * e}px)`;
+      if (k < 1) return requestAnimationFrame(frame);
+      card.classList.add('win');
+      strip.classList.remove('spinning');
+      setTimeout(done, 700);
+    };
+    requestAnimationFrame(frame);
+  },
+
   // Ventana con las probabilidades de la próxima tirada
   treasureOdds(cur, mine, odds) {
     const back = el('div', 'modal');
@@ -169,6 +231,8 @@ export const treasureViews = {
 
   // Las cartas que faltaban se encienden por turnos, rápido al principio y frenando hasta el premio; luego, done()
   treasureSpin(r, done) {
+    const strip = this.root.querySelector('.tz-strip');
+    if (strip && strip.offsetParent) return this.treasureStrip(r, strip, done);   // en el móvil, la tira
     const board = this.root.querySelector('.tz-board');
     const cells = board ? [...board.querySelectorAll('.tz-card:not(.got)')] : [];
     const target = cells.findIndex(c => c.dataset.id === r.treasure.prize);
