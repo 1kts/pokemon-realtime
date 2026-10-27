@@ -152,6 +152,8 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .evo-title { flex-basis: 100%; color: var(--muted); }
 .evo-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
 .evo-mon { display: grid; place-items: center; filter: grayscale(1) brightness(.6) opacity(.75); }
+.evo-chip.got .evo-mon { filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }   /* ya atrapado: en color */
+.evo-chip.got .evo-txt b { color: #fff; }
 .evo-txt { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
 .evo-txt b { font-size: 12.5px; color: rgba(255,255,255,.75); }
 .evo-txt small { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }

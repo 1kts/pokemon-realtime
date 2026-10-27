@@ -1,5 +1,5 @@
-// Evoluciones de una especie, como fichas: el Pokémon en gris (aún no lo tienes) con su nombre y cómo se
-// consigue: el nivel, o la imagen y el nombre del objeto (piedras y objetos de intercambio, siempre a la vista).
+// Evoluciones de una especie, como fichas: el Pokémon en color si ya lo has atrapado o en gris (aún no lo
+// tienes), con su nombre y cómo se consigue: el nivel, o la imagen y el nombre del objeto (piedras y objetos de intercambio, siempre a la vista).
 // Se usan en la ficha del Pokémon, en sus estadísticas, en la Pokédex y en las tarjetas del equipo.
 import { monIcon } from './sprites.js';
 import { item as itemImg } from './pixicons.js';
@@ -19,15 +19,15 @@ export function evoHow(c) {
 
 // Bloque con el título «Evoluciones» y una ficha por evolución; null si no evoluciona.
 // size: tamaño del sprite; compact: sin título (tarjetas del equipo); big: fichas grandes con el título
-// como encabezado de sección (ficha del Pokémon)
-export function evoChips(dex, { size = 48, compact = false, big = false } = {}) {
+// como encabezado de sección (ficha del Pokémon); caught: las especies atrapadas (profile.caught)
+export function evoChips(dex, { size = 48, compact = false, big = false, caught = [] } = {}) {
   const list = evosOf(SPECIES[dex]).filter(([to]) => SPECIES[to]);
   if (!list.length) return null;
   const box = el('div', 'evo-chips' + (compact ? ' compact' : '') + (big ? ' big' : ''));
   if (big) box.append(el('h4', 'evo-title', t('Evoluciones')));
   else if (!compact) box.append(el('small', 'evo-title', t('Evoluciones')));
   for (const [to, c] of list) {
-    const chip = el('span', 'evo-chip');
+    const chip = el('span', 'evo-chip' + (caught.includes(to) ? ' got' : ''));
     const mon = el('span', 'evo-mon');
     mon.append(monIcon(to, size));
     chip.append(mon, el('span', 'evo-txt', `<b>${SPECIES[to].name}</b><small>${evoHow(c)}</small>`));

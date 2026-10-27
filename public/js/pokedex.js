@@ -164,7 +164,7 @@ export const pokedexViews = {
       const names = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'].map(x => t(x));
       box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: s.bst })}</small><div class="bs">${s.base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     }
-    const evos = evoChips(dex);
+    const evos = evoChips(dex, { caught: p.caught });
     if (evos) box.append(evos);
     const pre = Object.values(SPECIES).find(o => evosOf(o).some(([to]) => to === dex));
     if (pre) box.append(el('p', 'small', t('Evoluciona de {name}', { name: pre.name })));

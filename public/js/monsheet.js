@@ -188,7 +188,7 @@ export const monSheetViews = {
     body.append(el('h4', '', t('Stats base de la especie (total {n})', { n: sp.bst })),
       el('div', 'base-stats', `<div class="bs">${base.map((v, k) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[k]}</span></div>`).join('')}</div>`));
     // Cómo evoluciona: a quién (en gris) y con qué nivel u objeto
-    const evos = evoChips(mon.dex, { size: 160, big: true });
+    const evos = evoChips(mon.dex, { size: 160, big: true, caught: this.profile.caught });
     if (evos) body.append(evos);
   },
 

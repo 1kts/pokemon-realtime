@@ -1046,7 +1046,7 @@ export class UI {
         b.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: m.uid });
         acts.append(b);
       }
-      const evos = evoChips(m.dex, { size: 28, compact: true });
+      const evos = evoChips(m.dex, { size: 28, compact: true, caught: p.caught });
       if (evos) acts.append(evos);
       if (mine.length > 1) {
         const price = Data.sellPrice(m);
@@ -1190,7 +1190,7 @@ export class UI {
     box.append(el('div', 'base-stats', `<small>${t('Stats base de la especie (total {n})', { n: sp.bst })}</small><div class="bs">${base.map((v, i) => `<div><i style="height:${Math.min(100, v / 1.6)}%"></i><b>${v}</b><span>${names[i]}</span></div>`).join('')}</div>`));
     const moves = (mon.moves && mon.moves.length ? mon.moves : sp.moves).filter(k => MOVES[k]);
     box.append(el('div', 'movechips', moves.map(k => `<span class="mchip" style="--tc:${TYPE_COLOR[MOVES[k].type]}">${typeIcon(MOVES[k].type, 16)}${MOVES[k].name}</span>`).join('')));
-    const evos = evoChips(mon.dex);
+    const evos = evoChips(mon.dex, { caught: p.caught });
     if (evos) box.append(evos);
     const acts = el('div', 'acts');
     const price = Data.sellPrice(mon);
