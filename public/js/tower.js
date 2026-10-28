@@ -26,7 +26,10 @@ export const towerViews = {
   view_tower() {
     const tw = this.profile.tower;
     const wrap = el('div', 'tower');
-    wrap.append(this.topbar(t('Torre Batalla'), 'menu'));
+    const bar = this.topbar(t('Torre Batalla'), 'menu');
+    // En el móvil, la racha, tu récord, la guía y los premios van en la cabecera (a la derecha le sobra sitio)
+    bar.querySelector('.tb-ctx').append(this.towerChips(tw));
+    wrap.append(bar);
     const body = el('div', 'tower-body');
     body.append(tw.team ? this.towerProgress(tw) : this.towerPicker(), this.towerSide(tw));
     wrap.append(body);
@@ -34,18 +37,40 @@ export const towerViews = {
     this.net.send({ t: 'ladder', board: 'tower' });
   },
 
+  // Lo de la Torre en pequeño para la cabecera en el móvil (tb-mobile: solo en pantallas bajas)
+  towerChips(tw) {
+    const box = el('div', 'tb-mobile tower-chips');
+    if (tw.team) box.append(el('span', 'tw-chip streak', `<b>${tw.streak}</b><small>${t('Racha')}</small>`));
+    box.append(el('span', 'tw-chip', `<b>${tw.best}</b><small>${t('Tu récord')}</small>`));
+    const help = el('button', 'tb-btn icon', ICON.help);
+    help.title = t('Cómo se juega');
+    help.setAttribute('aria-label', help.title);
+    help.onclick = () => this.towerGuide();
+    const prizes = el('button', 'tb-btn icon', icon('trophy', 18));
+    prizes.title = t('Premios');
+    prizes.setAttribute('aria-label', prizes.title);
+    prizes.onclick = () => this.towerRewards();
+    box.append(help, prizes);
+    return box;
+  },
+
   // Sin racha en curso: elegir 3 (tuyos o de alquiler)
   towerPicker() {
     const p = this.profile;
     const box = el('div', 'panel tower-main');
-    box.append(el('h3', '', t('Elige tu equipo')),
-      el('p', 'small', t('3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.', { n: LEVEL })));
+    // La explicación, en el móvil, en una línea que se despliega al tocarla
+    const intro = el('p', 'small tower-intro', t('3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.', { n: LEVEL }));
+    intro.onclick = () => intro.classList.toggle('open');
+    box.append(el('h3', '', t('Elige tu equipo')), intro);
     const chosen = (this.towerPick || []).filter(e => e.uid ? p.mons.some(m => m.uid === e.uid) : RANKED_POOL.includes(e.dex));
     this.towerPick = chosen;
     const dexOf = e => e.uid ? p.mons.find(m => m.uid === e.uid).dex : e.dex;
     const same = (a, b) => a.uid ? a.uid === b.uid : !b.uid && a.dex === b.dex;
     const slots = el('div', 'tower-slots');
     const go = el('button', 'primary', t('Empezar desafío'));
+    // En el móvil, los huecos van en una fila que se queda arriba al bajar por la lista, con su propio botón de
+    // empezar (el de abajo quedaba lejísimos)
+    const go2 = el('button', 'primary tslot-go', t('Empezar desafío'));
     const refresh = () => {
       slots.innerHTML = '';
       for (let i = 0; i < 3; i++) {
@@ -59,11 +84,12 @@ export const towerViews = {
         } else s.append(el('small', '', t('Hueco {n}', { n: i + 1 })));
         slots.append(s);
       }
+      slots.append(go2);
       box.querySelectorAll('.pool-card').forEach(c => {
         const e = JSON.parse(c.dataset.e);
         c.classList.toggle('sel', chosen.some(x => same(x, e)));
       });
-      go.disabled = chosen.length !== 3;
+      go.disabled = go2.disabled = chosen.length !== 3;
     };
     const toggle = e => {
       const i = chosen.findIndex(x => same(x, e));
@@ -97,7 +123,7 @@ export const towerViews = {
     for (const dex of RANKED_POOL) rent.append(card({ dex }, `${lv(LEVEL)} · ${t('alquiler')}`, false));
     scroll.append(rent);
     box.append(scroll);
-    go.onclick = () => this.net.send({ t: 'tower', a: 'start', team: chosen });
+    go.onclick = go2.onclick = () => this.net.send({ t: 'tower', a: 'start', team: chosen });
     box.append(go);
     setTimeout(refresh, 0);
     return box;
