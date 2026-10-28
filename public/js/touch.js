@@ -10,7 +10,9 @@ import { t } from './i18n.js';
 const DEAD = 0.25;          // zona muerta del joystick (fracción del radio)
 const STICK_R = 56;         // radio del joystick, px de pantalla
 const AIM_MIN = 18;         // px de arrastre para pasar de «tocar» a «apuntar»
-const AIM_RANGE = 320;      // a qué distancia se apunta al arrastrar, unidades de juego
+const AIM_PAD = 70;         // px de arrastre para apuntar a todo el alcance del movimiento (menos, más cerca)
+const AIM_RANGE = 320;      // alcance si el movimiento no dice el suyo, unidades de juego
+const ASSIST = 0.2;         // rad: si se apunta casi hacia el rival, va justo a él
 
 export function touchMode() {
   try {
@@ -27,21 +29,41 @@ export function touchMode() {
 export function initTouchDevice() {
   if (!touchMode()) return;
   document.body.classList.add('touch');
-  const gate = el('div', 'rotate-gate', '<b>⟳</b><span></span>');
-  const text = () => { gate.querySelector('span').textContent = t('Gira el móvil para jugar en horizontal'); };
-  text();
-  addEventListener('resize', text);
-  document.body.append(gate);
-  // iPhone/iPad en Safari: no deja pantalla completa en una web; como app (Añadir a pantalla de inicio) sí. Se
-  // explica una vez, con una ✕ para no volver a verlo
+  // iPhone/iPad: una web no puede forzar el horizontal (ni instalada como app), y con el bloqueo de rotación
+  // puesto el móvil no gira: el aviso explica cómo quitarlo. Instalarla (Añadir a pantalla de inicio) la abre
+  // a pantalla completa, sin las barras de Safari. En Android, Chrome deja instalarla con su propio aviso
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const installed = () => !!navigator.standalone || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+  let prompt = null;   // el aviso de instalar de Chrome (Android), que se guarda para lanzarlo con nuestro botón
+  const canInstall = () => !installed() && (ios || !!prompt);
+  const install = () => {
+    if (prompt) { const p = prompt; prompt = null; p.prompt(); p.userChoice.finally(refresh); return; }
+    installGuide();
+  };
+  const gate = el('div', 'rotate-gate', '<b>⟳</b><span></span><p></p><button class="primary rg-install" hidden></button>');
+  gate.querySelector('button').onclick = install;
+  // Aviso en los menús (en horizontal): instalar como app, con una ✕ para no volver a verlo
   let seen = false;
   try { seen = !!localStorage.getItem('arena.iosTip'); } catch {}
-  if (ios && !navigator.standalone && !seen) {
-    const tip = el('div', 'ios-tip', `<span>${t('Para jugar a pantalla completa, como una app: pulsa Compartir y luego «Añadir a pantalla de inicio».')}</span><button aria-label="${t('Cerrar')}">✕</button>`);
-    tip.querySelector('button').onclick = () => { tip.remove(); try { localStorage.setItem('arena.iosTip', '1'); } catch {} };
-    document.body.append(tip);
-  }
+  const tip = el('div', 'ios-tip', `<span></span><button class="primary it-go"></button><button class="it-x" aria-label="${t('Cerrar')}">✕</button>`);
+  tip.querySelector('.it-go').onclick = install;
+  tip.querySelector('.it-x').onclick = () => { seen = true; refresh(); try { localStorage.setItem('arena.iosTip', '1'); } catch {} };
+  const refresh = () => {
+    gate.querySelector('span').textContent = t('Gira el móvil para jugar en horizontal');
+    gate.querySelector('p').textContent = ios ? t('¿No gira? Abre el Centro de control (desliza desde la esquina de arriba a la derecha) y quita el bloqueo de rotación, el candado.')
+      : t('¿No gira? Activa la rotación automática en los ajustes rápidos del móvil.');
+    const go = gate.querySelector('button');
+    go.hidden = !canInstall();
+    go.textContent = t('Instalar como app');
+    tip.querySelector('span').textContent = t('Instala PokéArenas como app: se abre a pantalla completa, sin las barras del navegador.');
+    tip.querySelector('.it-go').textContent = t('Instalar');
+    if (canInstall() && !seen) { if (!tip.isConnected) document.body.append(tip); } else tip.remove();
+  };
+  addEventListener('resize', refresh);
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); prompt = e; refresh(); });
+  addEventListener('appinstalled', () => { prompt = null; refresh(); });
+  document.body.append(gate);
+  refresh();
   let left = false;
   document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) left = true; });
   const standalone = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
@@ -52,6 +74,22 @@ export function initTouchDevice() {
       .then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}))
       .catch(() => {});
   }, { capture: true });
+}
+
+// Cómo instalarla en el iPhone (Safari no tiene botón de instalar): por encima de todo, también del aviso de girar
+const SHARE_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ADD_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+function installGuide() {
+  if (document.querySelector('.install-guide')) return;
+  const box = el('div', 'install-guide', `<div class="ig-box"><h3>${t('Instalar PokéArenas')}</h3><ol>
+    <li>${SHARE_SVG}<span>${t('Toca <b>Compartir</b> en la barra de Safari (en iOS 26, dentro del menú <b>···</b>).')}</span></li>
+    <li>${ADD_SVG}<span>${t('Elige <b>Añadir a pantalla de inicio</b> y luego <b>Añadir</b>.')}</span></li>
+    <li><b class="ig-n">3</b><span>${t('Abre PokéArenas desde su icono: a pantalla completa y sin barras.')}</span></li></ol>
+    <p>${t('Si el móvil no gira a horizontal, quita el bloqueo de rotación en el Centro de control.')}</p>
+    <button class="primary">${t('Entendido')}</button></div>`);
+  box.querySelector('button').onclick = () => box.remove();
+  box.onclick = e => { if (e.target === box) box.remove(); };
+  document.body.append(box);
 }
 
 // Nombre de un movimiento para un botón pequeño: cada palabra en su línea (como mucho dos), recortada a 8 letras
@@ -69,6 +107,10 @@ export class TouchControls {
     this.root.classList.add('touch');
     document.body.classList.add('touch-battle');
     this.buildStick();
+    // Mientras se arrastra un movimiento: un aro donde empezó el dedo con la bola que lo sigue (el dedo tapa el
+    // botón), en rojo si se ha vuelto al centro para cancelar
+    this.pad = el('div', 'tc-aimpad', '<i></i>');
+    this.root.append(this.pad);
     this.bindButtons();
     // Sin tecla Esc: un botón para rendirse (abre la misma ventana)
     const quit = this.quit = el('button', 'tc-quit', '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 3v18M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>');
@@ -138,18 +180,20 @@ export class TouchControls {
         const dx = e.clientX - ox, dy = e.clientY - oy;
         if (Math.hypot(dx, dy) >= AIM_MIN) this.aiming = { slot, dx, dy };
         else if (this.aiming) this.aiming = { slot, dx: 0, dy: 0, cancel: true };
+        if (this.aiming) this.showPad(ox, oy, dx, dy, this.aiming.cancel);
       });
       const end = e => {
         if (e.pointerId !== id) return;
         id = null; btn.classList.remove('press');
+        this.pad.classList.remove('on');
         const a = this.aiming;
         this.aiming = null;
         if (a && a.cancel) return;            // arrastró y volvió al botón: no se lanza
-        if (a) this.aimAt(a.dx, a.dy); else this.autoAim();
+        if (a) this.aimAt(a.dx, a.dy, slot); else this.autoAim();
         b.castQueue = slot;
       };
       btn.addEventListener('pointerup', end);
-      btn.addEventListener('pointercancel', e => { if (e.pointerId === id) { id = null; this.aiming = null; btn.classList.remove('press'); } });
+      btn.addEventListener('pointercancel', e => { if (e.pointerId === id) { id = null; this.aiming = null; btn.classList.remove('press'); this.pad.classList.remove('on'); } });
     });
     b.teamsEl[0].querySelectorAll('.tm').forEach(row => {
       if (row.dataset.touch) return;
@@ -168,11 +212,34 @@ export class TouchControls {
     };
   }
 
-  // Apuntar en una dirección de la pantalla (la cámara mira de frente: derecha es +x y abajo es +y)
-  aimAt(dx, dy) {
-    const p = this.b.pred, len = Math.hypot(dx, dy) || 1;
-    if (!p) return;
-    this.b.aim = { x: p.x + dx / len * AIM_RANGE, y: p.y + dy / len * AIM_RANGE };
+  showPad(x, y, dx, dy, cancel) {
+    const len = Math.hypot(dx, dy), k = len > AIM_PAD ? AIM_PAD / len : 1;
+    this.pad.style.left = x + 'px'; this.pad.style.top = y + 'px';
+    this.pad.firstChild.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+    this.pad.classList.add('on');
+    this.pad.classList.toggle('cancel', !!cancel);
+  }
+
+  // Apuntar arrastrando (dx, dy px de pantalla desde el botón): en la dirección del arrastre tal como se ve (la
+  // cámara va inclinada, así que se pasa por el suelo), tan lejos como se arrastre (AIM_PAD px = todo el alcance
+  // del movimiento) y, si va casi hacia el rival, justo a él
+  aimAt(dx, dy, slot) {
+    const b = this.b, p = b.pred, len = Math.hypot(dx, dy);
+    if (!p || !len) return;
+    const s = b.toScreen(p.x, p.y), g = b.fromScreen(s.x + dx / len * 100, s.y + dy / len * 100);
+    let ang = g ? Math.atan2(g.y - p.y, g.x - p.x) : Math.atan2(dy, dx);
+    const m = slot >= 0 && slot < 4 ? b.moveOf(b.you, slot) : null;
+    const reach = (m && (m.maxRange || m.range)) || AIM_RANGE;
+    let dist = reach * Math.min(1, Math.max(0.25, len / AIM_PAD));
+    const foe = b.renderPos && b.renderPos[b.foeIdx];
+    if (foe && foe.st && foe.st.x !== undefined) {
+      const fa = Math.atan2(foe.y - p.y, foe.x - p.x), fd = Math.hypot(foe.x - p.x, foe.y - p.y);
+      if (Math.abs(Math.atan2(Math.sin(ang - fa), Math.cos(ang - fa))) < ASSIST && fd <= reach * 1.1) {
+        ang = fa;
+        if (m && m.maxRange) dist = Math.min(fd, m.maxRange);
+      }
+    }
+    b.aim = { x: p.x + Math.cos(ang) * dist, y: p.y + Math.sin(ang) * dist };
   }
 
   // Al rival, si se le ve; si no, se queda donde estaba
@@ -184,12 +251,12 @@ export class TouchControls {
   // Cada fotograma (en vez del ratón): mientras se arrastra, hacia donde apunta el dedo; si no, al rival
   updateAim() {
     if (this.b.castQueue >= 0) return;   // un movimiento a punto de salir conserva su apuntado
-    if (this.aiming && !this.aiming.cancel) this.aimAt(this.aiming.dx, this.aiming.dy);
+    if (this.aiming && !this.aiming.cancel) this.aimAt(this.aiming.dx, this.aiming.dy, this.aiming.slot);
     else this.autoAim();
   }
 
   dispose() {
     document.body.classList.remove('touch-battle');
-    this.zone.remove(); this.quit.remove();
+    this.zone.remove(); this.quit.remove(); this.pad.remove();
   }
 }
