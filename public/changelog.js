@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.5', date: '2026-10-28', title: 'Mapa más claro y móvil más ligero',
+      items: [
+        ['cambio', 'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.'],
+        ['cambio', 'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).'],
+        ['arreglo', 'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.'],
+        ['arreglo', 'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.'],
+      ],
+    },
+    {
       v: '0.31.4', date: '2026-10-28', title: 'Toques más precisos en el móvil',
       items: [
         ['arreglo', 'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.'],

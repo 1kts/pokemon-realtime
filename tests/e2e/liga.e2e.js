@@ -6,6 +6,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); localStorage.removeItem('arena.storyMode'); window.__app.ui.show('story'); true`);
+  // (Historia abre en el Camino: lo que se prueba aquí es el mapa; la vista elegida se recuerda)
+  await page.waitFor(`document.querySelector('.story-mode')`); await page.eval(`localStorage.setItem('arena.storyGuide', '1'); document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);
+  await page.click('.story-mode button:nth-child(2)');
   await page.waitFor(`document.querySelector('.map .node.league-hq')`);
   ok(await page.eval(`!document.querySelector('.node.elite, .node.champion') && !document.querySelector('.node.league-hq.locked')`), 'en el mapa, la Liga es un solo edificio, abierto con las 8 medallas');
   await page.eval(`document.querySelector('.node.league-hq').click(); true`);

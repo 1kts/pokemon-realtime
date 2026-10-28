@@ -10,6 +10,13 @@ module.exports = async ({ page, ok }) => {
   await page.type('.title-panel input', 'Movil');
   await page.realClick('.title-panel button.primary');
   await page.waitFor(`window.__app.ui.view === 'menu'`);
+  // En el móvil la música no se descarga entera al abrir (eran 15 MB): lo que pide el navegador, el menú y, pasados
+  // unos segundos, los salvajes
+  const mp3 = `performance.getEntriesByType('resource').map(r => r.name).filter(u => u.includes('/music/')).map(u => u.split('/').pop())`;
+  await page.waitFor(`${mp3}.includes('viaje.mp3')`, 10000);
+  await new Promise(r => setTimeout(r, 2500));   // (lo que se hubiera pedido con él ya ha tenido tiempo de bajar)
+  ok(await page.eval(`!${mp3}.some(f => /campeon|duelo|torre|desierto|gimnasio|lider|maligno|ruta/.test(f))`),
+    'en el móvil, al abrir no se descargan los temas de combate, Torre, gimnasios ni Campeón (se piden al sonar)');
   // Ya en el menú, en vertical un aviso tapa todo hasta girar el móvil
   await page.resize(390, 844);
   ok(await page.eval(`document.body.classList.contains('touch') && getComputedStyle(document.querySelector('.rotate-gate')).display !== 'none'`), 'desde el menú, en vertical pide girar el móvil');

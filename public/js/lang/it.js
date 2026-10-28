@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.5 ----------
+    'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'Sul cellulare il gioco parte più leggero: la musica si scarica quando sta per suonare invece che tutta all’apertura (erano 15 MB).',
+    'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'La barra in basso non copre più Lucky Spin né la mappa della Storia sugli schermi grandi, e le etichette di rarità di Lucky Spin si leggono meglio.',
+    'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'Con lettore di schermo e tastiera: i pulsanti con solo un’icona dicono cosa sono e gli elenchi scorrevoli si scorrono con la tastiera.',
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'La mappa della Storia è più chiara: la prossima sfida risalta in oro, i percorsi mostrano con un anello cosa hai catturato e quelli nuovi hanno una stella.',
+    'Mapa más claro y móvil más ligero': 'Mappa più chiara e cellulare più leggero',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'Tocchi più precisi sul cellulare',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'Nel menu, toccare l’intestazione delle Missioni ti porta lì: prima, toccandone il centro, si riscuotevano tutti i premi.',
@@ -171,7 +177,6 @@ export default {
     'Amigos': 'Amici',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'In Amici vedi chi è online e cosa fa, apri il suo profilo e accetti le richieste che ricevi. Serve un account.',
     'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.': 'Aggiungi amici con il loro nome e l\'etichetta di 4 cifre dal pulsante Amici in alto, o dalla loro scheda nelle classifiche.',
-    // ---------- Novedades v0.28.0 ----------
     // ---------- Amigos ----------
     'Aceptar solicitud': 'Accetta richiesta',
     'Añade amigos, mira si están en línea y su perfil.': 'Aggiungi amici e guarda se sono online e il loro profilo.',
@@ -236,7 +241,6 @@ export default {
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'Nuovo logo di PokéArenas, e I miei Pokémon risalta in rosso nel menu per trovarlo prima.',
     'Avísanos desde el juego': 'Avvisaci dal gioco',
     'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'Con il pulsante della coccinella in alto nel menu puoi dirci se qualcosa non funziona e cosa è successo; ci arriva subito per sistemarlo.',
-    // ---------- Novedades v0.26.0 ----------
     // ---------- Botón de reportar un bug ----------
     '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Qualcosa non funziona? Raccontaci cosa è successo e lo sistemiamo il prima possibile.',
     // ---------- Reportar un bug ----------
@@ -440,7 +444,6 @@ export default {
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'Se vai in Traguardi dai risultati di una lotta, Indietro ti riporta dove avevi iniziato. In I miei Pokémon, il pulsante della squadra dice Togli dalla squadra.',
     // ---------- Quitar del equipo ----------
     'Quitar del equipo': 'Togli dalla squadra',
-    // ---------- Novedades v0.22.0 ----------
     'En línea y nueva derrota': 'Online e nuova sconfitta',
     'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': 'Quando perdi vedi com\'è andata la lotta (danni, KO, colpi a segno e la tua mossa migliore) e un consiglio; contro un capopalestra puoi riprovare subito.',
     // ---------- Pantalla de resultados ----------
@@ -460,7 +463,6 @@ export default {
     '{who} gana esta vez': '{who} vince stavolta',
     'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': 'Mira un po\' davanti all\'avversario: i proiettili impiegano tempo ad arrivare.',
     'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': 'Proteggiti appena prima di un colpo: col tempismo giusto rimandi indietro i proiettili.',
-    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'Guarda chi è online',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'Le carte Classificata e Partita rapida mostrano quante persone sono online e si illuminano quando qualcuno cerca un avversario in quella modalità.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'In Traguardi c\'è un pulsante Riscatta tutto in alto che riscuote in un colpo le sfide delle tue linee evolutive e i traguardi.',
@@ -770,7 +772,6 @@ export default {
     'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': 'Sulla mappa, i Superquattro e i Campioni si riconoscono dal volto invece che da una stella.',
     // ---------- Novedades v0.14.0 ----------
     '¡Te desafía!': 'ti sfida!',
-    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Ricerca e cromatici come vuoi',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In I miei Pokémon puoi cercare per nome o numero, filtrare il box per tipo, cromatici o leggendari e ordinarlo come preferisci.',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'I tuoi cromatici hanno un pulsante per vederli con i colori normali, anche in lotta; contano sempre come cromatici.',
@@ -1624,6 +1625,15 @@ export default {
     'Termina antes lo que estás haciendo': 'Finisci prima quello che stai facendo',
     'Usuario o contraseña incorrectos': 'Nome utente o password errati',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account creato: ora puoi accedere da qualsiasi dispositivo',
+    'Medalla ganada': 'Medaglia vinta',
+    'Tu siguiente reto': 'La tua prossima sfida',
+    'Rutas: Pokémon capturados': 'Percorsi: Pokémon catturati',
+    'Aún bloqueado': 'Ancora bloccato',
+    'Se abre al vencer a {who}': 'Si apre battendo {who}',
+    'Desafiar': 'Sfida',
+    'Camino': 'Cammino',
+    '{a}/{b} capturados': '{a}/{b} catturati',
+    'Combate {n} de {m}': 'Lotta {n} di {m}',
     'Mandarme un código aquí': 'Mandami un codice qui',
     'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'Questo link è stato richiesto altrove. Perché la partita salvata in questo browser passi al tuo account, chiedi qui un altro codice. Se non l’hai chiesto tu, chiudilo.',
     'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'Questo link è stato richiesto altrove: se non l’hai chiesto tu, chiudilo. Se è tuo, accedi: l’account non prende la partita da ospite di un altro browser.',

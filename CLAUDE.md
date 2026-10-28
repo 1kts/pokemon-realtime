@@ -51,5 +51,5 @@ En esta máquina el Chrome de los e2e se pasa con `CHROME=~/.cache/ms-playwright
 - Móvil en horizontal: `@media (max-height: 500px)`, en `public/mobile.css` (por pantallas, junto con lo de ventana
   estrecha y vertical; se carga después de `cards.css`). Pantalla táctil: `touchMode()` (`public/js/touch.js`),
   `body.touch` y `#hud.touch`. El mapa de Historia es un contenedor: se adapta con `@container`.
-- Tras tocar el CSS: `tests/e2e/pantallas-movil.e2e.js` y `pantallas-ventana.e2e.js` (nada tapado ni desbordado en 4 tamaños).
+- Tras tocar el CSS: `tests/e2e/pantallas-*.e2e.js` (nada tapado, desbordado ni inaccesible en 4 tamaños).
 - Comentarios en español, en el tono del código de alrededor.

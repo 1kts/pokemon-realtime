@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.5 ----------
+    'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'スマホでの起動が軽くなりました。音楽は開いたときにまとめてではなく、流れる直前にダウンロードされます（以前は15 MB）。',
+    'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '大きな画面で下のバーが Lucky Spin やストーリーのマップを隠さなくなり、Lucky Spin のレア度ラベルが読みやすくなりました。',
+    'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'スクリーンリーダーとキーボードで、アイコンだけのボタンが何かを伝え、スクロールするリストをキーボードで操作できます。',
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'ストーリーのマップが見やすくなりました。次の挑戦は金色で目立ち、道路は捕まえた割合をリングで示し、新しい道路には星が付きます。',
+    'Mapa más claro y móvil más ligero': '見やすいマップとスマホの軽量化',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'スマホでのタップがより正確に',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'メニューでミッションの見出しをタップするとミッションへ移動します。以前は中央をタップすると報酬をすべて受け取っていました。',
@@ -171,7 +177,6 @@ export default {
     'Amigos': 'フレンド',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'フレンド画面では、誰がオンラインで何をしているかを見たり、プロフィールを開いたり、届いた申請を承認したりできます。アカウントが必要です。',
     'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.': '上のフレンドボタンから、名前と4桁のタグでフレンドを追加できます。ランキングのプロフィールからも追加できます。',
-    // ---------- Novedades v0.28.0 ----------
     // ---------- Amigos ----------
     'Aceptar solicitud': '申請を承認',
     'Añade amigos, mira si están en línea y su perfil.': 'フレンドを追加して、オンラインかどうかやプロフィールを見よう。',
@@ -236,7 +241,6 @@ export default {
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenasの新しいロゴ。メニューの「マイポケモン」が赤く目立って見つけやすくなりました。',
     'Avísanos desde el juego': 'ゲームから知らせよう',
     'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'メニュー上のてんとう虫ボタンから、うまく動かないことや何が起きたかを知らせられます。すぐに届くので直せます。',
-    // ---------- Novedades v0.26.0 ----------
     // ---------- Botón de reportar un bug ----------
     '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'うまく動かない？何が起きたか教えてね。できるだけ早く直します。',
     // ---------- Reportar un bug ----------
@@ -440,7 +444,6 @@ export default {
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'バトル結果から実績に移動しても、戻るで元の画面に戻れます。マイポケモンのチームボタンは「チームから外す」になりました。',
     // ---------- Quitar del equipo ----------
     'Quitar del equipo': 'チームから外す',
-    // ---------- Novedades v0.22.0 ----------
     'En línea y nueva derrota': 'オンライン表示と新しい敗北画面',
     'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '負けるとバトルの内容（ダメージ、KO、命中、ベストわざ）とアドバイスが表示され、ジムリーダー戦ならすぐに再挑戦できます。',
     // ---------- Pantalla de resultados ----------
@@ -460,7 +463,6 @@ export default {
     '{who} gana esta vez': '今回は{who}の勝ち',
     'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '相手の少し先を狙おう：飛び道具は届くまで時間がかかります。',
     'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '攻撃が当たる直前にまもろう：タイミングが合えば飛び道具を跳ね返せます。',
-    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'オンラインの人を確認',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'ランクマッチとクイック対戦のカードにオンライン人数が表示され、そのモードで誰かが対戦相手を探していると光ります。',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '実績の上部にある「すべて受け取る」で、進化系統のチャレンジと実績をまとめて受け取れます。',
@@ -770,7 +772,6 @@ export default {
     'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '地図上の四天王とチャンピオンは、星の代わりに顔で表示される。',
     // ---------- Novedades v0.14.0 ----------
     '¡Te desafía!': 'が勝負を仕掛けてきた！',
-    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '検索と色違いの見た目を自由に',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '「じぶんの ポケモン」で名前や番号で検索し、ボックスをタイプ・色違い・伝説で絞り込んで、好きな順に並べられます。',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '色違いのポケモンにボタンが付き、バトル中も含めて通常の色で表示できます。色違いとしてのカウントはそのままです。',
@@ -1624,6 +1625,15 @@ export default {
     'Termina antes lo que estás haciendo': '先に 今の 操作を おえてください',
     'Usuario o contraseña incorrectos': 'ユーザー名 または パスワードが ちがいます',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'アカウントを 作りました：どの 端末からでも ログインできます',
+    'Medalla ganada': '獲得したバッジ',
+    'Tu siguiente reto': '次の挑戦',
+    'Rutas: Pokémon capturados': '道路：捕まえたポケモン',
+    'Aún bloqueado': 'まだロック中',
+    'Se abre al vencer a {who}': '{who}に勝つと開放',
+    'Desafiar': '挑戦する',
+    'Camino': '道のり',
+    '{a}/{b} capturados': '{a}/{b} 捕獲',
+    'Combate {n} de {m}': '{m}戦中 {n}戦目',
     'Mandarme un código aquí': 'ここにコードを送る',
     'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'このリンクは別の場所から要求されました。このブラウザに保存されたデータをアカウントに移すには、ここで新しいコードを要求してください。心当たりがなければ閉じてください。',
     'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'このリンクは別の場所から要求されました。心当たりがなければ閉じてください。あなたのものならログインしてください。別のブラウザのゲストのデータは引き継がれません。',

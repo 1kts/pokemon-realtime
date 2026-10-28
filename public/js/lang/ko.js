@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.5 ----------
+    'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '모바일에서 게임이 더 가볍게 시작됩니다. 음악은 열 때 한꺼번에가 아니라 나오기 직전에 내려받습니다(전에는 15 MB).',
+    'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '큰 화면에서 아래 바가 Lucky Spin과 스토리 지도를 가리지 않고, Lucky Spin의 희귀도 라벨이 더 잘 읽힙니다.',
+    'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '스크린 리더와 키보드로: 아이콘만 있는 버튼이 무엇인지 알려 주고, 스크롤 목록을 키보드로 넘길 수 있습니다.',
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '스토리 지도가 더 깔끔해졌습니다. 다음 도전은 금색으로 눈에 띄고, 도로는 잡은 포켓몬을 링으로 보여 주며, 새 도로에는 별이 붙습니다.',
+    'Mapa más claro y móvil más ligero': '더 깔끔한 지도와 가벼워진 모바일',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '모바일에서 더 정확한 터치',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '메뉴에서 미션 머리글을 누르면 미션으로 이동합니다. 전에는 가운데를 누르면 보상을 모두 받았습니다.',
@@ -171,7 +177,6 @@ export default {
     'Amigos': '친구',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': '친구 화면에서 누가 접속 중이고 무엇을 하는지 보고, 프로필을 열고, 받은 신청을 수락할 수 있어요. 계정이 필요해요.',
     'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.': '위쪽 친구 버튼에서 이름과 4자리 태그로 친구를 추가하거나, 랭킹의 프로필에서 추가할 수 있어요.',
-    // ---------- Novedades v0.28.0 ----------
     // ---------- Amigos ----------
     'Aceptar solicitud': '신청 수락',
     'Añade amigos, mira si están en línea y su perfil.': '친구를 추가하고 접속 여부와 프로필을 확인하세요.',
@@ -236,7 +241,6 @@ export default {
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas의 새 로고, 그리고 메뉴의 내 포켓몬이 빨갛게 눈에 띄어 더 빨리 찾을 수 있어요.',
     'Avísanos desde el juego': '게임에서 알려 주세요',
     'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': '메뉴 위쪽의 무당벌레 버튼으로 뭔가 안 되는 것과 무슨 일이 있었는지 알려 줄 수 있어요. 바로 전달돼서 고칠 수 있어요.',
-    // ---------- Novedades v0.26.0 ----------
     // ---------- Botón de reportar un bug ----------
     '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '뭔가 안 되나요? 무슨 일이 있었는지 알려 주시면 최대한 빨리 고칠게요.',
     // ---------- Reportar un bug ----------
@@ -440,7 +444,6 @@ export default {
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '배틀 결과에서 업적으로 가도 뒤로 가기로 처음 화면에 돌아갑니다. 내 포켓몬의 팀 버튼은 이제 \'팀에서 빼기\'입니다.',
     // ---------- Quitar del equipo ----------
     'Quitar del equipo': '팀에서 빼기',
-    // ---------- Novedades v0.22.0 ----------
     'En línea y nueva derrota': '온라인 표시와 새 패배 화면',
     'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '패배하면 배틀 내용(피해, KO, 명중, 최고의 기술)과 팁이 나오고, 체육관 관장전이라면 바로 다시 도전할 수 있습니다.',
     // ---------- Pantalla de resultados ----------
@@ -460,7 +463,6 @@ export default {
     '{who} gana esta vez': '이번엔 {who}의 승리',
     'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '상대보다 조금 앞을 노리세요: 투사체는 도달하는 데 시간이 걸립니다.',
     'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '공격이 닿기 직전에 방어하세요: 타이밍이 맞으면 투사체를 되돌려 보냅니다.',
-    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': '누가 온라인인지 보세요',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '랭크전과 빠른 대전 카드에 온라인 인원이 표시되고, 그 모드에서 누군가 상대를 찾으면 빛납니다.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '업적 위쪽의 모두 받기 버튼으로 진화 계열 도전과 업적을 한 번에 받습니다.',
@@ -770,7 +772,6 @@ export default {
     'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '지도에서 사천왕과 챔피언은 별 대신 얼굴로 알아볼 수 있어.',
     // ---------- Novedades v0.14.0 ----------
     '¡Te desafía!': '이(가) 승부를 걸어왔다!',
-    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '검색과 원하는 대로 바꾸는 색이 다른 포켓몬',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '내 포켓몬에서 이름이나 번호로 검색하고, 박스를 타입·색이 다른 포켓몬·전설로 걸러 원하는 대로 정렬할 수 있습니다.',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '색이 다른 포켓몬에 버튼이 생겨 배틀 중에도 보통 색으로 볼 수 있습니다. 색이 다른 포켓몬으로 계속 집계됩니다.',
@@ -1624,6 +1625,15 @@ export default {
     'Termina antes lo que estás haciendo': '먼저 하던 일을 끝내세요',
     'Usuario o contraseña incorrectos': '아이디 또는 비밀번호가 틀렸습니다',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '계정을 만들었습니다: 이제 어떤 기기에서든 로그인할 수 있어요',
+    'Medalla ganada': '획득한 배지',
+    'Tu siguiente reto': '다음 도전',
+    'Rutas: Pokémon capturados': '도로: 잡은 포켓몬',
+    'Aún bloqueado': '아직 잠김',
+    'Se abre al vencer a {who}': '{who}을(를) 이기면 열림',
+    'Desafiar': '도전',
+    'Camino': '여정',
+    '{a}/{b} capturados': '{a}/{b} 포획',
+    'Combate {n} de {m}': '{m}전 중 {n}번째',
     'Mandarme un código aquí': '여기로 코드 보내기',
     'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': '이 링크는 다른 곳에서 요청되었습니다. 이 브라우저에 저장된 진행 상황을 계정으로 옮기려면 여기서 새 코드를 요청하세요. 직접 요청하지 않았다면 닫으세요.',
     'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': '이 링크는 다른 곳에서 요청되었습니다. 직접 요청하지 않았다면 닫으세요. 당신의 것이라면 로그인하세요. 다른 브라우저의 게스트 진행 상황은 계정으로 옮겨지지 않습니다.',

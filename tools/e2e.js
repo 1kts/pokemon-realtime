@@ -108,16 +108,22 @@ async function setup(name, extraEnv = {}) {
         const x = Math.min(innerWidth - 1, Math.max(0, b.x + b.width / 2)), y = Math.min(innerHeight - 1, Math.max(0, b.y + b.height / 2));
         if (b.right < 1 || b.bottom < 1 || b.left > innerWidth - 1 || b.top > innerHeight - 1) return { err: 'fuera de la pantalla' };
         if (e.disabled) return { err: 'desactivado' };
-        // (una animación de entrada en él o en lo que lo contiene, p. ej. una ventana que crece: se espera a que acabe)
-        if (document.getAnimations().some(a => a.playState === 'running' && a.effect && a.effect.target && a.effect.target.contains && a.effect.target.contains(e) && a.effect.getTiming().iterations !== Infinity)) return { err: 'moviéndose' };
+        // (una animación de entrada en él o en lo que lo contiene, p. ej. una ventana que crece: se espera a que acabe,
+        // como mucho 1,2 s; después basta con que esté quieto, de sitio y de tamaño, que algunas duran más y no lo mueven)
+        if (!window.__e2eAnimOk && document.getAnimations().some(a => a.playState === 'running' && a.effect && a.effect.target && a.effect.target.contains && a.effect.target.contains(e) && a.effect.getTiming().iterations !== Infinity)) return { err: 'moviéndose' };
         const top = document.elementFromPoint(x, y);
         const name = n => n ? n.tagName.toLowerCase() + (typeof n.className === 'string' && n.className.trim() ? '.' + n.className.trim().split(/\\s+/).join('.') : '') : 'nada';
         if (!top || !(top === e || e.contains(top) || (e.htmlFor && top.id === e.htmlFor))) return { err: 'tapado por ' + name(top) };
-        return { x, y }; })()`;
+        return { x, y, w: Math.round(b.width), h: Math.round(b.height) }; })()`;
       // (y quieto: la misma posición en dos lecturas seguidas, que una ventana o ficha que entra con animación no se mueva bajo el clic)
       const t0 = Date.now();
+      await page.eval('window.__e2eAnimOk = false; true');
       let r = await page.eval(where), prev = null;
-      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y) && Date.now() - t0 < 3000) { prev = r.err ? null : r; await sleep(80); r = await page.eval(where); }
+      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && Date.now() - t0 < 4000) {
+        prev = r.err ? null : r; await sleep(80);
+        if (Date.now() - t0 > 1200) await page.eval('window.__e2eAnimOk = true; true');
+        r = await page.eval(where);
+      }
       if (r.err) throw new Error(`No se puede pulsar «${textOrSel}»: ${r.err}`);
       for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
       await sleep(150);

@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.5 ----------
+    'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '手机上游戏启动更轻快：音乐在快要播放时才下载，不再在打开时全部下载（原来有 15 MB）。',
+    'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '在大屏幕上，底部栏不再遮挡 Lucky Spin 和故事模式地图，Lucky Spin 的稀有度标签也更易读。',
+    'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '使用读屏和键盘时：只有图标的按钮会说明自己是什么，可滚动的列表也能用键盘浏览。',
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
+    'Mapa más claro y móvil más ligero': '更清晰的地图，更轻快的手机版',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '手机上点得更准',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '在菜单里点任务的标题会进入任务：以前点中间会领取所有奖励。',
@@ -170,7 +176,6 @@ export default {
     'Amigos': '好友',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': '在好友中可以看到谁在线、在做什么，打开对方资料并接受收到的申请。需要账号。',
     'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.': '通过上方的好友按钮，用名字和4位数标签添加好友，也可以在排行榜的资料中添加。',
-    // ---------- Novedades v0.28.0 ----------
     // ---------- Amigos ----------
     'Aceptar solicitud': '接受申请',
     'Añade amigos, mira si están en línea y su perfil.': '添加好友，查看他们是否在线以及个人资料。',
@@ -235,7 +240,6 @@ export default {
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'PokéArenas全新标志，菜单中的“我的宝可梦”以红色突出，更容易找到。',
     'Avísanos desde el juego': '在游戏中告诉我们',
     'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': '点按菜单上方的瓢虫按钮，就能告诉我们哪里不正常、发生了什么；我们会立刻收到并修复。',
-    // ---------- Novedades v0.26.0 ----------
     // ---------- Botón de reportar un bug ----------
     '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': '有什么不正常吗？告诉我们发生了什么，我们会尽快修复。',
     // ---------- Reportar un bug ----------
@@ -439,7 +443,6 @@ export default {
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': '从对战结果进入成就后，按返回会回到开始的地方。在我的宝可梦中，队伍按钮改为「移出队伍」。',
     // ---------- Quitar del equipo ----------
     'Quitar del equipo': '移出队伍',
-    // ---------- Novedades v0.22.0 ----------
     'En línea y nueva derrota': '在线人数与全新失败画面',
     'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': '失败后会显示对战情况（伤害、击倒、命中和你的最佳招式）以及一条提示；对战馆主时可以立即重试。',
     // ---------- Pantalla de resultados ----------
@@ -459,7 +462,6 @@ export default {
     '{who} gana esta vez': '这次{who}获胜',
     'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': '瞄准对手前方一点：飞行道具需要时间才能飞到。',
     'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': '在攻击命中前一刻防守：时机准确就能把飞行道具弹回去。',
-    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': '看看谁在线',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': '排位赛和快速对战卡片会显示在线人数，有人在该模式寻找对手时会亮起。',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': '成就顶部的「全部领取」按钮可一次领取进化系列挑战和成就奖励。',
@@ -769,7 +771,6 @@ export default {
     'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': '地图上的四天王和冠军改为以头像显示，而不是星星。',
     // ---------- Novedades v0.14.0 ----------
     '¡Te desafía!': '向你发起挑战！',
-    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': '搜索与随心切换异色',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': '在“我的宝可梦”中可以按名字或编号搜索，按属性、异色或传说筛选盒子，并随意排序。',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': '你的异色宝可梦有一个按钮，可以用普通配色显示（对战中也是）；它们仍然算作异色。',
@@ -1636,6 +1637,15 @@ export default {
     'Termina antes lo que estás haciendo': '请先完成当前操作',
     'Usuario o contraseña incorrectos': '用户名或密码错误',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '账号已创建：现在可以在任何设备上登录了',
+    'Medalla ganada': '已获得徽章',
+    'Tu siguiente reto': '你的下一个挑战',
+    'Rutas: Pokémon capturados': '道路：已捕捉的宝可梦',
+    'Aún bloqueado': '尚未解锁',
+    'Se abre al vencer a {who}': '击败{who}后开放',
+    'Desafiar': '挑战',
+    'Camino': '路线',
+    '{a}/{b} capturados': '已捕捉 {a}/{b}',
+    'Combate {n} de {m}': '第 {n}/{m} 场',
     'Mandarme un código aquí': '把验证码发到这里',
     'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': '这个链接是在别处申请的。要让这个浏览器里保存的进度转到你的账号，请在这里重新申请验证码。如果不是你申请的，请关闭它。',
     'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': '这个链接是在别处申请的：如果不是你申请的，请关闭它。如果是你的，就登录吧：账号不会带上其他浏览器的游客进度。',

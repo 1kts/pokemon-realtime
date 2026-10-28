@@ -244,6 +244,14 @@ function forfeitBox() {
 }
 
 applyCursor();   // el color de cursor elegido en Ajustes
+// Las zonas con scroll (.scroll) se pueden enfocar y desplazar con el teclado: se les da tabindex al aparecer (solo
+// se mira lo que se añade, no la página entera: en combate el HUD cambia sin parar)
+new MutationObserver(ms => {
+  for (const m of ms) for (const n of m.addedNodes) {
+    if (!(n instanceof Element)) continue;
+    for (const e of [n, ...n.querySelectorAll('.scroll')]) if (e.classList.contains('scroll') && !e.hasAttribute('tabindex')) e.tabIndex = 0;
+  }
+}).observe(document.body, { childList: true, subtree: true });
 initTouchDevice();   // en móvil: horizontal y pantalla completa
 ui.show('title');
 // Enlace del correo para entrar (#entrar=correo~código, ver server/mail.js): abre «Entrar con email» con los dos ya

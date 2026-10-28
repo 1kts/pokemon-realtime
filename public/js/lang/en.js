@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.5 ----------
+    'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'On mobile the game starts lighter: music downloads when it’s about to play instead of all at once when you open it (it was 15 MB).',
+    'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'The bottom bar no longer covers Lucky Spin or the Story map on large screens, and Lucky Spin’s rarity labels are easier to read.',
+    'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'With a screen reader and keyboard: icon-only buttons say what they are and scrolling lists can be browsed with the keyboard.',
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'The Story map is clearer: the next challenge stands out in gold, routes show what you’ve caught with a ring and new ones have a star.',
+    'Mapa más claro y móvil más ligero': 'Clearer map and lighter on mobile',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'More precise taps on mobile',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'In the menu, tapping the Missions header takes you to them: before, tapping its center claimed every reward.',
@@ -170,7 +176,6 @@ export default {
     'Amigos': 'Friends',
     'En Amigos ves quién está en línea y qué hace, abres su perfil y aceptas las solicitudes que te llegan. Hace falta cuenta.': 'In Friends you see who\'s online and what they\'re doing, open their profile and accept the requests you get. An account is required.',
     'Añade amigos con su nombre y su etiqueta de 4 cifras desde el botón de Amigos de arriba, o desde su ficha en los rankings.': 'Add friends with their name and 4-digit tag from the Friends button at the top, or from their profile in the rankings.',
-    // ---------- Novedades v0.28.0 ----------
     // ---------- Amigos ----------
     'Aceptar solicitud': 'Accept request',
     'Añade amigos, mira si están en línea y su perfil.': 'Add friends and see if they\'re online and their profile.',
@@ -235,7 +240,6 @@ export default {
     'Logo nuevo de PokéArenas, y Mis Pokémon destaca en rojo en el menú para encontrarlo antes.': 'A new PokéArenas logo, and My Pokémon stands out in red in the menu so you find it sooner.',
     'Avísanos desde el juego': 'Tell us from the game',
     'Con el botón de la mariquita, arriba en el menú, puedes contarnos si algo no funciona y qué ha pasado; nos llega al momento para arreglarlo.': 'With the ladybug button at the top of the menu you can tell us if something isn\'t working and what happened; it reaches us right away so we can fix it.',
-    // ---------- Novedades v0.26.0 ----------
     // ---------- Botón de reportar un bug ----------
     '¿Algo no funciona? Cuéntanos qué ha pasado y lo arreglamos lo antes posible.': 'Something not working? Tell us what happened and we\'ll fix it as soon as we can.',
     // ---------- Reportar un bug ----------
@@ -439,7 +443,6 @@ export default {
     'Si vas a Logros desde los resultados de un combate, Volver te lleva donde empezaste. En Mis Pokémon, el botón del equipo dice Quitar del equipo.': 'If you go to Achievements from a battle\'s results, Back takes you where you started. In My Pokémon, the team button now says Remove from team.',
     // ---------- Quitar del equipo ----------
     'Quitar del equipo': 'Remove from team',
-    // ---------- Novedades v0.22.0 ----------
     'En línea y nueva derrota': 'Online now and a new defeat screen',
     'Al perder ves cómo ha ido el combate (daño, KOs, aciertos y tu mejor movimiento) y un consejo; contra un líder puedes reintentar al momento.': 'When you lose you see how the battle went (damage, KOs, hits and your best move) and a tip; against a leader you can retry right away.',
     // ---------- Pantalla de resultados ----------
@@ -459,7 +462,6 @@ export default {
     '{who} gana esta vez': '{who} wins this time',
     'Apunta un poco por delante del rival: los proyectiles tardan en llegar.': 'Aim a little ahead of your rival: projectiles take time to arrive.',
     'Protégete justo antes de que te llegue un golpe: si aciertas el momento, devuelves los proyectiles.': 'Protect right before a hit lands: time it well and you send projectiles back.',
-    // ---------- Novedades v0.22.0 ----------
     'Mira quién está en línea': 'See who\'s online',
     'Las tarjetas de Clasificatoria y Partida rápida dicen cuánta gente hay en línea y se iluminan cuando alguien está buscando rival en ese modo.': 'The Ranked and Quick match cards show how many people are online and light up when someone is looking for a match in that mode.',
     'En Logros tienes un botón de Recoger todo arriba que cobra de una vez los retos de tus líneas evolutivas y los logros.': 'Achievements has a Collect all button at the top that claims your evolution line challenges and achievements in one go.',
@@ -769,7 +771,6 @@ export default {
     'En el mapa, el Alto Mando y los Campeones se reconocen por su cara en vez de por una estrella.': 'On the map, the Elite Four and Champions are shown by their faces instead of a star.',
     // ---------- Novedades v0.14.0 ----------
     '¡Te desafía!': 'challenges you!',
-    // ---------- Novedades v0.14.0 ----------
     'Buscador y shiny a tu gusto': 'Search and shinies your way',
     'En Mis Pokémon puedes buscar por nombre o número, filtrar la caja por tipo, shiny o legendarios y ordenarla a tu gusto.': 'In My Pokémon you can search by name or number, filter your box by type, shiny or legendary, and sort it however you like.',
     'Tus shiny tienen un botón para verlos con sus colores normales, también en combate; siguen contando como shiny.': 'Your shinies have a button to show them in their normal colours, in battle too; they still count as shiny.',
@@ -1637,6 +1638,15 @@ export default {
     'Termina antes lo que estás haciendo': 'Finish what you\'re doing first',
     'Usuario o contraseña incorrectos': 'Wrong username or password',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account created: you can now log in from any device',
+    'Medalla ganada': 'Badge won',
+    'Tu siguiente reto': 'Your next challenge',
+    'Rutas: Pokémon capturados': 'Routes: Pokémon caught',
+    'Aún bloqueado': 'Still locked',
+    'Se abre al vencer a {who}': 'Opens when you beat {who}',
+    'Desafiar': 'Challenge',
+    'Camino': 'Path',
+    '{a}/{b} capturados': '{a}/{b} caught',
+    'Combate {n} de {m}': 'Battle {n} of {m}',
     'Mandarme un código aquí': 'Send me a code here',
     'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'This link was requested somewhere else. To move the game saved in this browser to your account, request another code here. If you didn’t ask for it, close it.',
     'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'This link was requested somewhere else: if you didn’t ask for it, close it. If it’s yours, sign in: the account won’t take another browser’s guest game.',

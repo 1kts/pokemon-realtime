@@ -1,12 +1,14 @@
 // Barrido de todas las pantallas y ventanas en varios tamaños, mirando lo que ve el jugador, no cómo está hecho
-// (lo usan pantallas-movil.e2e.js, 844 y 667 en horizontal con pantalla táctil, y pantallas-ventana.e2e.js, 390 de
-// ancho y escritorio de 1280: juntos pasaban de los 5 minutos que tiene cada prueba en el CI):
+// (lo usan pantallas-movil, pantallas-movil-pequeno, pantallas-ventana y pantallas-escritorio, un tamaño cada una:
+// juntos pasaban de los 5 minutos que tiene cada prueba en el CI):
 //   - nada se sale de ancho (sin scroll horizontal)
 //   - ningún botón visible está tapado por otra cosa (un aviso, una barra, otra ventana)
 //   - con el dedo, los botones miden al menos MIN_TAP px
+//   - sin problemas de accesibilidad graves (axe-core: WCAG 2 A y AA)
 // Con E2E_GEOM=archivo.json guarda además la posición y el tamaño de todo lo visible de cada pantalla (para comparar
 // un antes y un después al reordenar el CSS: tools/geom-diff.js).
 const fs = require('fs');
+const AXE = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');   // accesibilidad (axe-core, solo en las pruebas)
 
 const MIN_TAP = 24;   // px en el lado corto de un botón con el dedo (Apple recomienda 44: subirlo según se arregle)
 const VIEWS = ['menu', 'story', 'team', 'online', 'treasure', 'settings', 'profile', 'collection', 'missions', 'ladder', 'tower', 'practice', 'dex', 'bag', 'shop', 'friends'];
@@ -25,7 +27,7 @@ const CHECK = (touch, geom) => `(() => {
   if (document.documentElement.scrollWidth > W + 1) out.push('la página se sale de ancho: ' + document.documentElement.scrollWidth + ' > ' + W);
   if (sc && !sc.hidden && sc.scrollWidth > sc.clientWidth + 1) out.push('la pantalla se sale de ancho: ' + sc.scrollWidth + ' > ' + sc.clientWidth);
   // Lo que se puede pulsar ahora: si hay una ventana abierta, solo lo de la de encima
-  const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .install-guide')];
+  const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .install-guide, body > .mon-sheet-back')];
   const scope = tops.length ? tops[tops.length - 1] : document;
   for (const e of scope.querySelectorAll('button, a[href], [role=button], input, select, summary')) {
     const r = e.getBoundingClientRect();
@@ -55,6 +57,24 @@ const CHECK = (touch, geom) => `(() => {
     if (${touch} && e.matches('button, a[href], [role=button], summary') && !e.closest('.legal-bar, .node.locked') && !cut && !(hit(-d, 0) && hit(d, 0) && hit(0, -d) && hit(0, d)))
       out.push('pequeño para el dedo (' + Math.round(r.width) + '×' + Math.round(r.height) + '): ' + name(e));
   }
+  // La barra legal (al final de la pantalla, sin fondo) no puede quedar encima de textos de la pantalla
+  const bar = sc && sc.querySelector(':scope > .legal-bar');
+  if (bar && !tops.length && getComputedStyle(bar).display !== 'none') {
+    const b = bar.getBoundingClientRect();
+    for (const e of sc.querySelectorAll('*')) {
+      // (lo de un desplegable cerrado no se ve, aunque el navegador le dé sitio)
+      // (cada elemento con texto propio, también los que tienen negritas u otros dentro)
+      if (bar.contains(e) || ![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) || e.closest('details:not([open]) > :not(summary)')) continue;
+      // (la parte que se ve: lo recortado por un contenedor con scroll no cuenta)
+      const q = e.getBoundingClientRect();
+      let L = q.left, T = q.top, R = q.right, B = q.bottom;
+      for (let a = e.parentElement; a && a !== sc; a = a.parentElement) {
+        const cs = getComputedStyle(a);
+        if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') { const c = a.getBoundingClientRect(); L = Math.max(L, c.left); T = Math.max(T, c.top); R = Math.min(R, c.right); B = Math.min(B, c.bottom); }
+      }
+      if (R - L > 1 && B - T > 1 && B > b.top + 2 && T < b.bottom - 2 && R > b.left && L < b.right && getComputedStyle(e).visibility !== 'hidden') out.push('la barra legal pisa: ' + name(e));
+    }
+  }
   let g = null;
   if (${geom}) {
     g = {};
@@ -79,8 +99,10 @@ module.exports = SIZES => async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', item: 'pocion', qty: 3 }); await me.client.wait(m => m.t === 'profile');
   const geomFile = process.env.E2E_GEOM, geom = {};
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const settle = () => page.waitFor(`[...document.querySelectorAll('#screen > *, body > .modal *')].every(c => c.getAnimations().every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity))`).catch(() => {});
-  const problems = [];
+  // (espera a que acaben las animaciones de entrada de toda la página; las que no acaban nunca, como un brillo, no)
+  const settle = () => page.waitFor(`document.getAnimations().every(a => a.playState !== 'running' || !a.effect || a.effect.getTiming().iterations === Infinity
+    || !(a.effect.target instanceof Element) || !a.effect.target.closest('#screen, body > .modal, body > .mon-sheet-back'))`).catch(() => {});   // (las de la pantalla y las ventanas)
+  const problems = [], a11y = [];
   for (const [W, H, touch] of SIZES) {
     await page.goto('/');
     await page.eval(`localStorage.clear(); localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); localStorage.setItem('arena.storyGuide', '1'); localStorage.setItem('arena.towerGuide', '1');
@@ -88,11 +110,17 @@ module.exports = SIZES => async ({ page, player, ok }) => {
     await page.resize(W, H);
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
+    await page.eval(AXE + '; true');
     const look = async label => {
       await settle(); await sleep(150);
       const r = await page.eval(CHECK(touch, !!geomFile));
       for (const o of r.out) problems.push(`${W}×${H} ${label}: ${o}`);
       if (r.g) geom[`${W}x${H} ${label}`] = r.g;
+      // Accesibilidad (WCAG 2 A y AA) de lo que hay a la vista: la ventana de encima o la pantalla
+      const ax = await page.eval(`(async () => { const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .install-guide, body > .mon-sheet-back')], scope = tops.length ? tops[tops.length - 1] : document.getElementById('screen');
+        const r = await axe.run(scope, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }, resultTypes: ['violations'] });
+        return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, ej: v.nodes.slice(0, 2).map(x => x.target.join(' ') + ' · ' + (x.failureSummary || '').split('\\n')[1]) })); })()`);
+      for (const v of ax) a11y.push({ where: `${W}×${H} ${label}`, ...v });
     };
     for (const v of VIEWS) {
       await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); window.__app.ui.show('${v}'); true`);   // atajo: el barrido mira el diseño de cada pantalla
@@ -108,6 +136,7 @@ module.exports = SIZES => async ({ page, player, ok }) => {
   }
   if (geomFile) fs.writeFileSync(geomFile, JSON.stringify(geom, null, 1));
   if (process.env.E2E_REPORT) fs.writeFileSync(process.env.E2E_REPORT, problems.join('\n'));
+  if (process.env.E2E_A11Y) fs.writeFileSync(process.env.E2E_A11Y, JSON.stringify(a11y, null, 1));
   // Fallos conocidos que aún no tienen arreglo (a la vista aquí, no escondidos): se avisa de ellos en la salida
   const KNOWN = [
     [/667×375 story: pequeño para el dedo .*Ruta 24/, 'en el mapa de 667 de ancho, la Ruta 24 está tan cerca del gimnasio de Misty que sus zonas de toque se pisan'],
@@ -118,5 +147,9 @@ module.exports = SIZES => async ({ page, player, ok }) => {
   const sizes = SIZES.map(([w, h]) => `${w}×${h}`).join(', ');
   say(/de ancho/, `ninguna pantalla ni ventana se sale de ancho en ${sizes}`);
   say(/tapado/, 'ningún botón visible está tapado por otra cosa');
+  say(/barra legal pisa/, 'la barra legal no se monta sobre el contenido de ninguna pantalla');
+  // Accesibilidad (axe-core, WCAG 2 A y AA): nada grave ni crítico
+  const bad = a11y.filter(v => v.impact === 'serious' || v.impact === 'critical');
+  ok(!bad.length, bad.length ? `accesibilidad:\n      ${bad.slice(0, 10).map(v => `${v.where}: ${v.id} (${v.impact}) ${v.ej[0] || ''}`).join('\n      ')}` : 'sin problemas de accesibilidad graves (axe-core, WCAG 2 A y AA)');
   if (SIZES.some(([, , touch]) => touch)) say(/pequeño para el dedo/, `con el dedo, los botones miden al menos ${MIN_TAP} px`);
 };

@@ -559,8 +559,8 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 
 /* Tablero a todo el ancho y alto que quede de pantalla, y la barra de tirar debajo */
 .treasure { min-height: 100%; }
-#screen > .treasure { min-height: max(620px, calc(100vh - 36px)); }   /* (crece si no cabe: si no, se montaba sobre la barra legal) */
-.treasure .tz-body { flex: 1; display: flex; min-height: 0; }
+#screen > .treasure { height: auto; min-height: max(620px, calc(100vh - 36px)); }   /* (crece si no cabe: con la altura fija de style.css se montaba sobre la barra legal) */
+.treasure .tz-body { flex: 1; display: flex; min-height: auto; }   /* (no se encoge por debajo de lo que tiene: se salía por debajo de la barra legal) */
 .tz-left { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .tz-board { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, minmax(130px, 1fr)); gap: 12px; padding: 14px; border-radius: 20px;
   background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--tc) 14%, transparent), transparent 60%), linear-gradient(170deg, #232a58, #161b3e);
@@ -575,6 +575,8 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 .tz-card .tz-art { width: clamp(56px, 6vw, 88px); height: clamp(56px, 6vw, 88px); filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
 .tz-name { font: 800 13px/1.2 var(--display); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
 .tz-card .tz-rar { position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%) skewX(-10deg); padding: 1px 10px; border-radius: 6px; font: 900 10px var(--display); letter-spacing: .6px; text-transform: uppercase; color: #fff; background: var(--rc); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.tz-card .tz-rar { background: color-mix(in srgb, var(--rc) 66%, #000); }   /* (algo más oscuro: el blanco no se leía sobre el morado, contraste 3,8) */
+.tz-card.r-legendario .tz-rar { color: #2a1c00; background: var(--rc); }   /* (sobre el naranja, mejor texto oscuro: con blanco, 1,8) */
 .tz-card .tz-check { top: 8px; right: 8px; }
 .tz-card.got { filter: grayscale(.7) brightness(.6); }
 .tz-card.sel { border-color: #fff; box-shadow: 0 0 0 1px #fff, 0 0 22px var(--rc); }
@@ -596,7 +598,7 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 .tz-jackpot small { font: 900 10px var(--display); letter-spacing: 2px; text-transform: uppercase; }
 .tz-jackpot b { font: 900 16px var(--display); }
 /* Barra de tirar: progreso · lo elegido · probabilidades · precio y botón */
-.tz-bar { display: flex; align-items: center; gap: 16px; padding: 12px 14px 12px 20px; border-radius: 18px;
+.tz-bar { flex: none; display: flex; align-items: center; gap: 16px; padding: 12px 14px 12px 20px; border-radius: 18px;
   background: radial-gradient(120% 160% at 100% 50%, rgba(255,210,63,.12), transparent 55%), linear-gradient(135deg, #27306a, #1a2048 60%, #141a3c);
   border: 1px solid rgba(170,190,255,.2); box-shadow: inset 0 2px 0 rgba(255,215,90,.6), 0 12px 30px rgba(0,0,0,.45); }
 .tz-prog { flex: none; width: 170px; display: flex; flex-direction: column; gap: 6px; }
@@ -1754,3 +1756,172 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 /* Mapa de Historia: cada sitio responde al dedo en un círculo más grande que su dibujo (el mapa 3D los encoge con
    la perspectiva, y los bloqueados son un punto); no se ve. No más grande: los de sitios vecinos se pisarían */
 .story .map .node::before { content: ''; position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; transform: translate(-50%, -50%); border-radius: 50%; }
+
+/* ---------- Mapa de Historia: jerarquía ----------
+   Un solo foco, el siguiente reto: anillo dorado que late, el único rótulo dorado y el camino hasta él. Lo demás
+   se calla: los gimnasios ganados enseñan su medalla y el líder (la ciudad, al elegirlos), las rutas cuentan sus
+   capturas con un anillo alrededor (no con un número encima) y las nuevas llevan una estrella, sin parpadear. Sin
+   etiquetas en mayúsculas: los textos que se ven son nombres. Los textos que se quitan de la vista siguen ahí para
+   los lectores de pantalla. Con #screen delante: gana también a las reglas del mapa 3D (.map.map3d-on), que eran
+   más específicas */
+#screen .story .map .node .caught-count, #screen .story .map .node .goal-tag { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* Rutas: el anillo de capturas (verde lo capturado; entero y dorado si están todas) */
+#screen .story .map .node.route:not(.locked)::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(#8fe36a calc(var(--prog, 0) * 1turn), rgba(255,255,255,.22) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); }
+#screen .story .map .node.route:not(.locked):has(.caught-count.full)::after { background: var(--gold); }
+/* Ruta nueva: una estrella en su esquina (antes «NUEVA» encima y la ruta latiendo) */
+#screen .story .map .node.route.new { animation: none; box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 3px 8px rgba(0,0,0,.45); }
+#screen .story .map .node.route .new-tag { left: auto; right: -9px; top: -9px; bottom: auto; transform: none; width: 17px; height: 17px; padding: 0; display: grid; place-items: center;
+  border-radius: 50%; font-size: 0; letter-spacing: 0; color: #2a1c00; background: var(--gold); box-shadow: 0 0 0 2px rgba(14,18,40,.7), 0 0 10px rgba(255,203,5,.7); }
+#screen .story .map .node.route .new-tag::before { content: '✦'; font-size: 11px; line-height: 1; }
+/* Rótulos: nombres en minúsculas y sin la ciudad, salvo en el siguiente reto y en lo que eliges. Las rutas, solo al
+   elegirlas o al pasar por encima (sus nombres son largos y se montaban sobre los gimnasios; las nuevas ya salen en
+   «Tu objetivo») */
+#screen .story .map .node.route:not(.sel):not(:hover):not(:focus-visible) > label { display: none; }
+#screen .story .map .node.route:is(.sel, :hover, :focus-visible) > label { display: block; z-index: 6; }
+#screen .story .map .node label { font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+#screen .story .map .node:not(.next):not(.sel) label small { display: none; }
+#screen .story .map .node.gym.done:not(.sel) label { background: rgba(14,18,40,.62); color: #dfe6f5; font-weight: 600; }
+/* El siguiente reto: su rótulo es el único dorado */
+#screen .story .map .node.next > label { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #2a1c00; font-weight: 800; box-shadow: 0 2px 0 #b97a00, 0 4px 10px rgba(0,0,0,.45); }
+#screen .story .map .node.next > label small { color: #5a4300; }
+/* Estás aquí: el avatar en su chincheta, por encima del sitio (no encima de su medalla) y en minúsculas */
+#screen .story .map .you-pin { margin-top: -30px; }
+#screen .story .map .you-pin span { text-transform: none; letter-spacing: 0; font-size: 10px; }
+/* Leyenda: la estrella de las rutas nuevas, como en el mapa */
+#screen .story .map-legend .lg.new { display: inline-grid; place-items: center; width: 14px; height: 14px; background: var(--gold); box-shadow: none; animation: none; }
+#screen .story .map-legend .lg.new::before { content: '✦'; font-size: 9px; color: #2a1c00; }
+/* Mapa pequeño: menos rótulos (solo el siguiente reto, lo elegido y los líderes), la chincheta sin texto */
+@container (max-width: 640px) {
+  #screen .story .map .node label { font-size: 8.5px; }
+  #screen .story .map .node.route:not(.locked)::after { inset: -4px; }
+  #screen .story .map .node.route .new-tag { width: 12px; height: 12px; right: -6px; top: -6px; }
+  #screen .story .map .node.route .new-tag::before { font-size: 8px; }
+  #screen .story .map .you-pin { margin-top: -20px; }
+  #screen .story .map .you-pin span { display: none; }
+  #screen .story .map .you-pin::after { border-width: 4px; }
+}
+
+/* ---------- Historia: el camino (storypath.js) ----------
+   Un viaje en línea: el eje de gimnasios (dorado y continuo lo recorrido; discontinuo lo que falta) y, encima de
+   cada tramo, las rutas que se abren en él. Lo que toca es lo único grande, dorado y que late */
+.story-body > .story-pathwrap { align-self: start; }   /* (de su altura, no de la del panel de al lado) */
+.story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
+  background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
+.story-pathwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.story-path { --gym: 64px; --now: 84px; --rt: 44px; --ch: 150px; container-type: inline-size; flex: 1; display: flex; overflow-x: auto; overflow-y: hidden; padding: 64px 28px 18px; scroll-behavior: smooth; }
+.sp-track { display: flex; align-items: flex-end; margin-top: auto; }   /* (todos los tramos apoyados en el eje) */
+/* Salida: el pueblo, al principio del eje */
+.sp-start { flex: none; align-self: flex-end; position: relative; width: 96px; height: calc(var(--now) + 40px); display: flex; flex-direction: column; align-items: center; }
+.sp-start::before { content: ''; width: 18px; height: 18px; margin-top: calc(var(--now) / 2 - 9px); border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px #121834; position: relative; z-index: 1; }
+.sp-start::after { content: ''; position: absolute; left: 50%; right: 0; top: calc(var(--now) / 2 - 2px); height: 4px; border-radius: 2px; background: var(--gold); }
+.sp-start b { margin-top: 10px; font: 700 12px var(--display); color: #c9d3ea; white-space: nowrap; }
+/* Cada tramo: arriba sus rutas, abajo su líder en el eje */
+.sp-ch { flex: none; width: var(--ch); display: flex; flex-direction: column; justify-content: flex-end; }
+.sp-routes { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 10px; padding-bottom: 18px; }
+.sp-routes:not(:empty)::after { content: ''; position: absolute; left: 50%; bottom: 0; height: 18px; border-left: 2px solid rgba(255,255,255,.28); }
+.sp-spine { position: relative; display: flex; justify-content: center; height: calc(var(--now) + 40px); }
+/* El eje: una línea que cruza el tramo a la altura del centro de los líderes */
+.sp-spine::before { content: ''; position: absolute; left: 0; right: 0; top: calc(var(--now) / 2 - 2px); height: 4px; border-radius: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
+.sp-ch.done .sp-spine::before { background: var(--gold); }
+.sp-ch.now .sp-spine::before { background: linear-gradient(90deg, var(--gold) 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
+/* Los sitios: un círculo y su nombre debajo */
+.sp-node { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; border: 0; background: none; box-shadow: none; color: #e6edf7; cursor: pointer; }
+.sp-node:hover:not(:disabled) { background: none; }
+.sp-dot { position: relative; display: grid; place-items: center; border-radius: 50%; }
+.sp-name { max-width: calc(var(--ch) - 16px); text-align: center; font: 600 12px/1.2 var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sp-name b { font: 800 13px var(--display); display: block; }
+.sp-name small { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
+.sp-node.sel .sp-dot { outline: 2px solid #fff; outline-offset: 4px; }
+.sp-node:focus-visible .sp-dot { outline: 2px solid var(--yellow); outline-offset: 4px; }
+/* Líderes: el color de su tipo; con la medalla en color si ya es tuya */
+.sp-gym .sp-dot { width: var(--gym); height: var(--gym); margin-top: calc((var(--now) - var(--gym)) / 2); border: 4px solid var(--tc, #8a93b8); background: radial-gradient(circle at 50% 38%, #2c3560, #121834); box-shadow: 0 0 0 4px #121834, 0 6px 14px rgba(0,0,0,.45); }
+.sp-gym .sp-badge { width: 34px; height: 34px; image-rendering: pixelated; }
+.sp-gym .sp-face { width: 120%; height: 120%; border-radius: 50%; object-fit: cover; }
+.sp-gym .league-ico { width: 40px; height: 40px; image-rendering: pixelated; }
+.sp-gym .sp-dot:has(.sp-face) { overflow: hidden; }
+.sp-gym.done .sp-dot { box-shadow: 0 0 0 4px #121834, 0 0 14px var(--tc), 0 6px 14px rgba(0,0,0,.45); }
+.sp-gym:not(.done) .sp-badge { filter: brightness(0) invert(1) opacity(.4); }
+.sp-ord { position: absolute; top: calc((var(--now) - var(--gym)) / 2 - 6px); left: calc(50% - var(--gym) / 2 - 6px); width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%;
+  font: 900 11px var(--display); font-style: normal; color: #2a1c00; background: #d6e2f5; box-shadow: 0 0 0 2px #121834; }
+/* Lo que toca: más grande, dorado y lo único que late */
+.sp-gym.now .sp-dot { width: var(--now); height: var(--now); margin-top: 0; border-color: var(--gold); animation: spNow 1.6s ease-in-out infinite; }
+.sp-gym.now .sp-badge { width: 44px; height: 44px; filter: brightness(0) invert(1) opacity(.9); }
+.sp-gym.now .sp-ord { top: -6px; left: calc(50% - var(--now) / 2 - 4px); background: var(--gold); }
+.sp-gym.now .sp-name { padding: 3px 10px; border-radius: 9px; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; -webkit-line-clamp: 3; }
+@keyframes spNow { 50% { box-shadow: 0 0 0 4px #121834, 0 0 0 10px rgba(255,203,5,.22), 0 0 28px rgba(255,203,5,.75); } }
+/* Rutas: su Pokémon y el anillo de lo capturado; las nuevas, con estrella */
+.sp-route .sp-dot { width: var(--rt); height: var(--rt); background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 3px #121834, 0 4px 10px rgba(0,0,0,.4); }
+.sp-route .sp-dot .mon-icon { width: 34px; height: auto; margin-top: -8px; image-rendering: pixelated; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
+.sp-route:not(.locked) .sp-dot::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(#8fe36a calc(var(--prog, 0) * 1turn), rgba(255,255,255,.22) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); }
+.sp-route.full .sp-dot::after { background: var(--gold); }
+.sp-route .sp-name { font-size: 11px; color: #c9d3ea; }
+/* Lo capturado de cada ruta: una Poké Ball y «2/7» (con todos, en verde y con ✓); las nuevas dicen «Nueva» */
+.sp-count { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px 1px 4px; border-radius: 99px; font: 800 11px var(--display); color: #e6edf7; background: rgba(255,255,255,.1); }
+.sp-count img { image-rendering: pixelated; }
+.sp-count.full { color: #0f2a0c; background: #8fe36a; }
+.sp-new { position: absolute; top: -10px; left: calc(50% + var(--rt) / 2 - 14px); padding: 1px 7px; border-radius: 99px; font: 800 10px var(--display); font-style: normal; color: #2a1c00; background: var(--gold); box-shadow: 0 0 0 2px #121834; }
+/* Lo que falta: apagado, sin Pokémon ni medalla a la vista */
+.sp-node.locked { color: #8a93b8; }
+.sp-node.locked .sp-dot { filter: grayscale(1) brightness(.6); }
+.sp-route.locked .sp-dot { background: none; box-shadow: none; border: 2px dashed rgba(200,210,240,.35); filter: none; }
+.sp-end { display: grid; place-items: center; width: var(--gym); height: var(--gym); margin-top: calc((var(--now) - var(--gym)) / 2); color: var(--gold); font-size: 26px; }
+@media (prefers-reduced-motion: reduce) { .sp-gym.now .sp-dot { animation: none; } .story-path { scroll-behavior: auto; } }
+/* Camino pequeño (móvil): todo algo más pequeño para que quepan más tramos */
+@container (max-width: 640px) {
+  .sp-track { min-height: 0; }
+}
+@media (max-height: 500px) {
+  .story-pathwrap { height: calc(100vh - 76px); min-height: 250px; }
+  .story-path { --gym: 48px; --now: 62px; --rt: 34px; --ch: 112px; padding: 50px 14px 8px; }
+  .sp-routes { gap: 6px; padding-bottom: 12px; }
+  .sp-routes:not(:empty)::after { height: 12px; }
+  .sp-spine { height: calc(var(--now) + 34px); }
+  .sp-gym .sp-badge { width: 26px; height: 26px; }
+  .sp-gym.now .sp-badge { width: 34px; height: 34px; }
+  .sp-route .sp-dot .mon-icon { width: 26px; margin-top: -6px; }
+  .sp-name { font-size: 10px; }
+  .sp-name b { font-size: 11px; }
+  .sp-route .sp-name { font-size: 9.5px; }
+  .sp-start { width: 74px; height: calc(var(--now) + 34px); }
+  .sp-start b { font-size: 10px; margin-top: 6px; }
+  .sp-gym.now .sp-name small { display: none; }
+}
+
+/* El camino y su leyenda */
+.story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sp-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; padding: 8px 14px 12px; border-top: 1px solid rgba(255,255,255,.08); font-size: 12px; color: #c9d3ea; }
+.sp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sp-legend img { image-rendering: pixelated; }
+.sp-k { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.sp-k.done { background: #6aa8ff; box-shadow: 0 0 0 2px #121834, 0 0 0 4px #6aa8ff; }
+.sp-k.now { background: var(--gold); box-shadow: 0 0 0 2px #121834, 0 0 0 4px var(--gold); }
+.sp-k.locked { border: 2px dashed rgba(200,210,240,.45); }
+/* El siguiente reto: su botón de jugar debajo, el único del camino */
+.sp-nowbox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+/* (debajo de su nombre, sin alargar el tramo: el eje sigue recto) */
+.sp-go { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 7px 18px; font-size: 14px; white-space: nowrap; }
+.story-path { padding-bottom: 60px; }
+/* Un tramo bloqueado dice qué lo abre */
+.sp-lock { margin: 0 4px; max-width: calc(var(--ch) - 12px); text-align: center; font-size: 11px; line-height: 1.3; color: #8a93b8; }
+@media (max-height: 500px) {
+  /* Móvil: las pestañas abajo, en la fila de la leyenda (arriba tapaban las primeras rutas), y la leyenda solo con lo
+     que no se explica solo; las rutas más bajitas (el contador sobre el círculo, el nombre en una línea) */
+  .story-pathwrap > .story-mode { top: auto; bottom: 5px; left: 6px; padding: 2px; }
+  .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
+  .story-path { padding-top: 12px; }
+  .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 10px; padding: 4px 8px 4px 170px; font-size: 10px; }
+  .sp-legend span:first-child, .sp-legend span:last-child { display: none; }
+  .sp-route .sp-dot { margin-bottom: 4px; }
+  .sp-route .sp-count { position: absolute; top: calc(var(--rt) - 8px); left: 50%; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 0 2px #121834; }
+  .sp-route .sp-name { -webkit-line-clamp: 1; margin-top: 6px; }
+  .sp-new { top: -8px; font-size: 8.5px; padding: 0 5px; }
+  .sp-go { display: none; }   /* (en el móvil, el «¡Desafiar!» grande de la ficha de al lado está siempre a la vista) */
+  .story-path { padding-bottom: 10px; }
+  .sp-count { font-size: 9.5px; padding: 0 5px 0 3px; }
+  .sp-lock { font-size: 9.5px; }
+}

@@ -11,6 +11,9 @@ module.exports = async ({ page, player, ok }) => {
     HTMLCanvasElement.prototype.getContext = function (type, opts) { return this.classList.contains('map3d-canvas') ? null : get.call(this, type, opts); };
     return true; })()`);
   await page.eval(`window.__app.ui.show('story'); true`);
+  // (Historia abre en el Camino: lo que se prueba aquí es el mapa; la vista elegida se recuerda)
+  await page.waitFor(`document.querySelector('.story-mode')`); await page.eval(`localStorage.setItem('arena.storyGuide', '1'); document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);
+  await page.click('.story-mode button:nth-child(2)');
   await page.waitFor(`document.querySelector('.you-pin')`);
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
   await page.waitFor(`document.querySelector('.mapart')`);

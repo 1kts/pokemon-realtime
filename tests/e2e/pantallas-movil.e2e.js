@@ -1,3 +1,4 @@
-// Todas las pantallas y ventanas en el móvil en horizontal (844×390 y 667×375, con pantalla táctil): nada se sale de
-// ancho, ningún botón está tapado y con el dedo miden lo bastante (ver barrido.js)
-module.exports = require('./barrido.js')([[844, 390, true], [667, 375, true]]);
+// Todas las pantallas y ventanas en el móvil en horizontal (844×390, con pantalla táctil): nada se sale de ancho, ningún botón está tapado, la barra legal no
+// pisa nada y sin problemas de accesibilidad graves (ver barrido.js; un tamaño por prueba, que juntos pasaban de los
+// 5 minutos que tiene cada una en el CI)
+module.exports = require('./barrido.js')([[844, 390, true]]);

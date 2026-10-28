@@ -57,7 +57,7 @@ Las pruebas usan el juego como lo haría un jugador, y el arnés lo comprueba:
   `page.fingerDown(selector)` y `page.fingerUp()` son toques con el dedo de verdad (un toque o una pulsación larga).
 - `tools/e2e-lint.js` (en `npm test`) cuenta los atajos: `.click()` dentro de `page.eval`, `ui.show('…')` y teclas
   inventadas. No pueden crecer; el que haga falta de verdad lleva `// atajo: motivo`.
-- `pantallas-movil.e2e.js` y `pantallas-ventana.e2e.js` (con `barrido.js`) recorren todas las pantallas y ventanas en 4 tamaños y falla si algo se sale de ancho, si un botón
+- `pantallas-*.e2e.js` (con `barrido.js`) recorren todas las pantallas y ventanas en 4 tamaños y falla si algo se sale de ancho, si un botón
   visible está tapado o si con el dedo un botón es demasiado pequeño. Con `E2E_GEOM=archivo.json` guarda dónde está cada
   cosa, para comparar un antes y un después al tocar el CSS.
 

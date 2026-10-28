@@ -11,6 +11,7 @@
 // Notación de las melodías: "nota:duración" en semicorcheas (un compás = 16), p. ej. 'E5:4 r:2'
 // (r = silencio). El bajo, los arpegios y la batería salen de los acordes de cada compás.
 import { storage } from './net.js';
+import { touchMode } from './touch.js';
 
 const KEY = 'arena.music';
 const DEFAULT_VOLUME = 0.45;
@@ -231,9 +232,12 @@ export class Music {
     this.buffers = new Map();
     // El del menú se pide ya (suena primero); el resto, cuando la página está tranquila. Los que solo suenan
     // enlazados se piden al empezar el primero de su cadena (da tiempo de sobra) y los de cada gimnasio, al
-    // entrar en su combate (son muchos y cada jugador oye pocos; si tarda, suena antes el sintetizado)
+    // entrar en su combate (son muchos y cada jugador oye pocos; si tarda, suena antes el sintetizado).
+    // En el móvil o con ahorro de datos, solo el de los salvajes (lo siguiente más probable): todos eran 15 MB
+    // nada más abrir el juego; los demás se piden al sonar
     this.preload('menu');
-    setTimeout(() => Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-')).forEach(n => this.preload(n)), 4000);
+    const light = touchMode() || !!(navigator.connection && navigator.connection.saveData);
+    setTimeout(() => (light ? ['wild'] : Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-'))).forEach(n => this.preload(n)), 4000);
     // Los navegadores no dejan sonar nada hasta que el jugador toca la página
     const unlock = () => { this.start(); };
     addEventListener('pointerdown', unlock, { capture: true });
@@ -294,13 +298,23 @@ export class Music {
     const file = FILES[name];
     if (!file) return Promise.resolve(null);
     if (!this.bytes.has(file)) {
-      this.bytes.set(file, fetch(`/music/${file}.mp3`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null));
+      // (si falla, p. ej. un corte de red en el móvil, se olvida para volver a intentarlo la próxima vez)
+      const got = fetch(`/music/${file}.mp3`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+      this.bytes.set(file, got);
+      got.then(b => { if (!b && this.bytes.get(file) === got) this.bytes.delete(file); });
     }
     return this.bytes.get(file);
   }
-  async decode(name) {
+  // (la que esté en marcha se comparte: si la grabación llega tarde, launch la vuelve a pedir y no se decodifica dos veces)
+  decode(name) {
     const file = FILES[name];
-    if (this.buffers.has(file)) return this.buffers.get(file);
+    if (this.buffers.has(file)) return Promise.resolve(this.buffers.get(file));
+    if (!this.decoding) this.decoding = new Map();
+    if (!this.decoding.has(file)) this.decoding.set(file, this.decodeFile(name).finally(() => this.decoding.delete(file)));
+    return this.decoding.get(file);
+  }
+  async decodeFile(name) {
+    const file = FILES[name];
     const raw = await this.preload(name);
     if (!raw || !this.ctx) return null;
     try {
@@ -318,7 +332,15 @@ export class Music {
     const load = !buf && FILES[name] ? Promise.race([this.decode(name), new Promise(r => setTimeout(r, FILE_WAIT, null))]) : buf;
     [buf] = await Promise.all([load, new Promise(r => setTimeout(r, wait))]);
     if (token !== this.token || !this.ctx) return;   // mientras tanto se ha pedido otro tema
-    if (buf) this.startFile(name, buf); else this.begin(name);
+    if (buf) return this.startFile(name, buf);
+    this.begin(name);
+    // (la grabación aún no ha llegado, p. ej. en el móvil, que no las precarga: cuando llegue, sustituye al
+    // sintetizado con un fundido, si sigue sonando este tema)
+    if (FILES[name]) this.decode(name).then(late => {
+      if (!late || token !== this.token || !this.ctx || !this.seq) return;
+      this.fadeOut();
+      this.startFile(name, late);
+    });
   }
   // Un bus que entra poco a poco
   fadeInBus() {

@@ -147,6 +147,7 @@ export const treasureViews = {
       : `<span>${t('Toca un premio para ver qué es.')}</span><small>${icon('gem', 14)} ${t('Misiones y cofres, la primera victoria online del día, líderes y Alto Mando, cada 7 de la Torre, subir de liga y los salvajes raros o shiny.')}</small>`);
     bar.append(info);
     const oddsBtn = el('button', 'tb-btn tz-odds-btn', `${icon('star', 16)}<span>${t('Probabilidades')}</span>`);
+    oddsBtn.setAttribute('aria-label', t('Probabilidades'));   // (en el móvil solo se ve la estrella)
     oddsBtn.onclick = () => this.treasureOdds(cur, mine, odds);
     bar.append(oddsBtn);
     const buy = el('div', 'tz-buy');

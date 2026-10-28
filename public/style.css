@@ -17,6 +17,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 1px solid var(-
 button:hover:not(:disabled) { border-color: var(--line-hi); background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.06)); }
 button:active:not(:disabled) { transform: translateY(1px) scale(.99); }
 button:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+.scroll:focus-visible { outline: 2px solid var(--yellow); outline-offset: -2px; }   /* (las zonas con scroll se recorren con el teclado) */
 button:disabled { opacity: .42; cursor: default; }
 button.primary { background: linear-gradient(180deg, #ffe066, #ffbf00); color: #1a1405; border: 0; font-weight: 700; padding: 12px 22px; box-shadow: 0 4px 0 var(--yellow-d), 0 8px 24px rgba(255, 190, 0, .25); letter-spacing: .2px; }
 button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #ffe88a, #ffc928); box-shadow: 0 4px 0 var(--yellow-d), 0 10px 30px rgba(255, 190, 0, .4); }
@@ -92,7 +93,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .howto li { margin: 5px 0; }
 
 /* Historia */
-.story { display: flex; flex-direction: column; height: 100%; }
+.story { display: flex; flex-direction: column; min-height: 100%; }   /* (crece si no cabe: con altura fija se salía por debajo de la barra legal) */
 .story-body { display: grid; grid-template-columns: 1fr 350px; gap: 14px; flex: 1; min-height: 0; }
 .map { position: relative; border-radius: var(--radius); overflow: hidden; min-height: 460px; border: 1px solid var(--line); box-shadow: var(--shadow);
   background: repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.04) 0 2px, transparent 2px 22px), linear-gradient(160deg, #2e7ac4, #1b4c8a); }

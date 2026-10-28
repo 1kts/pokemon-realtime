@@ -15,6 +15,7 @@ import { missionViews } from './missions.js';
 import { legalBarViews } from './legalbar.js';
 import { collectionViews } from './collection.js';
 import { treasureViews } from './treasure.js';
+import { storyPathViews } from './storypath.js';
 import { dropdown, typeDropdown } from './dropdown.js';
 import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
@@ -298,6 +299,7 @@ export class UI {
     // Lucky Spin (las ruletas de Tesoros), en su propia burbuja junto a la de idioma y pantalla completa (brilla si te llega para una tirada)
     const p = this.profile;
     const tz = el('button', 'hub-mod hub-tz' + (this.treasureReady() ? ' ready' : ''), `${WHEEL_SVG}<span><b>${t('Lucky Spin')}</b><small>${t('{n} gemas', { n: (p.gems || 0).toLocaleString() })}</small></span>`);
+    tz.setAttribute('aria-label', `${t('Lucky Spin')} · ${t('{n} gemas', { n: (p.gems || 0).toLocaleString() })}`);   // (en el móvil su texto no se ve)
     tz.onclick = () => this.openTreasure();
     const left = el('div', 'hub-left');
     left.append(tools, this.hoverTip(tz, `<b>${t('Lucky Spin')}</b><p>${t('Ruletas de skins, partículas, efectos y retratos que se giran con gemas.')}</p>`));
@@ -421,10 +423,11 @@ export class UI {
     sb.querySelector('.next-goal').remove();
     const tools = el('div', 'panel story-info');
 
-    // Mapa o lista: el mismo viaje, en el mapa de la región o paso a paso
-    const mode = this.storyMode || storage.get('arena.storyMode') || 'map';
+    // Camino, mapa o lista: el mismo viaje, como un camino de sitios en orden (lo que toca, claro), en el mapa de la
+    // región o paso a paso
+    const mode = this.storyMode || storage.get('arena.storyMode') || 'path';
     const seg = el('div', 'seg story-mode');
-    for (const [k, label] of [['map', t('Mapa')], ['list', t('Lista')]]) {
+    for (const [k, label] of [['path', t('Camino')], ['map', t('Mapa')], ['list', t('Lista')]]) {
       const b = el('button', mode === k ? 'sel' : '', label);
       b.onclick = () => { this.storyMode = k; storage.set('arena.storyMode', k); this.show('story'); };
       seg.append(b);
@@ -446,7 +449,7 @@ export class UI {
     // sobre; sin WebGL, el mapa SVG
     const stage = el('div', 'map-stage');
     map.append(stage);
-    mountMap3D(map, stage, region);
+    if (mode === 'map') mountMap3D(map, stage, region);   // (la maqueta 3D, solo si se ve)
     const art = REGION_ART[region];
     // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
     const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
@@ -502,6 +505,7 @@ export class UI {
         const dexes = [...new Set(n.wild.map(([d]) => d))];
         const got = dexes.filter(d => p.caught.includes(d)).length;
         extra = `<em class="caught-count${got === dexes.length ? ' full' : ''}">${got === dexes.length ? '✓' : got + '/' + dexes.length}</em>`;
+        b.style.setProperty('--prog', dexes.length ? got / dexes.length : 0);   // (el anillo de capturas alrededor de la ruta)
       }
       if (!unlocked) extra = `<em class="lock">${LOCK_SVG}</em>`;
       if (isNew) extra += `<em class="new-tag">${t('Nueva')}</em>`;
@@ -555,6 +559,7 @@ export class UI {
     // El selector Mapa / Lista va en la esquina de arriba a la izquierda de lo que se ve
     let view = map;
     if (mode === 'list') { view = el('div', 'story-listwrap'); view.append(this.storyList(region, nodes, prog, nextLeader, buttons, info)); }
+    if (mode === 'path') { view = el('div', 'story-pathwrap'); view.append(this.storyPath(region, nodes, prog, nextLeader, info)); }
     view.prepend(seg);
     body.append(view, side);
     const head = el('div', 'story-head');
@@ -562,7 +567,7 @@ export class UI {
     wrap.append(head, body);
     this.root.append(wrap);
     const next = map.querySelector('.node.next:not(.league-hq)') || map.querySelector('.node.route.new') || map.querySelector('.node.route:not(.locked)');
-    if (next) next.click();
+    if (next && mode !== 'path') next.click();   // (el camino elige solo lo que toca)
     if (mode === 'list') { const cur = body.querySelector('.sl-step.now'); if (cur) cur.scrollIntoView({ block: 'center' }); }
   }
 
@@ -1791,7 +1796,7 @@ export class UI {
   }
 }
 
-Object.assign(UI.prototype, friendViews, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews, treasureViews, monSheetViews);
+Object.assign(UI.prototype, storyPathViews, friendViews, towerViews, accountViews, pokedexViews, bagViews, achievementViews, missionViews, legalBarViews, collectionViews, dailyViews, tutorialViews, treasureViews, monSheetViews);
 
 // Plano en miniatura de una arena (para elegirla en Práctica): suelo del color de su tipo, hierba, agua, hielo,
 // veneno, telarañas y lava, rocas, baldosas de curación, placas eléctricas, teletransportes y el haz del faro
