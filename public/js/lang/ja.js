@@ -257,6 +257,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'メニューがスマホの画面に合わせて表示されます。横向きでも縦向きでも、ヘッダーがコンパクトになり、ストーリーのマップが画面に収まります。',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'ジョイスティックで移動 · わざをタップで相手に使い、ドラッグでねらう · チームをタップで交代',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': 'モンスターボールは やせいの ポケモンとの バトルで つかいます：大きな ボールを タップで なげ、ほかの ボールを タップで かえる。',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': '<b>ジョイスティック</b>で移動：左に指を置いて すべらせよう',
+    'Toca el <b>botón grande</b> para atacar al muñeco': '<b>大きなボタン</b>をタップして 人形を こうげき',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': 'ほかの わざも ためそう：タップ、または ドラッグで ねらう',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': '<b>まもる</b>をタップ：ダメージを ほとんど防げます',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': 'ポケモンを交代：左上の チームの 2番目の顔を タップ',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>ジョイスティック</b>（左）で移動',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': 'わざを タップで 相手に使い、ドラッグで ねらう',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>まもる</b>は 小さなボタン · チームの顔を タップで 交代',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': '大きな ボールを タップで なげ、ほかの ボールで かえる（やせい） · 赤い旗で こうさん',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': 'たおして けいけんちを えるか、HPを へらして モンスターボールを なげよう。ボールは {balls}こ。色違い：{n}分の1。',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': '大きな ボールを タップで なげ、ほかの ボールを タップで かえる。ボールを 当てよう。',
     'Gira el móvil para jugar en horizontal': 'スマホを横向きにしてプレイしてね',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'にぎやかになったマップ',

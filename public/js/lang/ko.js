@@ -257,6 +257,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': '메뉴가 휴대폰 화면에 맞춰져요. 가로와 세로 모두 헤더가 더 작아지고 스토리 지도가 화면에 다 들어와요.',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': '조이스틱으로 이동 · 기술을 탭하면 상대에게 쓰고, 드래그하면 조준해요 · 팀을 탭하면 교체해요',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': '몬스터볼은 야생 포켓몬과의 배틀에서 써요: 큰 볼을 탭하면 던지고, 다른 볼을 탭하면 바꿔요.',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': '<b>조이스틱</b>으로 이동: 왼쪽에 손가락을 대고 밀어요',
+    'Toca el <b>botón grande</b> para atacar al muñeco': '<b>큰 버튼</b>을 탭해서 인형을 공격해요',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': '다른 기술도 써 봐요: 탭하거나 드래그해서 조준해요',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': '<b>방어</b>를 탭: 거의 모든 피해를 막아요',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': '포켓몬 교체: 왼쪽 위 팀의 두 번째 얼굴을 탭해요',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>조이스틱</b>(왼쪽)으로 이동',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': '기술을 탭하면 상대에게 쓰고, 드래그하면 조준해요',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>방어</b>는 작은 버튼 · 팀 얼굴을 탭하면 포켓몬 교체',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': '큰 볼을 탭하면 던지고 다른 볼로 바꿔요(야생) · 빨간 깃발은 항복',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': '쓰러뜨려 경험치를 얻거나, HP를 줄이고 몬스터볼을 던져요. 볼 {balls}개. 색이 다른 포켓몬: {n}분의 1.',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': '큰 볼을 탭하면 던지고, 다른 볼을 탭하면 바꿔요. 볼이 맞아야 해요.',
     'Gira el móvil para jugar en horizontal': '휴대폰을 가로로 돌려서 플레이하세요',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': '더 생생해진 지도',

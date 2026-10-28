@@ -256,6 +256,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': '菜单会适配手机屏幕，横屏竖屏都可以：标题栏更紧凑，故事地图也能完整显示。',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': '用摇杆移动 · 点按招式即对对手使用，拖动可瞄准 · 点按队伍可替换',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': '精灵球用于与野生宝可梦的对战：点按大的球即可投掷，点按其他球可切换。',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': '用<b>摇杆</b>移动：手指放在左侧并滑动',
+    'Toca el <b>botón grande</b> para atacar al muñeco': '点按<b>大按钮</b>攻击假人',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': '试试其他招式：点按，或拖动来瞄准',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': '点按<b>守住</b>：几乎能挡下所有伤害',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': '替换宝可梦：点按左上方队伍中的第二个头像',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>摇杆</b>（左侧）移动',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': '点按招式即对对手使用，拖动可瞄准',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>守住</b>是小按钮 · 点按队伍头像可替换宝可梦',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': '点按大的球投掷，点按其他球切换（野生） · 红旗：认输',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': '打倒它获得经验，或削减它的HP后投掷精灵球。你有 {balls} 个球。闪光：{n} 分之一。',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': '点按大的球投掷，点按其他球切换。球必须命中目标。',
     'Gira el móvil para jugar en horizontal': '请把手机横过来游玩',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': '更热闹的地图',
