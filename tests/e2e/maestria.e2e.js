@@ -69,13 +69,14 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`document.querySelectorAll('.ms-retos .lg-row.got').length === 5`), 'en la ficha, la pestaña Retos enseña los de su línea con lo ya recogido');
   await page.eval(`[...document.querySelectorAll('.ms-tab')].find(b => /Vestuario/.test(b.textContent)).click(); true`);
   await page.waitFor(`[...document.querySelectorAll('.ms-wear.skin')].some(b => /Oro/.test(b.textContent))`);
-  ok(await page.eval(`!!document.querySelector('.ms-wear.skin canvas.skin-oro') && document.querySelectorAll('.ms-wear.skin.locked').length >= 2`), 'en Vestuario cada skin se ve sobre el Pokémon; las que no tienes, apagadas');
+  // (con WebGL la skin la pinta el shader en el canvas, skinfx-* es su brillo; sin WebGL, el filtro CSS skin-*)
+  ok(await page.eval(`!!document.querySelector('.ms-wear.skin canvas.skinfx-oro[data-fx], .ms-wear.skin canvas.skin-oro') && document.querySelectorAll('.ms-wear.skin.locked').length >= 2`), 'en Vestuario cada skin se ve sobre el Pokémon; las que no tienes, apagadas');
   await page.eval(`[...document.querySelectorAll('.ms-wear.skin')].find(b => /Oro/.test(b.textContent)).click(); true`);
   await page.waitFor(`${p}.skins[4] === 'oro'`);
   ok(true, 'la skin Oro se pone a la línea de Charmander desde su Vestuario');
   await page.eval(`window.__app.ui.closeSheet(); window.__app.ui.show('menu'); true`);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`!!document.querySelector('.menu-card.story .art.skin-oro')`), 'y se ve en la tarjeta de Historia con tu Charmander');
+  ok(await page.eval(`!!document.querySelector('.menu-card.story .art.skinfx-oro[data-fx], .menu-card.story .art.skin-oro')`), 'y se ve en la tarjeta de Historia con tu Charmander');
 
   // En combate: el sprite lleva la skin (práctica con Charizard, de la misma línea)
   await page.eval(`window.__app.net.send({ t: 'practice', dexes: [6], skill: 0.1 }); true`);

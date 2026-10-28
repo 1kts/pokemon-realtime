@@ -268,7 +268,7 @@ export function emitFx(scene, type, pal, pos, w, h, dt, vis = 1) {
   }
 }
 
-// Dibujo de la skin Elemental según el tipo de la línea (shader de actors.js y menufx.js): 0 llamas, 1 agua,
+// Dibujo de la skin Elemental según el tipo de la línea (shader de skinshader.js): 0 llamas, 1 agua,
 // 2 chispa, 3 naturaleza, 4 espíritu
 export const ELEM_FAMILY = { fuego: 0, dragon: 0, lucha: 0, agua: 1, hielo: 1, volador: 1, electrico: 2, psiquico: 2, acero: 2, hada: 2, normal: 2,
   planta: 3, bicho: 3, veneno: 3, tierra: 3, roca: 3, fantasma: 4, siniestro: 4 };

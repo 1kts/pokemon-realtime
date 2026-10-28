@@ -1,20 +1,17 @@
-// Skins y partículas en los menús (retratos y avatar): lo mismo que el combate (actors.js) pero en el canvas
-// del retrato. La Elemental recolorea el sprite con la paleta del tipo de su línea, con parpadeo y vetas que
-// suben y un contorno fino que brilla; Oro (con su reflejo que sube), Holo y Galaxia, como en el shader; las partículas (otro premio, con cualquier skin) son
-// pequeñas de pixel art por encima (brasas, burbujas, chispas, hojas, copos, humo o destellos). Los retratos animados (animatedPortrait) llaman a c.fx tras
-// cada fotograma; los fijos (portrait) se repintan aquí desde su primer dibujo.
-import { elementalPalette, ELEM_FAMILY } from './skinfx.js';
+// Skins y partículas en los menús (retratos y avatar). La skin es el mismo shader que en combate (skinshader.js):
+// un renderer WebGL fuera de la página pinta el fotograma que enseña el retrato (c.sprite, ver sprites.js) con su
+// skin, a la resolución del pixel art y con un margen para las llamas y el contorno de la Elemental, y se copia
+// escalado al canvas del retrato en lugar del sprite. Los retratos que se ven van todos en una pasada (un atlas),
+// a FPS. Las partículas (otro premio, con cualquier skin) son pequeñas de pixel art por encima (brasas, burbujas,
+// chispas, hojas, copos, humo o destellos). Sin WebGL, la skin es el filtro CSS skin-* (skinCss).
+import * as THREE from 'three';
+import { elementalPalette } from './skinfx.js';
+import { skinUniforms, skinMaterial, setSkin } from './skinshader.js';
 
 const FPS = 24;
+const M = 3;            // margen alrededor del fotograma, en píxeles de arte (llamas y contorno de la Elemental)
+const ATLAS_W = 1024;   // ancho del atlas: los fotogramas se colocan por filas
 const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-const hash = (x, y) => { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); };
-function noise(x, y) {
-  const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
-  const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-  const a = hash(ix, iy), b = hash(ix + 1, iy), c = hash(ix, iy + 1), d = hash(ix + 1, iy + 1);
-  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
-}
-const mix = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k, p[2] + (q[2] - p[2]) * k];
 
 // Partícula de cada tipo: forma (celdas de [dx, dy, 0 borde | 1 centro]), colores y movimiento.
 // Cada tipo tiene las suyas (normal, las genéricas), aunque de momento solo se reparten las del tipo de la línea
@@ -45,174 +42,198 @@ function kind(type) {
   }
 }
 
-// Color de un píxel con la skin, a partir de su color original (0-255) y su luminosidad l (0-1): lo mismo
-// que el shader del combate (actors.js). x, y: el píxel de arte; t: segundos; w, h: tamaño en píxeles de arte
-const ORO_LO = [41, 18, 0], ORO_MID = [242, 153, 13], ORO_HI = [255, 237, 140];
-const GAL_LO = [5, 8, 31], GAL_HI = [46, 61, 133], GAL_PINK = [242, 64, 191], GAL_CYAN = [51, 217, 255];
-// Ruido por capas (el skinFbm del shader): las nubes de la Galaxia
-const fbm = (x, y) => (0.5 * noise(x, y) + 0.25 * noise(x * 2, y * 2) + 0.125 * noise(x * 4, y * 4)) / 0.875;
-const sstep = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
-function skinColor(skin, rgb, l, x, y, t, w, h) {
-  if (skin === 'oro') {
-    const g = sstep(0.05, 0.9, l);
-    let c = mix(mix(ORO_LO, ORO_MID, sstep(0, 0.55, g)), ORO_HI, sstep(0.55, 1, g));
-    // El reflejo: una franja blanca algo inclinada que sube por el sprite cada 2,5 s
-    const band = Math.pow(Math.max(0, Math.sin(((h - y) + x * 0.5) / (h * 1.5) * Math.PI * 2 - t * 2.5)), 10);
-    return mix(c, [255, 250, 225], band * 0.85);
-  }
-  if (skin === 'holo') {
-    const k = l * 1.2 + (x + y) / (w + h) + t * 0.35;
-    return [0, 0.33, 0.67].map((o, i) => rgb[i] * 0.45 + (0.5 + 0.5 * Math.cos(6.2831 * (o + k))) * 255 * 0.7);
-  }
-  // galaxia: cielo de noche azul, nubes de nebulosa magenta y cian que se desplazan, estrellas que parpadean
-  // y alguna grande en cruz (como el shader: y hacia arriba)
-  const qx = x, qy = Math.round(h) - y;
-  let c = mix(GAL_LO, GAL_HI, l);
-  const n1 = fbm(qx * 0.08 + t * 0.15, qy * 0.08 - t * 0.05), n2 = fbm(qx * 0.11 - t * 0.1 + 5, qy * 0.09 + t * 0.07 + 3);
-  c = mix(c, GAL_PINK.map(v => v * (0.55 + 0.6 * l)), sstep(0.5, 0.85, n1) * 0.75);
-  c = mix(c, GAL_CYAN.map(v => v * (0.55 + 0.6 * l)), sstep(0.55, 0.9, n2) * 0.6);
-  const hs = hash(qx, qy);
-  if (hs > 0.965) c = mix(c, [255, 255, 255], 0.5 + 0.5 * Math.sin(t * 4 + hs * 40));
-  const bx = Math.floor(qx / 5), by = Math.floor(qy / 5), hb = hash(bx + 31.7, by + 31.7);
-  if (hb > 0.82) {
-    const k = Math.max(0, Math.sin(t * 2 + hb * 50)), m = Math.abs(qx - bx * 5 - 2) + Math.abs(qy - by * 5 - 2);
-    if (m === 0) c = mix(c, [255, 255, 255], k); else if (m === 1) c = mix(c, [217, 242, 255], k * 0.65);
-  }
-  return c;
+// Skin con filtro CSS: para las ilustraciones (sin canvas) y si no hay WebGL
+export function skinCss(node, skin, type) {
+  if (skin === 'elemental') { node.classList.add('skin-elemental'); node.style.setProperty('--fx', Data.TYPE_COLOR[type]); }
+  else if (skin) node.classList.add('skin-' + skin);
 }
 
-// Color de un píxel con la Elemental (el shader de actors.js): paleta según la luz l y el dibujo de su familia.
-// qx, qy: píxel de arte con y hacia arriba
-function elementalColor(pal, fam, l, qx, qy, t) {
-  const r = l * 3, j = Math.min(2, Math.floor(r));
-  let c = mix(pal[j], pal[j + 1], r - j);
-  c = mix(c, pal[3], 0.3 * l * (0.5 + 0.5 * Math.sin(qy * 0.45 + t * 9 + qx * 0.21)));
-  const up = k => pal[k].map(v => v * (k === 3 ? 1.15 : 1.1));
-  if (fam === 0) {
-    const v = noise(qx * 0.3, qy * 0.25 - t * 6) + 0.5 * noise(qx * 0.7 + 2, qy * 0.5 - t * 10);
-    if (v > 1.12) c = up(3); else if (v > 0.92) c = mix(c, pal[2].map(x => x * 1.2), 0.6);
-  } else if (fam === 1) {
-    const n = noise(qx * 0.18 + t * 0.6, qy * 0.18 + t * 0.4) + noise(qx * 0.23 - t * 0.5 + 7, qy * 0.21 + t * 0.3 + 7);
-    const line = 1 - Math.abs(n - 1) * 4;
-    if (line > 0.6) c = mix(c, up(3), 0.8); else if (line > 0.3) c = mix(c, up(2), 0.4);
-  } else if (fam === 2) {
-    const s6 = Math.floor(t * 6);
-    const r2 = 1 - Math.abs(noise(qx * 0.22 + s6 * 3.7, qy * 0.22) * 2 - 1);
-    if (hash(s6, 1) > 0.45) { if (r2 > 0.93) c = mix(pal[3], [255, 255, 255], 0.6).map(v => v * 1.1); else if (r2 > 0.84) c = mix(c, pal[3].map(v => v * 1.2), 0.7); }
-    c = mix(c, pal[3], 0.15 * (0.5 + 0.5 * Math.sin(t * 14 + qx * 0.9)));
-  } else if (fam === 3) {
-    const r2 = 1 - Math.abs(noise(qx * 0.2, qy * 0.2) * 2 - 1), pulse = 0.5 + 0.5 * Math.sin(qy * 0.35 - t * 3);
-    if (r2 > 0.88) c = mix(c, up(3), 0.35 + 0.65 * pulse); else if (r2 > 0.8) c = mix(c, pal[2], 0.3 * pulse);
-  } else {
-    const n = fbm(qx * 0.1 + Math.sin(t * 0.8) * 0.6, qy * 0.1 - t * 0.4);
-    c = mix(c, pal[0], sstep(0.55, 0.8, n) * 0.75);
-    if (n < 0.28) c = mix(c, up(3).map(v => v * 1.04), 0.6);
+// ---------- El renderer de las skins: uno para todos los retratos, creado al primero que lleva skin ----------
+let GL = null, noGL = false;
+// El renderer (o null si no hay WebGL)
+export function skinGL() {
+  if (GL || noGL) return GL;
+  try {
+    const canvas = document.createElement('canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, preserveDrawingBuffer: true, powerPreference: 'low-power' });
+    renderer.setPixelRatio(1);
+    renderer.autoClear = false;
+    renderer.setClearColor(0x000000, 0);
+    const u = skinUniforms();
+    const mat = skinMaterial(new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.5, toneMapped: false }), u);
+    const scene = new THREE.Scene();
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat));
+    // copy: el atlas pasado a 2D (una sola lectura de la GPU por pasada; de ahí se copia a cada retrato)
+    GL = { canvas, renderer, u, mat, scene, camera: new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, -1, 1), copy: document.createElement('canvas'), textures: new Map() };
+    // Si se pierde el contexto, las skins pasan al filtro CSS
+    canvas.addEventListener('webglcontextlost', () => {
+      noGL = true; GL = null;
+      for (const e of entries) if (e.skin) { e.node.classList.remove('skinfx-' + e.skin); skinCss(e.node, e.skin, e.type); e.skin = null; }
+    });
+  } catch { noGL = true; }
+  return GL;
+}
+
+// Textura de una hoja de sprites (como texFor de actors.js); las que no se usan en un rato se liberan
+function texture(img, now) {
+  let t = GL.textures.get(img);
+  if (!t) {
+    t = new THREE.Texture(img);
+    t.magFilter = THREE.NearestFilter;
+    t.minFilter = THREE.NearestFilter;
+    t.generateMipmaps = false;
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.needsUpdate = true;
+    GL.textures.set(img, t);
   }
-  return c;
+  t.userData.used = now;
+  return t;
+}
+
+// Pinta con su skin el fotograma de cada retrato de la lista en el atlas. Devuelve dónde quedó cada uno
+// ({ x, y, w, h } en GL.copy); los que enseñan lo mismo comparten sitio
+function skinPass(list, now) {
+  const out = new Map();
+  if (!list.length || !skinGL()) return out;
+  const { renderer, u, mat, scene, camera, canvas, copy } = GL;
+  const tiles = new Map();
+  let x = 0, y = 0, rowH = 0, w = 0;
+  for (const e of list) {
+    const s = e.c.sprite, key = `${s.img.src}|${s.sx}|${s.sy}|${s.sw}|${s.sh}|${e.skin}|${e.type}`;
+    let tile = tiles.get(key);
+    if (!tile) {
+      const tw = s.sw + 2 * M, th = s.sh + 2 * M;
+      if (x + tw > ATLAS_W) { x = 0; y += rowH; rowH = 0; }
+      tile = { s, e, x, y, w: tw, h: th };
+      tiles.set(key, tile);
+      x += tw; rowH = Math.max(rowH, th); w = Math.max(w, x);
+    }
+    out.set(e, tile);
+  }
+  const h = y + rowH;
+  if (canvas.width < w || canvas.height < h) renderer.setSize(Math.max(canvas.width, w), Math.max(canvas.height, h), false);
+  const H = canvas.height;
+  renderer.setScissorTest(false);
+  renderer.clear();
+  renderer.setScissorTest(true);
+  u.uTime.value = now / 1000;
+  for (const { s, e, x, y, w, h } of tiles.values()) {
+    const iw = s.img.naturalWidth, ih = s.img.naturalHeight, tex = texture(s.img, now);
+    // El plano enseña el fotograma con M píxeles de más por cada lado (uFrame: solo el fotograma)
+    tex.offset.set((s.sx - M) / iw, 1 - (s.sy + s.sh + M) / ih);
+    tex.repeat.set(w / iw, h / ih);
+    mat.map = tex;
+    setSkin(u, e.skin, e.type);
+    u.uTexel.value.set(1 / iw, 1 / ih);
+    u.uFrame.value.set(s.sx / iw, 1 - (s.sy + s.sh) / ih, s.sw / iw, s.sh / ih);
+    renderer.setViewport(x, H - y - h, w, h);   // (en WebGL, y desde abajo)
+    renderer.setScissor(x, H - y - h, w, h);
+    renderer.render(scene, camera);
+  }
+  if (copy.width !== canvas.width || copy.height !== canvas.height) { copy.width = canvas.width; copy.height = canvas.height; }
+  const g = copy.getContext('2d');
+  g.clearRect(0, 0, copy.width, copy.height);
+  g.drawImage(canvas, 0, 0);
+  for (const [img, t] of GL.textures) if (now - t.userData.used > 20000) { t.dispose(); GL.textures.delete(img); }
+  return out;
+}
+
+// Píxeles opacos de un fotograma (en píxeles de arte), para que las partículas nazcan sobre el sprite
+const solid = new Map();
+let scratch = null;
+function solidCells(s) {
+  const key = `${s.img.src}|${s.sx}|${s.sy}`;
+  let list = solid.get(key);
+  if (!list) {
+    scratch = scratch || document.createElement('canvas');
+    scratch.width = s.sw; scratch.height = s.sh;
+    const g = scratch.getContext('2d', { willReadFrequently: true });
+    g.drawImage(s.img, s.sx, s.sy, s.sw, s.sh, 0, 0, s.sw, s.sh);
+    const d = g.getImageData(0, 0, s.sw, s.sh).data;
+    list = [];
+    for (let i = 0; i < s.sw * s.sh; i++) if (d[i * 4 + 3] >= 128) list.push(i);
+    if (solid.size > 600) solid.clear();
+    solid.set(key, list);
+  }
+  return list;
+}
+
+// Partículas de un retrato: nacen en un punto del sprite y se mueven un poco, sin salir de él apenas
+function particles(e, g, dt) {
+  const { k, ppal, parts, c } = e, s = c.sprite, size = c.width;
+  const px = Math.max(1, Math.round(size / 40));   // un píxel de arte, más o menos
+  const cells = solidCells(s), sc = s.dw / s.sw;
+  if (cells.length && Math.random() < dt * 14) {
+    const i = cells[Math.floor(Math.random() * cells.length)];
+    parts.push({ x: s.dx + (i % s.sw + Math.random()) * sc, y: s.dy + (Math.floor(i / s.sw) + Math.random()) * sc, life: 0.45 + Math.random() * 0.3, t: 0,
+      shape: k.shapes[Math.floor(Math.random() * k.shapes.length)],
+      vx: (Math.random() - 0.5) * 2 * k.vx * size * 0.15, vy: k.vy * size * 0.15 * (0.6 + Math.random() * 0.6), seed: Math.random() * 6 });
+  }
+  for (let n = parts.length - 1; n >= 0; n--) {
+    const q = parts[n];
+    q.t += dt;
+    if (q.t >= q.life) { parts.splice(n, 1); continue; }
+    q.x += (q.vx + (k.wobble ? Math.sin((q.t + q.seed) * 8) * size * 0.05 : 0)) * dt;
+    q.y += q.vy * dt;
+    g.globalAlpha = Math.min(1, (1 - q.t / q.life) * 2);
+    for (const [dx, dy, core] of q.shape) {
+      const col = core ? ppal[3] : ppal[2];
+      g.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
+      g.fillRect(Math.round(q.x + dx * px), Math.round(q.y + dy * px), px, px);
+    }
+    g.globalAlpha = 1;
+  }
+}
+
+// ---------- Los retratos con efectos: un bucle para todos, solo los que están en la página y se ven ----------
+const entries = new Set();
+const byCanvas = new WeakMap();
+const io = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(list => {
+  for (const x of list) { const e = byCanvas.get(x.target); if (e) e.visible = x.isIntersecting; }
+}) : null;
+let running = false, last = 0;
+function loop(now) {
+  if (!entries.size) { running = false; return; }
+  requestAnimationFrame(loop);
+  if (now - last < 1000 / FPS) return;
+  last = now;
+  const live = [];
+  for (const e of entries) {
+    if (!e.c.isConnected) {
+      if (now - e.t0 > 1500) { entries.delete(e); if (io) io.unobserve(e.c); }
+      continue;
+    }
+    if (e.visible && e.c.sprite && e.c.sprite.img.naturalWidth) live.push(e);
+  }
+  const tiles = skinPass(live.filter(e => e.skin), now);
+  for (const e of live) {
+    const { c } = e, s = c.sprite, g = c.getContext('2d'), tile = tiles.get(e);
+    const dt = e.last ? Math.min(0.1, (now - e.last) / 1000) : 0;
+    e.last = now;
+    g.imageSmoothingEnabled = false;
+    g.clearRect(0, 0, c.width, c.height);
+    if (tile && GL) {
+      const k = s.dw / s.sw;
+      g.drawImage(GL.copy, tile.x, tile.y, tile.w, tile.h, s.dx - M * k, s.dy - M * k, tile.w * k, tile.h * k);
+    } else g.drawImage(s.img, s.sx, s.sy, s.sw, s.sh, s.dx, s.dy, s.dw, s.dh);
+    if (e.k) particles(e, g, dt);
+  }
 }
 
 // Pone los efectos a un canvas de retrato (o al que haya dentro del nodo). skin: 'elemental', 'oro', 'holo',
 // 'galaxia' o null (se pinta en el propio canvas, para que el filtro no toque las partículas); skinType: el
-// tipo de la paleta Elemental; parts: el tipo de las partículas o null. Sus colores son siempre los de su
-// tipo, con cualquier skin
+// tipo de la línea (paleta y dibujo de la Elemental); parts: el tipo de las partículas o null. Sus colores son
+// siempre los de su tipo, con cualquier skin. Con skin hace falta WebGL (skinGL): si no, la pone applySkin con CSS
 export function portraitFx(node, { skin = null, skinType = null, parts = null } = {}) {
   const c = node instanceof HTMLCanvasElement ? node : node.querySelector && node.querySelector('canvas');
   if (!c || c.dataset.fx) return;
+  if (skin && !skinGL()) skin = null;
+  if (!skin && !parts) return;
   c.dataset.fx = '1';
-  const pal = skin === 'elemental' ? elementalPalette(skinType, Data.TYPE_COLOR[skinType]).map(hex) : null;
-  const fam = ELEM_FAMILY[skinType] ?? 2;
-  const ppal = parts ? elementalPalette(parts, Data.TYPE_COLOR[parts]).map(hex) : null;
-  const k = parts ? kind(parts) : null;
-  const recolor = !!skin;
-  const particles = [];
-  const size = c.width;
-  const px = Math.max(1, Math.round(size / 40));   // un píxel de arte, más o menos
-  let base = null, last = 0, t0 = performance.now();
-
-  const paint = (g, now) => {
-    const w = c.width, h = c.height, t = (now - t0) / 1000;
-    const img = g.getImageData(0, 0, w, h), d = img.data;
-    const solid = new Uint8Array(w * h);
-    for (let i = 0; i < w * h; i++) solid[i] = d[i * 4 + 3] >= 128 ? 1 : 0;
-    const on = (x, y) => x >= 0 && y >= 0 && x < w && y < h && solid[y * w + x] === 1;
-    const opaque = [];
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const i = y * w + x, p = i * 4;
-      const cx = Math.floor(x / px), cy = Math.floor(y / px);
-      if (solid[i] && !recolor) { opaque.push(i); continue; }
-      if (solid[i]) {
-        opaque.push(i);
-        const l = Math.min(1, Math.max(0, ((0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2]) / 255 - 0.08) / 0.84));
-        let col;
-        col = pal ? elementalColor(pal, fam, l, cx, Math.round(h / px) - cy, t) : skinColor(skin, [d[p], d[p + 1], d[p + 2]], l, cx, cy, t, w / px, h / px);
-        d[p] = Math.min(255, col[0]); d[p + 1] = Math.min(255, col[1]); d[p + 2] = Math.min(255, col[2]);
-      } else if (pal) {
-        // Fuera de la silueta: llamas y espíritu, lenguas hacia arriba (hasta 3 px de arte); el resto, contorno de 1 px
-        const qx = cx, qy = Math.round(h / px) - cy;
-        let below = 0;
-        if (fam === 0 || fam === 4) for (let k = 1; k <= 3 && !below; k++) if (on(x, y + k * px)) below = k;
-        if (below) {
-          const f = fam === 0 ? noise(qx * 0.55, qy * 0.35 - t * 9) : noise(qx * 0.4 + t * 0.7, qy * 0.25 - t * 3);
-          if (f > 0.28 + 0.17 * below) {
-            const col = fam === 4 ? (below === 1 ? pal[2] : pal[1]) : below === 1 ? pal[3] : below === 2 ? pal[2].map(v => v * 1.2) : pal[1].map(v => v * 1.3);
-            d[p] = Math.min(255, col[0]); d[p + 1] = Math.min(255, col[1]); d[p + 2] = Math.min(255, col[2]); d[p + 3] = fam === 4 ? 190 : 255;
-          }
-        } else if (on(x - px, y) || on(x + px, y) || on(x, y - px) || on(x, y + px)) {
-          const v = noise(qx * 0.6, qy * 0.4 - t * 7);
-          if (v > 0.45) { const col = v > 0.75 ? pal[3] : pal[2]; d[p] = col[0]; d[p + 1] = col[1]; d[p + 2] = col[2]; d[p + 3] = 255; }
-        }
-      }
-    }
-    if (recolor) g.putImageData(img, 0, 0);
-    // Partículas: nacen en un punto del sprite y se mueven un poco, sin salir de él apenas
-    const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
-    if (k && opaque.length && Math.random() < dt * 14) {
-      const i = opaque[Math.floor(Math.random() * opaque.length)];
-      particles.push({ x: i % w, y: Math.floor(i / w), life: 0.45 + Math.random() * 0.3, t: 0, shape: k.shapes[Math.floor(Math.random() * k.shapes.length)],
-        vx: (Math.random() - 0.5) * 2 * k.vx * size * 0.15, vy: k.vy * size * 0.15 * (0.6 + Math.random() * 0.6), seed: Math.random() * 6 });
-    }
-    for (let n = particles.length - 1; n >= 0; n--) {
-      const q = particles[n];
-      q.t += dt;
-      if (q.t >= q.life) { particles.splice(n, 1); continue; }
-      q.x += (q.vx + (k.wobble ? Math.sin((q.t + q.seed) * 8) * size * 0.05 : 0)) * dt;
-      q.y += q.vy * dt;
-      g.globalAlpha = Math.min(1, (1 - q.t / q.life) * 2);
-      for (const [dx, dy, core] of q.shape) {
-        const col = core ? ppal[3] : ppal[2];
-        g.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
-        g.fillRect(Math.round(q.x + dx * px), Math.round(q.y + dy * px), px, px);
-      }
-      g.globalAlpha = 1;
-    }
-    last = now;
-  };
-
-  if (c.dataset.anim) {
-    // Retrato animado: tras cada fotograma (como mucho a FPS: si no, el fotograma queda sin efecto)
-    let prev = null;
-    c.fx = (g, now) => {
-      if (prev && now - last < 1000 / FPS) { g.putImageData(prev, 0, 0); return; }
-      paint(g, now);
-      prev = g.getImageData(0, 0, c.width, c.height);
-    };
-    return;
-  }
-  // Retrato fijo: se guarda su primer dibujo y se repinta encima mientras esté en la página
-  const loop = now => {
-    if (!c.isConnected && now - t0 > 1500) return;
-    requestAnimationFrame(loop);
-    if (now - last < 1000 / FPS) return;
-    const g = c.getContext('2d');
-    if (!base) {
-      const probe = g.getImageData(0, 0, c.width, c.height).data;
-      let any = false;
-      for (let i = 3; i < probe.length; i += 4) if (probe[i]) { any = true; break; }
-      if (!any) return;
-      base = g.getImageData(0, 0, c.width, c.height);
-    }
-    g.putImageData(base, 0, 0);
-    paint(g, now);
-  };
-  requestAnimationFrame(loop);
+  const e = { c, node, skin, type: skinType, k: parts ? kind(parts) : null, ppal: parts ? elementalPalette(parts, Data.TYPE_COLOR[parts]).map(hex) : null,
+    parts: [], t0: performance.now(), last: 0, visible: true };
+  entries.add(e);
+  byCanvas.set(c, e);
+  if (io) io.observe(c);
+  if (!running) { running = true; requestAnimationFrame(loop); }
 }

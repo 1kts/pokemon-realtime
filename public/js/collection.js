@@ -36,7 +36,7 @@ export const collectionViews = {
     return lineRoots(p).reduce((n, r) => n + Data.masteryReady(p, r).length, 0);
   },
 
-  // Pone la skin y las partículas de su línea a un retrato (en los menús; en combate la pinta el shader de actors.js)
+  // Pone la skin y las partículas de su línea a un retrato (el mismo shader en los menús que en combate, skinshader.js)
   skinned(node, dex) {
     return applySkin(node, Data.skinOf(this.profile, dex), dex, Data.particlesOf(this.profile, dex));
   },

@@ -53,6 +53,9 @@ export function preload(list) {
   })));
 }
 
+// Los retratos dejan en c.sprite el fotograma que enseñan: la hoja (img), el trozo de la hoja (sx, sy, sw, sh) y
+// dónde va en el canvas (dx, dy, dw, dh). Con skin o partículas (c.dataset.fx), los pinta menufx.js a partir de él.
+
 // Retrato: primer fotograma de Idle mirando abajo, escalado sin suavizar.
 // opts: { shiny, silhouette (negro, para los misteriosos), className, anim (otra animación, p. ej. Sleep) }
 export function portrait(dex, size = 64, opts = {}) {
@@ -68,13 +71,14 @@ export function portrait(dex, size = 64, opts = {}) {
     const scale = Math.floor(size / Math.max(m.w, m.h) * 1.6 * 10) / 10;
     const w = m.w * scale, h = m.h * scale;
     // Centrar sobre el ancla (los pies) un poco por debajo del centro
-    g.drawImage(img, 0, 0, m.w, m.h, Math.round(size / 2 - m.ax * scale), Math.round(size * 0.78 - m.ay * scale), w, h);
+    const dx = Math.round(size / 2 - m.ax * scale), dy = Math.round(size * 0.78 - m.ay * scale);
+    g.drawImage(img, 0, 0, m.w, m.h, dx, dy, w, h);
     if (opts.silhouette) {
       g.globalCompositeOperation = 'source-in';
       g.fillStyle = '#10141e';
       g.fillRect(0, 0, size, size);
       g.globalCompositeOperation = 'source-over';
-    }
+    } else c.sprite = { img, sx: 0, sy: 0, sw: m.w, sh: m.h, dx, dy, dw: w, dh: h };
   };
   if (img.complete && img.naturalWidth) draw(); else img.addEventListener('load', draw, { once: true });
   return c;
@@ -153,12 +157,13 @@ export function animatedPortrait(dex, size = 96, anim = 'Idle', shiny = false) {
     if (!c.isConnected && now - t0 > 1000) return;
     requestAnimationFrame(loop);
     if (!img.complete || !img.naturalWidth) return;
+    const f = frameAt(m, now - t0, false);
+    const s = c.sprite = { img, sx: f * m.w, sy: 0, sw: m.w, sh: m.h, dx: Math.round(size / 2 - m.ax * scale), dy: Math.round(size * 0.8 - m.ay * scale), dw: m.w * scale, dh: m.h * scale };
+    if (c.dataset.fx) return;   // con skin o partículas lo pinta menufx.js
     const g = c.getContext('2d');
     g.imageSmoothingEnabled = false;
     g.clearRect(0, 0, size, size);
-    const f = frameAt(m, now - t0, false);
-    g.drawImage(img, f * m.w, 0, m.w, m.h, Math.round(size / 2 - m.ax * scale), Math.round(size * 0.8 - m.ay * scale), m.w * scale, m.h * scale);
-    if (c.fx) c.fx(g, now);   // skin Elemental (menufx.js)
+    g.drawImage(img, s.sx, s.sy, s.sw, s.sh, s.dx, s.dy, s.dw, s.dh);
   };
   requestAnimationFrame(loop);
   return c;

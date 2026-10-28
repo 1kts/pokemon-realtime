@@ -1,7 +1,7 @@
 // Marcos del avatar: una capa SVG animada encima del avatar (el aro de color lo pone el CSS con
 // .frame-<id>). Lienzo de 150×150 con el avatar en el centro (radio 50): lo que pasa de 50 sobresale.
 // Ligas de clasificatoria (bronce → maestro), los de logros y los de maestría de cada tipo (tipo-<tipo>).
-import { portraitFx } from './menufx.js';
+import { portraitFx, skinGL, skinCss } from './menufx.js';
 
 const C = 75, R = 50;
 let uid = 0;
@@ -216,21 +216,18 @@ const AURA_COLOR = { dorado: '#ffcb05', sombra: '#7a3cff', estelar: '#bfe6ff' };
 export const auraDot = g => `<i class="glow-dot${g === 'prisma' ? ' glow-prisma' : ''}" style="--gc:${g.startsWith('tipo-') ? Data.TYPE_COLOR[g.slice(5)] : AURA_COLOR[g] || '#fff'}"></i>`;
 export const auraName = (g, t) => t('Glow {type}', { type: g.startsWith('tipo-') ? Data.TYPE_LABEL[g.slice(5)] : t(AURA_LABEL[g]) });
 
-// Pone una skin a un retrato en los menús. Con canvas (sprites), la skin se pinta en el propio canvas
-// (menufx.js) y el CSS solo pone el brillo de alrededor (skinfx-*): así las partículas, que se pintan
-// después, conservan los colores de su tipo. Sin canvas (una ilustración), la skin es un filtro CSS (skin-*).
-// parts: con las partículas (otro premio, van con cualquier skin; solo en canvas): true (las del tipo de la
-// línea) o el tipo
+// Pone una skin a un retrato en los menús. Con canvas (sprites), la skin es el shader del combate, que menufx.js
+// pinta en el propio canvas, y el CSS solo pone el brillo de alrededor (skinfx-*): así las partículas, que se
+// pintan después, conservan los colores de su tipo. Sin canvas (una ilustración) o sin WebGL, la skin es un
+// filtro CSS (skin-*). parts: con las partículas (otro premio, van con cualquier skin; solo en canvas): true (las
+// del tipo de la línea) o el tipo
 export function applySkin(node, skin, dex, parts = false) {
   const type = Data.SPECIES[Data.lineOf(dex)].types[0];
   const canvas = node instanceof HTMLCanvasElement || (node.querySelector && node.querySelector('canvas'));
-  if (canvas) {
-    if (skin || parts) portraitFx(node, { skin, skinType: type, parts: parts ? (typeof parts === 'string' ? parts : type) : null });
-    if (skin && skin !== 'elemental') node.classList.add('skinfx-' + skin);
-    return node;
-  }
-  if (skin === 'elemental') { node.classList.add('skin-elemental'); node.style.setProperty('--fx', Data.TYPE_COLOR[type]); }
-  else if (skin) node.classList.add('skin-' + skin);
+  const gl = canvas && skin && skinGL();
+  if (canvas && (skin || parts)) portraitFx(node, { skin: gl ? skin : null, skinType: type, parts: parts ? (typeof parts === 'string' ? parts : type) : null });
+  if (gl) { if (skin !== 'elemental') node.classList.add('skinfx-' + skin); }
+  else skinCss(node, skin, type);
   return node;
 }
 export function masteryPrize(tier, dex, t) {
