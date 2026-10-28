@@ -16,7 +16,7 @@ function battle(map, a = [{ dex: 25, level: 30 }], b = [{ dex: 74, level: 30 }],
   bt.state = 'fight';
   return bt;
 }
-const run = (bt, secs, inp = { mx: 0, my: 0 }) => { for (let i = 0; i < secs * S.TICK; i++) { for (const s of bt.sides) s.inputs.push({ ...inp }); bt.tick(); } };
+const run = (bt, secs, inp = { mx: 0, my: 0 }) => { for (let i = 0; i < Math.round(secs / S.DT); i++) { for (const s of bt.sides) s.inputs.push({ ...inp }); bt.tick(); } };
 
 check('cada líder pelea en la arena de su tipo y el Alto Mando en su sala', () => {
   for (const n of Object.values(D.NODES)) {
