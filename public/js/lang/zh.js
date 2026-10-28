@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.3 ----------
+    'Cuentas más seguras': '更安全的账号',
+    'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': '邮箱需用验证码或 Google 确认后才算你的，所以没人能抢先注册来占用你的账号。用邮箱请选“用邮箱登录”。',
     // ---------- Novedades v0.31.2 ----------
     'Menú y combate a medida del móvil': '为手机打造的菜单和对战',
     'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': '在手机上，菜单几乎能放进一屏：模式排成网格，你的收藏和任务就在旁边。',
@@ -18,7 +21,6 @@ export default {
     'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': '故事模式地图会按大小调整道馆、道路和标签，在小屏幕上不再重叠。',
     'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': '在手机上，其他训练家的照片居中显示且大小合适，安装为应用的提示也不再遮挡窗口。',
     'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': '星河和元素皮肤在手机和电脑上看起来一样，长时间游玩后也不例外；它们的星星和火焰位置略有变化。',
-    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '衣柜一览无余',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '在每只宝可梦的衣柜里可以看到所有属性的粒子效果，在头像编辑中可以看到所有特效：还没有的会以灰色显示。',
@@ -757,7 +759,6 @@ export default {
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': '更简洁的地图',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '剧情地图上的道路不再有虚线，让从“你在这里”通往新道路和下一个挑战的连线更醒目。',
-    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': '馆主们亮相了',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '在剧情地图上选择道馆馆主、四天王和冠军时，会显示他们在游戏中的像素形象。',
@@ -1632,6 +1633,9 @@ export default {
     'Termina antes lo que estás haciendo': '请先完成当前操作',
     'Usuario o contraseña incorrectos': '用户名或密码错误',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '账号已创建：现在可以在任何设备上登录了',
+    'El usuario debe tener de 3 a 24 letras, números, _ . o -': '用户名须为 3 到 24 个字母、数字、_ . 或 -',
+    'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': '账号已创建。另有一个账号把这个邮箱当作用户名：如果是你的，请用它的密码登录',
+    'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': '要使用你的邮箱，请选择“用邮箱登录”：我们会发送验证码确认邮箱是你的',
     'Ese Pokémon no es tuyo': '这只宝可梦不是你的',
     'Equipo no válido': '队伍无效',
     'Esa liga no existe': '没有这个段位',

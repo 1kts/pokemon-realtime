@@ -53,15 +53,16 @@ const newId = () => crypto.randomBytes(5).toString('hex');
 const ids = new Map([...profiles.values()].filter(p => p.id).map(p => [p.id, p]));
 const byId = id => ids.get(id) || null;
 
-// Índices usuario (en minúsculas) -> token, correo -> token e id de Google -> token. Las cuentas de antes
-// cuyo usuario es un correo también se encuentran por ese correo (al entrar con él se entra en ellas)
+// Índices usuario (en minúsculas) -> token, correo -> token e id de Google -> token. El correo de una cuenta es
+// solo el comprobado (con el código o con Google). Antes un correo registrado como usuario también contaba como su
+// correo, y quien registrara el de otro se quedaba con la cuenta en la que el dueño entraba luego con Google o con
+// el código: ahora un correo de usuario es solo un usuario (esas cuentas siguen entrando con su contraseña)
 const accounts = new Map(), emails = new Map(), googles = new Map();
 function index(p) {
   const a = p.account;
   if (!a) return;
   if (a.user) accounts.set(a.user.toLowerCase(), p.token);
-  const mail = a.email || (a.user && EMAIL_RE.test(a.user) ? a.user.toLowerCase() : null);
-  if (mail && !emails.has(mail)) emails.set(mail, p.token);
+  if (a.email && !emails.has(a.email)) emails.set(a.email, p.token);
   if (a.google) googles.set(a.google, p.token);
 }
 
@@ -164,14 +165,15 @@ function get(token, name) {
 
 // ---------- Cuentas ----------
 // scrypt asíncrono: calcularlo cuesta ~30 ms y no debe parar los combates mientras tanto
-// Usuario: un nombre (3-24 letras, números, _ . o -) o un correo (hasta 64). Solo lo ve su dueño:
-// no sale en la ladder ni en las fichas públicas.
+// Usuario: un nombre (3-24 letras, números, _ . o -). Las cuentas de antes pueden tener un correo (hasta 64): con
+// él siguen entrando y cambiando la contraseña, pero ya no se registran así. Solo lo ve su dueño: no sale en la
+// ladder ni en las fichas públicas.
 const USER_RE = /^[A-Za-z0-9_.-]{3,24}$/;
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;
 for (const p of profiles.values()) index(p);
 const validUser = u => typeof u === 'string' && u.length <= 64 && (USER_RE.test(u) || EMAIL_RE.test(u));
-// Nombre de entrenador (público) para un perfil nuevo: si el usuario es un correo, solo lo de antes de la @
-const trainerName = u => u.split('@')[0].slice(0, 16) || 'Entrenador';
+// Nombre de entrenador (público) para un perfil nuevo
+const trainerName = u => u.slice(0, 16) || 'Entrenador';
 const scrypt = promisify(crypto.scrypt);
 const hash = async (pass, salt) => (await scrypt(pass, salt, 32)).toString('hex');
 
@@ -184,14 +186,17 @@ function checkCredentials(user, pass) {
 // Registra usuario y contraseña en el perfil (el invitado conserva toda su partida); sin
 // perfil crea uno nuevo, en uso por quien lo pide. Devuelve { p } o { err }.
 async function register(p, user, pass) {
+  // Un correo solo se usa comprobado: con el código (Entrar con email) o con Google
+  if (typeof user === 'string' && EMAIL_RE.test(user)) return { err: 'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo' };
+  if (typeof user !== 'string' || !USER_RE.test(user)) return { err: 'El usuario debe tener de 3 a 24 letras, números, _ . o -' };
   const err = checkCredentials(user, pass);
   if (err) return { err };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
-  if (accounts.has(user.toLowerCase()) || emails.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
+  if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
   const salt = crypto.randomBytes(16).toString('hex');
   const h = await hash(pass, salt);
   // Mientras se calculaba el hash otro ha podido registrar el mismo usuario o este perfil
-  if (accounts.has(user.toLowerCase()) || emails.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
+  if (accounts.has(user.toLowerCase())) return { err: 'Ese usuario ya existe' };
   if (p && p.account) return { err: 'Este perfil ya tiene cuenta' };
   if (!p) p = use(addProfile(trainerName(user)));
   p.account = { user, salt, hash: h, since: Date.now() };
@@ -421,4 +426,5 @@ function rankOf(p) {
 }
 
 module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
-  check, setPassword, byIdentity, linkIdentity, identityAccount, use, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values() };
+  check, setPassword, byIdentity, linkIdentity, identityAccount, use, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values(),
+  reindex: index };   // (reindex: para las pruebas, que simulan cuentas de antes)

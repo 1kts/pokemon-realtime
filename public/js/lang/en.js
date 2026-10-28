@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.3 ----------
+    'Cuentas más seguras': 'Safer accounts',
+    'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'Your email only counts as yours once confirmed with the code or with Google, so nobody can register it first to take your account. With your email, use “Sign in with email”.',
     // ---------- Novedades v0.31.2 ----------
     'Menú y combate a medida del móvil': 'Menu and battles made for mobile',
     'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'On mobile, the menu almost fits on one screen: modes in a grid with your collection and missions beside them.',
@@ -18,7 +21,6 @@ export default {
     'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'The Story map scales gyms, routes and labels to its size, so they no longer overlap on small screens.',
     'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'On mobile, another trainer\'s picture is centered and the right size, and the install-as-app notice no longer covers windows.',
     'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'The Galaxy and Elemental skins look the same on mobile as on a computer, even after long sessions; their stars and flames move around a little.',
-    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'The whole Wardrobe on show',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'In each Pokémon\'s Wardrobe you see particles of every type on it, and in the avatar editor every effect: the ones you don\'t have yet show dimmed.',
@@ -757,7 +759,6 @@ export default {
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Cleaner map',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Roads on the story map no longer have a dashed line, so the ones from “You are here” to the new routes and your next challenge stand out.',
-    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'Leaders show their faces',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Every Gym Leader, Elite Four member and Champion now appears with their sprite from the games when you pick them on the story map.',
@@ -1633,6 +1634,9 @@ export default {
     'Termina antes lo que estás haciendo': 'Finish what you\'re doing first',
     'Usuario o contraseña incorrectos': 'Wrong username or password',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account created: you can now log in from any device',
+    'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'Your username must have 3 to 24 letters, numbers, _ . or -',
+    'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'Account created. There is another account with this email as its username: if it’s yours, log in to it with its password',
+    'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'To use your email, choose “Sign in with email”: we send you a code to check it’s yours',
     'Ese Pokémon no es tuyo': 'That Pokémon isn\'t yours',
     'Equipo no válido': 'Invalid team',
     'Esa liga no existe': 'That league doesn\'t exist',

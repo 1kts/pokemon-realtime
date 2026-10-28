@@ -682,7 +682,11 @@ async function identityAuth(c, msg) {
   if (store.banned(p)) return refuseBanned(c, p);
   audit.log(created ? 'cuenta.registro' : 'cuenta.entra', { actor: p.id, ip: c.ip, via });
   if (p !== c.profile) setProfile(c, created ? p : store.use(p));
-  send(c, { t: 'authok', msg: created ? 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' : `¡Hola de nuevo, ${p.name}!` });
+  // (una cuenta de antes con este correo de usuario no se toca: nadie comprobó que fuera de su dueño. Se avisa
+  // por si es la suya: a esa se entra con su usuario y contraseña)
+  const old = created && ident.email && store.byUser(ident.email);
+  send(c, { t: 'authok', msg: !created ? `¡Hola de nuevo, ${p.name}!` : old && old !== p ? 'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña'
+    : 'Cuenta creada: ya puedes entrar desde cualquier dispositivo' });
   sendProfile(c);
 }
 

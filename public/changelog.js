@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.3', date: '2026-10-28', title: 'Cuentas más seguras',
+      items: [
+        ['arreglo', 'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».'],
+      ],
+    },
+    {
       v: '0.31.2', date: '2026-10-28', title: 'Menú y combate a medida del móvil',
       items: [
         ['cambio', 'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.'],

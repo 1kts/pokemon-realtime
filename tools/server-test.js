@@ -428,9 +428,13 @@ class Client {
   m = await uc.req({ t: 'register', user: 'Nuevo', pass: 'abcdef' });
   ok(m.p.name === 'Nuevo' && m.p.account.user === 'Nuevo' && m.p.coins === 500, 'registrarse desde la portada crea un perfil nuevo');
   const ue = new Client(port); await ue.open();
-  m = await ue.req({ t: 'register', user: 'ash.ketchum@pueblo-paleta.com', pass: 'pikachu' });
-  ok(m.p.account.user === 'ash.ketchum@pueblo-paleta.com' && m.p.name === 'ash.ketchum', 'registrarse con un correo; el nombre de entrenador es lo de antes de la @');
-  ok(!!await store.login('ASH.KETCHUM@pueblo-paleta.com', 'pikachu'), 'entrar con el correo (sin distinguir mayúsculas)');
+  m = await ue.req({ t: 'register', user: 'ash.ketchum@pueblo-paleta.com', pass: 'pikachu' }, 'autherr');
+  ok(/Entrar con email/.test(m.msg), 'un correo no se registra como usuario con contraseña: se usa comprobado («Entrar con email» o Google)');
+  // Una cuenta de antes del arreglo con el correo como usuario (antes se podía registrar así)
+  m = await ue.req({ t: 'register', user: 'ash_k', pass: 'pikachu' });
+  const ashP = store.get(m.p.token);
+  ashP.account.user = 'ash.ketchum@pueblo-paleta.com'; store.reindex(ashP);
+  ok(!!await store.login('ASH.KETCHUM@pueblo-paleta.com', 'pikachu'), 'las cuentas de antes entran con su correo de usuario (sin distinguir mayúsculas)');
   ok(!store.ladder('dex').rows.concat(store.ladder('ranked').rows).some(r => JSON.stringify(r).includes('@pueblo')) && !JSON.stringify(store.publicUser(m.p.id)).includes('@pueblo'), 'el correo no sale en la ladder ni en la ficha pública');
   m = await ue.req({ t: 'register', user: 'no es un correo@', pass: 'pikachu' }, 'autherr');
   ok(/usuario/i.test(m.msg), 'usuario no válido');
@@ -501,13 +505,31 @@ class Client {
     const m5 = new Client(port); await m5.open();
     m = await m5.req({ t: 'mailverify', email: 'erika@example.com', code: mail.newCode('erika@example.com'), token: erikaTok });
     ok(m.p.token === erikaTok && m.p.name === 'Erika' && m.p.account.email === 'erika@example.com', 'desde la portada, la partida de invitado de ese navegador pasa a la cuenta');
-    // Una cuenta de antes con el correo como usuario: se entra en ella
+    // Una cuenta con un correo de usuario que nadie comprobó (de antes, o la de alguien que registró el correo de otro
+    // antes que su dueño): quien demuestra que el correo es suyo no entra en ella, sino en una cuenta suya, y se le
+    // avisa por si la otra es suya (a esa se entra con su contraseña)
     const m6 = new Client(port); await m6.open();
-    m = await m6.req({ t: 'mailverify', email: 'Ash.Ketchum@pueblo-paleta.com', code: mail.newCode('ash.ketchum@pueblo-paleta.com') });
-    ok(m.p.account.user === 'ash.ketchum@pueblo-paleta.com' && m.p.account.pass && m.p.account.email === 'ash.ketchum@pueblo-paleta.com', 'con el correo se entra en la cuenta de antes que lo tiene de usuario');
+    m = await m6.req({ t: 'mailverify', email: 'Ash.Ketchum@pueblo-paleta.com', code: mail.newCode('ash.ketchum@pueblo-paleta.com') }, 'authname');
+    m = await m6.req({ t: 'authname', name: 'Ash' }, 'authok');
+    ok(/otra cuenta con este correo/.test(m.msg), 'el dueño del correo tiene su propia cuenta y se le avisa de la que lo tiene de usuario');
+    const ashNew = store.byIdentity({ email: 'ash.ketchum@pueblo-paleta.com' });
+    ok(ashNew && ashNew !== ashP && !ashP.account.email && !ashNew.account.hash, 'la cuenta del correo de usuario no queda vinculada al correo comprobado');
+    ok((await store.login('ash.ketchum@pueblo-paleta.com', 'pikachu')) === ashP, 'y a la de antes se sigue entrando con su usuario y contraseña');
+    // Quien registró el correo de otro: su contraseña solo le abre su propia cuenta, nunca la del dueño
+    const sq = new Client(port); await sq.open();
+    m = await sq.req({ t: 'register', user: 'okupa', pass: 'clave-okupa' });
+    const squatP = store.get(m.p.token);
+    squatP.account.user = 'kasumi@hanada.jp'; store.reindex(squatP);
+    const own = new Client(port); await own.open();
+    m = await own.req({ t: 'mailverify', email: 'kasumi@hanada.jp', code: mail.newCode('kasumi@hanada.jp') }, 'authname');
+    m = await own.req({ t: 'authname', name: 'Kasumi' });
+    ok(m.p.token !== squatP.token && m.p.account.email === 'kasumi@hanada.jp' && !m.p.account.pass, 'el dueño de un correo que otro registró sin comprobar tiene su propia cuenta, no la del otro');
+    ok((await store.login('kasumi@hanada.jp', 'clave-okupa')) === squatP && store.byIdentity({ email: 'kasumi@hanada.jp' }).token === m.p.token, 'y la contraseña del otro solo le abre su propia cuenta');
+    // Antes se comprobaba aquí que no se registrara de usuario el correo de otra cuenta; ahora ningún correo se
+    // registra de usuario (y el correo de otra cuenta, tampoco)
     const m7 = new Client(port); await m7.open();
     m = await m7.req({ t: 'register', user: 'Gary@Example.com', pass: 'clave-gary' }, 'autherr');
-    ok(/existe/.test(m.msg), 'no se puede registrar de usuario el correo de otra cuenta');
+    ok(/Entrar con email/.test(m.msg), 'tampoco se registra de usuario el correo de otra cuenta');
     m = await m2.req({ t: 'passwd', old: 'x', pass: 'nueva123' }, 'autherr');
     ok(/no tiene contraseña/.test(m.msg), 'una cuenta sin contraseña no la puede cambiar');
     ok(!JSON.stringify(store.ladder('ranked')).includes('@example') && !JSON.stringify(store.publicUser(peek(brockTok).id)).includes('@example')

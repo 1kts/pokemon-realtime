@@ -123,7 +123,8 @@ export const accountViews = {
         setTimeout(() => name.focus(), 50);
       } else {
         const reg = this.authTab === 'register';
-        const [fu, user] = field('Usuario o correo', 'text', { maxLength: 64, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
+        // (al entrar vale también el correo de las cuentas de antes; al registrarse, solo un usuario)
+        const [fu, user] = field(reg ? 'Usuario' : 'Usuario o correo', 'text', { maxLength: reg ? 24 : 64, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
         const [fp, pass] = field('Contraseña', 'password', { maxLength: 72, autocomplete: reg ? 'new-password' : 'current-password' });
         form.append(fu, fp);
         let pass2;
@@ -917,7 +918,7 @@ export const accountViews = {
     if (!p.account) {
       box.append(el('p', 'warn', t('Juegas como invitado: tu partida solo vive en este navegador. Si borras sus datos o cambias de dispositivo, la perderás.')));
       box.append(el('p', 'small', t('Crea una cuenta y conservarás todo lo que tienes.')));
-      const [fu, user] = field('Usuario o correo', 'text', { maxLength: 64, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
+      const [fu, user] = field('Usuario', 'text', { maxLength: 24, autocomplete: 'username', spellcheck: false, autocapitalize: 'off' });
       const [fp, pass] = field('Contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const [f2, pass2] = field('Repite la contraseña', 'password', { maxLength: 72, autocomplete: 'new-password' });
       const go = el('button', 'primary', t('Crear cuenta'));

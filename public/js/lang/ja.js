@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.3 ----------
+    'Cuentas más seguras': 'より安全なアカウント',
+    'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'メールアドレスはコードかGoogleで確認して初めてあなたのものになるので、誰かが先に登録してアカウントを奪うことはできません。メールで使うなら「メールで ログイン」へ。',
     // ---------- Novedades v0.31.2 ----------
     'Menú y combate a medida del móvil': 'スマホ向けのメニューとバトル',
     'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'スマホではメニューがほぼ1画面に収まります。モードはグリッドで、コレクションとミッションはその横に並びます。',
@@ -19,7 +22,6 @@ export default {
     'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'ストーリーのマップがジム、道路、ラベルを大きさに合わせて調整し、小さな画面でも重なりません。',
     'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'スマホで他のトレーナーの写真が中央にちょうどいい大きさで表示され、アプリとしてインストールする案内がウィンドウを隠さなくなりました。',
     'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'ギャラクシーとエレメンタルのスキンが、長く遊んだ後でもスマホとパソコンで同じ見た目になりました。星や炎の位置が少し変わります。',
-    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '衣装を全部チェック',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '各ポケモンの衣装で全タイプのパーティクルを試し見でき、アバター編集ではすべてのエフェクトが見られます。まだ持っていないものは薄く表示されます。',
@@ -758,7 +760,6 @@ export default {
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'すっきりした地図',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'ストーリーの地図の道から点線をなくした。「現在地」から新しい道路と次の挑戦への線が目立つように。',
-    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'リーダーたちが顔を見せる',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'ストーリーの地図でジムリーダー、四天王、チャンピオンを選ぶと、ゲームのドット絵で登場する。',
@@ -1620,6 +1621,9 @@ export default {
     'Termina antes lo que estás haciendo': '先に 今の 操作を おえてください',
     'Usuario o contraseña incorrectos': 'ユーザー名 または パスワードが ちがいます',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'アカウントを 作りました：どの 端末からでも ログインできます',
+    'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'ユーザー名は3〜24文字の英数字、_ . - で入力してください',
+    'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'アカウントを作成しました。このメールアドレスをユーザー名にした別のアカウントがあります。あなたのものなら、そのパスワードでログインしてください',
+    'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'メールアドレスを使うには「メールで ログイン」を選んでください。あなたのものか確認するコードを送ります',
     'Ese Pokémon no es tuyo': 'その ポケモンは あなたの ものでは ありません',
     'Equipo no válido': '手持ちが 正しくありません',
     'Esa liga no existe': 'その ランクは ありません',

@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.3 ----------
+    'Cuentas más seguras': 'Des comptes plus sûrs',
+    'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'Ton e-mail ne compte comme le tien qu’une fois confirmé avec le code ou Google : personne ne peut l’enregistrer avant toi pour prendre ton compte. Avec ton e-mail, utilise « Se connecter par e-mail ».',
     // ---------- Novedades v0.31.2 ----------
     'Menú y combate a medida del móvil': 'Menu et combats pensés pour mobile',
     'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'Sur mobile, le menu tient presque sur un seul écran : les modes en grille, ta collection et tes missions à côté.',
@@ -18,7 +21,6 @@ export default {
     'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'La carte Histoire adapte arènes, routes et étiquettes à sa taille : elles ne se chevauchent plus sur les petits écrans.',
     'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'Sur mobile, la photo d\'un autre dresseur est centrée et à la bonne taille, et l\'avis pour installer l\'app ne cache plus les fenêtres.',
     'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'Les skins Galaxie et Élémentaire sont identiques sur mobile et sur ordinateur, même après une longue partie ; leurs étoiles et flammes changent un peu de place.',
-    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'Toute la Garde-robe en vue',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'Dans la Garde-robe de chaque Pokémon, tu vois les particules de tous les types sur lui, et dans l\'éditeur d\'avatar tous les effets : ceux que tu n\'as pas encore sont grisés.',
@@ -757,7 +759,6 @@ export default {
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': 'Carte plus nette',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': 'Les chemins de la carte de l’histoire n’ont plus de ligne pointillée : celles qui vont de « Tu es ici » vers les nouvelles routes et ton prochain défi ressortent mieux.',
-    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': 'Les champions montrent leur visage',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': 'Chaque Champion d’Arène, membre du Conseil 4 et Maître apparaît avec son sprite des jeux quand tu le choisis sur la carte de l’histoire.',
@@ -1544,6 +1545,9 @@ export default {
     'Termina antes lo que estás haciendo': 'Termine d\'abord ce que tu fais',
     'Usuario o contraseña incorrectos': 'Identifiant ou mot de passe incorrect',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Compte créé : tu peux maintenant te connecter depuis n\'importe quel appareil',
+    'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'Le nom d’utilisateur doit contenir de 3 à 24 lettres, chiffres, _ . ou -',
+    'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'Compte créé. Un autre compte utilise cet e-mail comme nom d’utilisateur : s’il est à toi, connecte-toi avec son mot de passe',
+    'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'Pour utiliser ton e-mail, choisis « Se connecter par e-mail » : on t’envoie un code pour vérifier qu’il est à toi',
     'Ese Pokémon no es tuyo': 'Ce Pokémon n\'est pas à toi',
     'Equipo no válido': 'Équipe invalide',
     'Esa liga no existe': 'Cette ligue n\'existe pas',

@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.3 ----------
+    'Cuentas más seguras': '더 안전한 계정',
+    'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': '이메일은 코드나 Google로 확인해야 당신의 것이 되므로, 누구도 먼저 등록해 계정을 가로챌 수 없습니다. 이메일로는 "이메일로 로그인"을 사용하세요.',
     // ---------- Novedades v0.31.2 ----------
     'Menú y combate a medida del móvil': '모바일에 맞춘 메뉴와 배틀',
     'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': '모바일에서 메뉴가 거의 한 화면에 들어갑니다. 모드는 격자로, 컬렉션과 미션은 그 옆에 있습니다.',
@@ -19,7 +22,6 @@ export default {
     'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': '스토리 지도가 체육관, 도로, 라벨을 크기에 맞게 조정해 작은 화면에서도 겹치지 않습니다.',
     'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': '모바일에서 다른 트레이너의 사진이 가운데에 알맞은 크기로 나오고, 앱 설치 안내가 더 이상 창을 가리지 않습니다.',
     'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': '갤럭시와 엘리멘탈 스킨이 오래 플레이한 뒤에도 모바일과 컴퓨터에서 똑같이 보입니다. 별과 불꽃의 위치가 조금 바뀝니다.',
-    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '옷장 전부 한눈에',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '각 포켓몬의 옷장에서 모든 타입의 파티클을 입혀 볼 수 있고, 아바타 편집에서는 모든 효과가 보입니다. 아직 없는 것은 흐리게 나옵니다.',
@@ -758,7 +760,6 @@ export default {
     // ---------- Novedades v0.15.2 ----------
     'Mapa más limpio': '더 깔끔한 지도',
     'Los caminos del mapa de la historia ya no llevan línea discontinua: así destacan las que van de «Estás aquí» a las rutas nuevas y a tu siguiente reto.': '스토리 지도의 길에서 점선을 없앴어. 「현재 위치」에서 새 도로와 다음 도전으로 가는 선이 잘 보여.',
-    // ---------- Novedades v0.15.1 ----------
     // ---------- Novedades v0.15.0 ----------
     'Los líderes dan la cara': '관장들이 얼굴을 드러냈어',
     'Cada líder, miembro del Alto Mando y Campeón sale con su sprite de los juegos al elegirlo en el mapa de la historia.': '스토리 지도에서 체육관 관장, 사천왕, 챔피언을 고르면 게임 속 도트 스프라이트로 나와.',
@@ -1620,6 +1621,9 @@ export default {
     'Termina antes lo que estás haciendo': '먼저 하던 일을 끝내세요',
     'Usuario o contraseña incorrectos': '아이디 또는 비밀번호가 틀렸습니다',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '계정을 만들었습니다: 이제 어떤 기기에서든 로그인할 수 있어요',
+    'El usuario debe tener de 3 a 24 letras, números, _ . o -': '사용자 이름은 3~24자의 영문, 숫자, _ . - 로 입력하세요',
+    'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': '계정이 만들어졌습니다. 이 이메일을 사용자 이름으로 쓰는 다른 계정이 있습니다. 당신의 계정이라면 그 비밀번호로 로그인하세요',
+    'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': '이메일을 사용하려면 "이메일로 로그인"을 선택하세요. 본인 이메일인지 확인할 코드를 보내 드립니다',
     'Ese Pokémon no es tuyo': '내 포켓몬이 아닙니다',
     'Equipo no válido': '포켓몬 구성이 올바르지 않습니다',
     'Esa liga no existe': '없는 등급입니다',
