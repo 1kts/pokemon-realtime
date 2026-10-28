@@ -320,15 +320,33 @@ export class BattleClient {
     ret.position.y = 0.06;
     ret.renderOrder = 3;
     this.world.scene.add(ret);
+    // Con el dedo, mientras se arrastra un movimiento: una línea en el suelo de tu Pokémon a donde apunta
+    if (touchMode()) {   // (this.touch aún no existe: se crea después)
+      const geo = new THREE.PlaneGeometry(1, 0.2);
+      geo.rotateX(-Math.PI / 2);
+      const line = this.aimLine = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: this.reticleColor, transparent: true, opacity: 0.8, depthWrite: false, toneMapped: false }));
+      line.renderOrder = 3;
+      line.visible = false;
+      this.world.scene.add(line);
+    }
   }
 
   // Punto del suelo bajo el ratón, en px de juego
   updateAim() {
+    const hit = this.fromScreen(this.mouse.x, this.mouse.y);
+    if (hit) this.aim = hit;
+  }
+
+  // Del suelo (px de juego) a la pantalla y al revés (con el dedo se apunta en la dirección que se ve)
+  toScreen(x, y) {
+    const v = toWorld(x, y).project(this.world.camera), r = this.app.canvas.getBoundingClientRect();
+    return { x: r.left + (v.x + 1) / 2 * r.width, y: r.top + (1 - v.y) / 2 * r.height };
+  }
+  fromScreen(sx, sy) {
     const r = this.app.canvas.getBoundingClientRect();
-    const ndc = new THREE.Vector2(((this.mouse.x - r.left) / r.width) * 2 - 1, -((this.mouse.y - r.top) / r.height) * 2 + 1);
-    this.ray.setFromCamera(ndc, this.world.camera);
+    this.ray.setFromCamera(new THREE.Vector2(((sx - r.left) / r.width) * 2 - 1, -((sy - r.top) / r.height) * 2 + 1), this.world.camera);
     const hit = new THREE.Vector3();
-    if (this.ray.ray.intersectPlane(this.ground, hit)) this.aim = { x: hit.x * Shared.CELL, y: hit.z * Shared.CELL };
+    return this.ray.ray.intersectPlane(this.ground, hit) ? { x: hit.x * Shared.CELL, y: hit.z * Shared.CELL } : null;
   }
 
   sampleInput() {
@@ -420,6 +438,17 @@ export class BattleClient {
     const onFoe = foe.st.x !== undefined && Math.hypot(this.aim.x - foe.x, this.aim.y - foe.y) < (this.monOf(this.foeIdx).r || 22);
     ret.scale.setScalar((onFoe ? 1.25 : 1) * (1 + Math.sin(now / 180) * 0.05));
     for (const c of ret.children) c.material.color.set(onFoe ? this.reticleHit : this.reticleColor);
+    if (this.aimLine && this.touch) {
+      const ai = this.touch.aiming;
+      this.aimLine.visible = !!(ai && !ai.cancel);
+      if (this.aimLine.visible) {
+        const me = pos[this.you], a = toWorld(me.x, me.y, 0.05), b = toWorld(this.aim.x, this.aim.y, 0.05);
+        this.aimLine.position.copy(a).lerp(b, 0.5);
+        this.aimLine.scale.set(a.distanceTo(b), 1, 1);
+        this.aimLine.rotation.y = -Math.atan2(b.z - a.z, b.x - a.x);
+        this.aimLine.material.color.set(onFoe ? this.reticleHit : this.reticleColor);
+      }
+    }
     for (let i = 0; i < 2; i++) {
       const { x, y, a, st, moving } = pos[i];
       const actor = this.actors[i];
@@ -685,6 +714,7 @@ export class BattleClient {
     if (this.touch) this.touch.dispose();
     for (const a of this.actors) a.dispose();
     this.world.scene.remove(this.reticle);
+    if (this.aimLine) { this.world.scene.remove(this.aimLine); this.aimLine.geometry.dispose(); this.aimLine.material.dispose(); }
     for (const c of this.reticle.children) { c.geometry.dispose(); c.material.dispose(); }
     this.fx.clear();
     this.p.clear();
