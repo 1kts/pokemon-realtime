@@ -19,6 +19,7 @@ import { Net, storage } from './net.js';
 import { t, tServer, getLang } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
 import { Sfx } from './sfx.js';
+import { lowerQuality } from './gfx.js';
 
 const canvas = document.getElementById('view');
 let renderer;
@@ -73,6 +74,7 @@ resize();
 
 // Calidad automática: si va a menos de 40 FPS durante 3 s, se baja un escalón (resolución interna a 1×, quitar
 // el resplandor, resolución a 0,75×). No vuelve a subir en la sesión, para que la imagen no vaya cambiando.
+// El escalón se comparte (gfx.js): el mapa de Historia, con su propio renderer, lo sigue.
 const gfx = { step: 0, frames: 0, time: 0, bloom: true };
 const setPR = pr => { renderer.setPixelRatio(pr); composer.setPixelRatio(pr); };
 const DOWNGRADES = [
@@ -88,6 +90,7 @@ function checkFps(raw) {
   gfx.frames = 0; gfx.time = 0;
   if (fps >= 40) return;
   while (gfx.step < DOWNGRADES.length && !DOWNGRADES[gfx.step++]());
+  lowerQuality(gfx.step);
   console.info(`[gfx] ${fps.toFixed(0)} FPS: calidad ${gfx.step}/${DOWNGRADES.length} (resolución ${renderer.getPixelRatio()}×, resplandor ${gfx.bloom ? 'sí' : 'no'})`);
   resize();
 }

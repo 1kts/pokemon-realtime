@@ -4,10 +4,12 @@
 // ortográfica mira inclinada y el llano cae justo en el rectángulo 16:10 de .map-stage, así que los nodos,
 // etiquetas y líneas HTML siguen encima en su sitio sin proyectar nada. Un solo renderer para todo, escenas en
 // caché por región (precargadas al arrancar) y se pinta solo cuando hace falta (el agua, a 8 FPS; quieta con
-// «reducir movimiento»). Sin WebGL, o si falla, se ve el mapa SVG de regionmap.js.
+// «reducir movimiento»). Sin WebGL, o si falla, se ve el mapa SVG de regionmap.js. Sigue la calidad automática
+// del juego (gfx.js) y, si pinta lento, la baja él solo (ver timedRender).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { REGION_ART, regionMapSVG } from './regionmap.js';
+import { quality, onQuality, pixelRatioFor } from './gfx.js';
 
 // Lienzo como el del SVG: U = x % · 1,6 (0-160) y V = y % (0-100). En el mundo, X = U, Z = V / sen(inclinación)
 // e Y la altura: con la cámara inclinada, el llano (Y = LAND) se ve exactamente como el lienzo plano
@@ -18,6 +20,7 @@ const W = (u, v, y = LAND) => new THREE.Vector3(u, y, v / SIN);
 const U0 = -8, V0 = -8, UW = 176, VH = 116, RES = 2, GW = UW * RES, GH = VH * RES;
 const TEX_PX = 7;   // píxeles de la textura del suelo por unidad
 const FPS = 8;      // el agua se mueve a pocos FPS: basta para que se note y apenas gasta
+const SLOW_MS = 30; // si un fotograma del mapa tarda más que esto en la GPU, se baja la calidad del mapa
 const KENNEY = 'models/kenney/';
 // Gimnasio (building-j de City Kit Industrial: nave ancha y baja de tejado curvo): tamaño, giro para que la
 // puerta mire a la cámara y dónde va el emblema (delante en Z, altura)
@@ -432,7 +435,8 @@ async function buildScene(region) {
   sun.target.position.set(80, 0, 60);
   sun.castShadow = true;
   const mobile = matchMedia('(pointer: coarse)').matches;
-  sun.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
+  const size = mobile || level() >= 2 ? 1024 : 2048;
+  sun.shadow.mapSize.set(size, size);
   Object.assign(sun.shadow.camera, { left: -110, right: 110, top: 110, bottom: -110, near: 1, far: 400 });
   sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.06;
   scene.add(sun, sun.target);
@@ -441,7 +445,7 @@ async function buildScene(region) {
   const ms = Math.round(performance.now() - t0);
   const loaded = await loading;
   if (loaded) instance(scene, region, list, loaded);
-  return { region, scene, water: wat, T, ms };
+  return { region, scene, water: wat, sun, T, ms };
 }
 
 // Precarga de las dos regiones, de una en una y cuando no molesta (si no hay WebGL, ni se intenta; en las pruebas,
@@ -491,7 +495,7 @@ function viewer() {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(C.sea);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = level() >= 2 ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate = false;   // la maqueta no se mueve: las sombras se calculan al cambiar de escena
   const camera = new THREE.OrthographicCamera(-80, 80, 50, -50, 1, 900);
   const target = W(80, 50);
@@ -506,8 +510,9 @@ function viewer() {
 
 function show(entry) {
   clearTimeout(V.waitTimer);
-  if (V.shown !== entry) V.renderer.shadowMap.needsUpdate = true;
+  if (V.shown !== entry) { V.renderer.shadowMap.needsUpdate = true; V.probe = []; }
   V.shown = entry;
+  fitShadows();
   V.map.classList.remove('map3d-wait');
   V.map.classList.add('map3d-on');
   // (los nodos los pone view_story después de llamar a mountMap3D: se colocan en cuanto acaba, antes de pintar)
@@ -589,7 +594,7 @@ function placeNodes() {
 function layout() {
   const c = V.canvas, cr = c.getBoundingClientRect(), sr = V.stage.getBoundingClientRect();
   if (!cr.width || !sr.width || !c.clientWidth) return false;
-  V.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  V.renderer.setPixelRatio(pixelRatioFor(level()));
   V.renderer.setSize(c.clientWidth, c.clientHeight, false);
   const kx = 160 / sr.width, ky = 100 / sr.height, cam = V.camera;
   cam.left = -80 - (sr.left - cr.left) * kx; cam.right = cam.left + cr.width * kx;
@@ -600,6 +605,56 @@ function layout() {
 
 function render() { if (V && V.shown) V.renderer.render(V.shown.scene, V.camera); }
 
+// ---------- Calidad ----------
+// El nivel del mapa: el del juego (gfx.js, lo baja main.js por los FPS) o el suyo, si él mismo pinta lento. Como
+// pinta a ratos, los FPS no dicen nada: al enseñar una región mide lo que tarda la GPU en unos fotogramas (con una
+// lectura de 1 píxel, que espera a que acabe) y, si va lento, baja un escalón y vuelve a medir
+let slow = 0;
+const level = () => Math.max(quality.level, slow);
+const PROBE = 8, PROBE_SKIP = 2;   // fotogramas que se miden; los primeros no cuentan (sombras y shaders)
+const pixel = new Uint8Array(4);
+function timedRender() {
+  if (!V.probe || level() >= 3) return render();
+  const gl = V.renderer.getContext(), t0 = performance.now();
+  render();
+  gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+  V.probe.push(performance.now() - t0);
+  if (V.probe.length < PROBE) return;
+  const ms = V.probe.slice(PROBE_SKIP).sort((a, b) => a - b)[(PROBE - PROBE_SKIP) >> 1];
+  V.probe = null;
+  if (ms < SLOW_MS) return;
+  // (el escalón de la resolución a 1× no cambia nada si ya va a 1×: se salta)
+  slow = level() + 1;
+  if (slow === 1 && devicePixelRatio <= 1) slow = 2;
+  console.info(`[gfx] mapa: ${ms.toFixed(0)} ms por fotograma: calidad ${slow}/3`);
+  applyQuality();
+  V.probe = [];
+}
+
+// Sombras según el nivel: desde el 2, PCF normal (sin suavizar) y mapa de 1024
+function fitShadows() {
+  if (level() < 2) return;
+  const r = V.renderer;
+  if (r.shadowMap.type !== THREE.PCFShadowMap) {
+    r.shadowMap.type = THREE.PCFShadowMap;
+    for (const e of built.values()) e.scene.traverse(o => { for (const m of [].concat(o.material || [])) m.needsUpdate = true; });   // (otro shader)
+    r.shadowMap.needsUpdate = true;
+  }
+  const sh = V.shown && V.shown.sun.shadow;
+  if (sh && sh.mapSize.x > 1024) {
+    sh.mapSize.set(1024, 1024);
+    if (sh.map) { sh.map.dispose(); sh.map = null; }
+    r.shadowMap.needsUpdate = true;
+  }
+}
+
+function applyQuality() {
+  if (!V || !V.shown) return;
+  fitShadows();
+  if (V.canvas.isConnected && layout()) render();
+}
+onQuality(applyQuality);
+
 // Cada 1/8 s el agua da un paso (si se ve). Fuera de Historia mucho rato, el renderer se libera
 function tick() {
   if (!V) return;
@@ -608,7 +663,7 @@ function tick() {
     else if (performance.now() - V.goneAt > GONE_MS) return release();
   } else if (V.shown && !V.calm && V.visible && !document.hidden) {
     V.shown.water.material.uniforms.uTime.value = performance.now() / 1000;
-    render();
+    timedRender();
   }
   V.timer = setTimeout(tick, 1000 / FPS);
 }
