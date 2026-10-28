@@ -4,6 +4,16 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.2', date: '2026-10-28', title: 'Menú y combate a medida del móvil',
+      items: [
+        ['cambio', 'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.'],
+        ['cambio', 'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.'],
+        ['cambio', 'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.'],
+        ['arreglo', 'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.'],
+        ['arreglo', 'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.'],
+      ],
+    },
+    {
       v: '0.31.1', date: '2026-10-28', title: 'Todo el Vestuario a la vista',
       items: [
         ['cambio', 'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.'],

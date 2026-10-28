@@ -23,6 +23,10 @@ module.exports = async ({ page, ok }) => {
     'con pantalla táctil salen el joystick y el botón de rendirse, y los movimientos sin teclas');
   const fits = await page.eval(`[...document.querySelectorAll('.mv, .team .tm, .tc-quit')].every(e => { const r = e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })`);
   ok(fits, 'en 844×390 los movimientos, el equipo y el botón de rendirse caben en pantalla');
+  // Cámara cerca, siguiendo a tu Pokémon (sin seguir, a 844×390 va a 23,6 de altura); el rival lejos sale como flecha en el borde
+  ok(await page.eval(`window.__app.camera.position.y < 16`), 'la cámara del combate va más cerca que en el ordenador');
+  await page.waitFor(`document.querySelector('.foe-arrow') && (document.querySelector('.foe-arrow').hidden === !(() => { const b = window.__app.battle, f = b.renderPos[b.foeIdx], p = b.toScreen(f.x, f.y); return p.x < 0 || p.y < 0 || p.x > innerWidth || p.y > innerHeight; })())`);
+  ok(true, 'la flecha del rival sale solo cuando el rival queda fuera de la pantalla');
   ok(await page.eval(`[...document.querySelectorAll('.mv .tc-name')].every(n => n.textContent.trim().length > 0) && getComputedStyle(document.querySelector('.mv .mv-ico')).display === 'none'`),
     'cada movimiento lleva su nombre (en corto) sobre el color de su tipo, sin el icono');
 
@@ -78,6 +82,8 @@ module.exports = async ({ page, ok }) => {
   await page.click('Rendirse');
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
   ok(await page.eval(`!document.querySelector('.tc-zone') && !document.body.classList.contains('touch-battle')`), 'al acabar, los controles táctiles se quitan');
+  await page.waitFor(`!document.querySelector('.foe-arrow')`);
+  ok(true, 'y la flecha del rival se quita');
   // Los resultados no caben en 390 px de alto: se puede bajar hasta el botón de seguir (antes se recortaban)
   await page.eval(`(() => { const s = document.getElementById('screen'); s.scrollTop = s.scrollHeight; return true; })()`);
   ok(await page.eval(`(() => { const b = [...document.querySelectorAll('.results button.primary')].pop(), r = b.getBoundingClientRect(), legal = document.querySelector('.legal-bar').getBoundingClientRect().height;

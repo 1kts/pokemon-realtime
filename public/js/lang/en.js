@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': 'Menu and battles made for mobile',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'On mobile, the menu almost fits on one screen: modes in a grid with your collection and missions beside them.',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': 'On mobile, the battle camera moves closer and follows your Pokémon, and if the opponent is off screen, an arrow with their face shows where they are.',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'The Story map scales gyms, routes and labels to its size, so they no longer overlap on small screens.',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'On mobile, another trainer\'s picture is centered and the right size, and the install-as-app notice no longer covers windows.',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'The Galaxy and Elemental skins look the same on mobile as on a computer, even after long sessions; their stars and flames move around a little.',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'The whole Wardrobe on show',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'In each Pokémon\'s Wardrobe you see particles of every type on it, and in the avatar editor every effect: the ones you don\'t have yet show dimmed.',
@@ -521,7 +529,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': 'Challenges to earn skins, frames, titles and more',
     // ---------- Efectos del avatar ----------
     'Efecto': 'Effect',
-    'Sin efectos todavía: salen en Lucky Spin.': 'No effects yet: they come from Lucky Spin.',
     'Efecto {name}': '{name} effect',
     'Ponerme el efecto': 'Put on the effect',
     'Retrato de {m} ({e})': '{m} portrait ({e})',

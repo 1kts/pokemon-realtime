@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': '모바일에 맞춘 메뉴와 배틀',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': '모바일에서 메뉴가 거의 한 화면에 들어갑니다. 모드는 격자로, 컬렉션과 미션은 그 옆에 있습니다.',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': '모바일에서 배틀 카메라가 가까워져 포켓몬을 따라가고, 상대가 화면 밖에 있으면 얼굴이 있는 화살표로 위치를 알려 줍니다.',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': '스토리 지도가 체육관, 도로, 라벨을 크기에 맞게 조정해 작은 화면에서도 겹치지 않습니다.',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': '모바일에서 다른 트레이너의 사진이 가운데에 알맞은 크기로 나오고, 앱 설치 안내가 더 이상 창을 가리지 않습니다.',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': '갤럭시와 엘리멘탈 스킨이 오래 플레이한 뒤에도 모바일과 컴퓨터에서 똑같이 보입니다. 별과 불꽃의 위치가 조금 바뀝니다.',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '옷장 전부 한눈에',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '각 포켓몬의 옷장에서 모든 타입의 파티클을 입혀 볼 수 있고, 아바타 편집에서는 모든 효과가 보입니다. 아직 없는 것은 흐리게 나옵니다.',
@@ -522,7 +530,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': '스킨, 테두리, 칭호 등을 얻는 도전',
     // ---------- Efectos del avatar ----------
     'Efecto': '효과',
-    'Sin efectos todavía: salen en Lucky Spin.': '아직 효과가 없어요: Lucky Spin에서 얻어요.',
     'Efecto {name}': '{name} 효과',
     'Ponerme el efecto': '효과 적용',
     'Retrato de {m} ({e})': '{m} 초상 ({e})',

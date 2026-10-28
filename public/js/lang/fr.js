@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': 'Menu et combats pensés pour mobile',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'Sur mobile, le menu tient presque sur un seul écran : les modes en grille, ta collection et tes missions à côté.',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': 'Sur mobile, la caméra de combat se rapproche et suit ton Pokémon, et si l\'adversaire n\'est pas visible, une flèche avec son visage indique où il est.',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'La carte Histoire adapte arènes, routes et étiquettes à sa taille : elles ne se chevauchent plus sur les petits écrans.',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'Sur mobile, la photo d\'un autre dresseur est centrée et à la bonne taille, et l\'avis pour installer l\'app ne cache plus les fenêtres.',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'Les skins Galaxie et Élémentaire sont identiques sur mobile et sur ordinateur, même après une longue partie ; leurs étoiles et flammes changent un peu de place.',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'Toute la Garde-robe en vue',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'Dans la Garde-robe de chaque Pokémon, tu vois les particules de tous les types sur lui, et dans l\'éditeur d\'avatar tous les effets : ceux que tu n\'as pas encore sont grisés.',
@@ -521,7 +529,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': 'Des défis pour gagner skins, cadres, titres et plus',
     // ---------- Efectos del avatar ----------
     'Efecto': 'Effet',
-    'Sin efectos todavía: salen en Lucky Spin.': 'Pas encore d\'effets : ils viennent de Lucky Spin.',
     'Efecto {name}': 'Effet {name}',
     'Ponerme el efecto': 'Mettre l\'effet',
     'Retrato de {m} ({e})': 'Portrait de {m} ({e})',

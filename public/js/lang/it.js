@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': 'Menu e lotte su misura per il cellulare',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'Sul cellulare il menu sta quasi tutto in una schermata: le modalità in una griglia e la tua collezione e le missioni accanto.',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': 'Sul cellulare la telecamera della lotta si avvicina e segue il tuo Pokémon, e se l\'avversario non si vede una freccia con la sua faccia ti indica dov\'è.',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'La mappa della Storia adatta palestre, percorsi ed etichette alla sua dimensione, così non si sovrappongono sugli schermi piccoli.',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'Sul cellulare la foto di un altro allenatore è centrata e della giusta misura, e l\'avviso per installare l\'app non copre più le finestre.',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'Le skin Galassia ed Elementale si vedono uguali sul cellulare e sul computer, anche dopo tanto tempo di gioco; le loro stelle e fiamme cambiano un po\' posizione.',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'Tutto il Guardaroba in vista',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'Nel Guardaroba di ogni Pokémon vedi su di lui le particelle di tutti i tipi, e nell\'editor dell\'avatar tutti gli effetti: quelli che non hai ancora appaiono sbiaditi.',
@@ -522,7 +530,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': 'Sfide per ottenere skin, cornici, titoli e altro',
     // ---------- Efectos del avatar ----------
     'Efecto': 'Effetto',
-    'Sin efectos todavía: salen en Lucky Spin.': 'Ancora nessun effetto: arrivano da Lucky Spin.',
     'Efecto {name}': 'Effetto {name}',
     'Ponerme el efecto': 'Metti l\'effetto',
     'Retrato de {m} ({e})': 'Ritratto di {m} ({e})',

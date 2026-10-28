@@ -42,12 +42,19 @@ export function initTouchDevice() {
   };
   const gate = el('div', 'rotate-gate', '<b>⟳</b><span></span><p></p><button class="primary rg-install" hidden></button>');
   gate.querySelector('button').onclick = install;
-  // Aviso en los menús (en horizontal): instalar como app, con una ✕ para no volver a verlo
-  let seen = false;
+  // Aviso en el menú (en horizontal): instalar como app, con una ✕ para no volver a verlo. Abajo, solo en el
+  // menú sin ventanas abiertas (el menú le deja hueco: body.has-tip) y 12 s a la vista cada vez que se abre el juego
+  let seen = false, shown = true, visible = 0;
+  const tick = setInterval(() => {
+    const on = tip.isConnected && !!document.querySelector('#screen > .menu') && !document.querySelector('body > .modal, .mon-sheet-back');
+    tip.hidden = !on;
+    document.body.classList.toggle('has-tip', on);
+    if (on && ++visible >= 24) { shown = false; clearInterval(tick); document.body.classList.remove('has-tip'); refresh(); }
+  }, 500);
   try { seen = !!localStorage.getItem('arena.iosTip'); } catch {}
   const tip = el('div', 'ios-tip', `<span></span><button class="primary it-go"></button><button class="it-x" aria-label="${t('Cerrar')}">✕</button>`);
   tip.querySelector('.it-go').onclick = install;
-  tip.querySelector('.it-x').onclick = () => { seen = true; refresh(); try { localStorage.setItem('arena.iosTip', '1'); } catch {} };
+  tip.querySelector('.it-x').onclick = () => { seen = true; document.body.classList.remove('has-tip'); refresh(); try { localStorage.setItem('arena.iosTip', '1'); } catch {} };
   const refresh = () => {
     gate.querySelector('span').textContent = t('Gira el móvil para jugar en horizontal');
     gate.querySelector('p').textContent = ios ? t('¿No gira? Abre el Centro de control (desliza desde la esquina de arriba a la derecha) y quita el bloqueo de rotación, el candado.')
@@ -57,7 +64,7 @@ export function initTouchDevice() {
     go.textContent = t('Instalar como app');
     tip.querySelector('span').textContent = t('Instala PokéArenas como app: se abre a pantalla completa, sin las barras del navegador.');
     tip.querySelector('.it-go').textContent = t('Instalar');
-    if (canInstall() && !seen) { if (!tip.isConnected) document.body.append(tip); } else tip.remove();
+    if (canInstall() && !seen && shown) { if (!tip.isConnected) { tip.hidden = true; document.body.append(tip); } } else { tip.remove(); document.body.classList.remove('has-tip'); }
   };
   addEventListener('resize', refresh);
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); prompt = e; refresh(); });

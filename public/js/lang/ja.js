@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': 'スマホ向けのメニューとバトル',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'スマホではメニューがほぼ1画面に収まります。モードはグリッドで、コレクションとミッションはその横に並びます。',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': 'スマホではバトルのカメラが近づいてポケモンを追いかけ、相手が画面外にいるときは顔付きの矢印で場所を示します。',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'ストーリーのマップがジム、道路、ラベルを大きさに合わせて調整し、小さな画面でも重なりません。',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'スマホで他のトレーナーの写真が中央にちょうどいい大きさで表示され、アプリとしてインストールする案内がウィンドウを隠さなくなりました。',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'ギャラクシーとエレメンタルのスキンが、長く遊んだ後でもスマホとパソコンで同じ見た目になりました。星や炎の位置が少し変わります。',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '衣装を全部チェック',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '各ポケモンの衣装で全タイプのパーティクルを試し見でき、アバター編集ではすべてのエフェクトが見られます。まだ持っていないものは薄く表示されます。',
@@ -522,7 +530,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': 'スキン、フレーム、称号などを手に入れるチャレンジ',
     // ---------- Efectos del avatar ----------
     'Efecto': 'エフェクト',
-    'Sin efectos todavía: salen en Lucky Spin.': 'エフェクトはまだありません：Lucky Spinで手に入ります。',
     'Efecto {name}': '{name}エフェクト',
     'Ponerme el efecto': 'エフェクトを付ける',
     'Retrato de {m} ({e})': '{m}の顔アイコン（{e}）',

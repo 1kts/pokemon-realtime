@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': '为手机打造的菜单和对战',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': '在手机上，菜单几乎能放进一屏：模式排成网格，你的收藏和任务就在旁边。',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': '在手机上，对战镜头会拉近并跟随你的宝可梦；对手不在画面里时，带有其头像的箭头会指出它的位置。',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': '故事模式地图会按大小调整道馆、道路和标签，在小屏幕上不再重叠。',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': '在手机上，其他训练家的照片居中显示且大小合适，安装为应用的提示也不再遮挡窗口。',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': '星河和元素皮肤在手机和电脑上看起来一样，长时间游玩后也不例外；它们的星星和火焰位置略有变化。',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': '衣柜一览无余',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '在每只宝可梦的衣柜里可以看到所有属性的粒子效果，在头像编辑中可以看到所有特效：还没有的会以灰色显示。',
@@ -521,7 +529,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': '完成挑战，获得皮肤、边框、称号等',
     // ---------- Efectos del avatar ----------
     'Efecto': '效果',
-    'Sin efectos todavía: salen en Lucky Spin.': '还没有效果：可以在 Lucky Spin 中获得。',
     'Efecto {name}': '{name}效果',
     'Ponerme el efecto': '使用该效果',
     'Retrato de {m} ({e})': '{m}的头像（{e}）',

@@ -21,6 +21,10 @@ module.exports = async ({ page, player, ok }) => {
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
     await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);
+    // El menú cabe en una pantalla: los 7 modos, tu colección y las misiones a la vista sin bajar (tras su animación de entrada)
+    await page.waitFor(`[...document.getElementById('screen').children].every(c => c.getAnimations().every(a => a.playState === 'finished'))`);
+    ok(await page.eval(`(() => { const all = [...document.querySelectorAll('.menu-card, .hub-coll .coll-tile, .missions-widget .mw-head')];
+      return all.length >= 13 && all.every(e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1; }); })()`), `${W}×${H}: el menú cabe en una pantalla (modos, colección y misiones)`);
     const over = [];
     for (const v of views) {
       await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); window.__app.ui.show('${v}'); true`);

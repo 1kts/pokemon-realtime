@@ -19,7 +19,8 @@ uniform vec3 uPal2;
 uniform vec3 uPal3;
 uniform vec2 uTexel;
 uniform vec4 uFrame;
-float skinHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// Hash sin sin(): el de fract(sin(x) * 43758.5) pierde precisión en las GPU de móvil y el dibujo salía distinto
+float skinHash(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 float skinNoise(vec2 p) {
   vec2 i = floor(p), f = fract(p);
   f = f * f * (3.0 - 2.0 * f);
@@ -163,9 +164,12 @@ export function setSkin(u, skin, type) {
 }
 
 // El fotograma de la hoja que se ve (lo que muestra la textura con su offset y repeat) y el reloj
+// (el reloj da la vuelta cada 10 min: sin acotar, tras un rato largo el shader pierde precisión y la skin se
+// queda a bloques o congelada, sobre todo en las GPU de móvil)
+export const skinClock = now => (now / 1000) % 600;
 export function setFrame(u, tex, now) {
   const img = tex.image;
-  u.uTime.value = now / 1000;
+  u.uTime.value = skinClock(now);
   u.uTexel.value.set(1 / img.naturalWidth, 1 / img.naturalHeight);
   u.uFrame.value.set(tex.offset.x, tex.offset.y, tex.repeat.x, tex.repeat.y);
 }

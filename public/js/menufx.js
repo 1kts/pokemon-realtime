@@ -6,7 +6,7 @@
 // chispas, hojas, copos, humo o destellos). Sin WebGL, la skin es el filtro CSS skin-* (skinCss).
 import * as THREE from 'three';
 import { elementalPalette } from './skinfx.js';
-import { skinUniforms, skinMaterial, setSkin } from './skinshader.js';
+import { skinUniforms, skinMaterial, setSkin, skinClock } from './skinshader.js';
 
 const FPS = 24;
 const M = 3;            // margen alrededor del fotograma, en píxeles de arte (llamas y contorno de la Elemental)
@@ -116,7 +116,7 @@ function skinPass(list, now) {
   renderer.setScissorTest(false);
   renderer.clear();
   renderer.setScissorTest(true);
-  u.uTime.value = now / 1000;
+  u.uTime.value = skinClock(now);
   for (const { s, e, x, y, w, h } of tiles.values()) {
     const iw = s.img.naturalWidth, ih = s.img.naturalHeight, tex = texture(s.img, now);
     // El plano enseña el fotograma con M píxeles de más por cada lado (uFrame: solo el fotograma)

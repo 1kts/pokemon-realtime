@@ -36,7 +36,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------- Pantallas ---------- */
-#screen { position: fixed; inset: 0; overflow: auto; padding: 18px 18px calc(18px + var(--legal-h, 0px)); display: flex; flex-direction: column; align-items: center;
+#screen { position: fixed; inset: 0; overflow: auto; padding: 18px; display: flex; flex-direction: column; align-items: center;
   background: radial-gradient(ellipse at 50% 0%, rgba(30, 60, 120, .35), transparent 60%), linear-gradient(180deg, rgba(6,10,20,.6), rgba(6,10,20,.25) 40%, rgba(6,10,20,.7)); }
 #screen > * { width: min(1560px, 100%); animation: enter .28s ease-out; }
 #screen.repaint > * { animation: none; }

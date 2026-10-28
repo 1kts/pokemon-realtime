@@ -421,11 +421,24 @@ export class World {
   placeCamera(aspect) {
     // Cámara inclinada estilo Battlerite, lo bastante lejos para ver el campo entero por encima del HUD
     // (las esquinas de abajo no quedan tapadas); más alta si la ventana es estrecha
-    const cx = COLS / 2, cz = ROWS / 2;
-    const fit = Math.max(1, 1.62 / aspect) * CAM_ZOOM;
+    let cx = COLS / 2, cz = ROWS / 2, fit = Math.max(1, 1.62 / aspect) * CAM_ZOOM, look = 1.4;
+    // En el móvil (follow: la fracción de la distancia de siempre) se acerca y sigue al Pokémon propio. Se
+    // suaviza con el tiempo real (igual a 60 que a 120 Hz) y entra desde el campo entero, sin salto. El límite
+    // deja asomar un poco fuera del campo para que tu Pokémon junto a un borde no quede bajo el HUD
+    const now = performance.now(), dt = Math.min(0.1, (now - (this.camT || now)) / 1000);
+    this.camT = now;
+    if (this.follow && this.focus) {
+      const z = this.follow, cl = (v, a, b) => Math.min(b, Math.max(a, v));
+      const mx = COLS * z / 2 - 1.5, mz = ROWS * z / 2 - 2.5;
+      const tx = cl(this.focus.x / CELL, mx, COLS - mx), tz = cl(this.focus.y / CELL, mz, ROWS - mz);
+      const c = this.camC || (this.camC = { x: cx, z: cz, f: 1 });
+      const k = 1 - Math.exp(-dt * 7);
+      c.x += (tx - c.x) * k; c.z += (tz - c.z) * k; c.f += (z - c.f) * k;
+      cx = c.x; cz = c.z; fit *= c.f; look = 1.4 + (-0.5 - 1.4) * (1 - c.f) / (1 - z);   // (tu Pokémon, algo por debajo del centro: arriba van los equipos y el reloj)
+    } else this.camC = null;
     this.camera.aspect = aspect;
     this.camera.position.set(cx, 17.5 * fit, cz + 11.5 * fit);
-    this.camera.lookAt(cx, 0, cz + 1.4);   // el campo, centrado en vertical
+    this.camera.lookAt(cx, 0, cz + look);   // el campo, centrado en vertical
     this.camera.updateProjectionMatrix();
   }
 

@@ -55,6 +55,19 @@ export class BattleClient {
     if (this.app.tutorial) this.app.tutorial.attach(this);   // tutorial jugable (tutorial.js)
     this.bindInput();
     this.touch = touchMode() ? new TouchControls(this) : null;   // en móvil: joystick y botones táctiles
+    this.world.follow = this.touch ? 0.62 : null;   // y la cámara más cerca, siguiendo a tu Pokémon (world.placeCamera)
+    // Con la cámara cerca el rival puede quedar fuera: una flecha con su cara en el borde dice dónde está
+    if (this.touch) {
+      const a = this.foeArrow = el('div', 'foe-arrow', '<i></i><img alt="" draggable="false">');
+      a.hidden = true; a.tip = a.querySelector('i'); a.img = a.querySelector('img'); a.dex = null;
+      document.body.append(a);
+      const probe = el('div');   // (el notch del iPhone en horizontal: los márgenes seguros de la pantalla)
+      probe.style.cssText = 'position: fixed; visibility: hidden; padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px)';
+      document.body.append(probe);
+      const ps = getComputedStyle(probe);
+      this.safeL = parseFloat(ps.paddingLeft) || 0; this.safeR = parseFloat(ps.paddingRight) || 0;
+      probe.remove();
+    }
     this.banner('3', 'big');
     const foe = this.sides[this.foeIdx];
     // Contra un líder: su presentación al empezar
@@ -449,6 +462,21 @@ export class BattleClient {
         this.aimLine.material.color.set(onFoe ? this.reticleHit : this.reticleColor);
       }
     }
+    if (this.foeArrow) {
+      // En el borde de la zona libre: por debajo de los equipos y el reloj, por encima de los botones y fuera del notch
+      const fa = this.foeArrow, sp = foe.st.x !== undefined && this.toScreen(foe.x, foe.y);
+      const L = 34 + this.safeL, R = innerWidth - 34 - this.safeR, T = 76, B = innerHeight - 34;
+      const out = !!sp && (sp.x < L || sp.y < T || sp.x > R || sp.y > B);
+      fa.hidden = !out;
+      if (out) {
+        const cx = (L + R) / 2, cy = (T + B) / 2, ang = Math.atan2(sp.y - cy, sp.x - cx);
+        const k = Math.min((R - L) / 2 / Math.max(1e-6, Math.abs(Math.cos(ang))), (B - T) / 2 / Math.max(1e-6, Math.abs(Math.sin(ang))));
+        fa.style.transform = `translate(${cx + Math.cos(ang) * k}px, ${cy + Math.sin(ang) * k}px) translate(-50%, -50%)`;
+        fa.tip.style.transform = `rotate(${ang}rad)`;
+        const fm = this.monOf(this.foeIdx), key = fm.dex + (fm.shiny ? 's' : '');
+        if (fa.dex !== key) { fa.dex = key; fa.img.src = faceSrc(fm.dex, 'Normal', !!fm.shiny) || ''; }
+      }
+    }
     for (let i = 0; i < 2; i++) {
       const { x, y, a, st, moving } = pos[i];
       const actor = this.actors[i];
@@ -712,6 +740,8 @@ export class BattleClient {
     removeEventListener('contextmenu', this.onContext);
     removeEventListener('blur', this.onBlur);
     if (this.touch) this.touch.dispose();
+    this.world.follow = null; this.world.focus = null;
+    if (this.foeArrow) this.foeArrow.remove();
     for (const a of this.actors) a.dispose();
     this.world.scene.remove(this.reticle);
     if (this.aimLine) { this.world.scene.remove(this.aimLine); this.aimLine.geometry.dispose(); this.aimLine.material.dispose(); }

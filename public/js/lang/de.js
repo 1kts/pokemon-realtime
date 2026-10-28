@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.2 ----------
+    'Menú y combate a medida del móvil': 'Menü und Kämpfe fürs Handy gemacht',
+    'En el móvil, el menú cabe casi entero en una pantalla: los modos en una rejilla y tu colección y tus misiones al lado.': 'Am Handy passt das Menü fast auf einen Bildschirm: die Modi in einem Raster, deine Sammlung und Missionen daneben.',
+    'En el móvil, la cámara del combate se acerca y sigue a tu Pokémon, y si el rival no se ve, una flecha con su cara te dice dónde está.': 'Am Handy rückt die Kampfkamera näher und folgt deinem Pokémon, und ist der Gegner nicht zu sehen, zeigt ein Pfeil mit seinem Gesicht, wo er ist.',
+    'El mapa de Historia ajusta gimnasios, rutas y rótulos a su tamaño, así no se pisan en pantallas pequeñas.': 'Die Story-Karte passt Arenen, Routen und Beschriftungen an ihre Größe an, damit sie sich auf kleinen Bildschirmen nicht überlappen.',
+    'En el móvil, la foto de otro entrenador sale centrada y a su tamaño, y el aviso de instalar como app ya no tapa las ventanas.': 'Am Handy ist das Bild anderer Trainer zentriert und richtig groß, und der Hinweis zum Installieren als App verdeckt keine Fenster mehr.',
+    'Las skins Galaxia y Elemental se ven igual en el móvil que en el ordenador, también tras jugar mucho rato; sus estrellas y llamas cambian un poco de sitio.': 'Die Galaxie- und Element-Skins sehen am Handy genauso aus wie am Computer, auch nach langem Spielen; ihre Sterne und Flammen sitzen etwas anders.',
+    // ---------- Novedades v0.31.2 ----------
     // ---------- Novedades v0.31.1 ----------
     'Todo el Vestuario a la vista': 'Der ganze Kleiderschrank im Blick',
     'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'Im Kleiderschrank jedes Pokémon siehst du die Partikel aller Typen an ihm und im Avatar-Editor alle Effekte: die, die du noch nicht hast, erscheinen blass.',
@@ -521,7 +529,6 @@ export default {
     'Retos para conseguir skins, marcos, títulos y más': 'Herausforderungen für Skins, Rahmen, Titel und mehr',
     // ---------- Efectos del avatar ----------
     'Efecto': 'Effekt',
-    'Sin efectos todavía: salen en Lucky Spin.': 'Noch keine Effekte: Es gibt sie bei Lucky Spin.',
     'Efecto {name}': 'Effekt {name}',
     'Ponerme el efecto': 'Effekt anlegen',
     'Retrato de {m} ({e})': '{m}-Porträt ({e})',
