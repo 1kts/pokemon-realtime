@@ -1,11 +1,14 @@
-// Barra legal: fija abajo, centrada y pegada al borde en todas las pantallas (menos el combate), con el aviso
-// de fan-game, las marcas, la atribución de los sprites y los enlaces; se ajusta al ancho de la ventana y la
-// pantalla le deja su sitio para que no tape nada
+// Barra legal: al final de cada pantalla (menos el combate), centrada y pegada al borde de abajo al bajar del
+// todo, con el aviso de fan-game, las marcas, la atribución de los sprites y los enlaces; se ajusta al ancho de
+// la ventana y va detrás del contenido, así que no tapa nada
 module.exports = async ({ page, player, ok }) => {
+  // (baja #screen del todo; el centro se mide sobre su ancho útil, sin la barra de scroll)
   const geo = () => page.eval(`(() => {
-    const b = document.querySelector('.legal-bar'), r = b.getBoundingClientRect(), s = getComputedStyle(document.getElementById('screen'));
-    return { bottom: Math.round(innerHeight - r.bottom), centre: Math.round(r.left + r.width / 2 - innerWidth / 2), width: Math.round(r.width), vw: innerWidth,
-      h: Math.round(r.height), legalH: parseInt(getComputedStyle(document.documentElement).getPropertyValue('--legal-h')), pad: parseInt(s.paddingBottom), shown: getComputedStyle(b).display !== 'none' };
+    const sc = document.getElementById('screen'); sc.scrollTop = sc.scrollHeight;
+    const b = document.querySelector('.legal-bar'), r = b.getBoundingClientRect();
+    const covers = [...sc.children].some(c => c !== b && (q => q.height && q.bottom > r.top + 1 && q.top < r.bottom - 1)(c.getBoundingClientRect()));
+    return { bottom: Math.round(innerHeight - r.bottom), centre: Math.round(r.left + r.width / 2 - sc.clientWidth / 2), width: Math.round(r.width), vw: innerWidth,
+      inScreen: b.parentElement === sc && getComputedStyle(b).position !== 'fixed', covers, shown: getComputedStyle(b).display !== 'none' };
   })()`);
 
   // Portada
@@ -25,7 +28,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.resize(w, h);
     const g = await geo();
     ok(g.bottom === 0 && Math.abs(g.centre) <= 1 && g.width <= g.vw, `${w}×${h}: pegada al borde de abajo, centrada y sin pasarse del ancho`);
-    ok(Math.abs(g.legalH - g.h) <= 1 && g.pad >= g.h, `${w}×${h}: la pantalla le deja su sitio (${g.h} px)`);
+    ok(g.inScreen && !g.covers, `${w}×${h}: va al final de la pantalla y no tapa nada`);
   }
   ok((await page.eval(`document.documentElement.scrollWidth <= innerWidth`)), 'en la ventana estrecha no aparece scroll horizontal');
   await page.resize();
@@ -34,11 +37,12 @@ module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'barralegal' });
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok((await geo()).shown && (await geo()).bottom === 0, 'también está en el menú del juego');
+  await page.waitFor(`[...document.getElementById('screen').children].every(c => c.getAnimations().every(a => a.playState === 'finished'))`);   // tras su animación de entrada
+  const g = await geo();
+  ok(g.shown && g.bottom === 0 && !g.covers, 'también está en el menú del juego, al final y sin tapar nada');
   await page.eval(`document.body.classList.add('in-battle'); true`);
   await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display === 'none'`);
-  await page.waitFor(`getComputedStyle(document.documentElement).getPropertyValue('--legal-h').trim() === '0px'`);   // lo publica el ResizeObserver, un instante después
-  ok(true, 'en combate se esconde y no ocupa sitio');
+  ok(true, 'en combate se esconde');
   await page.eval(`document.body.classList.remove('in-battle'); true`);
   await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display !== 'none'`);
   await page.eval(`[...document.querySelectorAll('.legal-bar button.link')].find(b => /Créditos/.test(b.textContent)).click(); true`);

@@ -1421,7 +1421,7 @@ button.mini.pick.empty { justify-content: center; min-height: 82px; border-style
 @media (max-width: 520px) { .music-row .music-label { flex-basis: 100%; } }
 
 /* Barra legal: la última de #screen (order) y empujada abajo (margin-top: auto), detrás del contenido y sin taparlo */
-#screen > .legal-bar { order: 9999; flex-shrink: 0; margin-top: auto; width: min(100%, 1180px); animation: none; }
+#screen > .legal-bar { order: 9999; flex-shrink: 0; margin-top: auto; width: min(100%, 1180px); animation: none; margin-bottom: -18px; }
 .legal-bar { position: relative; box-sizing: border-box;
   padding: 6px clamp(8px, 2vw, 22px) calc(6px + env(safe-area-inset-bottom)); text-align: center; color: rgba(255,255,255,.9);
   font-size: clamp(9px, 0.5vw + 6.5px, 12.5px); line-height: 1.4; background: linear-gradient(0deg, rgba(8,12,28,.94), rgba(8,12,28,.8));

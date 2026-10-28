@@ -1254,6 +1254,7 @@ body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-
 /* ================= Móvil y pantallas bajas: todo más compacto para que quepa lo importante ================= */
 @media (max-height: 500px), (max-width: 560px) {
   #screen { padding: 8px 10px calc(8px + var(--legal-h, 0px)); }
+  #screen > .legal-bar { margin-bottom: -8px; }
   /* Barra legal: una línea (tocarla la despliega) y los enlaces en otra */
   .legal-bar { font-size: 9.5px; line-height: 1.35; padding: 2px 8px calc(3px + env(safe-area-inset-bottom)); }
   .legal-bar .legal-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 1px; cursor: pointer; }

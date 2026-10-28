@@ -1593,6 +1593,7 @@ export class UI {
     };
     wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, arenas, start);
     this.root.append(wrap);
+    this.refreshLegalBar();
   }
 
   // ---------- Resultados ----------
@@ -1721,6 +1722,7 @@ export class UI {
     }
     box.append(acts);
     this.root.append(box);
+    this.refreshLegalBar();
   }
 
   // Adónde se va tras un combate: la pantalla desde la que se empezó
