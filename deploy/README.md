@@ -148,6 +148,10 @@ ssh root@IP "GOOGLE_CLIENT_ID='1234-abcd.apps.googleusercontent.com' \
 reinicia el juego (como en un despliegue: espera a que acaben los combates en curso, como mucho 5 min). Antes,
 copia la carpeta `deploy` actualizada al servidor (`scp -r deploy root@IP:/root/arena-deploy`).
 
+- El correo lleva un enlace para entrar con un toque (y el código debajo). Apunta a `https://pokearenas.com`; en
+  otro servidor, pon su dirección en `PUBLIC_URL` (p. ej. `PUBLIC_URL='https://pruebas.ejemplo.com'`). En Brevo,
+  desactiva el seguimiento de clics (*Transactional → Settings → Tracking*): si no, el enlace pasa por sus
+  servidores con el correo y el código.
 - Se pueden poner solo las de Google o solo las del correo. Para cambiar una, repite la orden solo con ella; para
   quitarla, pásala vacía (`GOOGLE_CLIENT_ID=`).
 - `SMTP_PORT`: `587` (STARTTLS, lo normal) o `465` (TLS directo). El juego se niega a mandar la contraseña

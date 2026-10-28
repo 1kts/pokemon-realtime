@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.4', date: '2026-10-28', title: 'Toques más precisos en el móvil',
+      items: [
+        ['arreglo', 'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.'],
+        ['arreglo', 'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.'],
+        ['arreglo', 'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.'],
+      ],
+    },
+    {
       v: '0.31.3', date: '2026-10-28', title: 'Cuentas más seguras',
       items: [
         ['arreglo', 'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».'],

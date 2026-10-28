@@ -458,7 +458,8 @@ class Client {
     const r2 = await m1.req({ t: 'mailcode', email: 'ash.ketchum@pueblo-paleta.com', lang: 'en' }, 'mailsent');
     ok(JSON.stringify(r1) === JSON.stringify(r2), 'pedir un código responde igual exista la cuenta o no');
     const code = codeOf('brock@example.com');
-    ok(/^\d{6}$/.test(code) && /PokéArenas/.test(mail.lastTo('brock@example.com').subject) && /Your code/.test(mail.lastTo('ash.ketchum@pueblo-paleta.com').text), 'el correo lleva el código, en el idioma del jugador');
+    ok(/^\d{6}$/.test(code) && /PokéArenas/.test(mail.lastTo('brock@example.com').subject) && /Tap this link/.test(mail.lastTo('ash.ketchum@pueblo-paleta.com').text), 'el correo lleva el código, en el idioma del jugador');
+    ok(mail.lastTo('brock@example.com').text.includes(`/#entrar=brock%40example.com~${code}`), 'y un enlace para entrar con un toque, con el correo y el código detrás de # (no llegan al servidor)');
     const row = store.db.prepare('SELECT * FROM mail_codes WHERE email = ?').get('brock@example.com');
     ok(row && !JSON.stringify(row).includes(code) && row.expires - Date.now() <= mail.CODE_MS && row.expires - Date.now() > 9 * 60e3, 'el código se guarda solo como huella y caduca a los 10 minutos');
     m = await m1.req({ t: 'mailcode', email: 'brock@example.com' }, 'autherr');

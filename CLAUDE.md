@@ -37,8 +37,8 @@ En esta máquina el Chrome de los e2e se pasa con `CHROME=~/.cache/ms-playwright
 
 - Un test comprueba lo que ve y hace el jugador (texto visible, que nada tape un botón, que quepa en pantalla),
   no clases CSS ni detalles de cómo está hecho.
-- Pulsar y escribir como un jugador (`page.realClick`, entradas reales) en vez de `.click()` dentro de `eval` o de
-  `ui.show()`; si hace falta un atajo, se dice por qué en un comentario.
+- Pulsar y escribir como un jugador (`page.click`, `page.type`, `page.slide`, `page.press`: entradas reales) en vez de
+  `.click()` dentro de `eval` o de `ui.show()`; si hace falta un atajo, `// atajo: motivo` (`tools/e2e-lint.js`).
 - Si un test falla, primero se sospecha del código. Cambiar un test para que pase solo cuando el comportamiento ha
   cambiado a propósito, y diciéndolo.
 - Lo de móvil se prueba en 844×390 y 667×375 (horizontal) con `localStorage arena.touch = '1'`.
@@ -48,6 +48,8 @@ En esta máquina el Chrome de los e2e se pasa con `CHROME=~/.cache/ms-playwright
 - Textos con `t('…')` en español; cada texto nuevo va traducido en los 7 idiomas de `public/js/lang/`
   (`node tools/i18n-check.js --strict`). Dentro de `t()` no va un ternario: dos `t()`.
 - La CSP no deja manejadores en línea (`onclick=""`, `onerror=""`): se asignan desde JS.
-- Móvil en horizontal: `@media (max-height: 500px)`; pantalla táctil: `touchMode()` (`public/js/touch.js`),
+- Móvil en horizontal: `@media (max-height: 500px)`, en `public/mobile.css` (por pantallas, junto con lo de ventana
+  estrecha y vertical; se carga después de `cards.css`). Pantalla táctil: `touchMode()` (`public/js/touch.js`),
   `body.touch` y `#hud.touch`. El mapa de Historia es un contenedor: se adapta con `@container`.
+- Tras tocar el CSS: `tests/e2e/pantallas-movil.e2e.js` y `pantallas-ventana.e2e.js` (nada tapado ni desbordado en 4 tamaños).
 - Comentarios en español, en el tono del código de alrededor.

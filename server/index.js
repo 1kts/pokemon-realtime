@@ -615,7 +615,7 @@ async function mailCode(c, msg) {
   }
   const lang = typeof msg.lang === 'string' ? msg.lang : 'en';
   try {
-    await mail.send(email, mail.codeMail(lang, mail.newCode(email)));
+    await mail.send(email, mail.codeMail(lang, mail.newCode(email), email));
   } catch (e) {
     console.error('No se ha podido mandar un código por correo:', e.message);
     return send(c, { t: 'autherr', msg: 'No se ha podido mandar el correo: inténtalo más tarde' });
@@ -649,7 +649,8 @@ async function identityAuth(c, msg) {
       audit.log('cuenta.fallo', { ip: c.ip, via: 'correo' });
       return send(c, { t: 'autherr', msg: 'Código incorrecto o caducado' });
     }
-    ident = { email };
+    // (noGuest: un enlace del correo que ese navegador no pidió; la partida de invitado no pasa a esa cuenta)
+    ident = { email, ...(msg.noGuest ? { noGuest: true } : {}) };
     via = 'correo';
   }
   if (!clients.has(c)) return;
@@ -658,8 +659,8 @@ async function identityAuth(c, msg) {
   else {
     // La partida de invitado que pasa a ser la cuenta: la de la conexión o, desde la portada, la de este
     // navegador (se demuestra que es suya con su token, como al continuar la partida)
-    let guest = c.profile && !c.profile.account ? c.profile : null;
-    if (!guest && !c.profile && store.has(msg.token)) {
+    let guest = c.profile && !c.profile.account && !ident.noGuest ? c.profile : null;
+    if (!guest && !c.profile && !ident.noGuest && store.has(msg.token)) {
       const g = store.get(msg.token);
       if (g.account) store.release(g); else { setProfile(c, g); guest = g; }
     }

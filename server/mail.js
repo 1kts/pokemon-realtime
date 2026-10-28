@@ -54,20 +54,26 @@ function fail(row) {
 }
 
 // ---------- Textos del correo ----------
-// En el idioma del jugador. El mismo correo para todos, tenga cuenta o no (no se puede averiguar quién juega)
+// En el idioma del jugador. El mismo correo para todos, tenga cuenta o no (no se puede averiguar quién juega).
+// Lleva un enlace para entrar con un toque ({link}: el juego con el correo y el código detrás de #, que no llega al
+// servidor ni a sus registros) y el código, por si se abre en otro dispositivo o en la app instalada del iPhone
+// (el enlace abre Safari, no la app)
 const TEXTS = {
-  es: ['Tu código de PokéArenas: {code}', 'Tu código para entrar en PokéArenas es:\n\n    {code}\n\nCaduca en 10 minutos y solo sirve una vez.\nSi no lo has pedido tú, ignora este correo: nadie puede entrar sin él.'],
-  en: ['Your PokéArenas code: {code}', 'Your code to sign in to PokéArenas is:\n\n    {code}\n\nIt expires in 10 minutes and works only once.\nIf you didn\'t ask for it, ignore this email: nobody can sign in without it.'],
-  de: ['Dein PokéArenas-Code: {code}', 'Dein Code für die Anmeldung bei PokéArenas lautet:\n\n    {code}\n\nEr läuft in 10 Minuten ab und gilt nur einmal.\nWenn du ihn nicht angefordert hast, ignoriere diese E-Mail: Ohne ihn kann sich niemand anmelden.'],
-  it: ['Il tuo codice PokéArenas: {code}', 'Il tuo codice per accedere a PokéArenas è:\n\n    {code}\n\nScade tra 10 minuti e vale una sola volta.\nSe non l\'hai richiesto tu, ignora questa email: nessuno può accedere senza.'],
-  fr: ['Ton code PokéArenas : {code}', 'Ton code pour te connecter à PokéArenas est :\n\n    {code}\n\nIl expire dans 10 minutes et ne sert qu\'une fois.\nSi tu ne l\'as pas demandé, ignore cet e-mail : personne ne peut se connecter sans lui.'],
-  ja: ['PokéArenas のコード: {code}', 'PokéArenas にログインするためのコードです:\n\n    {code}\n\n有効期限は10分で、1回だけ使えます。\n心当たりがない場合はこのメールを無視してください。このコードがなければ誰もログインできません。'],
-  ko: ['PokéArenas 코드: {code}', 'PokéArenas 로그인 코드입니다:\n\n    {code}\n\n10분 후에 만료되며 한 번만 사용할 수 있습니다.\n요청하지 않았다면 이 메일을 무시하세요. 이 코드 없이는 아무도 로그인할 수 없습니다.'],
-  zh: ['你的 PokéArenas 验证码：{code}', '你登录 PokéArenas 的验证码是：\n\n    {code}\n\n10 分钟后失效，只能使用一次。\n如果不是你本人申请的，请忽略这封邮件：没有验证码谁也无法登录。'],
+  es: ['Entra en PokéArenas · código {code}', 'Toca este enlace para entrar en PokéArenas:\n\n    {link}\n\nO escribe este código en el juego:\n\n    {code}\n\nCaducan en 10 minutos y solo sirven una vez.\nSi no lo has pedido tú, ignora este correo: nadie puede entrar sin él.'],
+  en: ['Sign in to PokéArenas · code {code}', 'Tap this link to sign in to PokéArenas:\n\n    {link}\n\nOr type this code in the game:\n\n    {code}\n\nThey expire in 10 minutes and work only once.\nIf you didn\'t ask for it, ignore this email: nobody can sign in without it.'],
+  de: ['Bei PokéArenas anmelden · Code {code}', 'Tippe auf diesen Link, um dich bei PokéArenas anzumelden:\n\n    {link}\n\nOder gib diesen Code im Spiel ein:\n\n    {code}\n\nSie laufen in 10 Minuten ab und gelten nur einmal.\nWenn du das nicht angefordert hast, ignoriere diese E-Mail: Ohne sie kann sich niemand anmelden.'],
+  it: ['Accedi a PokéArenas · codice {code}', 'Tocca questo link per accedere a PokéArenas:\n\n    {link}\n\nOppure scrivi questo codice nel gioco:\n\n    {code}\n\nScadono tra 10 minuti e valgono una sola volta.\nSe non l\'hai richiesto tu, ignora questa email: nessuno può accedere senza.'],
+  fr: ['Connexion à PokéArenas · code {code}', 'Touche ce lien pour te connecter à PokéArenas :\n\n    {link}\n\nOu tape ce code dans le jeu :\n\n    {code}\n\nIls expirent dans 10 minutes et ne servent qu\'une fois.\nSi tu ne l\'as pas demandé, ignore cet e-mail : personne ne peut se connecter sans lui.'],
+  ja: ['PokéArenas にログイン · コード {code}', 'このリンクをタップすると PokéArenas にログインできます:\n\n    {link}\n\nまたはゲームでこのコードを入力してください:\n\n    {code}\n\n有効期限は10分で、1回だけ使えます。\n心当たりがない場合はこのメールを無視してください。これがなければ誰もログインできません。'],
+  ko: ['PokéArenas 로그인 · 코드 {code}', '이 링크를 누르면 PokéArenas에 로그인합니다:\n\n    {link}\n\n또는 게임에서 이 코드를 입력하세요:\n\n    {code}\n\n10분 후에 만료되며 한 번만 사용할 수 있습니다.\n요청하지 않았다면 이 메일을 무시하세요. 이것 없이는 아무도 로그인할 수 없습니다.'],
+  zh: ['登录 PokéArenas · 验证码 {code}', '点此链接登录 PokéArenas：\n\n    {link}\n\n或在游戏中输入这个验证码：\n\n    {code}\n\n10 分钟后失效，只能使用一次。\n如果不是你本人申请的，请忽略这封邮件：没有它谁也无法登录。'],
 };
-function codeMail(lang, code) {
-  const [subject, text] = (Object.hasOwn(TEXTS, lang) ? TEXTS[lang] : TEXTS.en).map(s => s.replace('{code}', code));
-  return { subject, text: text + '\n\n— PokéArenas · https://pokearenas.com\n' };
+// Dirección del juego para el enlace (PUBLIC_URL; si no, la de producción)
+const site = () => (process.env.PUBLIC_URL || 'https://pokearenas.com').replace(/\/+$/, '');
+function codeMail(lang, code, email) {
+  const link = `${site()}/#entrar=${encodeURIComponent(email)}~${code}`;
+  const [subject, text] = (Object.hasOwn(TEXTS, lang) ? TEXTS[lang] : TEXTS.en).map(s => s.replace('{code}', code).replace('{link}', link));
+  return { subject, text: text + `\n\n— PokéArenas · ${site()}\n` };
 }
 
 // ---------- Envío ----------

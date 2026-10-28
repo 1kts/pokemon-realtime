@@ -246,3 +246,16 @@ function forfeitBox() {
 applyCursor();   // el color de cursor elegido en Ajustes
 initTouchDevice();   // en móvil: horizontal y pantalla completa
 ui.show('title');
+// Enlace del correo para entrar (#entrar=correo~código, ver server/mail.js): abre «Entrar con email» con los dos ya
+// escritos y falta un toque en «Entrar» (mailLogin). Se quita de la dirección (que no quede en el historial). También
+// con el juego ya abierto en la pestaña (entonces solo cambia el #)
+function mailLink() {
+  const m = /^#entrar=(.+)~(\d{6})$/.exec(location.hash);
+  if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  let email = null;
+  try { email = decodeURIComponent(m[1]); } catch { /* enlace roto: se ignora */ }
+  if (email && !app.battle) ui.mailLogin({ email, code: m[2] });
+}
+mailLink();
+addEventListener('hashchange', mailLink);

@@ -43,20 +43,15 @@ module.exports = async ({ page, player, ok }) => {
   // Tooltips con el dedo: tocar no los saca (se quedaban pegados); mantener medio segundo, sí
   await page.eval(`window.__app.ui.show('menu'); true`);
   const tipSel = await page.eval(`(() => { const n = [...document.querySelectorAll('#screen [title], #screen [data-tip]')].find(e => e.offsetParent && !e.closest('#hud')); n.id = n.id || 'tip-e2e'; return '#' + n.id; })()`);
-  const touch = (type) => page.eval(`(() => { const n = document.querySelector('${tipSel}'), r = n.getBoundingClientRect();
-    n.dispatchEvent(new PointerEvent('${type}', { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); return true; })()`);
-  // Un toque corto: todo en la misma consulta (en el CI cada consulta tarda y parecería una pulsación larga)
-  await page.eval(`(() => { const n = document.querySelector('${tipSel}'), r = n.getBoundingClientRect();
-    for (const type of ['pointerover', 'pointerdown']) n.dispatchEvent(new PointerEvent(type, { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 }));
-    n.focus();
-    n.dispatchEvent(new PointerEvent('pointerup', { pointerId: 3, pointerType: 'touch', bubbles: true, clientX: r.left + 4, clientY: r.top + 4 })); return true; })()`);
+  // (con el dedo de verdad: toques del navegador, no eventos inventados)
+  await page.press(tipSel, 60);
   await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
   ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
-  await touch('pointerdown');
+  await page.fingerDown(tipSel);
   // (sale a los 500 ms; en el CI, lento, se espera a que aparezca en vez de un tiempo fijo)
   await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 15000);
   ok(true, 'manteniendo el dedo medio segundo sale el tooltip');
-  await touch('pointerup'); await touch('pointerdown'); await touch('pointerup');
+  await page.fingerUp();
 
   // Las novedades se desplazan dentro de su ventana (en horizontal no cabían y no se podía bajar)
   await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); window.__app.ui.patchNotes(); true`);

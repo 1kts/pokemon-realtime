@@ -232,11 +232,16 @@ export const missionViews = {
     const ms = this.profile.missions;
     const ready = this.readyCount();
     const box = el('div', 'panel missions-widget' + (ready ? ' has-ready' : ''));
-    const head = el('button', 'mw-head', `<b>${t('Misiones')}</b>${ready ? `<span class="m-ready">${ready > 1 ? t('¡{n} por recoger!', { n: ready }) : t('¡1 por recoger!')}</span>` : ''}<i class="go">${t('Ver todas')} ›</i>`);
-    head.onclick = () => this.show('missions');
+    // Cabecera: «Misiones» y «Ver todas ›» llevan a Misiones; en medio, «Recoger todo» si hay algo por recoger.
+    // Botones separados (antes «Recoger todo» iba dentro del botón de la cabecera, y tocar en medio para ver las
+    // misiones las recogía)
+    const head = el('div', 'mw-head');
+    const open = () => this.show('missions');
+    const title = el('button', 'mw-title', `<b>${t('Misiones')}</b>`);
+    const go = el('button', 'go', `${t('Ver todas')} ›`);
+    title.onclick = go.onclick = open;
+    head.append(title, ready ? this.claimAllButton() : '', go);
     box.append(head);
-    // En la portada, «Recoger todo» pequeño junto al título, en lugar del aviso «¡N por recoger!»
-    if (this.readyCount()) { head.querySelector('.m-ready') && head.querySelector('.m-ready').remove(); head.insertBefore(this.claimAllButton(), head.querySelector('.go')); }
     // Diarias y semanales en una lista con scroll, cada grupo con su cofre cuando están todas recogidas
     const list = el('div', 'mw-list scroll');
     for (const [kind, title] of [['daily', t('Misiones diarias')], ['weekly', t('Misiones semanales')]]) {

@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.4 ----------
+    'Toques más precisos en el móvil': 'More precise taps on mobile',
+    'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'In the menu, tapping the Missions header takes you to them: before, tapping its center claimed every reward.',
+    'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.': 'Lucky Spin and Missions are no longer covered by the bottom bar, and on mobile the Pokémon sheet tabs scroll instead of hiding.',
+    'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.': 'On mobile, the type and sort filters in My Pokémon and the Pokédex show in full, and places on the Story map are easier to tap.',
     // ---------- Novedades v0.31.3 ----------
     'Cuentas más seguras': 'Safer accounts',
     'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'Your email only counts as yours once confirmed with the code or with Google, so nobody can register it first to take your account. With your email, use “Sign in with email”.',
@@ -105,13 +110,11 @@ export default {
     'Tu correo': 'Your email',
     'Mandarme un código': 'Send me a code',
     'Escribe un correo válido': 'Enter a valid email',
-    'Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': 'We\'ll send you a 6-digit code: no passwords. If you don\'t have an account yet, it\'s created when you sign in.',
     'Código': 'Code',
     'El código tiene 6 cifras': 'The code has 6 digits',
     'Usar otro correo': 'Use another email',
     'Reenviar el código': 'Resend the code',
     'Código reenviado': 'Code sent again',
-    'Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.': 'We\'ve sent a code to <b>{email}</b>. It expires in 10 minutes; if it doesn\'t arrive, check your spam folder.',
     'Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.': 'Choose your Google account. We only store your email so you can sign in; if you don\'t have an account yet, it\'s created when you sign in.',
     'No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.': 'Couldn\'t load Google: check your connection or your ad blocker.',
     'Escribe tu nombre de entrenador': 'Enter your trainer name',
@@ -1634,6 +1637,12 @@ export default {
     'Termina antes lo que estás haciendo': 'Finish what you\'re doing first',
     'Usuario o contraseña incorrectos': 'Wrong username or password',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account created: you can now log in from any device',
+    'Mandarme un código aquí': 'Send me a code here',
+    'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'This link was requested somewhere else. To move the game saved in this browser to your account, request another code here. If you didn’t ask for it, close it.',
+    'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'This link was requested somewhere else: if you didn’t ask for it, close it. If it’s yours, sign in: the account won’t take another browser’s guest game.',
+    'Vas a entrar como <b>{email}</b>.': 'You’re about to sign in as <b>{email}</b>.',
+    'Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': 'We send you a link to sign in with one tap (and a code, in case you open it somewhere else): no passwords. If you don’t have an account yet, it’s created when you sign in.',
+    'Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.': 'We’ve sent a link and a code to <b>{email}</b>: tap the link or type the code here. They expire in 10 minutes; if it doesn’t arrive, check spam.',
     'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'Your username must have 3 to 24 letters, numbers, _ . or -',
     'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'Account created. There is another account with this email as its username: if it’s yours, log in to it with its password',
     'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'To use your email, choose “Sign in with email”: we send you a code to check it’s yours',
@@ -1749,7 +1758,6 @@ export default {
     'Misiones': 'Missions',
     'Misiones diarias': 'Daily missions',
     '¡{n} por recoger!': '{n} to collect!',
-    '¡1 por recoger!': '1 to collect!',
     'Ver todas': 'See all',
     '¡Nuevo avatar!': 'New avatar!',
     '¡Logro recogido!': 'Achievement collected!',

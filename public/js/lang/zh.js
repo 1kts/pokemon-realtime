@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.4 ----------
+    'Toques más precisos en el móvil': '手机上点得更准',
+    'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '在菜单里点任务的标题会进入任务：以前点中间会领取所有奖励。',
+    'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.': 'Lucky Spin 和任务不再被底部栏遮挡，手机上宝可梦详情的标签可以滑动而不会被藏起来。',
+    'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.': '在手机上，我的宝可梦和图鉴的属性与排序筛选能完整显示，故事模式地图上的地点也更容易点中。',
     // ---------- Novedades v0.31.3 ----------
     'Cuentas más seguras': '更安全的账号',
     'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': '邮箱需用验证码或 Google 确认后才算你的，所以没人能抢先注册来占用你的账号。用邮箱请选“用邮箱登录”。',
@@ -105,13 +110,11 @@ export default {
     'Tu correo': '你的邮箱',
     'Mandarme un código': '给我发验证码',
     'Escribe un correo válido': '请输入有效的邮箱',
-    'Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': '我们会给你发一个 6 位数验证码，不需要密码。如果你还没有账号，登录时会自动创建。',
     'Código': '验证码',
     'El código tiene 6 cifras': '验证码是 6 位数字',
     'Usar otro correo': '换一个邮箱',
     'Reenviar el código': '重新发送验证码',
     'Código reenviado': '验证码已重新发送',
-    'Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.': '我们已把验证码发到 <b>{email}</b>。10 分钟后失效；如果没收到，请查看垃圾邮件。',
     'Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.': '选择你的 Google 账号。我们只保存你的邮箱以便你登录；如果你还没有账号，登录时会自动创建。',
     'No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.': '无法加载 Google：请检查网络或广告拦截器。',
     'Escribe tu nombre de entrenador': '请输入你的训练家名字',
@@ -1633,6 +1636,12 @@ export default {
     'Termina antes lo que estás haciendo': '请先完成当前操作',
     'Usuario o contraseña incorrectos': '用户名或密码错误',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '账号已创建：现在可以在任何设备上登录了',
+    'Mandarme un código aquí': '把验证码发到这里',
+    'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': '这个链接是在别处申请的。要让这个浏览器里保存的进度转到你的账号，请在这里重新申请验证码。如果不是你申请的，请关闭它。',
+    'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': '这个链接是在别处申请的：如果不是你申请的，请关闭它。如果是你的，就登录吧：账号不会带上其他浏览器的游客进度。',
+    'Vas a entrar como <b>{email}</b>.': '你将以 <b>{email}</b> 登录。',
+    'Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': '我们会发给你一个一键登录的链接（以及一个验证码，方便你在别处打开）：无需密码。如果你还没有账号，登录时会自动创建。',
+    'Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.': '我们已向 <b>{email}</b> 发送了链接和验证码：点击链接或在这里输入验证码。10 分钟后失效；如果没收到，请查看垃圾邮件。',
     'El usuario debe tener de 3 a 24 letras, números, _ . o -': '用户名须为 3 到 24 个字母、数字、_ . 或 -',
     'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': '账号已创建。另有一个账号把这个邮箱当作用户名：如果是你的，请用它的密码登录',
     'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': '要使用你的邮箱，请选择“用邮箱登录”：我们会发送验证码确认邮箱是你的',
@@ -1748,7 +1757,6 @@ export default {
     'Misiones': '任务',
     'Misiones diarias': '每日任务',
     '¡{n} por recoger!': '{n}个待领取！',
-    '¡1 por recoger!': '1个待领取！',
     'Ver todas': '查看全部',
     '¡Nuevo avatar!': '新头像！',
     '¡Logro recogido!': '成就已领取！',

@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`document.querySelectorAll('.missions-widget .mission').length`) === 6 && await page.eval(`document.querySelectorAll('.missions-widget .mw-sub').length`) === 2, 'el menú enseña las 3 misiones diarias y las 3 semanales');
   ok(await page.eval(`!!document.querySelector('.missions-widget.has-ready .claim-all')`), 'el panel de misiones avisa de que hay algo por recoger');
 
-  await page.click('.mw-head');
+  await page.click('.mw-head .go');   // (el «Ver todas ›» de la cabecera; en su centro está «Recoger todo»)
   await page.waitFor(`window.__app.ui.view === 'missions'`);
   ok(await page.eval(`document.querySelectorAll('.missions.daily .mission').length === 3 && document.querySelectorAll('.missions.weekly .mission').length === 3`), '3 diarias y 3 semanales');
 

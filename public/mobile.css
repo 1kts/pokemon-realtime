@@ -1,0 +1,476 @@
+/* Móvil: lo que cambia en el móvil en horizontal (max-height: 500px), en ventanas estrechas (max-width: 420 y
+   560px) y en vertical, por pantallas. Va después de style.css y cards.css (gana a lo de escritorio). Lo táctil que no
+   depende del tamaño (body.touch, #hud.touch) sigue en cards.css. Antes estaba en 36 bloques sueltos por
+   cards.css. */
+
+/* ========== General: pantalla, cabeceras y aviso de girar ========== */
+@media (orientation: portrait) {
+  body.touch .rotate-gate { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center;
+    background: radial-gradient(circle at 50% 40%, #232a58, #0b0f24); color: #fff; font: 800 20px var(--display); }
+  body.touch .rotate-gate b { font-size: 64px; color: var(--yellow, #ffcb05); animation: tcTurn 1.6s ease-in-out infinite; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+  /* ================= Móvil y pantallas bajas: todo más compacto para que quepa lo importante ================= */
+  #screen { padding: 8px 10px; }
+  /* Pantallas interiores: cabecera de una línea, sin la descripción */
+  .inner-bar { margin-bottom: 10px; gap: 8px; }
+  .inner-bar .tb-left .back { height: 34px; padding: 0 10px 0 6px; }
+  .feature-sign { min-height: 40px; padding: 4px 14px; }
+  .feature-sign h2 { font-size: 20px; }
+  .feature-sign small { display: none; }
+  .tb-ctx .pill { height: 36px; font-size: 15px; padding: 0 12px 0 9px; }
+}
+@media (max-height: 500px) {
+  .inner-bar + * { margin-top: 0; }
+  #screen > :has(> .inner-bar) > :last-child:not(.inner-bar) { margin-bottom: 0; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+  /* Regiones: en pantallas bajas, pestañas más pequeñas y sin la lista de «Próximamente» (ya salen en la Pokédex
+   y en el mapa) para que el mapa se vea antes */
+  .rg-soon { display: none; }
+  .subbar { padding: 8px 10px; }
+}
+@media (max-height: 500px) {
+  .rs-stat { min-width: 76px; padding: 5px 8px; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+   #screen { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+}
+@media (max-height: 500px) {
+  .tb-mobile { display: flex !important; }
+}
+@media (max-width: 760px), (max-height: 500px) {
+   .friends-body { grid-template-columns: 1fr; }
+}
+@media (max-height: 500px) {
+  .q-radar { grid-area: radar; width: 96px; height: 96px; justify-self: center; margin: 0; }
+  .q-ball { width: 50px; height: 50px; }
+  .q-title { grid-area: title; font-size: 17px; }
+  .q-time { grid-area: time; font-size: 26px; }
+  .q-note { grid-area: note; }
+  .q-team { grid-area: team; justify-content: center; }
+  .q-team > * { width: 40px; height: 40px; }
+  .q-cancel { grid-area: cancel; justify-self: start; min-width: 120px; padding: 6px 14px; }
+  /* Podios más bajos */
+  .podium { gap: 6px; }
+  .pod-card { padding: 5px 10px 5px 34px !important; gap: 10px; }
+  .pod-card .pod-who b { font-size: 15px !important; }
+  .pod-card .pod-val b { font-size: 20px !important; }
+  .pod-card.p1 .pod-val b { font-size: 24px !important; }
+  .pod-crown { font-size: 16px; top: -12px; }
+  .pod-rays { width: 160%; }
+  .arena-pool { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 6px; }
+  .arena-card { padding: 5px; }
+  .arena-card small { -webkit-line-clamp: 1; }
+  .tslot { position: relative; min-height: 46px; gap: 6px; padding: 3px 8px; border-radius: 12px; }
+  .tslot canvas { width: 38px !important; height: 38px !important; flex: none; }
+  .tslot small { min-width: 0; font-size: 11px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tslot.full { padding-right: 24px; }
+  .tslot.full::after { content: '×'; position: absolute; top: 50%; right: 6px; transform: translateY(-50%); width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%;
+    font: 900 12px/1 var(--text); color: #fff; background: rgba(255,255,255,.18); }
+  .tslot-go { display: block; padding: 6px 16px; font-size: 14px; white-space: nowrap; }
+}
+@media (max-height: 500px) and (max-width: 760px) {
+  /* Móvil en horizontal estrecho (≤760 de ancho): la cabecera de las pantallas interiores sigue en una sola línea
+   (Volver, el cartel y lo de la pantalla a la derecha) en vez de bajar lo de la derecha a otra fila */
+  .inner-bar { grid-template-columns: auto auto minmax(0, 1fr); }
+  .inner-bar .tb-ctx { grid-column: auto; min-width: 0; }
+  .feature-sign { padding: 4px 12px; }
+  .feature-sign h2 { font-size: 18px; }
+}
+
+/* ========== Menú principal ========== */
+@media (max-height: 500px), (max-width: 560px) {
+  /* Portada: sin logo ni nombre (el avatar ya dice quién eres), botones algo más pequeños */
+  .hub-bar { gap: 8px; margin: 6px 0 10px; }
+  .hub-bar:not(.inner-bar) { display: flex; justify-content: space-between; }
+  .hub-mod { height: 44px; padding: 0 6px; }
+  .hub-bar .hub-logo, .hub-who, .hub-me .support span, .hub-tz span { display: none; }
+  .hub-tz { padding: 0 8px; }
+  .hub-me { margin-left: 8px; gap: 5px; }
+  .hub-me .support { width: 34px; padding: 0; justify-content: center; }
+  .hub-me .tb-btn, .hub-tools .tb-btn, .hub-tools .lang-cur { width: 34px; height: 34px; }
+  .hub-tools .lang-cur { width: auto; }
+  .hub-me .pill.coins, .hub-me .pill.gems { height: 34px; padding: 0 9px; }
+  .hub-bar .hub-ava .ava { --s: 44px !important; }
+}
+@media (max-width: 560px) {
+  .hub-bar { grid-template-columns: 1fr auto; }
+  .hub-left { grid-column: 1; }
+  .hub-me { grid-column: 1 / -1; justify-self: stretch; justify-content: space-between; margin-left: 0; }
+}
+@media (max-height: 500px) {
+  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .bag-list, .bag-detail, .tower-pools, .ladder-table .scroll, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
+}
+@media (max-width: 560px) {
+  .hub-bar:not(.inner-bar) { flex-wrap: wrap; row-gap: 8px; }
+  .hub-bar:not(.inner-bar) .hub-me { flex: 1 1 100%; justify-content: space-between; margin-left: 0; }
+}
+@media (max-height: 500px) {
+  body.has-tip .menu > .menu-top { height: calc(100dvh - 122px); }
+  /* ---------- Menú en el móvil en horizontal: casi todo en una pantalla ----------
+   Las 7 cartas de los modos en una rejilla de 4×2 (Historia ocupa dos), sin cabeceras de sección ni textos
+   largos (toda la carta es el botón), y a la derecha la colección y las misiones, compactas. El bloque ocupa
+   el alto de la pantalla bajo la cabecera; lo que explica cómo se juega queda debajo */
+  .menu { gap: 8px; }
+  .menu > .menu-top { margin-top: 0; height: calc(100dvh - 80px); min-height: 250px; grid-template-columns: minmax(0, 1fr) minmax(190px, 29%); gap: 8px; align-items: stretch; }
+  .menu-main { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 6px; min-height: 0; }
+  .menu-sec, .menu-sec .menu-grid { display: contents; }
+  .menu-sec .sec-head { display: none; }
+  .menu-card.wide { grid-column: span 2; }
+  .menu-card, .menu-card.wide { min-height: 0; height: auto; padding: 8px 9px; gap: 2px; border-radius: 14px; justify-content: flex-start; }
+  .menu-card b, .menu-card.wide b { font-size: 14px; gap: 5px; line-height: 1.1; }
+  .menu-card.wide b { font-size: 18px; }
+  .menu-card b .card-ico { width: 22px; height: 22px; padding: 1px; border-radius: 7px; }
+  .menu-card > span:not(.pvp-live) { display: none; }
+  .menu-card.wide > span:not(.pvp-live) { display: -webkit-box; max-width: calc(100% - 70px); font-size: 11px; line-height: 1.25; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .menu-card .go { display: none; }
+  .menu-card .art { width: 54px; height: 54px; right: 3px; bottom: 3px; }
+  .menu-card.wide .art { width: 76px; height: 76px; right: 8px; }
+  .menu-card .pvp-live { margin-top: auto; max-width: calc(100% - 44px); padding: 1px 6px; font-size: 9.5px; gap: 4px; }
+  .menu-card .pvp-live > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .menu-top > .menu-side { position: static; display: flex; flex-direction: column; gap: 6px; min-width: 0; min-height: 0; }
+  .menu-side > .hub-coll { flex: none; padding: 6px; }
+  .menu-side > .hub-coll > h3 { display: none; }
+  .hub-coll .coll-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .hub-coll .coll-tile { min-width: 0; gap: 6px; padding: 5px 7px; border-radius: 11px; }
+  .hub-coll .coll-tile > img { width: 24px; height: 24px; }
+  .hub-coll .coll-txt b { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hub-coll .coll-txt small { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hub-coll .coll-txt small img { width: 12px; height: 12px; }
+  .hub-coll .coll-tile.wide { grid-column: span 2; }
+  .menu-side > .missions-widget { flex: 1; min-height: 0; padding: 6px 7px; gap: 4px; }
+  .missions-widget .mw-head b { font-size: 14px; }
+  .missions-widget .mw-head .claim-all, .missions-widget .mw-head .go, .missions-widget .mw-head .mw-title { min-height: 26px; }
+  .missions-widget .mw-list { flex: 1; min-height: 0; max-height: none; overflow-y: auto; gap: 4px; }
+  .missions-widget .mw-sub { margin: 2px 0 0; font-size: 10px; }
+  .missions-widget .mission.compact { padding: 4px 6px; gap: 6px; border-radius: 10px; }
+  .missions-widget .mission.compact .m-ico { width: 24px; height: 24px; }
+  .missions-widget .mission.compact .m-ico > * { width: 24px; height: 24px; }
+  .missions-widget .mission.compact .m-body b { font-size: 10.5px; line-height: 1.2; }
+  .missions-widget .mission.compact .m-bar { height: 12px; font-size: 9px; }
+  .missions-widget .mission.compact .m-acts button { padding: 3px 8px; font-size: 10.5px; }
+}
+@media (max-height: 500px) and (max-width: 720px) {
+  .menu > .menu-top { grid-template-columns: minmax(0, 1fr) minmax(170px, 31%); }
+  .menu-main { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .menu-card b { font-size: 13px; }
+  .hub-coll .coll-tile > img { display: none; }
+  .hub-coll .coll-txt b { font-size: 11.5px; }
+}
+@media (max-width: 420px) {
+  /* Ventana estrecha (≤420 px): la cabecera del menú (avatar, dinero, gemas y 5 botones) en su ancho */
+  .hub-me { gap: 3px; margin-left: 0; }
+  .hub-me .tb-btn { width: 30px; height: 30px; }
+  .hub-me .pill.coins, .hub-me .pill.gems { height: 30px; padding: 0 7px; }
+  .hub-me .hub-sep { display: none; }
+}
+
+/* ========== Historia y su mapa, Liga e inicial ========== */
+@media (max-height: 500px) {
+  /* En pantallas bajas no caben cajas con scroll propio (se quedan en una rendija): las pantallas crecen con su
+   contenido y se desplaza la página entera */
+  .story, .teamview, .shop, .draft, .profile-view, .dexview, .missions-view, .bagview, .collection, .settings-view, .league-view { height: auto; min-height: 100%; }
+  .story-body, .pv-body, .bag-body, .tz-body { flex: none; min-height: auto; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+  .subbar .region-tabs button { min-width: 96px; padding: 5px 10px; }
+  .subbar .region-tabs button b { font-size: 14px; }
+  .story-head { margin-bottom: 10px; gap: 10px; }
+  .story-head .map-goal { padding: 8px 12px; }
+  .story-head .map-goal b { font-size: 16px; }
+}
+@media (max-width: 560px) {
+  .story-head { grid-template-columns: 1fr; }
+  .story-head .map-goal.has-leader { padding-right: 110px; }
+}
+@media (max-height: 500px) {
+  /* Mapa de la Historia en el móvil: en horizontal, que quepa entero en la pantalla; la leyenda, fuera (tapaba
+   medio mapa) */
+  .story .map { width: min(100%, calc((100vh - 20px) * 1.6)); justify-self: center; margin-inline: auto; }
+}
+@media (max-height: 500px), (max-width: 560px) {
+  .story .map-legend { display: none; }
+}
+@media (max-height: 500px) {
+  /* Historia en el móvil en horizontal: el mapa arriba (las regiones y el objetivo, debajo) y la ficha del sitio a su
+   lado, de su misma altura y con su propio scroll; el botón de jugar siempre a la vista, abajo. Los nodos, más
+   pequeños para que se vea el mapa */
+  .story > .inner-bar { order: -2; }
+  .story > .story-body { order: -1; margin-bottom: 10px; }
+  .story-body { grid-template-columns: min(calc((100vh - 76px) * 1.6), calc(100% - 250px)) minmax(0, 1fr); gap: 8px; align-items: stretch; }
+  .story .story-body .map { width: 100%; margin: 0; }
+  .story-side { height: 0; min-height: 100%; }
+   /* tan alta como el mapa, sin estirar la fila */
+  .story-side .node-info { overflow: auto; flex: 1 1 auto; min-height: 0; padding: 10px 12px; }
+  .story-side .node-info .leader-head { margin: -10px -12px 6px; padding: 10px 12px 0; }
+  .story-side .node-info h3 { font-size: 16px; }
+  .story-side .leader-head .leader-sprite { width: 52px; height: 52px; }
+  .story-side .node-info h4, .story-side .node-info .team-head { margin-top: 8px; }
+  .story-side .node-info .mini { min-width: 52px; }
+  .story-side .node-info .mini canvas, .story-side .node-info .mini img.portrait { width: 36px !important; height: 36px !important; }
+  .story-side .node-info button.primary { position: sticky; bottom: -10px; z-index: 3; margin-top: 8px; padding: 8px 14px; box-shadow: 0 -8px 14px rgba(14,18,40,.9), 0 4px 0 #b97a00; }
+  .story-list { max-height: calc(100vh - 76px); }
+  /* Mapa pequeño (móvil): el nombre de una ruta solo al seleccionarla (se pisaban con los de los líderes); la ficha
+   de al lado ya dice cuál es */
+   .story .map .node.route:not(.sel) > label { display: none !important; }
+  .story > .subbar { display: none; }
+  .story .map .node.locked:not(.sel) > label { display: none !important; }
+  .panel.online-me > h3, .online-me > .league, .online-me > .big-elo, .online-me > p.small:first-of-type, .online-me:has(> .warn) > p.small { display: none; }
+  /* Móvil en horizontal: elegir inicial (las regiones en la cabecera y los tres en fila) y la Liga (los cinco
+   rivales en una fila, más bajos) */
+  .starter > .subbar { display: none; }
+  .starter > .intro { margin: 0 0 8px; font-size: 12.5px; }
+  .starter-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .starter-card { padding: 8px 6px; gap: 3px; }
+  .starter-card canvas, .starter-card img { max-width: 96px; max-height: 96px; }
+  .starter-card b { font-size: 17px; }
+  .starter-card small { font-size: 11px; }
+  .lv-hall { padding: 10px 12px; }
+  .lv-steps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .lv-step { padding: 6px 3px 6px; gap: 2px; border-radius: 12px; }
+  .lv-step .lv-face { height: 58px; }
+  .lv-step.champ .lv-face { height: 66px; }
+  .lv-step b { font-size: 12.5px; }
+  .lv-step small { font-size: 10px; }
+  .lv-rules { font-size: 11.5px; margin: 6px 0 0; }
+}
+
+/* ========== Combate ========== */
+@media (max-height: 500px) {
+  /* Pantalla de móvil en horizontal: los equipos, una fila de caras con su vida debajo (el nombre ya sale sobre
+   cada Pokémon en la arena), para que no tapen la arena; y el tiempo, más pequeño */
+  #hud.touch .team { top: 6px; width: auto; flex-direction: row; gap: 4px; }
+  #hud.touch .team.mine { left: max(8px, env(safe-area-inset-left)); }
+  #hud.touch .team.foe { right: max(8px, env(safe-area-inset-right)); flex-direction: row-reverse; }
+  #hud.touch .team .tname { display: none; }
+  #hud.touch .team .tm { flex-direction: column; gap: 2px; width: 44px; padding: 3px 3px 4px; border-radius: 12px; }
+  #hud.touch .team .tm > :first-child { width: 36px; height: 36px; }
+  #hud.touch .team .tinfo { flex: none; width: 100%; }
+  #hud.touch .team .tinfo b, #hud.touch .team .tinfo small { display: none; }
+  #hud.touch .team .hp { height: 5px; margin-top: 0; }
+  #hud.touch .team.foe .tm { width: 38px; }
+  #hud.touch .team.foe .tm > :first-child { width: 30px; height: 30px; }
+  #hud.touch .team .tm.cool:not(.fainted) { opacity: .55; }
+  #hud.touch .timer { font-size: 18px; padding: 2px 12px; top: 8px; }
+  #hud.touch .tc-quit { top: 6px; margin-left: -80px; }
+   #hud.touch .tc-quit { top: 6px; margin-left: -96px; width: 40px; height: 40px; }
+  /* Combate en el móvil: el cartel de la arena y la tarjeta del tutorial, más pequeños y bajo los equipos */
+  #hud.touch .arena-tag { top: 54px; max-width: min(420px, 56vw); padding: 4px 10px; }
+  #hud.touch .arena-tag b { font-size: 12px; }
+  #hud.touch .arena-tag span { font-size: 10.5px; }
+  body.touch-battle .tutorial-card { top: 54px; width: min(400px, 52vw); padding: 6px 12px 8px; }
+  body.touch-battle .tutorial-card p { margin: 2px 0 5px; font-size: 14px; }
+}
+
+/* ========== Mis Pokémon, Pokédex y la ficha ========== */
+@media (max-height: 500px) {
+  /* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
+   sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
+  .mon-sheet-back.modal { padding: 6px; }
+  .mon-sheet { grid-template-columns: 250px minmax(0, 1fr); height: calc(100vh - 12px); overflow: hidden; }
+  .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 10px; gap: 8px; }
+  .ms-stage { height: 120px; }
+   .ms-stage canvas { width: 110px !important; height: 110px !important; }
+  .user-card .ficha-head { margin-bottom: 8px; }
+  .user-card .ficha-head .ava, .user-card .npc-face { --s: 64px !important; width: 72px; height: 72px; }
+  /* (el retrato de dentro se pinta a 104 px: se ajusta al círculo, si no se salía y quedaba descentrado) */
+  .user-card .ficha-head .ava .ava-pic > :is(canvas, img), .user-card .npc-face .trainer-img { width: 64px; height: 64px; }
+  .user-card .ficha-head { gap: 12px; }
+  .user-card .ficha-head h3 { font-size: 18px; }
+  /* ---------- Móvil en horizontal: Mis Pokémon, Pokédex y fichas ---------- */
+  /* Mis Pokémon: las regiones van en la cabecera, la explicación en una línea (tocarla la despliega) y los
+     filtros en una sola fila que se desliza */
+  .teamview > .subbar { display: none; }
+  .teamview > .intro { margin: 0 0 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .teamview > .intro.open { white-space: normal; }
+  .mon-filters, .dex-head { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .mon-filters::-webkit-scrollbar, .dex-head::-webkit-scrollbar { display: none; }
+  .mon-filters { gap: 6px; margin: 0 0 8px; padding-bottom: 2px; }
+  .mon-filters > *, .dex-head > *, .dex-head .dex-filters > *, .dex-head .chips > * { flex: none; }
+  .mon-filters .dd, .dex-head .dd { flex: none; }
+   /* (.dex-filters .dd los dejaba encoger: en la fila se quedaban en 0 y su contenido pisaba lo de al lado) */
+  .mon-filters input, .dex-head .dex-filters input { flex: 0 0 160px; padding: 6px 10px; }
+  .mon-filters .seg button, .dex-head .seg button { padding: 6px 9px; }
+  /* Pokédex: lo capturado, el buscador, los filtros y las generaciones, todo en una fila */
+  .dex-head { flex-direction: row; align-items: center; gap: 8px; padding: 6px 8px; }
+  .dex-head .dex-filters, .dex-head .chips { flex-wrap: nowrap; gap: 6px; }
+  .dex-count { font-size: 12px; white-space: nowrap; }
+  .dex-count b { font-size: 18px; }
+  .dex-count .dexbar { display: none; }
+  .dex-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+  .dex-card { padding: 5px 4px; }
+  .dex-card b { font-size: 12px; }
+  /* Ficha en el móvil: las pestañas en una fila */
+  /* (si no caben, se deslizan: antes las últimas quedaban debajo de ‹ › ✕) */
+  .ms-tabs { flex-wrap: nowrap; gap: 4px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .ms-tabs::-webkit-scrollbar { display: none; }
+  .ms-tab { padding: 7px 11px; font-size: 13px; white-space: nowrap; }
+}
+@media (max-height: 500px) and (max-width: 760px) {
+  .teamview .tb-ctx .pill.coins { display: none; }
+}
+
+/* ========== Lucky Spin ========== */
+@media (max-height: 500px) {
+  #screen > .treasure { height: auto; min-height: 0; }
+  /* Lucky Spin en el móvil: las ruletas en la cabecera, la tira de premios en vez del tablero y la barra de
+     abajo en pequeño */
+  .treasure > .tz-tabs, .treasure .tz-board { display: none; }
+  .treasure .tz-strip { display: block; }
+  .tz-bar { gap: 10px; padding: 8px 10px 8px 12px; border-radius: 14px; }
+  .tz-prog { width: auto; gap: 4px; }
+  .tz-progress b { font-size: 18px; }
+  .tz-progress span { display: none; }
+  .tz-seg i { width: 9px; height: 5px; }
+  .tz-bar .tz-info { font-size: 12px; padding: 0 10px; }
+  .tz-bar .tz-info small { display: none; }
+  .tz-odds-btn { height: 36px; padding: 0 10px; }
+  .tz-odds-btn span { display: none; }
+  .tz-price { min-width: 84px; height: 46px; padding: 0 10px; border-radius: 12px; }
+  .tz-price b { font-size: 18px; }
+  .tz-price small { font-size: 9px; }
+  .tz-go { padding: 10px 22px; font-size: 17px; }
+}
+
+/* ========== Torre, Clasificatoria, Práctica y draft ========== */
+@media (max-height: 500px) {
+  /* ---------- Móvil en horizontal (poca altura): lo nuevo, compacto ---------- */
+  /* Buscando rival: en dos columnas (radar y tiempo a la izquierda, mensaje y cancelar a la derecha) */
+  .queue-box { width: min(700px, 96vw); display: grid; grid-template-columns: 150px 1fr; grid-template-areas: 'mode title' 'radar title' 'radar time' 'radar note' 'team tip' 'team cancel'; column-gap: 18px; row-gap: 6px; padding: 14px 18px; text-align: left; align-items: center; }
+  .queue-box .q-mode { grid-area: mode; justify-self: center; }
+  .q-tip { grid-area: tip; min-height: 0; padding: 7px 10px; font-size: 12px; }
+  .ladder-table .podium { grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+  .ladder-table .pod-card { flex-direction: row; text-align: left; padding: 6px 8px 6px 30px !important; }
+  .ladder-table .pod-card .pod-who, .ladder-table .pod-card .pod-val { align-items: flex-start; text-align: left; width: auto; }
+  .ladder-table .pod-card .pod-val { margin-left: auto; align-items: flex-end; text-align: right; }
+  .ladder-table .pod-card .pod-val small { display: none; }
+  .ladder-table .pod-card .pod-rank { top: 50%; left: 6px; transform: translateY(-50%); }
+  /* Práctica: Pokémon y arenas más pequeños */
+  .draft:has(.practice-arenas) > .pool { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+  .draft:has(.practice-arenas) .pool-card { padding: 4px 2px; gap: 1px; }
+  .draft:has(.practice-arenas) .pool-card canvas, .draft:has(.practice-arenas) .pool-card img { max-width: 44px; max-height: 44px; }
+  .draft:has(.practice-arenas) .pool-card b { font-size: 12px; }
+  .draft:has(.practice-arenas) .pool-card .types { transform: scale(.85); }
+  .draft:has(.practice-arenas) > button.primary { bottom: 40px; padding: 8px 20px; min-width: 200px; }
+  /* Movimientos de Clasificatoria: tarjetas más bajas */
+  .pvp-mvbox { padding: 8px; margin: 8px 0 2px; }
+  .pvp-mvbox .pvp-mvlist { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; }
+  .pvp-mvbox .pvp-mv { padding: 6px 8px; gap: 8px; }
+  .pvp-mvbox .mv-ico { width: 24px; height: 24px; }
+  .draft:has(.practice-arenas) .pool-card .types { display: flex; flex-wrap: nowrap; gap: 2px; transform: none; }
+  .draft:has(.practice-arenas) .pool-card .types > * { font-size: 9px; padding: 1px 4px; }
+  /* Torre: la explicación en una línea (tocarla la despliega), los 3 huecos en fila con el botón de empezar y
+     pegados arriba al bajar, y los Pokémon en cartas pequeñas */
+  .tower-body { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .tower-main { min-width: 0; gap: 6px; padding: 10px 12px; }
+  .tower-main h3 { font-size: 16px; }
+  .tower-main h4 { margin: 4px 0 0; font-size: 13px; }
+  .tower-intro { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .tower-intro.open { white-space: normal; }
+  .tower-main > button.primary { display: none; }
+  /* (top: -8px, lo que mide el padding de arriba de #screen en el móvil, para que no asome nada por encima) */
+  .tower-slots { position: sticky; top: -8px; z-index: 5; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 6px; margin: 0 -12px; padding: 6px 12px;
+    background: linear-gradient(180deg, rgba(30,38,78,.97), rgba(22,29,62,.97)); box-shadow: 0 6px 12px rgba(0,0,0,.3); }
+  .tower-pools .pool { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; padding: 2px 0 8px; }
+  .tower-pools .pool-card { padding: 4px 2px 5px; gap: 1px; border-radius: 12px; }
+  .tower-pools .pool-card canvas { width: 40px !important; height: 40px !important; }
+  .tower-pools .pool-card b { font-size: 11.5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tower-pools .pool-card .types { display: flex; flex-wrap: nowrap; gap: 2px; }
+  .tower-pools .pool-card .types > * { font-size: 9px; padding: 1px 4px; }
+  .tower-pools .pool-card > small { display: none; }
+  .tower-pools .pool-card.sel::before { top: 3px; right: 3px; width: 17px; height: 17px; font-size: 11px; }
+  .tower-pools > p.small { margin: 2px 0; }
+  .tower-side .panel { padding: 12px 14px; }
+  .tower-side .big-elo { font-size: 44px; }
+  /* Clasificatoria: el bloque del ELO, solo con el botón de buscar (lo demás va en la cabecera); los 3 huecos
+     en fila (el Pokémon y los iconos de sus movimientos) */
+  .online-body, .online-col { gap: 10px; }
+  .online-me { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px; }
+  .online-me > p.small { flex: 1 1 240px; margin: 0; font-size: 12px; }
+  .online-me > button.primary { order: -1; padding: 8px 20px; }
+  .online-me > .warn { flex: 1 1 240px; margin: 0; font-size: 12px; }
+  .pvp-team { padding: 10px 12px; }
+  .pvp-team h3 { font-size: 16px; }
+  .pvp-team h4 { margin: 8px 0 4px; }
+  .pvp-slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pvp-slot { flex-direction: row; justify-content: flex-start; gap: 8px; min-width: 0; min-height: 52px; padding: 4px 10px; text-align: left; }
+  .pvp-slot canvas { width: 42px !important; height: 42px !important; flex: none; }
+  .pvp-slot.empty { justify-content: center; }
+  .pvp-plus { font-size: 22px; }
+  .pvp-slot b { font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pvp-slot .pvp-moves { margin-left: auto; flex-wrap: nowrap; gap: 2px; }
+  .pvp-moves i { font-size: 0; padding: 2px; }
+  .pvp-mvbox .pvp-mv { padding: 5px 8px; }
+  .pvp-mvbox .mv-txt small { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* ========== Ventanas, resultados, perfil y ajustes ========== */
+@media (max-width: 560px) {
+   .res-hero { grid-template-columns: 1fr; }
+   .rh-side.foe { display: none; }
+   .rh-mid h1 { font-size: 40px; }
+}
+@media (max-height: 500px) {
+  .results.is-win, .results.is-lose, .results.is-draw { padding: 12px 16px; }
+  .res-hero { margin-bottom: 8px; }
+  .rh-side .face, .rh-side canvas, .rh-side .rh-trainer { width: 60px; height: 60px; border-radius: 14px; }
+  .rh-mid h1 { font-size: 34px; }
+  .res-sum { gap: 8px; padding: 8px; }
+}
+@media (max-width: 560px) {
+  .rh-side .face, .rh-side canvas, .rh-side .rh-trainer { width: 64px; height: 64px; }
+  .rh-mid h1 { font-size: 34px; }
+}
+@media (max-height: 500px) {
+  /* Ventanas en pantallas bajas: el editor de avatar con la vista previa en pequeño y la colección ocupando el resto,
+   y Lucky Spin con el tablero a la medida de la pantalla */
+  .modal-box { max-height: calc(100vh - 12px); }
+  .modal-box.ava-edit { max-height: calc(100vh - 12px); width: min(760px, 96vw); gap: 6px; padding: 10px 14px; }
+  .ae-preview { padding: 6px 10px; gap: 10px; }
+  .ae-preview .ava { --s: 56px !important; }
+  .ae-body { max-height: none; flex: 1 1 auto; min-height: 120px; }
+  /* Ventanas en pantallas bajas: lo de dentro (novedades, créditos…) con su propio scroll, también con el dedo */
+  .modal-box .notes-list, .modal-box .scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+  /* Victoria y derrota en pantallas bajas (móvil en horizontal): sin la fila de equipos (ya salen arriba), las
+   estadísticas en una fila, y dinero y gemas uno al lado del otro */
+  .results .rs-vs { display: none; }
+  .results .res-sum { margin: 2px 0 6px; padding: 6px; }
+  .results .rs-stats { flex-wrap: nowrap; gap: 5px; }
+  .results .rs-stat { min-width: 0; flex: 1 1 0; padding: 4px 6px; }
+  .results .rs-stat b { font-size: 15px; }
+  .results .rs-stat small, .results .rs-stat span { font-size: 9px; }
+  .results .res-hero { gap: 6px; margin-bottom: 4px; }
+  .results .rh-side small { font-size: 11px; }
+  .results .rh-mid p { font-size: 12px; }
+  .results p.reward { display: inline-flex; align-items: center; gap: 4px; margin: 2px 10px; font-size: 18px; }
+  .results p.reward img, .results p.reward svg { width: 20px; height: 20px; }
+  .results > p.small, .results .res-tip { font-size: 11px; margin: 4px 0; }
+  .results .xp-list { gap: 4px; margin: 4px 0; }
+  .results .xp-row { padding: 3px 8px; }
+  .results .acts { margin-top: 6px; }
+  .results .acts button { padding: 8px 16px; }
+  .pod-card .ava, .pod-card .pod-npc { --s: 44px !important; width: 44px; height: 44px; }
+  .pod-card.p1 .ava, .pod-card.p1 .pod-npc { --s: 52px !important; width: 52px; height: 52px; }
+  /* Ficha de un entrenador */
+  .user-card { padding-top: 14px; }
+  .user-badges .ub-badge { width: 20px; height: 20px; }
+  .user-card .user-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+  .user-card .stat { padding: 5px 8px; border-radius: 10px; }
+  .user-card .stat small { font-size: 9.5px; letter-spacing: .3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-card .stat b { font-size: 15px; }
+  .user-card .mini-team .mini canvas { width: 40px; height: 40px; }
+   .install-guide .ig-box { padding: 12px 16px; }
+   .install-guide ol { gap: 6px; }
+   .install-guide h3 { margin-bottom: 8px; }
+}
+
+/* ========== Barra legal ========== */
+@media (max-height: 500px), (max-width: 560px) {
+  #screen > .legal-bar { margin-bottom: -8px; }
+  /* Barra legal: una línea (tocarla la despliega) y los enlaces en otra */
+  .legal-bar { font-size: 9.5px; line-height: 1.35; padding: 2px 8px calc(3px + env(safe-area-inset-bottom)); }
+  .legal-bar .legal-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 1px; cursor: pointer; }
+  .legal-bar.open .legal-text { white-space: normal; }
+  .legal-nav { gap: 1px 10px; }
+}

@@ -35,7 +35,7 @@ module.exports = async ({ page, ok }) => {
   await page.eval(`window.__app.ui.show('settings'); true`);
   await page.waitFor(`document.querySelector('.music-panel .sfx-vol input[type=range]')`);
   const music0 = await page.eval(`window.__app.music.volume`);
-  await page.type('.music-panel .sfx-vol input[type=range]', '0');
+  await page.slide('.music-panel .sfx-vol input[type=range]', 0);
   await page.waitFor(`window.__app.sfx.volume === 0`);
   ok(await page.eval(`localStorage.getItem('arena.sfx')`) === '0' && /Sin efectos/.test(await page.eval(`document.querySelector('.music-panel .sfx-vol button').textContent`))
     && await page.eval(`window.__app.music.volume`) === music0, 'los efectos se pueden quitar sin tocar la música');

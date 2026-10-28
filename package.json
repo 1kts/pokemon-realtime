@@ -1,12 +1,12 @@
 {
   "name": "pokearenas",
-  "version": "0.31.3",
+  "version": "0.31.4",
   "description": "Combates Pokémon en tiempo real en el navegador: historia, clasificatoria y práctica (HD-2D con Three.js)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "prepare": "git config core.hooksPath .githooks || true",
-    "test": "node tools/server-test.js && node tools/store-test.js && node tools/security-test.js && node tools/admin-test.js && node tools/arena-test.js && node tools/i18n-check.js --strict && node tools/changelog-check.js && node tools/legal.js --check && node tools/sim-test.js 60",
+    "test": "node tools/e2e-lint.js && node tools/server-test.js && node tools/store-test.js && node tools/security-test.js && node tools/admin-test.js && node tools/arena-test.js && node tools/i18n-check.js --strict && node tools/changelog-check.js && node tools/legal.js --check && node tools/sim-test.js 60",
     "i18n": "node tools/i18n-check.js",
     "test:e2e": "node tools/e2e.js",
     "test:sim": "node tools/sim-test.js",

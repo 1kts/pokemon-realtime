@@ -40,7 +40,7 @@ module.exports = async ({ page, ok }) => {
 
   await page.eval(`window.__app.ui.show('settings'); true`);
   await page.waitFor(`document.querySelector('.music-panel input[type=range]')`);
-  await page.type('.music-panel input[type=range]', '0');
+  await page.slide('.music-panel input[type=range]', 0);
   await page.waitFor(`window.__app.music.volume === 0`);
   ok(await page.eval(`localStorage.getItem('arena.music')`) === '0' && /Sin música/.test(await page.eval(`document.querySelector('.music-panel button').textContent`)),
     'bajar el volumen a 0 la silencia y se recuerda');

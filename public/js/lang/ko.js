@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.4 ----------
+    'Toques más precisos en el móvil': '모바일에서 더 정확한 터치',
+    'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '메뉴에서 미션 머리글을 누르면 미션으로 이동합니다. 전에는 가운데를 누르면 보상을 모두 받았습니다.',
+    'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.': 'Lucky Spin과 미션이 더 이상 아래 바에 가려지지 않고, 모바일에서 포켓몬 정보의 탭이 숨지 않고 스크롤됩니다.',
+    'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.': '모바일에서 내 포켓몬과 도감의 타입·정렬 필터가 온전히 보이고, 스토리 지도의 장소를 더 쉽게 누를 수 있습니다.',
     // ---------- Novedades v0.31.3 ----------
     'Cuentas más seguras': '더 안전한 계정',
     'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': '이메일은 코드나 Google로 확인해야 당신의 것이 되므로, 누구도 먼저 등록해 계정을 가로챌 수 없습니다. 이메일로는 "이메일로 로그인"을 사용하세요.',
@@ -106,13 +111,11 @@ export default {
     'Tu correo': '이메일',
     'Mandarme un código': '코드 보내기',
     'Escribe un correo válido': '올바른 이메일을 입력하세요',
-    'Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': '6자리 코드를 보내드려요. 비밀번호는 필요 없어요. 아직 계정이 없다면 로그인할 때 만들어져요.',
     'Código': '코드',
     'El código tiene 6 cifras': '코드는 6자리예요',
     'Usar otro correo': '다른 이메일 사용',
     'Reenviar el código': '코드 다시 보내기',
     'Código reenviado': '코드를 다시 보냈어요',
-    'Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.': '<b>{email}</b>(으)로 코드를 보냈어요. 10분 후에 만료돼요. 도착하지 않으면 스팸함을 확인하세요.',
     'Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.': 'Google 계정을 선택하세요. 로그인할 수 있도록 이메일만 저장해요. 아직 계정이 없다면 로그인할 때 만들어져요.',
     'No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.': 'Google을 불러오지 못했어요. 연결 상태나 광고 차단기를 확인하세요.',
     'Escribe tu nombre de entrenador': '트레이너 이름을 입력하세요',
@@ -1621,6 +1624,12 @@ export default {
     'Termina antes lo que estás haciendo': '먼저 하던 일을 끝내세요',
     'Usuario o contraseña incorrectos': '아이디 또는 비밀번호가 틀렸습니다',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '계정을 만들었습니다: 이제 어떤 기기에서든 로그인할 수 있어요',
+    'Mandarme un código aquí': '여기로 코드 보내기',
+    'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': '이 링크는 다른 곳에서 요청되었습니다. 이 브라우저에 저장된 진행 상황을 계정으로 옮기려면 여기서 새 코드를 요청하세요. 직접 요청하지 않았다면 닫으세요.',
+    'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': '이 링크는 다른 곳에서 요청되었습니다. 직접 요청하지 않았다면 닫으세요. 당신의 것이라면 로그인하세요. 다른 브라우저의 게스트 진행 상황은 계정으로 옮겨지지 않습니다.',
+    'Vas a entrar como <b>{email}</b>.': '<b>{email}</b>(으)로 로그인합니다.',
+    'Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': '한 번의 터치로 로그인하는 링크(다른 곳에서 열 때를 위한 코드도)를 보내 드립니다. 비밀번호는 필요 없습니다. 아직 계정이 없다면 로그인할 때 만들어집니다.',
+    'Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.': '<b>{email}</b>(으)로 링크와 코드를 보냈습니다. 링크를 누르거나 여기에 코드를 입력하세요. 10분 후에 만료됩니다. 오지 않으면 스팸함을 확인하세요.',
     'El usuario debe tener de 3 a 24 letras, números, _ . o -': '사용자 이름은 3~24자의 영문, 숫자, _ . - 로 입력하세요',
     'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': '계정이 만들어졌습니다. 이 이메일을 사용자 이름으로 쓰는 다른 계정이 있습니다. 당신의 계정이라면 그 비밀번호로 로그인하세요',
     'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': '이메일을 사용하려면 "이메일로 로그인"을 선택하세요. 본인 이메일인지 확인할 코드를 보내 드립니다',
@@ -1759,7 +1768,6 @@ export default {
     'Misiones': '미션',
     'Misiones diarias': '일일 미션',
     '¡{n} por recoger!': '받을 보상 {n}개!',
-    '¡1 por recoger!': '받을 보상 1개!',
     'Ver todas': '모두 보기',
     '¡Nuevo avatar!': '새 아바타!',
     '¡Logro recogido!': '업적 보상 받음!',

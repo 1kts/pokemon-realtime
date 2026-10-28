@@ -57,10 +57,10 @@ if [ -n "${TELEGRAM_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT:-}" ]; then
   install -m 600 /dev/null /etc/arena-alerts.env
   printf 'TELEGRAM_TOKEN=%s\nTELEGRAM_CHAT=%s\n' "$TELEGRAM_TOKEN" "$TELEGRAM_CHAT" > /etc/arena-alerts.env
 fi
-# Entrar con Google y por correo: GOOGLE_CLIENT_ID=… SMTP_HOST=… SMTP_PORT=… SMTP_USER=… SMTP_PASS=… MAIL_FROM=…
+# Entrar con Google y por correo: GOOGLE_CLIENT_ID=… SMTP_HOST=… SMTP_PORT=… SMTP_USER=… SMTP_PASS=… MAIL_FROM=… PUBLIC_URL=…
 # bash setup.sh (cualquiera de ellas; las que no se den se quedan como estaban en /etc/arena-login.env, que
 # solo lee root; una vacía, p. ej. GOOGLE_CLIENT_ID=, la quita). Ver «Entrar con Google o por correo» en el README
-LOGIN_VARS="GOOGLE_CLIENT_ID SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS MAIL_FROM"
+LOGIN_VARS="GOOGLE_CLIENT_ID SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASS MAIL_FROM PUBLIC_URL"
 LOGIN_CHANGED=
 if env | grep -qE "^($(echo $LOGIN_VARS | tr ' ' '|'))="; then
   (

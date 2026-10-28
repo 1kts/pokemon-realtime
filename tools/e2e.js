@@ -91,31 +91,69 @@ async function setup(name, extraEnv = {}) {
       while (Date.now() - t0 < ms) { try { if (await page.eval(`!!(${expr})`)) return; } catch {} await sleep(100); }
       throw new Error(`Tiempo agotado esperando: ${expr}`);
     },
-    // Pulsa el primer botón/enlace visible cuyo texto contenga `text` (o el elemento de un selector CSS)
+    // Pulsa como un jugador el elemento de un selector CSS (o el primer botón/enlace visible cuyo texto contenga
+    // `text`): lo pone a la vista, espera a que se pueda pulsar (dentro de la pantalla, activo y sin nada encima,
+    // hasta 3 s: animaciones, ventanas que se abren) y hace un clic de ratón de verdad en su centro. Si algo lo
+    // tapa, falla diciendo qué: así se ven los avisos o barras que tapan botones
     async click(textOrSel) {
-      const ok = await page.eval(`(() => { const s = ${JSON.stringify(textOrSel)};
+      const where = `(() => { const s = ${JSON.stringify(textOrSel)};
+        const shown = x => x.getClientRects().length > 0 && getComputedStyle(x).visibility !== 'hidden';
         let e = null;
         try { e = document.querySelector(s); } catch { /* no es un selector: se busca por texto */ }
-        if (!e) e = [...document.querySelectorAll('button, a, summary, [role=button]')].find(x => x.offsetParent !== null && x.textContent.trim().toLowerCase().includes(s.toLowerCase()));
-        if (!e) return false; e.scrollIntoView({ block: 'center' }); e.click(); return true; })()`);
-      if (!ok) throw new Error('No encuentro qué pulsar: ' + textOrSel);
-      await sleep(150);
-    },
-    // Pulsación de ratón de verdad (eventos de puntero del navegador, no .click()): hace falta para lo que
-    // solo se permite tras tocar la página, como el sonido
-    async realClick(sel) {
-      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'center' });
-        const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; })()`);
-      if (!r) throw new Error('No encuentro qué pulsar: ' + sel);
+        if (!e) e = [...document.querySelectorAll('button, a, summary, [role=button]')].find(x => shown(x) && x.textContent.trim().toLowerCase().includes(s.toLowerCase()));
+        if (!e) return { err: 'no está' };
+        e.scrollIntoView({ block: 'center', inline: 'center' });
+        const b = e.getBoundingClientRect();
+        if (!b.width || !b.height || !shown(e)) return { err: 'no se ve' };
+        const x = Math.min(innerWidth - 1, Math.max(0, b.x + b.width / 2)), y = Math.min(innerHeight - 1, Math.max(0, b.y + b.height / 2));
+        if (b.right < 1 || b.bottom < 1 || b.left > innerWidth - 1 || b.top > innerHeight - 1) return { err: 'fuera de la pantalla' };
+        if (e.disabled) return { err: 'desactivado' };
+        // (una animación de entrada en él o en lo que lo contiene, p. ej. una ventana que crece: se espera a que acabe)
+        if (document.getAnimations().some(a => a.playState === 'running' && a.effect && a.effect.target && a.effect.target.contains && a.effect.target.contains(e) && a.effect.getTiming().iterations !== Infinity)) return { err: 'moviéndose' };
+        const top = document.elementFromPoint(x, y);
+        const name = n => n ? n.tagName.toLowerCase() + (typeof n.className === 'string' && n.className.trim() ? '.' + n.className.trim().split(/\\s+/).join('.') : '') : 'nada';
+        if (!top || !(top === e || e.contains(top) || (e.htmlFor && top.id === e.htmlFor))) return { err: 'tapado por ' + name(top) };
+        return { x, y }; })()`;
+      // (y quieto: la misma posición en dos lecturas seguidas, que una ventana o ficha que entra con animación no se mueva bajo el clic)
+      const t0 = Date.now();
+      let r = await page.eval(where), prev = null;
+      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y) && Date.now() - t0 < 3000) { prev = r.err ? null : r; await sleep(80); r = await page.eval(where); }
+      if (r.err) throw new Error(`No se puede pulsar «${textOrSel}»: ${r.err}`);
       for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
       await sleep(150);
     },
-    // Escribe en un campo (como si tecleara: dispara input y change)
+    // (antes era un clic de mentira y este el de verdad; ahora los dos son de verdad)
+    async realClick(sel) { await page.click(sel); },
+    // Escribe en un campo como un teclado: lo enfoca, borra lo que haya y mete el texto (eventos input reales);
+    // al acabar, change (como al salir del campo)
     async type(sel, text) {
+      // (borrar lo que haya como un usuario: seleccionarlo y suprimirlo, que avisa al campo aunque se escriba '')
       const ok = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false;
-        e.focus(); e.value = ${JSON.stringify(text)}; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`);
-      if (!ok) throw new Error('No encuentro el campo: ' + sel);
+        e.scrollIntoView({ block: 'center' }); e.focus(); if (e.value) { e.select(); document.execCommand('delete'); } return document.activeElement === e; })()`);
+      if (!ok) throw new Error('No encuentro el campo (o no se puede escribir en él): ' + sel);
+      if (text) await call('Input.insertText', { text });
+      await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (e) e.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`);
       await sleep(100);
+    },
+    // El dedo de verdad (eventos táctiles del navegador): fingerDown pone el dedo sobre el elemento, fingerUp lo
+    // levanta; press es un toque de `ms` milisegundos (corto, o una pulsación larga)
+    async fingerDown(sel) {
+      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'center' });
+        const b = e.getBoundingClientRect(); return { x: b.left + Math.min(8, b.width / 2), y: b.top + Math.min(8, b.height / 2) }; })()`);
+      if (!r) throw new Error('No encuentro qué tocar: ' + sel);
+      await call('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: r.x, y: r.y }] });
+    },
+    async fingerUp() { await call('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(80); },
+    async press(sel, ms = 60) { await page.fingerDown(sel); await sleep(ms); await page.fingerUp(); },
+    // Mueve un deslizador (input range) como con el dedo: pulsa en el punto de su barra que da ese valor
+    async slide(sel, value) {
+      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'center' });
+        // (el centro del tirador recorre la barra menos su ancho: en Chrome, 16 px)
+        const b = e.getBoundingClientRect(), min = +e.min || 0, max = e.max === '' ? 100 : +e.max, f = (${+value} - min) / (max - min), th = 16;
+        return { x: b.left + th / 2 + f * (b.width - th), y: b.top + b.height / 2 }; })()`);
+      if (!r) throw new Error('No encuentro el deslizador: ' + sel);
+      for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
+      await sleep(150);
     },
     // Cambia el tamaño de la ventana (una pantalla estrecha, un móvil…); resize() sin argumentos la deja como estaba
     async resize(width, height) {

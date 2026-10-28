@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.4 ----------
+    'Toques más precisos en el móvil': 'スマホでのタップがより正確に',
+    'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'メニューでミッションの見出しをタップするとミッションへ移動します。以前は中央をタップすると報酬をすべて受け取っていました。',
+    'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.': 'Lucky Spin とミッションが下のバーに隠れなくなり、スマホではポケモンの詳細のタブが隠れずにスクロールします。',
+    'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.': 'スマホで「マイポケモン」とポケモン図鑑のタイプと並び替えのフィルターが全部見えるようになり、ストーリーのマップの場所がタップしやすくなりました。',
     // ---------- Novedades v0.31.3 ----------
     'Cuentas más seguras': 'より安全なアカウント',
     'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'メールアドレスはコードかGoogleで確認して初めてあなたのものになるので、誰かが先に登録してアカウントを奪うことはできません。メールで使うなら「メールで ログイン」へ。',
@@ -106,13 +111,11 @@ export default {
     'Tu correo': 'メールアドレス',
     'Mandarme un código': 'コードを 送る',
     'Escribe un correo válido': '正しい メールアドレスを 入力してね',
-    'Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': '6けたの コードを 送ります。パスワードは いりません。アカウントが まだ なければ、ログインの ときに 作られます。',
     'Código': 'コード',
     'El código tiene 6 cifras': 'コードは 6けたです',
     'Usar otro correo': 'ほかの メールを 使う',
     'Reenviar el código': 'コードを もう一度 送る',
     'Código reenviado': 'コードを もう一度 送りました',
-    'Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.': '<b>{email}</b> に コードを 送りました。10分で 期限切れに なります。届かない ときは 迷惑メールも 見てね。',
     'Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.': 'Google アカウントを 選んでね。ログインの ために メールアドレスだけを 保存します。アカウントが まだ なければ、ログインの ときに 作られます。',
     'No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.': 'Google を 読みこめませんでした。接続か 広告ブロッカーを 確認してね。',
     'Escribe tu nombre de entrenador': 'トレーナー名を 入力してね',
@@ -1621,6 +1624,12 @@ export default {
     'Termina antes lo que estás haciendo': '先に 今の 操作を おえてください',
     'Usuario o contraseña incorrectos': 'ユーザー名 または パスワードが ちがいます',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'アカウントを 作りました：どの 端末からでも ログインできます',
+    'Mandarme un código aquí': 'ここにコードを送る',
+    'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'このリンクは別の場所から要求されました。このブラウザに保存されたデータをアカウントに移すには、ここで新しいコードを要求してください。心当たりがなければ閉じてください。',
+    'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'このリンクは別の場所から要求されました。心当たりがなければ閉じてください。あなたのものならログインしてください。別のブラウザのゲストのデータは引き継がれません。',
+    'Vas a entrar como <b>{email}</b>.': '<b>{email}</b> としてログインします。',
+    'Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': 'ワンタップでログインできるリンク（別の場所で開くとき用のコードも）を送ります。パスワードは不要です。まだアカウントがなければ、ログイン時に作成されます。',
+    'Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.': '<b>{email}</b> にリンクとコードを送りました。リンクをタップするか、ここにコードを入力してください。有効期限は10分です。届かない場合は迷惑メールを確認してください。',
     'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'ユーザー名は3〜24文字の英数字、_ . - で入力してください',
     'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'アカウントを作成しました。このメールアドレスをユーザー名にした別のアカウントがあります。あなたのものなら、そのパスワードでログインしてください',
     'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'メールアドレスを使うには「メールで ログイン」を選んでください。あなたのものか確認するコードを送ります',
@@ -1759,7 +1768,6 @@ export default {
     'Misiones': 'ミッション',
     'Misiones diarias': 'デイリーミッション',
     '¡{n} por recoger!': '{n}個受け取れます！',
-    '¡1 por recoger!': '1個受け取れます！',
     'Ver todas': 'すべて見る',
     '¡Nuevo avatar!': '新しいアバター！',
     '¡Logro recogido!': '実績を受け取った！',

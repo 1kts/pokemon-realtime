@@ -46,3 +46,18 @@ API: `page.goto/reload/eval/waitFor/click/type/shot/resize/loginAs`, `player({ n
 
 Chrome: el del sistema (`google-chrome`, `chromium`), el de Playwright si está en la caché, o la ruta en
 `CHROME`. En GitHub Actions ya viene instalado.
+
+## Como un jugador
+
+Las pruebas usan el juego como lo haría un jugador, y el arnés lo comprueba:
+
+- `page.click(selector o texto)` es un clic de ratón de verdad: espera a que el elemento esté a la vista, activo, quieto
+  (sin animaciones de entrada) y sin nada encima, y falla diciendo qué lo tapa. `page.type` teclea de verdad.
+- `page.slide(selector, valor)` mueve un deslizador pulsando en su barra; `page.press(selector, ms)`,
+  `page.fingerDown(selector)` y `page.fingerUp()` son toques con el dedo de verdad (un toque o una pulsación larga).
+- `tools/e2e-lint.js` (en `npm test`) cuenta los atajos: `.click()` dentro de `page.eval`, `ui.show('…')` y teclas
+  inventadas. No pueden crecer; el que haga falta de verdad lleva `// atajo: motivo`.
+- `pantallas-movil.e2e.js` y `pantallas-ventana.e2e.js` (con `barrido.js`) recorren todas las pantallas y ventanas en 4 tamaños y falla si algo se sale de ancho, si un botón
+  visible está tapado o si con el dedo un botón es demasiado pequeño. Con `E2E_GEOM=archivo.json` guarda dónde está cada
+  cosa, para comparar un antes y un después al tocar el CSS.
+

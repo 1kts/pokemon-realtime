@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.4 ----------
+    'Toques más precisos en el móvil': 'Des touches plus précises sur mobile',
+    'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'Dans le menu, toucher l’en-tête des Missions t’y emmène : avant, toucher son centre récupérait toutes les récompenses.',
+    'Lucky Spin y Misiones ya no quedan tapados por la barra de abajo, y en el móvil las pestañas de la ficha del Pokémon se deslizan en vez de esconderse.': 'Lucky Spin et les Missions ne sont plus cachés par la barre du bas, et sur mobile les onglets de la fiche du Pokémon défilent au lieu de se cacher.',
+    'En el móvil, los filtros de tipo y orden de Mis Pokémon y la Pokédex se ven enteros, y los sitios del mapa de Historia se tocan mejor.': 'Sur mobile, les filtres de type et de tri de Mes Pokémon et du Pokédex s’affichent en entier, et les lieux de la carte Histoire se touchent plus facilement.',
     // ---------- Novedades v0.31.3 ----------
     'Cuentas más seguras': 'Des comptes plus sûrs',
     'Tu correo solo cuenta como tuyo al comprobarlo con el código o con Google, así nadie puede registrarlo antes para quedarse tu cuenta. Con tu correo, usa «Entrar con email».': 'Ton e-mail ne compte comme le tien qu’une fois confirmé avec le code ou Google : personne ne peut l’enregistrer avant toi pour prendre ton compte. Avec ton e-mail, utilise « Se connecter par e-mail ».',
@@ -105,13 +110,11 @@ export default {
     'Tu correo': 'Ton e-mail',
     'Mandarme un código': 'M\'envoyer un code',
     'Escribe un correo válido': 'Écris un e-mail valide',
-    'Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': 'On t\'envoie un code à 6 chiffres : pas de mot de passe. Si tu n\'as pas encore de compte, il est créé à la connexion.',
     'Código': 'Code',
     'El código tiene 6 cifras': 'Le code a 6 chiffres',
     'Usar otro correo': 'Utiliser un autre e-mail',
     'Reenviar el código': 'Renvoyer le code',
     'Código reenviado': 'Code renvoyé',
-    'Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.': 'On t\'a envoyé un code à <b>{email}</b>. Il expire dans 10 minutes ; s\'il n\'arrive pas, regarde dans les spams.',
     'Elige tu cuenta de Google. Solo guardamos tu correo para que puedas entrar; si aún no tienes cuenta, se crea al entrar.': 'Choisis ton compte Google. On garde seulement ton e-mail pour que tu puisses te connecter ; si tu n\'as pas encore de compte, il est créé à la connexion.',
     'No se ha podido cargar Google: revisa tu conexión o el bloqueador de anuncios.': 'Impossible de charger Google : vérifie ta connexion ou ton bloqueur de pubs.',
     'Escribe tu nombre de entrenador': 'Écris ton nom de dresseur',
@@ -1545,6 +1548,12 @@ export default {
     'Termina antes lo que estás haciendo': 'Termine d\'abord ce que tu fais',
     'Usuario o contraseña incorrectos': 'Identifiant ou mot de passe incorrect',
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Compte créé : tu peux maintenant te connecter depuis n\'importe quel appareil',
+    'Mandarme un código aquí': 'M’envoyer un code ici',
+    'Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.': 'Ce lien a été demandé ailleurs. Pour que la partie enregistrée dans ce navigateur passe sur ton compte, demande un autre code ici. Si ce n’est pas toi qui l’as demandé, ferme-le.',
+    'Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.': 'Ce lien a été demandé ailleurs : si ce n’est pas toi, ferme-le. S’il est à toi, connecte-toi : le compte ne reprend pas la partie d’invité d’un autre navigateur.',
+    'Vas a entrar como <b>{email}</b>.': 'Tu vas te connecter en tant que <b>{email}</b>.',
+    'Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.': 'On t’envoie un lien pour te connecter d’un toucher (et un code, si tu l’ouvres ailleurs) : sans mot de passe. Si tu n’as pas encore de compte, il est créé à la connexion.',
+    'Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.': 'On a envoyé un lien et un code à <b>{email}</b> : touche le lien ou tape le code ici. Ils expirent dans 10 minutes ; si rien n’arrive, regarde dans les spams.',
     'El usuario debe tener de 3 a 24 letras, números, _ . o -': 'Le nom d’utilisateur doit contenir de 3 à 24 lettres, chiffres, _ . ou -',
     'Cuenta creada. Hay otra cuenta con este correo como usuario: si es tuya, entra en ella con su contraseña': 'Compte créé. Un autre compte utilise cet e-mail comme nom d’utilisateur : s’il est à toi, connecte-toi avec son mot de passe',
     'Para usar tu correo, elige «Entrar con email»: te mandamos un código para comprobar que es tuyo': 'Pour utiliser ton e-mail, choisis « Se connecter par e-mail » : on t’envoie un code pour vérifier qu’il est à toi',
@@ -1753,7 +1762,6 @@ export default {
     'Misiones': 'Missions',
     'Misiones diarias': 'Missions du jour',
     '¡{n} por recoger!': '{n} à récupérer !',
-    '¡1 por recoger!': '1 à récupérer !',
     'Ver todas': 'Tout voir',
     '¡Nuevo avatar!': 'Nouvel avatar !',
     '¡Logro recogido!': 'Succès récupéré !',

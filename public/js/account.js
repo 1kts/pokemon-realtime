@@ -208,7 +208,10 @@ export const accountViews = {
     this.net.auth(msg);
   },
 
-  mailLogin() {
+  // Con el enlace del correo (link: { email, code }) se abre en el paso del código, con los dos ya escritos: falta
+  // un toque en «Entrar» (que un antivirus del correo al abrir el enlace no gaste el código, y que nadie meta a otro
+  // en su cuenta con un enlace suyo). La partida de invitado solo se la lleva si este navegador pidió ese código
+  mailLogin(link = null) {
     this.loginModal('mail', t('Entrar con email'), box => {
       const askEmail = (value = '') => {
         const msg = this.loginStep(box);
@@ -221,25 +224,31 @@ export const accountViews = {
           go.disabled = true;
           this.authBtn = go;
           this.onMailSent = () => askCode(email);
+          storage.set('arena.mailAsked', email.toLowerCase());   // (lo pidió este navegador: ver mailLogin)
           this.identitySend({ t: 'mailcode', email, lang: getLang() });
         };
         go.onclick = submit;
         input.onkeydown = e => { if (e.key === 'Enter') submit(); };
-        box.append(el('p', 'small', t('Te mandamos un código de 6 cifras: sin contraseñas. Si aún no tienes cuenta, se crea al entrar.')), f, go, msg);
+        box.append(el('p', 'small', t('Te mandamos un enlace para entrar con un toque (y un código, por si lo abres en otro sitio): sin contraseñas. Si aún no tienes cuenta, se crea al entrar.')), f, go, msg);
         setTimeout(() => input.focus(), 50);
       };
-      const askCode = email => {
+      // fromLink: el código del enlace del correo. Si el enlace no se pidió desde este navegador (el de otro, para
+      // meterte en su cuenta, o el tuyo abierto en otro navegador o en la app del correo): con una partida guardada
+      // aquí no se ofrece entrar (se perdería), sino pedir aquí otro código; sin ella, se puede entrar avisando
+      const askCode = (email, fromLink = null) => {
         const msg = this.loginStep(box);
-        const [f, code] = field('Código', 'text', { maxLength: 6, inputMode: 'numeric', autocomplete: 'one-time-code', spellcheck: false });
+        const [f, code] = field('Código', 'text', { maxLength: 6, inputMode: 'numeric', autocomplete: 'one-time-code', spellcheck: false, value: fromLink || '' });
         code.classList.add('code-input');
         const go = el('button', 'primary', t('Entrar'));
+        const foreign = !!fromLink && storage.get('arena.mailAsked') !== email.toLowerCase();
+        const saved = foreign && !this.profile && !!Net.token();
         const submit = () => {
           const v = code.value.replace(/\D/g, '');
           if (v.length !== 6) return this.authError(t('El código tiene 6 cifras'));
           this.authError('');
           go.disabled = true;
           this.authBtn = go;
-          this.identitySend({ t: 'mailverify', email, code: v });
+          this.identitySend({ t: 'mailverify', email, code: v, ...(foreign ? { noGuest: true } : {}) });
         };
         go.onclick = submit;
         // Al escribir (o pegar) la sexta cifra se manda solo
@@ -247,14 +256,30 @@ export const accountViews = {
         code.onkeydown = e => { if (e.key === 'Enter') submit(); };
         const other = el('button', 'link', t('Usar otro correo'));
         other.onclick = () => askEmail(email);
-        const again = el('button', 'link', t('Reenviar el código'));
-        again.onclick = () => { this.authError(''); this.onMailSent = () => this.toast(t('Código reenviado')); this.identitySend({ t: 'mailcode', email, lang: getLang() }); };
+        // Reenviar: un código nuevo pedido desde aquí (el del enlace deja de valer), con su campo vacío
+        const again = el('button', saved ? 'primary' : 'link', saved ? t('Mandarme un código aquí') : t('Reenviar el código'));
+        again.onclick = () => {
+          this.authError('');
+          storage.set('arena.mailAsked', email.toLowerCase());
+          this.onMailSent = () => { if (fromLink) askCode(email); else this.toast(t('Código reenviado')); };
+          this.identitySend({ t: 'mailcode', email, lang: getLang() });
+        };
         const links = el('div', 'alt-links');
-        links.append(other, again);
-        box.append(el('p', '', t('Te hemos mandado un código a <b>{email}</b>. Caduca en 10 minutos; si no llega, mira en spam.', { email: escapeHtml(email) })), f, go, msg, links);
-        setTimeout(() => code.focus(), 50);
+        links.append(other, ...(saved ? [] : [again]));
+        if (!fromLink) {
+          box.append(el('p', '', t('Te hemos mandado un enlace y un código a <b>{email}</b>: toca el enlace o escribe aquí el código. Caducan en 10 minutos; si no llega, mira en spam.', { email: escapeHtml(email) })), f, go, msg, links);
+          return setTimeout(() => code.focus(), 50);
+        }
+        box.append(el('p', '', t('Vas a entrar como <b>{email}</b>.', { email: escapeHtml(email) })));
+        if (saved) {
+          box.append(el('p', 'warn', t('Este enlace se pidió desde otro sitio. Para que la partida guardada en este navegador pase a tu cuenta, pide aquí otro código. Si no lo pediste tú, ciérralo.')), again, msg, links);
+          return setTimeout(() => again.focus(), 50);
+        }
+        if (foreign) box.append(el('p', 'warn', t('Este enlace se pidió desde otro sitio: si no lo pediste tú, ciérralo. Si es tuyo, entra: la cuenta no se lleva la partida de invitado de otro navegador.')));
+        box.append(f, go, msg, links);
+        setTimeout(() => go.focus(), 50);
       };
-      askEmail();
+      if (link) askCode(link.email, link.code); else askEmail();
     });
   },
 

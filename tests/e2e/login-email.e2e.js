@@ -89,6 +89,7 @@ module.exports = async ({ page, client, player, ok }) => {
   await page.eval(`window.__app.ui.googleCredential(${JSON.stringify(googleToken('g-2', 'ash@example.com'))}); true`);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   ok(await page.eval(`window.__app.ui.profile.name === 'Ash' && window.__app.ui.profile.account.google`), 'con Google y el correo de una cuenta que ya existe, entra en ella');
+
   api.close();
 };
 
