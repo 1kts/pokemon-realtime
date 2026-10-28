@@ -818,10 +818,11 @@ export const accountViews = {
         const opts = (list, render, msg) => {
           const g = el('div', 'frame-grid');
           for (const v of list) {
-            const [node, label, sel] = render(v);
-            const b = el('button', 'frame-opt' + (sel ? ' sel' : ''));
+            const [node, label, sel, locked] = render(v);
+            const b = el('button', 'frame-opt' + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
             b.append(node, el('small', '', label));
-            b.onclick = () => this.net.send({ t: 'look', ...msg(v) });
+            if (locked) { b.disabled = true; b.append(el('em', '', t('En Lucky Spin'))); }
+            else b.onclick = () => this.net.send({ t: 'look', ...msg(v) });
             g.append(b);
           }
           return g;
@@ -830,8 +831,9 @@ export const accountViews = {
         if (tabId === 'frame') body.append(opts([null, ...(cos.frames || [])], f => [this.avatar(56, false, f), f ? frameLabel(f) : t('Ninguno'), (p.frame || null) === f], f => ({ frame: f })));
         if (tabId === 'aura') body.append(opts([null, ...(cos.auras || [])], au => [this.avatar(56, false, undefined, au), au ? auraName(au, t) : t('Ninguno'), (p.aura || null) === au], au => ({ aura: au })));
         if (tabId === 'effect') {
-          body.append(opts([null, ...(cos.effects || [])], fx => [this.avatar(56, false, undefined, undefined, fx), fx ? effectName(fx) : t('Ninguno'), (p.effect || null) === fx], fx => ({ effect: fx })));
-          if (!(cos.effects || []).length) body.append(el('p', 'small', t('Sin efectos todavía: salen en Lucky Spin.')));
+          // Todos los efectos: los que aún no tienes, apagados (salen en Lucky Spin)
+          const own = cos.effects || [];
+          body.append(opts([null, ...own, ...Data.EFFECTS.filter(fx => !own.includes(fx))], fx => [this.avatar(56, false, undefined, undefined, fx), fx ? effectName(fx) : t('Ninguno'), (p.effect || null) === fx, !!fx && !own.includes(fx)], fx => ({ effect: fx })));
         }
         if (tabId === 'title') {
           const chips = el('div', 'chips');

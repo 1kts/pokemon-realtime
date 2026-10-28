@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.1 ----------
+    'Todo el Vestuario a la vista': '衣装を全部チェック',
+    'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '各ポケモンの衣装で全タイプのパーティクルを試し見でき、アバター編集ではすべてのエフェクトが見られます。まだ持っていないものは薄く表示されます。',
     // ---------- Novedades v0.31.0 ----------
     'Evoluciones a la vista y móvil cómodo': '進化が一目で、スマホも快適に',
     'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': '各ポケモンの詳細で進化先を画像と必要などうぐ付きで確認でき、持っているものはカラーで表示されます。今後覚えるわざは薄く表示されます。',

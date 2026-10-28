@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.1 ----------
+    'Todo el Vestuario a la vista': 'The whole Wardrobe on show',
+    'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'In each Pokémon\'s Wardrobe you see particles of every type on it, and in the avatar editor every effect: the ones you don\'t have yet show dimmed.',
     // ---------- Novedades v0.31.0 ----------
     'Evoluciones a la vista y móvil cómodo': 'Evolutions at a glance, comfier mobile',
     'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'Each Pokémon\'s sheet shows its evolutions with their picture and the item they need, in color if you already have them; upcoming moves show dimmed.',

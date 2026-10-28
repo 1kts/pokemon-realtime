@@ -71,6 +71,8 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`[...document.querySelectorAll('.ms-wear.skin')].some(b => /Oro/.test(b.textContent))`);
   // (con WebGL la skin la pinta el shader en el canvas, skinfx-* es su brillo; sin WebGL, el filtro CSS skin-*)
   ok(await page.eval(`!!document.querySelector('.ms-wear.skin canvas.skinfx-oro[data-fx], .ms-wear.skin canvas.skin-oro') && document.querySelectorAll('.ms-wear.skin.locked').length >= 2`), 'en Vestuario cada skin se ve sobre el Pokémon; las que no tienes, apagadas');
+  ok(await page.eval(`(() => { const lk = [...document.querySelectorAll('.ms-wear.parts.locked')].filter(b => /Próximamente/.test(b.textContent));
+    return lk.length === Data.TYPE_NAMES.length - 1 && lk.every(b => b.disabled && b.querySelector('canvas')) && !lk.some(b => /de Fuego/.test(b.textContent)); })()`), 'y salen las partículas de todos los tipos sobre el Pokémon: las de otros tipos, bloqueadas para más adelante');
   await page.eval(`[...document.querySelectorAll('.ms-wear.skin')].find(b => /Oro/.test(b.textContent)).click(); true`);
   await page.waitFor(`${p}.skins[4] === 'oro'`);
   ok(true, 'la skin Oro se pone a la línea de Charmander desde su Vestuario');

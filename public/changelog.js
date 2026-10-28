@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.1', date: '2026-10-28', title: 'Todo el Vestuario a la vista',
+      items: [
+        ['cambio', 'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.'],
+      ],
+    },
+    {
       v: '0.31.0', date: '2026-10-28', title: 'Evoluciones a la vista y móvil cómodo',
       items: [
         ['nuevo', 'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.'],

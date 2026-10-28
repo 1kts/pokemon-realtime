@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.1 ----------
+    'Todo el Vestuario a la vista': 'Der ganze Kleiderschrank im Blick',
+    'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': 'Im Kleiderschrank jedes Pokémon siehst du die Partikel aller Typen an ihm und im Avatar-Editor alle Effekte: die, die du noch nicht hast, erscheinen blass.',
     // ---------- Novedades v0.31.0 ----------
     'Evoluciones a la vista y móvil cómodo': 'Entwicklungen im Blick, besser am Handy',
     'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'Im Steckbrief jedes Pokémon siehst du seine Entwicklungen mit Bild und dem nötigen Item, farbig, wenn du sie schon hast; kommende Attacken erscheinen blass.',

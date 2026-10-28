@@ -263,7 +263,12 @@ export const monSheetViews = {
     body.append(el('h4', '', t('Partículas')));
     const parts = el('div', 'ms-wardrobe');
     parts.append(card('parts', !partsNow, false, t('Sin partículas'), !partsNow ? t('Puesto') : t('Quitarlas'), n => n, () => this.net.send({ t: 'look', particles: { dex: line, on: false } })));
-    parts.append(card('parts', partsNow, !hasP, t('Partículas de {type}', { type: Data.TYPE_LABEL[SPECIES[line].types[0]] }), partsNow ? t('Puestas') : hasP ? t('Ponérselas') : t('En Lucky Spin'), n => applySkin(n, null, line, true), () => this.net.send({ t: 'look', particles: { dex: line, on: true } })));
+    const own = SPECIES[line].types[0];
+    parts.append(card('parts', partsNow, !hasP, t('Partículas de {type}', { type: Data.TYPE_LABEL[own] }), partsNow ? t('Puestas') : hasP ? t('Ponérselas') : t('En Lucky Spin'), n => applySkin(n, null, line, true), () => this.net.send({ t: 'look', particles: { dex: line, on: true } })));
+    // Las de los demás tipos, sobre el propio Pokémon pero bloqueadas: aún no se pueden conseguir
+    for (const type of Data.TYPE_NAMES) if (type !== own) {
+      parts.append(card('parts', false, true, t('Partículas de {type}', { type: Data.TYPE_LABEL[type] }), t('Próximamente'), n => applySkin(n, null, line, type)));
+    }
     body.append(parts);
     body.append(el('p', 'small', t('La skin y las partículas se ponen a toda la línea evolutiva y se ven en los menús y en combate.')));
   },

@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.1 ----------
+    'Todo el Vestuario a la vista': '衣柜一览无余',
+    'En el Vestuario de cada Pokémon ves las partículas de todos los tipos sobre él, y en el editor del avatar todos los efectos: los que aún no tienes salen apagados.': '在每只宝可梦的衣柜里可以看到所有属性的粒子效果，在头像编辑中可以看到所有特效：还没有的会以灰色显示。',
     // ---------- Novedades v0.31.0 ----------
     'Evoluciones a la vista y móvil cómodo': '进化一目了然，手机更顺手',
     'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': '每只宝可梦的详情里能看到它的进化，带图片和所需道具，已拥有的显示为彩色；即将学会的招式以灰色显示。',
