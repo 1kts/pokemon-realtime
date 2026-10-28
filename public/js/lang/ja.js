@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': '進化が一目で、スマホも快適に',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': '各ポケモンの詳細で進化先を画像と必要などうぐ付きで確認でき、持っているものはカラーで表示されます。今後覚えるわざは薄く表示されます。',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Escで前のウィンドウに戻り、バトル中は降参のウィンドウが開きます。',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': 'ゲームの速さを20%落とし、バトルが追いやすくなりました。',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': 'スマホではバトル中のチームが誰も隠さない顔の列になり、わざをドラッグすると届く距離が線で表示されます。',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': 'スマホの横画面でストーリー、Lucky Spin、バトルタワー、ランクバトル、メニューが見やすくなり、ゲームをアプリとしてインストールできます。',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': 'ギャラクシー、エレメンタル、ゴールド（輝き付き）のスキンがより美しく、メニューとバトルで同じ見た目になり、パーティクルがスキンの色に染まらなくなりました。',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': '3Dのわざとマップ、新しいアリーナ',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': 'わざが3Dに。タイプごとに手作り：らせんを描く光線、地面を走るかみなり、流れるなみのり、ひび割れと岩が飛ぶじしん。',

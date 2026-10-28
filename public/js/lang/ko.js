@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': '한눈에 보는 진화, 더 편한 모바일',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': '각 포켓몬 정보에서 진화를 이미지와 필요한 도구와 함께 볼 수 있고, 이미 가진 것은 컬러로 나옵니다. 앞으로 배울 기술은 흐리게 보입니다.',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Esc로 이전 창으로 돌아가고, 배틀 중에는 항복 창이 열립니다.',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': '배틀을 더 잘 따라갈 수 있도록 게임 속도가 20% 느려졌습니다.',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': '모바일에서 배틀 중 팀은 아무도 가리지 않는 얼굴 한 줄이 되고, 기술을 드래그하면 닿는 거리를 선으로 보여 줍니다.',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': '모바일 가로 화면에서 스토리, Lucky Spin, 배틀타워, 랭크 배틀, 메뉴가 더 잘 맞고, 게임을 앱으로 설치할 수 있습니다.',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': '갤럭시, 엘리멘탈, 골드(반짝임 포함) 스킨이 더 멋지고 메뉴와 배틀에서 똑같이 보이며, 파티클이 더 이상 스킨 색으로 바뀌지 않습니다.',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': '3D 기술과 지도, 새로운 아레나',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': '기술이 3D로 바뀌었어요. 타입마다 손수 만든 연출: 나선형 광선, 바닥을 타고 흐르는 번개, 물이 흐르는 파도타기, 땅이 갈라지는 지진.',

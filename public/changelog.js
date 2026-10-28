@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.31.0', date: '2026-10-28', title: 'Evoluciones a la vista y móvil cómodo',
+      items: [
+        ['nuevo', 'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.'],
+        ['nuevo', 'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.'],
+        ['cambio', 'El juego va un 20 % más lento para que los combates se sigan mejor.'],
+        ['cambio', 'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.'],
+        ['cambio', 'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.'],
+        ['cambio', 'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.'],
+      ],
+    },
+    {
       v: '0.30.0', date: '2026-10-27', title: 'Ataques y mapa en 3D, y arenas nuevas',
       items: [
         ['nuevo', 'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.'],

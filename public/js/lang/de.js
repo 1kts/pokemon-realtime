@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': 'Entwicklungen im Blick, besser am Handy',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'Im Steckbrief jedes Pokémon siehst du seine Entwicklungen mit Bild und dem nötigen Item, farbig, wenn du sie schon hast; kommende Attacken erscheinen blass.',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Mit Esc kommst du zum vorherigen Fenster zurück und im Kampf öffnet sich das zum Aufgeben.',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': 'Das Spiel läuft 20 % langsamer, damit du den Kämpfen besser folgen kannst.',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': 'Am Handy ist dein Team im Kampf eine Reihe Gesichter, die niemanden verdeckt, und beim Ziehen einer Attacke zeigt eine Linie ihre Reichweite.',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': 'Am Handy im Querformat passen Story, Lucky Spin, Duellturm, Rangliste und das Menü besser, und du kannst das Spiel als App installieren.',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': 'Die Galaxie-, Element- und Gold-Skins (mit ihrem Glanz) sehen besser und in Menüs wie im Kampf gleich aus, und Partikel nehmen nicht mehr die Skin-Farbe an.',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': '3D-Attacken, 3D-Karte und neue Arenen',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': 'Attacken sind jetzt in 3D, für jeden Typ von Hand gemacht: Strahlen mit Spiralen, Donner mit Entladungen am Boden, Surfer mit fließendem Wasser und Erdbeben mit Rissen und Felsen.',

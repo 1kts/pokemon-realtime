@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': 'Evolutions at a glance, comfier mobile',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'Each Pokémon\'s sheet shows its evolutions with their picture and the item they need, in color if you already have them; upcoming moves show dimmed.',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Esc takes you back to the previous window and, in battle, opens the forfeit one.',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': 'The game runs 20% slower so battles are easier to follow.',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': 'On mobile, your team in battle is a row of faces that covers no one, and dragging an attack draws a line showing how far it reaches.',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': 'On mobile in landscape, Story, Lucky Spin, Battle Tower, Ranked and the menu fit better, and you can install the game as an app.',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': 'The Galaxy, Elemental and Gold skins (with its shine) look better and the same in menus and battle, and particles no longer take the skin\'s color.',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': '3D attacks and map, and new arenas',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': 'Attacks are now in 3D, hand-made for each type: spiralling beams, Thunder with sparks across the ground, Surf with flowing water and Earthquake with cracks and rocks.',

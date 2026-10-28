@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': 'Evoluzioni in vista, mobile più comodo',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'Nella scheda di ogni Pokémon vedi le sue evoluzioni con l\'immagine e lo strumento che serve, a colori se le hai già; le prossime mosse si vedono sbiadite.',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Con Esc torni alla finestra precedente e, in lotta, apri quella per arrenderti.',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': 'Il gioco va il 20% più lento così segui meglio le lotte.',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': 'Sul cellulare la tua squadra in lotta è una fila di facce che non copre nessuno, e trascinando un attacco una linea mostra fin dove arriva.',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': 'Sul cellulare in orizzontale Storia, Lucky Spin, Torre Lotta, Classificate e il menu stanno meglio, e puoi installare il gioco come app.',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': 'Le skin Galassia, Elementale e Oro (con il suo riflesso) sono più belle e uguali nei menu e in lotta, e le particelle non prendono più il colore della skin.',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': 'Attacchi e mappa in 3D, e nuove arene',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': 'Gli attacchi ora sono in 3D, fatti a mano per ogni tipo: raggi a spirale, Tuono con scariche sul terreno, Surf con acqua che scorre e Terremoto con crepe e rocce.',

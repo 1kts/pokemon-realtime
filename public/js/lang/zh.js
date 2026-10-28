@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': '进化一目了然，手机更顺手',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': '每只宝可梦的详情里能看到它的进化，带图片和所需道具，已拥有的显示为彩色；即将学会的招式以灰色显示。',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': '按 Esc 返回上一个窗口，对战中则打开认输窗口。',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': '游戏速度放慢了 20%，对战更容易看清。',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': '手机上，对战中你的队伍是一排不遮挡任何人的头像，拖动招式时会有一条线显示它能打多远。',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': '手机横屏时，故事模式、Lucky Spin、对战塔、排位赛和菜单排版更合适，还可以把游戏安装为应用。',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': '星河、元素和黄金（带反光）皮肤更好看，菜单和对战中看起来一致，粒子也不再随皮肤变色。',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': '3D 招式与地图，以及新竞技场',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': '招式变成了 3D，按属性逐一手工制作：螺旋光束、在地面蔓延的打雷、流动的冲浪，以及带裂缝和岩石的地震。',

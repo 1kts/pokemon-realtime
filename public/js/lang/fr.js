@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.31.0 ----------
+    'Evoluciones a la vista y móvil cómodo': 'Évolutions en vue, mobile plus confortable',
+    'En la ficha de cada Pokémon ves sus evoluciones con su imagen y el objeto que necesitan, en color si ya las tienes; los próximos movimientos se ven apagados.': 'La fiche de chaque Pokémon montre ses évolutions avec leur image et l\'objet nécessaire, en couleur si tu les as déjà ; les prochaines capacités apparaissent grisées.',
+    'Con Esc vuelves a la ventana anterior y, en combate, abres la de rendirte.': 'Avec Échap, tu reviens à la fenêtre précédente et, en combat, tu ouvres celle pour abandonner.',
+    'El juego va un 20 % más lento para que los combates se sigan mejor.': 'Le jeu va 20 % plus lentement pour que les combats se suivent mieux.',
+    'En el móvil, tu equipo en combate es una fila de caras que no tapa a nadie, y al arrastrar un ataque una línea marca hasta dónde llega.': 'Sur mobile, ton équipe en combat est une rangée de visages qui ne cache personne, et en faisant glisser une attaque une ligne montre sa portée.',
+    'En el móvil en horizontal, Historia, Lucky Spin, Torre Batalla, Clasificatoria y el menú caben mejor, y puedes instalar el juego como app.': 'Sur mobile à l\'horizontale, Histoire, Lucky Spin, Tour de Combat, Classé et le menu tiennent mieux, et tu peux installer le jeu comme une app.',
+    'Las skins Galaxia, Elemental y Oro, con su reflejo, lucen mejor e iguales en menús y combate, y las partículas ya no cambian de color con la skin.': 'Les skins Galaxie, Élémentaire et Or (avec son reflet) sont plus belles et identiques dans les menus et en combat, et les particules ne prennent plus la couleur du skin.',
     // ---------- Novedades v0.30.0 ----------
     'Ataques y mapa en 3D, y arenas nuevas': 'Attaques et carte en 3D, et nouvelles arènes',
     'Los ataques se ven en 3D, hechos a mano para cada tipo: rayos con espirales, Trueno con descargas por el suelo, Surf con agua que fluye y Terremoto con grietas y rocas.': 'Les attaques sont en 3D, faites main pour chaque type : rayons en spirale, Fatal-Foudre avec des décharges au sol, Surf avec de l\'eau qui coule et Séisme avec fissures et rochers.',
