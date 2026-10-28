@@ -1309,10 +1309,15 @@ export class UI {
   view_online() {
     const p = this.profile;
     const wrap = el('div', 'online');
-    wrap.append(this.topbar(t('Clasificatoria'), 'menu'));
-    const body = el('div', 'online-body');
-    const me = el('div', 'panel');
+    const bar = this.topbar(t('Clasificatoria'), 'menu');
     const next = LEAGUES.find(l => l[0] > p.elo);
+    // En el móvil, la liga, el ELO y tus victorias y derrotas van en la cabecera y el bloque grande de abajo se
+    // queda en una fila con el botón de buscar
+    bar.querySelector('.tb-ctx').append(el('div', 'tb-mobile elo-chip', `<span><small class="league">${t(p.league)}</small><b>${p.elo}</b></span>
+      <small>${t('{w}V {l}D', { w: p.wins, l: p.losses })}${next ? `<br>${t('{n} puntos para {league}', { n: next[0] - p.elo, league: t(next[1]) })}` : ''}</small>`));
+    wrap.append(bar);
+    const body = el('div', 'online-body');
+    const me = el('div', 'panel online-me');
     me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="league">${t(p.league)}</div><div class="big-elo">${p.elo}</div>
       <p class="small">${t('{w} victorias · {l} derrotas', { w: p.wins, l: p.losses })}${next ? ` · ${t('{n} puntos para {league}', { n: next[0] - p.elo, league: t(next[1]) })}` : ''}</p>
       <p class="small">${t('Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.', { n: Data.RANKED_LEVEL })}</p>`;
