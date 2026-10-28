@@ -20,12 +20,13 @@ import { storage } from './net.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { masteryHtml, frameBadge, masteryPrize } from './frames.js';
 import { accountViews } from './account.js';
-import { t, locale } from './i18n.js';
+import { t, tServer, locale } from './i18n.js';
 import { trackForView } from './music.js';
 import { dailyViews } from './daily.js';
 import { tutorialViews } from './tutorial.js';
 import { monSheetViews, upcomingMoves } from './monsheet.js';
 import { evoChips } from './evos.js';
+import { touchMode } from './touch.js';
 
 const { SPECIES, MOVES, TYPE_LABEL, TYPE_COLOR, ROUTES, GYMS, SHOP, STARTERS, RANKED_POOL, xpToNext, LEAGUES } = Data;
 // Cara con emoción: si el Pokémon no tiene esa, la más parecida que tenga (contento → feliz → normal…)
@@ -134,6 +135,9 @@ export class UI {
     if (track) this.app.music.play(track);
     this.root.hidden = false;
     this.root.innerHTML = '';
+    // Una pantalla nueva empieza arriba (si no, heredaba el scroll de la anterior: en el móvil, al volver al
+    // menú la cabecera con tu perfil quedaba fuera de la vista)
+    if (!same) this.root.scrollTop = 0;
     this.refreshLegalBar();   // idioma y aviso de novedades al día
     document.querySelectorAll('body > .dd-menu').forEach(m => m.remove());   // desplegables que quedaran abiertos
     const fn = this['view_' + view];
@@ -370,7 +374,11 @@ export class UI {
     const li = items => items.map(x => `<li>${x}</li>`).join('');
     d.innerHTML = `<summary>${t('Cómo se juega')}</summary>
       <div class="cols">
-      <div><h4>${t('Controles')}</h4><ul>${li([
+      <div><h4>${t('Controles')}</h4><ul>${li(touchMode() ? [
+        t('<b>Joystick</b> (a la izquierda) para moverte'),
+        t('Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar'),
+        t('<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon'),
+        t('Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse')] : [
         t('<kbd>WASD</kbd> moverte · <kbd>Ratón</kbd> apuntar'),
         t('<kbd>Clic</kbd> <kbd>Clic dcho</kbd> <kbd>Q</kbd> <kbd>E</kbd> los 4 movimientos'),
         t('<kbd>Espacio</kbd> Protección · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> cambiar de Pokémon'),
@@ -748,7 +756,8 @@ export class UI {
       all.append(grid, el('p', 'small', t('Cada 6 horas salen 4 al azar y uno de sus especiales; las que llevan más tiempo sin salir tienen más probabilidades de salir en la siguiente tanda.')));
       box.append(all);
       const balls = Data.BALL_IDS.reduce((n, k) => n + (p.items[k] || 0), 0);
-      box.append(el('p', 'small', t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })));
+      box.append(el('p', 'small', touchMode() ? t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })
+        : t('Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball (<kbd>F</kbd>). Tienes {balls} Balls. Shiny: 1 de {n}.', { balls, n: Math.round(1 / Data.SHINY_RATE) })));
       if (!unlocked) box.append(el('p', 'warn', t('Necesitas {n} medallas de {r}.', { n: n.req, r: R.name })));
       else {
         const go = el('button', 'primary', t('Explorar'));
@@ -805,7 +814,9 @@ export class UI {
     const R = Data.REGIONS[region];
     const wrap = el('div', 'starter');
     const bar = this.topbar(t('Tu inicial de {r}', { r: R.name }), 'menu');
-    wrap.append(bar, this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true));
+    const pick = rid => { this.region = rid; this.show('story'); };
+    wrap.append(bar, this.regionBar(region, pick, true));
+    bar.querySelector('.tb-ctx').append(this.regionChips(region, pick, false));
     wrap.append(el('p', 'intro', t('Cada región es un viaje nuevo: tus Pokémon de otras regiones no vienen contigo. Elige a tu compañero para {r}.', { r: R.name })));
     const row = el('div', 'starter-row');
     for (const dex of Data.REGION_STARTERS[region]) {
@@ -869,7 +880,7 @@ export class UI {
         t('Ganar da dinero y experiencia.'),
       ]),
       sec(t('Capturar'), [
-        t('Lanza una Poké Ball con <kbd>F</kbd> y cambia de Ball con <kbd>R</kbd>. La Ball tiene que darle.'),
+        touchMode() ? t('Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.') : t('Lanza una Poké Ball con <kbd>F</kbd> y cambia de Ball con <kbd>R</kbd>. La Ball tiene que darle.'),
         t('Es más fácil cuanta <b>menos vida</b> le quede y si tiene un <b>estado</b> (quemado, envenenado, aturdido…). La Súper Ball y la Ultra Ball ayudan mucho.'),
         t('Si se escapa, puedes volver a intentarlo. Uno de cada 300 es <b>shiny</b> (los especiales, el triple).'),
         t('Los especiales tienen <b>IV perfectos</b> 1 de cada 3 veces.'),
@@ -964,12 +975,15 @@ export class UI {
     const wrap = el('div', 'teamview');
     const region = this.teamRegion = this.teamRegion || this.region || 'kanto';
     const bar = this.topbar(t('Mis Pokémon'), this.returnTo || 'menu');
-    wrap.append(bar, this.regionBar(region, rid => { this.teamRegion = rid; this.show('team'); }, false));
+    const pick = rid => { this.teamRegion = rid; this.show('team'); };
+    wrap.append(bar, this.regionBar(region, pick, false));
+    bar.querySelector('.tb-ctx').prepend(this.regionChips(region, pick, false));
     const cap = Data.levelCap(p, region);
     const next = Data.leadersOf(region)[Data.progOf(p, region)];
     const team = (p.teams && p.teams[region]) || [];
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
-    wrap.append(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
+    const intro = wrap.appendChild(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
+    intro.onclick = () => intro.classList.toggle('open');   // en el móvil va en una línea: tocarla la despliega
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
     // Buscador y filtros de la caja (se recuerdan al volver). Filtran al momento ocultando tarjetas, sin
     // volver a pintar la pantalla (así no se pierde lo que se escribe); el orden sí la vuelve a pintar.
@@ -1725,10 +1739,10 @@ export class UI {
       // Contra un líder de la historia, su retrato; si no, la cara de su Pokémon
       if (!me && lm && lm.kind === 'story' && lm.a !== 'route' && lm.id) box.innerHTML = trainerImg(lm.id, 'rh-trainer');
       else box.append(moodFace(lead.dex, 96, mood(me), lead.shiny) || portrait(lead.dex, 96, { shiny: lead.shiny }));
-      box.append(el('small', '', escapeHtml(me ? t('Tú') : s.name || '')));
+      box.append(el('small', '', escapeHtml(me ? t('Tú') : tServer(s.name || ''))));
       return box;
     };
-    const mid = el('div', 'rh-mid', `<h1 class="${won ? 'win' : draw ? '' : 'lose'}">${title}</h1><p>${draw ? t('Nadie se lleva este combate') : won ? t('Has vencido a {who}', { who: escapeHtml(foe.name) }) : t('{who} gana esta vez', { who: escapeHtml(foe.name) })}</p>`);
+    const mid = el('div', 'rh-mid', `<h1 class="${won ? 'win' : draw ? '' : 'lose'}">${title}</h1><p>${draw ? t('Nadie se lleva este combate') : won ? t('Has vencido a {who}', { who: escapeHtml(tServer(foe.name)) }) : t('{who} gana esta vez', { who: escapeHtml(tServer(foe.name)) })}</p>`);
     const hero = el('div', 'res-hero');
     hero.append(side(mine, true), mid, side(foe, false));
     return hero;

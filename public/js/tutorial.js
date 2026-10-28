@@ -4,17 +4,18 @@
 // hace el jugador). Al ganar, el premio (Data.TUTORIAL_REWARD, una vez) se recoge a mano.
 import { t } from './i18n.js';
 import { prizeHtml } from './missions.js';
+import { touchMode } from './touch.js';
 
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const TEAM = [6, 9];   // Charizard y Blastoise: dos tipos distintos para aprender a cambiar
 
-// Cada paso: texto (con sus teclas) y cuándo se cumple
+// Cada paso: texto (con sus teclas, o con los controles táctiles en el móvil: touch) y cuándo se cumple
 const STEPS = [
-  { text: () => t('Muévete con <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>'), tick: (tu, b) => b.pred && Math.hypot(b.pred.x - tu.from.x, b.pred.y - tu.from.y) > 90 },
-  { text: () => t('Apunta con el <kbd>Ratón</kbd> y ataca con <kbd>Clic</kbd>: acierta al muñeco'), ev: (e, b) => e.k === 'hit' && e.s !== b.you },
-  { text: () => t('Prueba tus otros movimientos: <kbd>Clic dcho</kbd>, <kbd>Q</kbd> o <kbd>E</kbd>'), ev: (e, b) => e.k === 'cast' && e.s === b.you && e.c >= 1 && e.c <= 3 },
-  { text: () => t('Protégete con <kbd>Espacio</kbd>: bloquea casi todo el daño'), ev: (e, b) => e.k === 'protect' && e.s === b.you },
-  { text: () => t('Cambia de Pokémon con <kbd>2</kbd>'), ev: (e, b) => e.k === 'swap' && e.s === b.you },
+  { text: () => t('Muévete con <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>'), touch: () => t('Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo'), tick: (tu, b) => b.pred && Math.hypot(b.pred.x - tu.from.x, b.pred.y - tu.from.y) > 90 },
+  { text: () => t('Apunta con el <kbd>Ratón</kbd> y ataca con <kbd>Clic</kbd>: acierta al muñeco'), touch: () => t('Toca el <b>botón grande</b> para atacar al muñeco'), ev: (e, b) => e.k === 'hit' && e.s !== b.you },
+  { text: () => t('Prueba tus otros movimientos: <kbd>Clic dcho</kbd>, <kbd>Q</kbd> o <kbd>E</kbd>'), touch: () => t('Prueba tus otros movimientos: tócalos, o arrástralos para apuntar'), ev: (e, b) => e.k === 'cast' && e.s === b.you && e.c >= 1 && e.c <= 3 },
+  { text: () => t('Protégete con <kbd>Espacio</kbd>: bloquea casi todo el daño'), touch: () => t('Toca <b>Protección</b>: bloquea casi todo el daño'), ev: (e, b) => e.k === 'protect' && e.s === b.you },
+  { text: () => t('Cambia de Pokémon con <kbd>2</kbd>'), touch: () => t('Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda'), ev: (e, b) => e.k === 'swap' && e.s === b.you },
   { text: () => t('¡Ya sabes lo básico! Derrota al muñeco'), ev: () => false },
 ];
 
@@ -40,7 +41,7 @@ export class Tutorial {
   render() {
     if (!this.box) return;
     const s = STEPS[this.step];
-    this.box.innerHTML = `<small>${t('Tutorial')} · ${this.step + 1}/${STEPS.length}</small><p>${s.text()}</p>
+    this.box.innerHTML = `<small>${t('Tutorial')} · ${this.step + 1}/${STEPS.length}</small><p>${(touchMode() && s.touch || s.text)()}</p>
       <div class="tut-dots">${STEPS.map((_, i) => `<i class="${i < this.step ? 'ok' : i === this.step ? 'on' : ''}"></i>`).join('')}</div>`;
     const skip = el('button', 'link', t('Saltar'));
     skip.onclick = () => { this.stop(); this.ui.net.send({ t: 'forfeit' }); };

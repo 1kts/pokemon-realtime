@@ -256,6 +256,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'Die Menüs passen sich dem Handybildschirm an, quer und hochkant: kompaktere Kopfzeilen, und die Story-Karte passt ganz auf den Bildschirm.',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick zum Bewegen · tippe eine Attacke an, um sie auf den Gegner einzusetzen, oder ziehe sie zum Zielen · tippe dein Team an, um zu wechseln',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': 'Pokébälle setzt du in Kämpfen gegen wilde Pokémon ein: Tippe den großen Ball an, um ihn zu werfen, und einen anderen, um den Ball zu wechseln.',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': 'Beweg dich mit dem <b>Joystick</b>: Leg den Finger links auf und zieh ihn',
+    'Toca el <b>botón grande</b> para atacar al muñeco': 'Tippe den <b>großen Knopf</b> an, um die Puppe anzugreifen',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': 'Probier deine anderen Attacken: Tippe sie an oder zieh sie zum Zielen',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': 'Tippe <b>Schutzschild</b> an: Es blockt fast den ganzen Schaden',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': 'Wechsle das Pokémon: Tippe oben links das zweite Gesicht deines Teams an',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>Joystick</b> (links) zum Bewegen',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': 'Tippe eine Attacke an, um sie auf den Gegner einzusetzen, oder zieh sie zum Zielen',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>Schutzschild</b>, der kleine Knopf · tippe die Gesichter deines Teams an, um zu wechseln',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': 'Tippe den großen Ball an, um ihn zu werfen, und einen anderen zum Wechseln (wilde) · die rote Flagge: aufgeben',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': 'Besiege es für Erfahrung oder senk seine KP und wirf einen Pokéball. Du hast {balls} Bälle. Shiny: 1 zu {n}.',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': 'Tippe den großen Ball an, um ihn zu werfen, und einen anderen, um den Ball zu wechseln. Der Ball muss treffen.',
     'Gira el móvil para jugar en horizontal': 'Dreh dein Handy quer, um zu spielen',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'Eine lebendigere Karte',

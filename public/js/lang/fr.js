@@ -256,6 +256,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'Les menus s\'adaptent à l\'écran du téléphone, à l\'horizontale comme à la verticale : en-têtes plus compacts et la carte de l\'Histoire s\'affiche en entier.',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick pour te déplacer · touche une capacité pour la lancer sur l\'adversaire ou fais-la glisser pour viser · touche ton équipe pour changer',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': 'Les Poké Balls s\'utilisent en combat contre les Pokémon sauvages : touche la grande Ball pour la lancer et une autre pour changer de Ball.',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': 'Déplace-toi avec le <b>joystick</b> : pose le doigt à gauche et fais-le glisser',
+    'Toca el <b>botón grande</b> para atacar al muñeco': 'Touche le <b>gros bouton</b> pour attaquer le mannequin',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': 'Essaie tes autres capacités : touche-les, ou fais-les glisser pour viser',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': 'Touche <b>Abri</b> : ça bloque presque tous les dégâts',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': 'Change de Pokémon : touche le deuxième visage de ton équipe, en haut à gauche',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>Joystick</b> (à gauche) pour te déplacer',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': 'Touche une capacité pour la lancer sur l\'adversaire, ou fais-la glisser pour viser',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>Abri</b>, le petit bouton · touche les visages de ton équipe pour changer de Pokémon',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': 'Touche la grande Ball pour la lancer et une autre pour changer (sauvages) · le drapeau rouge, abandonner',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': 'Mets-le K.O. pour gagner de l\'expérience, ou baisse ses PV et lance une Poké Ball. Tu as {balls} Balls. Shiny : 1 sur {n}.',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': 'Touche la grande Ball pour la lancer et une autre pour changer de Ball. La Ball doit le toucher.',
     'Gira el móvil para jugar en horizontal': 'Tourne ton téléphone à l\'horizontale pour jouer',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'Une carte plus vivante',

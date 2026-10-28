@@ -256,6 +256,18 @@ export default {
     'Los menús se adaptan a la pantalla del móvil, en horizontal y en vertical: cabeceras más compactas y el mapa de la Historia se ve entero.': 'Menus adapt to your phone screen, in landscape and portrait: more compact headers, and the Story map fits on screen.',
     // ---------- Combate táctil (móvil) ----------
     'Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar': 'Joystick to move · tap a move to use it on your opponent or drag it to aim · tap your team to switch',
+    'Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.': 'Poké Balls are used in battles against wild Pokémon: tap the big Ball to throw it and another one to switch Ball.',
+    'Muévete con el <b>joystick</b>: pon el dedo a la izquierda y deslízalo': 'Move with the <b>joystick</b>: put your finger on the left and slide it',
+    'Toca el <b>botón grande</b> para atacar al muñeco': 'Tap the <b>big button</b> to attack the dummy',
+    'Prueba tus otros movimientos: tócalos, o arrástralos para apuntar': 'Try your other moves: tap them, or drag them to aim',
+    'Toca <b>Protección</b>: bloquea casi todo el daño': 'Tap <b>Protect</b>: it blocks almost all damage',
+    'Cambia de Pokémon: toca la segunda cara de tu equipo, arriba a la izquierda': 'Switch Pokémon: tap the second face of your team, top left',
+    '<b>Joystick</b> (a la izquierda) para moverte': '<b>Joystick</b> (on the left) to move',
+    'Toca un movimiento para lanzarlo al rival, o arrástralo para apuntar': 'Tap a move to use it on your opponent, or drag it to aim',
+    '<b>Protección</b>, el botón pequeño · toca las caras de tu equipo para cambiar de Pokémon': '<b>Protect</b>, the small button · tap your team\'s faces to switch Pokémon',
+    'Toca la Ball grande para lanzarla y otra para cambiar (salvajes) · la bandera roja, rendirse': 'Tap the big Ball to throw it and another one to switch (wild) · the red flag, forfeit',
+    'Debilítalo para ganar experiencia, o bájale los PS y lánzale una Poké Ball. Tienes {balls} Balls. Shiny: 1 de {n}.': 'Knock it out for experience, or lower its HP and throw a Poké Ball. You have {balls} Balls. Shiny: 1 in {n}.',
+    'Toca la Ball grande para lanzarla y otra para cambiar de Ball. La Ball tiene que darle.': 'Tap the big Ball to throw it and another one to switch Ball. The Ball has to hit it.',
     'Gira el móvil para jugar en horizontal': 'Turn your phone sideways to play',
     // ---------- Novedades v0.23.2 ----------
     'Un mapa con más vida': 'A livelier map',

@@ -4,6 +4,7 @@ import { portrait, animatedPortrait } from './sprites.js';
 import { monLabel } from './battle.js';
 import { t } from './i18n.js';
 import { item as itemImg } from './pixicons.js';
+import { touchMode } from './touch.js';
 
 const { SHOP, SPECIES } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -66,7 +67,8 @@ export const bagViews = {
     if (sel) {
       detail.append(el('div', 'bag-head', `${itemImg(sel.id, 64)}<div><h3>${sel.name}</h3><p class="small">${sel.desc}</p><p class="qty">${t('Tienes: {n}', { n: p.items[sel.id] })}</p></div>`));
       if (BALLS.includes(sel.id)) {
-        detail.append(el('p', 'bag-hint', t('Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.')));
+        detail.append(el('p', 'bag-hint', touchMode() ? t('Las Poké Balls se usan en combate contra Pokémon salvajes: toca la Ball grande para lanzarla y otra para cambiar de Ball.')
+          : t('Las Poké Balls se usan en combate contra Pokémon salvajes: pulsa <kbd>F</kbd> para lanzarla y <kbd>R</kbd> para cambiar de Ball.')));
       } else {
         detail.append(el('h4', 'bag-pocket', t('¿En qué Pokémon?')));
         const grid = el('div', 'bag-mons');
