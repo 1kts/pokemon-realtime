@@ -232,7 +232,7 @@ function battleSetup(p, msg) {
     const lt = D.leaderTeam(fight, p.starters[fight.region] || (team[0] && team[0].dex));
     return {
       kind: 'gym', gym: fight, index: fight.index, region: fight.region, league,
-      opts: { mode: 'trainer', map: fight.map, sides: [mine, { name: fight.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(fight) })), ai: fight.ai }] },
+      opts: { mode: 'trainer', map: fight.map, sides: [mine, { name: fight.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(fight) })), ai: fight.ai, leader: fight.id }] },
     };
   }
   return { error: 'Combate desconocido' };

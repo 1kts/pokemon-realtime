@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': 'Arenaleiter mit eigenen Taktiken',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Jeder Arenaleiter, jedes Mitglied der Top Vier und jeder Champ hat Taktiken passend zu Typ und Arena: Rocko verschanzt sich hinter Felsen, Pyro kämpft aus der Lava und Bianka eilt zum Heilen.',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': 'Im Training kannst du „Zeigen, was die KI denkt“ einschalten: Über dem Bot siehst du, ob er angreifen, abtasten oder sich verteidigen will, seine Aggressivität und seine Persönlichkeit.',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'Die KI auf Schwer, Meister und im Turm entscheidet besser, wann sie Pokémon wechselt, wann sie sich heilt und welche Attacke sie nutzt. Leicht und Normal bleiben gleich.',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'Die Schwierigkeit der Arenaleiter steigt gleichmäßiger: Die ersten Arenen fordern etwas mehr und die Top Vier spielen mit etwas weniger Können.',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'Am Handy startet das Spiel leichter: Die Musik lädt erst, wenn sie gleich spielt, statt komplett beim Öffnen (das waren 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'Die untere Leiste verdeckt auf großen Bildschirmen weder Lucky Spin noch die Story-Karte, und die Seltenheits-Labels in Lucky Spin sind besser lesbar.',
@@ -1222,6 +1228,15 @@ export default {
     'Contra otros entrenadores y sus rankings': 'Gegen andere Trainer, und ihre Ranglisten',
     'Entrenamiento': 'Training',
     'Contra la IA, sin arriesgar nada': 'Gegen die KI, ohne Risiko',
+    '{name} se atrinchera tras las rocas': '{name} verschanzt sich hinter den Felsen',
+    '{name} quiere encerrarte en la zona de peligro': '{name} will dich in der Gefahrenzone festhalten',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name} kämpft von einem Boden aus, der seinem Team nichts anhaben kann',
+    '{name} se esconde para tenderte una emboscada': '{name} versteckt sich, um dir aufzulauern',
+    '{name} se retira a curarse': '{name} zieht sich zurück, um sich zu heilen',
+    '{name} aprovecha que estás mojado': '{name} nutzt aus, dass du nass bist',
+    '{name} va a por el remate': '{name} will dir den Rest geben',
+    '{name} escapa por un teletransporte': '{name} flieht durch einen Teleporter',
+    '{name} ataca con el viento a favor': '{name} greift mit Rückenwind an',
     'Ver qué piensa la IA': 'Zeigen, was die KI denkt',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': 'Zeigt über dem Bot, ob er angreifen, abtasten oder sich verteidigen will, seine Aggressivität und seine Persönlichkeit',
     'Atacar': 'Angreifen',

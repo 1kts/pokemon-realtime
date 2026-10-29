@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.32.0', date: '2026-10-29', title: 'Líderes con jugadas propias',
+      items: [
+        ['nuevo', 'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.'],
+        ['nuevo', 'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.'],
+        ['cambio', 'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.'],
+        ['cambio', 'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.'],
+      ],
+    },
+    {
       v: '0.31.5', date: '2026-10-28', title: 'Mapa más claro y móvil más ligero',
       items: [
         ['cambio', 'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.'],

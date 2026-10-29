@@ -88,6 +88,81 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     assert(ended, 'el combate acaba');
   });
 
+  // ---------- Jugadas de los líderes (server/tactics.js) ----------
+  const tactics = require('../server/tactics.js');
+  const { T } = S;
+  // Líder (lado 1, con su id) contra un Pokémon que no hace nada (lado 0)
+  const duelLeader = (map, leader, mine, theirs, extra = {}) => battle({ mode: 'trainer', map, sides: [{ name: 'A', team: [mine] }, { name: 'Líder', team: [theirs], ai: 0.6, leader, ...extra }] });
+  const events = b => { const seen = []; const ev = b.ev.bind(b); b.ev = e => { if (e.k === 'tactic') seen.push(e.id); ev(e); }; return seen; };
+  const lineBlocked = (b, a, c) => b.obstacles.some(o => {
+    if (o.kind === 'ghost') return false;
+    const dx = c.x - a.x, dy = c.y - a.y, l2 = dx * dx + dy * dy || 1, k = Math.max(0, Math.min(1, ((o.x - a.x) * dx + (o.y - a.y) * dy) / l2));
+    return Math.hypot(a.x + dx * k - o.x, a.y + dy * k - o.y) < o.r + 4;
+  });
+
+  await check('cada líder, Alto Mando y Campeón tiene 2 o 3 jugadas, y todas encajan con su arena', () => {
+    for (const n of D.REGION_IDS.flatMap(r => D.leadersOf(r))) {
+      const list = tactics.LEADER_PLAYS[n.id];
+      assert(list && list.length >= 2 && list.length <= 3, n.id);
+      const b = battle({ mode: 'trainer', map: n.map });
+      assert.deepStrictEqual(tactics.playsOf(b, n.id), list, `${n.id}: ${list.filter(k => !tactics.playsOf(b, n.id).includes(k))} no encaja en ${n.map}`);
+    }
+  });
+  // El rival (lado 0) lanza Ascuas hacia el líder una y otra vez
+  const fire = (b, secs) => { for (let i = 0; i < Math.round(secs / S.DT); i++) { const [a, l] = b.sides; b.sides[0].inputs.push({ mx: 0, my: 0, c: i % 20 ? -1 : 0, sw: -1, a: Math.atan2(l.y - a.y, l.x - a.x), tx: l.x, ty: l.y }); b.tick(); } };
+  const coverWhileFiring = (leader) => {
+    const b = battle({ mode: 'trainer', map: 'g-roca', sides: [{ name: 'A', team: [{ dex: 4, level: 14 }] }, { name: 'L', team: [{ dex: 95, level: 14 }], ai: 0.6, leader }] });
+    const seen = events(b);
+    fire(b, 1.5);
+    let covered = 0;
+    for (let i = 0; i < 30; i++) { fire(b, 0.1); if (lineBlocked(b, b.sides[0], b.sides[1])) covered++; }
+    return { covered, seen };
+  };
+  await check('Brock se atrinchera: si le cargas ataques a distancia, se pone con una roca en medio (y lo anuncia una vez)', () => {
+    let total = 0, seen = [];
+    for (let n = 0; n < 4; n++) { const r = coverWhileFiring('brock'); total += r.covered; seen = r.seen; }
+    assert(total / 4 >= 8, `a cubierto de media ${total / 4}/30`);
+    assert.deepStrictEqual(seen.filter(x => x === 'trinchera'), ['trinchera']);
+  });
+  await check('sin ser líder, la misma IA no hace jugadas', () => {
+    for (let n = 0; n < 3; n++) assert.deepStrictEqual(coverWhileFiring(null).seen, []);
+  });
+  await check('Lt. Surge cierra el cerco: si el rival está en una placa a punto de saltar, le lanza algo que aturde', () => {
+    const b = duelLeader('g-electrico', 'surge', { dex: 7, level: 21 }, { dex: 100, level: 21 });
+    run(b, 1);
+    b.sides[1].energy = 100;
+    let stunned = false;
+    for (let i = 0; i < 30 && !stunned; i++) {
+      b.arena.danger.push({ x: b.sides[0].x, y: b.sides[0].y, r: 30, t: 0.8 });
+      run(b, 0.05);
+      stunned = !!(b.sides[1].wind && b.sides[1].wind.m.stun);
+    }
+    assert(stunned && b.sides[1].aiState.play === 'cerco');
+  });
+  await check('Blaine pelea desde la lava (a su Growlithe no le hace nada; a un Squirtle, sí): más rato en ella que sin la jugada', () => {
+    const lava = leader => {
+      let on = 0;
+      for (let n = 0; n < 4; n++) {
+        const b = duelLeader('g-fuego', leader, { dex: 7, level: 40 }, { dex: 58, level: 42 });
+        for (let i = 0; i < 60; i++) { run(b, 0.1); if (b.terrain[S.cellIndex(b.sides[1].x, b.sides[1].y)] === T.LAVA) on++; }
+      }
+      return on / 4;
+    };
+    const withPlay = lava('blaine'), without = lava(null);
+    assert(withPlay >= 10 && withPlay > without * 1.5, `en la lava ${withPlay}/60 con la jugada y ${without}/60 sin ella`);
+  });
+  await check('Blanca, con poca vida, va a una baldosa de curación y se cura', () => {
+    const b = duelLeader('g-normal', 'whitney', { dex: 1, level: 19 }, { dex: 241, level: 19 });
+    run(b, 0.5);
+    const mon = b.sides[1].team[0];
+    mon.hp = Math.round(mon.maxHp * 0.4);
+    const start = mon.hp;
+    let onPad = false;
+    for (let i = 0; i < 80 && !onPad; i++) { run(b, 0.1); onPad = b.arena.pads.some(p => p.i === S.cellIndex(b.sides[1].x, b.sides[1].y)); }
+    run(b, 1.5);
+    assert(onPad && mon.hp > start, `baldosa ${onPad}, PS ${start} → ${mon.hp}`);
+  });
+
   await check('líderes: habilidad calibrada para todos, dentro de lo razonable, y el Campeón por encima de los primeros gimnasios', () => {
     for (const r of D.REGION_IDS) {
       const ls = D.leadersOf(r);

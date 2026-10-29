@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': 'ジムリーダーの とくいわざ せんじゅつ',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'ジムリーダー、四天王、チャンピオンは タイプと バトルフィールドに あった せんじゅつを つかう。タケシは いわの かげに たてこもり、カツラは ようがんの うえで たたかい、アカネは かいふくに はしる。',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '練習で「AIの 考えを 見る」を オンに できる。ボットの 上に こうげき・さぐり・ぼうぎょの どれを したいか、こうげき性と せいかくが 表示される。',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'むずかしい・マスター・タワーの AIは ポケモンを いれかえる タイミング、かいふくする タイミング、つかう わざを よりうまく えらぶ。かんたんと ふつうは そのまま。',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'リーダーの むずかしさが なだらかに あがるように なった。さいしょの ジムは すこし てごわく、四天王は すこし うでまえを おさえて たたかう。',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'スマホでの起動が軽くなりました。音楽は開いたときにまとめてではなく、流れる直前にダウンロードされます（以前は15 MB）。',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '大きな画面で下のバーが Lucky Spin やストーリーのマップを隠さなくなり、Lucky Spin のレア度ラベルが読みやすくなりました。',
@@ -1223,6 +1229,15 @@ export default {
     'Contra otros entrenadores y sus rankings': 'ほかの トレーナーとの バトルと ランキング',
     'Entrenamiento': 'トレーニング',
     'Contra la IA, sin arriesgar nada': 'AI と バトル。なにも 失わない',
+    '{name} se atrinchera tras las rocas': '{name}は いわの かげに たてこもった',
+    '{name} quiere encerrarte en la zona de peligro': '{name}は きけんな ばしょに きみを とじこめる つもりだ',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name}は じぶんたちに きかない ちけいから たたかう',
+    '{name} se esconde para tenderte una emboscada': '{name}は かくれて まちぶせ している',
+    '{name} se retira a curarse': '{name}は さがって かいふくする',
+    '{name} aprovecha que estás mojado': '{name}は きみが ぬれているのを ねらってきた',
+    '{name} va a por el remate': '{name}は とどめを さしに きた',
+    '{name} escapa por un teletransporte': '{name}は ワープで にげた',
+    '{name} ataca con el viento a favor': '{name}は おいかぜに のって こうげきする',
     'Ver qué piensa la IA': 'AIの 考えを 見る',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': 'ボットの 上に こうげき・さぐり・ぼうぎょの どれを したいか、こうげき性と せいかくを 表示する',
     'Atacar': 'こうげき',

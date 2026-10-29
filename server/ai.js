@@ -13,6 +13,7 @@
 // Los salvajes son más simples: deambulan, atacan a ratos, apenas esquivan y nunca usan Protección.
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
+const tactics = require('./tactics.js');
 
 const { T, F } = S;
 const rnd = () => Math.random();
@@ -151,7 +152,14 @@ function adaptiveSkill(b, side, st, dt, P = PARAMS) {
   return Math.max(0.05, Math.min(1, side.ai + st.adapt));
 }
 
+// Entrada de la IA en este tick: la de utilidad y, si es un líder, su jugada encima (server/tactics.js)
 function aiInput(b, side, dt) {
+  const inp = utilityInput(b, side, dt);
+  if (side.leader && !side.wild) tactics.leaderPlay(b, side, inp, dt, { aimMove });
+  return inp;
+}
+
+function utilityInput(b, side, dt) {
   const st = side.aiState;
   const P = side.aiParams || paramsFor(side.ai || 0);   // (tools/ai-tune.js prueba otros en un lado)
   const skill = side.wild ? side.ai : adaptiveSkill(b, side, st, dt, P);
@@ -177,6 +185,9 @@ function aiInput(b, side, dt) {
   const dist = Math.hypot(dx, dy) || 1;
   const toFoe = Math.atan2(dy, dx);
   const foeFlags = seen && !f.hidden ? seen.flags : 0;
+  // (lo que ve, para las jugadas de los líderes: lo mismo que ella, con el mismo retraso)
+  st.view = { x: target.x, y: target.y, vx: vel.x, vy: vel.y, dist, flags: foeFlags, hidden: !!f.hidden };
+  st.skill = skill;
 
   // Cambio forzado tras un debilitado: el que mejor aguante al rival
   if (side.forced > 0) { if (side.swapTo < 0) inp.sw = bestSwap(side, fmon, -1); return inp; }
@@ -396,14 +407,19 @@ function aiInput(b, side, dt) {
     if (u > bestU) { bestU = u; best = i; }
   });
   if (best === null) return aim(inp, toFoe, skill);
-  const m = moves[best];
-  // Apuntar con anticipación (más precisa cuanto más hábil): lo que tarda en cargar el ataque y en llegar
+  aimMove(inp, side, st.view, dist, moves[best], skill);
+  inp.c = best;
+  return inp;
+}
+
+// Apuntar con anticipación (más precisa cuanto más hábil): lo que tarda en cargar el ataque y en llegar.
+// view: dónde ve al rival y cómo se mueve (st.view)
+function aimMove(inp, side, view, dist, m, skill) {
   const lead = m.kind === 'proj' || m.kind === 'wave' ? (m.wind || 0) + dist / m.speed : m.kind === 'area' ? m.delay + m.wind : m.wind;
-  const px = target.x + vel.x * lead * skill, py = target.y + vel.y * lead * skill;
+  const px = view.x + view.vx * lead * skill, py = view.y + view.vy * lead * skill;
   inp.a = Math.atan2(py - side.y, px - side.x) + (rnd() - 0.5) * (1 - skill) * 0.6;
   inp.tx = px + (rnd() - 0.5) * (1 - skill) * 100; inp.ty = py + (rnd() - 0.5) * (1 - skill) * 100;
-  if (m.kind === 'blink') inp.a = toFoe + Math.PI + (rnd() - 0.5) * 1.5;
-  inp.c = best;
+  if (m.kind === 'blink') inp.a = Math.atan2(view.y - side.y, view.x - side.x) + Math.PI + (rnd() - 0.5) * 1.5;
   return inp;
 }
 

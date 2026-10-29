@@ -9,7 +9,7 @@
 //        búsqueda evolutiva de los parámetros de server/ai.js (BASE_PARAMS) contra la IA de siempre
 //   node tools/ai-tune.js sweep [--skill 0.85] [--games 600] [--from …] [--out archivo.json]
 //        cada parámetro a medio camino de su extremo bajo y del alto, uno a uno: cuáles importan y hacia dónde
-//   node tools/ai-tune.js leaders [--games 300] [--ref 0.5]
+//   node tools/ai-tune.js leaders [--games 300] [--ref 0.5] [--sin-jugadas]
 //        tasa de victorias de un jugador de referencia contra cada líder, Alto Mando y Campeón
 //   node tools/ai-tune.js calibrate [--games 300] [--ref 0.5]
 //        busca la habilidad de cada líder para que esa tasa siga la curva TARGET (para LEADER_AI de public/data.js)
@@ -231,7 +231,7 @@ function leaderJobs(node, skill, ref, games, seed) {
     const lt = D.leaderTeam(node, starter);
     jobs.push({ seed: Math.floor(r() * 2 ** 31), mode: 'trainer', map: node.map, sides: [
       { name: 'Jugador', team, ai: ref, aiParams: { ...AI.BASE_PARAMS, adapt: false } },
-      { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(node) })), ai: skill },
+      { name: node.leader, team: lt.map(([dex, level]) => ({ dex, level, moves: D.defaultMoves(dex, level), ...D.leaderExtras(node) })), ai: skill, leader: argv.includes('--sin-jugadas') ? null : node.id },
     ] });
   }
   return jobs;
@@ -240,7 +240,8 @@ async function leaderRate(node, skill, ref, games, seed) {
   const res = await run(leaderJobs(node, skill, ref, games, seed));
   return res.reduce((a, w) => a + (w === 0 ? 1 : w < 0 ? 0.5 : 0), 0) / res.length;
 }
-const LEADERS = () => D.REGION_IDS.flatMap(r => D.leadersOf(r));
+// (--solo brock,misty: solo esos)
+const LEADERS = () => D.REGION_IDS.flatMap(r => D.leadersOf(r)).filter(n => !arg('solo') || arg('solo').split(',').includes(n.id));
 // Curva buscada: tasa de victorias del jugador de referencia. Los primeros gimnasios se ganan casi siempre, cada
 // medalla cuesta algo más y el Alto Mando y el Campeón son lo más difícil (el Campeón, menos de la mitad)
 const TARGET = i => [0.9, 0.86, 0.82, 0.78, 0.74, 0.7, 0.66, 0.62, 0.56, 0.53, 0.5, 0.47, 0.42][i];

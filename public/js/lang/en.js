@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': 'Leaders with signature plays',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Every Gym Leader, Elite Four member and Champion has plays that fit their type and arena: Brock digs in behind the rocks, Blaine fights from the lava and Whitney runs off to heal.',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': 'In Practice you can turn on «See what the AI is thinking»: above the bot you\'ll see whether it wants to attack, probe or defend, its aggressiveness and its personality.',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'The AI on Hard, Master and in the Tower is smarter about when to switch Pokémon, when to heal and which attack to use. Easy and Normal stay the same.',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'Leader difficulty rises more evenly: the first Gyms push a bit harder and the Elite Four plays with a bit less skill.',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'On mobile the game starts lighter: music downloads when it’s about to play instead of all at once when you open it (it was 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'The bottom bar no longer covers Lucky Spin or the Story map on large screens, and Lucky Spin’s rarity labels are easier to read.',
@@ -1292,6 +1298,15 @@ export default {
     'Contra otros entrenadores y sus rankings': 'Against other trainers, and their rankings',
     'Entrenamiento': 'Training',
     'Contra la IA, sin arriesgar nada': 'Against the AI, with nothing at stake',
+    '{name} se atrinchera tras las rocas': '{name} digs in behind the rocks',
+    '{name} quiere encerrarte en la zona de peligro': '{name} wants to trap you in the danger zone',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name} fights from ground that doesn\'t hurt their team',
+    '{name} se esconde para tenderte una emboscada': '{name} hides to ambush you',
+    '{name} se retira a curarse': '{name} pulls back to heal',
+    '{name} aprovecha que estás mojado': '{name} takes advantage of you being wet',
+    '{name} va a por el remate': '{name} goes in for the finish',
+    '{name} escapa por un teletransporte': '{name} escapes through a teleporter',
+    '{name} ataca con el viento a favor': '{name} attacks with the wind at their back',
     'Ver qué piensa la IA': 'See what the AI is thinking',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': 'Shows above the bot whether it wants to attack, probe or defend, its aggressiveness and its personality',
     'Atacar': 'Attack',

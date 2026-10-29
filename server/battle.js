@@ -75,7 +75,7 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, npc: !!s.npc, ws: s.ws || null, ai: s.ai ?? null, aiParams: s.aiParams || null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
+      idx: i, name: s.name, npc: !!s.npc, ws: s.ws || null, ai: s.ai ?? null, aiParams: s.aiParams || null, leader: s.leader || null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null });

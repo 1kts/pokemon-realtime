@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': '관장마다 고유 전술',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '모든 체육관 관장, 사천왕, 챔피언이 자신의 타입과 경기장에 맞는 전술을 써요. 웅은 바위 뒤에 진을 치고, 강연은 용암 위에서 싸우고, 꼭두는 회복하러 달려가요.',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '연습에서 «AI의 생각 보기»를 켤 수 있어요. 봇 위에 공격·탐색·방어 중 무엇을 하려는지, 공격성과 성격이 보여요.',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': '어려움, 마스터, 배틀타워의 AI가 포켓몬 교체, 회복, 사용할 기술을 더 잘 판단해요. 쉬움과 보통은 그대로예요.',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': '관장 난이도가 더 고르게 올라가요. 첫 체육관들은 조금 더 까다롭고 사천왕은 실력을 조금 낮춰 싸워요.',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '모바일에서 게임이 더 가볍게 시작됩니다. 음악은 열 때 한꺼번에가 아니라 나오기 직전에 내려받습니다(전에는 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '큰 화면에서 아래 바가 Lucky Spin과 스토리 지도를 가리지 않고, Lucky Spin의 희귀도 라벨이 더 잘 읽힙니다.',
@@ -1223,6 +1229,15 @@ export default {
     'Contra otros entrenadores y sus rankings': '다른 트레이너와의 배틀과 랭킹',
     'Entrenamiento': '훈련',
     'Contra la IA, sin arriesgar nada': 'AI 와 배틀, 잃을 것 없음',
+    '{name} se atrinchera tras las rocas': '{name}이(가) 바위 뒤에 진을 쳤다',
+    '{name} quiere encerrarte en la zona de peligro': '{name}이(가) 너를 위험 지역에 가두려 한다',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name}이(가) 자기 팀에게는 아무렇지 않은 지형에서 싸운다',
+    '{name} se esconde para tenderte una emboscada': '{name}이(가) 숨어서 매복하고 있다',
+    '{name} se retira a curarse': '{name}이(가) 물러나 회복한다',
+    '{name} aprovecha que estás mojado': '{name}이(가) 네가 젖은 틈을 노린다',
+    '{name} va a por el remate': '{name}이(가) 마무리하러 온다',
+    '{name} escapa por un teletransporte': '{name}이(가) 순간이동 발판으로 도망쳤다',
+    '{name} ataca con el viento a favor': '{name}이(가) 순풍을 타고 공격한다',
     'Ver qué piensa la IA': 'AI의 생각 보기',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': '봇 위에 공격·탐색·방어 중 무엇을 하려는지, 공격성과 성격을 보여 줍니다',
     'Atacar': '공격',

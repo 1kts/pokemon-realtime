@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': '道馆馆主的拿手战术',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '每位道馆馆主、四天王和冠军都有符合自己属性和场地的战术：小刚会躲到岩石后面，夏伯在熔岩上战斗，小茜会跑去回复。',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '在练习中可以开启「查看 AI 的想法」：机器人头顶会显示它想进攻、试探还是防守，以及它的攻击性和性格。',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': '困难、大师和对战塔中的 AI 更懂得何时替换宝可梦、何时回复以及使用哪个招式。简单和普通保持不变。',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': '馆主的难度提升得更平稳：前几个道馆稍微难一些，四天王的技巧则稍微降低。',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '手机上游戏启动更轻快：音乐在快要播放时才下载，不再在打开时全部下载（原来有 15 MB）。',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '在大屏幕上，底部栏不再遮挡 Lucky Spin 和故事模式地图，Lucky Spin 的稀有度标签也更易读。',
@@ -1292,6 +1298,15 @@ export default {
     'Contra otros entrenadores y sus rankings': '与其他训练家对战，以及排行榜',
     'Entrenamiento': '训练',
     'Contra la IA, sin arriesgar nada': '与 AI 对战，没有任何风险',
+    '{name} se atrinchera tras las rocas': '{name}躲到岩石后面固守',
+    '{name} quiere encerrarte en la zona de peligro': '{name}想把你困在危险区域里',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name}在对自己队伍无害的地形上战斗',
+    '{name} se esconde para tenderte una emboscada': '{name}藏了起来，准备伏击你',
+    '{name} se retira a curarse': '{name}后撤去恢复体力',
+    '{name} aprovecha que estás mojado': '{name}趁你浑身湿透发动攻击',
+    '{name} va a por el remate': '{name}冲上来要给你最后一击',
+    '{name} escapa por un teletransporte': '{name}通过传送板逃走了',
+    '{name} ataca con el viento a favor': '{name}顺风发动攻击',
     'Ver qué piensa la IA': '查看 AI 的想法',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': '在机器人头顶显示它想进攻、试探还是防守，以及它的攻击性和性格',
     'Atacar': '进攻',

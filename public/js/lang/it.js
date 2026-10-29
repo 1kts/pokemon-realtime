@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.32.0 ----------
+    'Líderes con jugadas propias': 'Capipalestra con mosse da maestro',
+    'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Ogni Capopalestra, membro dei Superquattro e Campione ha tattiche legate al suo tipo e alla sua arena: Brock si trincera dietro le rocce, Blaine combatte dalla lava e Chiara corre a curarsi.',
+    'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': 'In Allenamento puoi attivare «Vedi cosa pensa l\'IA»: sopra il bot vedrai se vuole attaccare, studiarti o difendersi, la sua aggressività e la sua personalità.',
+    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'L\'IA in Difficile, Maestro e nella Torre sceglie meglio quando cambiare Pokémon, quando curarsi e quale attacco usare. Facile e Normale restano uguali.',
+    'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'La difficoltà dei Capipalestra cresce in modo più regolare: le prime palestre sono un po\' più impegnative e i Superquattro giocano con un po\' meno abilità.',
     // ---------- Novedades v0.31.5 ----------
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'Sul cellulare il gioco parte più leggero: la musica si scarica quando sta per suonare invece che tutta all’apertura (erano 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'La barra in basso non copre più Lucky Spin né la mappa della Storia sugli schermi grandi, e le etichette di rarità di Lucky Spin si leggono meglio.',
@@ -1223,6 +1229,15 @@ export default {
     'Contra otros entrenadores y sus rankings': 'Contro altri Allenatori, e le loro classifiche',
     'Entrenamiento': 'Allenamento',
     'Contra la IA, sin arriesgar nada': 'Contro l\'IA, senza rischiare nulla',
+    '{name} se atrinchera tras las rocas': '{name} si trincera dietro le rocce',
+    '{name} quiere encerrarte en la zona de peligro': '{name} vuole chiuderti nella zona di pericolo',
+    '{name} pelea desde un terreno que a su equipo no le hace nada': '{name} combatte da un terreno che alla sua squadra non fa nulla',
+    '{name} se esconde para tenderte una emboscada': '{name} si nasconde per tenderti un\'imboscata',
+    '{name} se retira a curarse': '{name} si ritira per curarsi',
+    '{name} aprovecha que estás mojado': '{name} approfitta che sei bagnato',
+    '{name} va a por el remate': '{name} punta a finirti',
+    '{name} escapa por un teletransporte': '{name} fugge da un teletrasporto',
+    '{name} ataca con el viento a favor': '{name} attacca con il vento a favore',
     'Ver qué piensa la IA': 'Vedi cosa pensa l\'IA',
     'Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad': 'Mostra sopra il bot se vuole attaccare, studiarti o difendersi, la sua aggressività e la sua personalità',
     'Atacar': 'Attaccare',

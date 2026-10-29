@@ -246,6 +246,8 @@ export class BattleClient {
       case 'sudden': this.banner(t('¡Muerte súbita! Daño ×1,5 y sin curaciones'), 'bad'); break;
       // Mecánicas de las arenas de gimnasio
       case 'arena': this.banner(tServer(e.msg), 'info'); break;
+      // Un líder empieza una de sus jugadas (server/tactics.js): se anuncia la primera vez
+      case 'tactic': if (TACTICS[e.id]) this.banner(TACTICS[e.id](tServer(this.sides[s].name)), 'info'); break;
       case 'panel': this.world.panelFlash(e.g, e.ph, e.d); if (e.ph === 'zap') this.fx.panelZap(e.g); break;
       case 'quake': this.fx.quake(e); this.banner(t('¡Terremoto! Ponte detrás de una roca'), 'bad'); break;
       case 'covered': this.floatText(pos.x, pos.y, t('¡A cubierto!'), 'info'); break;
@@ -753,6 +755,15 @@ export class BattleClient {
     this.app.root.innerHTML = '';
   }
 }
+
+// Las jugadas de los líderes, como se anuncian (ver server/tactics.js)
+const TACTICS = {
+  trinchera: name => t('{name} se atrinchera tras las rocas', { name }), cerco: name => t('{name} quiere encerrarte en la zona de peligro', { name }),
+  refugio: name => t('{name} pelea desde un terreno que a su equipo no le hace nada', { name }), emboscada: name => t('{name} se esconde para tenderte una emboscada', { name }),
+  curacion: name => t('{name} se retira a curarse', { name }), mojado: name => t('{name} aprovecha que estás mojado', { name }),
+  acoso: name => t('{name} va a por el remate', { name }), teletransporte: name => t('{name} escapa por un teletransporte', { name }),
+  viento: name => t('{name} ataca con el viento a favor', { name }),
+};
 
 // Lo que piensa la IA en Práctica (ver server/ai.js): su estado y su personalidad
 const AI_MODES = { atacar: () => t('Atacar'), tantear: () => t('Tantear'), defender: () => t('Defender') };
