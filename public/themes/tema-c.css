@@ -16,6 +16,8 @@ body.tema-c {
   --tc-mute: #d2ddf5;               /* texto secundario (7:1 o más sobre el velo) */
   --tc-done: #5fd8ff;               /* lo recorrido: celeste */
   --tc-now: #ffcb05;
+  --tc-gold: #ffd23f;               /* lo que engancha (Lucky Spin, gemas, premios por recoger): marco dorado */
+  --tc-pink: #ff6b8a;               /* Apoyar */
 }
 
 /* ---------- Lo común: velos sin borde ---------- */
@@ -26,8 +28,9 @@ body.tema-c .feature-sign, body.tema-c .subbar, body.tema-c .hub-mod, body.tema-
   border: 0; border-radius: 4px; box-shadow: none;
 }
 body.tema-c .menu-card::after, body.tema-c .coll-tile::after, body.tema-c .hub-tz::after, body.tema-c .panel::before, body.tema-c .menu-card::before { content: none; }
+/* Los parpadeos de siempre, fuera: lo que tiene algo que recoger late con el latido propio del tema (más abajo) */
 body.tema-c .coll-tile.ready, body.tema-c .missions-widget.has-ready, body.tema-c .hub-tz.ready, body.tema-c .hub-mod .news-btn, body.tema-c .menu-card.tutorial.ready,
-body.tema-c .mission.done, body.tema-c .tb-btn.support svg, body.tema-c .sp-gym.now .sp-dot { animation: none !important; }
+body.tema-c .mission.done, body.tema-c .tb-btn.support svg, body.tema-c .hub-me .support svg, body.tema-c .sp-gym.now .sp-dot { animation: none !important; }
 body.tema-c .mw-head b::before, body.tema-c .hub-coll h3::before, body.tema-c .node-info > h3::before, body.tema-c .panel:not(.modal-box) > h3::before { content: none; }
 body.tema-c :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
 body.tema-c button.primary { background: var(--tc-now); color: #1a1405; text-shadow: none; border: 0; border-radius: 4px; box-shadow: none; }
@@ -36,12 +39,21 @@ body.tema-c :focus-visible { outline: 2px solid #fff !important; outline-offset:
 
 /* ---------- Cabecera: casi invisible ---------- */
 body.tema-c .hub-mod { background: rgba(20,32,84,.75); }
-body.tema-c .hub-mod .tb-btn, body.tema-c .hub-me .pill.coins, body.tema-c .hub-me .pill.gems, body.tema-c .hub-mod .lang-cur, body.tema-c .inner-bar .tb-left .back {
+body.tema-c .hub-mod .tb-btn, body.tema-c .hub-mod .lang-cur, body.tema-c .inner-bar .tb-left .back {
   background: none; border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .hub-mod .tb-btn:hover:not(:disabled), body.tema-c .inner-bar .tb-left .back:hover { background: var(--tc-row); box-shadow: none; }
-body.tema-c .hub-left .hub-tz { border: 0; box-shadow: none; background: rgba(20,32,84,.75); }
-body.tema-c .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--tc-text); filter: none; }
-body.tema-c .hub-tz small { color: var(--tc-mute) !important; }
+/* Lo que engancha se queda con su color aunque la cabecera sea ligera: monedas y gemas en píldora dorada,
+   Apoyar en rosa, Lucky Spin con su marco y su letra de oro, Novedades con borde dorado si hay algo nuevo */
+body.tema-c .hub-me .pill.coins { background: rgba(255,203,5,.14); border: 1px solid rgba(255,203,5,.5); border-radius: 99px; box-shadow: none; color: #fff; }
+body.tema-c .hub-bar .hub-me .pill.gems { background: linear-gradient(135deg, rgba(255,197,49,.38), rgba(20,32,84,.7)); border: 2px solid var(--tc-gold); border-radius: 99px;
+  box-shadow: 0 0 12px rgba(255,190,40,.3); color: #fff3c4; }
+body.tema-c .hub-me .support { color: var(--tc-pink); background: rgba(255,107,138,.16); border: 1px solid rgba(255,107,138,.55); }
+body.tema-c .hub-me .support:hover { background: rgba(255,107,138,.28); }
+body.tema-c .hub-me .support span { color: #fff; }
+body.tema-c .hub-mod .news-btn:has(.ndot.news) { border: 2px solid var(--tc-gold); }
+body.tema-c .hub-left .hub-tz { border: 2px solid var(--tc-gold); border-radius: 4px; background: linear-gradient(135deg, rgba(255,197,49,.4), rgba(20,32,84,.8) 70%);
+  box-shadow: 0 0 16px rgba(255,190,40,.3); }
+body.tema-c .hub-tz small { color: #ffe9a8 !important; }
 body.tema-c .hub-sep { background: var(--tc-hair); }
 
 /* ---------- Menú ---------- */
@@ -76,34 +88,61 @@ body.tema-c .menu-card.story:hover .go { transform: none; box-shadow: none; }
 
 /* Colección y misiones: listas sin cajas dentro */
 body.tema-c .hub-coll h3, body.tema-c .mw-head b { color: var(--tc-text); font: 800 16px var(--display); }
-body.tema-c .coll-tile, body.tema-c .coll-tile.ready { background: none; border: 0 !important; border-radius: 4px; box-shadow: none; }
-body.tema-c .coll-tile:hover:not(:disabled) { transform: none; background: var(--tc-row); box-shadow: none; }
+/* Cada baldosa de la colección con su color, como los modos: tinte que se desvanece y barra a la izquierda
+   (Mis Pokémon rojo, Mochila azul, Tienda dorada, Pokédex violeta, Logros dorado; el orden es el de collectionTiles) */
+body.tema-c .hub-coll .coll-tile:nth-child(2) { --cc: #4f8cff; }
+body.tema-c .hub-coll .coll-tile:nth-child(3), body.tema-c .hub-coll .coll-tile:nth-child(5) { --cc: #ffc531; }
+body.tema-c .hub-coll .coll-tile:nth-child(4) { --cc: #9b6dff; }
+body.tema-c .coll-tile, body.tema-c .coll-tile.mons, body.tema-c .coll-tile.ready { border: 0 !important; border-radius: 4px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 42%, rgb(20,32,84)), rgba(20,32,84,.2) 92%); box-shadow: inset 3px 0 0 var(--cc); }
+body.tema-c .coll-tile:hover:not(:disabled) { transform: none; border: 0; background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 58%, rgb(20,32,84)), rgba(20,32,84,.3) 92%); box-shadow: inset 5px 0 0 var(--cc); }
 body.tema-c .coll-tile:hover:not(:disabled) img { transform: none; }
-body.tema-c .coll-tile img { filter: none; }
+body.tema-c .coll-tile img { filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
 body.tema-c .coll-tile .coll-txt b { color: var(--tc-text); }
 body.tema-c .coll-tile .coll-txt small { color: var(--tc-mute); }
-body.tema-c .missions-widget.has-ready { border: 0 !important; }
+/* Algo que recoger: marco dorado entero y brillo */
+body.tema-c .coll-tile.ready { box-shadow: inset 0 0 0 2px var(--tc-gold), 0 0 14px rgba(255,203,5,.4); }
+body.tema-c .coll-tile.ready .coll-txt small { color: #ffe9a8; }
+/* Misiones: el panel con marco dorado si hay premios y «Recoger todo» en píldora dorada */
+body.tema-c .missions-widget.has-ready { border: 2px solid var(--tc-gold) !important; box-shadow: 0 0 18px rgba(255,190,40,.25); }
 body.tema-c .mw-head .go { color: var(--tc-mute); }
-body.tema-c .mw-head button.claim-all { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); box-shadow: none; border-radius: 4px; }
-body.tema-c .mw-head button.claim-all small { background: #38c96a; color: #062312; }
+body.tema-c .mw-head button.claim-all { background: linear-gradient(180deg, #ffe066, var(--tc-gold) 55%, #ffb21a); color: #1a1405; border: 0; border-radius: 99px; box-shadow: 0 0 12px rgba(255,190,40,.45); }
+body.tema-c .mw-head button.claim-all small { background: #2a1c00; color: #ffe066; }
 body.tema-c .mw-sub { font: 700 12px var(--text); color: var(--tc-mute); }
 body.tema-c .mission, body.tema-c .mission.done:not(.claimed) { background: none; border: 0; border-radius: 0; box-shadow: none; padding-left: 0; }
+/* (la misión cumplida, con barra dorada en vez de caja) */
+body.tema-c .mission.done:not(.claimed) { background: linear-gradient(90deg, rgba(255,203,5,.18), transparent 80%); box-shadow: inset 3px 0 0 var(--tc-gold); padding-left: 6px; }
 body.tema-c .mission .m-body b { color: var(--tc-text); }
-body.tema-c .m-ico { background: none; box-shadow: none; filter: none; }
+/* Los iconos de misión sobre un cuadrito de color (dorado si ya está hecha) */
+body.tema-c .m-ico { background: color-mix(in srgb, var(--cc) 55%, rgb(20,32,84)); border-radius: 6px; box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); filter: none; }
+body.tema-c .m-ico > * { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+
+/* El latido: solo lo que tiene algo listo para recoger, a turnos (Lucky Spin, Tienda, Logros, Recoger todo) para
+   que no lata todo a la vez; con prefers-reduced-motion se queda quieto, con su marco y su brillo */
+@keyframes tcReady { 50% { box-shadow: inset 0 0 0 2px var(--tc-gold), 0 0 26px rgba(255,203,5,.75); } }
+@keyframes tcReadyPill { 50% { box-shadow: 0 0 20px rgba(255,203,5,.9); } }
+@media (prefers-reduced-motion: no-preference) {
+  body.tema-c .hub-left .hub-tz.ready { animation: tcReadyPill 2.4s ease-in-out infinite !important; }
+  body.tema-c .coll-tile.ready { animation: tcReady 2.4s .6s ease-in-out infinite !important; }
+  body.tema-c .hub-coll .coll-tile.ready:nth-child(5) { animation-delay: 1.2s !important; }
+  body.tema-c .mw-head button.claim-all { animation: tcReadyPill 2.4s 1.8s ease-in-out infinite; }
+}
 body.tema-c .m-bar { background: var(--tc-row); border: 0; border-radius: 2px; box-shadow: none; }
 body.tema-c .m-bar i { background: linear-gradient(90deg, #3fb6ff, var(--tc-done)); box-shadow: none; border-radius: 2px; }
 body.tema-c .mission.done .m-bar i { background: linear-gradient(90deg, #38c96a, #7ef0a0); }
 body.tema-c .m-bar span { color: var(--tc-text); text-shadow: 0 1px 2px #000; mix-blend-mode: difference; }
 
 /* ---------- Historia ---------- */
+/* El rótulo de la pantalla, con el rojo de la portada de Historia detrás (se desvanece sobre el mundo) */
 body.tema-c .feature-sign { background: none; padding-left: 4px; }
+body.tema-c .feature-sign.sign-story { background: linear-gradient(90deg, rgba(200,40,40,.88), rgba(232,90,40,.55) 60%, rgba(255,140,60,0)); padding-left: 16px; padding-right: 60px; }
 body.tema-c .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 2px 14px rgba(0,0,0,.7); }
 body.tema-c .feature-sign small { font: 700 14px var(--text); color: var(--tc-mute); text-shadow: 0 1px 6px rgba(0,0,0,.9); }
 body.tema-c .subbar { background: rgba(20,32,84,.75); }
 /* Regiones: texto; la elegida, subrayada en blanco */
 body.tema-c .subbar .region-tabs button.rg { background: none; border: 0; border-radius: 0; box-shadow: none; }
 body.tema-c .subbar .region-tabs button.rg:hover:not(.sel) { transform: none; background: var(--tc-row); }
-body.tema-c .subbar .region-tabs button.rg.sel { background: none; box-shadow: inset 0 -3px 0 var(--tc-done); }
+body.tema-c .subbar .region-tabs button.rg.sel { background: linear-gradient(180deg, transparent, rgba(95,216,255,.2)); box-shadow: inset 0 -3px 0 var(--tc-done); }
 body.tema-c .subbar .region-tabs button.rg b { text-shadow: none; }
 body.tema-c .subbar .region-tabs button.rg small { color: var(--tc-mute); }
 body.tema-c .rg-pips i { box-shadow: none; }
@@ -112,17 +151,21 @@ body.tema-c .rg-soon > small { font: 700 12px var(--text); color: var(--tc-mute)
 body.tema-c .subbar .rg-soon button.soon { background: none; }
 body.tema-c .region-chips .rgc { background: rgba(20,32,84,.7); border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .region-chips .rgc.sel { border: 0; box-shadow: inset 0 -3px 0 var(--tc-done); }
+body.tema-c .region-chips .badges-mini { background: rgba(20,32,84,.8); border-radius: 4px; }
 body.tema-c .badge-slot { background: rgba(255,255,255,.06); box-shadow: none; }
+/* (las medallas ganadas, con su brillo dorado detrás) */
+body.tema-c .badge-slot.got { background: radial-gradient(circle, rgba(255,214,90,.42), rgba(255,214,90,.06) 70%); }
 body.tema-c .story-head .map-goal { background: linear-gradient(90deg, color-mix(in srgb, var(--tc, #5fd8ff) 30%, rgb(20,32,84)), var(--tc-veil) 70%); }
-body.tema-c .story-head .map-goal > small:first-child { font: 700 13px var(--text); color: var(--tc-mute); }
+body.tema-c .story-head .map-goal > small:first-child { font: 800 13px var(--text); color: #ffd76a; }
 body.tema-c .story-head .map-goal b { font: 900 26px var(--display); letter-spacing: -.3px; }
 body.tema-c .story-head .map-goal small, body.tema-c .story-head .map-goal .where { color: var(--tc-mute); }
 body.tema-c .goal-leader { background: none; }
-body.tema-c .goal-badge { background: rgba(20,32,84,.7); box-shadow: none; }
-body.tema-c .goal-routes .chip { background: var(--tc-row); border: 0; border-radius: 4px; box-shadow: none; color: var(--tc-text); }
+body.tema-c .goal-badge { background: rgba(20,32,84,.8); box-shadow: inset 0 0 0 2px var(--tc), 0 0 12px color-mix(in srgb, var(--tc) 45%, transparent); }
+/* (las rutas nuevas, en verde de hierba) */
+body.tema-c .goal-routes .chip { background: rgba(126,226,110,.2); border: 0; border-radius: 4px; box-shadow: inset 0 -2px 0 #7ee26e; color: var(--tc-text); }
 body.tema-c .story-info { background: rgba(20,32,84,.75); }
 body.tema-c .story-info .rotation { color: var(--tc-mute); font-weight: 700; }
-body.tema-c .story-info .rotation b { color: var(--tc-text); text-shadow: none; font-variant-numeric: tabular-nums; }
+body.tema-c .story-info .rotation b { color: var(--tc-done); text-shadow: none; font-variant-numeric: tabular-nums; }
 body.tema-c .story-info .help { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); border-radius: 4px; box-shadow: none; }
 body.tema-c .story-info .help svg { color: var(--tc-text); }
 
@@ -157,13 +200,14 @@ body.tema-c .sp-spine::before { background: repeating-linear-gradient(90deg, rgb
 @keyframes tcArrive { from { transform: scale(.7); box-shadow: 0 0 0 0 rgba(255,203,5,.9); } to { transform: none; } }
 body.tema-c .sp-gym .sp-dot { background: rgba(24,38,96,.95); box-shadow: none; }
 body.tema-c .sp-gym.done .sp-dot { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tc) 45%, rgb(24,38,96)), rgb(24,38,96) 75%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 30%, transparent); }
-body.tema-c .sp-route:not(.locked) .sp-dot { background: rgba(140,200,120,.3); box-shadow: none; }
-body.tema-c .sp-route .sp-dot .mon-icon { filter: none; }
+/* Rutas: hierba verde, como sin tema, con el anillo de lo capturado */
+body.tema-c .sp-route:not(.locked) .sp-dot { background: radial-gradient(circle at 50% 35%, #c9f2a0, #4fa232); box-shadow: 0 0 0 3px rgb(20,32,84); }
 body.tema-c .sp-route.locked .sp-dot { border: 2px dashed rgba(255,255,255,.3); }
 body.tema-c .sp-routes:not(:empty)::after { border-left-color: rgba(255,255,255,.3); }
 body.tema-c .sp-ord { background: var(--tc-done); color: #06213a; box-shadow: none; }
-body.tema-c .sp-count { background: none; }
-body.tema-c .sp-new { background: #ff5a8a; color: #fff; box-shadow: none; border-radius: 3px; }
+body.tema-c .sp-count { background: rgba(20,32,84,.85); color: #fff; }
+body.tema-c .sp-count.full { background: #8fe36a; color: #0f2a0c; }
+body.tema-c .sp-new { background: #d42a62; color: #fff; box-shadow: 0 0 0 2px rgb(20,32,84); border-radius: 99px; }
 body.tema-c .sp-name { text-shadow: 0 1px 3px rgba(0,0,0,.9); }
 body.tema-c .sp-gym.now .sp-dot { border-color: var(--tc-now); box-shadow: 0 0 0 4px rgba(255,203,5,.25); }
 body.tema-c .sp-gym.now .sp-name { background: var(--tc-now); color: #1a1405; border-radius: 4px; box-shadow: none; text-shadow: none; }
@@ -174,7 +218,9 @@ body.tema-c .sp-k.done { background: var(--tc-done); box-shadow: none; }
 body.tema-c .sp-k.now { box-shadow: none; }
 
 /* La ficha del sitio */
-body.tema-c .story-side .node-info .leader-head { background: none; }
+/* La cabecera de la ficha, del color del tipo del líder */
+body.tema-c .story-side .node-info .leader-head { border-radius: 4px 4px 0 0; padding-bottom: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 55%, rgb(20,32,84)), color-mix(in srgb, var(--tc) 18%, rgba(20,32,84,0))); box-shadow: inset 0 3px 0 var(--tc); }
 body.tema-c .node-info h3 { font: 900 24px var(--display); letter-spacing: -.3px; color: var(--tc-text); }
 body.tema-c .node-info .leader, body.tema-c .node-info p.small, body.tema-c .node-info h4 { color: var(--tc-mute); }
 body.tema-c .node-info .leader b { color: var(--tc-text); }
@@ -186,7 +232,8 @@ body.tema-c .node-info .mini.pick.empty .plus { color: var(--tc-text); }
 body.tema-c .story-side .node-info .arena-info { background: none; border: 0; border-left: 2px solid var(--tc, #fff); border-radius: 0; color: var(--tc-mute); }
 body.tema-c .arena-info b { color: var(--tc-text); }
 body.tema-c .node-info .link { color: var(--tc-text); }
-body.tema-c .story-tools .coll-tile { background: var(--tc-row); }
+body.tema-c .story-tools .story-shop { --cc: #ffc531; }
+body.tema-c .story-tools .story-bag { --cc: #4f8cff; }
 
 /* ---------- Móvil en horizontal: la portada de Historia más pequeña, el resto como en el escritorio ---------- */
 @media (max-height: 500px) {
