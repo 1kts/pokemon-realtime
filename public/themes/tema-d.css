@@ -1,0 +1,307 @@
+/* ===================================================================================
+   Propuesta D · «Ruta con cuerpo» (docs/propuestas-ui.md). Solo con ?tema=d: se carga después de las demás hojas y
+   todo va bajo body.tema-d, así que sin el tema no cambia nada.
+   La idea: el orden de la C (Historia como portada y lo demás más pequeño, el dorado solo para lo que toca y los
+   premios listos, un latido a la vez, el mundo 3D detrás, azul noche en vez de negro) con la riqueza del aspecto
+   de siempre: tarjetas con cuerpo (color sólido y saturado de cada modo, luz arriba y sombra abajo, borde marcado y
+   sombra), sprites grandes que se salen de la tarjeta, botones con relieve y brillo al pasar el ratón.
+   Cada color se oscurece hacia su propio tono (--c1 arriba y --c2, su versión oscura, abajo), nunca hacia el azul
+   noche: así el amarillo no sale caqui ni el rojo naranja turbio. Con blanco encima, --c1 da 4,5:1 o más.
+   =================================================================================== */
+body.tema-d {
+  --td-night: #14205a;              /* la base: azul noche, no negro */
+  --td-night-hi: #1d2c78;           /* la parte de arriba de los paneles (luz) */
+  --td-night-lo: #0f1846;
+  --td-rim: #33479e;                /* borde de los paneles */
+  --td-row: rgba(140, 180, 255, .13);
+  --td-text: #ffffff;
+  --td-mute: #d2ddf5;               /* texto secundario: 9,5:1 o más sobre los paneles */
+  --td-done: #5fd8ff;               /* lo recorrido: celeste */
+  --td-now: #ffcb05;                /* lo que toca hacer ahora */
+  --td-gold: #ffd23f;               /* premios listos para recoger */
+  --td-pink: #ff6b8a;               /* Apoyar */
+  /* relieve de las tarjetas y los botones: luz arriba, sombra abajo, y la sombra de debajo */
+  --td-relief: inset 0 2px 0 rgba(255,255,255,.3), inset 0 -4px 0 rgba(0,0,0,.25);
+  --td-drop: 0 10px 22px rgba(0,0,0,.45);
+}
+/* El color de cada modo: --c (vivo, para el borde y el brillo), --c1 (arriba) y --c2 (su versión oscura, abajo) */
+body.tema-d .menu-card.story    { --c: #ff5a3a; --c1: #d63a30; --c2: #6a0f0f; }
+body.tema-d .menu-card.tower    { --c: #a070ff; --c1: #7b3fe0; --c2: #2e1270; }
+body.tema-d .menu-card.ranked   { --c: #ffb21a; --c1: #a86200; --c2: #452200; }
+body.tema-d .menu-card.casual   { --c: #4f8cff; --c1: #2f6ad8; --c2: #11286a; }
+body.tema-d .menu-card.ladder   { --c: #30c8d8; --c1: #0f7a88; --c2: #04323a; }
+body.tema-d .menu-card.practice { --c: #4fd06a; --c1: #1f7f36; --c2: #08361a; }
+body.tema-d .menu-card.tutorial { --c: #ff6fb5; --c1: #b82a70; --c2: #4e0c2c; }
+
+/* ---------- Lo común: paneles azul noche con algo de cuerpo ---------- */
+body.tema-d #screen { background: linear-gradient(90deg, rgba(14,24,70,.3), transparent 60%, rgba(14,24,70,.18)); }
+body.tema-d .panel, body.tema-d .node-info, body.tema-d .story-head .map-goal, body.tema-d .story-info, body.tema-d .subbar,
+body.tema-d .hub-mod, body.tema-d .story-pathwrap, body.tema-d .howto {
+  background: linear-gradient(180deg, rgba(29,44,120,.92), rgba(20,32,90,.92) 40%, rgba(15,24,70,.94)); color: var(--td-text); backdrop-filter: none;
+  border: 2px solid var(--td-rim); border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop);
+}
+body.tema-d .panel::before { content: none; }
+body.tema-d .mw-head b::before, body.tema-d .hub-coll h3::before, body.tema-d .node-info > h3::before, body.tema-d .panel:not(.modal-box) > h3::before { content: none; }
+body.tema-d :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
+/* Los parpadeos de siempre, fuera: lo que tiene algo que recoger late con el latido propio del tema (más abajo) */
+body.tema-d .coll-tile.ready, body.tema-d .missions-widget.has-ready, body.tema-d .hub-tz.ready, body.tema-d .hub-mod .news-btn, body.tema-d .menu-card.tutorial.ready,
+body.tema-d .mission.done, body.tema-d .tb-btn.support svg, body.tema-d .hub-me .support svg, body.tema-d .sp-gym.now .sp-dot, body.tema-d .menu-card .pvp-live.hot { animation: none !important; }
+/* El botón de lo que toca: dorado, con relieve */
+body.tema-d button.primary { background: linear-gradient(180deg, #ffe680, var(--td-now) 50%, #f2a900); color: #2a1c00; text-shadow: none; border: 0; border-radius: 10px;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(150,90,0,.35), 0 4px 0 #a86a00, 0 8px 16px rgba(0,0,0,.35); }
+body.tema-d button.primary:hover:not(:disabled) { background: linear-gradient(180deg, #fff0a8, #ffd52e 50%, #ffb300);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset 0 -3px 0 rgba(150,90,0,.35), 0 4px 0 #a86a00, 0 0 22px rgba(255,203,5,.55), 0 8px 16px rgba(0,0,0,.35); }
+body.tema-d button.primary:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 1px 0 #a86a00; }
+body.tema-d :focus-visible { outline: 3px solid #fff !important; outline-offset: 3px; }
+
+/* ---------- Cabecera ---------- */
+body.tema-d .hub-mod .tb-btn, body.tema-d .hub-mod .lang-cur, body.tema-d .inner-bar .tb-left .back {
+  background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid #3d53b0; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 2px 0 #0b1238; }
+body.tema-d .hub-mod .tb-btn:hover:not(:disabled), body.tema-d .hub-mod .lang-cur:hover, body.tema-d .inner-bar .tb-left .back:hover {
+  background: linear-gradient(180deg, #3549a8, #1f2e78); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 2px 0 #0b1238, 0 0 14px rgba(120,160,255,.35); }
+body.tema-d .hub-me .pill.coins { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid rgba(255,203,5,.55); border-radius: 99px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); color: #fff; }
+body.tema-d .hub-bar .hub-me .pill.gems { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid #c79bff; border-radius: 99px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); color: #fff; }
+/* Apoyar en rosa, con cuerpo */
+body.tema-d .hub-me .support { color: #fff; background: linear-gradient(180deg, #e8467a, #a8204e); border: 1px solid #ff8fb0; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #5a0c28; }
+body.tema-d .hub-me .support svg { color: #fff; }
+body.tema-d .hub-me .support:hover { background: linear-gradient(180deg, #f2578a, #b8285a); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 #5a0c28, 0 0 16px rgba(255,107,138,.55); }
+body.tema-d .hub-me .support span { color: #fff; }
+body.tema-d .hub-mod .news-btn:has(.ndot.news) { border-color: var(--td-gold); }
+/* Lucky Spin: su marco y su letra de oro, como siempre (es de donde salen los premios); el brillo, solo si te llega
+   para una tirada. El nombre en oro liso: el degradado de siempre baja de 4,5:1 por abajo */
+body.tema-d .hub-left .hub-tz { border: 2px solid var(--td-gold); border-radius: 12px; background: linear-gradient(180deg, #5a3a8a, #2a1858);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.22), inset 0 -3px 0 rgba(0,0,0,.25), 0 3px 0 #120a2e, var(--td-drop); }
+body.tema-d .hub-left .hub-tz.ready { box-shadow: inset 0 2px 0 rgba(255,255,255,.22), 0 3px 0 #120a2e, 0 0 18px rgba(255,203,5,.5); }
+body.tema-d .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--td-gold); filter: none; text-shadow: 0 2px 0 rgba(0,0,0,.45); }
+body.tema-d .hub-tz small { color: #ffe9a8 !important; }
+
+/* ---------- Menú ---------- */
+body.tema-d .menu-sec .sec-head h3 { font: 900 17px var(--display); color: var(--td-text); text-shadow: 0 2px 0 rgba(0,0,0,.5), 0 1px 8px rgba(0,0,0,.7); }
+body.tema-d .menu-sec .sec-head h3::before { content: none; }
+body.tema-d .menu-sec .sec-head small { color: #fff; font-weight: 700; text-shadow: 0 1px 2px #000, 0 1px 8px rgba(0,0,0,.9); }
+/* Los modos: tarjetas con cuerpo, del color de cada uno. El sprite, grande, se sale un poco por arriba */
+body.tema-d .menu-grid { row-gap: 22px; }
+body.tema-d .menu-card { overflow: visible; min-height: 116px; padding: 16px 20px; border-radius: 16px;
+  background: linear-gradient(170deg, var(--c1) 0%, color-mix(in srgb, var(--c1) 55%, var(--c2)) 55%, var(--c2) 100%);
+  border: 2px solid color-mix(in srgb, var(--c) 70%, #fff);
+  box-shadow: var(--td-relief), 0 5px 0 color-mix(in srgb, var(--c2) 70%, #000), var(--td-drop); }
+/* (la luz de arriba, como un plástico brillante) */
+body.tema-d .menu-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 46%; border-radius: 14px 14px 40% 40% / 14px 14px 18px 18px; opacity: 1; z-index: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.04)); pointer-events: none; }
+body.tema-d .menu-card:hover:not(:disabled) { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 45%, #fff);
+  background: linear-gradient(170deg, var(--c1) 0%, color-mix(in srgb, var(--c1) 55%, var(--c2)) 55%, var(--c2) 100%);
+  box-shadow: var(--td-relief), 0 8px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 0 30px color-mix(in srgb, var(--c) 60%, transparent), 0 16px 30px rgba(0,0,0,.5); }
+body.tema-d .menu-card:active:not(:disabled) { transform: translateY(2px); box-shadow: var(--td-relief), 0 2px 0 color-mix(in srgb, var(--c2) 70%, #000); }
+body.tema-d .menu-card b { position: relative; z-index: 2; font: 900 26px var(--display); color: var(--td-text); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+body.tema-d .menu-card b .card-ico { width: 34px; height: 34px; background: rgba(0,0,0,.22); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+body.tema-d .menu-card span { position: relative; z-index: 2; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5); font-weight: 600; }
+body.tema-d .menu-card .art { z-index: 1; width: 128px; height: 128px; bottom: 4px; right: 6px; filter: drop-shadow(0 8px 6px rgba(0,0,0,.5)); }
+body.tema-d .menu-card:hover .art { transform: scale(1.08) rotate(-3deg); }
+/* «Jugar» solo en Historia: en los demás, la tarjeta entera es el botón */
+body.tema-d .menu-card .go { display: none; }
+body.tema-d .menu-card .pvp-live { position: relative; z-index: 2; background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.2); color: #fff; }
+body.tema-d .menu-card .pvp-live.hot { background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.5); }
+body.tema-d .menu-card .pvp-live.hot b { color: #fff; }
+body.tema-d .menu-card em.ready { color: #ffe680; }
+/* Historia, la portada: grande, en rojo que acaba en rojo oscuro, con el único «Jugar» (dorado y con relieve) */
+body.tema-d .menu-card.story { min-height: 236px; padding: 28px 32px; }
+body.tema-d .menu-card.story b { font: 900 64px/1 var(--display); letter-spacing: -1px; text-shadow: 0 4px 0 rgba(70,0,0,.45); }
+body.tema-d .menu-card.story b .card-ico { display: none; }
+body.tema-d .menu-card.story span { font-size: 17px; max-width: calc(100% - 260px); text-shadow: 0 1px 3px rgba(60,0,0,.6); }
+body.tema-d .menu-card.story .art { width: 240px; height: 240px; top: auto; bottom: 6px; right: 26px; transform: none; }
+body.tema-d .menu-card.story:hover .art { transform: scale(1.06) rotate(-3deg); }
+body.tema-d .menu-card.story .go { display: inline-block; position: relative; z-index: 2; transform: none; margin-top: 16px; padding: 10px 28px; border-radius: 10px; letter-spacing: 0;
+  background: linear-gradient(180deg, #ffe680, var(--td-now) 50%, #f2a900); color: #2a1c00; font: 900 18px var(--display);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(150,90,0,.35), 0 4px 0 #8a4a00, 0 8px 16px rgba(0,0,0,.35); }
+body.tema-d .menu-card.story:hover .go { transform: translateY(-1px);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset 0 -3px 0 rgba(150,90,0,.35), 0 5px 0 #8a4a00, 0 0 24px rgba(255,203,5,.6), 0 8px 16px rgba(0,0,0,.35); }
+/* (al entrar, el Pokémon de Historia da un salto: lo único que se mueve solo en el menú, aparte del latido) */
+@keyframes tdHop { 40% { transform: translateY(-16px); } 70% { transform: none; } }
+@media (prefers-reduced-motion: no-preference) { body.tema-d .menu-card.story .art { animation: tdHop .6s .35s ease-out both; } }
+
+/* Colección: cada baldosa con cuerpo y su color (Mis Pokémon rojo, Mochila azul, Tienda verde, Pokédex violeta,
+   Logros cobre; el orden es el de collectionTiles). Dorado solo si hay algo listo */
+body.tema-d .hub-coll h3, body.tema-d .mw-head b { color: var(--td-text); font: 900 17px var(--display); }
+body.tema-d .hub-coll .coll-tile:nth-child(1) { --cc: #ff4a3d; --c1: #c42a22; --c2: #520c0c; }
+body.tema-d .hub-coll .coll-tile:nth-child(2) { --cc: #4f8cff; --c1: #2f6ad8; --c2: #11286a; }
+body.tema-d .hub-coll .coll-tile:nth-child(3) { --cc: #2fbf8a; --c1: #178060; --c2: #06332a; }
+body.tema-d .hub-coll .coll-tile:nth-child(4) { --cc: #a070ff; --c1: #7b3fe0; --c2: #2e1270; }
+body.tema-d .hub-coll .coll-tile:nth-child(5) { --cc: #ff8a3d; --c1: #b4500f; --c2: #4a1c04; }
+body.tema-d .hub-coll .coll-tile, body.tema-d .hub-coll .coll-tile.mons { border-radius: 12px; border: 2px solid color-mix(in srgb, var(--cc) 70%, #fff) !important;
+  background: linear-gradient(170deg, var(--c1), var(--c2)); box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 6px 12px rgba(0,0,0,.35); }
+body.tema-d .hub-coll .coll-tile:hover:not(:disabled) { transform: translateY(-2px); background: linear-gradient(170deg, var(--c1), var(--c2));
+  box-shadow: var(--td-relief), 0 5px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 0 20px color-mix(in srgb, var(--cc) 55%, transparent); }
+body.tema-d .coll-tile img { filter: drop-shadow(0 3px 3px rgba(0,0,0,.5)); }
+body.tema-d .coll-tile .coll-txt b { color: var(--td-text); text-shadow: 0 2px 0 rgba(0,0,0,.3); }
+body.tema-d .coll-tile .coll-txt small, body.tema-d .coll-tile.mons .coll-txt small { color: #fff; }
+/* Algo que recoger (la Tienda ha rotado, Logros con premios): borde dorado y brillo */
+body.tema-d .hub-coll .coll-tile.ready { border-color: var(--td-gold) !important;
+  box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 0 16px rgba(255,203,5,.5); }
+body.tema-d .coll-tile.ready .coll-txt small { color: #ffe680; }
+/* Misiones: el panel con borde dorado si hay premios, y «Recoger todo» dorado con relieve */
+body.tema-d .missions-widget.has-ready { border: 2px solid var(--td-gold) !important; }
+body.tema-d .mw-head .go { color: var(--td-mute); }
+body.tema-d .mw-head button.claim-all { background: linear-gradient(180deg, #ffe680, var(--td-now) 50%, #f2a900); color: #2a1c00; border: 0; border-radius: 99px;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 3px 0 #a86a00; }
+body.tema-d .mw-head button.claim-all small { background: #2a1c00; color: #ffe066; }
+body.tema-d .mw-sub { font: 800 12px var(--text); color: var(--td-mute); }
+body.tema-d .mission { background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04)); border: 1px solid rgba(140,170,255,.28); border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+body.tema-d .mission.done:not(.claimed) { background: linear-gradient(180deg, rgba(255,210,63,.2), rgba(255,210,63,.08)); border-color: var(--td-gold); }
+body.tema-d .mission .m-body b { color: var(--td-text); }
+/* (el cuadrito del icono, del color de la misión y oscuro hacia su propio tono, no hacia el negro del todo: un
+   amarillo verdoso mezclado con mucho negro salía caqui) */
+body.tema-d .m-ico { background: linear-gradient(180deg, color-mix(in srgb, var(--cc) 88%, #fff), color-mix(in srgb, var(--cc) 80%, #000)); border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 rgba(0,0,0,.35); filter: none; }
+body.tema-d .m-ico > * { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+body.tema-d .m-bar { background: rgba(0,0,0,.35); border: 0; border-radius: 99px; box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
+body.tema-d .m-bar i { background: linear-gradient(180deg, #9cecff, #2fb4f0); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); border-radius: 99px; }
+body.tema-d .mission.done .m-bar i { background: linear-gradient(180deg, #a6f5b8, #38c96a); }
+body.tema-d .m-bar span { color: #fff; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
+body.tema-d .howto summary { font-weight: 800; }
+
+/* El latido: solo lo que tiene algo listo para recoger, y uno a la vez. Cada uno late una vez en su turno de un
+   ciclo de 8 s (Lucky Spin, Tienda, Logros, Recoger todo) y el resto del ciclo se queda quieto; con
+   prefers-reduced-motion no se mueve nada: quedan el borde y el brillo */
+@keyframes tdBeat { 0%, 16%, 100% { transform: none; filter: none; } 6% { transform: scale(1.05); filter: brightness(1.15) drop-shadow(0 0 10px rgba(255,203,5,.9)); } }
+@media (prefers-reduced-motion: no-preference) {
+  body.tema-d .hub-left .hub-tz.ready { animation: tdBeat 8s ease-in-out infinite !important; }
+  body.tema-d .hub-coll .coll-tile.ready:nth-child(3) { animation: tdBeat 8s 2s ease-in-out infinite backwards !important; }
+  body.tema-d .hub-coll .coll-tile.ready:nth-child(5) { animation: tdBeat 8s 4s ease-in-out infinite backwards !important; }
+  body.tema-d .mw-head button.claim-all { animation: tdBeat 8s 6s ease-in-out infinite backwards; }
+}
+
+/* ---------- Historia ---------- */
+/* El rótulo de la pantalla, con el rojo de la portada (acaba en rojo oscuro, no en transparente) */
+body.tema-d .feature-sign { border-radius: 14px; }
+body.tema-d .feature-sign.sign-story { padding-left: 18px; padding-right: 36px; border: 2px solid #ff8a6a;
+  background: linear-gradient(170deg, #d63a30, #9a1c18 55%, #6a0f0f); box-shadow: var(--td-relief), 0 4px 0 #3a0606, var(--td-drop); }
+body.tema-d .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 3px 0 rgba(60,0,0,.45); }
+body.tema-d .feature-sign small { font: 700 14px var(--text); color: #fff; text-shadow: 0 1px 2px rgba(60,0,0,.6); }
+/* Regiones: la elegida, en celeste (lo recorrido) */
+body.tema-d .subbar .region-tabs button.rg { background: linear-gradient(180deg, rgba(42,60,146,.9), rgba(26,39,102,.9)); border: 1px solid #3d53b0; border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 3px 0 #0b1238; }
+body.tema-d .subbar .region-tabs button.rg:hover:not(.sel) { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 4px 0 #0b1238, 0 0 14px rgba(95,216,255,.3); }
+body.tema-d .subbar .region-tabs button.rg.sel { background: linear-gradient(180deg, #1f5f9a, #133a6e); border: 2px solid var(--td-done);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.25), 0 3px 0 #08203e, 0 0 16px rgba(95,216,255,.35); }
+body.tema-d .subbar .region-tabs button.rg b { text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+body.tema-d .subbar .region-tabs button.rg small { color: var(--td-mute); }
+body.tema-d .subbar .region-tabs button.rg.sel small { color: #fff; }
+body.tema-d .rg-soon { background: rgba(0,0,0,.18); border: 1px dashed rgba(140,170,255,.3); }
+body.tema-d .rg-soon > small { font: 800 12px var(--text); color: var(--td-mute); }
+body.tema-d .region-chips .rgc { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid #3d53b0; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 0 #0b1238; }
+body.tema-d .region-chips .rgc.sel { background: linear-gradient(180deg, #1f5f9a, #133a6e); border: 2px solid var(--td-done); }
+body.tema-d .region-chips .badges-mini { background: linear-gradient(180deg, #1d2c78, #14205a); border: 1px solid #3d53b0; border-radius: 10px; }
+/* (las medallas ganadas, con su brillo dorado detrás; las que no tienes, en gris, como sin tema) */
+body.tema-d .badge-slot.got { background: radial-gradient(circle, rgba(255,214,90,.45), rgba(255,214,90,.06) 70%); }
+/* El objetivo: lo que toca, con la medalla en un anillo del color del tipo del líder. El panel sigue azul noche
+   con una franja del tipo a la izquierda (mezclar el tipo con el azul daba colores sucios) */
+body.tema-d .story-head .map-goal { box-shadow: inset 5px 0 0 var(--tc, var(--td-done)), inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop); }
+body.tema-d .story-head .map-goal > small:first-child { font: 800 13px var(--text); color: #ffd76a; }
+body.tema-d .story-head .map-goal b { font: 900 26px var(--display); letter-spacing: -.3px; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+body.tema-d .story-head .map-goal small, body.tema-d .story-head .map-goal .where { color: var(--td-mute); }
+body.tema-d .goal-leader { background: none; }
+body.tema-d .goal-badge { background: radial-gradient(circle at 50% 35%, #2a3c92, #121c50); box-shadow: inset 0 0 0 3px var(--tc), 0 0 14px color-mix(in srgb, var(--tc) 50%, transparent), 0 3px 0 #0b1238; }
+/* (las rutas nuevas, en verde hierba con relieve) */
+body.tema-d .goal-routes .chip { background: linear-gradient(180deg, #3f9a2c, #24661a); border: 1px solid #8fe36a; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #10380a; color: #fff; }
+body.tema-d .story-info .rotation { color: var(--td-mute); font-weight: 700; }
+body.tema-d .story-info .rotation b { color: var(--td-done); text-shadow: 0 2px 0 rgba(0,0,0,.4); font-variant-numeric: tabular-nums; }
+/* «Cómo se juega»: un botón con relieve, pero no dorado (no es lo que toca) */
+body.tema-d .story-info .help { background: linear-gradient(180deg, #34489e, #1f2d78); color: #fff; border: 1px solid #5468c4; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 0 #0b1238; text-shadow: none; }
+body.tema-d .story-info .help:hover { background: linear-gradient(180deg, #3d53b0, #24348a); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 3px 0 #0b1238, 0 0 14px rgba(120,160,255,.4); }
+body.tema-d .story-info .help svg { color: #fff; }
+
+/* El camino: lo recorrido en celeste; lo que falta, punteado. Al entrar, la línea se dibuja desde el pueblo y lo
+   que toca aparece cuando llega (el único movimiento de esta pantalla) */
+body.tema-d .story-pathwrap { background: linear-gradient(180deg, rgba(29,44,120,.78), rgba(15,24,70,.86)); }
+body.tema-d .story-pathwrap > .story-mode { background: rgba(10,16,52,.85); border: 1px solid #3d53b0; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.1); }
+body.tema-d .story-mode button { border-radius: 8px; }
+body.tema-d .story-mode button.sel { background: linear-gradient(180deg, #9ce9ff, var(--td-done)); color: #06213a; box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 0 #1a6a8a; }
+body.tema-d .sp-start::before { background: var(--td-done); box-shadow: 0 0 10px rgba(95,216,255,.6); }
+body.tema-d .sp-start::after, body.tema-d .sp-ch.done .sp-spine::before { background: var(--td-done); box-shadow: 0 0 8px rgba(95,216,255,.5); }
+body.tema-d .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, var(--td-done) 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
+body.tema-d .sp-spine::before { background: repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
+@keyframes tdDraw { from { transform: scaleX(0); } }
+@keyframes tdArrive { from { transform: scale(.7); } to { transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  body.tema-d .sp-start::after, body.tema-d .sp-ch.done .sp-spine::before, body.tema-d .sp-ch.now .sp-spine::before { transform-origin: left; animation: tdDraw .22s linear both; }
+  body.tema-d .sp-ch:nth-child(2) .sp-spine::before { animation-delay: .22s; }
+  body.tema-d .sp-ch:nth-child(3) .sp-spine::before { animation-delay: .44s; }
+  body.tema-d .sp-ch:nth-child(4) .sp-spine::before { animation-delay: .66s; }
+  body.tema-d .sp-ch:nth-child(5) .sp-spine::before { animation-delay: .88s; }
+  body.tema-d .sp-ch:nth-child(6) .sp-spine::before { animation-delay: 1.1s; }
+  body.tema-d .sp-ch:nth-child(7) .sp-spine::before { animation-delay: 1.32s; }
+  body.tema-d .sp-ch:nth-child(8) .sp-spine::before { animation-delay: 1.54s; }
+  body.tema-d .sp-ch:nth-child(9) .sp-spine::before { animation-delay: 1.76s; }
+  body.tema-d .sp-ch:nth-child(10) .sp-spine::before { animation-delay: 1.98s; }
+  body.tema-d .sp-gym.now .sp-dot { animation: tdArrive .35s ease-out both !important; animation-delay: calc(var(--td-at, 3) * .22s + .1s) !important; }
+  body.tema-d .sp-ch:nth-child(2).now { --td-at: 1; } body.tema-d .sp-ch:nth-child(3).now { --td-at: 2; } body.tema-d .sp-ch:nth-child(4).now { --td-at: 3; }
+  body.tema-d .sp-ch:nth-child(5).now { --td-at: 4; } body.tema-d .sp-ch:nth-child(6).now { --td-at: 5; } body.tema-d .sp-ch:nth-child(7).now { --td-at: 6; }
+  body.tema-d .sp-ch:nth-child(8).now { --td-at: 7; } body.tema-d .sp-ch:nth-child(9).now { --td-at: 8; } body.tema-d .sp-ch:nth-child(10).now { --td-at: 9; }
+}
+/* Los gimnasios, con relieve: los ganados con el anillo del color de su tipo, los que faltan apagados */
+body.tema-d .sp-gym .sp-dot { background: radial-gradient(circle at 50% 30%, #2a3a88, #121c50); box-shadow: inset 0 2px 0 rgba(255,255,255,.15), 0 3px 0 #070c2a; }
+body.tema-d .sp-gym.done .sp-dot { background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--tc) 60%, #000), color-mix(in srgb, var(--tc) 22%, #000) 80%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.25), 0 0 0 3px color-mix(in srgb, var(--tc) 55%, transparent), 0 3px 0 #070c2a; }
+/* Rutas: hierba verde con relieve y el anillo de lo capturado */
+body.tema-d .sp-route:not(.locked) .sp-dot { background: radial-gradient(circle at 50% 30%, #d4f7ae, #4fa232 75%); box-shadow: inset 0 -3px 0 rgba(20,70,10,.35), 0 0 0 3px #14205a, 0 4px 0 2px #070c2a; }
+body.tema-d .sp-route.locked .sp-dot { border: 2px dashed rgba(255,255,255,.35); }
+body.tema-d .sp-ord { background: var(--td-done); color: #06213a; box-shadow: 0 2px 0 #1a6a8a; }
+body.tema-d .sp-count { background: linear-gradient(180deg, #2a3c92, #1a2766); color: #fff; border: 1px solid #3d53b0; box-shadow: 0 2px 0 #0b1238; }
+body.tema-d .sp-count.full { background: linear-gradient(180deg, #a6f08a, #6fcf4e); color: #0f2a0c; border-color: #c8ffb0; }
+body.tema-d .sp-new { background: linear-gradient(180deg, #ef4a80, #c0245a); color: #fff; box-shadow: 0 2px 0 #5a0c28; border-radius: 99px; }
+body.tema-d .sp-name { text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6); }
+body.tema-d .sp-gym.now .sp-dot { border-color: var(--td-now); box-shadow: 0 0 0 4px rgba(255,203,5,.3), 0 0 22px rgba(255,203,5,.45), 0 3px 0 #070c2a; }
+body.tema-d .sp-gym.now .sp-name { background: linear-gradient(180deg, #ffe680, var(--td-now)); color: #2a1c00; border-radius: 8px; box-shadow: 0 2px 0 #a86a00; text-shadow: none; }
+body.tema-d .sp-gym.now .sp-ord { background: var(--td-now); color: #2a1c00; box-shadow: 0 2px 0 #a86a00; }
+body.tema-d .sp-legend { border-top: 1px solid rgba(140,170,255,.3); color: var(--td-mute); }
+body.tema-d .sp-k.done { background: var(--td-done); box-shadow: none; }
+
+/* La ficha del sitio: una franja del color del tipo del líder arriba (sin mezclarlo con el azul) */
+body.tema-d .story-side .node-info .leader-head { background: none; border-radius: 12px 12px 0 0; box-shadow: inset 0 6px 0 var(--tc), inset 0 8px 0 rgba(0,0,0,.25); }
+body.tema-d .node-info h3 { font: 900 26px var(--display); letter-spacing: -.3px; color: var(--td-text); text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+body.tema-d .node-info .leader, body.tema-d .node-info p.small, body.tema-d .node-info h4 { color: var(--td-mute); }
+body.tema-d .node-info .leader b { color: var(--td-text); }
+body.tema-d .leader-head .leader-sprite { background: none; }
+body.tema-d .node-info .mini-team .mini { background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04)); border: 1px solid rgba(140,170,255,.35); border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 2px 0 rgba(0,0,0,.3); }
+body.tema-d .node-info button.mini:hover { background: rgba(255,255,255,.16); }
+body.tema-d .story-side .node-info .arena-info { background: rgba(0,0,0,.2); border: 0; border-left: 4px solid var(--tc, #fff); border-radius: 8px; color: var(--td-mute); }
+body.tema-d .arena-info b { color: var(--td-text); }
+body.tema-d .node-info .link { color: var(--td-text); }
+body.tema-d .story-side .node-info button.primary { font-size: 20px; }
+/* Tienda y Mochila junto a la ficha: con cuerpo y su color, como en la colección */
+body.tema-d .story-tools .coll-tile { border-radius: 12px; border: 2px solid color-mix(in srgb, var(--cc) 70%, #fff); background: linear-gradient(170deg, var(--c1), var(--c2));
+  box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000); }
+body.tema-d .story-tools .story-shop { --cc: #2fbf8a; --c1: #178060; --c2: #06332a; }
+body.tema-d .story-tools .story-bag { --cc: #4f8cff; --c1: #2f6ad8; --c2: #11286a; }
+body.tema-d .story-tools .coll-tile .coll-txt small { color: #fff; }
+
+/* Ventana estrecha (o móvil en vertical): el rótulo de la pantalla, como sin tema, para que quepa */
+@media (max-width: 760px) {
+  body.tema-d .feature-sign h2 { font-size: 24px; }
+  body.tema-d .feature-sign.sign-story { padding-right: 20px; }
+  body.tema-d .menu-card.story b { font-size: 40px; }
+  body.tema-d .menu-card.story span { max-width: calc(100% - 150px); }
+  body.tema-d .menu-card.story .art { width: 150px; height: 150px; }
+}
+
+/* ---------- Móvil en horizontal: la portada de Historia más pequeña, el resto con su cuerpo ---------- */
+@media (max-height: 500px) {
+  body.tema-d .menu-card, body.tema-d .menu-card.wide { min-height: 0; padding: 7px 9px; border-radius: 12px; box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 6px 12px rgba(0,0,0,.4); }
+  body.tema-d .menu-card::before { border-radius: 10px 10px 40% 40% / 10px 10px 12px 12px; }
+  body.tema-d .menu-card b, body.tema-d .menu-card.wide b { font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
+  /* (sin el icono: el sprite ya dice qué es, y así «Partida rápida» cabe) */
+  body.tema-d .menu-card b .card-ico { display: none; }
+  body.tema-d .menu-card .art { width: 68px; height: 68px; right: 2px; bottom: 2px; }
+  body.tema-d .menu-card.story { padding: 10px 12px; }
+  body.tema-d .menu-card.story b { font-size: 30px; }
+  body.tema-d .menu-card.story span { font-size: 11px; max-width: calc(100% - 100px); }
+  body.tema-d .menu-card.story .art { width: 104px; height: 104px; right: 6px; bottom: 2px; }
+  body.tema-d .menu-card.story .go { display: none; }
+  body.tema-d .feature-sign h2 { font-size: 22px; }
+  body.tema-d .node-info h3 { font-size: 20px; }
+  /* «Mis Pokémon» entero: el nombre puede ir en dos líneas */
+  body.tema-d .hub-coll .coll-tile { border-radius: 10px; gap: 5px; box-shadow: var(--td-relief), 0 2px 0 color-mix(in srgb, var(--c2) 70%, #000); }
+  body.tema-d .hub-coll .coll-txt b { white-space: normal; line-height: 1.05; overflow: visible; }
+  body.tema-d .hub-coll .coll-tile > img { width: 22px; height: 22px; }
+  body.tema-d .panel, body.tema-d .node-info, body.tema-d .subbar, body.tema-d .hub-mod, body.tema-d .story-pathwrap, body.tema-d .howto { border-radius: 12px; }
+}
