@@ -17,7 +17,7 @@ export default {
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'The bottom bar no longer covers Lucky Spin or the Story map on large screens, and Lucky Spin’s rarity labels are easier to read.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'With a screen reader and keyboard: icon-only buttons say what they are and scrolling lists can be browsed with the keyboard.',
     'Historia en un camino': 'Story as a path',
-    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': 'Story starts on the Path: your journey in one line, with the Gyms in order, your next challenge in gold with «Challenge» and how many Pokémon you have from each route.',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': 'Story starts on the Path: your journey in one line, with the Gyms in order, your next challenge in gold and how many Pokémon you have from each route.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'More precise taps on mobile',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'In the menu, tapping the Missions header takes you to them: before, tapping its center claimed every reward.',

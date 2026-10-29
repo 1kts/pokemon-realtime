@@ -18,7 +18,7 @@ export default {
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '大きな画面で下のバーが Lucky Spin やストーリーのマップを隠さなくなり、Lucky Spin のレア度ラベルが読みやすくなりました。',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'スクリーンリーダーとキーボードで、アイコンだけのボタンが何かを伝え、スクロールするリストをキーボードで操作できます。',
     'Historia en un camino': 'ストーリーが一本の道に',
-    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': 'ストーリーは「道のり」から始まります。旅が一本の線になり、ジムが順番に並び、次の挑戦は金色で「挑戦する」ボタン付き、道路ごとに捕まえたポケモンの数もわかります。',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': 'ストーリーは「道のり」から始まります。旅が一本の線になり、ジムが順番に並び、次の挑戦は金色で表示され、道路ごとに捕まえたポケモンの数もわかります。',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'スマホでのタップがより正確に',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'メニューでミッションの見出しをタップするとミッションへ移動します。以前は中央をタップすると報酬をすべて受け取っていました。',

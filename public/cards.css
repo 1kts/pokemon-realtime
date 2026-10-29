@@ -1855,7 +1855,7 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-gym.now .sp-dot { width: var(--sp-now); height: var(--sp-now); margin-top: 0; border-color: var(--gold); animation: spNow 1.6s ease-in-out infinite; }
 .sp-gym.now .sp-badge { width: 44px; height: 44px; filter: brightness(0) invert(1) opacity(.9); }
 .sp-gym.now .sp-ord { top: -6px; left: calc(50% - var(--sp-now) / 2 - 4px); background: var(--gold); }
-.sp-gym.now .sp-name { max-width: none; padding: 3px 10px; border-radius: 9px; white-space: nowrap; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; }
+.sp-gym.now .sp-name { max-width: calc(var(--sp-gc) + 40px); padding: 3px 10px; border-radius: 9px; -webkit-line-clamp: 3; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; }
 @keyframes spNow { 50% { box-shadow: 0 0 0 4px #121834, 0 0 0 10px rgba(255,203,5,.22), 0 0 28px rgba(255,203,5,.75); } }
 /* Rutas: su Pokémon, el anillo de lo capturado y su cuenta; un palito las cuelga del eje */
 .sp-route { width: var(--sp-rw); }

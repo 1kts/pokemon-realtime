@@ -17,7 +17,7 @@ export default {
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '在大屏幕上，底部栏不再遮挡 Lucky Spin 和故事模式地图，Lucky Spin 的稀有度标签也更易读。',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '使用读屏和键盘时：只有图标的按钮会说明自己是什么，可滚动的列表也能用键盘浏览。',
     'Historia en un camino': '故事变成一条路',
-    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': '故事模式从「路线」开始：你的旅程连成一条线，道馆按顺序排列，下一个挑战以金色显示并带有「挑战」按钮，还能看到每条道路已捕捉的宝可梦数量。',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': '故事模式从「路线」开始：你的旅程连成一条线，道馆按顺序排列，下一个挑战以金色显示，还能看到每条道路已捕捉的宝可梦数量。',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '手机上点得更准',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '在菜单里点任务的标题会进入任务：以前点中间会领取所有奖励。',

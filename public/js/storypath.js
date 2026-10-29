@@ -98,8 +98,9 @@ export const storyPathViews = {
         b.onclick = () => { this.leagueRegion = region; this.show('league'); };
         all.push(b);
         const now = open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM;
+        b.title = t('Liga Pokémon') + (now ? ' · ' + t('Tu siguiente reto') : open ? '' : ' · ' + t('Aún bloqueado'));
         // (la ficha de al lado, la de quien toca, con el desafío de la Liga)
-        if (now) b.showInfo = () => { all.forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, nextLeader, true, false); };
+        if (now) b.showInfo = () => pick(b, nextLeader, true, false);
         chapter(routes, now ? withGo(b, nextLeader.id) : b, cleared ? 'done' : open ? 'now' : 'locked', leaders[Data.LEAGUE_FROM - 1] && leaders[Data.LEAGUE_FROM - 1].leader);
         continue;
       }

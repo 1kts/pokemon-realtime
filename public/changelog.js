@@ -6,7 +6,7 @@
     {
       v: '0.32.0', date: '2026-10-29', title: 'Historia en un camino',
       items: [
-        ['nuevo', 'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.'],
+        ['nuevo', 'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.'],
         ['cambio', 'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.'],
         ['cambio', 'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).'],
         ['arreglo', 'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.'],

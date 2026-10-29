@@ -24,13 +24,16 @@ module.exports = async ({ page, player, ok }) => {
   const pressed = `[...document.querySelectorAll('.story-mode button')].find(b => b.getAttribute('aria-pressed') === 'true')?.textContent`;
   ok(await page.eval(pressed) === 'Camino' && await page.eval(`!!document.querySelector('.story-path') && !document.querySelector('.story .map')`),
     'Historia abre en el Camino (la pestaña Camino marcada), no en el mapa');
+  // Lo que dice cada sitio al pasar por encima (tips.js lo pasa de title a data-tip la primera vez que se pasa)
+  const node = (sel, op, text) => `${sel}[title${op}"${text}"], ${sel}[data-tip${op}"${text}"]`;
+  const tip = "(b => b.title || b.dataset.tip || '')";
   const shown = sel => `[...document.querySelectorAll(${JSON.stringify(sel)})].filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden')`;
   ok(await page.eval(`${shown('.story-pathwrap p, .sp-legend span')}.some(e => e.textContent.includes('Vence a los líderes de gimnasio en orden'))`)
     && await page.eval(`${shown('.sp-legend span')}.some(e => e.textContent.includes('Ruta: opcional, para capturar Pokémon'))`),
     'se explica en palabras sencillas: vencer a los líderes en orden, y que las rutas son opcionales para capturar');
 
   // Los gimnasios, en orden; los dos primeros ganados, el tercero es el siguiente reto y el cuarto está bloqueado
-  const gyms = await page.eval(`${shown('.sp-gym:not(.sp-league)')}.map(b => ({ name: b.querySelector('.sp-name b').textContent, title: b.title, w: b.querySelector('.sp-dot').getBoundingClientRect().width, x: b.getBoundingClientRect().left + b.getBoundingClientRect().width / 2 }))`);
+  const gyms = await page.eval(`${shown('.sp-gym:not(.sp-league)')}.map(b => ({ name: b.querySelector('.sp-name b').textContent, title: ${tip}(b), w: b.querySelector('.sp-dot').getBoundingClientRect().width, x: b.getBoundingClientRect().left + b.getBoundingClientRect().width / 2 }))`);
   ok(gyms.slice(0, 5).map(g => g.name).join(',') === 'Brock,Misty,Lt. Surge,Erika,Koga', 'los gimnasios salen en orden: Brock, Misty, Lt. Surge, Erika, Koga…');
   ok(/Medalla ganada/.test(gyms[0].title) && /Medalla ganada/.test(gyms[1].title), 'Brock y Misty salen con la medalla ganada');
   ok(/Tu siguiente reto/.test(gyms[2].title) && gyms.slice(3).every(g => /Aún bloqueado/.test(g.title)), 'Lt. Surge es el siguiente reto y los que vienen después están bloqueados');
@@ -50,17 +53,17 @@ module.exports = async ({ page, player, ok }) => {
     return { want, got: b && b.querySelector('.sp-count')?.textContent };
   })()`);
   ok(count.got === count.want && +count.want.split('/')[0] >= 3, `la ruta «Ruta 2 · Bosque Verde» dice cuántos tienes de los que viven en ella (${count.got}, deben ser ${count.want})`);
-  ok(await page.eval(`${shown('.sp-route')}.filter(b => /Aún bloqueado/.test(b.title)).every(b => !/\\d+\\/\\d+/.test(b.textContent))`), 'las rutas bloqueadas no enseñan cuenta');
+  ok(await page.eval(`${shown('.sp-route')}.filter(b => /Aún bloqueado/.test(${tip}(b))).every(b => !/\\d+\\/\\d+/.test(b.textContent))`), 'las rutas bloqueadas no enseñan cuenta');
 
   // Tocar un sitio abre su ficha al lado
   const side = `document.querySelector('.story-side').innerText`;
-  await page.click('.sp-gym[title^="Brock"]');
+  await page.click(node('.sp-gym', '^=', 'Brock'));
   await page.waitFor(`/Gimnasio Plateada/.test(${side})`);
   ok(await page.eval(`/Revancha/.test(${side}) && /para ganar su medalla/.test(${side})`), 'al tocar a Brock (ganado) su ficha dice qué es un gimnasio y ofrece la revancha');
-  await page.click('.sp-route[title^="Ruta 2 · Bosque Verde"]');
+  await page.click(node('.sp-route', '^=', 'Ruta 2 · Bosque Verde'));
   await page.waitFor(`/Explorar/.test(${side})`);
   ok(await page.eval(`/Ruta 2 · Bosque Verde/.test(${side}) && /Opcional/.test(${side})`), 'al tocar una ruta su ficha dice que es opcional y deja explorarla');
-  await page.click('.sp-gym[title^="Erika"]');
+  await page.click(node('.sp-gym', '^=', 'Erika'));
   await page.waitFor(`/Gimnasio Azulona/.test(${side})`);
   ok(await page.eval(`/Vence antes al anterior/.test(${side}) && !/¡Desafiar!/.test(${side})`), 'al tocar a Erika (bloqueada) su ficha dice que antes hay que vencer al anterior');
 
@@ -84,17 +87,23 @@ module.exports = async ({ page, player, ok }) => {
     await page.click('.title-panel button.primary');
     await page.waitFor(`window.__app.ui.view === 'menu'`);
     await openStory();
-    await page.waitFor(`document.querySelector('.story-path .sp-gym[title*="Tu siguiente reto"]')`);
-    await new Promise(r => setTimeout(r, 400));   // (se coloca en el siguiente reto al abrir)
+    // (al abrir se elige el siguiente reto, y en ese mismo momento el camino se coloca en él)
+    await page.waitFor(`/Gimnasio Carmín/.test(${side})`);
     const fits = await page.eval(`(() => {
-      const box = document.querySelector('.story-path').getBoundingClientRect(), now = document.querySelector('.sp-gym[title*="Tu siguiente reto"]');
+      const box = document.querySelector('.story-path').getBoundingClientRect(), now = document.querySelector(${JSON.stringify(node('.sp-gym', '*=', 'Tu siguiente reto'))});
       const inside = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom && r.bottom <= innerHeight; };
       const name = now.querySelector('.sp-name'), r = name.getBoundingClientRect(), top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
       return inside(now.querySelector('.sp-dot')) && inside(name) && name.innerText.trim() === 'Lt. Surge' && !!top && name.contains(top);
     })()`);
     ok(fits, `en ${w}×${h} se ve entero el siguiente reto con su nombre, sin nada encima`);
-    ok(await page.eval(`(() => { const b = [...document.querySelectorAll('.story-side button')].find(b => b.textContent.includes('¡Desafiar!')); if (!b) return false; const r = b.getBoundingClientRect(), top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-      return r.bottom <= innerHeight && r.top >= 0 && !!top && b.contains(top); })()`), `en ${w}×${h} el «¡Desafiar!» de la ficha está a la vista`);
+    const inView = text => `(() => { const b = [...document.querySelectorAll('.story-side button')].find(b => b.textContent.includes(${JSON.stringify(text)})); if (!b) return false;
+      const r = b.getBoundingClientRect(), top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return r.bottom <= innerHeight && r.top >= 0 && !!top && b.contains(top); })()`;
+    ok(await page.eval(inView('¡Desafiar!')), `en ${w}×${h} el «¡Desafiar!» de la ficha está a la vista`);
+    // (y al tocar una ruta, su «Explorar», aunque su ficha sea más larga)
+    await page.click(node('.sp-route', '^=', 'Ruta 6 · Cueva Diglett'));
+    await page.waitFor(`/Explorar/.test(${side})`);
+    ok(await page.eval(inView('Explorar')), `en ${w}×${h}, al tocar una ruta, el «Explorar» de su ficha está a la vista`);
   }
 
   // En el ordenador, «Desafiar» del camino empieza el combate contra Lt. Surge

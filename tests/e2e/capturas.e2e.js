@@ -10,8 +10,11 @@ module.exports = async ({ page, player, ok, log }) => {
   const dex = await page.eval(`Data.routeWild(Data.NODES['${ROUTE}']).list[0].dex`);
   const openRoute = async () => {
     await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); localStorage.setItem('arena.storyGuide', '1'); window.__app.ui.show('story'); true`);
-    await page.waitFor(`document.querySelector('.node.route')`);
-    await page.eval(`[...document.querySelectorAll('.node.route')].find(b => /Ruta 1/.test(b.title || b.textContent)).click(); true`);
+    // (Historia abre en el Camino: la Ruta 1, tocándola en él; su nombre está en su tooltip, en title o, tras pasar
+    // el ratón, en data-tip)
+    const ruta1 = '.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]';
+    await page.waitFor(`document.querySelector('${ruta1}')`);
+    await page.click(ruta1);
     await page.waitFor(`document.querySelector('.route-list .mini .catch-pips')`);
   };
   const card = `[...document.querySelectorAll('.route-list .mini')].find(c => c.title.startsWith(Data.SPECIES[${dex}].name))`;
