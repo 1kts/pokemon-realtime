@@ -13,8 +13,12 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`[...document.querySelectorAll('.node.route')].some(b => /Bosque Verde/.test(b.textContent))`);
   await page.eval(`[...document.querySelectorAll('.node.route')].find(b => /Bosque Verde/.test(b.textContent)).click(); true`);
   await page.waitFor(`document.querySelector('.route-list')`);
-  ok(await page.eval(`document.querySelectorAll('.route-list .mini').length === 4 && !!document.querySelector('.rotation.short')`), 'la ficha del Bosque Verde enseña las 4 especies de esta tanda y cuándo cambian');
-  ok(await page.eval(`document.querySelectorAll('.route-sp .mini.rare').length === 1 && /\\?\\?\\?/.test(document.querySelector('.route-sp').textContent)`), 'y su especial aparte, en silueta');
+  ok(await page.eval(`document.querySelectorAll('.route-list .mini:not(.rare)').length === 4 && !!document.querySelector('.rotation.short')`), 'la ficha del Bosque Verde enseña las 4 especies de esta tanda y cuándo cambian');
+  // (el especial, en la misma lista, el último, en silueta y dorado: su borde, tal como se pinta)
+  const sp = await page.eval(`(() => { const all = [...document.querySelectorAll('.route-list .mini')], r = document.querySelectorAll('.route-list .mini.rare'), last = all[all.length - 1];
+    const [R, G, B] = getComputedStyle(last).borderTopColor.match(/[\\d.]+/g).map(Number);
+    return { n: r.length, last: r[0] === last, hidden: /\\?\\?\\?/.test(last.textContent), gold: R > 200 && G > 160 && B < 120 }; })()`);
+  ok(sp.n === 1 && sp.last && sp.hidden && sp.gold, `y su especial en la misma lista, al final, en silueta y en dorado (${JSON.stringify(sp)})`);
   ok(await page.eval(`document.querySelectorAll('.route-all .ra').length === Data.NODES['k-ruta2'].wild.length + 1 && /Pueden salir aquí \\(8\\)/.test(document.querySelector('.route-all summary').textContent)`), 'plegado, todo lo que puede salir allí: sus 7 especies y Pikachu');
 
   // Mapa o lista: la lista ordena el viaje (rutas y líderes) y resalta lo que toca

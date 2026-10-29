@@ -720,7 +720,7 @@ export class UI {
       const w = Data.routeWild(n);
       box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
       box.append(this.rotationTimer('short'));
-      // Las 4 de esta tanda (cambian cada 6 horas) y, aparte, su especial y los errantes
+      // Las 4 de esta tanda (cambian cada 6 horas) y, en la misma lista y en dorado, su especial y los errantes
       const list = el('div', 'mini-team route-list');
       const normal = 1 - w.chance - w.roamChance;
       for (const { dex, weight, min, max } of w.list) {
@@ -732,22 +732,17 @@ export class UI {
         c.append(this.catchPips(dex));
         list.append(c);
       }
-      box.append(list);
       // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos
       const specials = [...w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length })), ...w.roam.map(dex => ({ dex, roam: true, chance: w.roamChance / w.roam.length }))];
-      if (specials.length) {
-        box.append(el('h4', 'route-sp-h', t('Especial')));
-        const sp = el('div', 'mini-team route-sp');
-        for (const x of specials) {
-          const known = p.caught.includes(x.dex);
-          const c = el('div', 'mini rare' + (known ? ' caught' : ''));
-          c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
-          c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} % · ${lv(w.level)}`));
-          c.title = x.roam ? t('Vaga por todas las rutas de Johto') : x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
-          sp.append(c);
-        }
-        box.append(sp);
+      for (const x of specials) {
+        const known = p.caught.includes(x.dex);
+        const c = el('div', 'mini rare' + (known ? ' caught' : ''));
+        c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
+        c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} % · ${lv(w.level)}`));
+        c.title = x.roam ? t('Vaga por todas las rutas de Johto') : x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
+        list.append(c);
       }
+      box.append(list);
       // Todo lo que puede salir en la zona, para saber qué esperar de las próximas tandas
       const all = el('details', 'route-all');
       all.append(el('summary', '', t('Pueden salir aquí ({n})', { n: n.wild.length + (Data.ROUTE_SPECIALS[n.id] || []).length })));

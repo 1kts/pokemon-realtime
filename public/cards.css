@@ -968,9 +968,8 @@ body.in-battle .ui-confirm { cursor: auto; }
 .title-panel .auth button.primary:disabled { filter: grayscale(.4) brightness(.8); }
 
 /* Ruta: todas sus especies (más pequeñas, en rejilla) y los especiales aparte */
-.route-list, .route-sp { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
-.route-list .mini small, .route-sp .mini small { font-size: 11px; line-height: 1.25; }
-.route-sp-h { margin: 10px 0 4px; color: var(--gold-hi, #ffe27a); font: 800 13px var(--display); text-transform: uppercase; letter-spacing: .5px; }
+.route-list { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+.route-list .mini small { font-size: 11px; line-height: 1.25; }
 
 /* Ruta: todo lo que puede salir, plegado bajo la tanda actual */
 .route-all { margin-top: 8px; }
