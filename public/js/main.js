@@ -1,4 +1,5 @@
 // Arranque del cliente: renderer 3D con bloom, bucle principal, red y cambio entre menús y combate.
+import './tema.js';   // (primero: las propuestas de aspecto, si se piden, antes de pintar nada)
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';

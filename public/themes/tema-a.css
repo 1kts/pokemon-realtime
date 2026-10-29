@@ -1,0 +1,180 @@
+/* ===================================================================================
+   Propuesta A · «Caja de texto» (docs/propuestas-ui.md). Solo con ?tema=a: se carga después de las demás hojas
+   y todo va bajo body.tema-a, así que sin el tema no cambia nada.
+   La idea: los menús de los juegos de GBA/DS. Lo que se lee (el menú, la ficha, el objetivo) va en cajas de papel
+   claro con marco doble y sombra dura; lo de alrededor (la cabecera, el camino) es el «mundo», oscuro y liso. Nada
+   de degradados, brillos ni reflejos. El dorado, solo para lo que toca hacer ahora; el cursor ▶ de los menús de
+   Pokémon marca lo que eliges, y el único movimiento de cada pantalla es ese cursor en lo que toca.
+   =================================================================================== */
+body.tema-a {
+  --ta-ink: #1e2433;     /* texto sobre el papel (14:1) */
+  --ta-paper: #f7f4ea;   /* el papel de las cajas */
+  --ta-paper-2: #e9e3d0; /* huecos y filas dentro de las cajas */
+  --ta-frame: #2b3a67;   /* marco de fuera */
+  --ta-band: #7fa6d9;    /* banda de dentro del marco */
+  --ta-mute: #535c70;    /* texto secundario sobre el papel (5,9:1) */
+  --ta-now: #f5bf1a;     /* lo que toca: solo eso es dorado */
+  --ta-field: #131a38;   /* el «mundo»: cabecera y camino */
+  --ta-line: #3c5a96;    /* bordes del mundo */
+  --ta-shade: rgba(6, 9, 22, .6);
+}
+
+/* ---------- Lo común: cajas de papel, el mundo liso y sin efectos ---------- */
+body.tema-a #screen { background: linear-gradient(180deg, rgba(6,10,22,.55), rgba(6,10,22,.3) 40%, rgba(6,10,22,.65)); }
+body.tema-a .menu-card, body.tema-a .panel, body.tema-a .node-info, body.tema-a .story-head .map-goal, body.tema-a .story-info, body.tema-a .feature-sign {
+  background: var(--ta-paper); color: var(--ta-ink); backdrop-filter: none;
+  border: 3px solid var(--ta-frame); border-radius: 10px;
+  box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 0 0 5px var(--ta-band), 0 4px 0 var(--ta-shade);
+}
+body.tema-a :is(.menu-card, .coll-tile, .hub-tz)::after, body.tema-a .panel::before { content: none; }
+/* Sin luces que laten: el único movimiento de cada pantalla es el cursor de lo que toca */
+body.tema-a :is(.coll-tile.ready, .missions-widget.has-ready, .hub-tz.ready, .hub-mod .news-btn, .menu-card.tutorial.ready, .mission.done, .tb-btn.support svg) { animation: none !important; }
+/* Títulos sin marca dorada delante */
+body.tema-a :is(.mw-head b, .hub-coll h3, .node-info > h3, .panel:not(.modal-box) > h3)::before { content: none; }
+/* Etiquetas en minúsculas, como frases */
+body.tema-a :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
+/* Botones secundarios: papel con borde de tinta; el principal (dorado) se reserva para lo que toca */
+body.tema-a button.primary { background: var(--ta-now); color: var(--ta-ink); text-shadow: none; border: 3px solid var(--ta-ink); border-radius: 8px; box-shadow: 0 3px 0 var(--ta-ink); }
+body.tema-a button.primary:hover:not(:disabled) { background: #ffd040; box-shadow: 0 3px 0 var(--ta-ink); }
+body.tema-a :focus-visible { outline: 3px solid var(--ta-now) !important; outline-offset: 2px; }
+/* El cursor ▶ de los menús: sale en lo que eliges (ratón o teclado) y, quieto, en lo que toca */
+@keyframes taCursor { 50% { transform: translateX(4px); } }
+
+/* ---------- Cabecera: el mundo, liso ---------- */
+body.tema-a .hub-mod { background: var(--ta-field); border: 2px solid var(--ta-line); border-radius: 8px; box-shadow: 0 4px 0 var(--ta-shade); backdrop-filter: none; }
+body.tema-a .hub-mod .tb-btn, body.tema-a .hub-me .pill.coins, body.tema-a .hub-me .pill.gems, body.tema-a .hub-mod .lang-cur, body.tema-a .inner-bar .tb-left .back {
+  background: #1f2a52; border: 2px solid var(--ta-line); border-radius: 6px; box-shadow: none; }
+body.tema-a .hub-mod .tb-btn:hover:not(:disabled), body.tema-a .inner-bar .tb-left .back:hover { background: #2a3870; border-color: #a9c4ee; box-shadow: none; }
+body.tema-a .hub-left .hub-tz { border: 2px solid var(--ta-line); box-shadow: 0 4px 0 var(--ta-shade); background: var(--ta-field); }
+body.tema-a .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #fff; filter: none; }
+body.tema-a .hub-tz small { color: #c9d3ea !important; }
+
+/* ---------- Menú ---------- */
+body.tema-a .menu-sec .sec-head h3 { font: 800 17px var(--display); color: #fff; text-shadow: 0 2px 0 var(--ta-shade); }
+body.tema-a .menu-sec .sec-head h3::before { content: none; }
+body.tema-a .menu-sec .sec-head small { color: #dfe6f5; }
+/* Cada modo: papel con una franja de su color a la izquierda (sin degradado, sin halo) */
+body.tema-a .menu-card { box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 0 0 5px var(--ta-band), inset 14px 0 0 var(--c), 0 4px 0 var(--ta-shade); padding-left: 30px; transition: transform .12s; }
+body.tema-a .menu-card::before { content: none; }
+body.tema-a .menu-card:hover:not(:disabled) { transform: none; background: #fffdf5; border-color: var(--ta-ink); box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 0 0 5px var(--ta-band), inset 14px 0 0 var(--c), 0 4px 0 var(--ta-shade); }
+body.tema-a .menu-card b { color: var(--ta-ink); text-shadow: none; }
+body.tema-a .menu-card b .card-ico { background: color-mix(in srgb, var(--c) 28%, var(--ta-paper)); box-shadow: inset 0 0 0 2px var(--ta-ink); border-radius: 6px; }
+body.tema-a .menu-card span { color: var(--ta-mute); text-shadow: none; font-weight: 700; }
+body.tema-a .menu-card .art { filter: drop-shadow(0 3px 0 rgba(30,36,51,.25)); }
+body.tema-a .menu-card:hover .art, body.tema-a .menu-card.wide:hover .art { transform: none; }
+body.tema-a .menu-card.wide:hover .art, body.tema-a .menu-card.wide .art { transform: translateY(-50%); }
+body.tema-a .menu-card .pvp-live { color: var(--ta-ink); background: var(--ta-paper-2); }
+/* «Jugar»: texto con el cursor; solo el de Historia (lo que toca) es el botón dorado y su ▶ se mueve */
+body.tema-a .menu-card .go { transform: none; background: none; color: var(--ta-ink); box-shadow: none; border-radius: 6px; padding: 3px 10px 3px 4px; font: 800 14px var(--display); }
+body.tema-a .menu-card .go::before { content: '▶'; display: inline-block; margin-right: 6px; font-size: 11px; opacity: 0; }
+body.tema-a .menu-card:is(:hover, :focus-visible) .go::before { opacity: 1; }
+body.tema-a .menu-card:hover .go { transform: none; box-shadow: none; }
+body.tema-a .menu-card.story .go { background: var(--ta-now); border: 2px solid var(--ta-ink); box-shadow: 0 3px 0 var(--ta-ink); padding: 3px 12px 3px 8px; }
+body.tema-a .menu-card.story .go::before { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) { body.tema-a .menu-card.story .go::before { animation: taCursor 1s steps(2, jump-none) infinite; } }
+body.tema-a .menu-card.tutorial.ready { border-color: var(--ta-frame); }
+
+/* Colección y misiones: filas de menú, sin tarjetas dentro de la caja */
+body.tema-a .hub-coll h3, body.tema-a .mw-head b { color: var(--ta-ink); }
+body.tema-a .coll-tile, body.tema-a .coll-tile.ready { background: var(--ta-paper-2); border: 2px solid transparent !important; border-radius: 6px; box-shadow: none; color: var(--ta-ink); }
+body.tema-a .coll-tile:hover:not(:disabled) { transform: none; border-color: var(--ta-ink) !important; box-shadow: none; background: #fffdf5; }
+body.tema-a .coll-tile:hover:not(:disabled) img { transform: none; }
+body.tema-a .coll-tile .coll-txt b { color: var(--ta-ink); }
+body.tema-a .coll-tile .coll-txt small { color: var(--ta-mute); }
+body.tema-a .coll-tile img { filter: none; }
+body.tema-a .missions-widget.has-ready { border: 3px solid var(--ta-frame) !important; }
+body.tema-a .mw-head .go { color: var(--ta-mute); }
+body.tema-a .mw-head .mw-title:hover, body.tema-a .mw-head .go:hover { color: var(--ta-frame); }
+body.tema-a .mw-head button.claim-all { background: var(--ta-paper); color: var(--ta-ink); border: 2px solid var(--ta-ink); box-shadow: 0 2px 0 var(--ta-ink); }
+body.tema-a .mw-head button.claim-all small { background: var(--ta-ink); color: #fff; }
+body.tema-a .mw-sub { color: var(--ta-mute); font-size: 12px; }
+body.tema-a .mission, body.tema-a .mission.done:not(.claimed) { background: none; border: 0; border-bottom: 2px dotted #c9c1a8; border-radius: 0; box-shadow: none; }
+body.tema-a .mission .m-body b { color: var(--ta-ink); }
+body.tema-a .m-ico { background: var(--ta-paper-2); box-shadow: none; filter: none; }
+/* La barra de progreso, como la de PS de los combates de GBA: hueco oscuro con borde y relleno liso */
+body.tema-a .m-bar { background: var(--ta-ink); border: 2px solid var(--ta-ink); border-radius: 4px; box-shadow: none; }
+body.tema-a .m-bar i, body.tema-a .mission.done .m-bar i { background: #58d070; box-shadow: none; border-radius: 2px; }
+body.tema-a .m-bar span { color: #fff; text-shadow: none; }
+body.tema-a .howto { background: var(--ta-field); border: 2px solid var(--ta-line); border-radius: 8px; backdrop-filter: none; }
+
+/* ---------- Historia ---------- */
+/* El nombre del sitio, como el cartel que sale al entrar en un pueblo */
+body.tema-a .feature-sign { padding: 8px 22px; }
+body.tema-a .feature-sign h2 { color: var(--ta-ink); text-shadow: none; }
+body.tema-a .feature-sign small { color: var(--ta-mute); }
+body.tema-a .subbar { background: var(--ta-field); border: 2px solid var(--ta-line); border-radius: 8px; box-shadow: 0 4px 0 var(--ta-shade); backdrop-filter: none; }
+/* Regiones: pestañas lisas; la elegida es una caja de papel (no dorada) */
+body.tema-a .subbar .region-tabs button.rg { background: #1f2a52; border: 2px solid var(--ta-line); border-radius: 6px; box-shadow: none; }
+body.tema-a .subbar .region-tabs button.rg:hover:not(.sel) { transform: none; border-color: #a9c4ee; }
+body.tema-a .subbar .region-tabs button.rg.sel { background: var(--ta-paper); border: 3px solid var(--ta-frame); box-shadow: inset 0 0 0 2px var(--ta-band); }
+body.tema-a .subbar .region-tabs button.rg.sel b { color: var(--ta-ink); text-shadow: none; }
+body.tema-a .subbar .region-tabs button.rg.sel small { color: var(--ta-mute); }
+body.tema-a .rg-pips i { box-shadow: none; }
+body.tema-a .rg-soon { background: none; border: 0; }
+body.tema-a .rg-soon > small { font: 700 12px var(--text); color: #b8c3dc; }
+body.tema-a .region-chips .rgc { background: #1f2a52; border: 2px solid var(--ta-line); border-radius: 6px; box-shadow: none; }
+body.tema-a .region-chips .rgc.sel { background: var(--ta-paper); border: 2px solid var(--ta-frame); box-shadow: inset 0 0 0 2px var(--ta-band); }
+body.tema-a .region-chips .rgc.sel b { color: var(--ta-ink); }
+body.tema-a .region-chips .rgc.sel small { color: var(--ta-mute); }
+body.tema-a .badge-slot { background: rgba(0,0,0,.35); box-shadow: none; }
+/* El objetivo: una caja de texto que dice lo que toca */
+body.tema-a .story-head .map-goal > small:first-child { font: 800 13px var(--text); color: var(--ta-mute); }
+body.tema-a .story-head .map-goal b { color: var(--ta-ink); }
+body.tema-a .story-head .map-goal small, body.tema-a .story-head .map-goal .where { color: var(--ta-mute); }
+body.tema-a .goal-leader { background: none; }
+body.tema-a .goal-leader .goal-face { filter: none; }
+body.tema-a .goal-badge { background: var(--ta-paper-2); box-shadow: inset 0 0 0 2px var(--ta-ink); }
+body.tema-a .goal-badge img { filter: brightness(0) opacity(.55); }
+body.tema-a .goal-routes .chip { background: var(--ta-paper-2); color: var(--ta-ink); border: 2px solid transparent; border-radius: 6px; box-shadow: none; }
+body.tema-a .goal-routes .chip:hover { border-color: var(--ta-ink); }
+body.tema-a .story-info .rotation { color: var(--ta-mute); }
+body.tema-a .story-info .rotation b { color: var(--ta-ink); text-shadow: none; }
+body.tema-a .story-info .help { background: var(--ta-paper); color: var(--ta-ink); border: 2px solid var(--ta-ink); border-radius: 8px; box-shadow: 0 3px 0 var(--ta-ink); }
+body.tema-a .story-info .help svg { color: var(--ta-ink); }
+
+/* El camino: el mapa del mundo, oscuro y liso, con el mismo marco que las cajas */
+body.tema-a .story-pathwrap { background: var(--ta-field); border: 3px solid var(--ta-frame); border-radius: 10px; box-shadow: inset 0 0 0 2px var(--ta-field), inset 0 0 0 5px var(--ta-line), 0 4px 0 var(--ta-shade); }
+body.tema-a .story-pathwrap > .story-mode { background: var(--ta-paper); border: 2px solid var(--ta-frame); border-radius: 8px; box-shadow: 0 3px 0 var(--ta-shade); }
+body.tema-a .story-mode button { color: var(--ta-ink); border-radius: 5px; }
+body.tema-a .story-mode button.sel { background: var(--ta-ink); color: #fff; }
+body.tema-a .sp-gym.done .sp-dot { box-shadow: 0 0 0 4px var(--ta-field); }
+body.tema-a .sp-gym .sp-dot, body.tema-a .sp-route .sp-dot { box-shadow: 0 0 0 4px var(--ta-field); }
+body.tema-a .sp-route:not(.locked) .sp-dot { background: #8fce6a; }
+body.tema-a .sp-route .sp-dot .mon-icon { filter: none; }
+body.tema-a .sp-gym .sp-dot { background: #1f2a52; }
+/* Lo que toca: dorado, su nombre en una caja de papel con el cursor ▶ (lo único que se mueve) */
+body.tema-a .sp-gym.now .sp-dot { animation: none; border-color: var(--ta-now); box-shadow: 0 0 0 4px var(--ta-field), 0 0 0 7px var(--ta-now); }
+body.tema-a .sp-gym.now .sp-name { background: var(--ta-paper); color: var(--ta-ink); border: 2px solid var(--ta-frame); border-radius: 6px; box-shadow: 0 3px 0 var(--ta-shade); overflow: visible; }
+body.tema-a .sp-gym.now .sp-name b::before { content: '▶'; display: inline-block; margin-right: 5px; font-size: .75em; }
+@media (prefers-reduced-motion: no-preference) { body.tema-a .sp-gym.now .sp-name b::before { animation: taCursor 1s steps(2, jump-none) infinite; } }
+body.tema-a .sp-gym.now .sp-name small { color: var(--ta-mute); opacity: 1; }
+body.tema-a .sp-ord { box-shadow: 0 0 0 2px var(--ta-field); }
+body.tema-a .sp-count { background: #1f2a52; border: 1px solid var(--ta-line); }
+body.tema-a .sp-count.full { background: #8fe36a; border-color: #8fe36a; }
+body.tema-a .sp-new { background: var(--ta-paper); color: var(--ta-ink); box-shadow: 0 0 0 2px var(--ta-field); }
+body.tema-a .sp-legend { border-top: 2px solid var(--ta-line); color: #dfe6f5; }
+body.tema-a .sp-go { border-radius: 8px; }
+
+/* La ficha del sitio: la caja de texto grande */
+body.tema-a .node-info h3, body.tema-a .node-info .leader b { color: var(--ta-ink); }
+body.tema-a .node-info .leader, body.tema-a .node-info p.small, body.tema-a .node-info h4 { color: var(--ta-mute); }
+body.tema-a .node-info .type { box-shadow: inset 0 0 0 2px rgba(30,36,51,.35); text-shadow: none; }
+body.tema-a .story-side .node-info .leader-head, body.tema-a .leader-head { background: none; }
+body.tema-a .leader-head .leader-sprite { background: none; filter: none; }
+body.tema-a .node-info .mini-team .mini { background: var(--ta-paper-2); border: 2px solid transparent; border-radius: 6px; box-shadow: none; color: var(--ta-ink); }
+body.tema-a .node-info .mini-team .mini small { color: var(--ta-ink); }
+body.tema-a .node-info button.mini:hover { border-color: var(--ta-ink); background: #fffdf5; }
+body.tema-a .node-info .mini.pick.empty .plus { color: var(--ta-ink); }
+body.tema-a .story-side .node-info .arena-info, body.tema-a .arena-info { background: var(--ta-paper-2); border: 0; border-left: 5px solid var(--ta-band); border-radius: 4px; color: var(--ta-ink); }
+body.tema-a .arena-info b { color: var(--ta-ink); }
+body.tema-a .node-info .link { color: var(--ta-frame); }
+body.tema-a .story-tools .coll-tile { background: var(--ta-paper-2); }
+
+/* ---------- Móvil en horizontal: marcos más finos ---------- */
+@media (max-height: 500px) {
+  body.tema-a .menu-card, body.tema-a .panel, body.tema-a .node-info, body.tema-a .story-head .map-goal, body.tema-a .story-info, body.tema-a .feature-sign { border-width: 2px; box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 0 0 4px var(--ta-band), 0 3px 0 var(--ta-shade); }
+  /* (la franja del modo, arriba: a la izquierda no cabían los nombres) */
+  body.tema-a .menu-card, body.tema-a .menu-card:hover:not(:disabled) { padding: 11px 8px 8px; box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 6px 0 var(--c), inset 0 0 0 4px var(--ta-band), 0 3px 0 var(--ta-shade); }
+  body.tema-a .story-pathwrap { border-width: 2px; box-shadow: inset 0 0 0 2px var(--ta-field), inset 0 0 0 4px var(--ta-line), 0 3px 0 var(--ta-shade); }
+  body.tema-a .sp-route .sp-count { box-shadow: 0 0 0 2px var(--ta-field); }
+}

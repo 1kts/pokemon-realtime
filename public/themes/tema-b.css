@@ -1,0 +1,180 @@
+/* ===================================================================================
+   Propuesta B · «Pokédex» (docs/propuestas-ui.md). Solo con ?tema=b: se carga después de las demás hojas y todo va
+   bajo body.tema-b, así que sin el tema no cambia nada.
+   La idea: la Pokédex como aparato. Superficies lisas de color carbón, separadas por líneas finas y no por sombras;
+   esquinas pequeñas; letra Nunito en todo, con números tabulares, como una ficha de datos. El color lo ponen los
+   tipos (y el de cada modo, como pestaña de índice); lo atrevido de cada pantalla va en un solo sitio: Historia en
+   el menú (un bloque de color liso) y el siguiente reto en el camino. El dorado, solo para lo que toca. Movimiento:
+   uno por pantalla y una sola vez (sin bucles).
+   =================================================================================== */
+body.tema-b {
+  --tb-body: #17191f;    /* superficie de los paneles */
+  --tb-row: #22252e;     /* filas y huecos */
+  --tb-line: #363a47;    /* líneas finas */
+  --tb-text: #eef0f4;    /* texto (15:1 sobre la superficie) */
+  --tb-mute: #a7adbb;    /* texto secundario (7,9:1) */
+  --tb-red: #c8272b;     /* el rojo de la Pokédex: solo el filo del cartel de cada pantalla */
+  --tb-now: #ffcb05;     /* lo que toca */
+  --display: 'Nunito', system-ui, sans-serif;
+}
+
+/* ---------- Lo común ---------- */
+body.tema-b #screen { background: linear-gradient(180deg, rgba(10,11,15,.72), rgba(10,11,15,.5) 40%, rgba(10,11,15,.8)); }
+body.tema-b .menu-card, body.tema-b .panel, body.tema-b .node-info, body.tema-b .story-head .map-goal, body.tema-b .story-info,
+body.tema-b .feature-sign, body.tema-b .subbar, body.tema-b .hub-mod, body.tema-b .story-pathwrap, body.tema-b .howto {
+  background: var(--tb-body); color: var(--tb-text); backdrop-filter: none;
+  border: 1px solid var(--tb-line); border-radius: 6px; box-shadow: none;
+}
+body.tema-b .menu-card::after, body.tema-b .coll-tile::after, body.tema-b .hub-tz::after, body.tema-b .panel::before { content: none; }
+body.tema-b .coll-tile.ready, body.tema-b .missions-widget.has-ready, body.tema-b .hub-tz.ready, body.tema-b .hub-mod .news-btn, body.tema-b .menu-card.tutorial.ready,
+body.tema-b .mission.done, body.tema-b .tb-btn.support svg, body.tema-b .sp-gym.now .sp-dot { animation: none !important; }
+body.tema-b .mw-head b::before, body.tema-b .hub-coll h3::before, body.tema-b .node-info > h3::before, body.tema-b .panel:not(.modal-box) > h3::before { content: none; }
+body.tema-b :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
+body.tema-b :is(.story-info .rotation b, .m-bar span, .coll-txt small, .rg small, .sp-count) { font-variant-numeric: tabular-nums; }
+body.tema-b button.primary { background: var(--tb-now); color: #1a1405; text-shadow: none; border: 0; border-radius: 6px; box-shadow: none; font: 900 17px var(--display); }
+body.tema-b button.primary:hover:not(:disabled) { background: #ffd83d; box-shadow: none; }
+body.tema-b :focus-visible { outline: 2px solid #fff !important; outline-offset: 2px; }
+
+/* ---------- Cabecera ---------- */
+body.tema-b .hub-mod .tb-btn, body.tema-b .hub-me .pill.coins, body.tema-b .hub-me .pill.gems, body.tema-b .hub-mod .lang-cur, body.tema-b .inner-bar .tb-left .back {
+  background: var(--tb-row); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
+body.tema-b .hub-mod .tb-btn:hover:not(:disabled), body.tema-b .inner-bar .tb-left .back:hover { background: #2c3040; border-color: #6b7183; box-shadow: none; }
+body.tema-b .hub-left .hub-tz { border: 1px solid var(--tb-line); box-shadow: none; background: var(--tb-body); }
+body.tema-b .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--tb-text); filter: none; }
+body.tema-b .hub-tz small { color: var(--tb-mute) !important; }
+body.tema-b .hub-ava { background: var(--tb-line); }
+
+/* ---------- Menú ---------- */
+/* Secciones: una línea con su nombre, como un índice */
+body.tema-b .menu-sec .sec-head { align-items: center; }
+body.tema-b .menu-sec .sec-head h3 { font: 800 14px var(--text); color: var(--tb-text); text-shadow: none; }
+body.tema-b .menu-sec .sec-head h3::before { content: none; }
+body.tema-b .menu-sec .sec-head small { color: var(--tb-mute); text-shadow: none; }
+body.tema-b .menu-sec .sec-head::after { content: ''; flex: 1; height: 1px; background: var(--tb-line); }
+/* Cada modo: la superficie lisa con su color como pestaña arriba */
+body.tema-b .menu-card { box-shadow: inset 0 4px 0 var(--c); transition: background .12s, border-color .12s; }
+body.tema-b .menu-card::before { content: none; }
+body.tema-b .menu-card:hover:not(:disabled) { transform: none; background: #1f222a; border-color: #6b7183; box-shadow: inset 0 4px 0 var(--c); }
+body.tema-b .menu-card b { font: 900 26px var(--display); letter-spacing: -.3px; color: var(--tb-text); text-shadow: none; }
+body.tema-b .menu-card.wide b { font-size: 34px; }
+body.tema-b .menu-card b .card-ico { background: var(--tb-row); box-shadow: inset 0 0 0 1px var(--tb-line); border-radius: 4px; }
+body.tema-b .menu-card span { color: var(--tb-mute); text-shadow: none; font-weight: 700; }
+body.tema-b .menu-card .art { filter: none; }
+body.tema-b .menu-card:hover .art { transform: none; }
+body.tema-b .menu-card.wide .art, body.tema-b .menu-card.wide:hover .art { transform: translateY(-50%); }
+body.tema-b .menu-card .pvp-live { background: var(--tb-row); color: var(--tb-text); }
+body.tema-b .menu-card .pvp-live .dot { box-shadow: none; }
+body.tema-b .menu-card .go { transform: none; background: none; color: var(--tb-mute); box-shadow: none; border-radius: 4px; padding: 3px 0; font: 800 14px var(--display); }
+body.tema-b .menu-card:hover .go { transform: none; box-shadow: none; color: var(--tb-text); }
+/* Historia, lo atrevido del menú: un bloque liso del color del modo, con el único botón dorado */
+body.tema-b .menu-card.story { --c: #ef5a3c; background: var(--c); border-color: var(--c); box-shadow: none; }
+body.tema-b .menu-card.story:hover:not(:disabled) { background: #f26a4e; border-color: #fff; box-shadow: none; }
+body.tema-b .menu-card.story b { color: #1a0f0b; }
+body.tema-b .menu-card.story b .card-ico { background: rgba(26,15,11,.15); box-shadow: none; }
+body.tema-b .menu-card.story span { color: #2a1712; }
+body.tema-b .menu-card.story .go { background: var(--tb-now); color: #1a1405; padding: 5px 16px; border-radius: 4px; }
+/* (lo único que se mueve en el menú: al entrar, Historia primero y lo demás un poco después) */
+@keyframes tbLate { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: no-preference) { body.tema-b .menu-sec .menu-card:not(.story), body.tema-b .menu-side { animation: tbLate .35s .18s both; } }
+
+/* Colección y misiones: listas de datos */
+body.tema-b .hub-coll h3, body.tema-b .mw-head b { color: var(--tb-text); font: 900 16px var(--display); }
+body.tema-b .coll-tile, body.tema-b .coll-tile.ready { background: var(--tb-row); border: 1px solid transparent !important; border-radius: 4px; box-shadow: none; }
+body.tema-b .coll-tile:hover:not(:disabled) { transform: none; border-color: #6b7183 !important; box-shadow: none; }
+body.tema-b .coll-tile:hover:not(:disabled) img { transform: none; }
+body.tema-b .coll-tile img { filter: none; }
+body.tema-b .coll-tile .coll-txt b { color: var(--tb-text); }
+body.tema-b .coll-tile .coll-txt small { color: var(--tb-mute); }
+body.tema-b .missions-widget.has-ready { border: 1px solid var(--tb-line) !important; }
+body.tema-b .mw-head .go { color: var(--tb-mute); }
+body.tema-b .mw-head button.claim-all { background: var(--tb-row); color: var(--tb-text); border: 1px solid #6b7183; box-shadow: none; border-radius: 4px; font: 800 11px var(--display); }
+body.tema-b .mw-head button.claim-all small { background: var(--tb-text); color: var(--tb-body); }
+body.tema-b .mw-sub { font: 800 12px var(--text); color: var(--tb-mute); }
+body.tema-b .mission, body.tema-b .mission.done:not(.claimed) { background: none; border: 0; border-top: 1px solid var(--tb-line); border-radius: 0; box-shadow: none; }
+body.tema-b .mission .m-body b { color: var(--tb-text); }
+body.tema-b .m-ico { background: var(--tb-row); box-shadow: none; filter: none; border-radius: 4px; }
+body.tema-b .m-bar { background: var(--tb-row); border: 0; border-radius: 2px; box-shadow: none; }
+body.tema-b .m-bar i, body.tema-b .mission.done .m-bar i { background: #5fb3f9; box-shadow: none; border-radius: 2px; }
+body.tema-b .m-bar span { color: var(--tb-text); text-shadow: 0 1px 0 #000; }
+
+/* ---------- Historia ---------- */
+body.tema-b .feature-sign { box-shadow: inset 4px 0 0 var(--tb-red); }
+body.tema-b .feature-sign h2 { font: 900 28px/1 var(--display); letter-spacing: -.3px; text-shadow: none; }
+body.tema-b .feature-sign small { font: 700 14px var(--text); color: var(--tb-mute); }
+/* Regiones: pestañas con la elegida subrayada (en blanco, no en dorado) */
+body.tema-b .subbar .region-tabs button.rg { background: var(--tb-row); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
+body.tema-b .subbar .region-tabs button.rg:hover:not(.sel) { transform: none; border-color: #6b7183; }
+body.tema-b .subbar .region-tabs button.rg.sel { background: #2a2e3a; border-color: #6b7183; box-shadow: inset 0 -3px 0 #fff; }
+body.tema-b .subbar .region-tabs button.rg b { font: 900 17px var(--display); text-shadow: none; }
+body.tema-b .subbar .region-tabs button.rg small { color: var(--tb-mute); }
+body.tema-b .rg-pips i { box-shadow: none; border-radius: 1px; }
+body.tema-b .rg-soon { background: none; border: 0; }
+body.tema-b .rg-soon > small { font: 700 12px var(--text); color: var(--tb-mute); }
+body.tema-b .subbar .rg-soon button.soon { background: none; border: 1px solid var(--tb-line); border-radius: 4px; }
+body.tema-b .region-chips .rgc { background: var(--tb-row); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
+body.tema-b .region-chips .rgc.sel { border: 1px solid #6b7183; box-shadow: inset 0 -3px 0 #fff; }
+body.tema-b .badge-slot { background: var(--tb-row); box-shadow: none; }
+/* El objetivo: una ficha con el color del tipo del líder a la izquierda */
+body.tema-b .story-head .map-goal { box-shadow: inset 6px 0 0 var(--tc, var(--tb-line)); padding-left: 22px; }
+body.tema-b .story-head .map-goal > small:first-child { font: 800 13px var(--text); color: var(--tb-mute); }
+body.tema-b .story-head .map-goal b { font: 900 22px var(--display); letter-spacing: -.3px; }
+body.tema-b .story-head .map-goal small, body.tema-b .story-head .map-goal .where { color: var(--tb-mute); }
+body.tema-b .goal-leader { background: none; }
+body.tema-b .goal-leader .goal-face { filter: none; }
+body.tema-b .goal-badge { background: var(--tb-row); box-shadow: inset 0 0 0 1px var(--tb-line); }
+body.tema-b .goal-routes .chip { background: var(--tb-row); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; color: var(--tb-text); }
+body.tema-b .story-info .rotation { color: var(--tb-mute); font-weight: 700; }
+body.tema-b .story-info .rotation b { font: 900 32px/1 var(--display); color: var(--tb-text); text-shadow: none; }
+body.tema-b .story-info .help { background: var(--tb-row); color: var(--tb-text); border: 1px solid #6b7183; border-radius: 4px; box-shadow: none; }
+body.tema-b .story-info .help svg { color: var(--tb-text); }
+
+/* El camino: la pantalla de la Pokédex, más oscura; el eje recorrido en blanco y lo que falta, punteado */
+body.tema-b .story-pathwrap { background: #101217; }
+body.tema-b .story-pathwrap > .story-mode { background: var(--tb-body); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
+body.tema-b .story-mode button { border-radius: 3px; }
+body.tema-b .story-mode button.sel { background: var(--tb-text); color: var(--tb-body); }
+body.tema-b .sp-start::before { background: #fff; box-shadow: 0 0 0 4px #101217; }
+body.tema-b .sp-start::after, body.tema-b .sp-ch.done .sp-spine::before { background: #fff; height: 3px; }
+body.tema-b .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, #fff 50%, transparent 50%), repeating-linear-gradient(90deg, #4a5060 0 6px, transparent 6px 12px); height: 3px; }
+body.tema-b .sp-spine::before { background: repeating-linear-gradient(90deg, #4a5060 0 6px, transparent 6px 12px); height: 3px; }
+body.tema-b .sp-gym .sp-dot { background: var(--tb-row); box-shadow: 0 0 0 4px #101217; }
+body.tema-b .sp-gym.done .sp-dot { box-shadow: 0 0 0 4px #101217; }
+body.tema-b .sp-route:not(.locked) .sp-dot { background: #2c3040; box-shadow: 0 0 0 3px #101217; }
+body.tema-b .sp-route .sp-dot .mon-icon { filter: none; }
+body.tema-b .sp-route.locked .sp-dot { border: 2px dashed #4a5060; }
+body.tema-b .sp-ord { background: var(--tb-text); color: var(--tb-body); box-shadow: 0 0 0 2px #101217; }
+body.tema-b .sp-count { background: var(--tb-row); border-radius: 3px; }
+body.tema-b .sp-new { background: var(--tb-text); color: var(--tb-body); border-radius: 3px; box-shadow: 0 0 0 2px #101217; }
+/* El siguiente reto: lo atrevido de esta pantalla. Anillo dorado liso; al entrar, una onda (una sola vez) */
+body.tema-b .sp-gym.now .sp-dot { border-color: var(--tb-now); box-shadow: 0 0 0 4px #101217; }
+body.tema-b .sp-gym.now .sp-name { background: var(--tb-now); color: #1a1405; border-radius: 4px; box-shadow: none; }
+body.tema-b .sp-gym.now .sp-ord { background: var(--tb-now); }
+@keyframes tbPing { from { box-shadow: 0 0 0 4px #101217, 0 0 0 4px rgba(255,203,5,.9); } to { box-shadow: 0 0 0 4px #101217, 0 0 0 26px rgba(255,203,5,0); } }
+@media (prefers-reduced-motion: no-preference) { body.tema-b .sp-gym.now .sp-dot { animation: tbPing .9s .3s ease-out 2 !important; } }
+body.tema-b .sp-go { border-radius: 4px; }
+body.tema-b .sp-legend { border-top: 1px solid var(--tb-line); color: var(--tb-mute); }
+body.tema-b .sp-k.done { background: #fff; box-shadow: 0 0 0 2px #101217, 0 0 0 4px #fff; }
+
+/* La ficha del sitio: cabecera con el color del tipo como pestaña */
+body.tema-b .story-side .node-info .leader-head { background: none; box-shadow: inset 0 5px 0 var(--tc); border-radius: 6px 6px 0 0; }
+body.tema-b .node-info h3 { font: 900 22px var(--display); letter-spacing: -.3px; color: var(--tb-text); }
+body.tema-b .node-info .leader, body.tema-b .node-info p.small, body.tema-b .node-info h4 { color: var(--tb-mute); }
+body.tema-b .node-info .leader b { color: var(--tb-text); }
+body.tema-b .node-info .type { border-radius: 3px; box-shadow: none; text-shadow: none; }
+body.tema-b .leader-head .leader-sprite { background: none; filter: none; }
+body.tema-b .node-info .mini-team .mini { background: var(--tb-row); border: 1px solid transparent; border-radius: 4px; box-shadow: none; }
+body.tema-b .node-info button.mini:hover { border-color: #6b7183; }
+body.tema-b .node-info .mini.pick.empty .plus { color: var(--tb-text); }
+body.tema-b .story-side .node-info .arena-info { background: var(--tb-row); border: 0; border-left: 3px solid var(--tc, var(--tb-line)); border-radius: 2px; color: var(--tb-text); }
+body.tema-b .arena-info b { color: var(--tb-text); }
+body.tema-b .node-info .link { color: var(--tb-text); }
+
+/* ---------- Móvil en horizontal ---------- */
+@media (max-height: 500px) {
+  body.tema-b .menu-card b, body.tema-b .menu-card.wide b { font-size: 14px; letter-spacing: 0; }
+  body.tema-b .menu-card.wide b { font-size: 19px; }
+  body.tema-b .menu-card { box-shadow: inset 0 3px 0 var(--c); }
+  body.tema-b .menu-card.story { box-shadow: none; }
+  body.tema-b .feature-sign h2 { font-size: 20px; }
+  body.tema-b .sp-route .sp-count { box-shadow: 0 0 0 2px #101217; }
+}
