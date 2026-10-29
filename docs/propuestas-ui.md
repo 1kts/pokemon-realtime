@@ -1,14 +1,15 @@
 # Propuestas de aspecto para PokéArenas
 
-Hay tres direcciones para elegir antes de cambiar nada. Cada una es una capa opcional, que **no cambia el aspecto
+Hay cuatro direcciones para elegir antes de cambiar nada (la D mezcla la C con el aspecto actual). Cada una es una capa opcional, que **no cambia el aspecto
 de siempre**: sin tema no se carga ninguna hoja.
 
-- Para verla: `?tema=a`, `?tema=b` o `?tema=c` en la dirección (por ejemplo `http://localhost:3000/?tema=b`). Se
+- Para verla: `?tema=a`, `?tema=b`, `?tema=c` o `?tema=d` en la dirección (por ejemplo `http://localhost:3000/?tema=b`). Se
   recuerda en `localStorage` (`arena.tema`) y `?tema=no` la quita.
 - Cómo está hecho: `public/js/tema.js` carga `public/themes/tema-X.css` después de `mobile.css` y pone la clase
   `tema-X` en el `<body>`. Todas las reglas van bajo `body.tema-X`.
 - El test e2e `tests/e2e/temas.e2e.js` comprueba lo siguiente: sin tema no se pide nada, con tema se ve y se recuerda,
-  `?tema=no` lo quita y «¡Desafiar!» sigue a la vista y sin nada encima.
+  `?tema=no` lo quita y «¡Desafiar!» sigue a la vista y sin nada encima. La D se comprueba además por lo que se ve
+  (ver su sección).
 - Alcance: el menú principal y la pantalla de Historia (la vista «Camino» y la ficha de al lado), en escritorio
   (1280×800) y en el móvil en horizontal (844×390). El resto de pantallas sigue con el aspecto actual aunque haya un
   tema puesto.
@@ -46,14 +47,14 @@ y que «Ruta 11 · Ruta 9 · Ruta 10» pase a ser una lista. No está hecho.
 ## Capturas
 
 Están en `docs/propuestas-ui/`, con el mismo perfil de prueba en todas (3 medallas de Kanto y 4 Pokémon). En cada
-fila se compara el aspecto actual con las tres propuestas.
+fila se compara el aspecto actual con las cuatro propuestas.
 
-| | Actual | A · Caja de texto | B · Pokédex | C · Ruta |
-|---|---|---|---|---|
-| Menú, escritorio | ![](propuestas-ui/actual-escritorio-menu.png) | ![](propuestas-ui/a-escritorio-menu.png) | ![](propuestas-ui/b-escritorio-menu.png) | ![](propuestas-ui/c-escritorio-menu.png) |
-| Historia, escritorio | ![](propuestas-ui/actual-escritorio-historia.png) | ![](propuestas-ui/a-escritorio-historia.png) | ![](propuestas-ui/b-escritorio-historia.png) | ![](propuestas-ui/c-escritorio-historia.png) |
-| Menú, móvil | ![](propuestas-ui/actual-movil-menu.png) | ![](propuestas-ui/a-movil-menu.png) | ![](propuestas-ui/b-movil-menu.png) | ![](propuestas-ui/c-movil-menu.png) |
-| Historia, móvil | ![](propuestas-ui/actual-movil-historia.png) | ![](propuestas-ui/a-movil-historia.png) | ![](propuestas-ui/b-movil-historia.png) | ![](propuestas-ui/c-movil-historia.png) |
+| | Actual | A · Caja de texto | B · Pokédex | C · Ruta | D · Ruta con cuerpo |
+|---|---|---|---|---|---|
+| Menú, escritorio | ![](propuestas-ui/actual-escritorio-menu.png) | ![](propuestas-ui/a-escritorio-menu.png) | ![](propuestas-ui/b-escritorio-menu.png) | ![](propuestas-ui/c-escritorio-menu.png) | ![](propuestas-ui/d-escritorio-menu.png) |
+| Historia, escritorio | ![](propuestas-ui/actual-escritorio-historia.png) | ![](propuestas-ui/a-escritorio-historia.png) | ![](propuestas-ui/b-escritorio-historia.png) | ![](propuestas-ui/c-escritorio-historia.png) | ![](propuestas-ui/d-escritorio-historia.png) |
+| Menú, móvil | ![](propuestas-ui/actual-movil-menu.png) | ![](propuestas-ui/a-movil-menu.png) | ![](propuestas-ui/b-movil-menu.png) | ![](propuestas-ui/c-movil-menu.png) | ![](propuestas-ui/d-movil-menu.png) |
+| Historia, móvil | ![](propuestas-ui/actual-movil-historia.png) | ![](propuestas-ui/a-movil-historia.png) | ![](propuestas-ui/b-movil-historia.png) | ![](propuestas-ui/c-movil-historia.png) | ![](propuestas-ui/d-movil-historia.png) |
 
 ## A · «Caja de texto» (GBA/DS)
 
@@ -184,9 +185,112 @@ notaría en el móvil con poca potencia, porque se ve más 3D.
 - **Medallas en gris también sin tema**: el cambio está en `cards.css`, así que se ve igual con y sin tema.
 - **El rojo detrás del rótulo de Historia**: une la pantalla con su portada del menú. Si se ve demasiado, se quita.
 
+## D · «Ruta con cuerpo» (el orden de la C con la riqueza del actual)
+
+Al dueño le gustó la C, pero la vio «menos visual» que el aspecto actual. El actual es muy de juego de móvil
+(tarjetas grandes con degradado, sprites grandes, botones dorados con relieve, brillos), pero todo destaca igual,
+el dorado está en todo y todo late a la vez. La D se queda con **el orden de la C** y le devuelve **el cuerpo del
+actual**. Hoja: `public/themes/tema-d.css`.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--td-night` / `--td-night-hi` / `--td-night-lo` | `#14205a` / `#1d2c78` / `#0f1846` | la base de los paneles, azul noche (degradado de arriba, con luz, a abajo) |
+| `--td-rim` | `#33479e` | borde de 2 px de los paneles |
+| `--td-text` / `--td-mute` | `#ffffff` / `#d2ddf5` | texto y secundario (9,5:1 o más sobre los paneles) |
+| `--td-done` | `#5fd8ff` | lo recorrido: el camino, la región elegida, el modo Camino, la cuenta atrás (7,6:1) |
+| `--td-now` | `#ffcb05` | lo que toca: «Jugar» de Historia, «¡Desafiar!», el siguiente reto (tinta `#2a1c00` encima: 10,9:1) |
+| `--td-gold` | `#ffd23f` | premios listos: el borde de lo que tiene algo que recoger, Lucky Spin |
+| `--td-pink` | `#ff6b8a` | Apoyar (el botón, `#cc2a5e` → `#8e1a42`: 5,2:1) |
+| `--td-relief` | luz arriba (2 px blancos al 30 %) y sombra abajo (4 px negros al 25 %) | el relieve de tarjetas y botones |
+| `--c` / `--c1` / `--c2` | de cada modo o baldosa | `--c` vivo (borde y brillo), `--c1` arriba (blanco encima a 4,5:1 o más) y `--c2`, su versión oscura, abajo |
+
+Los colores de cada modo (arriba → abajo, y el contraste del blanco sobre el de arriba):
+
+| Modo | `--c1` → `--c2` | Blanco |
+|---|---|---|
+| Historia | `#d63a30` → `#6a0f0f` (rojo oscuro) | 4,7:1 |
+| Torre Batalla | `#7b3fe0` → `#2e1270` | 5,8:1 |
+| Clasificatoria | `#a86200` → `#452200` (ámbar, no caqui) | 4,8:1 |
+| Partida rápida | `#2f6ad8` → `#11286a` | 5:1 |
+| Ladder | `#0f7a88` → `#04323a` | 5:1 |
+| Práctica | `#1f7f36` → `#08361a` | 5,1:1 |
+| Tutorial | `#b82a70` → `#4e0c2c` | 5,8:1 |
+| Colección | Mis Pokémon `#c42a22` (rojo), Mochila `#2f6ad8` (azul), Tienda `#178060` (verde, el de su pantalla), Pokédex `#7b3fe0` (violeta), Logros `#b4500f` (cobre) | 4,9:1 o más |
+
+**De la C se queda:**
+
+- Historia como portada grande (título de 64 px) y lo demás más pequeño. «Jugar» solo en Historia: en los demás
+  modos la tarjeta entera es el botón.
+- El dorado, solo para lo que toca (el «Jugar» de Historia, «¡Desafiar!», el siguiente reto del camino) y para los
+  premios listos (borde dorado y brillo en la Tienda cuando ha rotado, en Logros con premios, en el panel de
+  misiones y «Recoger todo»). Tienda y Logros van en su color cuando no hay nada.
+- Un solo latido a la vez: lo que está listo late una vez en su turno de un ciclo de 8 s (Lucky Spin, Tienda,
+  Logros, «Recoger todo») y el resto del ciclo está quieto; en la C latían todos a la vez con un desfase. Con
+  `prefers-reduced-motion` no se mueve nada. Los parpadeos de siempre (Novedades, el corazón de Apoyar, Tutorial,
+  «buscando rival»), fuera. Al entrar, el Pokémon de Historia da un salto, y en Historia el camino se dibuja desde
+  el pueblo hasta el siguiente reto, como en la C.
+- El mundo 3D detrás: los modos son tarjetas separadas por huecos, sin un panel que las tape, y el camino va sobre
+  un velo algo más transparente.
+- Cada modo con su color, el azul noche como base en vez de negro, las medallas que no tienes en gris (eso ya es así
+  para todos) y lo recorrido del camino en celeste.
+
+**Del actual vuelve:**
+
+- Tarjetas con cuerpo: color sólido y saturado de cada modo, una luz de plástico arriba, sombra abajo, borde de
+  2 px más claro que el color, un canto de 5 px debajo (como un botón) y sombra. Al pulsar se hunden.
+- Sprites grandes (128 px en los modos y 240 px en Historia) que se salen un poco por arriba de la tarjeta.
+- Botones con relieve: el dorado de lo que toca y también los de la cabecera, las regiones, «Cómo se juega» y los
+  contadores del camino, en azul.
+- Brillo al pasar el ratón: la tarjeta sube, se enciende un halo de su color y cruza el reflejo de siempre.
+- Los colores de la colección y Lucky Spin con su marco y su letra de oro. Apoyar en rosa, como un botón.
+
+**Los dos fallos de la C, arreglados:**
+
+1. **Colores sucios.** En la C, el tinte de cada modo se mezclaba con el azul noche: con los colores cálidos salía
+   caqui (Clasificatoria) o naranja turbio (Historia sobre la hierba, porque acababa en transparente). En la D cada
+   color se oscurece hacia su propio tono: `--c1` arriba y `--c2`, una versión oscura del mismo color, abajo, sin
+   pasar nunca por el azul. El amarillo de Clasificatoria, oscurecido sin más, también sale oliva, así que se ha
+   llevado a ámbar. Historia acaba en rojo oscuro, opaco. Donde el color viene del tipo del líder (puede ser
+   cualquiera, también el amarillo de Eléctrico), no se mezcla: el objetivo lleva una franja del tipo a la
+   izquierda, la ficha una banda del tipo arriba y la medalla un anillo, y el panel sigue azul noche.
+2. **Dorado por todas partes.** Tienda y Logros van en su color (verde y cobre) y solo llevan borde dorado y brillo
+   cuando tienen algo (`.ready`); el panel de misiones, solo con `.has-ready`. «Cómo se juega» deja de ser dorado.
+
+- **Móvil (844×390)**: la portada de Historia a 30 px, sin el icono pequeño de los modos (el sprite ya dice qué es;
+  así «Partida rápida» cabe) y «Mis Pokémon» en dos líneas en vez de cortado. El bloque de los modos es algo más
+  bajo: sin tema se sale 4 px por abajo, y aquí las tarjetas llevan sombra debajo.
+- **Contraste**: el blanco sobre el color de arriba de cada modo y baldosa da 4,5:1 o más (tabla de arriba); el
+  secundario sobre los paneles, 9,5:1; «Nueva» (`#d42a62`), 4,9:1; las rutas nuevas (`#2f7f20`), 5:1; la cifra de
+  las barras de misión (relleno `#1a74b8`), 5:1. Los títulos de sección («Aventura», «Online») van sobre el mundo,
+  sostenidos por una sombra, como en la C.
+- **El test** (`tests/e2e/temas.e2e.js`) mira con `?tema=d` lo que se pinta: el blanco se lee sobre cada modo, cada
+  modo se oscurece hacia su tono (el tono de arriba y el de abajo, a 12° como mucho, y saturado), Historia acaba en
+  rojo oscuro opaco y Clasificatoria es ámbar; solo se ve un «Jugar» y es el de Historia, dorado; la Tienda ya vista
+  no es dorada y Logros con premios sí; Mis Pokémon rojo, Mochila azul y Pokédex violeta; lo listo late de uno en
+  uno durante 8 s y nada con `prefers-reduced-motion`; «¡Desafiar!» dorado y sin nada encima; y en 844×390 los modos
+  y la colección caben y «Mis Pokémon» se lee entero. Pasado con la C, falla donde debe (degradado a transparente,
+  caqui). Para lo del movimiento reducido, el harness tiene ahora `page.media()`.
+
+Qué arregla: vuelve a parecer un juego, con el color y el relieve del actual, pero se lee qué es lo principal
+(Historia), qué toca (lo dorado) y qué tiene premio (lo que late, de uno en uno). A cambio, se ve menos mundo que
+en la C y pesa algo más.
+
+### Decisiones para el dueño (D)
+
+- **Lucky Spin dorado siempre**: se pidió que volviera su color, que es el oro; por eso es lo único dorado que no es
+  «lo que toca». El brillo y el latido, solo cuando te llega para una tirada. Si se quiere más estricto, podría ir en
+  morado con el oro solo al estar listo.
+- **Logros en cobre** (`#b4500f`): no tenía color propio (en el juego era dorado). Se puede cambiar por otro.
+- **«Jugar» en los demás modos**: no lo llevan (la tarjeta es el botón). Si se echa de menos la chapa, se puede
+  poner en blanco o en el color de cada modo, nunca en dorado.
+- **Clasificatoria en ámbar** en vez de amarillo: el amarillo con blanco encima no llega a 4,5:1 y oscurecido sale
+  oliva.
+- **Sprites que se salen por arriba**: en el escritorio pisan un poco el título de sección o la tarjeta de encima
+  si el sprite es muy alto. Se pueden dejar dentro.
+
 ## Recomendación
 
-(El dueño ha elegido la C, con más color: ver arriba.) La recomendación de entonces era **B («Pokédex») como base, con dos préstamos de A.**
+(El dueño eligió la C, con más color, y después pidió la D: la C con la riqueza del actual. Ver arriba.) La recomendación de entonces era **B («Pokédex») como base, con dos préstamos de A.**
 
 - B resuelve los cinco rasgos con menos riesgo. Las superficies lisas y las líneas finas se pueden llevar al resto
   de pantallas (tienda, Mis Pokémon, Torre y combate) sin revisar el color de cada texto, porque sigue siendo una
@@ -205,6 +309,7 @@ notaría en el móvil con poca potencia, porque se ve más 3D.
   puesto, esas pantallas mezclan los dos aspectos.
 - Los puntos medios del texto (rasgo 3) piden cambiar el JS de la pantalla elegida.
 - No hay ninguna letra nueva. La de píxel de A habría que descargarla y alojarla como las otras.
+- Sin tema, en 844×390 el bloque de los modos se sale 4 px por abajo (con un perfil con medallas). La D lo evita.
 - En 844×390, el nombre del siguiente reto queda pegado a la barra de desplazamiento del camino. Pasa con
   todos los temas y también sin tema.
 - Se ha comprobado con capturas en 1280×800 y 844×390 y con el e2e `temas.e2e.js`. La C, además, con los cuatro
@@ -212,3 +317,6 @@ notaría en el móvil con poca potencia, porque se ve más 3D.
   Con ellos salió que el rótulo de 40 px se salía de ancho en una ventana de 390 px; ya se encoge a 24 px. Los
   barridos con el tema no están en el repositorio (se pasaron con un envoltorio aparte). A, B y axe con tema, sin
   pasar.
+- La D, con `temas.e2e.js` y los cuatro barridos `pantallas-*.e2e.js` pasando `?tema=d` en cada página (con el mismo
+  envoltorio aparte): pasan, y sin tema también. En la máquina donde se hizo, el de escritorio tarda 8-9 minutos
+  (con o sin tema) y se pasa de los 5 que da el harness: se pasó con un límite mayor. En el CI va más rápido.

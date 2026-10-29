@@ -167,6 +167,8 @@ async function setup(name, extraEnv = {}) {
       else await call('Emulation.clearDeviceMetricsOverride');
       await sleep(300);
     },
+    // Preferencias del sistema que ve la página, p. ej. media([{ name: 'prefers-reduced-motion', value: 'reduce' }]); media() las quita
+    async media(features = []) { await call('Emulation.setEmulatedMedia', { features }); await sleep(100); },
     async shot(file) { const r = await call('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(file, Buffer.from(r.data, 'base64')); },
     // Entra al menú con una sesión ya hecha (el perfil se crea por WebSocket y aquí se usa su token),
     // pulsando «Continuar como…» en la portada como haría el jugador
