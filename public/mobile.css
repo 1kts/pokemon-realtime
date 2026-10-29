@@ -236,6 +236,52 @@
   .lv-rules { font-size: 11.5px; margin: 6px 0 0; }
 }
 
+@media (max-height: 500px) {
+  /* El camino de la Historia en el móvil en horizontal: entero de alto (se desplaza de lado), con las tarjetas más
+     pequeñas; las pestañas abajo, en la fila de la leyenda (arriba tapaban las primeras rutas), y la leyenda sin lo
+     que se explica solo */
+  .story-pathwrap { height: calc(100vh - 76px); min-height: 250px; }
+  .story-path { --gw: 110px; --gh: 136px; --nw: 140px; --nh: 168px; --rw: 106px; --rh: 84px; --road: 14px; --nm: 15px; --goh: 30px; padding: 10px 14px 6px; }
+  .story-pathwrap > .story-mode { top: auto; bottom: 5px; left: 6px; padding: 2px; }
+  .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
+  .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 12px; padding: 4px 8px 4px 158px; font-size: 9.5px; }
+  .sp-legend .sp-k-lock { display: none; }
+  .sp-k { width: 28px; height: 20px; }
+  .sp-k-face { width: 22px; height: 22px; }
+  .sp-name { font-size: 10px; -webkit-line-clamp: 1; }
+  .sp-name b { font-size: 11px; }
+  .sp-gym.now .sp-name small, .sp-league .sp-name small { display: none; }
+  .sp-route .sp-name { font-size: 9.5px; }
+  .sp-leg { gap: 8px; padding: 0 8px; }
+  .sp-stop { margin: 0 8px; }
+  .sp-stop.now { margin-left: 60px; }
+  .sp-branch { padding-bottom: calc(var(--below) + var(--road) / 2 + 8px); }
+  .sp-branch::before { width: 8px; left: calc(50% - 4px); height: calc(var(--road) / 2 + 12px); }
+  .sp-start { width: 84px; }
+  .sp-sign { font-size: 10px; padding: 3px 7px; }
+  .sp-card { border-radius: 10px; }
+  .sp-tag { font-size: 9px; padding: 2px 3px; gap: 3px; border-top-width: 2px; }
+  .sp-tag svg { width: 10px; height: 10px; }
+  .sp-tag .item-img { width: 11px; height: 11px; }
+  .sp-ord { width: 19px; height: 19px; font-size: 10px; top: 4px; left: 4px; }
+  .sp-badge { width: 24px; height: 24px; }
+  .sp-medal { right: 5px; }
+  .sp-medal::before { width: 10px; height: 9px; }
+  .sp-leader { bottom: 14px; }
+  .sp-stadium { bottom: 16px; }
+  .sp-mons { bottom: 17px; }
+  .sp-mons .mon-icon { width: 23px; }
+  .sp-count { font-size: 9.5px; padding: 0 5px 0 2px; top: 3px; right: 3px; }
+  .sp-count .item-img { width: 11px; height: 11px; }
+  .sp-new { top: 3px; left: 3px; font-size: 8.5px; padding: 0 5px; }
+  .sp-locknote { inset: 0 0 15px; gap: 2px; padding: 2px 5px; }
+  .sp-lock-ico { width: 16px; height: 16px; }
+  .sp-locknote small, .sp-route .sp-locknote small { font-size: 9px; }
+  .sp-you .ava { --s: 30px !important; }
+  .sp-you-tag { font-size: 9px; padding: 0 5px; }
+  button.sp-go { padding: 0 18px; font-size: 13px; }
+}
+
 /* ========== Combate ========== */
 @media (max-height: 500px) {
   /* Pantalla de móvil en horizontal: los equipos, una fila de caras con su vida debajo (el nombre ya sale sobre

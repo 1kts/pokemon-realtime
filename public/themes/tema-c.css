@@ -30,7 +30,7 @@ body.tema-c .feature-sign, body.tema-c .subbar, body.tema-c .hub-mod, body.tema-
 body.tema-c .menu-card::after, body.tema-c .coll-tile::after, body.tema-c .hub-tz::after, body.tema-c .panel::before, body.tema-c .menu-card::before { content: none; }
 /* Los parpadeos de siempre, fuera: lo que tiene algo que recoger late con el latido propio del tema (más abajo) */
 body.tema-c .coll-tile.ready, body.tema-c .missions-widget.has-ready, body.tema-c .hub-tz.ready, body.tema-c .hub-mod .news-btn, body.tema-c .menu-card.tutorial.ready,
-body.tema-c .mission.done, body.tema-c .tb-btn.support svg, body.tema-c .hub-me .support svg, body.tema-c .sp-gym.now .sp-dot { animation: none !important; }
+body.tema-c .mission.done, body.tema-c .tb-btn.support svg, body.tema-c .hub-me .support svg, body.tema-c .sp-gym.now .sp-card { animation: none !important; }
 body.tema-c .mw-head b::before, body.tema-c .hub-coll h3::before, body.tema-c .node-info > h3::before, body.tema-c .panel:not(.modal-box) > h3::before { content: none; }
 body.tema-c :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
 body.tema-c button.primary { background: var(--tc-now); color: #1a1405; text-shadow: none; border: 0; border-radius: 4px; box-shadow: none; }
@@ -171,53 +171,54 @@ body.tema-c .story-info .rotation b { color: var(--tc-done); text-shadow: none; 
 body.tema-c .story-info .help { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); border-radius: 4px; box-shadow: none; }
 body.tema-c .story-info .help svg { color: var(--tc-text); }
 
-/* El camino: lo atrevido de esta pantalla. Velo más claro (se ve el mundo detrás), eje blanco que se dibuja al
-   entrar desde el pueblo hasta lo que toca */
+/* El camino: lo atrevido de esta pantalla. Velo más claro (se ve el mundo detrás) y el camino recorrido en baldosas
+   celestes que se dibujan al entrar desde el pueblo hasta lo que toca */
 body.tema-c .story-pathwrap { background: linear-gradient(180deg, rgba(20,32,84,.74), rgba(20,32,84,.86)); }
 body.tema-c .story-pathwrap > .story-mode { background: rgba(20,32,84,.85); border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .story-mode button { border-radius: 3px; }
 body.tema-c .story-mode button.sel { background: var(--tc-done); color: #06213a; }
-body.tema-c .sp-start::before { background: var(--tc-done); box-shadow: none; }
-body.tema-c .sp-start::after, body.tema-c .sp-ch.done .sp-spine::before { background: var(--tc-done); }
-body.tema-c .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, var(--tc-done) 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
-body.tema-c .sp-spine::before { background: repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
+/* (lo recorrido, baldosas celestes; lo que falta, baldosas apagadas) */
+body.tema-c :is(.sp-start, .sp-ch.done, .sp-ch.now)::before { border-block: 2px solid #2b6c9e;
+  background: repeating-linear-gradient(90deg, var(--tc-done) 0 18px, color-mix(in srgb, var(--tc-done) 70%, #06213a) 18px 20px); }
+body.tema-c :is(.sp-start, .sp-ch, .sp-end)::before, body.tema-c .sp-ch.now::after { border-radius: 0; }
+body.tema-c .sp-branch.open::before { border-inline: 2px solid #2b6c9e; background: var(--tc-done); }
+body.tema-c .sp-sign { border-radius: 3px; color: #06213a; background: var(--tc-done); box-shadow: none; }
+body.tema-c .sp-sign::after { background: #2b6c9e; }
 @keyframes tcDraw { from { transform: scaleX(0); } }
 @media (prefers-reduced-motion: no-preference) {
-  body.tema-c .sp-start::after, body.tema-c .sp-ch.done .sp-spine::before, body.tema-c .sp-ch.now .sp-spine::before { transform-origin: left; animation: tcDraw .22s linear both; }
-  body.tema-c .sp-ch:nth-child(2) .sp-spine::before { animation-delay: .22s; }
-  body.tema-c .sp-ch:nth-child(3) .sp-spine::before { animation-delay: .44s; }
-  body.tema-c .sp-ch:nth-child(4) .sp-spine::before { animation-delay: .66s; }
-  body.tema-c .sp-ch:nth-child(5) .sp-spine::before { animation-delay: .88s; }
-  body.tema-c .sp-ch:nth-child(6) .sp-spine::before { animation-delay: 1.1s; }
-  body.tema-c .sp-ch:nth-child(7) .sp-spine::before { animation-delay: 1.32s; }
-  body.tema-c .sp-ch:nth-child(8) .sp-spine::before { animation-delay: 1.54s; }
-  body.tema-c .sp-ch:nth-child(9) .sp-spine::before { animation-delay: 1.76s; }
-  body.tema-c .sp-ch:nth-child(10) .sp-spine::before { animation-delay: 1.98s; }
-  /* (y lo que toca aparece cuando llega la línea: el último tramo hecho más uno) */
-  body.tema-c .sp-gym.now .sp-dot { animation: tcArrive .35s ease-out both !important; animation-delay: calc(var(--tc-at, 3) * .22s + .1s) !important; }
+  body.tema-c :is(.sp-start, .sp-ch.done, .sp-ch.now)::before { transform-origin: left; animation: tcDraw .22s linear both; }
+  body.tema-c .sp-ch:nth-child(2)::before { animation-delay: .22s; }
+  body.tema-c .sp-ch:nth-child(3)::before { animation-delay: .44s; }
+  body.tema-c .sp-ch:nth-child(4)::before { animation-delay: .66s; }
+  body.tema-c .sp-ch:nth-child(5)::before { animation-delay: .88s; }
+  body.tema-c .sp-ch:nth-child(6)::before { animation-delay: 1.1s; }
+  body.tema-c .sp-ch:nth-child(7)::before { animation-delay: 1.32s; }
+  body.tema-c .sp-ch:nth-child(8)::before { animation-delay: 1.54s; }
+  body.tema-c .sp-ch:nth-child(9)::before { animation-delay: 1.76s; }
+  body.tema-c .sp-ch:nth-child(10)::before { animation-delay: 1.98s; }
+  /* (y lo que toca aparece cuando llega el camino: el último tramo hecho más uno) */
+  body.tema-c .sp-gym.now .sp-card { animation: tcArrive .35s ease-out both !important; animation-delay: calc(var(--tc-at, 3) * .22s + .1s) !important; }
   body.tema-c .sp-ch:nth-child(2).now { --tc-at: 1; } body.tema-c .sp-ch:nth-child(3).now { --tc-at: 2; } body.tema-c .sp-ch:nth-child(4).now { --tc-at: 3; }
   body.tema-c .sp-ch:nth-child(5).now { --tc-at: 4; } body.tema-c .sp-ch:nth-child(6).now { --tc-at: 5; } body.tema-c .sp-ch:nth-child(7).now { --tc-at: 6; }
   body.tema-c .sp-ch:nth-child(8).now { --tc-at: 7; } body.tema-c .sp-ch:nth-child(9).now { --tc-at: 8; } body.tema-c .sp-ch:nth-child(10).now { --tc-at: 9; }
 }
 @keyframes tcArrive { from { transform: scale(.7); box-shadow: 0 0 0 0 rgba(255,203,5,.9); } to { transform: none; } }
-body.tema-c .sp-gym .sp-dot { background: rgba(24,38,96,.95); box-shadow: none; }
-body.tema-c .sp-gym.done .sp-dot { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tc) 45%, rgb(24,38,96)), rgb(24,38,96) 75%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 30%, transparent); }
-/* Rutas: hierba verde, como sin tema, con el anillo de lo capturado */
-body.tema-c .sp-route:not(.locked) .sp-dot { background: radial-gradient(circle at 50% 35%, #c9f2a0, #4fa232); box-shadow: 0 0 0 3px rgb(20,32,84); }
-body.tema-c .sp-route.locked .sp-dot { border: 2px dashed rgba(255,255,255,.3); }
-body.tema-c .sp-routes:not(:empty)::after { border-left-color: rgba(255,255,255,.3); }
+/* Las tarjetas: esquinas casi rectas y sin sombras; los gimnasios con su color en el marco */
+body.tema-c .sp-card { border-radius: 4px; box-shadow: none; }
+body.tema-c .sp-gym.done .sp-card { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 30%, transparent); }
+body.tema-c .sp-tag { background: rgba(20,32,84,.94); }
 body.tema-c .sp-ord { background: var(--tc-done); color: #06213a; box-shadow: none; }
-body.tema-c .sp-count { background: rgba(20,32,84,.85); color: #fff; }
+body.tema-c .sp-count { background: rgba(20,32,84,.9); color: #fff; }
 body.tema-c .sp-count.full { background: #8fe36a; color: #0f2a0c; }
-body.tema-c .sp-new { background: #d42a62; color: #fff; box-shadow: 0 0 0 2px rgb(20,32,84); border-radius: 99px; }
+body.tema-c .sp-new { background: #d42a62; color: #fff; border-radius: 99px; }
 body.tema-c .sp-name { text-shadow: 0 1px 3px rgba(0,0,0,.9); }
-body.tema-c .sp-gym.now .sp-dot { border-color: var(--tc-now); box-shadow: 0 0 0 4px rgba(255,203,5,.25); }
+body.tema-c .sp-gym.now .sp-card { border-color: var(--tc-now); box-shadow: 0 0 0 4px rgba(255,203,5,.25); }
 body.tema-c .sp-gym.now .sp-name { background: var(--tc-now); color: #1a1405; border-radius: 4px; box-shadow: none; text-shadow: none; }
 body.tema-c .sp-gym.now .sp-ord { background: var(--tc-now); }
+body.tema-c .sp-you-tag { border-radius: 3px; }
 body.tema-c .sp-go { border-radius: 4px; }
 body.tema-c .sp-legend { border-top: 1px solid var(--tc-hair); color: var(--tc-mute); }
-body.tema-c .sp-k.done { background: var(--tc-done); box-shadow: none; }
-body.tema-c .sp-k.now { box-shadow: none; }
+body.tema-c .sp-k { border-radius: 3px; }
 
 /* La ficha del sitio */
 /* La cabecera de la ficha, del color del tipo del líder */

@@ -27,7 +27,7 @@ body.tema-b .feature-sign, body.tema-b .subbar, body.tema-b .hub-mod, body.tema-
 }
 body.tema-b .menu-card::after, body.tema-b .coll-tile::after, body.tema-b .hub-tz::after, body.tema-b .panel::before { content: none; }
 body.tema-b .coll-tile.ready, body.tema-b .missions-widget.has-ready, body.tema-b .hub-tz.ready, body.tema-b .hub-mod .news-btn, body.tema-b .menu-card.tutorial.ready,
-body.tema-b .mission.done, body.tema-b .tb-btn.support svg, body.tema-b .sp-gym.now .sp-dot { animation: none !important; }
+body.tema-b .mission.done, body.tema-b .tb-btn.support svg, body.tema-b .sp-gym.now .sp-card { animation: none !important; }
 body.tema-b .mw-head b::before, body.tema-b .hub-coll h3::before, body.tema-b .node-info > h3::before, body.tema-b .panel:not(.modal-box) > h3::before { content: none; }
 body.tema-b :is(.menu-sec .sec-head h3, .mw-sub, .rg-soon > small, .story-head .map-goal > small:first-child, .node-info h4, .menu-card .go) { text-transform: none; letter-spacing: 0; }
 body.tema-b :is(.story-info .rotation b, .m-bar span, .coll-txt small, .rg small, .sp-count) { font-variant-numeric: tabular-nums; }
@@ -133,27 +133,17 @@ body.tema-b .story-pathwrap { background: #101217; }
 body.tema-b .story-pathwrap > .story-mode { background: var(--tb-body); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
 body.tema-b .story-mode button { border-radius: 3px; }
 body.tema-b .story-mode button.sel { background: var(--tb-text); color: var(--tb-body); }
-body.tema-b .sp-start::before { background: #fff; box-shadow: 0 0 0 4px #101217; }
-body.tema-b .sp-start::after, body.tema-b .sp-ch.done .sp-spine::before { background: #fff; height: 3px; }
-body.tema-b .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, #fff 50%, transparent 50%), repeating-linear-gradient(90deg, #4a5060 0 6px, transparent 6px 12px); height: 3px; }
-body.tema-b .sp-spine::before { background: repeating-linear-gradient(90deg, #4a5060 0 6px, transparent 6px 12px); height: 3px; }
-body.tema-b .sp-gym .sp-dot { background: var(--tb-row); box-shadow: 0 0 0 4px #101217; }
-body.tema-b .sp-gym.done .sp-dot { box-shadow: 0 0 0 4px #101217; }
-body.tema-b .sp-route:not(.locked) .sp-dot { background: #2c3040; box-shadow: 0 0 0 3px #101217; }
-body.tema-b .sp-route .sp-dot .mon-icon { filter: none; }
-body.tema-b .sp-route.locked .sp-dot { border: 2px dashed #4a5060; }
 body.tema-b .sp-ord { background: var(--tb-text); color: var(--tb-body); box-shadow: 0 0 0 2px #101217; }
 body.tema-b .sp-count { background: var(--tb-row); border-radius: 3px; }
 body.tema-b .sp-new { background: var(--tb-text); color: var(--tb-body); border-radius: 3px; box-shadow: 0 0 0 2px #101217; }
 /* El siguiente reto: lo atrevido de esta pantalla. Anillo dorado liso; al entrar, una onda (una sola vez) */
-body.tema-b .sp-gym.now .sp-dot { border-color: var(--tb-now); box-shadow: 0 0 0 4px #101217; }
 body.tema-b .sp-gym.now .sp-name { background: var(--tb-now); color: #1a1405; border-radius: 4px; box-shadow: none; }
 body.tema-b .sp-gym.now .sp-ord { background: var(--tb-now); }
 @keyframes tbPing { from { box-shadow: 0 0 0 4px #101217, 0 0 0 4px rgba(255,203,5,.9); } to { box-shadow: 0 0 0 4px #101217, 0 0 0 26px rgba(255,203,5,0); } }
-@media (prefers-reduced-motion: no-preference) { body.tema-b .sp-gym.now .sp-dot { animation: tbPing .9s .3s ease-out 2 !important; } }
+body.tema-b .sp-gym.now .sp-card { border-color: var(--tb-now); }
+@media (prefers-reduced-motion: no-preference) { body.tema-b .sp-gym.now .sp-card { animation: tbPing .9s .3s ease-out 2 !important; } }
 body.tema-b .sp-go { border-radius: 4px; }
 body.tema-b .sp-legend { border-top: 1px solid var(--tb-line); color: var(--tb-mute); }
-body.tema-b .sp-k.done { background: #fff; box-shadow: 0 0 0 2px #101217, 0 0 0 4px #fff; }
 
 /* La ficha del sitio: cabecera con el color del tipo como pestaña */
 body.tema-b .story-side .node-info .leader-head { background: none; box-shadow: inset 0 5px 0 var(--tc); border-radius: 6px 6px 0 0; }
