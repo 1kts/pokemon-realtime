@@ -695,7 +695,7 @@ export class BattleClient {
     const st = this.latest.ps[i];
     const mon = this.sides[i].team[this.act[i]];
     const fr = Math.max(0, st.hp[this.act[i]] / mon.maxHp);
-    const key = `${mon.dex}:${Math.round(fr * 200)}:${st.f}`;
+    const key = `${mon.dex}:${Math.round(fr * 200)}:${st.f}` + (st.ai ? `:${st.ai.m}:${st.ai.g}:${st.ai.p}` : '');
     if (plate.dataset.key === key) return;
     plate.dataset.key = key;
     const icons = [];
@@ -710,6 +710,8 @@ export class BattleClient {
     if (f & F.POWER) icons.push(`<i class="st power">${t('ATQ')}</i>`);
     if (f & F.HIDDEN) icons.push(`<i class="st hidden">${t('OCULTO')}</i>`);
     plate.innerHTML = `<div class="pn">${monLabel(mon)}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
+    // Práctica con «Ver qué piensa la IA»: estado, agresividad y personalidad del bot (solo llega en Práctica)
+    if (st.ai && AI_MODES[st.ai.m]) plate.insertAdjacentHTML('afterbegin', `<div class="ai-dbg ${st.ai.m}"><b>${AI_MODES[st.ai.m]()}</b> · ${t('Agresividad {n} %', { n: st.ai.g })} · ${(AI_STYLES[st.ai.p] || (() => ''))()}</div>`);
     // Salvaje: cuántas veces has atrapado su línea (las Poké Balls del reto de las 25 capturas)
     if (this.balls && i !== this.you && this.app.ui.profile) { const pips = this.app.ui.catchPips(mon.dex); pips.title = this.app.ui.catchText(mon.dex); plate.append(pips); }
   }
@@ -751,6 +753,10 @@ export class BattleClient {
     this.app.root.innerHTML = '';
   }
 }
+
+// Lo que piensa la IA en Práctica (ver server/ai.js): su estado y su personalidad
+const AI_MODES = { atacar: () => t('Atacar'), tantear: () => t('Tantear'), defender: () => t('Defender') };
+const AI_STYLES = { luchador: () => t('Luchador'), francotirador: () => t('Francotirador'), controlador: () => t('Controlador'), tanque: () => t('Tanque') };
 
 // Nombre con su etiqueta (Ash#4821): distingue a entrenadores que se llaman igual
 // npc: entrenador de la IA (Clasificatoria): se marca con «IA», nunca pasa por una persona

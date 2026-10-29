@@ -44,6 +44,9 @@ class Battle {
     this.tutorial = !!opts.tutorial;
     this.mapName = opts.map || 'pradera';
     this.mod = opts.mod && D.MODIFIERS[opts.mod] ? opts.mod : null;   // mecánica extra (Práctica)
+    // Práctica con «Ver qué piensa la IA»: el snapshot lleva el estado, la agresividad y la personalidad del bot.
+    // Solo en Práctica (nunca en clasificatoria, en línea, Torre ni historia) y nunca en el tutorial
+    this.aiDebug = !!opts.aiDebug && this.mode === 'practice' && !this.tutorial;
     this.onEnd = opts.onEnd || (() => {});
     const { terrain, rocks } = S.parseMap(this.mapName);
     this.terrain = terrain;
@@ -852,6 +855,8 @@ class Battle {
       e: Math.round(s.energy), w: s.wind ? { c: s.wind.c, p: +(s.wind.t / s.wind.m.wind).toFixed(2), a: +s.wind.a.toFixed(2), tx: Math.round(s.wind.tx), ty: Math.round(s.wind.ty) } : 0,
     };
     if (!hide) { o.x = +s.x.toFixed(1); o.y = +s.y.toFixed(1); }
+    const dbg = this.aiDebug && s.ai !== null && viewer !== s.idx && s.aiState.dbg;
+    if (dbg) o.ai = { m: dbg.m, g: Math.round(dbg.g * 100), p: dbg.p };
     if (viewer === s.idx) {
       o.cds = mon.cds.map(c => +c.toFixed(2)); o.pcd = +s.pcd.toFixed(2); o.swcd = +s.swapCd.toFixed(2); o.ack = s.ack;
       o.allcds = s.team.map(m => m.cds.map(c => +c.toFixed(1)));

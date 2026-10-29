@@ -310,6 +310,11 @@ body:not(.in-battle) #hud { display: none; }
 .plate .pn small { color: #cfd8e8; }
 .plate .hp { width: 104px; margin: 2px auto 0; height: 7px; border: 1px solid rgba(0,0,0,.7); }
 .plate .sts { display: flex; gap: 2px; justify-content: center; margin-top: 2px; }
+/* Práctica con «Ver qué piensa la IA»: el estado del bot encima de su nombre */
+.plate .ai-dbg { font-size: 11px; white-space: nowrap; margin-bottom: 2px; padding: 1px 6px; border-radius: 6px; background: rgba(8,12,24,.72); color: #dfe6f3; border: 1px solid rgba(255,255,255,.18); }
+.plate .ai-dbg b { color: var(--yellow); }
+.plate .ai-dbg.atacar b { color: #ff7a6b; }
+.plate .ai-dbg.defender b { color: #7ec4ff; }
 .st { font: normal 700 9px/1 var(--text); padding: 2px 4px; border-radius: 4px; color: #fff; background: #555; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
 .st.burn { background: #e05020; } .st.poison { background: #9040c0; } .st.wet { background: #3a7ae0; } .st.stun { background: #d0a000; color: #111; }
 .st.slow { background: #6a7a40; } .st.seed { background: #3a9a30; } .st.haste { background: #3aa0c0; } .st.power { background: #c03030; } .st.hidden { background: #2a5a2a; }

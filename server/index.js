@@ -290,7 +290,7 @@ function startPractice(c, msg) {
     // (la arena elegida: una de las de siempre o la de un gimnasio o del Alto Mando; si no, al azar)
     // (y una mecánica extra si se pide: una concreta o 'random')
     mod: tut ? null : msg.mod === 'random' ? Object.keys(D.MODIFIERS)[Math.floor(Math.random() * Object.keys(D.MODIFIERS).length)] : msg.mod,
-    mode: 'practice', tutorial: tut, map: tut ? Object.keys(D.MAPS)[0] : D.MAPS[msg.map] || D.ARENAS[msg.map] ? msg.map : maps[Math.floor(Math.random() * maps.length)],
+    mode: 'practice', tutorial: tut, aiDebug: !!msg.aiDebug, map: tut ? Object.keys(D.MAPS)[0] : D.MAPS[msg.map] || D.ARENAS[msg.map] ? msg.map : maps[Math.floor(Math.random() * maps.length)],
     sides: [
       { name: c.profile.name, team: list.map(dex => ({ dex, level: D.RANKED_LEVEL, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) },
       // (el muñeco es un Snorlax: Normal, así que ningún ataque del tutorial le hace poco efecto)

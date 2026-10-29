@@ -140,6 +140,7 @@ function aiInput(b, side, dt) {
   if (prevMode === 'atacar' && aggro > 0.55) mode = 'atacar';
   if (prevMode === 'defender' && aggro < 0.4) mode = 'defender';
   st.mode = mode;
+  st.dbg = { m: mode, g: aggro, p: pers.style };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
 
   // ---------- Movimiento ----------
   const moves = mon.moves.map(k => D.MOVES[k]);

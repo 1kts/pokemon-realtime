@@ -1558,6 +1558,15 @@ export class UI {
       b.onclick = () => { skill = v; diff.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
       diff.append(b);
     }
+    // Ver qué piensa la IA: encima del bot, su estado (atacar, tantear o defender), su agresividad y su personalidad.
+    // Para entender por qué hace lo que hace; se recuerda
+    let aiDebug = storage.get('arena.aiDebug') === '1';
+    const dbgRow = el('div', 'diff practice-dbg');
+    const dbg = el('button', aiDebug ? 'sel' : '', t('Ver qué piensa la IA'));
+    dbg.title = t('Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad');
+    dbg.setAttribute('aria-pressed', aiDebug);
+    dbg.onclick = () => { aiDebug = !aiDebug; storage.set('arena.aiDebug', aiDebug ? '1' : '0'); dbg.classList.toggle('sel', aiDebug); dbg.setAttribute('aria-pressed', aiDebug); };
+    dbgRow.append(dbg);
     // Arena: al azar, una de las 4 de siempre o la de un gimnasio o del Alto Mando (con sus mecánicas), en tarjetas
     // con un plano en miniatura y lo que tiene de especial; se recuerda
     let map = storage.get('arena.practiceMap') || '';
@@ -1593,10 +1602,10 @@ export class UI {
     }
     arenas.append(mods);
     start.onclick = () => {
-      this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod };
-      this.net.send({ t: 'practice', dexes: chosen, skill, map, mod });
+      this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod, aiDebug };
+      this.net.send({ t: 'practice', dexes: chosen, skill, map, mod, aiDebug });
     };
-    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, arenas, start);
+    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, dbgRow, arenas, start);
     this.root.append(wrap);
     this.refreshLegalBar();
   }
@@ -1712,7 +1721,7 @@ export class UI {
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
-      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod }) : this.startStory(lm.a, lm.id);
+      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod, aiDebug: lm.aiDebug }) : this.startStory(lm.a, lm.id);
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
