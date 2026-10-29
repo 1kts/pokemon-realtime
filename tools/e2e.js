@@ -118,9 +118,10 @@ async function setup(name, extraEnv = {}) {
       // (y quieto: la misma posición en dos lecturas seguidas, que una ventana o ficha que entra con animación no se mueva bajo el clic)
       const t0 = Date.now();
       await page.eval('window.__e2eAnimOk = false; true');
-      let r = await page.eval(where), prev = null;
-      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && Date.now() - t0 < 4000) {
-        prev = r.err ? null : r; await sleep(80);
+      // (con la máquina muy cargada una sola lectura puede tardar segundos: siempre unas cuantas, aunque pasen los 4 s)
+      let r = await page.eval(where), prev = null, reads = 1;
+      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && (Date.now() - t0 < 4000 || reads < 5)) {
+        prev = r.err ? null : r; await sleep(80); reads++;
         if (Date.now() - t0 > 1200) await page.eval('window.__e2eAnimOk = true; true');
         r = await page.eval(where);
       }

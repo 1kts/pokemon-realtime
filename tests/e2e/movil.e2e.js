@@ -34,8 +34,9 @@ module.exports = async ({ page, ok }) => {
   ok(await page.eval(`window.__app.camera.position.y < 16`), 'la cámara del combate va más cerca que en el ordenador');
   await page.waitFor(`document.querySelector('.foe-arrow') && (document.querySelector('.foe-arrow').hidden === !(() => { const b = window.__app.battle, f = b.renderPos[b.foeIdx], p = b.toScreen(f.x, f.y); return p.x < 0 || p.y < 0 || p.x > innerWidth || p.y > innerHeight; })())`);
   ok(true, 'la flecha del rival sale solo cuando el rival queda fuera de la pantalla');
-  ok(await page.eval(`[...document.querySelectorAll('.mv .tc-name')].every(n => n.textContent.trim().length > 0) && getComputedStyle(document.querySelector('.mv .mv-ico')).display === 'none'`),
-    'cada movimiento lleva su nombre (en corto) sobre el color de su tipo, sin el icono');
+  // (desde la 0.34.0 el nombre va entero y con el icono del tipo a la vista; lo mira a fondo movil-combate.e2e.js)
+  ok(await page.eval(`[...document.querySelectorAll('.mv')].every(b => b.querySelector('.tc-name').textContent.trim() && getComputedStyle(b.querySelector('.mv-ico')).display !== 'none')`),
+    'cada movimiento lleva su nombre y el icono de su tipo');
 
   const ptr = (sel, type, x, y) => page.eval(`(() => { const t = document.querySelector('${sel}'), r = t.getBoundingClientRect();
     t.dispatchEvent(new PointerEvent('${type}', { pointerId: 7, pointerType: 'touch', bubbles: true, cancelable: true, clientX: ${x === null ? 'r.left + r.width / 2' : x}, clientY: ${y === null ? 'r.top + r.height / 2' : y} })); return true; })()`);

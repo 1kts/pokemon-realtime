@@ -108,16 +108,20 @@ module.exports = async ({ page, player, ok }) => {
 
   // Lo que tiene un premio esperando se mueve (parpadea, late o lo cruza un destello: es lo que engancha): Lucky Spin
   // (con gemas para una tirada), Logros con premios y «Recoger todo»; con prefers-reduced-motion no se mueve nada
-  const moving = async ms => {
+  const moving = async (ms, until) => {
     await page.eval(`window.__mv = new Map(); window.__mvT = setInterval(() => {
       for (const e of document.querySelectorAll('.hub-tz.ready, .hub-coll .coll-tile.ready, .mw-head .claim-all')) {
         const c = getComputedStyle(e), a = getComputedStyle(e, '::after'), k = e.textContent.trim().slice(0, 12);
         (__mv.get(k) || __mv.set(k, new Set()).get(k)).add([c.transform, c.boxShadow, c.borderColor, a.backgroundPosition].join('|'));
       } }, 120); true`);
-    await new Promise(r => setTimeout(r, ms));
+    // (si se pide, hasta que se haya movido todo: el destello solo cruza 0,6 s de cada 3,2 y con la máquina cargada se
+    // toman pocas muestras)
+    const t0 = Date.now();
+    do await new Promise(r => setTimeout(r, until ? 500 : ms));
+    while (until && Date.now() - t0 < ms && !await page.eval(`__mv.size >= 3 && [...__mv.values()].every(v => v.size > 1)`));
     return page.eval(`(() => { clearInterval(__mvT); return [...__mv].map(([k, v]) => [k, v.size > 1]); })()`);
   };
-  const m1 = await moving(3500);
+  const m1 = await moving(10000, true);
   ok(m1.length >= 3 && m1.every(([, m]) => m), `con la D, lo que tiene premio se mueve para que se vea (${m1.map(([k, m]) => k + (m ? ' sí' : ' NO')).join(' | ')})`);
   await page.media([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   const m2 = await moving(2500);
