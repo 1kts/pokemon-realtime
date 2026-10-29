@@ -764,6 +764,15 @@ class Client {
     ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 300 && perDay >= 0.8 && perDay <= 1.5, `una ruleta entera son 300 gemas: entrando a diario (premio diario y misiones diarias) sale una tirada al día (${perDay.toFixed(2)})`);
   }
 
+  // ---------- Premio del tutorial: una sola vez ----------
+  {
+    const daily = require('../server/daily.js');
+    const tp = { coins: 0, gems: 0, items: {} };
+    const first = daily.claimTutorial(tp), again = daily.claimTutorial(tp);
+    ok(first.loot && tp.coins === D.TUTORIAL_REWARD.coins && again.error && tp.coins === D.TUTORIAL_REWARD.coins,
+      `el premio del tutorial (${D.TUTORIAL_REWARD.coins}) se recoge una sola vez: la segunda da error y no paga`);
+  }
+
   // ---------- Retratos con emoción en Tesoros ----------
   {
     const faces = Array.from({ length: 6 }, (_, k) => D.treasures(k)).flat().flatMap(r => r.prizes).filter(x => x.kind === 'portrait');
