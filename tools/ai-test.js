@@ -68,6 +68,26 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     assert(low.g < full - 30 && low.m === 'defender', `${full} → ${JSON.stringify(low)}`);
   });
 
+  // Parámetros ajustados con tools/ai-tune.js: las IA torpes deciden como siempre, las hábiles con los ajustados
+  await check('parámetros: Fácil y Normal deciden como antes, Maestro con los ajustados y en medio una mezcla', () => {
+    const AI = require('../server/ai.js');
+    assert.deepStrictEqual(AI.paramsFor(0.1), { ...AI.BASE_PARAMS }, 'Fácil');
+    assert.deepStrictEqual(AI.paramsFor(0.28), { ...AI.BASE_PARAMS }, 'Normal');
+    assert.strictEqual(AI.paramsFor(0.85).swapType, AI.TUNED_PARAMS.swapType);
+    assert.strictEqual(AI.paramsFor(1).range.luchador, AI.TUNED_PARAMS.range.luchador);
+    const mid = AI.paramsFor(0.6).swapType, [a, b] = [AI.BASE_PARAMS.swapType, AI.TUNED_PARAMS.swapType].sort();
+    assert(mid > a && mid < b, `mezcla ${mid}`);
+    // (ningún parámetro toca la ejecución: la habilidad sigue mandando en reflejos y puntería)
+    for (const k of Object.keys(AI.TUNED_PARAMS)) assert(k in AI.BASE_PARAMS, k);
+    assert.strictEqual(AI.TUNED_PARAMS.adapt, true, 'la dificultad adaptativa sigue en el juego');
+  });
+  await check('un combate entero con los parámetros del juego acaba sin errores', () => {
+    const b = battle({ mode: 'practice', map: 'g-roca', sides: [{ name: 'A', team: [{ dex: 6, level: 50 }], ai: 0.9 }, { name: 'B', team: [{ dex: 9, level: 50 }], ai: 0.9 }] });
+    let ended = null; b.onEnd = r => { ended = r; };
+    for (let i = 0; i < S.TICK * 300 && !ended; i++) b.tick();
+    assert(ended, 'el combate acaba');
+  });
+
   // Por WebSocket: la opción de la pantalla de Práctica llega al combate
   const { start } = require('../server/index.js');
   const server = await start(0);

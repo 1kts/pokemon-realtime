@@ -2,7 +2,7 @@
 // temporizador, repartida en hilos. Cada combate lleva su semilla (equipos, arena y Math.random), así que dos
 // versiones de la IA juegan exactamente los mismos combates y se comparan sin tanto ruido.
 //
-//   node tools/ai-tune.js compare [--skill 0.85] [--games 2000] [--a base|tuned|archivo.json] [--b base|tuned|…]
+//   node tools/ai-tune.js compare [--skill 0.85] [--games 2000] [--a game|base|tuned|archivo.json] [--b base|…]
 //        tasa de victorias de A contra B (mismos equipos y arenas; cada combate se juega dos veces cambiando
 //        quién lleva cada lado)
 //   node tools/ai-tune.js strength [--skill 0.85] [--gens 10] [--pop 10] [--games 400] [--from archivo.json] [--out archivo.json]
@@ -77,7 +77,8 @@ const cmd = argv[0];
 const arg = (k, def) => { const i = argv.indexOf('--' + k); return i >= 0 ? argv[i + 1] : def; };
 const pct = x => (x * 100).toFixed(1) + ' %';
 const se = (p, n) => Math.sqrt(p * (1 - p) / n);   // error típico de una proporción
-const loadParams = v => v === 'base' || !v ? AI.BASE_PARAMS : v === 'tuned' ? AI.TUNED_PARAMS : { ...AI.BASE_PARAMS, ...JSON.parse(fs.readFileSync(v, 'utf8')) };
+// base: los de siempre · tuned: los ajustados enteros · game: los que usa el juego a esa habilidad (mezcla de los dos)
+const loadParams = (v, skill = 0.85) => v === 'base' || !v ? AI.BASE_PARAMS : v === 'tuned' ? AI.TUNED_PARAMS : v === 'game' ? AI.paramsFor(skill) : { ...AI.BASE_PARAMS, ...JSON.parse(fs.readFileSync(v, 'utf8')) };
 
 // ---------- Duelo: A contra B con los mismos equipos y arenas ----------
 const MAPS = [...Object.keys(D.MAPS), ...Object.keys(D.ARENAS)];
@@ -189,9 +190,9 @@ async function sweep() {
 
 async function compareCmd() {
   const skill = +arg('skill', 0.85), games = +arg('games', 2000);
-  const A = { ...loadParams(arg('a', 'tuned')), adapt: false }, B = { ...loadParams(arg('b', 'base')), adapt: false };
+  const A = { ...loadParams(arg('a', 'game'), skill), adapt: false }, B = { ...loadParams(arg('b', 'base'), skill), adapt: false };
   const w = await duel(A, B, skill, games, +arg('seed', 4242));
-  console.log(`A (${arg('a', 'tuned')}) contra B (${arg('b', 'base')}) a habilidad ${skill}: A gana ${pct(w)} ± ${pct(se(w, games))} de ${games} combates`);
+  console.log(`A (${arg('a', 'game')}) contra B (${arg('b', 'base')}) a habilidad ${skill}: A gana ${pct(w)} ± ${pct(se(w, games))} de ${games} combates`);
   return w;
 }
 

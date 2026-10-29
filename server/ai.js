@@ -42,7 +42,37 @@ const BASE_PARAMS = {
   // Adaptativa: afloja si va arrasando y aprieta si va perdiendo (las personas no; ver tools/ai-tune.js)
   adapt: true,
 };
-const PARAMS = BASE_PARAMS;
+// Ajustados con tools/ai-tune.js (búsqueda (1+λ) con revancha a habilidad 0.85, IA contra IA con los mismos
+// equipos y arenas, sin la dificultad adaptativa). Contra BASE_PARAMS, en combates nuevos
+// (node tools/ai-tune.js compare): 52,3 % ± 0,9 % a habilidad 0.85, 51,7 % a 0.95, 51,6 % a 0.6 y 50 % a 0.28 (no cambia).
+// Lo que más cambia: cambia de Pokémon más a menudo cuando el tipo no le va o está tocado, se cura antes, sigue
+// atacando aunque se esté defendiendo, guarda algo menos de energía y prefiere ondas y áreas a rayos y embestidas.
+const TUNED_PARAMS = { ...BASE_PARAMS,
+  aggro: { luchador: 0.62, tanque: 0.466, controlador: 0.605, francotirador: 0.303 }, wHp: 0.367, wAlive: 0,
+  wType: 0.149, wEnergy: 0.195, finish: 0.127, finishAt: 0.294, lowHp: 0.219, lowHpAt: 0.342, opening: 0.245,
+  atacarAt: 0.619, defenderAt: 0.386, hyst: 0.052,
+  range: { luchador: 65, tanque: 147, controlador: 233, francotirador: 269 }, probeExtra: 39, fleeMin: 346,
+  fleeExtra: 145, strafe: 0.605, strafeDefend: 1.127, guard: 0.136, swapType: 0.678, swapSave: 0.648,
+  swapSaveAt: 0.377, cadenceAttack: 0.088, cadenceDefend: 0.046, reserve: 18, uProj: 0.675, uBeam: 0.523,
+  uBeamOpen: 1.443, uMelee: 0.961, uCone: 1.088, uWave: 1.197, uWaveOpen: 1.377, uDashAttack: 0.979,
+  uDashProbe: 0.608, uAreaSelf: 1.106, uArea: 0.807, uAreaOpen: 1.549, uHeal: 43, healAt: 0.524, healAtDefend: 0.553,
+  uBuff: 14, uWall: 22, uBlink: 18, meleeDefend: 0.381, bigAttack: 1.143, finishMult: 1.591,
+};
+// Las IA torpes deciden como siempre; desde habilidad 0.35 se pasan poco a poco a las ajustadas (del todo a 0.85).
+// Así Fácil y Normal no cambian y Difícil, Maestro, la Torre y los líderes de después juegan mejor
+const TUNE_FROM = 0.35, TUNE_FULL = 0.85;
+const blended = new Map();
+function paramsFor(skill) {
+  const w = Math.round(clamp01((skill - TUNE_FROM) / (TUNE_FULL - TUNE_FROM)) * 20) / 20;
+  if (!blended.has(w)) {
+    const mix = (a, b) => typeof a === 'number' ? a + (b - a) * w : a;
+    const P = { ...BASE_PARAMS };
+    for (const [k, v] of Object.entries(TUNED_PARAMS)) P[k] = v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([x, y]) => [x, mix(BASE_PARAMS[k][x], y)])) : mix(BASE_PARAMS[k], v);
+    blended.set(w, P);
+  }
+  return blended.get(w);
+}
+const PARAMS = TUNED_PARAMS;
 const clamp01 = v => Math.max(0, Math.min(1, v));
 
 function angleDiff(a, b) {
@@ -123,7 +153,7 @@ function adaptiveSkill(b, side, st, dt, P = PARAMS) {
 
 function aiInput(b, side, dt) {
   const st = side.aiState;
-  const P = side.aiParams || PARAMS;   // (tools/ai-tune.js prueba otros en un lado)
+  const P = side.aiParams || paramsFor(side.ai || 0);   // (tools/ai-tune.js prueba otros en un lado)
   const skill = side.wild ? side.ai : adaptiveSkill(b, side, st, dt, P);
   const inp = { s: 0, mx: 0, my: 0, a: side.a, tx: side.x, ty: side.y, c: -1, sw: -1 };
   if (b.state !== 'fight') return inp;
@@ -392,4 +422,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { aiInput, personality, adaptiveSkill, BASE_PARAMS, TUNED_PARAMS: PARAMS, PARAMS };
+module.exports = { aiInput, personality, adaptiveSkill, paramsFor, BASE_PARAMS, TUNED_PARAMS, PARAMS };
