@@ -146,7 +146,13 @@ net.on('disconnected', () => {
   if (app.battle) endBattle();
   ui.show('menu');
 });
-net.on('profile', m => ui.setProfile(m.p, m.board, m.rank));
+net.on('profile', m => { if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank); });
+// Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
+net.on('flags', m => {
+  ui.flags = m.flags;
+  if (ui.view === 'treasure' && !ui.spinOpen()) { ui.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad'); ui.tzSpin = null; ui.show(ui.tzBack || 'menu'); }
+  else if (ui.view === 'menu' || ui.view === 'treasure') ui.show(ui.view, true);
+});
 net.on('pop', m => { ui.pop = m; ui.updatePop(); });
 net.on('error', m => {
   ui.toast(tServer(m.msg), 'bad');

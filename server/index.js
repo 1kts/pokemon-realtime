@@ -23,7 +23,8 @@ const usage = require('./usage.js');
 const friends = require('./friends.js');
 const npc = require('./npc.js');
 const audit = require('./audit.js');
-const { createAdmin } = require('./admin.js');
+const { createAdmin, adminRow } = require('./admin.js');
+const flags = require('./flags.js');
 const art = require('./art.js');
 const names = require('./names.js');
 const google = require('./google.js');
@@ -98,8 +99,10 @@ function sendProfile(c) {
   rewards.migrate(c.profile);
   treasure.migrate(c.profile);
   if (metrics.touch(c.profile)) store.save();
-  send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile) });
+  send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile), flags: flagsOf(c) });
 }
+// Los interruptores (server/flags.js) tal como los ve este jugador: un admin lo ve todo abierto, con lo cerrado aparte
+const flagsOf = c => flags.forPlayer(!!(c.profile && adminRow(c.profile.id)));
 function publicProfile(p) {
   const { account, act, ...rest } = p;
   // (el correo solo se lo enseña a su dueño: no sale en la ladder, ni en las fichas, ni en el panel de admin)
@@ -138,7 +141,9 @@ const queues = { ranked: [], casual: [] };
 // Mantenimiento: como al apagar, no se empiezan combates ni colas nuevas, pero el servidor sigue
 let maintenance = false;
 const adminPanel = createAdmin({ clients, send, sendProfile, queues, version: VERSION, startedAt: STARTED,
-  maintenance: () => maintenance, setMaintenance: on => { maintenance = on; } });
+  maintenance: () => maintenance, setMaintenance: on => { maintenance = on; },
+  // (al tocar un interruptor, a cada conectado le llega al momento cómo queda para él)
+  flagsChanged: () => { for (const x of clients) if (x.profile) send(x, { t: 'flags', flags: flagsOf(x) }); } });
 
 // Gente en línea para las tarjetas de PvP del menú: conectados, buscando rival en cada cola y combatiendo.
 // Cada 2 s se manda a quien no tenga ya los números de ahora (los recién llegados lo reciben enseguida)
@@ -487,7 +492,7 @@ function handle(c, msg) {
   if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'daily' || msg.t === 'tutorial' || msg.t === 'treasure') {
     const r = msg.t === 'mission' && msg.a === 'claimAll' ? collectAll(c.profile, msg.scope)
       : msg.t === 'mission' ? missions.action(c.profile, msg)
-      : msg.t === 'treasure' ? treasure.spin(c.profile, String(msg.id))
+      : msg.t === 'treasure' ? (flagsOf(c).spin ? treasure.spin(c.profile, String(msg.id)) : { error: 'Lucky Spin está cerrado por ahora. ¡Vuelve pronto!' })
       : msg.t === 'daily' ? daily.claim(c.profile)
       : msg.t === 'tutorial' ? daily.claimTutorial(c.profile)
       : msg.t === 'achclaim' ? rewards.claimAchievement(c.profile, String(msg.id))

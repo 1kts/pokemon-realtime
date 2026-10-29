@@ -79,7 +79,7 @@ function show(tab) {
   if (tab === 'resumen') overview();
   if (tab === 'auditoria' && !$('#audit tbody').children.length) loadAudit();
   if (tab === 'jugadores' && !$('#results').children.length) loadPlayers();
-  if (tab === 'servidor') overview(true);
+  if (tab === 'servidor') { overview(true); loadFlags(); }
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
   if (tab === 'bugs') loadBugs();
@@ -470,6 +470,19 @@ $('#announce').addEventListener('submit', async e => {
   toast(r.ok);
   e.target.reset();
 });
+// Interruptores (server/flags.js): cada uno con su estado y un botón para abrirlo o cerrarlo
+function drawFlags(rows) {
+  $('#flags').replaceChildren(...rows.map(f => h('div', { class: 'flag-row' },
+    h('p', {}, h('b', {}, f.label), ' · ', h('b', { class: f.on ? 'ok' : 'warn' }, f.on ? 'abierto' : 'CERRADO'), h('br'), h('span', { class: 'small' }, f.desc + (f.at ? ` · cambiado ${fmtDate(f.at)}` : ''))),
+    h('button', { 'data-flag': f.id, onclick: async () => {
+      if (f.on && !confirm(`¿Cerrar ${f.label}? Los jugadores dejarán de verlo al momento.`)) return;
+      const r = await ask('admin.flag', { id: f.id, on: !f.on });
+      if (r.err) return toast(r.err, true);
+      toast(r.ok);
+      drawFlags(r.rows);
+    } }, f.on ? 'Cerrar' : 'Abrir'))));
+}
+async function loadFlags() { const r = await ask('admin.flags'); if (r.rows) drawFlags(r.rows); }
 for (const [id, on] of [['#maint-on', true], ['#maint-off', false]]) $(id).addEventListener('click', async () => {
   if (on && !confirm('¿Activar el mantenimiento? Nadie podrá empezar combates nuevos.')) return;
   const r = await ask('admin.maintenance', { on });

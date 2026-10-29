@@ -306,8 +306,11 @@ export class UI {
     const tz = el('button', 'hub-mod hub-tz' + (this.treasureReady() ? ' ready' : ''), `${WHEEL_SVG}<span><b>${t('Lucky Spin')}</b><small>${t('{n} gemas', { n: (p.gems || 0).toLocaleString() })}</small></span>`);
     tz.setAttribute('aria-label', `${t('Lucky Spin')} · ${t('{n} gemas', { n: (p.gems || 0).toLocaleString() })}`);   // (en el móvil su texto no se ve)
     tz.onclick = () => this.openTreasure();
+    // (si está cerrado no sale; a un admin sí, con el aviso)
+    if (this.spinClosedForOthers()) { tz.classList.add('closed'); tz.append(el('em', 'tz-closed', t('Cerrado para los jugadores'))); }
     const left = el('div', 'hub-left');
-    left.append(tools, this.hoverTip(tz, `<b>${t('Lucky Spin')}</b><p>${t('Ruletas de skins, partículas, efectos y retratos que se giran con gemas.')}</p>`));
+    left.append(tools);
+    if (this.spinOpen()) left.append(this.hoverTip(tz, `<b>${t('Lucky Spin')}</b><p>${t('Ruletas de skins, partículas, efectos y retratos que se giran con gemas.')}</p>`));
     bar.append(left, el('h1', 'hub-logo', 'Poké<b data-t="Arenas">Arenas</b>'), this.meModule());
     return bar;
   }

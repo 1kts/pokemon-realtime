@@ -78,3 +78,7 @@ tr.few td { opacity: .55; }
 .fbar { position: relative; height: 22px; border-radius: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
 .fbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #3a6fe0, #5fd0ff); }
 .fbar span { position: relative; padding: 0 8px; line-height: 22px; font-size: 12px; font-weight: 700; }
+/* Interruptores */
+.flag-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,.08); }
+.flag-row b.ok { color: #4fd06a; }
+.flag-row b.warn { color: #ff8a7a; }

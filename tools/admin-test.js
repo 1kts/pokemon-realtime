@@ -14,6 +14,7 @@ const { start } = require('../server/index.js');
 const totp = require('../server/totp.js');
 const audit = require('../server/audit.js');
 const store = require('../server/store.js');
+const flags = require('../server/flags.js');
 
 let failures = 0;
 const ok = (cond, msg) => { console.log(`${cond ? '✓' : '✗'} ${msg}`); if (!cond) failures++; };
@@ -43,6 +44,7 @@ async function player(name, user, pass) {
   else c.send({ t: 'hello', name });
   const m = await c.wait(x => x.t === 'profile');
   c.p = m && m.p;
+  c.flags = m && m.flags;
   return c;
 }
 // Código válido para el siguiente intervalo de 30 s (cada código solo vale una vez)
@@ -188,6 +190,34 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   normal.send({ t: 'practice', dexes: [require('../public/data.js').RANKED_POOL[0]] });
   ok(!!(await normal.wait(m => m.t === 'start')), 'sin mantenimiento se vuelve a poder');
   normal.send({ t: 'forfeit' });
+
+  // ---------- Interruptores: cerrar Lucky Spin sin sacar versión ----------
+  // (un jugador normal y la jefa, que también juega con su cuenta de admin: la conexión del principio)
+  const spinner = await player(null, 'girador', 'clave-larga-3');
+  const bossPlay = boss;
+  bossPlay.msgs.length = 0;
+  const gemsFor = pl => { store.byId(pl.p.id).gems = 5000; };
+  gemsFor(spinner); gemsFor(bossPlay);
+  const tid = require('../public/data.js').treasures()[0].id;
+  ok(spinner.p && (await adm.ask('admin.flags')).rows.some(f => f.id === 'spin' && f.on), 'Lucky Spin empieza abierto');
+  const closeR = await adm.ask('admin.flag', { id: 'spin', on: false });
+  const fl = await spinner.wait(m => m.t === 'flags');
+  const flBoss = await bossPlay.wait(m => m.t === 'flags');
+  ok(/cerrado/.test(closeR.ok) && fl && fl.flags.spin === false && flBoss && flBoss.flags.spin === true && flBoss.flags.closed.includes('spin'),
+    'al cerrarlo, a cada jugador le llega al momento; a la admin le sigue abierto, con el aviso de que está cerrado para los demás');
+  spinner.send({ t: 'treasure', id: tid });
+  ok(/cerrado/.test(((await spinner.wait(m => m.t === 'error')) || {}).msg || ''), 'cerrado, el servidor rechaza la tirada de un jugador');
+  bossPlay.send({ t: 'treasure', id: tid });
+  ok(!!(await bossPlay.wait(m => m.t === 'loot')), 'y la admin puede seguir tirando para probarlo');
+  ok(audit.query({ type: 'admin.interruptor' }).some(r => r.data.id === 'spin' && r.data.on === false), 'cerrarlo queda en la auditoría');
+  // Sigue cerrado al volver a entrar (está en la base de datos, no en memoria)
+  const later = await player(null, 'tardio', 'clave-larga-4');
+  ok(later.p && later.flags && later.flags.spin === false && !flags.isOn('spin'), 'sigue cerrado para quien entra después (está en la base de datos)');
+  await adm.ask('admin.flag', { id: 'spin', on: true });
+  ok(((await spinner.wait(m => m.t === 'flags')) || {}).flags?.spin === true, 'al abrirlo, vuelve para todos al momento');
+  spinner.send({ t: 'treasure', id: tid });
+  ok(!!(await spinner.wait(m => m.t === 'loot')), 'y se vuelve a poder tirar');
+  ok((await adm.ask('admin.flag', { id: 'nada', on: false })).err, 'un interruptor que no existe no se puede tocar');
 
   // ---------- Auditoría ----------
   const a1 = await adm.ask('admin.audit', { type: 'admin.' });

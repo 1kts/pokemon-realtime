@@ -1468,6 +1468,8 @@ export default {
     '{n} puntos para {league}': 'noch {n} Punkte bis {league}',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': 'Draft: Jeder Spieler sperrt 1 Pokémon und wählt 3. Alle auf Level {n}.',
     'Buscar partida clasificatoria': 'Ranglistenkampf suchen',
+    'Lucky Spin está cerrado por ahora. ¡Vuelve pronto!': 'Lucky Spin ist gerade geschlossen. Schau bald wieder vorbei!',
+    'Cerrado para los jugadores': 'Für Spieler geschlossen',
     'Buscar partida rápida': 'Schnelles Spiel suchen',
     'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': 'Online ohne ELO: Du gewinnst und verlierst keine Punkte. Du nutzt dein Ranglisten-Team: 3 Pokémon, alle auf Lv.{n}.',
     'Buscando rival para clasificatoria…': 'Suche Gegner für die Rangliste…',

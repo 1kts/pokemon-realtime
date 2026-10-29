@@ -37,7 +37,13 @@ export const treasureViews = {
     return Data.treasures().some(r => (got[r.id] || []).length < r.prizes.length && (p.gems || 0) >= SPIN_COST[(got[r.id] || []).length]);
   },
 
+  // Lucky Spin abierto para este jugador (el servidor lo puede cerrar desde el panel de admin: server/flags.js; a un
+  // admin le sale siempre, con el aviso de que está cerrado para los demás)
+  spinOpen() { return !this.flags || this.flags.spin !== false; },
+  spinClosedForOthers() { return !!(this.flags && (this.flags.closed || []).includes('spin')); },
+
   openTreasure() {
+    if (!this.spinOpen()) return this.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad');
     if (this.view !== 'treasure') this.tzBack = this.view;
     this.show('treasure');
   },

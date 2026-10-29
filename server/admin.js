@@ -17,6 +17,7 @@ const metrics = require('./metrics.js');
 const bugs = require('./bugs.js');
 const insights = require('./insights.js');
 const usage = require('./usage.js');
+const flags = require('./flags.js');
 const D = require('../public/data.js');
 
 const { db } = store;
@@ -251,6 +252,15 @@ function createAdmin(ctx) {
         if (on) for (const x of clients) if (x.profile) send(x, { t: 'announce', msg: 'Mantenimiento: termina tu combate; durante un rato no se podrán empezar otros.' });
         audit.log('admin.mantenimiento', { actor: c.admin.id, ip: c.ip, on });
         return reply({ ok: on ? 'Mantenimiento activado: no se empiezan combates nuevos' : 'Mantenimiento desactivado' });
+      }
+      // Interruptores: partes del juego que se cierran sin sacar versión (server/flags.js)
+      case 'admin.flags': return reply({ rows: flags.list() });
+      case 'admin.flag': {
+        const id = String(msg.id || ''), on = !!msg.on;
+        if (!flags.set(id, on, c.admin.id)) return reply({ err: 'No existe ese interruptor' });
+        ctx.flagsChanged();
+        audit.log('admin.interruptor', { actor: c.admin.id, ip: c.ip, id, on });
+        return reply({ ok: `${flags.FLAGS[id].label}: ${on ? 'abierto' : 'cerrado para los jugadores'}`, rows: flags.list() });
       }
       case 'admin.logout':
         audit.log('admin.logout', { actor: c.admin.id, ip: c.ip });
