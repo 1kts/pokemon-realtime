@@ -44,9 +44,19 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval(`window.__app.ui.show('menu'); true`);
   const tipSel = await page.eval(`(() => { const n = [...document.querySelectorAll('#screen [title], #screen [data-tip]')].find(e => e.offsetParent && !e.closest('#hud')); n.id = n.id || 'tip-e2e'; return '#' + n.id; })()`);
   // (con el dedo de verdad: toques del navegador, no eventos inventados)
-  await page.press(tipSel, 60);
+  // Un toque corto: la página mide cuánto duró de verdad (con la máquina cargada, los 60 ms pedidos pueden pasar del
+  // medio segundo y ser una pulsación larga, que sí saca el tooltip); si no fue corto, se repite
+  await page.eval(`(() => { const n = document.querySelector('${tipSel}'); window.__tap = null;
+    n.addEventListener('pointerdown', () => { window.__tapT = performance.now(); }, { capture: true });
+    n.addEventListener('pointerup', () => { window.__tap = performance.now() - window.__tapT; }, { capture: true }); return true; })()`);
+  let tap = null;
+  for (let i = 0; i < 4 && !(tap < 300); i++) {
+    await page.eval(`document.querySelectorAll('.ui-tip.on').forEach(t => t.classList.remove('on')); true`);
+    await page.press(tipSel, 60);
+    tap = await page.eval('window.__tap');
+  }
   await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
-  ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
+  ok(tap < 300 && await page.eval(`!document.querySelector('.ui-tip.on')`), `con el dedo, tocar (${Math.round(tap)} ms) no deja un tooltip pegado`);
   await page.fingerDown(tipSel);
   // (sale a los 500 ms; en el CI, lento, se espera a que aparezca en vez de un tiempo fijo)
   await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 15000);
@@ -67,9 +77,15 @@ module.exports = async ({ page, player, ok }) => {
   ok(h2 > h1 + 10 && /no está afiliado/i.test(await page.eval(`document.querySelector('.legal-text').textContent`)), 'tocar el texto legal lo despliega entero');
   await page.eval(`document.querySelector('.legal-text').click(); true`);
 
-  // El mapa de la Historia cabe entero en la pantalla en horizontal
+  // La Historia cabe entera en la pantalla en horizontal: el Camino (lo primero que sale) y el mapa
   await page.eval(`window.__app.ui.show('story'); true`);
+  await page.waitFor(`document.querySelector('.story-pathwrap') && document.querySelector('.story-side .node-info button.primary')`);
+  ok(await page.eval(`(() => { const m = document.querySelector('.story-pathwrap').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
+    return m.top >= 0 && m.bottom <= innerHeight + 1 && b.left >= m.right && b.bottom <= innerHeight && b.top >= 0 && document.getElementById('screen').scrollTop === 0; })()`), 'en horizontal el Camino se ve entero, con la ficha al lado y su botón de jugar a la vista sin bajar');
+  await page.click('.story-mode button:nth-child(2)');
   await page.waitFor(`document.querySelector('.story .map')`);
+  // (el clic del arnés centra la pestaña, que en el móvil está abajo, y baja la pantalla; quien la toca no baja nada)
+  await page.eval(`document.getElementById('screen').scrollTo(0, 0); true`);
   const mapH = await page.eval(`Math.round(document.querySelector('.story .map').getBoundingClientRect().height)`);
   ok(mapH <= 390 - h1, `en horizontal el mapa se ve entero (${mapH} px de alto)`);
   ok(await page.eval(`(() => { const m = document.querySelector('.story .map').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();

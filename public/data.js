@@ -926,6 +926,18 @@
   // encuentros reales, y líderes, Alto Mando y Campeón con sus equipos reales.
   const REGIONS = typeof module !== 'undefined' && module.exports ? require('./regions.js') : root.REGIONS;
   const REGION_IDS = Object.keys(REGIONS);
+  // Habilidad de la IA de cada líder, Alto Mando y Campeón (sustituye a la 'ai' de regions.js). Calibrada con
+  // node tools/ai-tune.js calibrate: un jugador de referencia (IA de habilidad 0.5 sin dificultad adaptativa, su inicial y
+  // dos Pokémon de las rutas abiertas que le van bien contra el tipo del líder, al tope de nivel) debería ganar del
+  // 90 % al primer gimnasio al 62 % al octavo, 56-47 % al Alto Mando y 42 % al Campeón. Lo calibrado se ha aplicado
+  // con un tope de ±0,15 sobre lo de antes: el jugador de referencia es una aproximación y donde manda el equipo
+  // (Erika, Morti, el Alto Mando con IV y EV) la habilidad sola no llega. Antes → después, en la cabecera del commit.
+  const LEADER_AI = {
+    brock: 0.35, misty: 0.43, surge: 0.5, erika: 0.27, koga: 0.63, sabrina: 0.7, blaine: 0.72, giovanni: 0.51,
+    lorelei: 0.55, bruno: 0.59, agatha: 0.63, lance: 0.67, azul: 0.73,
+    falkner: 0.35, bugsy: 0.43, whitney: 0.5, morty: 0.27, chuck: 0.63, jasmine: 0.68, pryce: 0.75, clair: 0.6,
+    will: 0.55, kogaj: 0.59, brunoj: 0.63, karen: 0.67, lancej: 0.73,
+  };
   const NODES = {};          // id -> nodo (con .region)
   for (const r of Object.values(REGIONS)) {
     let gi = 0;
@@ -936,6 +948,7 @@
         // El Alto Mando y los Campeones tienen sala propia; los líderes, la arena de su tipo
         if (ARENAS['e-' + n.id]) n.map = 'e-' + n.id;
         else if (ARENAS['g-' + n.type]) n.map = 'g-' + n.type;
+        if (LEADER_AI[n.id] !== undefined) n.ai = LEADER_AI[n.id];
       }
       else {
         // Algunas zonas juntan niveles de hierba, surf y caña de dos juegos (Tentacool de Nv.5 a 40): cada

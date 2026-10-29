@@ -4,8 +4,18 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.31.5', date: '2026-10-28', title: 'Mapa más claro y móvil más ligero',
+      v: '0.33.0', date: '2026-10-29', title: 'Líderes con jugadas propias',
       items: [
+        ['nuevo', 'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.'],
+        ['nuevo', 'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.'],
+        ['cambio', 'La IA hábil decide mejor cuándo cambiar de Pokémon, curarse y qué ataque usar: en Difícil, Maestro, la Torre, los entrenadores IA de Clasificatoria y casi todos los líderes.'],
+        ['cambio', 'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.'],
+      ],
+    },
+    {
+      v: '0.32.0', date: '2026-10-29', title: 'Historia en un camino',
+      items: [
+        ['nuevo', 'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.'],
         ['cambio', 'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.'],
         ['cambio', 'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).'],
         ['arreglo', 'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.'],

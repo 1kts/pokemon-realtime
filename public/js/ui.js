@@ -704,6 +704,8 @@ export class UI {
       const head = el('div', 'leader-head', `<div><h3>${title}</h3><p class="leader">${n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Miembro')}: <b>${n.leader}</b> · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span></p></div>${trainerImg(n.id, 'leader-sprite')}`);
       head.style.setProperty('--tc', TYPE_COLOR[n.type]);
       box.append(head);
+      // Qué es un gimnasio, para quien no ha jugado nunca a Pokémon
+      if (n.kind === 'gym') box.append(el('p', 'small ni-what', t('Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.')));
       const used = Data.leaderTeam(n, p.starter || (p.mons[0] && p.mons[0].dex));
       const team = el('div', 'mini-team');
       for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }
@@ -721,7 +723,8 @@ export class UI {
       }
     } else {
       const w = Data.routeWild(n);
-      box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
+      // (y qué es una ruta: opcional)
+      box.append(el('h3', '', n.name), el('p', 'small ni-what', t('Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.')), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
       box.append(this.rotationTimer('short'));
       // Las 4 de esta tanda (cambian cada 6 horas) y, en la misma lista y en dorado, su especial y los errantes
       const list = el('div', 'mini-team route-list');
@@ -1564,6 +1567,15 @@ export class UI {
       b.onclick = () => { skill = v; diff.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b)); };
       diff.append(b);
     }
+    // Ver qué piensa la IA: encima del bot, su estado (atacar, tantear o defender), su agresividad y su personalidad.
+    // Para entender por qué hace lo que hace; se recuerda
+    let aiDebug = storage.get('arena.aiDebug') === '1';
+    const dbgRow = el('div', 'diff practice-dbg');
+    const dbg = el('button', aiDebug ? 'sel' : '', t('Ver qué piensa la IA'));
+    dbg.title = t('Enseña encima del bot si quiere atacar, tantear o defenderse, su agresividad y su personalidad');
+    dbg.setAttribute('aria-pressed', aiDebug);
+    dbg.onclick = () => { aiDebug = !aiDebug; storage.set('arena.aiDebug', aiDebug ? '1' : '0'); dbg.classList.toggle('sel', aiDebug); dbg.setAttribute('aria-pressed', aiDebug); };
+    dbgRow.append(dbg);
     // Arena: al azar, una de las 4 de siempre o la de un gimnasio o del Alto Mando (con sus mecánicas), en tarjetas
     // con un plano en miniatura y lo que tiene de especial; se recuerda
     let map = storage.get('arena.practiceMap') || '';
@@ -1599,10 +1611,10 @@ export class UI {
     }
     arenas.append(mods);
     start.onclick = () => {
-      this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod };
-      this.net.send({ t: 'practice', dexes: chosen, skill, map, mod });
+      this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod, aiDebug };
+      this.net.send({ t: 'practice', dexes: chosen, skill, map, mod, aiDebug });
     };
-    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, arenas, start);
+    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, dbgRow, arenas, start);
     this.root.append(wrap);
     this.refreshLegalBar();
   }
@@ -1723,7 +1735,7 @@ export class UI {
     acts.append(back);
     if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
       const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
-      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod }) : this.startStory(lm.a, lm.id);
+      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod, aiDebug: lm.aiDebug }) : this.startStory(lm.a, lm.id);
       acts.append(again);
     }
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {

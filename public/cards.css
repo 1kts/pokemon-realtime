@@ -1824,7 +1824,7 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
    caminito. Lo recorrido es tierra clara; lo que falta, baldosas apagadas. Lo que toca es lo único grande, dorado y
    que late, con el jugador al lado y el botón de jugar debajo */
 .story-body > .story-pathwrap { align-self: start; }   /* (de su altura, no de la del panel de al lado) */
-.story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
+.story-pathwrap { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; border-radius: 20px;
   background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
 .story-pathwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 .story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }

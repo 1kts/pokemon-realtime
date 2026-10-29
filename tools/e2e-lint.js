@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE = 120;   // atajos sin justificar al empezar (2026-10-28); bájalo cuando quites alguno
+const BASE = 119;   // atajos sin justificar al empezar (2026-10-28); bájalo cuando quites alguno
 const dir = path.join(__dirname, '..', 'tests', 'e2e');
 const PATTERNS = [[/\.click\(\);?\s*true/, '.click() dentro de eval'], [/ui\.show\('/, "ui.show('…')"], [/dispatchEvent\(new KeyboardEvent/, 'tecla inventada']];
 
