@@ -1,8 +1,10 @@
 // El Camino de la Historia (storypath.js) se entiende sin haber jugado nunca a Pokémon: cada gimnasio es una tarjeta
 // con su líder que dice «Gimnasio · combate» y cada ruta una con sus Pokémon que dice «Ruta · captura»; los Pokémon
-// que no tienes salen como una silueta oscura y los que sí, en color. El jugador está de pie junto a lo que toca, que
-// es lo más grande y tiene el único «Desafiar», a la vista y sin nada encima; lo bloqueado dice qué lo abre. En el
-// móvil en horizontal cabe entero de alto (se desplaza de lado). Pulsar «Desafiar» empieza el combate
+// que no tienes salen como una silueta oscura y los que sí, en color. El jugador está de pie al principio de su tramo,
+// antes de sus rutas (no junto al líder, que parecería que ya las ha hecho), y al abrir está elegida la primera de
+// ellas con Pokémon por capturar. El siguiente líder es lo más grande y tiene el único «Desafiar», a la vista y sin
+// nada encima; lo bloqueado dice qué lo abre. En el móvil en horizontal cabe entero de alto (se desplaza de lado).
+// Pulsar «Desafiar» empieza el combate
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'camino' });
   // (con un Pidgey, que sale en la Ruta 1: en su tarjeta, él en color y los demás en silueta)
@@ -55,6 +57,10 @@ module.exports = async ({ page, player, ok }) => {
   for (const [W, H, touch] of [[1280, 800, false], [844, 390, true], [667, 375, true]]) {
     const at = `${W}×${H}`;
     await open(W, H, touch);
+    // Al abrir, la ficha de al lado es la de la primera ruta del tramo con Pokémon por capturar, y está a la vista
+    const first = await page.eval(`(() => { const h = document.querySelector('.story-side .node-info h3'), b = document.querySelector('.sp-node.sel'), r = b.getBoundingClientRect(), w = document.querySelector('.story-path').getBoundingClientRect();
+      return { side: h && h.textContent.trim(), seen: r.left >= w.left - 1 && r.right <= w.right + 1 }; })()`);
+    ok(first.side === 'Ruta 11 · Ruta 9 · Ruta 10' && first.seen, `${at}: al abrir, elegida y a la vista la primera ruta por capturar del tramo (${JSON.stringify(first)})`);
     // Recorre el camino de punta a punta (como quien lo desliza) mirando cada tarjeta allí donde se ve
     const seen = new Map();
     // (a pasos que dejan a la vista, en algún momento, cada tarjeta entera)
@@ -75,9 +81,12 @@ module.exports = async ({ page, player, ok }) => {
     ok(now && cards.filter(c => c.name !== now.name).every(c => c.kind === 'league' ? c.w * c.h <= now.w * now.h : c.w * c.h < now.w * now.h), `${at}: Erika, lo que toca, es la tarjeta más grande (con la Liga, el otro lugar grande, como mucho igual)`);
     const g = await page.eval(go);
     ok(g.n === 1 && g.text === 'Desafiar' && g.free && g.inside, `${at}: un solo «Desafiar» en el camino, a la vista y sin nada encima (${JSON.stringify(g)})`);
-    const you = await page.eval(`(() => { const y = [...document.querySelectorAll('.story-path *')].find(e => e.children.length === 0 && e.textContent === 'Estás aquí'), n = document.querySelector('.sp-node.now .sp-card');
-      if (!y) return null; const a = y.getBoundingClientRect(), b = n.getBoundingClientRect(); return { gap: b.left - a.right, seen: a.width > 0 && a.top >= 0 }; })()`);
-    ok(you && you.seen && you.gap >= 0 && you.gap < 40, `${at}: «Estás aquí», con el jugador, junto a lo que toca (${JSON.stringify(you)})`);
+    // «Estás aquí»: al principio del tramo, justo antes de su primera ruta y después del último líder vencido
+    const you = await page.eval(`(() => { const y = [...document.querySelectorAll('.story-path *')].find(e => e.children.length === 0 && e.textContent === 'Estás aquí');
+      const cards = [...document.querySelectorAll('.story-path .sp-node')], i = cards.findIndex(b => b.querySelector('.sp-name').textContent.startsWith('Ruta 11 '));
+      if (!y || i < 1) return null; const a = y.getBoundingClientRect(), next = cards[i].querySelector('.sp-card').getBoundingClientRect(), prev = cards[i - 1].querySelector('.sp-card').getBoundingClientRect();
+      return { before: prev.right <= a.left, gap: Math.round(next.left - a.right), prev: cards[i - 1].querySelector('.sp-name').innerText.split('\\n')[0], seen: a.width > 0 && a.top >= 0 }; })()`);
+    ok(you && you.seen && you.before && you.prev === 'Lt. Surge' && you.gap >= 0 && you.gap < 60, `${at}: «Estás aquí», con el jugador, al principio de su tramo: entre Lt. Surge y la Ruta 11 (${JSON.stringify(you)})`);
     // Bloqueado: dice qué lo abre
     const koga = cards.find(c => c.name.startsWith('Koga'));
     ok(koga && koga.lock.includes('Se abre al vencer a Erika'), `${at}: Koga, bloqueado, dice «Se abre al vencer a Erika» (${koga && koga.lock})`);

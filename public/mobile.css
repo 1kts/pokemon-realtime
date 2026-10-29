@@ -253,7 +253,6 @@
   .sp-gym.now .sp-name small, .sp-league .sp-name small { display: none; }
   .sp-route .sp-name { font-size: 9.5px; }
   .sp-leg { gap: 8px; padding: 0 8px; }
-  .sp-stop.now { margin-left: 60px; }
   .sp-branch { padding-bottom: calc(var(--below) + var(--road) / 2 + 8px); }
   .sp-branch::before { width: 8px; left: calc(50% - 4px); height: calc(var(--road) / 2 + 12px); }
   .sp-start { width: 84px; }

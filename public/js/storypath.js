@@ -67,7 +67,8 @@ export const storyPathViews = {
       stand.append(b);
       return stand;
     };
-    // El jugador, de pie en el camino junto a lo que toca
+    // El jugador, de pie en el camino al principio del tramo en el que está (antes de sus rutas: si estuviera junto al
+    // gimnasio parecería que las rutas ya las ha hecho)
     const you = () => { const y = el('div', 'sp-you'); y.append(el('span', 'sp-you-tag', t('Estás aquí')), this.avatar(40)); return y; };
     // El único botón de jugar del camino: el del siguiente reto
     const goBtn = play => { const go = el('button', 'primary sp-go', t('Desafiar')); go.onclick = e => { e.stopPropagation(); play(); }; return go; };
@@ -88,16 +89,16 @@ export const storyPathViews = {
       all.push(b);
       return stop(b, now && (() => this.startStory('gym', n.id)));
     };
-    // Una parada en el camino: el sitio y, si es lo que toca (play: cómo se juega), el jugador al lado y el botón
-    // de jugar debajo
+    // Una parada en el camino: el sitio y, si es lo que toca (play: cómo se juega), el botón de jugar debajo
     const stop = (b, play) => {
       const s = el('div', 'sp-stop' + (play ? ' now' : ''));
-      if (play) { b.classList.add('now'); s.append(you(), b, goBtn(play)); } else s.append(b);
+      if (play) { b.classList.add('now'); s.append(b, goBtn(play)); } else s.append(b);
       return s;
     };
     // Cada tramo: el camino con las rutas que se abren en él y, al final, su gimnasio
     const chapter = (routes, head, state) => {
       const ch = el('div', 'sp-ch ' + state);
+      if (state === 'now') ch.append(you());
       if (routes.length) { const leg = el('div', 'sp-leg'); routes.forEach(n => leg.append(route(n))); ch.append(leg); }
       if (head) ch.append(head);
       track.append(ch);
@@ -132,8 +133,9 @@ export const storyPathViews = {
     const end = el('div', 'sp-end', cleared ? '<em>♛</em>' : '');
     if (cleared) end.prepend(you());
     chapter(after, end, cleared ? 'done' : 'locked');
-    // Al abrir: elegido y en el centro lo que toca (el siguiente líder o, si no, la primera ruta nueva)
-    const cur = all.find(b => b.classList.contains('now')) || all.find(b => b.classList.contains('new')) || all.find(b => !b.classList.contains('locked'));
+    // Al abrir: elegida y en el centro la primera ruta de tu tramo con Pokémon por capturar (lo primero que se puede
+    // hacer); si ya las tienes todas, el siguiente líder
+    const cur = all.find(b => b.classList.contains('new') && !b.classList.contains('full')) || all.find(b => b.classList.contains('now')) || all.find(b => !b.classList.contains('locked'));
     requestAnimationFrame(() => {
       if (!cur) return;
       if (!cur.classList.contains('sp-league')) cur.click();

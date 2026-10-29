@@ -1828,9 +1828,9 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
   background: radial-gradient(circle at 30% 35%, rgba(255,245,215,.55) 0 1.5px, transparent 2.2px) 0 0 / 15px 11px,
     radial-gradient(circle at 70% 70%, rgba(110,72,30,.55) 0 1.6px, transparent 2.3px) 4px 2px / 19px 13px, linear-gradient(180deg, #e8c78c, #c99a58); }
 .sp-start::before { left: 50%; border-radius: 0; }
-/* (hasta la tarjeta del siguiente reto se ha andado; más allá, lo que falta) */
-.sp-ch.now::before { right: calc(var(--nw) / 2 + var(--stopm) + 6px); }
-.sp-ch.now::after { content: ''; position: absolute; right: 0; width: calc(var(--nw) / 2 + var(--stopm) + 6px); bottom: calc(var(--below) - var(--road) / 2); height: var(--road);
+/* (en el tramo en el que estás, andado solo hasta donde estás tú, al principio; lo de delante, lo que falta) */
+.sp-ch.now::before { right: auto; width: 60px; }
+.sp-ch.now::after { content: ''; position: absolute; left: 60px; right: 0; bottom: calc(var(--below) - var(--road) / 2); height: var(--road);
   box-sizing: border-box; border-block: 2px dashed rgba(190,205,240,.32); background: repeating-linear-gradient(90deg, rgba(190,205,240,.16) 0 16px, rgba(190,205,240,.06) 16px 22px); }
 /* Salida: el pueblo, con su cartel de madera */
 .sp-start { width: 110px; height: 100%; justify-content: center; padding-bottom: calc(var(--below) + var(--road) / 2 + 6px); }
@@ -1880,11 +1880,10 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-gym.now .sp-ord { background: var(--gold); }
 .sp-gym.now .sp-name { max-width: calc(var(--nw) + 20px); padding: 2px 10px; border-radius: 9px; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; height: auto; }
 @keyframes spNow { 50% { box-shadow: 0 0 0 4px rgba(8,12,32,.7), 0 0 0 10px rgba(255,203,5,.22), 0 0 28px rgba(255,203,5,.75); } }
-.sp-stop.now { margin-left: 78px; }
-.sp-you { position: absolute; z-index: 2; right: calc(100% + 6px); bottom: calc(var(--below) + var(--road) / 2 - 4px); display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
+.sp-you { position: relative; z-index: 2; flex: none; margin: 0 4px calc(var(--below) + var(--road) / 2 - 4px) 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
 .sp-you::after { content: ''; width: 30px; height: 7px; margin-top: -4px; border-radius: 50%; background: rgba(0,0,0,.35); }
 .sp-you-tag { padding: 1px 7px; border-radius: 99px; font: 800 10.5px var(--display); color: #1a1405; background: #fff; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
-.sp-end .sp-you { position: static; margin-right: 6px; }
+.sp-end .sp-you { margin: 0 6px 0 0; }
 /* El único botón de jugar del camino, debajo del nombre del siguiente reto */
 button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-content; height: var(--goh); min-height: 0; margin: 0 auto; padding: 0 22px; font-size: 15px; line-height: 1; white-space: nowrap; }
 /* Rutas: la foto de su terreno, sus Pokémon (en silueta los que no tienes), lo capturado y si es nueva */

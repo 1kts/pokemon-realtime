@@ -1,13 +1,13 @@
 // Propuestas de aspecto (docs/propuestas-ui.md): solo se ven si se piden. Sin ?tema el juego se ve como siempre y no
 // carga ninguna hoja de tema; con ?tema=b se ve la propuesta B, se recuerda al volver a entrar y ?tema=no la quita.
 // Con el tema puesto, el menú y Historia se siguen usando igual (nada tapado). La propuesta D se mira además por lo
-// que ve el jugador: colores limpios y que se leen, el dorado solo en lo que toca y lo listo, un latido a la vez (y
-// ninguno sin movimiento) y que en el móvil todo cabe
+// que ve el jugador: colores limpios y que se leen, el dorado solo en lo que toca y lo listo, lo que tiene un premio esperando parpadea
+// y lo cruza un destello (y nada se mueve sin movimiento) y que en el móvil todo cabe
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'temas' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
   await me.client.wait(m => m.t === 'profile');
-  me.client.send({ t: 'dev', badges: 3, region: 'kanto' });
+  me.client.send({ t: 'dev', badges: 3, region: 'kanto', gems: 300 });   // (con gemas para una tirada de Lucky Spin)
   await me.client.wait(m => m.t === 'profile');
   await page.resize(1280, 800);
   await page.loginAs(me.token);
@@ -37,7 +37,12 @@ module.exports = async ({ page, player, ok }) => {
   // Se usa igual: Historia se abre con el ratón y el botón de desafiar se ve y se puede pulsar
   await page.click('.menu-card.story');
   await page.waitFor(`document.querySelector('.story-path .sp-node')`, 20000);
-  await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);   // atajo: la guía de la primera vez
+  // (la guía de la primera vez: se cierra como un jugador)
+  await page.waitFor(`[...document.querySelectorAll('body > .modal button')].some(b => b.textContent.includes('¡A jugar!'))`);
+  await page.click('¡A jugar!');
+  await page.waitFor(`!document.querySelector('body > .modal')`);
+  await page.eval(`document.querySelector('.story-path .sp-node.now').scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' }); true`);   // atajo: desplazar el camino hasta el líder
+  await page.click('.story-path .sp-node.now');
   const go = await page.eval(`(() => { const b = document.querySelector('.story-side .node-info button.primary'), r = b.getBoundingClientRect();
     return b.textContent.trim() + '|' + (document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b); })()`);
   ok(go === '¡Desafiar!|true', `con el tema, «¡Desafiar!» se ve y no lo tapa nada (${go})`);
@@ -90,20 +95,22 @@ module.exports = async ({ page, player, ok }) => {
   const [hMons, hBag, , hDex] = gilt.hues;
   ok((hMons <= 12 || hMons >= 350) && hBag >= 205 && hBag <= 235 && hDex >= 250 && hDex <= 285, `con la D, Mis Pokémon es rojo, Mochila azul y Pokédex violeta (${gilt.hues.join('°, ')}°)`);
 
-  // Un latido a la vez: lo que tiene algo listo late por turnos (8 s mirando cada 150 ms: nunca dos a la vez y
-  // laten al menos dos distintos), y con prefers-reduced-motion no late nada
-  const beats = async ms => {
-    await page.eval(`window.__beat = { max: 0, who: new Set() }; window.__beatT = setInterval(() => {
-      const on = [...document.querySelectorAll('.hub-tz, .hub-coll .coll-tile, .mw-head .claim-all')].filter(e => { const t = getComputedStyle(e).transform; return t !== 'none' && !/^matrix\\(1, 0, 0, 1, 0, -?[0-3](\\.\\d+)?\\)$/.test(t); });
-      __beat.max = Math.max(__beat.max, on.length); on.forEach(e => __beat.who.add(e.textContent.trim().slice(0, 12))); }, 150); true`);
+  // Lo que tiene un premio esperando se mueve (parpadea, late o lo cruza un destello: es lo que engancha): Lucky Spin
+  // (con gemas para una tirada), Logros con premios y «Recoger todo»; con prefers-reduced-motion no se mueve nada
+  const moving = async ms => {
+    await page.eval(`window.__mv = new Map(); window.__mvT = setInterval(() => {
+      for (const e of document.querySelectorAll('.hub-tz.ready, .hub-coll .coll-tile.ready, .mw-head .claim-all')) {
+        const c = getComputedStyle(e), a = getComputedStyle(e, '::after'), k = e.textContent.trim().slice(0, 12);
+        (__mv.get(k) || __mv.set(k, new Set()).get(k)).add([c.transform, c.boxShadow, c.borderColor, a.backgroundPosition].join('|'));
+      } }, 120); true`);
     await new Promise(r => setTimeout(r, ms));
-    return page.eval(`(() => { clearInterval(__beatT); return { max: __beat.max, who: [...__beat.who] }; })()`);
+    return page.eval(`(() => { clearInterval(__mvT); return [...__mv].map(([k, v]) => [k, v.size > 1]); })()`);
   };
-  const b1 = await beats(8500);
-  ok(b1.max === 1 && b1.who.length >= 2, `con la D, lo que está listo late de uno en uno (a la vez como mucho ${b1.max}; han latido: ${b1.who.join(' | ')})`);
+  const m1 = await moving(3500);
+  ok(m1.length >= 3 && m1.every(([, m]) => m), `con la D, lo que tiene premio se mueve para que se vea (${m1.map(([k, m]) => k + (m ? ' sí' : ' NO')).join(' | ')})`);
   await page.media([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-  const b2 = await beats(3000);
-  ok(b2.max === 0, `con la D y prefers-reduced-motion, no late nada (${b2.who.join(' | ') || 'nada'})`);
+  const m2 = await moving(2500);
+  ok(m2.every(([, m]) => !m), `con la D y prefers-reduced-motion, no se mueve nada (${m2.filter(([, m]) => m).map(([k]) => k).join(' | ') || 'nada'})`);
   await page.media();
 
   // Historia en el escritorio: «¡Desafiar!» dorado, a la vista y sin nada encima
@@ -112,6 +119,9 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`document.querySelector('.story-path .sp-node')`, 20000);
     if (await page.eval(`!!document.querySelector('body > .modal button.primary')`)) await page.click('body > .modal button.primary');   // la guía de la primera vez: «¡A jugar!»
     await page.waitFor(`!document.querySelector('body > .modal')`, 5000);
+    // (al abrir está elegida la primera ruta con Pokémon por capturar: se toca el líder para ver su ficha)
+    await page.eval(`document.querySelector('.story-path .sp-node.now').scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' }); true`);   // atajo: desplazar el camino hasta el líder
+    await page.click('.story-path .sp-node.now');
     return page.eval(`(() => { ${TD} const b = q('.story-side .node-info button.primary'), r = b.getBoundingClientRect();
       return b.textContent.trim() + '|' + (document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b) + '|' + (r.bottom <= innerHeight && r.right <= innerWidth) + '|' + gold(stops(b)[1] || stops(b)[0]); })()`);
   };
