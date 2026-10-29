@@ -100,7 +100,9 @@ function installGuide() {
 }
 
 // Nombre de un movimiento para un botón pequeño: cada palabra en su línea (como mucho dos), recortada a 8 letras
-const shortName = s => s.trim().split(/\s+/).slice(0, 2).map(w => w.length > 8 ? w.slice(0, 7) + '.' : w).join('<br>');
+// El nombre en el botón redondo: entero (sin recortar), una palabra por línea, y más pequeño cuanto más larga la palabra
+const nameCls = s => { const n = Math.max(...s.trim().split(/\s+/).map(w => w.length)); return n > 9 ? ' xs' : n > 7 ? ' s' : ''; };
+const shortName = s => s.trim().split(/\s+/).slice(0, 2).join('<br>');
 
 const capture = (node, id) => { try { node.setPointerCapture(id); } catch {} };   // el dedo sigue siendo de ese botón aunque se salga
 const el = (tag, cls, html = '') => { const e = document.createElement(tag); e.className = cls; e.innerHTML = html; return e; };
@@ -166,9 +168,10 @@ export class TouchControls {
     b.movesEl.querySelectorAll('.mv').forEach((btn, slot) => {
       if (btn.dataset.touch) return;
       btn.dataset.touch = '1';
-      // En el botón redondo, el nombre en corto (una palabra por línea, las largas recortadas) en vez del icono
-      const name = btn.querySelector('b');
-      if (name) btn.append(el('span', 'tc-name', shortName(name.textContent)));
+      // En el botón redondo: el icono de su tipo, el nombre entero y lo que gasta de energía (el básico, nada)
+      const name = btn.querySelector('b'), cost = /(\d+)\s*⚡/.exec((btn.querySelector('small') || {}).textContent || '');
+      if (name) btn.append(el('span', 'tc-name' + nameCls(name.textContent), shortName(name.textContent)));
+      if (cost) btn.append(el('i', 'tc-cost', `⚡${cost[1]}`));
       if (btn.classList.contains('protect')) {
         btn.addEventListener('pointerdown', e => { e.preventDefault(); b.castQueue = 4; btn.classList.add('press'); });
         btn.addEventListener('pointerup', () => btn.classList.remove('press'));

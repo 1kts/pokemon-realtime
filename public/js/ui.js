@@ -1649,13 +1649,16 @@ export class UI {
       box.append(c);
       if (r.captured && r.captured.uid) box.append(this.nickForm(r.captured.uid, msg.captured.dex));
     }
+    // Lo ganado, todo en una fila: la medalla, el dinero, las gemas y los objetos
+    const loot = el('div', 'res-loot');
     if (r.badge) {
       const ln = Data.leadersOf(r.badge.region || 'kanto')[r.badge.index];
-      box.append(el('div', 'badge-won', `${r.badge.kind === 'gym' ? `<span class="badge-shine">${badgeImg(r.badge.region || 'kanto', r.badge.index, true, 96, 'big')}</span>` : `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i>`}<p>${t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}${r.badge.kind === 'gym' ? ' ' + t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? ' ' + t('¡Eres el nuevo Campeón!') : ''}</p>`));
+      loot.append(el('span', 'rl badge-won', `${r.badge.kind === 'gym' ? `<span class="badge-shine">${badgeImg(r.badge.region || 'kanto', r.badge.index, true, 56, 'big')}</span>` : `<i class="badge got big" style="--tc:${TYPE_COLOR[ln.type]}"></i>`}<b>${r.badge.kind === 'gym' ? t('{badge} conseguida.', { badge: ln.badge || ln.name }) : r.badge.kind === 'champion' ? t('¡Eres el nuevo Campeón!') : t('¡Has vencido a <b>{who}</b>!', { who: ln.leader })}</b>`));
     }
-    if (r.items) box.append(el('p', 'reward-items', t('Premio:') + ' ' + Object.entries(r.items).map(([k, n]) => `<span class="ri">${itemImg(k, 28)}${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}</span>`).join(' ')));
-    if (r.coins) box.append(el('p', 'reward', `+${coins(r.coins)}`));
-    if (r.gems) box.append(el('p', 'reward gems', `+${icon('gem', 18)} ${t('{n} gemas', { n: r.gems })}`));
+    if (r.coins) loot.append(el('span', 'rl reward', `+${coins(r.coins)}`));
+    if (r.gems) loot.append(el('span', 'rl reward gems', `+${icon('gem', 18)} ${t('{n} gemas', { n: r.gems })}`));
+    if (r.items) for (const [k, n] of Object.entries(r.items)) loot.append(el('span', 'rl reward-items', `${itemImg(k, 26)}${(SHOP.find(i => i.id === k) || { name: k }).name} ×${n}`));
+    if (loot.children.length) box.append(loot);
     if (r.cap && r.xp && r.xp.some(x => x.capped)) box.append(el('p', 'small', t('Tope de nivel {n}: vence al siguiente gimnasio para que sigan subiendo.', { n: r.cap })));
     if (r.xp && r.xp.length) {
       const up = r.xp.filter(x => x.level > x.fromLevel || x.evolved);
@@ -1666,11 +1669,13 @@ export class UI {
         const pm = this.profile && this.profile.mons.find(m => m.uid === x.uid);
         // Quien evoluciona posa y quien sube de nivel salta; los demás, cara de victoria o de derrota
         const shiny = !!(pm && pm.shiny), dex = x.evolved || x.dex;
-        row.append(x.evolved ? animatedPortrait(dex, 48, 'Pose', shiny) : x.level > x.fromLevel ? animatedPortrait(dex, 48, 'Hop', shiny)
-          : moodFace(dex, 48, draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny) || portrait(dex, 48, { shiny }));
-        const lvl = x.level > x.fromLevel ? `${lv(x.fromLevel)} → <span class="lvup">${lv(x.level)} ${t('¡sube de nivel!')}</span>` : lv(x.level);
+        row.append(x.evolved ? animatedPortrait(dex, 40, 'Pose', shiny) : x.level > x.fromLevel ? animatedPortrait(dex, 40, 'Hop', shiny)
+          : moodFace(dex, 40, draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny) || portrait(dex, 40, { shiny }));
+        // (en corto: nombre, EXP y nivel; lo que pasa de especial, debajo; los EV, al pasar el ratón)
+        const lvl = x.level > x.fromLevel ? `<span class="lvup">${lv(x.fromLevel)} → ${lv(x.level)}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
-        row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b> ${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}${x.evolved ? `<br><span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<br><span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span> <small>${t('(elígelo en Equipo)')}</small>` : ''}${x.ev && Object.keys(x.ev).length ? ` <small class="evgain">EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}</small>` : ''}`));
+        row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b><small>${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}</small>${x.evolved ? `<span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span>` : ''}`));
+        if (x.ev && Object.keys(x.ev).length) row.title = `EV ${Object.entries(x.ev).map(([k, v]) => `+${v} ${Data.VIT_STATS[k]}`).join(', ')}`;
         list.append(row);
       }
       box.append(list);

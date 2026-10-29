@@ -1365,11 +1365,22 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 #hud.touch .mv { background: radial-gradient(circle at 35% 25%, color-mix(in srgb, var(--tc) 55%, #fff), var(--tc) 55%, color-mix(in srgb, var(--tc) 55%, #000));
   box-shadow: 0 4px 12px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.25); }
 #hud.touch .mv::before { display: none; }
-#hud.touch .mv .mv-ico { display: none; }
 #hud.touch .mv .tc-name { position: relative; z-index: 1; font: 900 10.5px/1.05 var(--display); color: #fff; text-align: center; text-shadow: 0 1px 0 rgba(0,0,0,.7), 0 0 3px rgba(0,0,0,.6); padding: 0 3px; }
 #hud.touch .mv:nth-child(1) .tc-name { font-size: 13px; }
 #hud.touch .mv.protect .tc-name { font-size: 9.5px; }
 #hud.touch .mv.noenergy { opacity: 1; filter: grayscale(.85) brightness(.65); }
+/* Cada botón: el icono de su tipo arriba, el nombre entero (más pequeño si la palabra es larga: «Protección») y
+   abajo lo que gasta de energía; la barra de energía lleva su ⚡ encima para que se sepa qué es */
+#hud.touch .mv { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+#hud.touch .mv .mv-ico { display: block; position: relative; left: auto; top: auto; transform: none; z-index: 1; width: 18px; height: 18px; margin: 0; padding: 2px; box-sizing: border-box; border-radius: 50%; background: rgba(10,16,40,.6); box-shadow: 0 0 0 1px rgba(255,255,255,.35); }
+#hud.touch .mv:nth-child(1) .mv-ico { width: 24px; height: 24px; padding: 3px; }
+#hud.touch .mv.protect .mv-ico { width: 16px; height: 16px; }
+#hud.touch .mv .tc-name.s { font-size: 9px; }
+#hud.touch .mv .tc-name.xs { font-size: 7.5px; letter-spacing: -.2px; }
+#hud.touch .mv:nth-child(1) .tc-name.s, #hud.touch .mv:nth-child(1) .tc-name.xs { font-size: 11px; }
+#hud.touch .mv .tc-cost { position: relative; z-index: 1; padding: 0 4px; border-radius: 6px; font: 800 8px/11px var(--text); font-style: normal; color: #dff6ff; background: rgba(0,20,60,.55); }
+#hud.touch .bottom::before { content: '⚡'; position: absolute; left: -19px; bottom: 182px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: #ffd23a;
+  background: rgba(10,16,40,.75); box-shadow: 0 0 0 1px rgba(122,232,255,.6), 0 0 8px rgba(122,232,255,.5); }
 #hud.touch .mv .cdt { z-index: 2; }
 /* Energía: barra vertical a la izquierda de los botones, que se llena de abajo arriba */
 #hud.touch .energy { left: -14px; right: auto; bottom: 4px; top: auto; width: 12px; height: 176px; max-width: none; border-radius: 6px; }
@@ -1931,3 +1942,32 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 .sp-k-face { width: 26px; height: 26px; margin-top: 2px; }
 .sp-k.locked { border-style: dashed; color: #c9d1e6; background: rgba(190,205,240,.08); }
 .sp-k.locked svg { width: 14px; height: 14px; }
+
+/* ---------- Resultados del combate, en corto: lo ganado en una fila de fichas, cada Pokémon en una ficha pequeña
+   (nombre, EXP y nivel; lo especial debajo), las misiones en una línea y los botones siempre a la vista abajo ---------- */
+.results { overflow: clip; }
+.res-loot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 8px 0; }
+.res-loot .rl { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 4px 12px; border-radius: 99px; font-size: 17px; font-weight: 800;
+  background: rgba(0,0,0,.28); border: 1px solid var(--line); }
+.res-loot .rl img, .res-loot .rl svg { width: 22px; height: 22px; }
+.res-loot .badge-won { flex-direction: row; padding: 2px 14px 2px 4px; border-color: rgba(255,203,5,.6); background: linear-gradient(90deg, rgba(255,210,63,.18), rgba(0,0,0,.25)); }
+.res-loot .badge-won b { font-size: 14px; }
+.res-loot .badge-won .badge-shine img.big { width: 44px; height: 44px; }
+.res-loot .badge-won .badge-shine { width: 48px; height: 48px; }
+.results .xp-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; margin: 6px 0; }
+.results .xp-row { gap: 8px; padding: 4px 8px; border-radius: 10px; align-items: flex-start; }
+.results .xp-row > div { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.results .xp-row > div b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.results .xp-row > div small { font-size: 12px; color: #c4d0e4; }
+.results .xp-row .evo, .results .xp-row > div > .lvup { font-size: 11.5px; }
+.results .results-missions { gap: 4px; margin: 6px 0; }
+.results .rm { gap: 8px; padding: 4px 8px; border-radius: 10px; }
+.results .rm .m-ico { width: 26px; height: 26px; }
+.results .rm .m-body small { display: none; }
+.results .rm .m-body b { display: block; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.results .rm .m-bar { height: 12px; margin-top: 2px; }
+.results .rm .m-bar span { font-size: 9px; line-height: 12px; }
+.results .rm .claim-btn { padding: 4px 10px; font-size: 12px; }
+/* (los botones, pegados abajo mientras se baja) */
+.results .acts { position: sticky; bottom: 0; z-index: 3; margin: 8px 0 0; padding: 10px 0 6px;
+  background: linear-gradient(180deg, transparent, rgba(16,24,66,.96) 35%); }

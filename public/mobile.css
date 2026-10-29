@@ -492,7 +492,11 @@
   .results > p.small, .results .res-tip { font-size: 11px; margin: 4px 0; }
   .results .xp-list { gap: 4px; margin: 4px 0; }
   .results .xp-row { padding: 3px 8px; }
-  .results .acts { margin-top: 6px; }
+  .results .acts { margin-top: 4px; padding: 8px 0 4px; }
+  .results .xp-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .results .res-loot { margin: 4px 0; gap: 6px; }
+  .results .res-loot .rl { font-size: 14px; padding: 2px 10px; }
+  .results .res-loot .badge-won .badge-shine, .results .res-loot .badge-won .badge-shine img.big { width: 34px; height: 34px; }
   .results .acts button { padding: 8px 16px; }
   .pod-card .ava, .pod-card .pod-npc { --s: 44px !important; width: 44px; height: 44px; }
   .pod-card.p1 .ava, .pod-card.p1 .pod-npc { --s: 52px !important; width: 52px; height: 52px; }
