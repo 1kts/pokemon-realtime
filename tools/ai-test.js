@@ -88,6 +88,13 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     assert(ended, 'el combate acaba');
   });
 
+  await check('líderes: habilidad calibrada para todos, dentro de lo razonable, y el Campeón por encima de los primeros gimnasios', () => {
+    for (const r of D.REGION_IDS) {
+      const ls = D.leadersOf(r);
+      for (const n of ls) assert(n.ai >= 0.2 && n.ai <= 0.9, `${n.id}: ${n.ai}`);
+      assert(ls[ls.length - 1].ai > ls[0].ai + 0.2, `${r}: Campeón ${ls[ls.length - 1].ai} y primer gimnasio ${ls[0].ai}`);
+    }
+  });
   // Por WebSocket: la opción de la pantalla de Práctica llega al combate
   const { start } = require('../server/index.js');
   const server = await start(0);
