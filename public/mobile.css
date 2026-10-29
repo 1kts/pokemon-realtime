@@ -240,8 +240,8 @@
   /* El camino de la Historia en el móvil en horizontal: entero de alto (se desplaza de lado), con las tarjetas más
      pequeñas; las pestañas abajo, en la fila de la leyenda (arriba tapaban las primeras rutas), y la leyenda sin lo
      que se explica solo */
-  .story-pathwrap { height: calc(100vh - 76px); min-height: 250px; }
-  .story-path { --gw: 110px; --gh: 136px; --nw: 140px; --nh: 168px; --rw: 106px; --rh: 84px; --road: 14px; --nm: 15px; --goh: 30px; padding: 10px 14px 6px; }
+  .story-pathwrap { height: calc(100vh - 76px); height: calc(100dvh - 76px); min-height: 250px; }   /* (sin la barra del navegador) */
+  .story-path { --gw: 110px; --gh: 136px; --nw: 140px; --nh: 168px; --rw: 106px; --rh: 84px; --road: 14px; --nm: 15px; --goh: 30px; --stopm: 8px; padding: 10px 14px 6px; }
   .story-pathwrap > .story-mode { top: auto; bottom: 5px; left: 6px; padding: 2px; }
   .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
   .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 12px; padding: 4px 8px 4px 158px; font-size: 9.5px; }
@@ -253,7 +253,6 @@
   .sp-gym.now .sp-name small, .sp-league .sp-name small { display: none; }
   .sp-route .sp-name { font-size: 9.5px; }
   .sp-leg { gap: 8px; padding: 0 8px; }
-  .sp-stop { margin: 0 8px; }
   .sp-stop.now { margin-left: 60px; }
   .sp-branch { padding-bottom: calc(var(--below) + var(--road) / 2 + 8px); }
   .sp-branch::before { width: 8px; left: calc(50% - 4px); height: calc(var(--road) / 2 + 12px); }

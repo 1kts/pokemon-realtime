@@ -46,7 +46,10 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`[...document.querySelectorAll('body > .modal button')].some(b => b.textContent.includes('¡A jugar!'))`);
     await page.click('¡A jugar!');
     await page.waitFor(`!document.querySelector('body > .modal') && document.querySelector('.story-path .sp-node.now')`);
-    await page.waitFor(`[...document.querySelectorAll('.story-path img')].every(i => i.complete) && document.getAnimations().every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity)`).catch(() => {});
+    // (y a que acaben de entrar y de cargar las fotos que se ven: las demás se cargan al llegar a ellas)
+    await page.waitFor(`(() => { const w = document.querySelector('.story-path').getBoundingClientRect();
+      return [...document.querySelectorAll('.story-path img')].every(i => { const r = i.getBoundingClientRect(); return i.complete || r.right < w.left || r.left > w.right; })
+        && document.getAnimations().every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity); })()`);
   };
 
   for (const [W, H, touch] of [[1280, 800, false], [844, 390, true], [667, 375, true]]) {

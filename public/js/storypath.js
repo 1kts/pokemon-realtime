@@ -23,7 +23,7 @@ const SHOWN = 4;
 
 export const storyPathViews = {
   storyPath(region, nodes, prog, nextLeader, info) {
-    const p = this.profile;
+    const p = this.profile, caught = new Set(p.caught);
     const leaders = nodes.filter(n => n.kind !== 'route');
     const cleared = prog >= leaders.length;
     const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
@@ -31,9 +31,11 @@ export const storyPathViews = {
     const track = el('div', 'sp-track');
     wrap.append(track);
     // La leyenda, con lo que es cada cosa en pequeño: un gimnasio es para combatir y una ruta, para capturar
-    const first = leaders[0], mini = (key, inner) => `<i class="sp-k"><img src="img/arenas/${key}.webp" alt="" loading="lazy">${inner}</i>`;
-    const legend = el('div', 'sp-legend', `<span>${mini(first.map, trainerImg(first.id, 'sp-k-face'))}${t('Gimnasio: combate por su medalla')}</span>`
-      + `<span>${mini('pradera', BALL())}${t('Ruta: captura Pokémon')}</span><span class="sp-k-lock"><i class="sp-k locked">${LOCK}</i>${t('Aún bloqueado')}</span>`);
+    const first = leaders[0], legend = el('div', 'sp-legend');
+    const mini = (key, inner, text) => { const k = el('i', 'sp-k', inner); k.prepend(pic(key)); const s = el('span'); s.append(k, text); legend.append(s); };
+    mini(first.map, trainerImg(first.id, 'sp-k-face'), t('Gimnasio: combate por su medalla'));
+    mini('pradera', BALL(), t('Ruta: captura Pokémon'));
+    legend.append(el('span', 'sp-k-lock', `<i class="sp-k locked">${LOCK}</i>${t('Aún bloqueado')}`));
     const all = [];
     const pick = (b, n, unlocked, done) => {
       all.forEach(x => x.classList.remove('sel'));
@@ -44,7 +46,7 @@ export const storyPathViews = {
     // Una ruta: la foto de su terreno, sus Pokémon (en silueta los que no tienes), lo capturado y si es nueva
     const route = n => {
       const unlocked = n.req <= prog, isNew = unlocked && n.req === prog;
-      const dexes = [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => p.caught.includes(d)).length, full = got === dexes.length;
+      const dexes = [...new Set(n.wild.map(([d]) => d))], have = dexes.filter(d => caught.has(d)), got = have.length, full = got === dexes.length;
       const b = el('button', 'sp-node sp-route' + (unlocked ? '' : ' locked') + (isNew ? ' new' : '') + (unlocked && full ? ' full' : ''));
       b.title = n.name;
       b.setAttribute('aria-label', `${n.name} · ${t('Ruta · captura')} · ${unlocked ? t('{a}/{b} capturados', { a: got, b: dexes.length }) : t('Aún bloqueado')}${isNew ? ' · ' + t('Nueva') : ''}`);
@@ -53,11 +55,7 @@ export const storyPathViews = {
       if (unlocked) {
         // (los que tienes primero, y el resto en silueta: «¿quién es ese Pokémon?»)
         const mons = el('span', 'sp-mons');
-        for (const d of [...dexes.filter(d => p.caught.includes(d)), ...dexes.filter(d => !p.caught.includes(d))].slice(0, SHOWN)) {
-          const known = p.caught.includes(d), ic = monIcon(d, 32, { silhouette: !known });
-          ic.classList.add(known ? 'got' : 'unknown');
-          mons.append(ic);
-        }
+        for (const d of [...have, ...dexes.filter(d => !caught.has(d))].slice(0, SHOWN)) mons.append(monIcon(d, 32, { silhouette: !caught.has(d) }));
         card.append(mons, el('span', 'sp-count' + (full ? ' full' : ''), `${BALL()}${full ? '✓ ' : ''}${got}/${dexes.length}`));
         if (isNew) card.append(el('em', 'sp-new', t('Nueva')));
       } else card.insertAdjacentHTML('beforeend', lockNote(n.req > 0 && leaders[n.req - 1] && leaders[n.req - 1].leader));
@@ -72,11 +70,11 @@ export const storyPathViews = {
     // El jugador, de pie en el camino junto a lo que toca
     const you = () => { const y = el('div', 'sp-you'); y.append(el('span', 'sp-you-tag', t('Estás aquí')), this.avatar(40)); return y; };
     // El único botón de jugar del camino: el del siguiente reto
-    const goBtn = id => { const go = el('button', 'primary sp-go', t('Desafiar')); go.onclick = e => { e.stopPropagation(); this.startStory('gym', id); }; return go; };
+    const goBtn = play => { const go = el('button', 'primary sp-go', t('Desafiar')); go.onclick = e => { e.stopPropagation(); play(); }; return go; };
     // Un gimnasio: la foto de su arena, el líder de pie, el color de su tipo, su número y su medalla colgando
     const leader = n => {
       const unlocked = n.index <= prog, done = n.index < prog, now = n === nextLeader;
-      const b = el('button', 'sp-node sp-gym' + (done ? ' done' : '') + (now ? ' now' : '') + (unlocked ? '' : ' locked'));
+      const b = el('button', 'sp-node sp-gym' + (done ? ' done' : '') + (unlocked ? '' : ' locked'));
       b.style.setProperty('--tc', TYPE_COLOR[n.type]);
       b.title = `${n.name} · ${n.leader}`;
       b.setAttribute('aria-label', `${n.index + 1}. ${n.name} · ${n.leader} · ${t('Gimnasio · combate')} · ${done ? t('Medalla ganada') : now ? t('Tu siguiente reto') : t('Aún bloqueado')}`);
@@ -88,12 +86,13 @@ export const storyPathViews = {
       b.append(card, el('span', 'sp-name', `<b>${n.leader}</b>${now ? `<small>${n.name}</small>` : ''}`));
       b.onclick = () => pick(b, n, unlocked, done);
       all.push(b);
-      return now ? stop(b, n.id) : stop(b);
+      return stop(b, now && (() => this.startStory('gym', n.id)));
     };
-    // Una parada en el camino: el sitio y, si es lo que toca, el jugador al lado y el botón de jugar debajo
-    const stop = (b, goId) => {
-      const s = el('div', 'sp-stop' + (goId ? ' now' : ''));
-      if (goId) { s.append(you(), b, goBtn(goId)); b.classList.add('now'); } else s.append(b);
+    // Una parada en el camino: el sitio y, si es lo que toca (play: cómo se juega), el jugador al lado y el botón
+    // de jugar debajo
+    const stop = (b, play) => {
+      const s = el('div', 'sp-stop' + (play ? ' now' : ''));
+      if (play) { b.classList.add('now'); s.append(you(), b, goBtn(play)); } else s.append(b);
       return s;
     };
     // Cada tramo: el camino con las rutas que se abren en él y, al final, su gimnasio
@@ -119,9 +118,11 @@ export const storyPathViews = {
         card.insertAdjacentHTML('beforeend', `<img class="sp-stadium" src="tiles/league.png" alt="" draggable="false" loading="lazy"><span class="sp-tag">${SWORDS}${t('Liga · combate')}</span>`
           + (cleared ? '<em class="sp-crown">♛</em>' : '') + (open ? '' : lockNote(leaders[Data.LEAGUE_FROM - 1] && leaders[Data.LEAGUE_FROM - 1].leader)));
         b.append(card, el('span', 'sp-name', `<b>${t('Liga Pokémon')}</b>${open && !cleared ? `<small>${t('Combate {n} de {m}', { n: run + 1, m: total })}</small>` : ''}`));
-        b.onclick = () => { this.leagueRegion = region; this.show('league'); };
+        // (su «Desafiar» también abre su pantalla, que explica los 5 combates seguidos antes de empezar)
+        const league = () => { this.leagueRegion = region; this.show('league'); };
+        b.onclick = league;
         all.push(b);
-        chapter(routes, open && !cleared ? stop(b, nextLeader.id) : stop(b), cleared ? 'done' : open ? 'now' : 'locked');
+        chapter(routes, stop(b, open && !cleared && league), cleared ? 'done' : open ? 'now' : 'locked');
         continue;
       }
       chapter(routes, leader(L), L.index < prog ? 'done' : L === nextLeader ? 'now' : 'locked');

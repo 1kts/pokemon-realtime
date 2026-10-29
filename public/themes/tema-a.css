@@ -174,5 +174,3 @@ body.tema-a .story-tools .coll-tile { background: var(--ta-paper-2); }
   body.tema-a .sp-route .sp-count { box-shadow: 0 0 0 2px var(--ta-field); }
   body.tema-a .sp-gym.now .sp-name { border-width: 1px; padding: 0 8px; box-shadow: none; }   /* (si no, la barra de desplazamiento tapaba el nombre) */
 }
-
-/* El eje recorrido, del color de la banda (no dorado: el dorado es solo lo que toca) */
