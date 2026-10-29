@@ -11,18 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.32.0 ----------
+    // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Leaders with signature plays',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Every Gym Leader, Elite Four member and Champion has plays that fit their type and arena: Brock digs in behind the rocks, Blaine fights from the lava and Whitney runs off to heal.',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': 'In Practice you can turn on «See what the AI is thinking»: above the bot you\'ll see whether it wants to attack, probe or defend, its aggressiveness and its personality.',
     'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'The AI on Hard, Master and in the Tower is smarter about when to switch Pokémon, when to heal and which attack to use. Easy and Normal stay the same.',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'Leader difficulty rises more evenly: the first Gyms push a bit harder and the Elite Four plays with a bit less skill.',
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'The Story map is clearer: the next challenge stands out in gold, routes show what you’ve caught with a ring and new ones have a star.',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'On mobile the game starts lighter: music downloads when it’s about to play instead of all at once when you open it (it was 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'The bottom bar no longer covers Lucky Spin or the Story map on large screens, and Lucky Spin’s rarity labels are easier to read.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'With a screen reader and keyboard: icon-only buttons say what they are and scrolling lists can be browsed with the keyboard.',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'The Story map is clearer: the next challenge stands out in gold, routes show what you’ve caught with a ring and new ones have a star.',
-    'Mapa más claro y móvil más ligero': 'Clearer map and lighter on mobile',
+    'Historia en un camino': 'Story as a path',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': 'Story starts on the Path: your journey in one line, with the Gyms in order, your next challenge in gold and how many Pokémon you have from each route.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'More precise taps on mobile',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'In the menu, tapping the Missions header takes you to them: before, tapping its center claimed every reward.',
@@ -1665,7 +1666,11 @@ export default {
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account created: you can now log in from any device',
     'Medalla ganada': 'Badge won',
     'Tu siguiente reto': 'Your next challenge',
-    'Rutas: Pokémon capturados': 'Routes: Pokémon caught',
+    'Ruta: opcional, para capturar Pokémon': 'Route: optional, for catching Pokémon',
+    'Ya capturados de los que viven allí': 'Already caught out of those living there',
+    'Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.': 'Beat the Gym Leaders in order to win their badges: each badge opens the next stretch of the path.',
+    'Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.': 'Beat its Leader in a battle to win their badge: each badge opens new routes and the next Gym.',
+    'Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.': 'Optional: wild Pokémon appear here for you to catch and make your team stronger.',
     'Aún bloqueado': 'Still locked',
     'Se abre al vencer a {who}': 'Opens when you beat {who}',
     'Desafiar': 'Challenge',

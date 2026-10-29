@@ -12,18 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.32.0 ----------
+    // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'ジムリーダーの とくいわざ せんじゅつ',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'ジムリーダー、四天王、チャンピオンは タイプと バトルフィールドに あった せんじゅつを つかう。タケシは いわの かげに たてこもり、カツラは ようがんの うえで たたかい、アカネは かいふくに はしる。',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '練習で「AIの 考えを 見る」を オンに できる。ボットの 上に こうげき・さぐり・ぼうぎょの どれを したいか、こうげき性と せいかくが 表示される。',
     'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'むずかしい・マスター・タワーの AIは ポケモンを いれかえる タイミング、かいふくする タイミング、つかう わざを よりうまく えらぶ。かんたんと ふつうは そのまま。',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'リーダーの むずかしさが なだらかに あがるように なった。さいしょの ジムは すこし てごわく、四天王は すこし うでまえを おさえて たたかう。',
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'ストーリーのマップが見やすくなりました。次の挑戦は金色で目立ち、道路は捕まえた割合をリングで示し、新しい道路には星が付きます。',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'スマホでの起動が軽くなりました。音楽は開いたときにまとめてではなく、流れる直前にダウンロードされます（以前は15 MB）。',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '大きな画面で下のバーが Lucky Spin やストーリーのマップを隠さなくなり、Lucky Spin のレア度ラベルが読みやすくなりました。',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'スクリーンリーダーとキーボードで、アイコンだけのボタンが何かを伝え、スクロールするリストをキーボードで操作できます。',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'ストーリーのマップが見やすくなりました。次の挑戦は金色で目立ち、道路は捕まえた割合をリングで示し、新しい道路には星が付きます。',
-    'Mapa más claro y móvil más ligero': '見やすいマップとスマホの軽量化',
+    'Historia en un camino': 'ストーリーが一本の道に',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': 'ストーリーは「道のり」から始まります。旅が一本の線になり、ジムが順番に並び、次の挑戦は金色で表示され、道路ごとに捕まえたポケモンの数もわかります。',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'スマホでのタップがより正確に',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'メニューでミッションの見出しをタップするとミッションへ移動します。以前は中央をタップすると報酬をすべて受け取っていました。',
@@ -1652,7 +1653,11 @@ export default {
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'アカウントを 作りました：どの 端末からでも ログインできます',
     'Medalla ganada': '獲得したバッジ',
     'Tu siguiente reto': '次の挑戦',
-    'Rutas: Pokémon capturados': '道路：捕まえたポケモン',
+    'Ruta: opcional, para capturar Pokémon': '道路：自由。ポケモンを捕まえる場所',
+    'Ya capturados de los que viven allí': 'そこにすむポケモンのうち捕まえた数',
+    'Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.': 'ジムリーダーを順番に倒してバッジを手に入れよう。バッジごとに道の次の区間が開きます。',
+    'Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.': 'バトルでジムリーダーを倒すとバッジがもらえます。バッジごとに新しい道路と次のジムが開きます。',
+    'Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.': '自由：ここでは野生のポケモンが出てきます。捕まえてチームを強くしよう。',
     'Aún bloqueado': 'まだロック中',
     'Se abre al vencer a {who}': '{who}に勝つと開放',
     'Desafiar': '挑戦する',

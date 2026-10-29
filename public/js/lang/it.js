@@ -12,18 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.32.0 ----------
+    // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Capipalestra con mosse da maestro',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Ogni Capopalestra, membro dei Superquattro e Campione ha tattiche legate al suo tipo e alla sua arena: Brock si trincera dietro le rocce, Blaine combatte dalla lava e Chiara corre a curarsi.',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': 'In Allenamento puoi attivare «Vedi cosa pensa l\'IA»: sopra il bot vedrai se vuole attaccare, studiarti o difendersi, la sua aggressività e la sua personalità.',
     'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'L\'IA in Difficile, Maestro e nella Torre sceglie meglio quando cambiare Pokémon, quando curarsi e quale attacco usare. Facile e Normale restano uguali.',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'La difficoltà dei Capipalestra cresce in modo più regolare: le prime palestre sono un po\' più impegnative e i Superquattro giocano con un po\' meno abilità.',
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'La mappa della Storia è più chiara: la prossima sfida risalta in oro, i percorsi mostrano con un anello cosa hai catturato e quelli nuovi hanno una stella.',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'Sul cellulare il gioco parte più leggero: la musica si scarica quando sta per suonare invece che tutta all’apertura (erano 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'La barra in basso non copre più Lucky Spin né la mappa della Storia sugli schermi grandi, e le etichette di rarità di Lucky Spin si leggono meglio.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'Con lettore di schermo e tastiera: i pulsanti con solo un’icona dicono cosa sono e gli elenchi scorrevoli si scorrono con la tastiera.',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'La mappa della Storia è più chiara: la prossima sfida risalta in oro, i percorsi mostrano con un anello cosa hai catturato e quelli nuovi hanno una stella.',
-    'Mapa más claro y móvil más ligero': 'Mappa più chiara e cellulare più leggero',
+    'Historia en un camino': 'La storia come un cammino',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': 'La storia si apre sul Cammino: il tuo viaggio in una linea, con le Palestre in ordine, la tua prossima sfida in oro e quanti Pokémon hai di ogni percorso.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'Tocchi più precisi sul cellulare',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'Nel menu, toccare l’intestazione delle Missioni ti porta lì: prima, toccandone il centro, si riscuotevano tutti i premi.',
@@ -1652,7 +1653,11 @@ export default {
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': 'Account creato: ora puoi accedere da qualsiasi dispositivo',
     'Medalla ganada': 'Medaglia vinta',
     'Tu siguiente reto': 'La tua prossima sfida',
-    'Rutas: Pokémon capturados': 'Percorsi: Pokémon catturati',
+    'Ruta: opcional, para capturar Pokémon': 'Percorso: facoltativo, per catturare Pokémon',
+    'Ya capturados de los que viven allí': 'Già catturati tra quelli che vivono lì',
+    'Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.': 'Sconfiggi i Capopalestra in ordine per vincere le loro medaglie: ogni medaglia apre il tratto successivo del cammino.',
+    'Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.': 'Sconfiggi il Capopalestra in una lotta per vincere la sua medaglia: ogni medaglia apre nuovi percorsi e la Palestra successiva.',
+    'Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.': 'Facoltativo: qui compaiono Pokémon selvatici da catturare per rendere più forte la tua squadra.',
     'Aún bloqueado': 'Ancora bloccato',
     'Se abre al vencer a {who}': 'Si apre battendo {who}',
     'Desafiar': 'Sfida',

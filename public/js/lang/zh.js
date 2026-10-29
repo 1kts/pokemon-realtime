@@ -11,18 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.32.0 ----------
+    // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': '道馆馆主的拿手战术',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '每位道馆馆主、四天王和冠军都有符合自己属性和场地的战术：小刚会躲到岩石后面，夏伯在熔岩上战斗，小茜会跑去回复。',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '在练习中可以开启「查看 AI 的想法」：机器人头顶会显示它想进攻、试探还是防守，以及它的攻击性和性格。',
     'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': '困难、大师和对战塔中的 AI 更懂得何时替换宝可梦、何时回复以及使用哪个招式。简单和普通保持不变。',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': '馆主的难度提升得更平稳：前几个道馆稍微难一些，四天王的技巧则稍微降低。',
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '手机上游戏启动更轻快：音乐在快要播放时才下载，不再在打开时全部下载（原来有 15 MB）。',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '在大屏幕上，底部栏不再遮挡 Lucky Spin 和故事模式地图，Lucky Spin 的稀有度标签也更易读。',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '使用读屏和键盘时：只有图标的按钮会说明自己是什么，可滚动的列表也能用键盘浏览。',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
-    'Mapa más claro y móvil más ligero': '更清晰的地图，更轻快的手机版',
+    'Historia en un camino': '故事变成一条路',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': '故事模式从「路线」开始：你的旅程连成一条线，道馆按顺序排列，下一个挑战以金色显示，还能看到每条道路已捕捉的宝可梦数量。',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '手机上点得更准',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '在菜单里点任务的标题会进入任务：以前点中间会领取所有奖励。',
@@ -1664,7 +1665,11 @@ export default {
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '账号已创建：现在可以在任何设备上登录了',
     'Medalla ganada': '已获得徽章',
     'Tu siguiente reto': '你的下一个挑战',
-    'Rutas: Pokémon capturados': '道路：已捕捉的宝可梦',
+    'Ruta: opcional, para capturar Pokémon': '道路：可选，用来捕捉宝可梦',
+    'Ya capturados de los que viven allí': '在这里出没的宝可梦中已捕捉的数量',
+    'Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.': '按顺序打败道馆馆主赢得徽章：每枚徽章都会打开路线的下一段。',
+    'Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.': '在对战中打败馆主即可赢得徽章：每枚徽章都会开放新的道路和下一座道馆。',
+    'Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.': '可选：这里会出现野生宝可梦，捕捉它们让你的队伍更强。',
     'Aún bloqueado': '尚未解锁',
     'Se abre al vencer a {who}': '击败{who}后开放',
     'Desafiar': '挑战',

@@ -236,6 +236,38 @@
   .lv-rules { font-size: 11.5px; margin: 6px 0 0; }
 }
 
+@media (max-height: 500px) {
+  /* Camino de la Historia en el móvil en horizontal: tan alto como la pantalla y entero de alto (gimnasios, rutas y
+     nombres más pequeños; la cuenta de cada ruta, sobre su círculo). Las pestañas, abajo en la fila de la leyenda, y
+     la leyenda solo con lo de las rutas (lo demás se entiende solo); sin la frase de arriba ni el «Desafiar» del
+     camino: lo dice la ficha de al lado, con su «¡Desafiar!» grande siempre a la vista */
+  .story-pathwrap { height: calc(100vh - 76px); min-height: 250px; }
+  .story-pathwrap > .story-mode { grid-area: 3 / 1; align-self: center; margin: 4px 0 5px 6px; padding: 2px; }
+  .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
+  .sp-intro, .sp-go { display: none; }
+  .story-path { --sp-gym: 50px; --sp-now: 64px; --sp-rt: 38px; --sp-rw: 82px; --sp-gc: 88px; --sp-tick: 12px; --sp-lab: 32px; padding: 8px 0 6px 14px; overflow-y: auto; }
+  .sp-legend { grid-area: 3 / 2; justify-content: flex-end; gap: 2px 12px; padding: 4px 10px; font-size: 10px; line-height: 1.2; }
+  .sp-legend .sp-l-done, .sp-legend .sp-l-now, .sp-legend .sp-l-locked { display: none; }
+  .sp-track { padding-right: 14px; }
+  .sp-start { width: 70px; }
+  .sp-start b { font-size: 10px; margin-top: 6px; }
+  .sp-name { font-size: 10px; }
+  .sp-name b { font-size: 11px; }
+  .sp-gym.now .sp-name small { display: none; }
+  .sp-ord { width: 17px; height: 17px; font-size: 10px; }
+  .sp-gym .sp-badge { width: 26px; height: 26px; }
+  .sp-gym.now .sp-badge { width: 34px; height: 34px; }
+  .sp-gym .league-ico { width: 32px; height: 32px; }
+  .sp-route .sp-dot { margin-bottom: 4px; }
+  .sp-route .sp-dot .mon-icon { width: 30px; margin-top: -7px; }
+  .sp-route .sp-name { font-size: 10px; }
+  .sp-route .sp-count { position: absolute; top: calc(var(--sp-rt) - 8px); left: 50%; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 0 2px #121834; }
+  .sp-count { gap: 2px; padding: 0 5px 0 2px; font-size: 9.5px; }
+  .sp-count img { width: 12px; height: 12px; }
+  .sp-new { top: -8px; padding: 0 5px; font-size: 8.5px; }
+  .sp-lock { margin-bottom: 6px; font-size: 10px; }
+}
+
 /* ========== Combate ========== */
 @media (max-height: 500px) {
   /* Pantalla de móvil en horizontal: los equipos, una fila de caras con su vida debajo (el nombre ya sale sobre

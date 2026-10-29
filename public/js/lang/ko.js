@@ -12,18 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.32.0 ----------
+    // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': '관장마다 고유 전술',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '모든 체육관 관장, 사천왕, 챔피언이 자신의 타입과 경기장에 맞는 전술을 써요. 웅은 바위 뒤에 진을 치고, 강연은 용암 위에서 싸우고, 꼭두는 회복하러 달려가요.',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '연습에서 «AI의 생각 보기»를 켤 수 있어요. 봇 위에 공격·탐색·방어 중 무엇을 하려는지, 공격성과 성격이 보여요.',
     'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': '어려움, 마스터, 배틀타워의 AI가 포켓몬 교체, 회복, 사용할 기술을 더 잘 판단해요. 쉬움과 보통은 그대로예요.',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': '관장 난이도가 더 고르게 올라가요. 첫 체육관들은 조금 더 까다롭고 사천왕은 실력을 조금 낮춰 싸워요.',
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '스토리 지도가 더 깔끔해졌습니다. 다음 도전은 금색으로 눈에 띄고, 도로는 잡은 포켓몬을 링으로 보여 주며, 새 도로에는 별이 붙습니다.',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '모바일에서 게임이 더 가볍게 시작됩니다. 음악은 열 때 한꺼번에가 아니라 나오기 직전에 내려받습니다(전에는 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '큰 화면에서 아래 바가 Lucky Spin과 스토리 지도를 가리지 않고, Lucky Spin의 희귀도 라벨이 더 잘 읽힙니다.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '스크린 리더와 키보드로: 아이콘만 있는 버튼이 무엇인지 알려 주고, 스크롤 목록을 키보드로 넘길 수 있습니다.',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '스토리 지도가 더 깔끔해졌습니다. 다음 도전은 금색으로 눈에 띄고, 도로는 잡은 포켓몬을 링으로 보여 주며, 새 도로에는 별이 붙습니다.',
-    'Mapa más claro y móvil más ligero': '더 깔끔한 지도와 가벼워진 모바일',
+    'Historia en un camino': '한 줄의 길로 보는 스토리',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado y cuántos Pokémon llevas de cada ruta.': '스토리가 「여정」에서 시작해요. 여정이 한 줄로 이어지고, 체육관이 순서대로 놓이며, 다음 도전은 금색으로 표시되고, 도로마다 잡은 포켓몬 수도 보여요.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '모바일에서 더 정확한 터치',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '메뉴에서 미션 머리글을 누르면 미션으로 이동합니다. 전에는 가운데를 누르면 보상을 모두 받았습니다.',
@@ -1652,7 +1653,11 @@ export default {
     'Cuenta creada: ya puedes entrar desde cualquier dispositivo': '계정을 만들었습니다: 이제 어떤 기기에서든 로그인할 수 있어요',
     'Medalla ganada': '획득한 배지',
     'Tu siguiente reto': '다음 도전',
-    'Rutas: Pokémon capturados': '도로: 잡은 포켓몬',
+    'Ruta: opcional, para capturar Pokémon': '도로: 선택, 포켓몬을 잡는 곳',
+    'Ya capturados de los que viven allí': '그곳에 사는 포켓몬 중 잡은 수',
+    'Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.': '체육관 관장을 순서대로 이겨 배지를 얻으세요. 배지마다 길의 다음 구간이 열립니다.',
+    'Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.': '배틀에서 관장을 이기면 배지를 얻습니다. 배지마다 새 도로와 다음 체육관이 열립니다.',
+    'Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.': '선택: 이곳에는 야생 포켓몬이 나와요. 잡아서 팀을 더 강하게 만드세요.',
     'Aún bloqueado': '아직 잠김',
     'Se abre al vencer a {who}': '{who}을(를) 이기면 열림',
     'Desafiar': '도전',
