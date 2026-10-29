@@ -240,23 +240,25 @@ export const monSheetViews = {
   },
 
   // Vestuario: cada skin y las partículas de su línea, vistas sobre el propio Pokémon; las que tienes se ponen
-  // al tocarlas, las que no salen apagadas con de dónde salen
+  // al tocarlas, las que no salen apagadas con de dónde salen (debajo y al pasar el ratón). Salen todas las de
+  // Data.SKINS y de todos los tipos: una skin nueva sale aquí sola (si no dice de dónde sale, «Próximamente»)
   sheet_look(body, mon) {
     const p = this.profile, line = Data.lineOf(mon.dex), shiny = Data.looksShiny(mon);
     const skinNow = Data.skinOf(p, mon.dex), partsNow = !!Data.particlesOf(p, mon.dex), hasP = Data.hasParticles(p, mon.dex);
     const card = (cls, sel, locked, label, sub, paint, onClick) => {
       const b = el('button', 'ms-wear ' + cls + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
       b.append(paint(portrait(mon.dex, 84, { shiny })), el('b', '', label), el('small', '', sub));
-      if (locked) b.disabled = true; else b.onclick = onClick;
+      if (locked) { b.disabled = true; b.title = `${label} · ${sub}`; } else b.onclick = onClick;
       return b;
     };
     const SRC = { oro: t('500 victorias con su línea'), holo: t('25 victorias online con su línea'), galaxia: t('Racha de 50 en la Torre con su línea'), elemental: t('En Lucky Spin') };
+    const src = id => SRC[id] || t('Próximamente');
     body.append(el('h4', '', t('Skin de la línea de {m}', { m: SPECIES[line].name })));
     const skins = el('div', 'ms-wardrobe');
     skins.append(card('skin', !skinNow, false, t('Sin skin'), skinNow ? t('Quitársela') : t('Puesta'), n => n, () => this.net.send({ t: 'look', skin: { dex: line, skin: null } })));
     for (const id of Data.SKINS) {
       const has = Data.hasSkin(p, mon.dex, id), on = skinNow === id;
-      skins.append(card('skin', on, !has, t(SKIN_LABEL[id]), on ? t('Puesta') : has ? t('Ponérsela') : SRC[id], n => applySkin(n, id, line), () => this.net.send({ t: 'look', skin: { dex: line, skin: id } })));
+      skins.append(card('skin', on, !has, t(SKIN_LABEL[id]), on ? t('Puesta') : has ? t('Ponérsela') : src(id), n => applySkin(n, id, line), () => this.net.send({ t: 'look', skin: { dex: line, skin: id } })));
     }
     body.append(skins);
     // Partículas de la línea: aparte de la skin, se encienden o se apagan

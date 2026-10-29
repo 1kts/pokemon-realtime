@@ -53,3 +53,8 @@ En esta máquina el Chrome de los e2e se pasa con `CHROME=~/.cache/ms-playwright
   `body.touch` y `#hud.touch`. El mapa de Historia es un contenedor: se adapta con `@container`.
 - Tras tocar el CSS: `tests/e2e/pantallas-*.e2e.js` (nada tapado, desbordado ni inaccesible en 4 tamaños).
 - Comentarios en español, en el tono del código de alrededor.
+- Cosméticos (skins, partículas, efectos del avatar…): uno nuevo se añade a su lista de `public/data.js` (`SKINS`,
+  `EFFECTS`, los tipos) y sale solo donde se elige (Mis Pokémon › Vestuario, el editor del avatar), también para quien
+  no lo tiene: apagado, sin poder ponérselo y diciendo de dónde sale, debajo y al pasar el ratón. Si sale de algo nuevo,
+  su pista va en `SRC` (`public/js/monsheet.js`); sin pista dice «Próximamente». Lo comprueba `tests/e2e/vestuario.e2e.js`.
+  Las formas de pixel art de partículas y efectos están en `public/js/pixshapes.js` (las mismas en combate y en los menús).

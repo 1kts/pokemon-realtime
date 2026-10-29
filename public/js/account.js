@@ -847,7 +847,7 @@ export const accountViews = {
             const [node, label, sel, locked] = render(v);
             const b = el('button', 'frame-opt' + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
             b.append(node, el('small', '', label));
-            if (locked) { b.disabled = true; b.append(el('em', '', t('En Lucky Spin'))); }
+            if (locked) { b.disabled = true; b.append(el('em', '', t('En Lucky Spin'))); b.title = `${label} · ${t('En Lucky Spin')}`; }
             else b.onclick = () => this.net.send({ t: 'look', ...msg(v) });
             g.append(b);
           }

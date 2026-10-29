@@ -212,12 +212,20 @@ body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .mw-head bu
 }
 
 /* ---------- Historia ---------- */
-/* El rótulo de la pantalla, con el rojo de la portada (acaba en rojo oscuro, no en transparente) */
-body.tema-d .feature-sign { border-radius: 14px; }
-body.tema-d .feature-sign.sign-story { padding-left: 18px; padding-right: 36px; border: 2px solid #ff8a6a;
-  background: linear-gradient(170deg, #d63a30, #9a1c18 55%, #6a0f0f); box-shadow: var(--td-relief), 0 4px 0 #3a0606, var(--td-drop); }
-body.tema-d .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 3px 0 rgba(60,0,0,.45); }
-body.tema-d .feature-sign small { font: 700 14px var(--text); color: #fff; text-shadow: 0 1px 2px rgba(60,0,0,.6); }
+/* El rótulo de cada pantalla, como las tarjetas del menú: azul noche con el color de la pantalla (--fc) encendido a
+   la izquierda, rayas finas, una franja de su color arriba y su borde; Historia, con su rojo más encendido */
+body.tema-d .feature-sign { position: relative; overflow: hidden; isolation: isolate; border-radius: 14px; padding-left: 20px; padding-right: 32px;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.045) 0 2px, transparent 2px 14px),
+    radial-gradient(110% 160% at 0% 50%, color-mix(in srgb, var(--fc) 62%, transparent), color-mix(in srgb, var(--fc) 16%, transparent) 50%, transparent 75%),
+    linear-gradient(170deg, #1d2c78, #121c52);
+  border: 2px solid color-mix(in srgb, var(--fc) 80%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 4px 0 #0b1238, var(--td-drop); }
+body.tema-d .feature-sign::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; z-index: -1;
+  background: linear-gradient(90deg, var(--fc), color-mix(in srgb, var(--fc) 50%, transparent) 50%, transparent); }
+body.tema-d .feature-sign.sign-story { background: repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px),
+    radial-gradient(110% 170% at 0% 50%, rgba(255,90,58,.8), rgba(255,90,58,.25) 50%, transparent 78%), linear-gradient(170deg, #1d2c78, #121c52);
+  border-color: rgba(255,90,58,.9); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 4px 0 #0b1238, 0 0 24px rgba(255,90,58,.25), var(--td-drop); }
+body.tema-d .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 3px 0 rgba(0,0,0,.4), 0 0 18px color-mix(in srgb, var(--fc) 45%, transparent); }
+body.tema-d .feature-sign small { font: 700 14px var(--text); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
 /* Regiones: la elegida, en celeste (lo recorrido) */
 body.tema-d .subbar .region-tabs button.rg { background: linear-gradient(180deg, rgba(42,60,146,.9), rgba(26,39,102,.9)); border: 1px solid #3d53b0; border-radius: 12px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 3px 0 #0b1238; }
@@ -234,9 +242,13 @@ body.tema-d .region-chips .rgc.sel { background: linear-gradient(180deg, #1f5f9a
 body.tema-d .region-chips .badges-mini { background: linear-gradient(180deg, #1d2c78, #14205a); border: 1px solid #3d53b0; border-radius: 10px; }
 /* (las medallas ganadas, con su brillo dorado detrás; las que no tienes, en gris, como sin tema) */
 body.tema-d .badge-slot.got { background: radial-gradient(circle, rgba(255,214,90,.45), rgba(255,214,90,.06) 70%); }
-/* El objetivo: lo que toca, con la medalla en un anillo del color del tipo del líder. El panel sigue azul noche
-   con una franja del tipo a la izquierda (mezclar el tipo con el azul daba colores sucios) */
-body.tema-d .story-head .map-goal { box-shadow: inset 5px 0 0 var(--tc, var(--td-done)), inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop); }
+/* El objetivo: lo que toca, como una tarjeta del menú: azul noche con el color del tipo del líder encendido detrás
+   de él, una franja del tipo a la izquierda y la medalla en un anillo de su color */
+body.tema-d .story-head .map-goal { position: relative; isolation: isolate;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px) right / 45% 100% no-repeat,
+    radial-gradient(70% 140% at 88% 55%, color-mix(in srgb, var(--tc, #5fd8ff) 55%, transparent), transparent 70%), linear-gradient(170deg, #1d2c78, #121c52);
+  border-color: color-mix(in srgb, var(--tc, #5fd8ff) 75%, transparent);
+  box-shadow: inset 5px 0 0 var(--tc, var(--td-done)), inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop); }
 body.tema-d .story-head .map-goal > small:first-child { font: 800 13px var(--text); color: #ffd76a; }
 body.tema-d .story-head .map-goal b { font: 900 26px var(--display); letter-spacing: -.3px; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
 body.tema-d .story-head .map-goal small, body.tema-d .story-head .map-goal .where { color: var(--td-mute); }

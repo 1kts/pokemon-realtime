@@ -6,6 +6,7 @@
 // chispas, hojas, copos, humo o destellos). Sin WebGL, la skin es el filtro CSS skin-* (skinCss).
 import * as THREE from 'three';
 import { elementalPalette } from './skinfx.js';
+import { SHAPES } from './pixshapes.js';
 import { skinUniforms, skinMaterial, setSkin, skinClock } from './skinshader.js';
 
 const FPS = 24;
@@ -13,33 +14,47 @@ const M = 3;            // margen alrededor del fotograma, en píxeles de arte (
 const ATLAS_W = 1024;   // ancho del atlas: los fotogramas se colocan por filas
 const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 
-// Partícula de cada tipo: forma (celdas de [dx, dy, 0 borde | 1 centro]), colores y movimiento.
-// Cada tipo tiene las suyas (normal, las genéricas), aunque de momento solo se reparten las del tipo de la línea
-const DOT = [[0, 0, 1]], PLUS = [[0, 0, 1], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]];
-const RING = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [-1, -1, 1]];
-const LEAF = [[0, 0, 1], [1, -1, 0], [-1, 1, 0]];
-const EMBER = [[0, 0, 1], [0, -1, 0], [1, 0, 0]];
-const PEBBLE = [[0, 0, 1], [1, 0, 0], [0, 1, 0], [1, 1, 0]];
-const DIAMOND = [[0, 0, 1], [0, -1, 1], [0, -2, 0], [0, 1, 0], [-1, -1, 0], [1, -1, 0]];
-const HEART = [[-1, -1, 0], [1, -1, 0], [-1, 0, 1], [0, 0, 1], [1, 0, 1], [0, 1, 0]];
-const FEATHER = [[0, 0, 1], [1, -1, 0], [-1, 1, 0], [2, -2, 0]];
+// Partículas de cada tipo, con las mismas formas de pixel art de 16×16 que en combate (pixshapes.js): llamas que
+// suben, burbujas que suben haciendo eses, rayos y chispas, hojas y plumas que caen, copos, humo, piedras, anillos,
+// rombos y corazones. Cada forma: su nombre y el color de cada nivel (1, el borde, a 4, el centro), como índice de la
+// paleta del tipo (0 oscuro a 3 claro) o un color fijo. size: su tamaño en píxeles de arte; vx/vy: hacia dónde va
+// (vy < 0, sube), wobble: hace eses, grow: crece (el humo, los anillos), gravity: cae como una piedra
+const F = (name, pal) => ({ name, pal });
 function kind(type) {
   switch (type) {
-    case 'fuego': return { shapes: [EMBER, DOT, PLUS], vy: -1, vx: 0.15 };
-    case 'agua': return { shapes: [RING, DOT], vy: -0.6, vx: 0.1, wobble: true };
-    case 'electrico': return { shapes: [PLUS, DOT], vy: -0.3, vx: 1.2 };
-    case 'planta': case 'bicho': return { shapes: [LEAF, DOT], vy: 0.35, vx: 0.4, wobble: true };
-    case 'hielo': return { shapes: [PLUS, DOT], vy: 0.3, vx: 0.2, wobble: true };
-    case 'fantasma': case 'siniestro': case 'veneno': return { shapes: [RING, DOT], vy: -0.4, vx: 0.15 };
-    case 'lucha': return { shapes: [PLUS, DOT], vy: -0.2, vx: 1.4 };
-    case 'tierra': case 'roca': return { shapes: [PEBBLE, DOT], vy: 0.6, vx: 0.25 };
-    case 'volador': return { shapes: [FEATHER, DOT], vy: 0.3, vx: 0.5, wobble: true };
-    case 'psiquico': return { shapes: [RING, PLUS], vy: -0.3, vx: 0.3 };
-    case 'dragon': return { shapes: [DIAMOND, EMBER], vy: -0.7, vx: 0.2 };
-    case 'acero': return { shapes: [DIAMOND, PLUS], vy: -0.2, vx: 0.1 };
-    case 'hada': return { shapes: [HEART, PLUS], vy: -0.5, vx: 0.2, wobble: true };
-    default: return { shapes: [PLUS, DOT], vy: -0.4, vx: 0.2 };
+    case 'fuego': return { shapes: [F('flame', [0, 1, 2, 3]), F('flame', [1, 2, 3, '#ffffff']), F('spark', [2, 3, 3, '#ffffff'])], vy: -1, vx: 0.15, size: 10 };
+    case 'agua': return { shapes: [F('bubble', [1, 3, 3, '#ffffff'])], vy: -0.6, vx: 0.1, wobble: true, size: 10 };
+    case 'electrico': return { shapes: [F('bolt', [3, 3, 3, 3]), F('spark', [2, 3, 3, '#ffffff'])], vy: -0.2, vx: 1.4, size: 11, life: 0.3 };
+    case 'planta': case 'bicho': return { shapes: [F('leaf', [0, 1, 2, 3])], vy: 0.35, vx: 0.4, wobble: true, size: 9 };
+    case 'hielo': return { shapes: [F('flake', [1, 2, 3, '#ffffff'])], vy: 0.3, vx: 0.2, wobble: true, size: 8 };
+    case 'fantasma': case 'siniestro': case 'veneno': return { shapes: [F('puff', [0, 1, 2, 3])], vy: -0.4, vx: 0.15, size: 9, grow: true, alpha: 0.75 };
+    case 'lucha': return { shapes: [F('spark', [2, 3, 3, '#ffffff']), F('twinkle', [2, 3, 3, '#ffffff'])], vy: -0.2, vx: 1.4, size: 9, life: 0.35 };
+    case 'tierra': case 'roca': return { shapes: [F('pebble', [0, 1, 2, 3])], vy: -0.5, vx: 0.4, gravity: true, size: 7 };
+    case 'volador': return { shapes: [F('feather', ['#ffffff', 3, 2, '#ffffff'])], vy: 0.3, vx: 0.5, wobble: true, size: 10 };
+    case 'psiquico': return { shapes: [F('ring', [2, 3, 3, 3]), F('twinkle', [2, 3, 3, '#ffffff'])], vy: -0.3, vx: 0.3, size: 8, grow: true };
+    case 'dragon': return { shapes: [F('diamond', [1, 2, 3, 3]), F('flame', [0, 1, 2, 3])], vy: -0.7, vx: 0.2, size: 9 };
+    case 'acero': return { shapes: [F('diamond', [1, 2, 3, '#ffffff']), F('spark', [2, 3, 3, '#ffffff'])], vy: -0.2, vx: 0.1, size: 8 };
+    case 'hada': return { shapes: [F('heart', [1, 2, 3, '#ffffff']), F('twinkle', [2, 3, 3, '#ffffff'])], vy: -0.5, vx: 0.2, wobble: true, size: 9 };
+    default: return { shapes: [F('twinkle', [2, 3, 3, '#ffffff']), F('spark', [2, 3, 3, '#ffffff'])], vy: -0.4, vx: 0.2, size: 8 };
   }
+}
+// Cada forma con sus colores, pintada una vez en un canvas de 16×16 (luego se copia escalada, sin suavizar)
+const shapeCache = new Map();
+function shapeCanvas(shape, ppal) {
+  const key = shape.name + shape.pal.join() + ppal.join();
+  let cv = shapeCache.get(key);
+  if (cv) return cv;
+  cv = document.createElement('canvas'); cv.width = cv.height = 16;
+  const g = cv.getContext('2d');
+  SHAPES[shape.name].forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === '.') return;
+    const v = shape.pal[+ch - 1], col = typeof v === 'number' ? ppal[v] : v;
+    g.fillStyle = typeof col === 'string' ? col : `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
+    g.fillRect(x, y, 1, 1);
+  }));
+  if (shapeCache.size > 300) shapeCache.clear();
+  shapeCache.set(key, cv);
+  return cv;
 }
 
 // Skin con filtro CSS: para las ilustraciones (sin canvas) y si no hay WebGL
@@ -161,26 +176,29 @@ function solidCells(s) {
 // Partículas de un retrato: nacen en un punto del sprite y se mueven un poco, sin salir de él apenas
 function particles(e, g, dt) {
   const { k, ppal, parts, c } = e, s = c.sprite, size = c.width;
-  const px = Math.max(1, Math.round(size / 40));   // un píxel de arte, más o menos
   const cells = solidCells(s), sc = s.dw / s.sw;
-  if (cells.length && Math.random() < dt * 14) {
+  if (cells.length && Math.random() < dt * 10) {
     const i = cells[Math.floor(Math.random() * cells.length)];
-    parts.push({ x: s.dx + (i % s.sw + Math.random()) * sc, y: s.dy + (Math.floor(i / s.sw) + Math.random()) * sc, life: 0.45 + Math.random() * 0.3, t: 0,
-      shape: k.shapes[Math.floor(Math.random() * k.shapes.length)],
+    parts.push({ x: s.dx + (i % s.sw + Math.random()) * sc, y: s.dy + (Math.floor(i / s.sw) + Math.random()) * sc, life: (k.life || 0.6) * (0.8 + Math.random() * 0.5), t: 0,
+      shape: k.shapes[Math.floor(Math.random() * k.shapes.length)], flip: Math.random() < 0.5,
       vx: (Math.random() - 0.5) * 2 * k.vx * size * 0.15, vy: k.vy * size * 0.15 * (0.6 + Math.random() * 0.6), seed: Math.random() * 6 });
   }
+  g.imageSmoothingEnabled = false;
   for (let n = parts.length - 1; n >= 0; n--) {
     const q = parts[n];
     q.t += dt;
     if (q.t >= q.life) { parts.splice(n, 1); continue; }
+    const f = q.t / q.life;
+    if (k.gravity) q.vy += size * 1.2 * dt;
     q.x += (q.vx + (k.wobble ? Math.sin((q.t + q.seed) * 8) * size * 0.05 : 0)) * dt;
     q.y += q.vy * dt;
-    g.globalAlpha = Math.min(1, (1 - q.t / q.life) * 2);
-    for (const [dx, dy, core] of q.shape) {
-      const col = core ? ppal[3] : ppal[2];
-      g.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`;
-      g.fillRect(Math.round(q.x + dx * px), Math.round(q.y + dy * px), px, px);
-    }
+    // (su tamaño, en píxeles de arte enteros: el humo y los anillos crecen, lo demás se encoge un poco al final)
+    const art = Math.max(3, Math.round(k.size * (k.grow ? 0.6 + f * 0.8 : 1 - Math.max(0, f - 0.6))));
+    const w = Math.round(art * sc);
+    g.globalAlpha = Math.min(1, (1 - f) * 2) * (k.alpha || 1);
+    const cv = shapeCanvas(q.shape, ppal), x = Math.round(q.x - w / 2), y = Math.round(q.y - w / 2);
+    if (q.flip) { g.save(); g.translate(x + w, y); g.scale(-1, 1); g.drawImage(cv, 0, 0, w, w); g.restore(); }
+    else g.drawImage(cv, x, y, w, w);
     g.globalAlpha = 1;
   }
 }
