@@ -1451,20 +1451,6 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .story-tool .coll-txt b { font-size: 13px; }
 .story-tool .coll-txt small { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* El mapa de Historia como maqueta 3D (map3d.js). El lienzo va debajo de los nodos y ocupa todo el mapa (lo que
-   sobra alrededor del lienzo 16:10 es mar). Mientras se monta la primera vez, fondo del color del mar con un
-   indicador, y luego entra con un fundido; el SVG solo sale si el 3D no puede */
-.map .map3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .35s; }
-.map.map3d-on .map3d-canvas { opacity: 1; }
-.map.map3d-on .mapart { visibility: hidden; }
-.map.map3d-wait { background: #477ebd; }
-.map.map3d-wait::before { content: ''; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; z-index: 3; pointer-events: none;
-  border-radius: 50%; border: 3px solid rgba(255,255,255,.25); border-top-color: rgba(255,255,255,.85); animation: map3dSpin .9s linear infinite; }
-@keyframes map3dSpin { to { transform: rotate(360deg); } }
-/* Marco doble de Town Map por dentro del borde del mapa, solo con la maqueta 3D */
-.map.map3d-on::before { content: ''; position: absolute; inset: 5px; z-index: 4; pointer-events: none; border-radius: 15px;
-  border: 2px solid rgba(255,248,225,.8); box-shadow: 0 0 0 2px rgba(22,52,110,.55), inset 0 0 0 2px rgba(22,52,110,.35); }
-
 /* Práctica: elegir la arena en tarjetas con su plano en miniatura */
 .practice-arenas { text-align: left; }
 .practice-arenas h4 { margin: 10px 4px 4px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
@@ -1481,28 +1467,6 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .draft:has(.practice-arenas) { height: auto; min-height: 100%; }
 .draft:has(.practice-arenas) > .pool.scroll { flex: none; overflow: visible; max-height: none; }
 .draft:has(.practice-arenas) > button.primary { position: sticky; bottom: 14px; z-index: 5; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-/* Con la maqueta 3D, nodos y etiquetas con más contraste (sobre el relieve se perdían): borde y sombra marcados,
-   etiquetas más opacas, rutas algo más grandes y las bloqueadas, visibles (gris oscuro con borde y candado) */
-.story .map.map3d-on .node.route { width: 34px; height: 34px; border: 3px solid #fff; box-shadow: 0 0 0 2.5px #141a33, 0 4px 10px rgba(0,0,0,.6); }
-.story .map.map3d-on .node.route.new { box-shadow: 0 0 0 2.5px #141a33, 0 0 0 6px #ffd23f, 0 4px 12px rgba(0,0,0,.6), 0 0 18px #ffd23f; }
-.story .map.map3d-on .node.gym { box-shadow: 0 0 0 2.5px #141a33, 0 4px 10px rgba(0,0,0,.6); }
-.story .map.map3d-on.focus .node.locked:not(.league-hq) { width: 18px !important; height: 18px !important; opacity: 1; filter: none; border-radius: 50%;
-  background: #3a3f52 !important; border: 2px solid #fff !important; box-shadow: 0 0 0 2px #141a33, 0 3px 7px rgba(0,0,0,.6) !important; }
-.story .map.map3d-on.focus .node.locked:not(.league-hq) .lock { position: absolute; inset: 0; margin: auto; transform: scale(.85); background: none; box-shadow: none; }
-.story .map.map3d-on .node label, .story .map.map3d-on .city span { background: rgba(10,13,30,.94); border: 1px solid rgba(255,255,255,.35); box-shadow: 0 3px 8px rgba(0,0,0,.6); color: #fff; }
-.story .map.map3d-on .node label { font-size: 12px; }
-.story .map.map3d-on .node .caught-count { background: #141a33; border: 1.5px solid #fff; font-size: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.6); }
-.story .map.map3d-on .node .caught-count.full { background: var(--green); }
-.story .map.map3d-on .node .new-tag, .story .map.map3d-on .node .goal-tag, .story .map.map3d-on .you-pin span { border: 1.5px solid #141a33; box-shadow: 0 3px 8px rgba(0,0,0,.6); font-size: 10px; }
-/* La Liga con la maqueta 3D: el edificio es el rascacielos. El nodo, transparente y del tamaño del edificio
-   (map3d.js lo pone encima), se pulsa sobre él y solo enseña su etiqueta y sus marcas (candado, siguiente reto…) */
-.story .map.map3d-on .node.league-hq { background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 8px !important;
-  opacity: 1; filter: none; scale: 1; cursor: pointer; }
-.story .map.map3d-on .node.league-hq .league-ico, .story .map.map3d-wait .node.league-hq .league-ico { display: none !important; }
-.story .map.map3d-on .node.league-hq:hover, .story .map.map3d-on .node.league-hq.sel { outline: 2px solid rgba(255,255,255,.55); outline-offset: 2px; }
-.story .map.map3d-on.focus .node.league-hq.locked > label { display: block !important; }
-/* (el nodo va sin escalar para cubrir el edificio, así que su etiqueta se escala como las de los demás nodos) */
-.story .map.map3d-on .node.league-hq label { scale: max(var(--ms, 1), .72); }
 /* «Entrar» y «Crear cuenta y jugar», con la misma forma que «Entrar con email» (sin inclinar ni flecha) */
 .title-panel .auth button.primary.alt-btn.go { align-self: stretch; width: 100%; min-width: 0; margin-top: 4px; padding: 8px 10px; border-radius: 12px; transform: none; font: inherit; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; font-style: normal; }
 .title-panel .auth button.primary.alt-btn.go::after { content: none; }
@@ -1824,7 +1788,7 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
    caminito. Lo recorrido es tierra clara; lo que falta, baldosas apagadas. Lo que toca es lo único grande, dorado y
    que late, con el jugador al lado y el botón de jugar debajo */
 .story-body > .story-pathwrap { align-self: start; }   /* (de su altura, no de la del panel de al lado) */
-.story-pathwrap { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; border-radius: 20px;
+.story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
   background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
 .story-pathwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 .story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }

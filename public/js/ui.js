@@ -5,7 +5,6 @@ import { confirmBox } from './dialog.js';
 import { portrait, monIcon, animatedPortrait, trainerImg, typeTint, face, hasAnim } from './sprites.js';
 import { escapeHtml, describeMove, monLabel } from './battle.js';
 import { REGION_ART } from './regionmap.js';
-import { mountMap3D } from './map3d.js';
 import { towerViews } from './tower.js';
 import { friendViews } from './friends.js';
 import { pokedexViews } from './pokedex.js';
@@ -73,7 +72,6 @@ export const ICON = {
 const REGION_COLOR = { kanto: '#ff5a3a', johto: '#e8b020' };
 // Edificio de la Liga en el mapa: un pórtico con columnas y tejado dorado
 // El edificio de la Liga: el gimnasio del tileset de Scarloxy (CC BY 4.0), en dorado
-const LEAGUE_SVG = '<img class="league-ico" src="tiles/league.png" alt="" draggable="false">';
 const LOCK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
 
 export class UI {
@@ -431,8 +429,6 @@ export class UI {
     sb.querySelector('.next-goal').remove();
     const tools = el('div', 'panel story-info');
 
-    // El viaje se ve solo como el Camino (las vistas de mapa y de lista ya no se ofrecen: se quitan del todo al pasarlo a main)
-    const mode = 'path';
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
     help.onclick = () => this.storyGuide();
     // «Cómo se juega» delante, a la izquierda (es lo primero que mira quien empieza), y la cuenta atrás después
@@ -440,98 +436,18 @@ export class UI {
     wrap.append(bar, sb);
     if (!storage.get('arena.storyGuide')) { storage.set('arena.storyGuide', '1'); setTimeout(() => this.storyGuide(), 400); }
     const body = el('div', 'story-body');
-    // En el mapa, lo que toca (siguiente líder, rutas nuevas y el camino hasta ellos) resalta y lo bloqueado se
-    // apaga; lo ya abierto se ve normal, para repetirlo cuando quieras
-    const map = el('div', 'map focus region-' + region);
-    // Los nodos, etiquetas y marcas se adaptan al tamaño del mapa: a su tamaño en un mapa de 860 px de ancho o más (un portátil)
-    // y más pequeños cuanto más pequeño se vea (en el móvil), sin bajar de la mitad para que se puedan tocar
-    if (window.ResizeObserver) new ResizeObserver(([e]) => map.style.setProperty('--ms', Math.max(0.5, Math.min(1, e.contentRect.width / 860)).toFixed(3))).observe(map);
-    // Lienzo con la proporción del mapa (16:10), centrado: la maqueta 3D (map3d.js), con el mar rellenando lo que
-    // sobre; sin WebGL, el mapa SVG
-    const stage = el('div', 'map-stage');
-    map.append(stage);
-    if (mode === 'map') mountMap3D(map, stage, region);   // (la maqueta 3D, solo si se ve)
     const art = REGION_ART[region];
-    // Ciudad con líder: su nombre va en la etiqueta del líder; si no, etiqueta propia
+    // Ciudad de un líder (para decir dónde está)
     const cityAt = n => art.cities.find(([, x, y]) => Math.hypot(x - n.x, y - n.y) < 4);
-    const leaderCities = new Set(R.nodes.filter(n => n.kind !== 'route').map(cityAt).filter(Boolean));
-    for (const city of art.cities) {
-      if (leaderCities.has(city)) continue;
-      // Meseta Añil (o la ciudad de la Liga): su nombre va en la etiqueta del edificio, como en los gimnasios
-      if (/Meseta|Liga/.test(city[0]) && R.nodes.some(n => n.kind !== 'route' && n.index >= Data.LEAGUE_FROM)) continue;
-      const [name, x, y] = city;
-      const c = el('div', 'city', `<span>${t(name)}</span>`);
-      c.style.left = x + '%'; c.style.top = y + '%';
-      stage.append(c);
-    }
     const nodes = R.nodes;
     const leaders = nodes.filter(n => n.kind !== 'route');
     const allDone = prog >= leaders.length;
     // El siguiente reto; en la Liga, el que toca del desafío en curso
     const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
     const nextLeader = leaders.find(n => n.index === (prog >= Data.LEAGUE_FROM && prog < leaders.length ? Data.LEAGUE_FROM + run : prog));
-    // Dónde estás: la ciudad del último líder vencido, o el pueblo de salida
-    const lastBeaten = leaders.find(n => n.index === prog - 1);
-    const here = lastBeaten ? { x: lastBeaten.x, y: lastBeaten.y } : { x: art.cities[0][1], y: art.cities[0][2] };
-    // A dónde puedes ir: las rutas que abre la última medalla y el siguiente líder
+    // Las rutas que abre la última medalla
     const fresh = nodes.filter(n => n.kind === 'route' && n.req === prog);
-    const targets = [...fresh, ...(nextLeader ? [nextLeader] : [])];
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('paths');
-    svg.innerHTML = targets.map(n => `<line class="leg${n === nextLeader ? ' goal' : ''}" x1="${here.x}" y1="${here.y}" x2="${n.x}" y2="${n.y}" vector-effect="non-scaling-stroke"/>`).join('');
-    stage.append(svg);
-    const pin = el('div', 'you-pin');
-    pin.style.left = here.x + '%'; pin.style.top = here.y + '%';
-    pin.append(this.avatar(26), el('span', '', t('Estás aquí')));
-    stage.append(pin);
     const info = el('div', 'node-info');
-    const buttons = new Map();
-    nodes.forEach(n => {
-      if (n.kind !== 'route' && n.index >= Data.LEAGUE_FROM) return;   // la Liga va en su edificio
-      const isLeader = n.kind !== 'route';
-      // La Liga se abre entera con las 8 medallas; sus miembros cuentan como vencidos en el desafío en curso
-      const inLeague = isLeader && n.index >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
-      const unlocked = inLeague ? prog >= Data.LEAGUE_FROM : isLeader ? n.index <= prog : n.req <= prog;
-      const done = inLeague ? cleared || n.index < Data.LEAGUE_FROM + run : isLeader && n.index < prog;
-      const isNew = !isLeader && n.req === prog && unlocked;
-      const b = el('button', `node ${isLeader ? 'gym ' + n.kind : 'route'}${unlocked ? '' : ' locked'}${done ? ' done' : ''}${n === nextLeader ? ' next' : ''}${isNew ? ' new' : ''}`);
-      b.style.left = n.x + '%'; b.style.top = n.y + '%';
-      if (isLeader) b.style.setProperty('--tc', TYPE_COLOR[n.type]);
-      b.title = isLeader ? `${n.name} · ${n.leader}` : n.name;
-      const city = isLeader && cityAt(n);
-      // Gimnasio: su medalla (en color si la tienes); Alto Mando y Campeón, estrella y corona
-      const face = n.kind === 'gym' ? badgeImg(region, n.index, done, 28, 'node-badge') : isLeader ? `<span class="node-face">${trainerImg(n.id)}</span>${n.kind === 'champion' ? '<i class="crown">♛</i>' : ''}` : '';
-      let extra = '';
-      if (!isLeader && unlocked) {
-        const dexes = [...new Set(n.wild.map(([d]) => d))];
-        const got = dexes.filter(d => p.caught.includes(d)).length;
-        extra = `<em class="caught-count${got === dexes.length ? ' full' : ''}">${got === dexes.length ? '✓' : got + '/' + dexes.length}</em>`;
-        b.style.setProperty('--prog', dexes.length ? got / dexes.length : 0);   // (el anillo de capturas alrededor de la ruta)
-      }
-      if (!unlocked) extra = `<em class="lock">${LOCK_SVG}</em>`;
-      if (isNew) extra += `<em class="new-tag">${t('Nueva')}</em>`;
-      if (n === nextLeader) extra += `<em class="goal-tag">${t('Siguiente reto')}</em>`;
-      if (n.kind === 'gym' && unlocked) extra += `<em class="ord">${n.index + 1}</em>`;   // el orden de los gimnasios, a la vista
-      b.innerHTML = `${face}<label>${isLeader ? n.leader : n.name}${city ? `<small>${t(city[0])}</small>` : ''}</label>${extra}`;
-      if (!isLeader && unlocked && n.wild.length) b.prepend(monIcon(n.wild[0][0], 36));
-      b.onclick = () => { map.querySelectorAll('.node').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
-      buttons.set(n.id, b);
-      stage.append(b);
-    });
-    // La Liga: un solo edificio en la Meseta Añil (en vez de sus 5 entrenadores sueltos) que abre su pantalla
-    const lg = leaders.filter(n => n.index >= Data.LEAGUE_FROM);
-    if (lg.length) {
-      const open = prog >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
-      const plateau = art.cities.find(([name]) => /Meseta|Liga/.test(name));
-      const x = plateau ? plateau[1] : lg.reduce((a, n) => a + n.x, 0) / lg.length, y = plateau ? plateau[2] : lg.reduce((a, n) => a + n.y, 0) / lg.length;
-      const hq = el('button', 'node league-hq' + (open ? '' : ' locked') + (cleared ? ' done' : '') + (open && !cleared ? ' next' : ''), `${LEAGUE_SVG}<label>${t('Liga Pokémon')}${plateau ? `<small>${t(plateau[0])}</small>` : ''}</label>${open ? (cleared ? '<i class="crown">♛</i>' : `<em class="ord">${Data.LEAGUE_FROM + 1}</em>`) : `<em class="lock">${LOCK_SVG}</em>`}${open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM ? `<em class="goal-tag">${t('Siguiente reto')}</em>` : ''}`);
-      hq.style.left = x + '%'; hq.style.top = y + '%';
-      hq.title = t('Liga Pokémon');
-      hq.onclick = () => { this.leagueRegion = region; this.show('league'); };
-      stage.append(hq);
-      // las líneas al siguiente reto van al edificio
-      svg.querySelectorAll('.leg.goal').forEach(l => { if (nextLeader && nextLeader.index >= Data.LEAGUE_FROM) { l.setAttribute('x2', x); l.setAttribute('y2', y); } });
-    }
     // Objetivo actual y leyenda
     const goal = el('div', 'map-goal');
     const cap = Data.levelCap(p, region);
@@ -554,26 +470,15 @@ export class UI {
       }
       goal.append(row);
     }
-    map.append(el('div', 'map-legend', [
-      `<span><i class="lg you"></i>${t('Estás aquí')}</span>`,
-      `<span><i class="lg goal"></i>${t('Siguiente reto')}</span>`,
-      `<span><i class="lg new"></i>${t('Ruta nueva')}</span>`,
-      `<span><i class="lg route"></i>${t('Ruta abierta · capturados')}</span>`,
-      `<span><i class="lg locked">${LOCK_SVG}</i>${t('Bloqueado')}</span>`].join('')));
     const side = el('div', 'story-side');
     side.append(info);
-    // El selector Mapa / Lista va en la esquina de arriba a la izquierda de lo que se ve
-    let view = map;
-    if (mode === 'list') { view = el('div', 'story-listwrap'); view.append(this.storyList(region, nodes, prog, nextLeader, buttons, info)); }
-    if (mode === 'path') { view = el('div', 'story-pathwrap'); view.append(this.storyPath(region, nodes, prog, nextLeader, info)); }
+    const view = el('div', 'story-pathwrap');
+    view.append(this.storyPath(region, nodes, prog, nextLeader, info));
     body.append(view, side);
     const head = el('div', 'story-head');
     head.append(goal, tools);
     wrap.append(head, body);
     this.root.append(wrap);
-    const next = map.querySelector('.node.next:not(.league-hq)') || map.querySelector('.node.route.new') || map.querySelector('.node.route:not(.locked)');
-    if (next && mode !== 'path') next.click();   // (el camino elige solo lo que toca)
-    if (mode === 'list') { const cur = body.querySelector('.sl-step.now'); if (cur) cur.scrollIntoView({ block: 'center' }); }
   }
 
   // Liga Pokémon: el Alto Mando y el Campeón, 5 combates seguidos. El equipo empieza cada combate curado
@@ -651,48 +556,6 @@ export class UI {
     body.append(hall, side);
     wrap.append(body);
     this.root.append(wrap);
-  }
-
-  // El viaje paso a paso: antes de cada líder, las rutas que se abren con las medallas que llevas; lo hecho
-  // con ✓, lo que toca resaltado y lo que falta con candado. Cada paso abre su ficha al lado, como el mapa
-  storyList(region, nodes, prog, nextLeader, buttons, info) {
-    const p = this.profile;
-    const list = el('div', 'story-list scroll');
-    const leaders = nodes.filter(n => n.kind !== 'route');
-    let step = 0;
-    const add = (n, isLeader) => {
-      const inLeague = isLeader && n.index >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
-      const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
-      const unlocked = inLeague ? prog >= Data.LEAGUE_FROM : isLeader ? n.index <= prog : n.req <= prog;
-      const done = inLeague ? cleared || n.index < Data.LEAGUE_FROM + run : isLeader && n.index < prog;
-      const now = isLeader ? n === nextLeader : unlocked && n.req === prog;
-      const dexes = isLeader ? [] : [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => p.caught.includes(d)).length;
-      const row = el('button', 'sl-step' + (isLeader ? ' leader' : ' route') + (done ? ' done' : '') + (now ? ' now' : '') + (unlocked ? '' : ' locked'));
-      if (isLeader) row.style.setProperty('--tc', TYPE_COLOR[n.type]);
-      const icon = isLeader ? (n.kind === 'gym' ? badgeImg(region, n.index, done, 34) : trainerImg(n.id, 'sl-face')) : '';
-      const title = isLeader ? `${n.leader} <small>${n.kind === 'gym' ? n.name : n.kind === 'champion' ? t('Campeón') : t('Alto Mando')}</small>` : n.name;
-      const state = done ? '✓' : !unlocked ? LOCK_SVG : now ? (isLeader ? t('Siguiente reto') : t('Ruta nueva')) : isLeader ? '' : `${got}/${dexes.length}`;
-      row.innerHTML = `<span class="sl-n">${++step}</span><span class="sl-ico">${icon}</span><span class="sl-t">${title}${!isLeader ? `<small>${t('Nv.{n}', { n: n.lvl[0] + '-' + n.lvl[1] })}</small>` : ''}</span><em class="sl-st">${state}</em>`;
-      if (!isLeader && unlocked && n.wild.length) row.querySelector('.sl-ico').append(portrait(n.wild[0][0], 40));
-      row.onclick = () => { list.querySelectorAll('.sl-step').forEach(x => x.classList.remove('sel')); row.classList.add('sel'); this.nodeInfo(info, n, unlocked, done); };
-      list.append(row);
-    };
-    for (const L of leaders) {
-      for (const n of nodes.filter(x => x.kind === 'route' && x.req === L.index)) add(n, false);
-      if (L.index >= Data.LEAGUE_FROM) {
-        if (L.index > Data.LEAGUE_FROM) continue;
-        // La Liga, una sola fila que abre su pantalla
-        const open = prog >= Data.LEAGUE_FROM, cleared = prog >= leaders.length;
-        const row = el('button', 'sl-step leader sl-league' + (cleared ? ' done' : '') + (open && !cleared ? ' now' : '') + (open ? '' : ' locked'));
-        row.innerHTML = `<span class="sl-n">${++step}</span><span class="sl-ico">${LEAGUE_SVG}</span><span class="sl-t">${t('Liga Pokémon')}<small>${t('{n} combates seguidos: si pierdes uno, vuelves a empezar', { n: leaders.length - Data.LEAGUE_FROM })}</small></span><em class="sl-st">${cleared ? '♛' : open ? t('Siguiente reto') : LOCK_SVG}</em>`;
-        row.onclick = () => { this.leagueRegion = region; this.show('league'); };
-        list.append(row);
-        continue;
-      }
-      add(L, true);
-    }
-    for (const n of nodes.filter(x => x.kind === 'route' && x.req > leaders.length - 1)) add(n, false);
-    return list;
   }
 
   nodeInfo(box, n, unlocked, done) {

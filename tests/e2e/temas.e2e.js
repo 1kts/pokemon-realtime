@@ -1,5 +1,6 @@
-// Propuestas de aspecto (docs/propuestas-ui.md): solo se ven si se piden. Sin ?tema el juego se ve como siempre y no
-// carga ninguna hoja de tema; con ?tema=b se ve la propuesta B, se recuerda al volver a entrar y ?tema=no la quita.
+// El aspecto del juego es el tema D (docs/propuestas-ui.md): sin pedir nada se carga con la página. Las otras
+// propuestas se ven si se piden: con ?tema=b se ve la B, se recuerda al volver a entrar y ?tema=no deja el aspecto de
+// antes, sin ninguna hoja de tema; ?tema=d vuelve al de siempre.
 // Con el tema puesto, el menú y Historia se siguen usando igual (nada tapado). La propuesta D se mira además por lo
 // que ve el jugador: colores limpios y que se leen, el dorado solo en lo que toca y lo listo, lo que tiene un premio esperando parpadea
 // y lo cruza un destello (y nada se mueve sin movimiento) y que en el móvil todo cabe
@@ -11,7 +12,6 @@ module.exports = async ({ page, player, ok }) => {
   await me.client.wait(m => m.t === 'profile');
   await page.resize(1280, 800);
   await page.loginAs(me.token);
-  const themeLoads = () => page.requests.filter(u => u.includes('/themes/')).length;
   // (el color de fondo de la tarjeta de Historia, tal como se pinta)
   const storyBg = `getComputedStyle(document.querySelector('.menu-card.story')).backgroundColor`;
   const enter = async q => {
@@ -21,18 +21,22 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`window.__app.ui.view === 'menu'`, 20000);
   };
 
-  ok(themeLoads() === 0, 'sin tema no se pide ninguna hoja de tema');
-  const plain = await page.eval(storyBg);
+  // (la hoja que se aplica de verdad: la que está entre las hojas de la página y tiene reglas cargadas)
+  const sheet = `(() => { const l = document.getElementById('tema-css'); return l && l.sheet && l.sheet.cssRules.length ? l.getAttribute('href') : null; })()`;
+  await page.waitFor(`${sheet} !== null`, 10000).catch(() => {});
+  ok(await page.eval(sheet) === '/themes/tema-d.css' && await page.eval(`document.body.classList.contains('tema-d')`), 'sin pedir nada, el juego lleva el tema D');
+  const base = await page.eval(storyBg);
 
   await enter('?tema=b');
-  ok(themeLoads() === 1, 'con ?tema=b se carga su hoja');
-  await page.waitFor(`${storyBg} !== ${JSON.stringify(plain)}`, 5000).catch(() => {});
+  await page.waitFor(`${sheet} === '/themes/tema-b.css'`, 10000).catch(() => {});
+  ok(await page.eval(sheet) === '/themes/tema-b.css' && await page.eval(`document.body.classList.contains('tema-b') && !document.body.classList.contains('tema-d')`), 'con ?tema=b se carga su hoja en vez de la D');
+  await page.waitFor(`${storyBg} !== ${JSON.stringify(base)}`, 5000).catch(() => {});
   const themed = await page.eval(storyBg);
-  ok(themed === 'rgb(239, 90, 60)', `con la propuesta B, Historia es un bloque de color liso (${themed}; sin tema, ${plain})`);
+  ok(themed === 'rgb(239, 90, 60)', `con la propuesta B, Historia es un bloque de color liso (${themed}; con la D, ${base})`);
 
   // Se recuerda: al volver a entrar sin nada en la dirección sigue el tema
   await enter('');
-  ok(themeLoads() === 2 && await page.eval(storyBg) === themed, 'al volver a entrar, el tema elegido sigue');
+  ok(await page.eval(sheet) === '/themes/tema-b.css' && await page.eval(storyBg) === themed, 'al volver a entrar, el tema elegido sigue');
 
   // Se usa igual: Historia se abre con el ratón y el botón de desafiar se ve y se puede pulsar
   await page.click('.menu-card.story');
@@ -47,10 +51,13 @@ module.exports = async ({ page, player, ok }) => {
     return b.textContent.trim() + '|' + (document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) === b); })()`);
   ok(go === '¡Desafiar!|true', `con el tema, «¡Desafiar!» se ve y no lo tapa nada (${go})`);
 
-  // ?tema=no lo quita: vuelve el aspecto de siempre
-  const before = themeLoads();
+  // ?tema=no lo quita todo: el aspecto de antes, sin hoja de tema ni clase
   await enter('?tema=no');
-  ok(themeLoads() === before && await page.eval(storyBg) === plain, '?tema=no lo quita y el menú vuelve a ser el de siempre');
+  const plain = await page.eval(storyBg);
+  ok(await page.eval(`!document.getElementById('tema-css') && ![...document.body.classList].some(c => c.startsWith('tema-'))`) && plain !== base && plain !== themed,
+    `?tema=no quita el tema y el menú se ve como antes (${plain})`);
+  await enter('?tema=d');
+  ok(await page.eval(`document.body.classList.contains('tema-d')`) && await page.eval(storyBg) === base, '?tema=d vuelve al aspecto del juego');
 
   // ---------- Propuesta D ----------
   // Ayudas para leer los colores tal como se pintan (los de un degradado, su tono y el contraste del blanco encima);

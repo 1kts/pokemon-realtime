@@ -9,15 +9,14 @@ module.exports = async ({ page, player, ok }) => {
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
-  // (Historia abre en el Camino: aquí se entra por el mapa, como en lideres.e2e.js; la guía de la primera vez, ya vista)
+  // (en el Camino, a Blaine, lo que toca; la guía de la primera vez, ya vista)
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);
   await page.click('.menu-card.story');
-  await page.waitFor(`document.querySelector('.story-mode')`);
-  await page.click('.story-mode button:nth-child(2)');
-  await page.waitFor(`document.querySelector('.node.gym.next')`);
+  await page.waitFor(`document.querySelector('.story-path .sp-node.now')`);
+  await page.eval(`(() => { const w = document.querySelector('.story-path'), n = document.querySelector('.sp-node.now'); w.style.scrollBehavior = 'auto'; w.scrollLeft += n.getBoundingClientRect().left - w.getBoundingClientRect().left - w.clientWidth / 2 + n.offsetWidth / 2; return true; })()`);   // atajo: desplazar el camino hasta lo que toca
   // (los avisos duran poco: se apunta cada uno que sale en pantalla)
   await page.eval(`window.__banners = []; new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => n.classList && n.classList.contains('banner') && window.__banners.push(n.textContent)))).observe(document.body, { childList: true, subtree: true }); true`);
-  await page.click('.node.gym.next');
+  await page.click('.story-path .sp-node.now');
   await page.click('.node-info button.primary');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);
   ok(await page.eval(`window.__app.battle.mapName === 'g-fuego'`), 'el combate contra Blaine es en su volcán');

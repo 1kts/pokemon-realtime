@@ -77,19 +77,11 @@ module.exports = async ({ page, player, ok }) => {
   ok(h2 > h1 + 10 && /no está afiliado/i.test(await page.eval(`document.querySelector('.legal-text').textContent`)), 'tocar el texto legal lo despliega entero');
   await page.eval(`document.querySelector('.legal-text').click(); true`);
 
-  // La Historia cabe entera en la pantalla en horizontal: el Camino (lo primero que sale) y el mapa
+  // La Historia cabe entera en la pantalla en horizontal: el Camino
   await page.eval(`window.__app.ui.show('story'); true`);
   await page.waitFor(`document.querySelector('.story-pathwrap') && document.querySelector('.story-side .node-info button.primary')`);
   ok(await page.eval(`(() => { const m = document.querySelector('.story-pathwrap').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
     return m.top >= 0 && m.bottom <= innerHeight + 1 && b.left >= m.right && b.bottom <= innerHeight && b.top >= 0 && document.getElementById('screen').scrollTop === 0; })()`), 'en horizontal el Camino se ve entero, con la ficha al lado y su botón de jugar a la vista sin bajar');
-  await page.click('.story-mode button:nth-child(2)');
-  await page.waitFor(`document.querySelector('.story .map')`);
-  // (el clic del arnés centra la pestaña, que en el móvil está abajo, y baja la pantalla; quien la toca no baja nada)
-  await page.eval(`document.getElementById('screen').scrollTo(0, 0); true`);
-  const mapH = await page.eval(`Math.round(document.querySelector('.story .map').getBoundingClientRect().height)`);
-  ok(mapH <= 390 - h1, `en horizontal el mapa se ve entero (${mapH} px de alto)`);
-  ok(await page.eval(`(() => { const m = document.querySelector('.story .map').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
-    return b.left >= m.right && b.bottom <= innerHeight && b.top >= 0 && document.getElementById('screen').scrollTop === 0; })()`), 'la ficha del sitio va al lado del mapa, con el botón de jugar a la vista sin bajar');
 
   // La ficha de un Pokémon cabe, con el sprite dentro de su recuadro
   await page.eval(`window.__app.ui.show('team'); true`);

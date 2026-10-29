@@ -1,5 +1,5 @@
 // Calidad gráfica automática, la misma para los dos renderers 3D: el del combate y los menús (main.js, que la
-// baja si va a menos de 40 FPS) y el del mapa de Historia (map3d.js, que la sigue). No vuelve a subir en la sesión.
+// baja si va a menos de 40 FPS). No vuelve a subir en la sesión.
 // Niveles: 0 completa; 1 resolución interna a 1×; 2 además sin resplandor (y en el mapa, sombras más sencillas);
 // 3 además resolución a 0,75×.
 const subs = new Set();

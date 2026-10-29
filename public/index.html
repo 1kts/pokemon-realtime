@@ -32,6 +32,8 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="cards.css">
 <link rel="stylesheet" href="mobile.css">
+<!-- El aspecto del juego (tema D, «Ruta con cuerpo»): va en la página para que no se vea un instante sin él; tema.js lo cambia si se pide otro -->
+<link rel="stylesheet" href="/themes/tema-d.css" id="tema-css">
 <script type="importmap">
 { "imports": {
   "three": "/vendor/three/build/three.module.js",
@@ -40,7 +42,7 @@
 } }
 </script>
 </head>
-<body>
+<body class="tema-d">
 <canvas id="view"></canvas>
 <div id="hud"></div>
 <div id="screen"></div>
