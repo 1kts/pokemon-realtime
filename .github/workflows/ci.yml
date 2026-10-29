@@ -10,6 +10,9 @@ on:
     branches: [main, develop]
   pull_request:
   workflow_dispatch:
+  # Cada noche, las pruebas de mutación (tools/mutar.js): que la nota de tests/mutaciones-nota.json sea verdad
+  schedule:
+    - cron: '17 3 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,6 +21,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -32,13 +36,34 @@ jobs:
       # Lo mismo que el hook de pre-push: las novedades traen test e2e y el código, algún test
       - name: Tests para lo que se sube
         if: github.event_name == 'push' && !startsWith(github.event.before, '0000000')
-        run: node tools/require-tests.js ${{ github.event.before }} ${{ github.sha }} ${{ github.ref }}
+        run: |
+          node tools/require-tests.js ${{ github.event.before }} ${{ github.sha }} ${{ github.ref }}
+          node tools/e2e-lint.js --base ${{ github.event.before }}
       - run: npm test
+
+  # Rojo primero: cada test nuevo o cambiado tiene que fallar con el código de antes de la subida (si no, no prueba
+  # nada). No frena el despliegue (deploy no lo espera) ni corre en main: ya se comprobó al subir a develop
+  rojo-primero:
+    if: (github.event_name == 'push' && github.ref != 'refs/heads/main' && !startsWith(github.event.before, '0000000')) || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Los tests nuevos fallan sin el cambio
+        run: node tools/rojo-primero.js ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }} ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }} ${{ github.ref }}
 
   # El juego en un navegador (Chrome ya viene en los runners de GitHub), repartido en 6 máquinas a la vez por lo que
   # tarda cada prueba (tests/e2e/times.json) y 2 pruebas a la vez en cada una (más, en una máquina del CI, les quita
   # CPU y las que miden tiempos fallan)
   e2e:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -57,6 +82,29 @@ jobs:
           E2E_SHARD: ${{ matrix.shard }}/6
           E2E_JOBS: 2
           E2E_TIMES: 1
+
+  # Pruebas de mutación (cada noche y a mano): cada mutación de tests/mutaciones.js con sus tests, en 4 máquinas; falla
+  # si alguna que la nota daba por cazada se escapa. Tarda (cada mutación pasa sus e2e): por eso no va en cada push;
+  # en cada push solo se mira que la nota guardada no baje (tools/require-tests.js)
+  mutaciones:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node tools/mutar.js --comprobar
+        env:
+          MUT_SHARD: ${{ matrix.shard }}/4
+          MUT_JOBS: 2
 
   # (de momento solo espera a los tests unitarios: los e2e se pasan igual y avisan, pero no frenan el despliegue)
   deploy:
