@@ -119,40 +119,74 @@ la información. A cambio, es la menos «de juego»: sin el bloque de Historia y
 de datos. Un detalle: el anillo de un gimnasio ganado de tipo Eléctrico es amarillo (es el color del tipo) y se
 parece algo al dorado de «lo que toca». Se distingue por el tamaño y la etiqueta, pero habría que vigilarlo.
 
-## C · «Ruta» (HUD ligero sobre el mundo)
+## C · «Ruta» (HUD ligero sobre el mundo) · la elegida
 
 El juego ya tiene un mundo 3D detrás de los menús, así que esta propuesta lo deja ser el protagonista. La interfaz
-se queda en lo justo: velos oscuros sin bordes ni sombras, letra grande y casi ninguna caja dentro de otra. Recuerda
-a una pantalla de título o al HUD de los juegos en 3D.
+se queda en lo justo: velos azul noche sin bordes ni sombras, letra grande y casi ninguna caja dentro de otra.
+Recuerda a una pantalla de título o al HUD de los juegos en 3D.
+
+La primera versión quedó «apagadísima» (velos casi negros y todo en blanco y gris), y se perdieron los colores que
+destacan las funciones y enganchan. Ahora cada cosa vuelve a tener su color, pero con el lenguaje de C: tinte que
+se desvanece y una barra a la izquierda en vez de una tarjeta con marco.
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--tc-veil` | `rgba(8,10,20,.8)` | velo de los paneles. Sobre un fondo blanco, el blanco da 11,2:1 y el secundario 6,8:1 |
-| `--tc-row` | `rgba(255,255,255,.07)` | filas y huecos |
-| `--tc-hair` | `rgba(255,255,255,.16)` | bordes de los botones secundarios |
-| `--tc-text` / `--tc-mute` | `#ffffff` / `#c3cad9` | texto y secundario |
-| `--tc-now` | `#ffcb05` | solo lo que toca |
+| `--tc-veil` / `--tc-veil-2` | `rgba(20,32,84,.8)` / `rgba(26,42,104,.88)` | velo de los paneles, azul noche. Sobre un fondo blanco, el blanco da 8,2:1 y el secundario 6:1 |
+| `--tc-row` | `rgba(140,180,255,.13)` | filas y huecos |
+| `--tc-hair` | `rgba(170,200,255,.3)` | bordes de los botones secundarios |
+| `--tc-text` / `--tc-mute` | `#ffffff` / `#d2ddf5` | texto y secundario |
+| `--tc-done` | `#5fd8ff` | lo recorrido (el camino, la región elegida, el modo Camino, la cuenta atrás) |
+| `--tc-now` | `#ffcb05` | lo que toca hacer ahora: «Jugar» de Historia, «¡Desafiar!», el siguiente reto |
+| `--tc-gold` | `#ffd23f` | lo que engancha: Lucky Spin, gemas, premios por recoger (marco y brillo) |
+| `--tc-pink` | `#ff6b8a` | Apoyar |
+| `--c` / `--cc` / `--tc` | de cada modo, baldosa o tipo | tinte al 34 % sobre el azul noche y barra de 3-4 px a la izquierda |
 
 - **Letra**: M PLUS Rounded 1c en 900 y muy grande en lo principal («Historia» a 64 px en el menú y el título de
   la pantalla a 40 px, encima del mundo). Nunito para todo lo demás.
-- **Paneles**: velo liso, sin borde, esquinas de 4 px. Los modos secundarios son filas bajas con su color en un
-  punto. La colección y las misiones van sin tarjetas.
-- **Atrevimiento**: en el menú, Historia es una portada, con un título enorme sobre el mundo y el único botón
-  dorado. En Historia, el camino.
-- **Movimiento**: al abrir Historia, la línea blanca del camino se dibuja tramo a tramo desde el pueblo, y el
-  siguiente reto aparece cuando llega la línea. En el menú, el Pokémon de Historia da un salto al entrar.
+- **Paneles**: velo liso, sin borde, esquinas de 4 px. Los modos son filas bajas teñidas con su color y su barra.
+- **Color en el menú**: Historia, portada en rojo cálido con el único botón dorado. Lucky Spin con marco y nombre
+  dorados; monedas y gemas en píldora dorada; Apoyar en rosa; Novedades con borde dorado si hay algo nuevo. En «Tu
+  colección», cada baldosa con su color (Mis Pokémon rojo, Mochila azul, Tienda y Logros dorados, Pokédex
+  violeta) y, si hay algo que recoger, marco dorado entero y brillo. Misiones con marco dorado cuando hay premios,
+  «Recoger todo» en píldora dorada, los iconos sobre un cuadrito de color y la misión cumplida con barra dorada.
+  La burbuja roja de Logros se queda.
+- **Color en Historia**: el rótulo «Historia» con el rojo de la portada detrás; la región elegida subrayada y
+  teñida de celeste; las medallas ganadas con brillo dorado detrás; «Tu objetivo» en dorado, con la medalla del
+  líder en un anillo de su tipo y las rutas nuevas en verde hierba; la cuenta atrás en celeste. En el camino, las
+  rutas vuelven a ser verdes con su anillo de capturados, los contadores «2/7» van en píldora (verde si está
+  completa) y «Nueva» en rosa frambuesa. La ficha del líder lleva una banda del color de su tipo arriba.
+- **Medallas que no tienes** (para todos, no solo con el tema): en gris y algo opacas, no en silueta blanca, en el
+  camino, la barra de medallas de arriba (también la pequeña del móvil), la lista, el mapa y el objetivo.
+- **Movimiento**: al abrir Historia, la línea del camino se dibuja tramo a tramo desde el pueblo, y el siguiente
+  reto aparece cuando llega la línea. En el menú, el Pokémon de Historia da un salto al entrar. Lo que tiene algo
+  listo para recoger late despacio (2,4 s) y a turnos, para que no lata todo a la vez: Lucky Spin, Tienda, Logros
+  y «Recoger todo». El resto de parpadeos de siempre, fuera. Con `prefers-reduced-motion` nada se mueve: queda el
+  marco y el brillo.
 - **Móvil**: la portada se encoge (título de 30 px) y se quita el punto de color de los modos, porque no
   cabían los nombres.
+- **Contraste**: calculado en el peor caso (el velo sobre un fondo blanco y el tinte más claro, el dorado o el
+  amarillo de Eléctrico). Blanco y secundario dan 4,5:1 o más en los modos, las baldosas, Lucky Spin («Lucky
+  Spin» en oro liso: el degradado dorado de siempre bajaba a 3,8:1), la ficha del líder, «Nueva» (4,9:1) y la
+  cuenta atrás (5:1). El rótulo «Historia» da 4,7:1. El subtítulo de la portada de Historia y el del rótulo de la
+  pantalla van sobre el mundo, sostenidos por una sombra: no se puede garantizar con cualquier fondo.
 
-Qué arregla: casi no quedan tarjetas, y el mundo 3D, que es lo que distingue al juego, se ve más. A cambio,
-legibilidad y aspecto dependen de lo que haya detrás. Con mucho detalle (hierba, agua), el camino y los rótulos
-sin caja tienen que pelear más. Los velos se subieron a 0,75 o más para mantener el contraste, y el título sin
-caja se sostiene con su tamaño y una sombra. Es la que más se notaría en el móvil con poca potencia, porque se ve
-más 3D.
+Qué arregla: casi no quedan tarjetas, y el mundo 3D, que es lo que distingue al juego, se ve más, sin perder lo
+que llama la atención. A cambio, legibilidad y aspecto dependen algo de lo que haya detrás. Es la que más se
+notaría en el móvil con poca potencia, porque se ve más 3D.
+
+### Decisiones para el dueño
+
+- **Tienda dorada siempre**: en C, Tienda y Logros van en dorado aunque no haya nada nuevo, y lo «listo» se marca
+  con el marco entero y el latido. Sin tema, la Tienda solo es dorada cuando ha rotado. ¿Se prefiere así?
+- **El latido**: ahora laten despacio y a turnos cuatro cosas como mucho. Si se quiere más vida, se puede volver al
+  corazón de Apoyar que late (ahora está quieto, en rosa).
+- **«Nueva» en rosa frambuesa** en vez de dorado, para que el dorado sea solo de lo que toca y de los premios.
+- **Medallas en gris también sin tema**: el cambio está en `cards.css`, así que se ve igual con y sin tema.
+- **El rojo detrás del rótulo de Historia**: une la pantalla con su portada del menú. Si se ve demasiado, se quita.
 
 ## Recomendación
 
-**B («Pokédex») como base, con dos préstamos de A.**
+(El dueño ha elegido la C, con más color: ver arriba.) La recomendación de entonces era **B («Pokédex») como base, con dos préstamos de A.**
 
 - B resuelve los cinco rasgos con menos riesgo. Las superficies lisas y las líneas finas se pueden llevar al resto
   de pantallas (tienda, Mis Pokémon, Torre y combate) sin revisar el color de cada texto, porque sigue siendo una
@@ -173,6 +207,8 @@ más 3D.
 - No hay ninguna letra nueva. La de píxel de A habría que descargarla y alojarla como las otras.
 - En 844×390, el nombre del siguiente reto queda pegado a la barra de desplazamiento del camino. Pasa con
   todos los temas y también sin tema.
-- Se ha comprobado con capturas en 1280×800 y 844×390 y con el e2e `temas.e2e.js`. No se han pasado los barridos
-  `pantallas-*.e2e.js` ni axe con el tema puesto: esos tests no ponen tema y miden el aspecto de siempre. Tampoco
-  se ha mirado 667×375 con cada tema.
+- Se ha comprobado con capturas en 1280×800 y 844×390 y con el e2e `temas.e2e.js`. La C, además, con los cuatro
+  barridos `pantallas-*.e2e.js` pasando `?tema=c` en cada página (escritorio, ventana, 844×390 y 667×375): pasan.
+  Con ellos salió que el rótulo de 40 px se salía de ancho en una ventana de 390 px; ya se encoge a 24 px. Los
+  barridos con el tema no están en el repositorio (se pasaron con un envoltorio aparte). A, B y axe con tema, sin
+  pasar.

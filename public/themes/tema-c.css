@@ -51,8 +51,10 @@ body.tema-c .hub-me .support { color: var(--tc-pink); background: rgba(255,107,1
 body.tema-c .hub-me .support:hover { background: rgba(255,107,138,.28); }
 body.tema-c .hub-me .support span { color: #fff; }
 body.tema-c .hub-mod .news-btn:has(.ndot.news) { border: 2px solid var(--tc-gold); }
-body.tema-c .hub-left .hub-tz { border: 2px solid var(--tc-gold); border-radius: 4px; background: linear-gradient(135deg, rgba(255,197,49,.4), rgba(20,32,84,.8) 70%);
+body.tema-c .hub-left .hub-tz { border: 2px solid var(--tc-gold); border-radius: 4px; background: linear-gradient(135deg, rgba(255,197,49,.22), rgba(20,32,84,.88) 55%);
   box-shadow: 0 0 16px rgba(255,190,40,.3); }
+/* (el nombre en oro liso: el degradado de siempre baja de 4,5:1 por abajo) */
+body.tema-c .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--tc-gold); filter: none; }
 body.tema-c .hub-tz small { color: #ffe9a8 !important; }
 body.tema-c .hub-sep { background: var(--tc-hair); }
 
@@ -62,8 +64,8 @@ body.tema-c .menu-sec .sec-head h3::before { content: none; }
 body.tema-c .menu-sec .sec-head small { color: var(--tc-mute); text-shadow: 0 1px 6px rgba(0,0,0,.8); }
 /* Los demás modos: filas bajas, con su color solo en un punto */
 body.tema-c .menu-card { min-height: 92px; padding: 14px 18px; transition: background .12s;
-  background: linear-gradient(100deg, color-mix(in srgb, var(--c) 42%, rgb(20,32,84)) , var(--tc-veil) 72%); box-shadow: inset 4px 0 0 var(--c); }
-body.tema-c .menu-card:hover:not(:disabled) { transform: none; background: linear-gradient(100deg, color-mix(in srgb, var(--c) 58%, rgb(20,32,84)), var(--tc-veil-2) 80%); box-shadow: inset 6px 0 0 var(--c); }
+  background: linear-gradient(100deg, color-mix(in srgb, var(--c) 34%, rgb(20,32,84)), var(--tc-veil) 72%); box-shadow: inset 4px 0 0 var(--c); }
+body.tema-c .menu-card:hover:not(:disabled) { transform: none; background: linear-gradient(100deg, color-mix(in srgb, var(--c) 46%, rgb(20,32,84)), var(--tc-veil-2) 80%); box-shadow: inset 6px 0 0 var(--c); }
 body.tema-c .menu-card b { font: 800 22px var(--display); color: var(--tc-text); text-shadow: none; }
 body.tema-c .menu-card b .card-ico { background: none; box-shadow: none; width: 30px; height: 30px; }
 body.tema-c .menu-card b::after { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent); order: -1; }
@@ -94,8 +96,8 @@ body.tema-c .hub-coll .coll-tile:nth-child(2) { --cc: #4f8cff; }
 body.tema-c .hub-coll .coll-tile:nth-child(3), body.tema-c .hub-coll .coll-tile:nth-child(5) { --cc: #ffc531; }
 body.tema-c .hub-coll .coll-tile:nth-child(4) { --cc: #9b6dff; }
 body.tema-c .coll-tile, body.tema-c .coll-tile.mons, body.tema-c .coll-tile.ready { border: 0 !important; border-radius: 4px;
-  background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 42%, rgb(20,32,84)), rgba(20,32,84,.2) 92%); box-shadow: inset 3px 0 0 var(--cc); }
-body.tema-c .coll-tile:hover:not(:disabled) { transform: none; border: 0; background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 58%, rgb(20,32,84)), rgba(20,32,84,.3) 92%); box-shadow: inset 5px 0 0 var(--cc); }
+  background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 34%, rgb(20,32,84)), rgba(20,32,84,.2) 92%); box-shadow: inset 3px 0 0 var(--cc); }
+body.tema-c .coll-tile:hover:not(:disabled) { transform: none; border: 0; background: linear-gradient(100deg, color-mix(in srgb, var(--cc) 46%, rgb(20,32,84)), rgba(20,32,84,.3) 92%); box-shadow: inset 5px 0 0 var(--cc); }
 body.tema-c .coll-tile:hover:not(:disabled) img { transform: none; }
 body.tema-c .coll-tile img { filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
 body.tema-c .coll-tile .coll-txt b { color: var(--tc-text); }
@@ -220,7 +222,7 @@ body.tema-c .sp-k.now { box-shadow: none; }
 /* La ficha del sitio */
 /* La cabecera de la ficha, del color del tipo del líder */
 body.tema-c .story-side .node-info .leader-head { border-radius: 4px 4px 0 0; padding-bottom: 6px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 55%, rgb(20,32,84)), color-mix(in srgb, var(--tc) 18%, rgba(20,32,84,0))); box-shadow: inset 0 3px 0 var(--tc); }
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 40%, rgb(20,32,84)), color-mix(in srgb, var(--tc) 12%, rgba(20,32,84,0))); box-shadow: inset 0 3px 0 var(--tc); }
 body.tema-c .node-info h3 { font: 900 24px var(--display); letter-spacing: -.3px; color: var(--tc-text); }
 body.tema-c .node-info .leader, body.tema-c .node-info p.small, body.tema-c .node-info h4 { color: var(--tc-mute); }
 body.tema-c .node-info .leader b { color: var(--tc-text); }
@@ -234,6 +236,9 @@ body.tema-c .arena-info b { color: var(--tc-text); }
 body.tema-c .node-info .link { color: var(--tc-text); }
 body.tema-c .story-tools .story-shop { --cc: #ffc531; }
 body.tema-c .story-tools .story-bag { --cc: #4f8cff; }
+
+/* Ventana estrecha (o móvil en vertical): el rótulo de la pantalla, como sin tema, para que quepa */
+@media (max-width: 760px) { body.tema-c .feature-sign h2 { font-size: 24px; } body.tema-c .feature-sign.sign-story { padding-right: 24px; } }
 
 /* ---------- Móvil en horizontal: la portada de Historia más pequeña, el resto como en el escritorio ---------- */
 @media (max-height: 500px) {
