@@ -5,8 +5,10 @@
 //   node tools/ai-tune.js compare [--skill 0.85] [--games 2000] [--a base|tuned|archivo.json] [--b base|tuned|…]
 //        tasa de victorias de A contra B (mismos equipos y arenas; cada combate se juega dos veces cambiando
 //        quién lleva cada lado)
-//   node tools/ai-tune.js strength [--skill 0.85] [--gens 12] [--pop 14] [--games 240] [--out archivo.json]
+//   node tools/ai-tune.js strength [--skill 0.85] [--gens 10] [--pop 10] [--games 400] [--from archivo.json] [--out archivo.json]
 //        búsqueda evolutiva de los parámetros de server/ai.js (BASE_PARAMS) contra la IA de siempre
+//   node tools/ai-tune.js sweep [--skill 0.85] [--games 600] [--from …] [--out archivo.json]
+//        cada parámetro a medio camino de su extremo bajo y del alto, uno a uno: cuáles importan y hacia dónde
 //   node tools/ai-tune.js leaders [--games 300] [--ref 0.5]
 //        tasa de victorias de un jugador de referencia contra cada líder, Alto Mando y Campeón
 //   node tools/ai-tune.js calibrate [--games 300] [--ref 0.5]
@@ -128,40 +130,61 @@ function mutate(P, r, sigma, rate) {
   if (Q.defenderAt > Q.atacarAt - 0.12) Q.defenderAt = round('defenderAt', Q.atacarAt - 0.12);
   return Q;
 }
-function mean(list) {
-  const Q = { ...list[0], aggro: { ...list[0].aggro }, range: { ...list[0].range } };
-  for (const k of Object.keys(SPACE)) set(Q, k, round(k, list.reduce((a, P) => a + get(P, k), 0) / list.length));
-  return Q;
-}
 const diff = (P, Q = AI.BASE_PARAMS) => Object.fromEntries(Object.keys(SPACE).filter(k => get(P, k) !== get(Q, k)).map(k => [k, get(P, k)]));
 const flat = P => { const out = {}; for (const k of Object.keys(SPACE)) set(out, k, get(P, k)); return { ...out, adapt: false }; };
 
+// (1+λ) con revancha: cada generación prueba λ mutaciones del padre en los mismos combates; la mejor juega otra
+// tanda de combates nuevos (el doble) contra la IA de siempre junto al padre, y solo lo sustituye si le gana también
+// ahí. Con tan poca diferencia entre versiones, sin la revancha se elige ruido
 async function strength() {
-  const skill = +arg('skill', 0.85), gens = +arg('gens', 12), pop = +arg('pop', 14), games = +arg('games', 240);
+  const skill = +arg('skill', 0.85), gens = +arg('gens', 10), pop = +arg('pop', 10), games = +arg('games', 400);
   const r = rng(+arg('seed', 7));
   const base = { ...AI.BASE_PARAMS, adapt: false };
   let parent = { ...loadParams(arg('from', 'base')), adapt: false };
-  let sigma = 0.12;
+  const sigma = +arg('sigma', 0.15), rate = +arg('rate', 0.25);
   console.log(`Búsqueda: habilidad ${skill}, ${gens} generaciones de ${pop}, ${games} combates por candidato (${THREADS} hilos)`);
   for (let g = 0; g < gens; g++) {
     const seed = Math.floor(r() * 2 ** 31);
-    const cands = [parent, ...Array.from({ length: pop - 1 }, () => mutate(parent, r, sigma, 0.35))];
+    const kids = Array.from({ length: pop }, () => mutate(parent, r, sigma, rate));
     const scores = [];
-    for (const c of cands) scores.push(await duel(c, base, skill, games, seed));
-    const order = cands.map((c, i) => i).sort((i, j) => scores[j] - scores[i]);
-    const top = order.slice(0, 3).map(i => cands[i]);
-    console.log(`gen ${g + 1}: padre ${pct(scores[0])} · mejor ${pct(scores[order[0]])} · media del top 3 ${pct(order.slice(0, 3).reduce((a, i) => a + scores[i], 0) / 3)}`);
-    // El nuevo padre es la media de los 3 mejores (si el padre sigue siendo el mejor, se queda casi igual)
-    parent = mean(top);
-    sigma = Math.max(0.04, sigma * 0.92);
+    for (const c of kids) scores.push(await duel(c, base, skill, games, seed));
+    const bi = scores.indexOf(Math.max(...scores));
+    const seed2 = Math.floor(r() * 2 ** 31);
+    const sp = await duel(parent, base, skill, games * 2, seed2), sk = await duel(kids[bi], base, skill, games * 2, seed2);
+    const take = sk > sp + 0.005;
+    console.log(`gen ${g + 1}: mejor hijo ${pct(scores[bi])} · revancha: hijo ${pct(sk)} contra padre ${pct(sp)}${take ? ' → nuevo padre' : ''}`);
+    if (take) parent = kids[bi];
   }
   const out = arg('out');
-  const d = diff(parent);
   if (out) fs.writeFileSync(out, JSON.stringify(flat(parent), null, 1));
-  console.log('Cambios respecto a BASE_PARAMS:', JSON.stringify(d));
+  console.log('Cambios respecto a BASE_PARAMS:', JSON.stringify(diff(parent)));
   const val = +arg('validate', 2000);
   const w = await duel(parent, base, skill, val, 99991);
   console.log(`Validación (combates nuevos): ${pct(w)} ± ${pct(se(w, val))} en ${val} combates a habilidad ${skill}`);
+}
+
+// Barrido de uno en uno: cada parámetro en el extremo bajo y en el alto de su rango (el resto como --from), contra
+// la IA de siempre en los mismos combates. Dice cuáles importan y hacia dónde; los que ayudan se pueden juntar con --out
+async function sweep() {
+  const skill = +arg('skill', 0.85), games = +arg('games', 600), seed = +arg('seed', 31);
+  const base = { ...AI.BASE_PARAMS, adapt: false }, from = { ...loadParams(arg('from', 'base')), adapt: false };
+  const ref = await duel(from, base, skill, games, seed);
+  console.log(`Punto de partida: ${pct(ref)} (${games} combates por prueba, ± ${pct(se(0.5, games))})`);
+  const good = {};
+  for (const [k, [lo, hi]] of Object.entries(SPACE)) {
+    const res = [];
+    for (const v of [lo + (get(from, k) - lo) / 2, get(from, k) + (hi - get(from, k)) / 2]) {
+      const P = { ...from, aggro: { ...from.aggro }, range: { ...from.range } };
+      set(P, k, round(k, v));
+      res.push([round(k, v), await duel(P, base, skill, games, seed)]);
+    }
+    const [bv, bw] = res[0][1] >= res[1][1] ? res[0] : res[1];
+    if (bw > ref + 2 * se(0.5, games)) good[k] = bv;
+    console.log(`${k.padEnd(20)} ${String(get(from, k)).padStart(6)}  ${res.map(([v, w]) => `${v} → ${pct(w)}`).join('   ')}${good[k] !== undefined ? '   *' : ''}`);
+  }
+  console.log('Mejoras claras:', JSON.stringify(good));
+  const out = arg('out');
+  if (out) { const P = { ...from, aggro: { ...from.aggro }, range: { ...from.range } }; for (const [k, v] of Object.entries(good)) set(P, k, v); fs.writeFileSync(out, JSON.stringify(flat(P), null, 1)); }
 }
 
 async function compareCmd() {
@@ -262,9 +285,10 @@ async function calibrate() {
   try {
     if (cmd === 'compare') await compareCmd();
     else if (cmd === 'strength') await strength();
+    else if (cmd === 'sweep') await sweep();
     else if (cmd === 'leaders') await leaders();
     else if (cmd === 'calibrate') await calibrate();
-    else { console.log('Uso: node tools/ai-tune.js compare|strength|leaders|calibrate [opciones] (ver el principio del archivo)'); process.exitCode = 2; }
+    else { console.log('Uso: node tools/ai-tune.js compare|strength|sweep|leaders|calibrate [opciones] (ver el principio del archivo)'); process.exitCode = 2; }
   } finally { done(); }
   console.log(`(${((Date.now() - t0) / 1000).toFixed(0)} s)`);
 })();
