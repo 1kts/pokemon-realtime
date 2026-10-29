@@ -317,3 +317,6 @@ en la C y pesa algo más.
   Con ellos salió que el rótulo de 40 px se salía de ancho en una ventana de 390 px; ya se encoge a 24 px. Los
   barridos con el tema no están en el repositorio (se pasaron con un envoltorio aparte). A, B y axe con tema, sin
   pasar.
+- La D, con `temas.e2e.js` y los cuatro barridos `pantallas-*.e2e.js` pasando `?tema=d` en cada página (con el mismo
+  envoltorio aparte): pasan, y sin tema también. En la máquina donde se hizo, el de escritorio tarda 8-9 minutos
+  (con o sin tema) y se pasa de los 5 que da el harness: se pasó con un límite mayor. En el CI va más rápido.
