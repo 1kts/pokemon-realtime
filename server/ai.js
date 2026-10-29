@@ -16,6 +16,33 @@ const S = require('../public/shared.js');
 
 const { T, F } = S;
 const rnd = () => Math.random();
+
+// Parámetros numéricos de la IA: pesos de la agresividad, distancias, disciplina con la energía y lo que vale
+// cada tipo de movimiento. Son decisiones, no ejecución: la habilidad (skill) sigue mandando en reflejos, puntería
+// y errores, así que tocarlos no hace trampas. tools/ai-tune.js los busca jugando IA contra IA (ver PARAMS).
+const BASE_PARAMS = {
+  // Agresividad: base de cada personalidad y peso de cada factor
+  aggro: { luchador: 0.65, tanque: 0.5, controlador: 0.45, francotirador: 0.4 },
+  wHp: 0.6, wAlive: 0.08, wType: 0.15, wEnergy: 0.25,
+  finish: 0.25, finishAt: 0.25, lowHp: 0.3, lowHpAt: 0.3, opening: 0.2,
+  // Estados: por encima de atacarAt ataca, por debajo de defenderAt se defiende (hyst: margen para no oscilar)
+  atacarAt: 0.62, defenderAt: 0.33, hyst: 0.07,
+  // Distancia ideal de cada personalidad atacando; tanteando, un poco más; defendiendo, lejos
+  range: { luchador: 55, tanque: 170, controlador: 230, francotirador: 260 },
+  probeExtra: 50, fleeMin: 330, fleeExtra: 120, strafe: 0.6, strafeDefend: 0.9,
+  // Protección de más defendiendo; cambios de Pokémon (por tipos y para salvar a uno tocado)
+  guard: 0.15, swapType: 0.5, swapSave: 0.45, swapSaveAt: 0.3,
+  // Cadencia según el estado y energía que se guarda para escapar (las hábiles)
+  cadenceAttack: 0.1, cadenceDefend: -0.03, reserve: 25,
+  // Lo que vale cada tipo de movimiento (por punto de daño) y con el rival vendido (Open)
+  uProj: 0.6, uBeam: 0.75, uBeamOpen: 1.7, uMelee: 1.2, uCone: 1.25, uWave: 0.9, uWaveOpen: 1.5,
+  uDashAttack: 1.3, uDashProbe: 0.7, uAreaSelf: 1.3, uArea: 0.65, uAreaOpen: 1.8,
+  uHeal: 35, healAt: 0.4, healAtDefend: 0.6, uBuff: 12, uWall: 25, uBlink: 24,
+  meleeDefend: 0.3, bigAttack: 1.3, finishMult: 1.4,
+  // Adaptativa: afloja si va arrasando y aprieta si va perdiendo (las personas no; ver tools/ai-tune.js)
+  adapt: true,
+};
+const PARAMS = BASE_PARAMS;
 const clamp01 = v => Math.max(0, Math.min(1, v));
 
 function angleDiff(a, b) {
@@ -25,9 +52,13 @@ function angleDiff(a, b) {
   return d;
 }
 
-// Personalidad de una especie según sus movimientos y estadísticas
+// Personalidad de una especie según sus movimientos y estadísticas (su distancia ideal y su agresividad base, de P)
+function personality(dex, P = PARAMS) {
+  const style = styleOf(dex);
+  return { style, range: P.range[style], aggro: P.aggro[style] };
+}
 const personalities = new Map();
-function personality(dex) {
+function styleOf(dex) {
   let p = personalities.get(dex);
   if (p) return p;
   const sp = D.SPECIES[dex];
@@ -35,10 +66,7 @@ function personality(dex) {
   const melee = moves.filter(m => m.kind === 'melee' || m.kind === 'dash' || m.kind === 'cone').length;
   const control = moves.filter(m => m.kind === 'area' || m.stun || m.slow || m.kind === 'wall').length;
   const heals = moves.some(m => m.kind === 'heal');
-  if (melee >= 2) p = { style: 'luchador', range: 55, aggro: 0.65 };
-  else if (sp.hp >= 135 || heals) p = { style: 'tanque', range: 170, aggro: 0.5 };
-  else if (control >= 2) p = { style: 'controlador', range: 230, aggro: 0.45 };
-  else p = { style: 'francotirador', range: 260, aggro: 0.4 };
+  p = melee >= 2 ? 'luchador' : sp.hp >= 135 || heals ? 'tanque' : control >= 2 ? 'controlador' : 'francotirador';
   personalities.set(dex, p);
   return p;
 }
@@ -84,7 +112,8 @@ function decide(st, key, prob) {
 // equipo) y aprieta si va perdiendo, como mucho ADAPT_DOWN / ADAPT_UP. Cambia despacio para que no se note
 // a saltos. Afecta a todo lo que depende de la habilidad: puntería, reflejos, esquivas, parrys y cadencia.
 const ADAPT_DOWN = 0.18, ADAPT_UP = 0.1;
-function adaptiveSkill(b, side, st, dt) {
+function adaptiveSkill(b, side, st, dt, P = PARAMS) {
+  if (!P.adapt) return side.ai;
   const hp = s => s.team.reduce((a, m) => a + Math.max(0, m.hp) / m.maxHp, 0) / s.team.length;
   const lead = hp(side) - hp(b.foe(side));   // > 0: la IA va ganando
   const want = lead > 0.15 ? -ADAPT_DOWN * Math.min(1, (lead - 0.15) / 0.45) : lead < -0.15 ? ADAPT_UP * Math.min(1, (-lead - 0.15) / 0.45) : 0;
@@ -94,7 +123,8 @@ function adaptiveSkill(b, side, st, dt) {
 
 function aiInput(b, side, dt) {
   const st = side.aiState;
-  const skill = side.wild ? side.ai : adaptiveSkill(b, side, st, dt);
+  const P = side.aiParams || PARAMS;   // (tools/ai-tune.js prueba otros en un lado)
+  const skill = side.wild ? side.ai : adaptiveSkill(b, side, st, dt, P);
   const inp = { s: 0, mx: 0, my: 0, a: side.a, tx: side.x, ty: side.y, c: -1, sw: -1 };
   if (b.state !== 'fight') return inp;
   const mon = b.mon(side);
@@ -122,29 +152,29 @@ function aiInput(b, side, dt) {
   if (side.forced > 0) { if (side.swapTo < 0) inp.sw = bestSwap(side, fmon, -1); return inp; }
 
   // ---------- Agresividad y estado ----------
-  const pers = personality(mon.dex);
+  const pers = personality(mon.dex, P);
   const myHp = mon.hp / mon.maxHp, foeHp = fmon.hp / fmon.maxHp;
   const myAlive = side.team.filter(m => !m.fainted).length, foeAlive = f.team.filter(m => !m.fainted).length;
   let aggro = pers.aggro
-    + (myHp - foeHp) * 0.6                       // voy ganando -> aprieto; voy perdiendo -> cuidado
-    + (myAlive - foeAlive) * 0.08
-    + (myBestEdge(mon, fmon) - worstThreat(fmon, mon)) * 0.15
-    + (side.energy / 100 - 0.5) * 0.25;
-  if (foeHp < 0.25) aggro += 0.25;               // rematar
-  if (myHp < 0.3) aggro -= 0.3;                  // poca vida -> defensivo
-  if (foeFlags & (F.STUN | F.REC)) aggro += 0.2 * skill;   // el rival está vendido
+    + (myHp - foeHp) * P.wHp                     // voy ganando -> aprieto; voy perdiendo -> cuidado
+    + (myAlive - foeAlive) * P.wAlive
+    + (myBestEdge(mon, fmon) - worstThreat(fmon, mon)) * P.wType
+    + (side.energy / 100 - 0.5) * P.wEnergy;
+  if (foeHp < P.finishAt) aggro += P.finish;     // rematar
+  if (myHp < P.lowHpAt) aggro -= P.lowHp;        // poca vida -> defensivo
+  if (foeFlags & (F.STUN | F.REC)) aggro += P.opening * skill;   // el rival está vendido
   aggro = clamp01(aggro);
   // Histéresis: no cambia de estado por pequeñas variaciones
   const prevMode = st.mode || 'tantear';
-  let mode = aggro > 0.62 ? 'atacar' : aggro < 0.33 ? 'defender' : 'tantear';
-  if (prevMode === 'atacar' && aggro > 0.55) mode = 'atacar';
-  if (prevMode === 'defender' && aggro < 0.4) mode = 'defender';
+  let mode = aggro > P.atacarAt ? 'atacar' : aggro < P.defenderAt ? 'defender' : 'tantear';
+  if (prevMode === 'atacar' && aggro > P.atacarAt - P.hyst) mode = 'atacar';
+  if (prevMode === 'defender' && aggro < P.defenderAt + P.hyst) mode = 'defender';
   st.mode = mode;
   st.dbg = { m: mode, g: aggro, p: pers.style };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
 
   // ---------- Movimiento ----------
   const moves = mon.moves.map(k => D.MOVES[k]);
-  const want = mode === 'atacar' ? pers.range : mode === 'tantear' ? pers.range + 50 : Math.max(330, pers.range + 120);
+  const want = mode === 'atacar' ? pers.range : mode === 'tantear' ? pers.range + P.probeExtra : Math.max(P.fleeMin, pers.range + P.fleeExtra);
   st.strafeT = (st.strafeT || 0) - dt;
   if (st.strafeT <= 0) { st.strafe = rnd() < 0.5 ? -1 : 1; st.strafeT = 0.7 + rnd() * 1.5; }
   let radial = Math.max(-1, Math.min(1, (dist - want) / 70));
@@ -152,7 +182,7 @@ function aiInput(b, side, dt) {
     radial = dist > 50 ? 1 : 0;
     if (dist <= 50) st.lastSeen = { x: S.ARENA.w / 2 + (rnd() - 0.5) * 400, y: S.ARENA.h / 2 + (rnd() - 0.5) * 300 };
   }
-  const strafeAmt = mode === 'defender' ? 0.9 : 0.6;
+  const strafeAmt = mode === 'defender' ? P.strafeDefend : P.strafe;
   let mx = (dx / dist) * radial + (-dy / dist) * st.strafe * strafeAmt;
   let my = (dy / dist) * radial + (dx / dist) * st.strafe * strafeAmt;
   // Salvaje: buena parte del tiempo va a su aire, a un punto al azar
@@ -262,7 +292,7 @@ function aiInput(b, side, dt) {
 
   // ---------- Protección / parry ----------
   if (side.pcd <= 0 && side.prot < 0 && !side.wild) {
-    const guard = mode === 'defender' ? 0.15 : 0;
+    const guard = mode === 'defender' ? P.guard : 0;
     if (threat && threat.t < 0.1 && decide(st, 'p' + threat.id, Math.pow(skill, 1.5) * 0.55 + guard)) { inp.c = 4; return aim(inp, toFoe, skill); }
     if (f.wind && !f.hidden) {
       const m = f.wind.m, left = m.wind - f.wind.t;
@@ -280,8 +310,8 @@ function aiInput(b, side, dt) {
     if (best >= 0) {
       const other = side.team[best];
       const badMatch = worstThreat(fmon, mon) >= 1.5 && worstThreat(fmon, other) < worstThreat(fmon, mon);
-      const saveMe = mode === 'defender' && myHp < 0.3 && other.hp / other.maxHp > 0.5;
-      if ((badMatch && rnd() < skill * 0.5) || (saveMe && rnd() < skill * 0.45)) { inp.sw = best; return inp; }
+      const saveMe = mode === 'defender' && myHp < P.swapSaveAt && other.hp / other.maxHp > 0.5;
+      if ((badMatch && rnd() < skill * P.swapType) || (saveMe && rnd() < skill * P.swapSave)) { inp.sw = best; return inp; }
     }
   }
 
@@ -291,44 +321,44 @@ function aiInput(b, side, dt) {
   if (st.pause <= 0 && rnd() < (1 - skill) * 0.012) st.pause = 0.3 + rnd() * 0.7;
   if (st.pause > 0 || !b.canAct(side) || (f.hidden && !st.lastSeen)) return aim(inp, toFoe, skill);
   // Cadencia: una IA torpe ataca a ratos; una experta, en cuanto tiene sentido
-  let cadence = 0.05 + 0.4 * Math.pow(skill, 1.2) + (mode === 'atacar' ? 0.1 : mode === 'defender' ? -0.03 : 0);
+  let cadence = 0.05 + 0.4 * Math.pow(skill, 1.2) + (mode === 'atacar' ? P.cadenceAttack : mode === 'defender' ? P.cadenceDefend : 0);
   if (side.wild) cadence *= st.wander ? 0.25 : 0.6;   // los salvajes atacan poco, y menos mientras deambulan
   if (rnd() > cadence) return aim(inp, toFoe, skill);
 
   const opening = (foeFlags & (F.STUN | F.REC | F.WIND)) && rnd() < 0.3 + 0.7 * skill;   // ¿lo ve vendido?
   const blocked = lineBlocked(b, side, target);
-  const reserve = skill > 0.45 ? 25 : 0;    // las buenas guardan energía para escapar
+  const reserve = skill > 0.45 ? P.reserve : 0;    // las buenas guardan energía para escapar
   let best = null, bestU = 0;
   moves.forEach((m, i) => {
     if (mon.cds[i] > 0 || side.energy < m.cost) return;
     if (m.cost > 0 && side.energy - m.cost < reserve && !opening && foeHp > 0.25) return;
     let u = 0;
     const big = m.cost >= 40;
-    if (m.kind === 'proj') u = dist < m.range * 0.92 ? (m.dmg + 2) * (m.count || 1) * 0.6 + (m.stun ? 8 : 0) : 0;
+    if (m.kind === 'proj') u = dist < m.range * 0.92 ? (m.dmg + 2) * (m.count || 1) * P.uProj + (m.stun ? 8 : 0) : 0;
     // Una roca en medio: el proyectil o el rayo no llegaría (las IA hábiles no lo malgastan)
     if ((m.kind === 'proj' || m.kind === 'beam') && u > 0 && blocked && rnd() < skill) u *= 0.05;
-    else if (m.kind === 'beam') u = dist < m.len * 0.92 ? m.dmg * (opening ? 1.7 : 0.75) : 0;
-    else if (m.kind === 'melee') u = dist < m.range + fr + 8 ? m.dmg * 1.2 : 0;
-    else if (m.kind === 'cone') u = dist < m.range + fr - 10 ? m.dmg * 1.25 : 0;
-    else if (m.kind === 'wave') u = dist < m.range * 0.9 ? m.dmg * (opening ? 1.5 : 0.9) : 0;
-    else if (m.kind === 'dash') u = dist < m.dist + 30 && dist > 60 ? m.dmg * (mode === 'atacar' ? 1.3 : mode === 'defender' ? 0.2 : 0.7) : 0;
+    else if (m.kind === 'beam') u = dist < m.len * 0.92 ? m.dmg * (opening ? P.uBeamOpen : P.uBeam) : 0;
+    else if (m.kind === 'melee') u = dist < m.range + fr + 8 ? m.dmg * P.uMelee : 0;
+    else if (m.kind === 'cone') u = dist < m.range + fr - 10 ? m.dmg * P.uCone : 0;
+    else if (m.kind === 'wave') u = dist < m.range * 0.9 ? m.dmg * (opening ? P.uWaveOpen : P.uWave) : 0;
+    else if (m.kind === 'dash') u = dist < m.dist + 30 && dist > 60 ? m.dmg * (mode === 'atacar' ? P.uDashAttack : mode === 'defender' ? 0.2 : P.uDashProbe) : 0;
     else if (m.kind === 'area') {
-      if (m.at === 'self') u = dist < m.radius * 0.85 ? m.dmg * 1.3 : 0;
-      else u = dist < m.maxRange ? m.dmg * (opening ? 1.8 : 0.65) : 0;
+      if (m.at === 'self') u = dist < m.radius * 0.85 ? m.dmg * P.uAreaSelf : 0;
+      else u = dist < m.maxRange ? m.dmg * (opening ? P.uAreaOpen : P.uArea) : 0;
       if (m.selfKO) u = myHp < 0.25 && dist < m.radius * 0.7 && myAlive > 1 ? 60 : 0;
     } else if (m.kind === 'heal') {
       // Curarse deja aturdido: mejor con el rival lejos, salvo a la desesperada
       const safe = !m.selfStun || dist > 260 || myHp < 0.2;
-      u = myHp < (mode === 'defender' ? 0.6 : 0.4) && !b.sudden && safe ? 35 : 0;
+      u = myHp < (mode === 'defender' ? P.healAtDefend : P.healAt) && !b.sudden && safe ? P.uHeal : 0;
     }
-    else if (m.kind === 'buff') u = side.haste <= 0 && side.power <= 0 && mode !== 'defender' && dist > 150 ? 12 : 0;
+    else if (m.kind === 'buff') u = side.haste <= 0 && side.power <= 0 && mode !== 'defender' && dist > 150 ? P.uBuff : 0;
     else if (m.kind === 'smoke') u = mode === 'defender' && rnd() < 0.4 ? 20 : 0;
-    else if (m.kind === 'wall') u = f.wind && (f.wind.m.kind === 'beam' || f.wind.m.kind === 'proj') ? 25 : mode === 'defender' ? 8 : 0;
-    else if (m.kind === 'blink') u = (threat && threat.t < 0.25) || (mode === 'defender' && dist < 140) ? 24 : 0;
+    else if (m.kind === 'wall') u = f.wind && (f.wind.m.kind === 'beam' || f.wind.m.kind === 'proj') ? P.uWall : mode === 'defender' ? 8 : 0;
+    else if (m.kind === 'blink') u = (threat && threat.t < 0.25) || (mode === 'defender' && dist < 140) ? P.uBlink : 0;
     // Estilo según el estado
-    if (u > 0 && mode === 'defender' && (m.kind === 'melee' || m.kind === 'dash' || m.kind === 'cone') && foeHp > 0.2) u *= 0.3;
-    if (u > 0 && mode === 'atacar' && big) u *= 1.3;
-    if (u > 0 && foeHp < 0.2 && m.dmg) u *= 1.4;
+    if (u > 0 && mode === 'defender' && (m.kind === 'melee' || m.kind === 'dash' || m.kind === 'cone') && foeHp > 0.2) u *= P.meleeDefend;
+    if (u > 0 && mode === 'atacar' && big) u *= P.bigAttack;
+    if (u > 0 && foeHp < 0.2 && m.dmg) u *= P.finishMult;
     // Combos: mojado + eléctrico/hielo
     if (u > 0 && (foeFlags & F.WET) && (m.type === 'electrico' || m.type === 'hielo')) u *= 1 + skill;
     if (u > 0 && m.dmg) u *= D.typeMult(m.type, D.SPECIES[fmon.dex].types);
@@ -362,4 +392,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { aiInput, personality, adaptiveSkill };
+module.exports = { aiInput, personality, adaptiveSkill, BASE_PARAMS, TUNED_PARAMS: PARAMS, PARAMS };
