@@ -1,5 +1,6 @@
 // Tarjetas de PvP del menú: cuánta gente hay en línea y, si alguien busca rival en ese modo, cuántos;
-// se actualiza sola mientras miras el menú
+// se actualiza sola mientras miras el menú. «Partida rápida» sin equipo lleva a prepararlo en una pantalla de
+// Partida rápida (no de Clasificatoria) que busca partida rápida; «Clasificatoria» sigue siendo Clasificatoria
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'mirona' });
   const rival = await player({ user: 'buscona' });
@@ -18,4 +19,26 @@ module.exports = async ({ page, player, ok }) => {
   rival.client.send({ t: 'unqueue' });
   await page.waitFor(`!document.querySelector('.menu-card.casual .pvp-live.hot')`, 15000);
   ok(true, 'cuando deja de buscar, se apaga');
+
+  // Partida rápida sin equipo: se prepara en su propia pantalla, sin ELO, y busca partida rápida
+  const shown = `(() => { const b = [...document.querySelectorAll('.online button.primary')].find(x => /Buscar partida/.test(x.textContent));
+    return { sign: document.querySelector('.feature-sign h2').textContent, go: b && b.textContent, off: b && b.disabled, elo: !!document.querySelector('.online .big-elo') }; })()`;
+  await page.click('.menu-card.casual');
+  await page.waitFor(`window.__app.ui.view === 'online'`);
+  const q1 = await page.eval(shown);
+  ok(q1.sign === 'Partida rápida' && q1.go === 'Buscar partida rápida' && q1.off && !q1.elo, `«Partida rápida» sin equipo abre Partida rápida (no Clasificatoria), sin ELO y con el botón esperando al equipo (${JSON.stringify(q1)})`);
+  for (let i = 0; i < 3; i++) { await page.click(`.pvp-pool .pvp-pick:nth-child(${i + 1})`); await page.waitFor(`document.querySelectorAll('.pvp-slot:not(.empty)').length === ${i + 1}`); }
+  await page.waitFor(`![...document.querySelectorAll('.online button.primary')].find(x => /Buscar partida/.test(x.textContent)).disabled`);
+  await page.click('Buscar partida rápida');
+  await page.waitFor(`document.querySelector('.q-mode')`);
+  ok(await page.eval(`document.querySelector('.q-mode').textContent`) === 'Partida rápida', 'con el equipo listo, «Buscar partida rápida» busca partida rápida');
+  await page.click('.q-cancel');
+  await page.waitFor(`!document.querySelector('.q-mode')`, 15000);
+  // Clasificatoria sigue abriendo Clasificatoria
+  if (await page.eval(`window.__app.ui.view !== 'menu'`)) await page.click('.inner-bar .back');
+  await page.waitFor(`window.__app.ui.view === 'menu'`);
+  await page.click('.menu-card.ranked');
+  await page.waitFor(`window.__app.ui.view === 'online'`);
+  const q2 = await page.eval(shown);
+  ok(q2.sign === 'Clasificatoria' && q2.go === 'Buscar partida clasificatoria' && q2.elo, `«Clasificatoria» abre Clasificatoria, con su ELO (${JSON.stringify(q2)})`);
 };

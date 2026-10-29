@@ -1468,6 +1468,8 @@ export default {
     '{n} puntos para {league}': 'noch {n} Punkte bis {league}',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': 'Draft: Jeder Spieler sperrt 1 Pokémon und wählt 3. Alle auf Level {n}.',
     'Buscar partida clasificatoria': 'Ranglistenkampf suchen',
+    'Buscar partida rápida': 'Schnelles Spiel suchen',
+    'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': 'Online ohne ELO: Du gewinnst und verlierst keine Punkte. Du nutzt dein Ranglisten-Team: 3 Pokémon, alle auf Lv.{n}.',
     'Buscando rival para clasificatoria…': 'Suche Gegner für die Rangliste…',
     'Buscando rival para partida rápida…': 'Suche Gegner für ein schnelles Spiel…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'Zum Alleine-Testen öffne einen weiteren Tab und suche dort auch einen Kampf.',

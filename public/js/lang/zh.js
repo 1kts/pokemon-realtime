@@ -1469,6 +1469,8 @@ export default {
     '{n} puntos para {league}': '距离{league}还差 {n} 分',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': '选秀：每位玩家禁用 1 只宝可梦并选择 3 只。全部为 {n} 级。',
     'Buscar partida clasificatoria': '寻找排位赛',
+    'Buscar partida rápida': '寻找快速对战',
+    'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': '不计ELO的在线对战：不会得分也不会扣分。使用你的排位队伍：3只宝可梦，全部为Lv.{n}。',
     'Buscando rival para clasificatoria…': '正在寻找排位赛对手…',
     'Buscando rival para partida rápida…': '正在寻找快速对战对手…',
     'Para probar solo, abre otra pestaña y busca partida también.': '想一个人试试的话，再打开一个标签页同时匹配即可。',

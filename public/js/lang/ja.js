@@ -1469,6 +1469,8 @@ export default {
     '{n} puntos para {league}': '{league}まで あと {n}',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': 'ドラフト：おたがい 1匹 禁止して 3匹 えらぶ。全員 レベル {n}。',
     'Buscar partida clasificatoria': 'ランクバトルを さがす',
+    'Buscar partida rápida': 'クイックバトルを さがす',
+    'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': 'ELOなしの オンライン: ポイントは 増えも 減りも しない。ランクバトルの チーム(ぜんいん Lv.{n} の 3匹)で たたかう。',
     'Buscando rival para clasificatoria…': 'ランクバトルの あいてを さがしています…',
     'Buscando rival para partida rápida…': 'クイックバトルの あいてを さがしています…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'ひとりで ためすなら、べつの タブを 開いて そこでも さがそう。',

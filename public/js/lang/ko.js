@@ -1469,6 +1469,8 @@ export default {
     '{n} puntos para {league}': '{league}까지 {n}점',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': '드래프트: 서로 1마리를 금지하고 3마리를 고른다. 모두 레벨 {n}.',
     'Buscar partida clasificatoria': '랭크 배틀 찾기',
+    'Buscar partida rápida': '빠른 배틀 찾기',
+    'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': 'ELO 없는 온라인: 점수를 얻지도 잃지도 않아요. 랭크 팀(모두 Lv.{n}인 포켓몬 3마리)으로 싸워요.',
     'Buscando rival para clasificatoria…': '랭크 배틀 상대를 찾는 중…',
     'Buscando rival para partida rápida…': '빠른 배틀 상대를 찾는 중…',
     'Para probar solo, abre otra pestaña y busca partida también.': '혼자 시험해 보려면 다른 탭을 열어 거기서도 찾아보세요.',

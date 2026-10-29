@@ -1470,6 +1470,8 @@ export default {
     '{n} puntos para {league}': '{n} points to {league}',
     'Draft: cada jugador veta 1 Pokémon y elige 3. Todos a nivel {n}.': 'Draft: each player bans 1 Pokémon and picks 3. All at level {n}.',
     'Buscar partida clasificatoria': 'Find a ranked match',
+    'Buscar partida rápida': 'Find a quick match',
+    'Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.': 'Online with no ELO: you neither win nor lose points. You use your Ranked team: 3 Pokémon, all at Lv.{n}.',
     'Buscando rival para clasificatoria…': 'Looking for a ranked opponent…',
     'Buscando rival para partida rápida…': 'Looking for a quick match opponent…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'To try it alone, open another tab and search for a match there too.',
