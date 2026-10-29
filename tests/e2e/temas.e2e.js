@@ -26,6 +26,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`${sheet} !== null`, 10000).catch(() => {});
   ok(await page.eval(sheet) === '/themes/tema-d.css' && await page.eval(`document.body.classList.contains('tema-d')`), 'sin pedir nada, el juego lleva el tema D');
   const base = await page.eval(storyBg);
+  // (la D pinta Historia con un degradado: lo que la distingue de sin tema es su imagen de fondo)
+  const storyImg = `getComputedStyle(document.querySelector('.menu-card.story')).backgroundImage`;
+  const baseImg = await page.eval(storyImg);
 
   await enter('?tema=b');
   await page.waitFor(`${sheet} === '/themes/tema-b.css'`, 10000).catch(() => {});
@@ -53,11 +56,11 @@ module.exports = async ({ page, player, ok }) => {
 
   // ?tema=no lo quita todo: el aspecto de antes, sin hoja de tema ni clase
   await enter('?tema=no');
-  const plain = await page.eval(storyBg);
-  ok(await page.eval(`!document.getElementById('tema-css') && ![...document.body.classList].some(c => c.startsWith('tema-'))`) && plain !== base && plain !== themed,
-    `?tema=no quita el tema y el menú se ve como antes (${plain})`);
+  const plainImg = await page.eval(storyImg);
+  ok(await page.eval(`!document.getElementById('tema-css') && ![...document.body.classList].some(c => c.startsWith('tema-'))`) && plainImg !== baseImg,
+    '?tema=no quita el tema y el menú se ve como antes (Historia sin el degradado de la D)');
   await enter('?tema=d');
-  ok(await page.eval(`document.body.classList.contains('tema-d')`) && await page.eval(storyBg) === base, '?tema=d vuelve al aspecto del juego');
+  ok(await page.eval(`document.body.classList.contains('tema-d')`) && await page.eval(storyImg) === baseImg, '?tema=d vuelve al aspecto del juego');
 
   // ---------- Propuesta D ----------
   // Ayudas para leer los colores tal como se pintan (los de un degradado, su tono y el contraste del blanco encima);
