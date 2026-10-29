@@ -11,12 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '手机上游戏启动更轻快：音乐在快要播放时才下载，不再在打开时全部下载（原来有 15 MB）。',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '在大屏幕上，底部栏不再遮挡 Lucky Spin 和故事模式地图，Lucky Spin 的稀有度标签也更易读。',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '使用读屏和键盘时：只有图标的按钮会说明自己是什么，可滚动的列表也能用键盘浏览。',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
-    'Mapa más claro y móvil más ligero': '更清晰的地图，更轻快的手机版',
+    'Historia en un camino': '故事变成一条路',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': '故事模式从「路线」开始：你的旅程连成一条线，道馆按顺序排列，下一个挑战以金色显示并带有「挑战」按钮，还能看到每条道路已捕捉的宝可梦数量。',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '手机上点得更准',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '在菜单里点任务的标题会进入任务：以前点中间会领取所有奖励。',

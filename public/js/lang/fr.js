@@ -11,12 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'La carte Histoire est plus claire : le prochain défi ressort en doré, les routes montrent avec un anneau ce que tu as capturé et les nouvelles ont une étoile.',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'Sur mobile, le jeu démarre plus léger : la musique se télécharge quand elle va jouer au lieu de tout télécharger à l’ouverture (c’était 15 Mo).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': 'La barre du bas ne cache plus Lucky Spin ni la carte Histoire sur les grands écrans, et les étiquettes de rareté de Lucky Spin se lisent mieux.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': 'Avec lecteur d’écran et clavier : les boutons avec seulement une icône disent ce qu’ils sont et les listes défilantes se parcourent au clavier.',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'La carte Histoire est plus claire : le prochain défi ressort en doré, les routes montrent avec un anneau ce que tu as capturé et les nouvelles ont une étoile.',
-    'Mapa más claro y móvil más ligero': 'Carte plus claire et mobile plus léger',
+    'Historia en un camino': 'Le mode histoire en chemin',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': 'Le mode histoire s\'ouvre sur le Chemin : ton voyage sur une ligne, avec les Arènes dans l\'ordre, ton prochain défi en doré avec « Défier » et combien de Pokémon tu as de chaque route.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': 'Des touches plus précises sur mobile',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': 'Dans le menu, toucher l’en-tête des Missions t’y emmène : avant, toucher son centre récupérait toutes les récompenses.',

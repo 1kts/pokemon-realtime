@@ -12,12 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
-    // ---------- Novedades v0.31.5 ----------
+    // ---------- Novedades v0.32.0 ----------
+    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '스토리 지도가 더 깔끔해졌습니다. 다음 도전은 금색으로 눈에 띄고, 도로는 잡은 포켓몬을 링으로 보여 주며, 새 도로에는 별이 붙습니다.',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '모바일에서 게임이 더 가볍게 시작됩니다. 음악은 열 때 한꺼번에가 아니라 나오기 직전에 내려받습니다(전에는 15 MB).',
     'La barra de abajo ya no tapa Lucky Spin ni el mapa de Historia en pantallas grandes, y las etiquetas de rareza de Lucky Spin se leen mejor.': '큰 화면에서 아래 바가 Lucky Spin과 스토리 지도를 가리지 않고, Lucky Spin의 희귀도 라벨이 더 잘 읽힙니다.',
     'Con lector de pantalla y teclado: los botones que solo tienen un icono dicen qué son y las listas con scroll se recorren con el teclado.': '스크린 리더와 키보드로: 아이콘만 있는 버튼이 무엇인지 알려 주고, 스크롤 목록을 키보드로 넘길 수 있습니다.',
-    'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '스토리 지도가 더 깔끔해졌습니다. 다음 도전은 금색으로 눈에 띄고, 도로는 잡은 포켓몬을 링으로 보여 주며, 새 도로에는 별이 붙습니다.',
-    'Mapa más claro y móvil más ligero': '더 깔끔한 지도와 가벼워진 모바일',
+    'Historia en un camino': '한 줄의 길로 보는 스토리',
+    'Historia empieza en el Camino: tu viaje en una línea, con los gimnasios en orden, tu siguiente reto en dorado con «Desafiar» y cuántos Pokémon llevas de cada ruta.': '스토리가 「여정」에서 시작해요. 여정이 한 줄로 이어지고, 체육관이 순서대로 놓이며, 다음 도전은 금색과 「도전」 버튼으로, 도로마다 잡은 포켓몬 수도 보여요.',
     // ---------- Novedades v0.31.4 ----------
     'Toques más precisos en el móvil': '모바일에서 더 정확한 터치',
     'En el menú, tocar la cabecera de Misiones te lleva a ellas: antes, tocando en el centro, recogía todos los premios.': '메뉴에서 미션 머리글을 누르면 미션으로 이동합니다. 전에는 가운데를 누르면 보상을 모두 받았습니다.',

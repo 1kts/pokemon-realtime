@@ -429,6 +429,7 @@ export class UI {
     const seg = el('div', 'seg story-mode');
     for (const [k, label] of [['path', t('Camino')], ['map', t('Mapa')], ['list', t('Lista')]]) {
       const b = el('button', mode === k ? 'sel' : '', label);
+      b.setAttribute('aria-pressed', String(mode === k));
       b.onclick = () => { this.storyMode = k; storage.set('arena.storyMode', k); this.show('story'); };
       seg.append(b);
     }

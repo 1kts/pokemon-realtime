@@ -245,9 +245,10 @@
   .story-pathwrap > .story-mode { grid-area: 3 / 1; align-self: center; margin: 4px 0 5px 6px; padding: 2px; }
   .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
   .sp-intro, .sp-go { display: none; }
-  .story-path { --sp-gym: 50px; --sp-now: 64px; --sp-rt: 38px; --sp-rw: 82px; --sp-gc: 88px; --sp-tick: 12px; --sp-lab: 32px; padding: 8px 14px 6px; overflow-y: auto; }
+  .story-path { --sp-gym: 50px; --sp-now: 64px; --sp-rt: 38px; --sp-rw: 82px; --sp-gc: 88px; --sp-tick: 12px; --sp-lab: 32px; padding: 8px 0 6px 14px; overflow-y: auto; }
   .sp-legend { grid-area: 3 / 2; justify-content: flex-end; gap: 2px 12px; padding: 4px 10px; font-size: 10px; line-height: 1.2; }
   .sp-legend .sp-l-done, .sp-legend .sp-l-now, .sp-legend .sp-l-locked { display: none; }
+  .sp-track { padding-right: 14px; }
   .sp-start { width: 70px; }
   .sp-start b { font-size: 10px; margin-top: 6px; }
   .sp-name { font-size: 10px; }

@@ -38,7 +38,7 @@ export const storyPathViews = {
       const dexes = [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => p.caught.includes(d)).length;
       const b = el('button', 'sp-node sp-route' + (unlocked ? '' : ' locked') + (isNew ? ' new' : '') + (unlocked && got === dexes.length ? ' full' : ''));
       b.style.setProperty('--prog', dexes.length ? got / dexes.length : 0);
-      b.title = unlocked ? `${n.name} · ${t('{a}/{b} capturados', { a: got, b: dexes.length })}` : n.name;
+      b.title = `${n.name} · ${unlocked ? t('{a}/{b} capturados', { a: got, b: dexes.length }) : t('Aún bloqueado')}`;
       const dot = el('span', 'sp-dot');
       if (unlocked && n.wild.length) dot.append(monIcon(n.wild[0][0], 32));
       b.append(dot, el('span', 'sp-name', n.name));
@@ -54,17 +54,20 @@ export const storyPathViews = {
       const unlocked = n.index <= prog, done = n.index < prog, now = n === nextLeader;
       const b = el('button', 'sp-node sp-gym' + (done ? ' done' : '') + (now ? ' now' : '') + (unlocked ? '' : ' locked'));
       b.style.setProperty('--tc', TYPE_COLOR[n.type]);
-      b.title = `${n.name} · ${n.leader}`;
+      // (al pasar por encima, también en qué punto está: lo que dice la leyenda)
+      b.title = `${n.leader} · ${n.name} · ${done ? t('Medalla ganada') : now ? t('Tu siguiente reto') : t('Aún bloqueado')}`;
       const face = n.kind === 'gym' ? badgeImg(region, n.index, done, 34, 'sp-badge') : trainerImg(n.id, 'sp-face');
       b.append(el('span', 'sp-dot', face), el('span', 'sp-name', `<b>${n.leader}</b>${now ? `<small>${n.name}</small>` : ''}`));
       if (n.kind === 'gym') b.append(el('em', 'sp-ord', String(n.index + 1)));
       b.onclick = () => pick(b, n, unlocked, done);
       all.push(b);
-      if (!now) return b;
-      // El único botón de jugar del camino: el del siguiente reto
+      return now ? withGo(b, n.id) : b;
+    };
+    // El único botón de jugar del camino, debajo del siguiente reto: su combate (en la Liga, el que toca de los 5)
+    const withGo = (b, id) => {
       const box = el('div', 'sp-nowbox');
       const go = el('button', 'primary sp-go', t('Desafiar'));
-      go.onclick = e => { e.stopPropagation(); this.startStory('gym', n.id); };
+      go.onclick = e => { e.stopPropagation(); this.startStory('gym', id); };
       box.append(b, go);
       return box;
     };
@@ -94,7 +97,10 @@ export const storyPathViews = {
         b.append(el('span', 'sp-dot', LEAGUE_IMG), el('span', 'sp-name', `<b>${t('Liga Pokémon')}</b>${open && !cleared ? `<small>${t('Combate {n} de {m}', { n: run + 1, m: leaders.length - Data.LEAGUE_FROM })}</small>` : ''}`));
         b.onclick = () => { this.leagueRegion = region; this.show('league'); };
         all.push(b);
-        chapter(routes, b, cleared ? 'done' : open ? 'now' : 'locked', leaders[Data.LEAGUE_FROM - 1] && leaders[Data.LEAGUE_FROM - 1].leader);
+        const now = open && !cleared && nextLeader && nextLeader.index >= Data.LEAGUE_FROM;
+        // (la ficha de al lado, la de quien toca, con el desafío de la Liga)
+        if (now) b.showInfo = () => { all.forEach(x => x.classList.remove('sel')); b.classList.add('sel'); this.nodeInfo(info, nextLeader, true, false); };
+        chapter(routes, now ? withGo(b, nextLeader.id) : b, cleared ? 'done' : open ? 'now' : 'locked', leaders[Data.LEAGUE_FROM - 1] && leaders[Data.LEAGUE_FROM - 1].leader);
         continue;
       }
       chapter(routes, leader(L), L.index < prog ? 'done' : L === nextLeader ? 'now' : 'locked', L.index > 0 && leaders[L.index - 1].leader);
@@ -106,7 +112,7 @@ export const storyPathViews = {
     const cur = all.find(b => b.classList.contains('now')) || all.find(b => b.classList.contains('new')) || all.find(b => !b.classList.contains('locked'));
     requestAnimationFrame(() => {
       if (!cur) return;
-      if (!cur.classList.contains('sp-league')) cur.click();
+      if (cur.showInfo) cur.showInfo(); else if (!cur.classList.contains('sp-league')) cur.click();
       const a = cur.getBoundingClientRect(), w = wrap.getBoundingClientRect();
       wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - w.width / 2 + a.width / 2), top: wrap.scrollHeight, behavior: 'instant' });
     });
