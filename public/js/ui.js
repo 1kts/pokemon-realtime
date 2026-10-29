@@ -217,6 +217,8 @@ export class UI {
     sign.style.setProperty('--fc', color);
     const right = el('div', 'tb-ctx');
     if (['shop', 'bag', 'team'].includes(this.view)) right.append(el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(this.profile.coins)));
+    // (en Lucky Spin, las gemas que tienes para tirar)
+    if (this.view === 'treasure') right.append(el('span', 'pill gems', `${icon('gem', 16)}${(this.profile.gems || 0).toLocaleString(locale())}`));
     this.coinBump = false;
     bar.append(left, sign, right);
     return bar;
@@ -1619,6 +1621,7 @@ export class UI {
     this.view = 'results';
     this.root.hidden = false;
     this.root.innerHTML = '';
+    this.root.scrollTop = 0;   // (desde arriba: si se había bajado en la pantalla de antes, el resultado quedaba fuera de la vista)
     const r = msg.reward || {};
     const won = msg.winner === msg.you, draw = msg.winner === -1;
     const box = el('div', 'panel results');

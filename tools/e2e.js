@@ -7,6 +7,8 @@
 //   node tools/e2e.js                       todos
 //   node tools/e2e.js tests/e2e/portada.e2e.js   uno
 // Chrome: variable CHROME, o google-chrome / chromium / el de Playwright si está en la caché.
+// Con E2E_BROWSER=webkit (el Safari del iPhone) o chromium-pw, el navegador lo abre Playwright (npm i --no-save
+// playwright; npx playwright install webkit): ver playwrightCall.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -29,8 +31,10 @@ function findChrome() {
   }
   return null;
 }
+// En una máquina lenta (E2E_TIMEOUT de más de 300 s) todas las esperas duran más en la misma proporción
+const PATIENCE = Math.max(1, (+process.env.E2E_TIMEOUT || 300) / 300);
 // Teclas con nombre para page.key: [key, código de tecla]
-const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], Space: [' ', 32], Tab: ['Tab', 9], Backspace: ['Backspace', 8],
+const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13, '\r'], Space: [' ', 32], Tab: ['Tab', 9], Backspace: ['Backspace', 8],
   ArrowLeft: ['ArrowLeft', 37], ArrowUp: ['ArrowUp', 38], ArrowRight: ['ArrowRight', 39], ArrowDown: ['ArrowDown', 40] };
 const freePort = () => new Promise(r => { const s = net.createServer().listen(0, () => { const p = s.address().port; s.close(() => r(p)); }); });
 
@@ -38,6 +42,61 @@ async function waitHttp(url, ms = 10000) {
   const t0 = Date.now();
   while (Date.now() - t0 < ms) { try { if ((await fetch(url)).ok) return; } catch {} await sleep(100); }
   throw new Error('El servidor no arranca: ' + url);
+}
+
+const gone = p => new Promise(r => { if (p.exitCode !== null || p.signalCode) return r(); p.once('exit', r); setTimeout(r, 5000).unref(); });
+
+// ---------- Otros navegadores (Playwright) ----------
+// E2E_BROWSER=webkit abre WebKit (el motor del Safari del iPhone) con Playwright, y `call` traduce las pocas órdenes
+// de CDP que usa el arnés (evaluar, navegar, ratón, teclado, dedo, tamaño, capturas) a las de Playwright: así las
+// pruebas son las mismas. Diferencias: sin E2E_SLOW, y el dedo puesto (fingerDown) son eventos de puntero y de toque
+// de la página (Playwright solo tiene toques enteros); un toque corto (press) sí es un toque de verdad
+async function playwrightCall(kind, problems, requests) {
+  let pw;
+  try { pw = require('playwright'); } catch { throw new Error('E2E_BROWSER necesita Playwright: npm i --no-save playwright && npx playwright install webkit'); }
+  const type = { webkit: pw.webkit, firefox: pw.firefox, 'chromium-pw': pw.chromium }[kind];
+  if (!type) throw new Error('E2E_BROWSER: webkit, firefox o chromium-pw');
+  const browser = await type.launch(kind === 'chromium-pw' && process.env.CHROME ? { executablePath: process.env.CHROME } : {});
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 }, hasTouch: true });
+  const p = await ctx.newPage();
+  p.on('pageerror', e => problems.push('JS: ' + String(e.message).split('\n')[0]));
+  p.on('console', m => { if (/Content Security Policy|Refused to/.test(m.text())) problems.push('CSP: ' + m.text()); });
+  p.on('request', r => requests.push(r.url()));
+  let finger = null;
+  // (el dedo como eventos de la página, en el elemento que hay en ese punto)
+  const touch = (type, x, y) => p.evaluate(([type, x, y]) => {
+    const e = document.elementFromPoint(x, y) || document.body, o = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 11, pointerType: 'touch', isPrimary: true };
+    const kind = { start: ['pointerdown', 'touchstart'], move: ['pointermove', 'touchmove'], end: ['pointerup', 'touchend'] }[type];
+    e.dispatchEvent(new PointerEvent(kind[0], o));
+    try { const t = new Touch({ identifier: 11, target: e, clientX: x, clientY: y }); e.dispatchEvent(new TouchEvent(kind[1], { bubbles: true, cancelable: true, touches: type === 'end' ? [] : [t], changedTouches: [t] })); } catch {}
+  }, [type, x, y]);
+  const H = {
+    'Runtime.evaluate': async ({ expression }) => {
+      try { return { result: { value: await p.evaluate(expression) } }; } catch (e) { return { exceptionDetails: { text: String(e.message).replace(/^page\.evaluate: /, '') } }; }
+    },
+    'Page.navigate': async ({ url }) => { await p.goto(url, { waitUntil: 'commit' }); },
+    'Page.reload': async () => { await p.reload({ waitUntil: 'commit' }); },
+    'Page.addScriptToEvaluateOnNewDocument': async ({ source }) => { await ctx.addInitScript(source); },
+    'Page.captureScreenshot': async () => ({ data: (await p.screenshot()).toString('base64') }),
+    'Input.dispatchMouseEvent': async ({ type, x, y, button = 'left' }) => {
+      await p.mouse.move(x, y);
+      if (type === 'mousePressed') await p.mouse.down({ button }); else if (type === 'mouseReleased') await p.mouse.up({ button });
+    },
+    'Input.insertText': async ({ text }) => { await p.keyboard.insertText(text); },
+    'Input.dispatchKeyEvent': async ({ type, code }) => { await (type === 'keyUp' ? p.keyboard.up(code) : p.keyboard.down(code)); },
+    // (un toque corto, de menos de 300 ms, es un toque de verdad; uno largo, el dedo puesto con eventos de la página)
+    'Input.dispatchTouchEvent': async ({ type, touchPoints }) => {
+      if (type === 'touchStart') { finger = touchPoints[0]; setTimeout(() => { if (finger && finger.long === undefined) { finger.long = true; touch('start', finger.x, finger.y).catch(() => {}); } }, 300); return; }
+      if (!finger) return;
+      if (type === 'touchMove') { if (!finger.long) { finger.long = true; await touch('start', finger.x, finger.y); } const p = touchPoints[0]; finger.x = p.x; finger.y = p.y; return touch('move', p.x, p.y); }
+      const f = finger; finger = null;
+      if (f.long) await touch('end', f.x, f.y); else { f.long = false; await p.touchscreen.tap(f.x, f.y); }
+    },
+    'Emulation.setDeviceMetricsOverride': async ({ width, height }) => { await p.setViewportSize({ width, height }); },
+    'Emulation.clearDeviceMetricsOverride': async () => { await p.setViewportSize({ width: 1280, height: 860 }); },
+  };
+  const call = async (method, params = {}) => (H[method] ? (await H[method](params)) || {} : {});
+  return { call, close: () => browser.close().catch(() => {}) };
 }
 
 // ---------- Servidor y navegador de una prueba ----------
@@ -50,26 +109,32 @@ async function setup(name, extraEnv = {}) {
   server.stderr.on('data', d => { serverErr += d; });
   const base = `http://127.0.0.1:${port}`;
   await waitHttp(base + '/healthz');
-  const chromePath = findChrome();
-  if (!chromePath) throw new Error('No encuentro Chrome/Chromium: instala uno o pon su ruta en CHROME');
-  const chrome = spawn(chromePath, ['--headless=new', '--no-sandbox', '--disable-gpu', '--enable-unsafe-swiftshader', '--use-angle=swiftshader',
-    `--remote-debugging-port=${dbg}`, `--user-data-dir=${path.join(tmp, 'chrome')}`, '--window-size=1280,860',
-    '--autoplay-policy=no-user-gesture-required', '--mute-audio', 'about:blank'], { stdio: 'ignore' });
-  let target;
-  for (let i = 0; i < 100 && !target; i++) { try { target = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find(x => x.type === 'page'); } catch {} if (!target) await sleep(100); }
-  if (!target) throw new Error('Chrome no abre la página de depuración');
-  const cdp = new WebSocket(target.webSocketDebuggerUrl);
-  await new Promise((r, j) => { cdp.on('open', r); cdp.on('error', j); });
-  let id = 0;
-  const pending = new Map(), problems = [], requests = [];
-  cdp.on('message', raw => {
-    const m = JSON.parse(raw);
-    if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.reject(new Error(m.error.message)) : p.resolve(m.result); }
-    if (m.method === 'Runtime.exceptionThrown') problems.push('JS: ' + (m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text).split('\n')[0]);
-    if (m.method === 'Log.entryAdded' && /Content Security Policy|Refused to/.test(m.params.entry.text)) problems.push('CSP: ' + m.params.entry.text);
-    if (m.method === 'Network.requestWillBeSent') requests.push(m.params.request.url);
-  });
-  const call = (method, params = {}) => new Promise((resolve, reject) => { const i = ++id; pending.set(i, { resolve, reject }); cdp.send(JSON.stringify({ id: i, method, params })); });
+  const problems = [], requests = [];
+  let call, closeBrowser;
+  if (process.env.E2E_BROWSER) ({ call, close: closeBrowser } = await playwrightCall(process.env.E2E_BROWSER, problems, requests));
+  else {
+    const chromePath = findChrome();
+    if (!chromePath) throw new Error('No encuentro Chrome/Chromium: instala uno o pon su ruta en CHROME');
+    const chrome = spawn(chromePath, ['--headless=new', '--no-sandbox', '--disable-gpu', '--enable-unsafe-swiftshader', '--use-angle=swiftshader',
+      `--remote-debugging-port=${dbg}`, `--user-data-dir=${path.join(tmp, 'chrome')}`, '--window-size=1280,860',
+      '--autoplay-policy=no-user-gesture-required', '--mute-audio', 'about:blank'], { stdio: 'ignore' });
+    let target;
+    for (let i = 0; i < 100 && !target; i++) { try { target = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find(x => x.type === 'page'); } catch {} if (!target) await sleep(100); }
+    if (!target) throw new Error('Chrome no abre la página de depuración');
+    const cdp = new WebSocket(target.webSocketDebuggerUrl);
+    await new Promise((r, j) => { cdp.on('open', r); cdp.on('error', j); });
+    let id = 0;
+    const pending = new Map();
+    cdp.on('message', raw => {
+      const m = JSON.parse(raw);
+      if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.reject(new Error(m.error.message)) : p.resolve(m.result); }
+      if (m.method === 'Runtime.exceptionThrown') problems.push('JS: ' + (m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text).split('\n')[0]);
+      if (m.method === 'Log.entryAdded' && /Content Security Policy|Refused to/.test(m.params.entry.text)) problems.push('CSP: ' + m.params.entry.text);
+      if (m.method === 'Network.requestWillBeSent') requests.push(m.params.request.url);
+    });
+    call = (method, params = {}) => new Promise((resolve, reject) => { const i = ++id; pending.set(i, { resolve, reject }); cdp.send(JSON.stringify({ id: i, method, params })); });
+    closeBrowser = async () => { try { cdp.close(); } catch {} chrome.kill('SIGKILL'); await gone(chrome); };
+  }
   await call('Runtime.enable'); await call('Log.enable'); await call('Page.enable'); await call('Network.enable');
   // E2E_SLOW=4: el navegador va 4 veces más lento, para reproducir aquí lo que solo falla en el CI (máquinas lentas)
   if (+process.env.E2E_SLOW > 1) await call('Emulation.setCPUThrottlingRate', { rate: +process.env.E2E_SLOW });
@@ -88,7 +153,8 @@ async function setup(name, extraEnv = {}) {
       for (let a = e; a && a.nodeType === 1; a = a.parentElement) {
         const cs = getComputedStyle(a);
         if (cs.visibility === 'hidden' || cs.display === 'none') return 'está oculto';
-        if (+cs.opacity < 0.1) return 'es transparente';
+        // (salvo a media animación de entrada: con la máquina cargada, el navegador puede tardar en acabarla)
+        if (+cs.opacity < 0.1 && !a.getAnimations().some(x => x.playState === 'running' && x.effect && x.effect.getTiming().iterations !== Infinity)) return 'es transparente';
       }
       let L = Math.max(0, r.left), T = Math.max(0, r.top), R = Math.min(innerWidth, r.right), B = Math.min(innerHeight, r.bottom);
       for (let a = e.parentElement; a && a !== document.documentElement; a = a.parentElement) {
@@ -96,12 +162,21 @@ async function setup(name, extraEnv = {}) {
         if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') { const q = a.getBoundingClientRect(); L = Math.max(L, q.left); T = Math.max(T, q.top); R = Math.min(R, q.right); B = Math.min(B, q.bottom); }
       }
       if (R - L < 2 || B - T < 2) return 'está fuera de la ventana (hay que desplazar para verlo)';
-      const top = document.elementFromPoint((L + R) / 2, (T + B) / 2);
-      if (!top || !(top === e || e.contains(top) || top.contains(e) || (e.htmlFor && top.id === e.htmlFor))) return 'está tapado por ' + tag(top);
+      const hit = () => document.elementFromPoint((L + R) / 2, (T + B) / 2);
+      const mine = n => !!n && (n === e || e.contains(n) || n.contains(e) || (e.htmlFor && n.id === e.htmlFor));
+      let top = hit();
+      // (lo que no recibe el ratón, como el marcador del combate, el punto lo atraviesa: se mira con él recibiéndolo)
+      if (!mine(top)) {
+        const off = []; for (let a = e; a && a.nodeType === 1; a = a.parentElement) if (getComputedStyle(a).pointerEvents === 'none') { off.push([a, a.style.pointerEvents]); a.style.pointerEvents = 'auto'; }
+        if (off.length) { top = hit(); off.forEach(([a, v]) => { a.style.pointerEvents = v; }); }
+      }
+      if (!mine(top)) return 'está tapado por ' + tag(top);
       return null;
     };
-    const crudo = e => String(e.getAttribute('aria-label') || (e.matches('input') ? e.value : e.innerText) || e.title || e.dataset.tip || [...e.querySelectorAll('img[alt]')].map(i => i.alt).join(' ')).replace(/\\s+/g, ' ').trim();
-    const nombre = e => norm(crudo(e));
+    // (lo que lee el jugador de un botón: su texto, y su aria-label, tooltip o el alt de su imagen: vale cualquiera)
+    const crudos = e => [e.getAttribute('aria-label'), e.matches('input') ? e.value : e.innerText, e.title, e.dataset.tip, ...[...e.querySelectorAll('img[alt]')].map(i => i.alt)]
+      .filter(Boolean).map(x => String(x).replace(/\\s+/g, ' ').trim()).filter(Boolean);
+    const nombre = e => crudos(e).map(norm).join(' | ');
     const sitio = s => { if (!s.startsWith('dentro:')) return document.querySelector(s); const w = JSON.parse(s.slice(7));
       const l = [...document.querySelectorAll(w.sel)].filter(e => norm(e.innerText).includes(norm(w.text)));
       const inner = l.filter(e => !l.some(o => o !== e && e.contains(o))); return inner.length === 1 ? inner[0] : null; };`;
@@ -132,6 +207,7 @@ async function setup(name, extraEnv = {}) {
     // Espera a que una expresión sea verdadera (15 s por defecto: con varias pruebas a la vez el CI va lento)
     async waitFor(expr, ms = 15000) {
       const t0 = Date.now();
+      ms *= PATIENCE;
       while (Date.now() - t0 < ms) { try { if (await page.eval(`!!(${expr})`)) return; } catch {} await sleep(100); }
       throw new Error(`Tiempo agotado esperando: ${expr}`);
     },
@@ -140,13 +216,24 @@ async function setup(name, extraEnv = {}) {
     // hasta 3 s: animaciones, ventanas que se abren) y hace un clic de ratón de verdad en su centro. Si algo lo
     // tapa, falla diciendo qué: así se ven los avisos o barras que tapan botones
     async click(textOrSel) {
+      const r = await page.locate(textOrSel);
+      for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
+      await sleep(150);
+    },
+    // Dónde pulsar un elemento (su centro) cuando ya se puede: a la vista (lo pone con scrollIntoView: `block`), activo,
+    // quieto y sin nada encima; si no, falla diciendo por qué. Lo usan click y el dedo
+    async locate(textOrSel, block = 'center') {
       const where = `(() => { const s = ${JSON.stringify(textOrSel)};
         const shown = x => x.getClientRects().length > 0 && getComputedStyle(x).visibility !== 'hidden';
         let e = null;
-        try { e = document.querySelector(s); } catch { /* no es un selector: se busca por texto */ }
+        // (lo que da page.within: el sitio que dice un texto)
+        if (s.startsWith('dentro:')) { const w = JSON.parse(s.slice(7)), n = t => String(t || '').replace(/\\s+/g, ' ').trim().toLowerCase();
+          const l = [...document.querySelectorAll(w.sel)].filter(x => n(x.innerText).includes(n(w.text))); const inner = l.filter(x => !l.some(o => o !== x && x.contains(o)));
+          if (inner.length !== 1) return { err: inner.length ? 'hay ' + inner.length : 'no está' }; e = inner[0]; }
+        else try { e = document.querySelector(s); } catch { /* no es un selector: se busca por texto */ }
         if (!e) e = [...document.querySelectorAll('button, a, summary, [role=button]')].find(x => shown(x) && x.textContent.trim().toLowerCase().includes(s.toLowerCase()));
         if (!e) return { err: 'no está' };
-        e.scrollIntoView({ block: 'center', inline: 'center' });
+        e.scrollIntoView({ block: ${JSON.stringify(block)}, inline: ${JSON.stringify(block)} });
         const b = e.getBoundingClientRect();
         if (!b.width || !b.height || !shown(e)) return { err: 'no se ve' };
         const x = Math.min(innerWidth - 1, Math.max(0, b.x + b.width / 2)), y = Math.min(innerHeight - 1, Math.max(0, b.y + b.height / 2));
@@ -163,14 +250,14 @@ async function setup(name, extraEnv = {}) {
       const t0 = Date.now();
       await page.eval('window.__e2eAnimOk = false; true');
       let r = await page.eval(where), prev = null;
-      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && Date.now() - t0 < 4000) {
+      // (en una máquina más lenta, con E2E_TIMEOUT de más, también se espera más)
+      while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && Date.now() - t0 < 4000 * PATIENCE) {
         prev = r.err ? null : r; await sleep(80);
         if (Date.now() - t0 > 1200) await page.eval('window.__e2eAnimOk = true; true');
         r = await page.eval(where);
       }
       if (r.err) throw new Error(`No se puede pulsar «${textOrSel}»: ${r.err}`);
-      for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x: r.x, y: r.y, button: 'left', clickCount: 1 });
-      await sleep(150);
+      return r;
     },
     // (antes era un clic de mentira y este el de verdad; ahora los dos son de verdad)
     async realClick(sel) { await page.click(sel); },
@@ -181,6 +268,7 @@ async function setup(name, extraEnv = {}) {
     async see(text, { in: scope, ms = 5000, scroll = false } = {}) {
       const pat = text instanceof RegExp ? { re: text.source, fl: text.flags } : { s: String(text) };
       const t0 = Date.now();
+      ms *= PATIENCE;
       let last = { err: 'no está' };
       for (;;) {
         if (scroll) await page.eval(`(() => { ${LOOK} const P = ${JSON.stringify(pat)}; const match = s => P.re ? new RegExp(P.re, P.fl).test(String(s || '')) : norm(s).includes(norm(P.s));
@@ -219,9 +307,10 @@ async function setup(name, extraEnv = {}) {
     // el jugador (su texto, o su aria-label o tooltip), primero igual y si no, que lo contenga, y hace un clic de
     // verdad con page.click (que falla si está tapado). Si hay varios que se ven y dicen lo mismo, falla: di cuál con
     // { in: selector } (dentro de qué) o { nth: i }. Con un RegExp, los que lo cumplen
-    async tap(name, { in: scope, nth, ms = 5000 } = {}) {
+    async tap(name, { in: scope, nth, ms = 10000 } = {}) {
       const pat = name instanceof RegExp ? { re: name.source, fl: name.flags } : { s: String(name) };
       const t0 = Date.now();
+      ms *= PATIENCE;
       let r;
       for (;;) {
         r = await page.eval(`(() => { ${LOOK}
@@ -230,10 +319,12 @@ async function setup(name, extraEnv = {}) {
           const CLICKABLE = 'button, a[href], summary, label, select, input[type=button], input[type=submit], input[type=checkbox], input[type=radio], [role=button], [role=tab], [role=link], [role=menuitem], [role=option], [role=switch], [tabindex]';
           const all = [...root.querySelectorAll('*')].filter(e => e.matches(CLICKABLE) || typeof e.onclick === 'function' || typeof e.onpointerdown === 'function');
           const shown = all.filter(e => !visto(e) || /fuera de la ventana/.test(visto(e)));
-          const fits = e => P.re ? new RegExp(P.re, P.fl).test(crudo(e)) : nombre(e).includes(norm(P.s));
-          const pick = P.re ? [shown.filter(fits)] : [shown.filter(e => nombre(e) === norm(P.s)), shown.filter(e => nombre(e).startsWith(norm(P.s))), shown.filter(e => nombre(e).includes(norm(P.s)))];
-          // (si uno está dentro de otro que también vale, p. ej. un <b> pulsable dentro del botón, cuenta el de fuera)
-          const level = pick.map(l => l.filter(e => !l.some(o => o !== e && o.contains(e)))).find(l => l.length) || [];
+          const q = norm(P.s), ns = e => crudos(e).map(norm);
+          const fits = e => P.re ? crudos(e).some(x => new RegExp(P.re, P.fl).test(x)) : ns(e).some(x => x.includes(q));
+          const pick = P.re ? [shown.filter(fits)] : [shown.filter(e => ns(e).some(x => x === q)), shown.filter(e => ns(e).some(x => x.startsWith(q))), shown.filter(fits)];
+          // (si uno está dentro de otro que también vale, cuenta el de dentro: el de fuera suele ser una tarjeta o el
+          // fondo de una ventana, pulsables y con todo el texto dentro)
+          const level = pick.map(l => l.filter(e => !l.some(o => o !== e && e.contains(o)))).find(l => l.length) || [];
           const nth = ${nth === undefined ? 'null' : +nth};
           if (!level.length) { const hidden = all.filter(fits).map(e => tag(e) + ' ' + visto(e)); return { err: hidden.length ? 'no se ve: ' + hidden.slice(0, 2).join('; ') : 'no hay ningún botón que lo diga' }; }
           if (level.length > 1 && nth === null) return { err: 'hay ' + level.length + ' que lo dicen (' + level.slice(0, 3).map(tag).join(', ') + '): di cuál con { in: selector } o { nth }' };
@@ -252,7 +343,12 @@ async function setup(name, extraEnv = {}) {
     // Qué pantalla ve el jugador: el título de la ventana que haya abierta encima (su primer encabezado visible) o,
     // si no hay ninguna, el de la pantalla (el letrero de su barra de arriba: «Tienda», «Mis Pokémon»…; en el menú
     // y en la portada, el logo; en los resultados, «¡Victoria!» o «Derrota»). En combate, sin pantalla delante, ''
-    async title() {
+    async title({ ms = 3000 } = {}) {
+      // (espera un poco a que salga: la pantalla o la ventana pueden estar entrando)
+      const t0 = Date.now();
+      for (;;) { const t = await page.titleNow(); if (t || Date.now() - t0 > ms * PATIENCE) return t; await sleep(150); }
+    },
+    async titleNow() {
       return page.eval(`(() => { ${LOOK}
         const seen = e => !visto(e) || /fuera de la ventana/.test(visto(e));
         const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .mon-sheet-back, body > .ui-confirm')].filter(seen);
@@ -277,19 +373,20 @@ async function setup(name, extraEnv = {}) {
     // levanta; press es un toque de `ms` milisegundos (corto, o una pulsación larga)
     async fingerDown(sel) {
       // (solo se desplaza si no está a la vista, como haría el jugador: desplazar justo antes del toque dispara un
-      // scroll que esconde lo que el toque acaba de abrir, y tapaba fallos como un tooltip que se queda pegado)
-      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        const b = e.getBoundingClientRect(); return { x: b.left + Math.min(8, b.width / 2), y: b.top + Math.min(8, b.height / 2) }; })()`);
-      if (!r) throw new Error('No encuentro qué tocar: ' + sel);
+      // scroll que esconde lo que el toque acaba de abrir, y tapaba fallos como un tooltip que se queda pegado; y como
+      // el clic, falla si no se ve o algo lo tapa: un toque que no llega a su sitio no prueba nada)
+      const r = await page.locate(sel, 'nearest');
       await call('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: r.x, y: r.y }] });
     },
     // Una tecla de verdad (del teclado del navegador, no un evento inventado): `code` como en KeyboardEvent.code
-    // ('Escape', 'KeyD', 'Digit2', 'Space'…), pulsada `ms` milisegundos
+    // ('Escape', 'KeyD', 'Digit2', 'Space', 'Enter'…), pulsada `ms` milisegundos
     async key(code, ms = 60) {
       const k = KEYS[code] || (/^Key([A-Z])$/.test(code) ? [code.slice(3).toLowerCase(), code.charCodeAt(3)] : /^Digit(\d)$/.test(code) ? [code.slice(5), 48 + +code.slice(5)] : null);
       if (!k) throw new Error('Tecla desconocida: ' + code);
       const base = { code, key: k[0], windowsVirtualKeyCode: k[1], nativeVirtualKeyCode: k[1] };
-      await call('Input.dispatchKeyEvent', { type: k[0].length === 1 ? 'keyDown' : 'rawKeyDown', ...base, ...(k[0].length === 1 ? { text: k[0] } : {}) });
+      // (con texto, como una letra o Intro, «keyDown» lleva su carácter: así Intro envía el formulario)
+      const text = k[2] || (k[0].length === 1 ? k[0] : '');
+      await call('Input.dispatchKeyEvent', { type: text ? 'keyDown' : 'rawKeyDown', ...base, ...(text ? { text, unmodifiedText: text } : {}) });
       await sleep(ms);
       await call('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
     },
@@ -299,6 +396,9 @@ async function setup(name, extraEnv = {}) {
       await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       if (click) for (const type of ['mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x, y, button, clickCount: 1 });
     },
+    // El dedo en un punto de la pantalla (fingerAt) y arrastrándolo (fingerMove): el joystick, apuntar un movimiento
+    async fingerAt(x, y) { await call('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] }); },
+    async fingerMove(x, y) { await call('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y }] }); await sleep(50); },
     async fingerUp() { await call('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(80); },
     async press(sel, ms = 60) { await page.fingerDown(sel); await sleep(ms); await page.fingerUp(); },
     // Mueve un deslizador (input range) como con el dedo: pulsa en el punto de su barra que da ese valor
@@ -362,11 +462,9 @@ async function setup(name, extraEnv = {}) {
 
   // Limpiar nunca hace fallar una prueba: se espera a que Chrome y el servidor terminen de verdad (si no,
   // Chrome puede seguir escribiendo en su carpeta mientras se borra) y el borrado se reintenta
-  const gone = p => new Promise(r => { if (p.exitCode !== null || p.signalCode) return r(); p.once('exit', r); setTimeout(r, 5000).unref(); });
   const teardown = async () => {
-    try { cdp.close(); } catch {}
-    chrome.kill('SIGKILL'); server.kill('SIGKILL');
-    await Promise.all([gone(chrome), gone(server)]);
+    server.kill('SIGKILL');
+    await Promise.all([closeBrowser(), gone(server)]);
     try { fs.rmSync(tmp, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch (e) { console.log(`    (no se pudo borrar ${tmp}: ${e.code})`); }
   };
   return { page, client, player, env, tmp, teardown, serverErr: () => serverErr };

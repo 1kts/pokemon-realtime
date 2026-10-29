@@ -18,9 +18,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`[...document.querySelectorAll('.fr-hits .fr-card')].some(c => c.textContent.includes('${beto.profile.name}'))`);
   ok(true, 'al escribir parte del nombre salen los entrenadores que coinciden');
   if (process.env.SHOT) await page.shot(process.env.SHOT);
-  await page.eval(`[...document.querySelectorAll('.fr-hits .fr-card')].find(c => c.textContent.includes('${beto.profile.name}')).querySelector('button.primary').click(); true`);
-  await page.waitFor(`document.querySelector('.fr-sec.out .fr-card')`);
-  ok(true, '«Añadir» en el resultado envía la solicitud y sale en «Solicitudes enviadas»');
+  await page.tap('Añadir', { in: await page.within(beto.profile.name, '.fr-hits .fr-card') });
+  await page.waitSee(beto.profile.name, { in: '.fr-sec.out', scroll: true });
+  ok(true, '«Añadir» en el resultado envía la solicitud y Beto sale en «Solicitudes enviadas»');
   const req = await beto.client.wait(m => m.t === 'friendreq');
   ok(req.name === ana.profile.name, 'a Beto le llega el aviso al momento');
   beto.client.send({ t: 'friend', a: 'accept', id: ana.id });

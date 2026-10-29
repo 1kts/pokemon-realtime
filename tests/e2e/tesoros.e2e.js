@@ -19,15 +19,18 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.tz-card.r-mitico.sel')`);
   ok(await page.eval(`/Mítico/.test(document.querySelector('.tz-info').textContent) && /%/.test(document.querySelector('.tz-info').textContent)`), 'un premio enseña su rareza y su probabilidad');
   // Tiradas hasta que salga un retrato (o 6 como mucho)
+  // (lo que se ve: las gemas de la cabecera y el precio de la tirada)
+  const num = async sel => +(await page.read(sel)).replace(/\D/g, '');
   for (let i = 0; i < 6; i++) {
-    const gems = await page.eval(`window.__app.ui.profile.gems`);
-    const cost = await page.eval(`Data.SPIN_COST[(window.__app.ui.profile.treasure.got[window.__app.ui.tzSel] || []).length]`);
-    await page.eval(`document.querySelector('.tz-go').click(); true`);
+    const gems = await num('.inner-bar .pill.gems'), cost = await num('.tz-price b');
+    if (i === 0) ok(gems === 150 && cost > 0, `arriba salen tus gemas (${gems}) y la tirada dice lo que cuesta (${cost})`);
+    await page.tap('¡Tirar!');
     await page.waitFor(`document.querySelector('.loot-pop')`, 15000);
-    await page.waitFor(`window.__app.ui.profile.gems === ${gems - cost}`);
-    if (i === 0) ok(await page.eval(`/Premio/.test(document.querySelector('.loot-pop h2').textContent)`), 'la tirada enciende las cartas por turnos y sale el premio con su rareza');
-    await page.eval(`document.querySelector('.loot-pop .acts .primary').click(); true`);
+    if (i === 0) ok(await page.see(/Premio/, { in: '.loot-pop' }), 'la tirada enciende las cartas por turnos y sale el premio con su rareza');
+    await page.click('.loot-pop .acts .primary');
     await page.waitFor(`!document.querySelector('.loot-pop')`);
+    const left = await num('.inner-bar .pill.gems');
+    ok(left === gems - cost, `la tirada ${i + 1} cuesta lo que decía: ${gems} − ${cost} = ${left}`);
     if (await page.eval(`(window.__app.ui.profile.cosmetics.avatars || []).some(a => a.startsWith('pt:'))`)) break;
   }
   const n = await page.eval(`window.__app.ui.profile.treasure.got[window.__app.ui.tzSel].length`);

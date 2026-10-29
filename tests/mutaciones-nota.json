@@ -1,19 +1,8 @@
 {
  "fecha": "2026-10-29",
- "cazadas": 28,
- "total": 38,
- "escapadas": [
-  "resultados-sin-medalla",
-  "tienda-compra-otro",
-  "tienda-precio-mentiroso",
-  "resultados-dinero-doble",
-  "tutorial-premio-repetido",
-  "tesoros-precio-mentiroso",
-  "tooltip-pegado-al-tocar",
-  "amigos-enviada-sin-nombre",
-  "idioma-ignorado",
-  "traduccion-sin-traducir"
- ],
+ "cazadas": 41,
+ "total": 41,
+ "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
    "resultado": "cazada",
@@ -30,7 +19,11 @@
    "motivo": "server-test.js: ✗ vencer a Pegaso da la Medalla Céfiro y premios | ✗ la Ruta 32 saca un Pokémon de sus encuentros reales"
   },
   "resultados-sin-medalla": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/victoria.e2e.js"
+   ],
+   "motivo": "victoria.e2e.js: ✗ dicen que has vencido a Brock y que la Medalla Roca es tuya"
   },
   "captura-no-se-guarda": {
    "resultado": "cazada",
@@ -54,10 +47,18 @@
    "motivo": "server-test.js: ✗ comprar 3 Poké Balls | ✗ perder no da dinero"
   },
   "tienda-compra-otro": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/tienda.e2e.js"
+   ],
+   "motivo": "tienda.e2e.js: ✗ error: no se ve «Tienes: 1»: no está en la página"
   },
   "tienda-precio-mentiroso": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/tienda.e2e.js"
+   ],
+   "motivo": "tienda.e2e.js: ✗ y cuesta lo que pone: 500 − 175 = 150"
   },
   "vender-paga-mal": {
    "resultado": "cazada",
@@ -67,7 +68,11 @@
    "motivo": "server-test.js: ✗ vender un Pokémon da 102 ₽ y lo quita"
   },
   "resultados-dinero-doble": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/victoria.e2e.js"
+   ],
+   "motivo": "victoria.e2e.js: ✗ en el menú el dinero sube lo que decían: 500 + 1200 = 1100"
   },
   "diario-sin-premio": {
    "resultado": "cazada",
@@ -77,7 +82,11 @@
    "motivo": "diario.e2e.js: ✗ da el dinero y las Poké Balls del día 1"
   },
   "tutorial-premio-repetido": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ el premio del tutorial (500) se recoge una sola vez: la segunda da error y no paga"
   },
   "tesoros-gratis": {
    "resultado": "cazada",
@@ -87,7 +96,11 @@
    "motivo": "tesoros.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.profile.gems === 140"
   },
   "tesoros-precio-mentiroso": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/tesoros.e2e.js"
+   ],
+   "motivo": "tesoros.e2e.js: ✗ arriba salen tus gemas (150) y la tirada dice lo que cuesta (0) | ✗ la tirada 1 cuesta lo que decía: 150 − 0 = 140"
   },
   "misiones-cambio-gratis-infinito": {
    "resultado": "cazada",
@@ -147,7 +160,11 @@
    "motivo": "movil.e2e.js: ✗ desde el menú, en vertical pide girar el móvil | ✗ en vertical pide girar el móvil"
   },
   "tooltip-pegado-al-tocar": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil-menus.e2e.js"
+   ],
+   "motivo": "movil-menus.e2e.js: ✗ con el dedo, tocar no saca el tooltip al momento (solo al mantenerlo)"
   },
   "barra-legal-tapa": {
    "resultado": "cazada",
@@ -193,7 +210,11 @@
    "motivo": "pokedex.e2e.js: ✗ la Pokédex dice 1 / 251"
   },
   "amigos-enviada-sin-nombre": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/amigos.e2e.js"
+   ],
+   "motivo": "amigos.e2e.js: ✗ error: no se ve «betoamigo»: no está en la página"
   },
   "musica-volumen-se-olvida": {
    "resultado": "cazada",
@@ -210,10 +231,18 @@
    "motivo": "barra-legal.e2e.js: ✗ avisa de que no está afiliado a Nintendo, Creatures ni GAME FREAK"
   },
   "idioma-ignorado": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/idioma.e2e.js"
+   ],
+   "motivo": "idioma.e2e.js: ✗ error: no se ve «Language»: no está en la página"
   },
   "traduccion-sin-traducir": {
-   "resultado": "escapada"
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/idioma.e2e.js"
+   ],
+   "motivo": "idioma.e2e.js: ✗ el menú sale en inglés: «Story», «My Pokémon» y la cuenta de Pokémon | ✗ sin textos en español"
   },
   "traduccion-hueco-roto": {
    "resultado": "cazada",
@@ -244,6 +273,27 @@
     "tools/security-test.js"
    ],
    "motivo": "security-test.js: ✗ la CSP permite el importmap de la página por su hash | TypeError: Cannot read properties of undefined (reading 'split')"
+  },
+  "movil-rendirse-se-cierra": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil.e2e.js"
+   ],
+   "motivo": "movil.e2e.js: ✗ error: no se ve «¿Rendirte?»: no está el sitio donde buscar: .ui-confirm-box"
+  },
+  "resultados-se-ven-a-medias": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/victoria.e2e.js"
+   ],
+   "motivo": "victoria.e2e.js: ✗ al vencer a Brock salen los resultados con «¡Victoria!»"
+  },
+  "lucky-spin-sin-gemas": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/tesoros.e2e.js"
+   ],
+   "motivo": "tesoros.e2e.js: ✗ arriba salen tus gemas (0) y la tirada dice lo que cuesta (10) | ✗ la tirada 1 cuesta lo que decía: 0 − 10 = 0 | ✗ la tirada 2 cuesta lo que decía: 0 − 14 = 0"
   }
  }
 }
