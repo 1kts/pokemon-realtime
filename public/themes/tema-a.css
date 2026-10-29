@@ -177,4 +177,11 @@ body.tema-a .story-tools .coll-tile { background: var(--ta-paper-2); }
   body.tema-a .menu-card, body.tema-a .menu-card:hover:not(:disabled) { padding: 11px 8px 8px; box-shadow: inset 0 0 0 2px var(--ta-paper), inset 0 6px 0 var(--c), inset 0 0 0 4px var(--ta-band), 0 3px 0 var(--ta-shade); }
   body.tema-a .story-pathwrap { border-width: 2px; box-shadow: inset 0 0 0 2px var(--ta-field), inset 0 0 0 4px var(--ta-line), 0 3px 0 var(--ta-shade); }
   body.tema-a .sp-route .sp-count { box-shadow: 0 0 0 2px var(--ta-field); }
+  body.tema-a .sp-gym.now .sp-name { border-width: 1px; padding: 0 8px; box-shadow: none; }   /* (si no, la barra de desplazamiento tapaba el nombre) */
 }
+
+/* El eje recorrido, del color de la banda (no dorado: el dorado es solo lo que toca) */
+body.tema-a .sp-start::before { background: #a9c4ee; box-shadow: 0 0 0 4px var(--ta-field); }
+body.tema-a .sp-start::after, body.tema-a .sp-ch.done .sp-spine::before { background: #a9c4ee; }
+body.tema-a .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, #a9c4ee 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
+body.tema-a .sp-k.done { background: #a9c4ee; box-shadow: 0 0 0 2px var(--ta-field), 0 0 0 4px #a9c4ee; }

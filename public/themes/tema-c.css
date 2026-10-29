@@ -33,11 +33,11 @@ body.tema-c button.primary:hover:not(:disabled) { background: #ffd83d; box-shado
 body.tema-c :focus-visible { outline: 2px solid #fff !important; outline-offset: 3px; }
 
 /* ---------- Cabecera: casi invisible ---------- */
-body.tema-c .hub-mod { background: rgba(8,10,20,.6); }
+body.tema-c .hub-mod { background: rgba(8,10,20,.75); }
 body.tema-c .hub-mod .tb-btn, body.tema-c .hub-me .pill.coins, body.tema-c .hub-me .pill.gems, body.tema-c .hub-mod .lang-cur, body.tema-c .inner-bar .tb-left .back {
   background: none; border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .hub-mod .tb-btn:hover:not(:disabled), body.tema-c .inner-bar .tb-left .back:hover { background: var(--tc-row); box-shadow: none; }
-body.tema-c .hub-left .hub-tz { border: 0; box-shadow: none; background: rgba(8,10,20,.6); }
+body.tema-c .hub-left .hub-tz { border: 0; box-shadow: none; background: rgba(8,10,20,.75); }
 body.tema-c .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--tc-text); filter: none; }
 body.tema-c .hub-tz small { color: var(--tc-mute) !important; }
 body.tema-c .hub-sep { background: var(--tc-hair); }
@@ -95,7 +95,7 @@ body.tema-c .m-bar span { color: var(--tc-text); text-shadow: 0 1px 2px #000; mi
 body.tema-c .feature-sign { background: none; padding-left: 4px; }
 body.tema-c .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 2px 14px rgba(0,0,0,.7); }
 body.tema-c .feature-sign small { font: 700 14px var(--text); color: var(--tc-mute); text-shadow: 0 1px 6px rgba(0,0,0,.9); }
-body.tema-c .subbar { background: rgba(8,10,20,.6); }
+body.tema-c .subbar { background: rgba(8,10,20,.75); }
 /* Regiones: texto; la elegida, subrayada en blanco */
 body.tema-c .subbar .region-tabs button.rg { background: none; border: 0; border-radius: 0; box-shadow: none; }
 body.tema-c .subbar .region-tabs button.rg:hover:not(.sel) { transform: none; background: var(--tc-row); }
@@ -109,14 +109,14 @@ body.tema-c .subbar .rg-soon button.soon { background: none; }
 body.tema-c .region-chips .rgc { background: rgba(8,10,20,.7); border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .region-chips .rgc.sel { border: 0; box-shadow: inset 0 -3px 0 #fff; }
 body.tema-c .badge-slot { background: rgba(255,255,255,.06); box-shadow: none; }
-body.tema-c .story-head .map-goal { background: linear-gradient(90deg, rgba(8,10,20,.85), rgba(8,10,20,.6)); }
+body.tema-c .story-head .map-goal { background: linear-gradient(90deg, rgba(8,10,20,.85), rgba(8,10,20,.75)); }
 body.tema-c .story-head .map-goal > small:first-child { font: 700 13px var(--text); color: var(--tc-mute); }
 body.tema-c .story-head .map-goal b { font: 900 26px var(--display); letter-spacing: -.3px; }
 body.tema-c .story-head .map-goal small, body.tema-c .story-head .map-goal .where { color: var(--tc-mute); }
 body.tema-c .goal-leader { background: none; }
 body.tema-c .goal-badge { background: rgba(8,10,20,.7); box-shadow: none; }
 body.tema-c .goal-routes .chip { background: var(--tc-row); border: 0; border-radius: 4px; box-shadow: none; color: var(--tc-text); }
-body.tema-c .story-info { background: rgba(8,10,20,.6); }
+body.tema-c .story-info { background: rgba(8,10,20,.75); }
 body.tema-c .story-info .rotation { color: var(--tc-mute); font-weight: 700; }
 body.tema-c .story-info .rotation b { color: var(--tc-text); text-shadow: none; font-variant-numeric: tabular-nums; }
 body.tema-c .story-info .help { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); border-radius: 4px; box-shadow: none; }
