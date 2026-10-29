@@ -21,7 +21,8 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);
   // Clic en el centro de la arena (hacia Brock, que sale a la derecha): Ascuas. Al verlo cargar, busca cobertura
   const said = `window.__banners.some(b => /Brock se atrinchera tras las rocas/.test(b))`;
-  for (let i = 0; i < 30 && !(await page.eval(said)); i++) { await page.click('#view'); await new Promise(r => setTimeout(r, 350)); }
+  const fighting = `!!window.__app.battle && window.__app.battle.latest.state === 'fight' && window.__app.ui.view !== 'results'`;
+  for (let i = 0; i < 30 && !(await page.eval(said)) && await page.eval(fighting); i++) { await page.click('#view'); await new Promise(r => setTimeout(r, 250)); }
   ok(await page.eval(said), `Brock anuncia su jugada: «Brock se atrinchera tras las rocas» (avisos: ${(await page.eval('window.__banners')).join(' | ')})`);
   // Y lo hace: acaba con una roca entre los dos
   const covered = await page.eval(`(async () => {

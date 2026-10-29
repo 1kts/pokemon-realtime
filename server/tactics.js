@@ -194,8 +194,9 @@ function context(b, side, inp, ai) {
   const c = {
     b, side, st, inp, ai, f, mon, fmon, view: st.view, skill: st.skill,
     myHp: mon.hp / mon.maxHp, foeHp: fmon.hp / fmon.maxHp,
-    // (el rival carga algo a distancia y lo apunta hacia mí: lo ve igual que lo vería un jugador)
-    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && Math.abs(Math.atan2(Math.sin(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a), Math.cos(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a))) < 0.5),
+    // (el rival carga algo a distancia apuntado hacia mí, o ya viene un proyectil suyo hacia mí: lo mismo que ve un jugador)
+    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && Math.abs(Math.atan2(Math.sin(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a), Math.cos(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a))) < 0.5)
+      || b.projectiles.some(p => p.owner === f && (p.vx * (side.x - p.x) + p.vy * (side.y - p.y)) > 0.9 * Math.hypot(p.vx, p.vy) * Math.hypot(side.x - p.x, side.y - p.y)),
     foeRanged: fmon.moves.some(k => ['proj', 'beam', 'wave'].includes(D.MOVES[k] && D.MOVES[k].kind)),
     safe: safeOf(myTypes) ?? null,
     foeAvoids: t => !SAFE.find(([x, ok]) => x === t && ok.some(y => foeTypes.includes(y))) && !(t === T.LAVA && foeTypes.includes('volador')),

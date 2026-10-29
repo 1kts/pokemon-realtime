@@ -24,6 +24,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(plate) === null && await page.eval(`!window.__app.battle.latest.ps.some(p => p.ai)`), 'apagada, encima del bot no sale nada (y el servidor no lo manda)');
   // atajo: Esc es la tecla para rendirse (no hay botón en pantalla con teclado y ratón)
   await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true })); true`);
+  await page.waitFor(`document.querySelector('.ui-confirm-box .ok')`);
   await page.click('.ui-confirm-box .ok');
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
   await page.click('Continuar');
