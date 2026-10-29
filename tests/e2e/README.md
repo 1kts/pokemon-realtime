@@ -41,7 +41,7 @@ module.exports = async ({ page, player, ok }) => {
 };
 ```
 
-API: `page.goto/reload/eval/waitFor/click/type/shot/resize/loginAs`, `player({ name | user, pass })`,
+API: `page.goto/reload/eval/waitFor/click/type/shot/resize/media/loginAs`, `player({ name | user, pass })`,
 `client()` (WebSocket directo, con `send/wait/ask`), `env` (el del servidor: `DB_FILE`…), `ok(cond, texto)`.
 
 Chrome: el del sistema (`google-chrome`, `chromium`), el de Playwright si está en la caché, o la ruta en

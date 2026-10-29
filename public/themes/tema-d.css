@@ -62,9 +62,9 @@ body.tema-d .hub-mod .tb-btn:hover:not(:disabled), body.tema-d .hub-mod .lang-cu
 body.tema-d .hub-me .pill.coins { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid rgba(255,203,5,.55); border-radius: 99px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); color: #fff; }
 body.tema-d .hub-bar .hub-me .pill.gems { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid #c79bff; border-radius: 99px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); color: #fff; }
 /* Apoyar en rosa, con cuerpo */
-body.tema-d .hub-me .support { color: #fff; background: linear-gradient(180deg, #e8467a, #a8204e); border: 1px solid #ff8fb0; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #5a0c28; }
+body.tema-d .hub-me .support { color: #fff; background: linear-gradient(180deg, #cc2a5e, #8e1a42); border: 1px solid #ff8fb0; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #5a0c28; }
 body.tema-d .hub-me .support svg { color: #fff; }
-body.tema-d .hub-me .support:hover { background: linear-gradient(180deg, #f2578a, #b8285a); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 #5a0c28, 0 0 16px rgba(255,107,138,.55); }
+body.tema-d .hub-me .support:hover { background: linear-gradient(180deg, #d43a6e, #9a1e4a); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 #5a0c28, 0 0 16px rgba(255,107,138,.55); }
 body.tema-d .hub-me .support span { color: #fff; }
 body.tema-d .hub-mod .news-btn:has(.ndot.news) { border-color: var(--td-gold); }
 /* Lucky Spin: su marco y su letra de oro, como siempre (es de donde salen los premios); el brillo, solo si te llega
@@ -153,8 +153,9 @@ body.tema-d .mission .m-body b { color: var(--td-text); }
 body.tema-d .m-ico { background: linear-gradient(180deg, color-mix(in srgb, var(--cc) 88%, #fff), color-mix(in srgb, var(--cc) 80%, #000)); border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 rgba(0,0,0,.35); filter: none; }
 body.tema-d .m-ico > * { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
 body.tema-d .m-bar { background: rgba(0,0,0,.35); border: 0; border-radius: 99px; box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
-body.tema-d .m-bar i { background: linear-gradient(180deg, #9cecff, #2fb4f0); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); border-radius: 99px; }
-body.tema-d .mission.done .m-bar i { background: linear-gradient(180deg, #a6f5b8, #38c96a); }
+/* (el relleno, con el blanco de la cifra encima a 4,5:1 o más) */
+body.tema-d .m-bar i { background: linear-gradient(180deg, #1a74b8, #0f4f8a); box-shadow: inset 0 1px 0 rgba(156,236,255,.7); border-radius: 99px; }
+body.tema-d .mission.done .m-bar i { background: linear-gradient(180deg, #1b7f40, #0f5a2c); box-shadow: inset 0 1px 0 rgba(166,245,184,.7); }
 body.tema-d .m-bar span { color: #fff; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
 body.tema-d .howto summary { font-weight: 800; }
 
@@ -201,7 +202,7 @@ body.tema-d .story-head .map-goal small, body.tema-d .story-head .map-goal .wher
 body.tema-d .goal-leader { background: none; }
 body.tema-d .goal-badge { background: radial-gradient(circle at 50% 35%, #2a3c92, #121c50); box-shadow: inset 0 0 0 3px var(--tc), 0 0 14px color-mix(in srgb, var(--tc) 50%, transparent), 0 3px 0 #0b1238; }
 /* (las rutas nuevas, en verde hierba con relieve) */
-body.tema-d .goal-routes .chip { background: linear-gradient(180deg, #3f9a2c, #24661a); border: 1px solid #8fe36a; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #10380a; color: #fff; }
+body.tema-d .goal-routes .chip { background: linear-gradient(180deg, #2f7f20, #1c5212); border: 1px solid #8fe36a; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #10380a; color: #fff; }
 body.tema-d .story-info .rotation { color: var(--td-mute); font-weight: 700; }
 body.tema-d .story-info .rotation b { color: var(--td-done); text-shadow: 0 2px 0 rgba(0,0,0,.4); font-variant-numeric: tabular-nums; }
 /* «Cómo se juega»: un botón con relieve, pero no dorado (no es lo que toca) */
@@ -248,7 +249,7 @@ body.tema-d .sp-route.locked .sp-dot { border: 2px dashed rgba(255,255,255,.35);
 body.tema-d .sp-ord { background: var(--td-done); color: #06213a; box-shadow: 0 2px 0 #1a6a8a; }
 body.tema-d .sp-count { background: linear-gradient(180deg, #2a3c92, #1a2766); color: #fff; border: 1px solid #3d53b0; box-shadow: 0 2px 0 #0b1238; }
 body.tema-d .sp-count.full { background: linear-gradient(180deg, #a6f08a, #6fcf4e); color: #0f2a0c; border-color: #c8ffb0; }
-body.tema-d .sp-new { background: linear-gradient(180deg, #ef4a80, #c0245a); color: #fff; box-shadow: 0 2px 0 #5a0c28; border-radius: 99px; }
+body.tema-d .sp-new { background: linear-gradient(180deg, #d42a62, #a01a48); color: #fff; box-shadow: 0 2px 0 #5a0c28; border-radius: 99px; }
 body.tema-d .sp-name { text-shadow: 0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6); }
 body.tema-d .sp-gym.now .sp-dot { border-color: var(--td-now); box-shadow: 0 0 0 4px rgba(255,203,5,.3), 0 0 22px rgba(255,203,5,.45), 0 3px 0 #070c2a; }
 body.tema-d .sp-gym.now .sp-name { background: linear-gradient(180deg, #ffe680, var(--td-now)); color: #2a1c00; border-radius: 8px; box-shadow: 0 2px 0 #a86a00; text-shadow: none; }
@@ -286,6 +287,9 @@ body.tema-d .story-tools .coll-tile .coll-txt small { color: #fff; }
 
 /* ---------- Móvil en horizontal: la portada de Historia más pequeña, el resto con su cuerpo ---------- */
 @media (max-height: 500px) {
+  /* (el bloque de los modos, algo más bajo: sin tema se sale 4 px por abajo, y aquí las tarjetas llevan sombra debajo) */
+  body.tema-d .menu > .menu-top { height: calc(100dvh - 98px); }
+  body.tema-d.has-tip .menu > .menu-top { height: calc(100dvh - 140px); }
   body.tema-d .menu-card, body.tema-d .menu-card.wide { min-height: 0; padding: 7px 9px; border-radius: 12px; box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 6px 12px rgba(0,0,0,.4); }
   body.tema-d .menu-card::before { border-radius: 10px 10px 40% 40% / 10px 10px 12px 12px; }
   body.tema-d .menu-card b, body.tema-d .menu-card.wide b { font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
