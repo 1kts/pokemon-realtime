@@ -7,6 +7,7 @@ import { confirmBox } from './dialog.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { frameBadge, SKIN_LABEL, applySkin, auraName, auraDot } from './frames.js';
 import { portrait } from './sprites.js';
+import { shapeSvg } from './pixshapes.js';
 import { achIcon, achName, achDesc, frameName, FRAME_LABEL_EXTRA } from './achievements.js';
 
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -43,13 +44,31 @@ export const EMOTION_NAME = { Normal: 'Normal', Happy: 'Contento', Joyous: 'Euf�
 export function portraitArt(dex, size, emo) {
   return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.png` : `portraits/${dex}.png`}" alt="" draggable="false" data-fallback="sprites/${dex}/Idle.png" data-miss-class="pt-miss"></span>`;
 }
-// Efecto: capa animada por encima de cualquier avatar (llamas, burbujas, chispas, hojas, copos, sombras,
-// estrellas, destellos o aurora). Las partículas salen siempre igual para el mismo efecto.
+// Efecto: capa animada por encima de cualquier avatar, en pixel art como los Pokémon: cada efecto con sus formas (las
+// de las partículas de combate, pixshapes.js), sus colores y su movimiento (style.css): llamas que suben
+// parpadeando, burbujas que suben haciendo eses y estallan, rayos que restallan, hojas y copos que caen, humo que
+// sube y se abre, estrellas y destellos que titilan y la aurora de colores. Las partículas salen siempre igual para
+// el mismo efecto
+const FX_ART = {
+  llamas: { n: 8, sz: 30, art: [['flame', ['#7a1400', '#ff4a12', '#ffb21a', '#fff3a0']]] },
+  burbujas: { n: 8, sz: 32, art: [['bubble', ['#1a5a98', '#b8ecff', '#e0f6ff', '#ffffff']]] },
+  chispas: { n: 9, sz: 34, art: [['bolt', ['#a87a00', '#ffd23a', '#fff3a0', '#fff6a0']], ['spark', ['#a87a00', '#ffd23a', '#fff3a0', '#ffffff']]] },
+  hojas: { n: 7, sz: 26, art: [['leaf', ['#1f5a10', '#4fb02a', '#8ad84a', '#d8ff9a']], ['leaf', ['#5a3a10', '#c8902a', '#f0c050', '#fff0a0']]] },
+  copos: { n: 9, sz: 22, art: [['flake', ['#4a7ab0', '#a8d8ff', '#dff2ff', '#ffffff']]] },
+  sombras: { n: 6, sz: 40, art: [['puff', ['#1a0630', '#4a1a78', '#7a3ab8', '#b07ae8']]] },
+  estrellas: { n: 7, sz: 28, art: [['star', ['#8a3a70', '#ff7ac8', '#ffc2e8', '#fff4fb']], ['star', ['#8a6a00', '#ffc531', '#ffe680', '#fffbe0']]] },
+  destellos: { n: 8, sz: 26, art: [['twinkle', ['#7a8aa8', '#c8d8f0', '#e8f0ff', '#ffffff']], ['spark', ['#a87a00', '#ffd23a', '#fff3a0', '#ffffff']]] },
+  aurora: { n: 8, sz: 26, art: [['twinkle', ['#7a1a5a', '#ff5ad1', '#ffb0ea', '#ffffff']], ['twinkle', ['#7a5a00', '#ffcb05', '#ffe680', '#ffffff']],
+    ['twinkle', ['#1a5a2a', '#4fd06a', '#a8f0b8', '#ffffff']], ['twinkle', ['#1a4a7a', '#46d0ff', '#b0ecff', '#ffffff']]] },
+};
+const fxImg = {};
 export function effectHtml(fx) {
   if (!fx) return '';
+  const def = FX_ART[fx] || FX_ART.destellos;
   let h = [...fx].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 2654435761) >>> 0, 7);
   const rnd = () => (h = Math.imul(h ^ h >>> 15, 2246822507) >>> 0) / 4294967296;
-  const parts = Array.from({ length: 9 }, () => `<b style="--x:${(rnd() * 90 + 5).toFixed(0)}%;--y:${(rnd() * 90 + 5).toFixed(0)}%;--d:${(-rnd() * 3).toFixed(2)}s;--k:${(0.6 + rnd() * 0.8).toFixed(2)}"></b>`).join('');
+  const img = i => { const [shape, pal] = def.art[i % def.art.length], k = fx + i % def.art.length; return fxImg[k] || (fxImg[k] = shapeSvg(shape, pal)); };
+  const parts = Array.from({ length: def.n }, (_, i) => `<b style="--x:${(rnd() * 80 + 5).toFixed(0)}%;--y:${(rnd() * 80 + 5).toFixed(0)}%;--d:${(-rnd() * 3).toFixed(2)}s;--k:${(0.7 + rnd() * 0.7).toFixed(2)};--sz:${Math.round(def.sz * (0.75 + rnd() * 0.5))}%;--img:${img(i)}"></b>`).join('');
   return `<span class="ava-fx-layer fx-${fx}"><i class="pt-fx">${parts}</i></span>`;
 }
 export const effectName = fx => t('Efecto {name}', { name: t(EFFECT_NAME[fx] || fx) });

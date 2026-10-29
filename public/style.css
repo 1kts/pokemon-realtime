@@ -1650,27 +1650,49 @@ body.in-battle .legal-bar { display: none; }
 .pt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
 .pt-img.pt-miss { object-fit: none; object-position: 50% 30%; transform: scale(2); }
 .pt-fx { position: absolute; inset: 0; pointer-events: none; }
-.pt-fx b { position: absolute; left: var(--x); top: var(--y); width: 12%; height: 12%; animation: pt-rise calc(2.2s * var(--k)) linear infinite; animation-delay: var(--d); }
-@keyframes pt-rise { from { transform: translateY(40%) scale(.6); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(-220%) scale(1); opacity: 0; } }
-@keyframes pt-fall { from { transform: translateY(-120%) rotate(0); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(220%) rotate(220deg); opacity: 0; } }
-@keyframes pt-twinkle { 0%, 100% { transform: scale(.2); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
-.fx-llamas::after, .fx-sombras::after, .fx-aurora::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
-.fx-llamas::after { background: linear-gradient(to top, rgba(255,90,20,.55), rgba(255,170,40,.15) 45%, transparent 70%); mix-blend-mode: screen; animation: pt-flicker .9s steps(3) infinite; }
-.fx-llamas .pt-fx b { background: radial-gradient(circle at 50% 70%, #fff3a0, #ffb21a 40%, #ff4a12 70%, transparent 72%); border-radius: 50% 50% 40% 40%; top: auto; bottom: calc(var(--y) / 3); }
-@keyframes pt-flicker { 50% { opacity: .7; } }
-.fx-burbujas .pt-fx b { border: 2px solid rgba(200,240,255,.9); border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.7) 15%, transparent 30%); }
-.fx-chispas .pt-fx b { background: #fff6a0; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation-name: pt-twinkle; animation-duration: calc(.8s * var(--k)); box-shadow: 0 0 6px #ffd23a; }
-.fx-chispas::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, transparent 55%, rgba(255,210,58,.45)); animation: pt-flicker .5s steps(2) infinite; }
-.fx-hojas .pt-fx b { background: linear-gradient(135deg, #b8f070, #4fb02a); border-radius: 0 80% 0 80%; animation-name: pt-fall; animation-duration: calc(3s * var(--k)); }
-.fx-copos .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-fall; animation-duration: calc(3.5s * var(--k)); }
+/* Efectos del avatar, en pixel art (las formas y los colores, en effectHtml de missions.js): cada partícula es una
+   forma de 16×16 escalada sin suavizar, y cada efecto se mueve a su manera, a saltos como un sprite */
+.pt-fx b { position: absolute; left: var(--x); top: var(--y); width: var(--sz, 24%); height: var(--sz, 24%); margin: calc(var(--sz, 24%) / -2) 0 0 calc(var(--sz, 24%) / -2);
+  background: var(--img) center / contain no-repeat; image-rendering: pixelated; opacity: 0;
+  animation: fx-twinkle calc(1.4s * var(--k)) steps(4) infinite; animation-delay: var(--d); }
+/* Llamas: salen de abajo, suben dándose la vuelta y se apagan; abajo, un resplandor que parpadea */
+@keyframes fx-flame { 0% { transform: translateY(30%) scale(1); opacity: 0; } 12% { opacity: 1; } 40% { transform: translateY(-40%) scale(-.9, .9); }
+  70% { transform: translateY(-100%) scale(.7); opacity: 1; } 100% { transform: translateY(-160%) scale(-.35, .35); opacity: 0; } }
+.fx-llamas .pt-fx b { top: auto; bottom: calc(var(--y) / 4 - 6%); animation: fx-flame calc(1.3s * var(--k)) steps(7) infinite var(--d); }
+.fx-llamas::after { background: linear-gradient(to top, rgba(255,90,20,.5), rgba(255,170,40,.12) 40%, transparent 65%); mix-blend-mode: screen; animation: pt-flicker .6s steps(2) infinite; }
+/* Burbujas: suben haciendo eses y al llegar arriba estallan */
+@keyframes fx-bubble { 0% { transform: translate(0, 60%) scale(.5); opacity: 0; } 12% { opacity: 1; } 35% { transform: translate(-30%, -20%) scale(.75); }
+  60% { transform: translate(30%, -90%) scale(.9); } 84% { transform: translate(-20%, -150%) scale(1); opacity: 1; } 90% { transform: translate(-20%, -155%) scale(1.5); opacity: .7; }
+  94%, 100% { transform: translate(-20%, -155%) scale(1.8); opacity: 0; } }
+.fx-burbujas .pt-fx b { animation: fx-bubble calc(2.6s * var(--k)) steps(14) infinite var(--d); }
+/* Chispas: rayos y chispazos que restallan un instante aquí y allá */
+@keyframes fx-zap { 0%, 100% { opacity: 0; transform: scale(1); } 15% { opacity: 1; } 30% { opacity: 0; } 38% { opacity: 1; transform: scale(-1, 1); } 55% { opacity: 0; } 62% { opacity: 1; transform: scale(.7); } 70% { opacity: 0; } }
+.fx-chispas .pt-fx b { animation: fx-zap calc(1.5s * var(--k)) step-end infinite var(--d); }
+.fx-chispas::after { background: radial-gradient(circle, transparent 55%, rgba(255,210,58,.4)); animation: pt-flicker .4s steps(2) infinite; }
+/* Hojas: caen de arriba meciéndose y dando vueltas de cuarto en cuarto */
+@keyframes fx-leaf { 0% { transform: translate(0, -140%) rotate(0); opacity: 0; } 10% { opacity: 1; } 30% { transform: translate(35%, -60%) rotate(90deg); }
+  55% { transform: translate(-30%, 20%) rotate(180deg); } 80% { transform: translate(30%, 100%) rotate(270deg); opacity: 1; } 100% { transform: translate(0, 170%) rotate(360deg); opacity: 0; } }
+.fx-hojas .pt-fx b { animation: fx-leaf calc(3.2s * var(--k)) steps(12) infinite var(--d); }
+/* Copos: caen despacio, de lado a lado */
+@keyframes fx-snow { 0% { transform: translate(0, -150%); opacity: 0; } 12% { opacity: 1; } 40% { transform: translate(-25%, -40%); } 70% { transform: translate(25%, 60%); opacity: 1; } 100% { transform: translate(0, 160%); opacity: 0; } }
+.fx-copos .pt-fx b { animation: fx-snow calc(4s * var(--k)) steps(16) infinite var(--d); }
+/* Sombras: humo morado que sube y se abre; abajo, la oscuridad */
+@keyframes fx-smoke { 0% { transform: translateY(40%) scale(.45); opacity: 0; } 25% { opacity: .9; } 100% { transform: translateY(-130%) scale(1.5); opacity: 0; } }
+.fx-sombras .pt-fx b { animation: fx-smoke calc(2.6s * var(--k)) steps(8) infinite var(--d); }
 .fx-sombras::after { background: radial-gradient(circle at 50% 110%, rgba(60,10,90,.75), transparent 70%); }
-.fx-sombras .pt-fx b { width: 22%; height: 22%; border-radius: 50%; background: radial-gradient(circle, rgba(150,80,220,.75), transparent 70%); filter: blur(1px); }
-.fx-estrellas .pt-fx b { background: #ffd6f4; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); animation-name: pt-twinkle; animation-duration: calc(1.6s * var(--k)); filter: drop-shadow(0 0 3px #ff9ee0); }
-.fx-destellos .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-twinkle; animation-duration: calc(1.4s * var(--k)); }
-.fx-aurora::after { background: conic-gradient(from 0deg, rgba(255,90,209,.4), rgba(255,203,5,.35), rgba(79,208,106,.35), rgba(70,208,255,.4), rgba(255,90,209,.4)); mix-blend-mode: screen; animation: aura-spin 4s linear infinite; }
-.fx-aurora .pt-fx b { background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation-name: pt-twinkle; animation-duration: calc(1.2s * var(--k)); }
+/* Estrellas: aparecen, titilan girando un poco y se van subiendo */
+@keyframes fx-star { 0%, 100% { transform: translateY(0) scale(0); opacity: 0; } 20% { transform: translateY(-10%) scale(.6); opacity: 1; } 45% { transform: translateY(-25%) scale(1) rotate(-15deg); opacity: 1; }
+  70% { transform: translateY(-40%) scale(.6) rotate(15deg); opacity: 1; } 85% { transform: translateY(-50%) scale(.3); opacity: 0; } }
+.fx-estrellas .pt-fx b { animation: fx-star calc(1.8s * var(--k)) steps(6) infinite var(--d); }
+/* Destellos (y la aurora): crecen, brillan y se apagan en su sitio */
+@keyframes fx-twinkle { 0%, 100% { transform: scale(0); opacity: 0; } 25% { transform: scale(.5); opacity: 1; } 50% { transform: scale(1); opacity: 1; } 75% { transform: scale(.5); opacity: 1; } }
+@keyframes pt-flicker { 50% { opacity: .7; } }
+.fx-llamas::after, .fx-chispas::after, .fx-sombras::after, .fx-aurora::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.fx-aurora::after { background: conic-gradient(from 0deg, rgba(255,90,209,.4), rgba(255,203,5,.35), rgba(79,208,106,.35), rgba(70,208,255,.4), rgba(255,90,209,.4)); mix-blend-mode: screen; animation: aura-spin 4s steps(24) infinite; }
+.fx-aurora .pt-fx b { animation-duration: calc(1.1s * var(--k)); }
 .ava-icon .ava-pic .pt-face, .ava-opt .pt-face { margin: auto; }
-@media (prefers-reduced-motion: reduce) { .pt-fx b, .pt-face::after { animation: none; } }
+/* (sin movimiento, las partículas quietas y a la vista) */
+@media (prefers-reduced-motion: reduce) { .pt-fx b, .pt-face::after { animation: none !important; } .pt-fx b { opacity: .9; } }
 
 /* ---------- Tesoros: ruletas de gemas ---------- */
 .gem-ico { display: inline-flex; vertical-align: -3px; margin-right: 3px; }
