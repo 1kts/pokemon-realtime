@@ -36,12 +36,12 @@ const LEADER_PLAYS = {
 
 // ---------- Ayudas ----------
 // Llevarlo hacia un punto, mezclado con lo que ya quería hacer la IA. Si la IA está esquivando o escapando, no se
-// toca: su movimiento manda. Devuelve la distancia que queda
+// toca: su movimiento manda. Devuelve la distancia que queda (y la apunta: leaderPlay mira si se avanza hacia él)
 function steer(c, to, w = 0.8) {
   const { inp, side } = c;
   const dx = to.x - side.x, dy = to.y - side.y, d = Math.hypot(dx, dy);
+  c.goal = d;
   if (c.st.evade) return d;
-  c.steered = true;
   if (d < 6) { inp.mx *= 0.3; inp.my *= 0.3; return d; }
   inp.mx = clamp(inp.mx * 0.5 + dx / d * w, -1, 1);
   inp.my = clamp(inp.my * 0.5 + dy / d * w, -1, 1);
@@ -59,10 +59,12 @@ function reaches(m, dist, fr) {
   return false;
 }
 // El mejor movimiento que se puede usar ya y que cumple ok(m); score(m) decide entre varios. Con la misma disciplina
-// que la IA: guarda su reserva de energía (salvo para rematar) y no tira proyectiles ni rayos contra una roca
+// que la IA: guarda su reserva de energía (salvo para rematar o con el rival vendido) y no tira proyectiles ni rayos
+// contra una roca
 function pick(c, ok, score = m => m.dmg * D.typeMult(m.type, typesOf(c.fmon))) {
   const blocked = c.ai.lineBlocked(c.b, c.side, c.view);
-  const reserve = c.foeHp <= 0.25 ? 0 : (c.st.reserve || 0);
+  const opening = c.view.flags & (F.STUN | F.REC | F.WIND);
+  const reserve = c.foeHp <= 0.25 || opening ? 0 : (c.st.reserve || 0);
   let best = -1, bs = -Infinity;
   c.mon.moves.forEach((k, i) => {
     const m = D.MOVES[k];
@@ -74,23 +76,29 @@ function pick(c, ok, score = m => m.dmg * D.typeMult(m.type, typesOf(c.fmon))) {
   });
   return best;
 }
-// Lanza el movimiento i al rival (con la misma anticipación que la IA de utilidad). Solo si a la IA le tocaba atacar
-// en este tick y no ha elegido protegerse, cambiar o ponerse a salvo
-function cast(c, i) {
-  if (i < 0 || !c.st.mayAttack || c.inp.c === 4 || c.inp.sw >= 0 || !c.b.canAct(c.side)) return false;
+// Ataca con el mejor movimiento que cumpla ok(m) (ver pick), con la misma anticipación que la IA de utilidad. Solo si a
+// la IA le tocaba atacar en este tick (sus dudas y su cadencia) y no ha elegido protegerse, cambiar o ponerse a salvo
+function attack(c, ok, score) {
+  if (!c.st.mayAttack || c.inp.c === 4 || c.inp.sw >= 0 || !c.b.canAct(c.side)) return false;
   const chosen = c.inp.c >= 0 && c.inp.c < 4 && D.MOVES[c.mon.moves[c.inp.c]];
   if (chosen && ESCAPE.has(chosen.kind)) return false;
+  const i = pick(c, ok, score);
+  if (i < 0) return false;
   c.ai.aimMove(c.inp, c.side, c.view, c.view.dist, D.MOVES[c.mon.moves[i]], c.skill);
   c.inp.c = i;
   return true;
 }
 const nearest = (list, p) => list.reduce((best, q) => (!best || Math.hypot(q.x - p.x, q.y - p.y) < Math.hypot(best.x - p.x, best.y - p.y) ? q : best), null);
-// Centros de las casillas de un tipo de terreno del mapa (b.base), una vez por combate: luego basta con mirar si
-// siguen siendo de ese tipo (la hierba se quema, los charcos crecen…)
+// Centros de las casillas de un tipo de terreno, con lo que ha aparecido en el combate (charcos que se extienden,
+// hierba que vuelve a crecer): se recuentan cada 2 s, no en cada tick. Al usarlas se mira si siguen siendo de ese tipo
 function cellsOf(b, t) {
   b.cellCache = b.cellCache || new Map();
-  if (!b.cellCache.has(t)) b.cellCache.set(t, b.base.flatMap((x, i) => (x === t ? [{ i, ...S.cellCenter(i) }] : [])));
-  return b.cellCache.get(t);
+  const hit = b.cellCache.get(t);
+  if (hit && b.t - hit.t < 2) return hit.cells;
+  const cells = [];
+  b.terrain.forEach((x, i) => { if (x === t) cells.push({ i, ...S.cellCenter(i) }); });
+  b.cellCache.set(t, { t: b.t, cells });
+  return cells;
 }
 
 // ---------- Jugadas ----------
@@ -116,7 +124,7 @@ const PLAYS = {
       }
       if (!best) return false;
       const d = steer(c, best, 1);
-      if (d < 30) cast(c, pick(c, m => m.kind === 'area' && m.at !== 'self'));
+      if (d < 30) attack(c, m => m.kind === 'area' && m.at !== 'self');
       return true;
     },
   },
@@ -125,7 +133,7 @@ const PLAYS = {
   cerco: {
     fits: (b) => ['rockfall', 'geyser', 'shock', 'eruption', 'storm'].some(k => b.arena.m[k]),
     when: c => !c.view.hidden && c.b.arena.danger.some(d => d.t > 0.25 && Math.hypot(c.view.x - d.x, c.view.y - d.y) < d.r + 6),
-    act: c => cast(c, pick(c, m => m.stun || m.slow, m => (m.stun ? 2 : 1) + m.dmg / 100)) || cast(c, pick(c, m => m.kind !== 'dash')),
+    act: c => attack(c, m => m.stun || m.slow, m => (m.stun ? 2 : 1) + m.dmg / 100) || attack(c, m => m.kind !== 'dash'),
   },
   // Pelear desde el terreno que a su tipo no le afecta y al rival sí (que tenga que entrar para pegarle), cuando el
   // rival se acerca o solo pega de cerca
@@ -153,7 +161,7 @@ const PLAYS = {
     fits: (b) => b.base.includes(T.GRASS) || !!b.arena.m.fog || !!b.arena.dark || !!b.arena.m.regrow,
     when: c => c.view.dist > 90 && c.myHp > 0.3 && (c.side.energy < 35 || (c.side.hidden && c.view.dist < 190)),
     act(c) {
-      if (c.side.hidden && c.view.dist < 190) return cast(c, pick(c, () => true, m => m.dmg * D.typeMult(m.type, typesOf(c.fmon)) * (m.kind === 'melee' || m.kind === 'cone' || m.kind === 'dash' ? 1.3 : 1)));
+      if (c.side.hidden && c.view.dist < 190) return attack(c, () => true, m => m.dmg * D.typeMult(m.type, typesOf(c.fmon)) * (m.kind === 'melee' || m.kind === 'cone' || m.kind === 'dash' ? 1.3 : 1));
       let spot = null;
       if (c.b.arena.dark) {
         // A oscuras basta con alejarse más allá de lo que se ve
@@ -181,7 +189,7 @@ const PLAYS = {
   mojado: {
     fits: (b) => b.base.includes(T.WATER) || !!(b.arena.m.tide || b.arena.m.crack || b.arena.m.ice),
     when: c => !c.view.hidden && !!(c.view.flags & F.WET),
-    act: c => cast(c, pick(c, m => m.type === 'hielo' || m.type === 'electrico')),
+    act: c => attack(c, m => m.type === 'hielo' || m.type === 'electrico'),
   },
   // El rival está tocado y yo no: a por él, con lo más fuerte (sin reserva de energía si ya está para rematar)
   acoso: {
@@ -190,7 +198,7 @@ const PLAYS = {
     when: c => !c.view.hidden && c.foeHp < 0.35 && c.myHp > c.foeHp + 0.15,
     act(c) {
       if (c.view.dist > 90) steer(c, c.view, 0.7);
-      cast(c, pick(c, () => true));
+      attack(c, () => true);
       return true;
     },
   },
@@ -212,7 +220,7 @@ const PLAYS = {
   viento: {
     fits: (b) => !!b.arena.m.wind,
     when: c => !c.view.hidden && !!c.b.arena.windFor(c.f),
-    act: c => cast(c, pick(c, m => m.kind === 'proj' || m.kind === 'beam' || m.kind === 'wave' || (m.kind === 'area' && m.at !== 'self'))),
+    act: c => attack(c, m => m.kind === 'proj' || m.kind === 'beam' || m.kind === 'wave' || (m.kind === 'area' && m.at !== 'self')),
   },
 };
 
@@ -221,12 +229,11 @@ function context(b, side, inp, ai) {
   const st = side.aiState, f = b.foe(side), mon = b.mon(side), fmon = b.mon(f);
   const myTypes = typesOf(mon), foeTypes = typesOf(fmon);
   const safeOf = types => (SAFE.find(([t, ok]) => ok.some(x => types.includes(x)) && b.base.includes(t)) || [])[0];
-  const angleTo = a => Math.abs(Math.atan2(Math.sin(Math.atan2(side.y - f.y, side.x - f.x) - a), Math.cos(Math.atan2(side.y - f.y, side.x - f.x) - a)));
   return {
     b, side, st, inp, ai, f, mon, fmon, view: st.view, skill: st.skill,
     myHp: mon.hp / mon.maxHp, foeHp: fmon.hp / fmon.maxHp,
     // (el rival carga algo a distancia apuntado hacia mí, o ya viene un proyectil suyo hacia mí: lo mismo que ve un jugador)
-    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && angleTo(f.wind.a) < 0.5)
+    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && Math.abs(ai.angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < 0.5)
       || b.projectiles.some(p => p.owner === f && (p.vx * (side.x - p.x) + p.vy * (side.y - p.y)) > 0.9 * Math.hypot(p.vx, p.vy) * Math.hypot(side.x - p.x, side.y - p.y)),
     foeRanged: fmon.moves.some(k => ['proj', 'beam', 'wave'].includes(D.MOVES[k] && D.MOVES[k].kind)),
     safe: safeOf(myTypes) ?? null,
@@ -255,14 +262,18 @@ function leaderPlay(b, side, inp, dt, ai) {
   const ready = k => !(st.rest[k] > b.t) && PLAYS[k].when(c);
   const play = st.playHold > 0 && st.play && ready(st.play) ? st.play : st.plays.find(ready);
   if (!play || !PLAYS[play].act(c)) { st.play = null; return null; }
-  if (play !== st.play) { st.playHold = 0.6; st.playSince = b.t; st.playStuck = 0; }
+  if (play !== st.play) { st.playHold = 0.6; st.playSince = b.t; st.progress = null; }
   st.play = play;
   if (PLAYS[play].max && b.t - st.playSince > PLAYS[play].max) st.rest[play] = b.t + PLAYS[play].max;
-  // Atascada: la jugada lo lleva hacia su sitio y no avanza (una roca en medio): descansa 3 s
-  const moved = st.playLast ? Math.hypot(side.x - st.playLast.x, side.y - st.playLast.y) : 1;
-  st.playLast = { x: side.x, y: side.y };
-  st.playStuck = c.steered && Math.hypot(inp.mx, inp.my) > 0.3 && moved < 0.3 ? (st.playStuck || 0) + dt : 0;
-  if (st.playStuck > 0.6) { st.rest[play] = b.t + 3; st.playStuck = 0; }
+  // Atascada: lleva 1,5 s yendo hacia su sitio sin acercarse ni 15 px (una roca en medio, o esquivando todo el rato):
+  // descansa 3 s. Se mide lo que se acerca, esté o no esquivando en este tick
+  if (c.goal > 30) {
+    if (!st.progress) st.progress = { t: b.t, d: c.goal };
+    else if (b.t - st.progress.t >= 1.5) {
+      if (st.progress.d - c.goal < 15) { st.rest[play] = b.t + 3; st.play = null; }
+      st.progress = null;
+    }
+  } else st.progress = null;
   // (pasado el «¡A combatir!», que si no el aviso se pierde entre los de la cuenta atrás)
   st.announced = st.announced || new Set();
   if (!st.announced.has(play) && (b.fightT || 0) > 1.2) { st.announced.add(play); b.ev({ k: 'tactic', s: side.idx, id: play }); }

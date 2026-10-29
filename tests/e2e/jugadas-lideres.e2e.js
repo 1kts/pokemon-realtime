@@ -21,9 +21,11 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('.node-info button.primary');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);
   ok(await page.eval(`window.__app.battle.mapName === 'g-fuego'`), 'el combate contra Blaine es en su volcán');
-  // Sin tocar nada: Blaine lo anuncia y se pone sobre la lava (se mira lo que se ve: dónde está su Pokémon)
+  // Sin tocar nada: Blaine lo anuncia (el aviso que sale en pantalla) y se pone sobre la lava
   const said = `window.__banners.some(b => /Blaine pelea desde un terreno que a su equipo no le hace nada/.test(b))`;
-  const onLava = `(() => { const b = window.__app.battle; if (!b || !b.latest) return false; const foe = b.latest.ps[b.foeIdx];
+  // atajo: estar «sobre la lava» no tiene nada propio que se vea (ni efecto ni texto); se mira la casilla de la arena
+  // que hay bajo su Pokémon, con la posición con la que lo dibuja el cliente
+  const onLava =`(() => { const b = window.__app.battle; if (!b || !b.latest) return false; const foe = b.latest.ps[b.foeIdx];
     if (foe.x === undefined) return false; const cell = Math.floor(foe.y / 40) * Shared.COLS + Math.floor(foe.x / 40);
     return b.world.types[cell] === 9; })()`;   // (9: lava)
   await page.waitFor(said, 30000).catch(() => {});

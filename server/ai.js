@@ -155,7 +155,7 @@ function adaptiveSkill(b, side, st, dt, P = PARAMS) {
 // Entrada de la IA en este tick: la de utilidad y, si es un líder, su jugada encima (server/tactics.js)
 function aiInput(b, side, dt) {
   const inp = utilityInput(b, side, dt);
-  if (side.leader && !side.wild) tactics.leaderPlay(b, side, inp, dt, { aimMove, lineBlocked });
+  if (side.leader && !side.wild) tactics.leaderPlay(b, side, inp, dt, { aimMove, lineBlocked, angleDiff });
   return inp;
 }
 
@@ -213,7 +213,7 @@ function utilityInput(b, side, dt) {
   if (prevMode === 'atacar' && aggro > P.atacarAt - P.hyst) mode = 'atacar';
   if (prevMode === 'defender' && aggro < P.defenderAt + P.hyst) mode = 'defender';
   st.mode = mode;
-  st.dbg = { m: mode, g: aggro, p: pers.style, dex: mon.dex };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
+  st.dbg = { m: mode, g: aggro, p: pers.style, mon };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
 
   // ---------- Movimiento ----------
   const moves = mon.moves.map(k => D.MOVES[k]);
@@ -323,7 +323,7 @@ function utilityInput(b, side, dt) {
   if (bad(ahead) && skill > 0.15) { const t = mx; mx = -my; my = t; st.evade = true; }
   if (bad(b.terrain[S.cellIndex(side.x, side.y)])) { mx += (S.ARENA.w / 2 - side.x) / 250; my += (S.ARENA.h / 2 - side.y) / 250; st.evade = true; }
   const edge = 70;
-  if (side.x < edge || side.y < edge || side.x > S.ARENA.w - edge || side.y > S.ARENA.h - edge) st.evade = true;
+  // (el empujón suave del borde no cuenta como esquiva: las jugadas lo mezclan y pueden llegar a sitios junto a la pared)
   if (side.x < edge) mx += (edge - side.x) / edge * 1.5;
   if (side.x > S.ARENA.w - edge) mx -= (side.x - (S.ARENA.w - edge)) / edge * 1.5;
   if (side.y < edge) my += (edge - side.y) / edge * 1.5;
@@ -371,11 +371,11 @@ function utilityInput(b, side, dt) {
   if (side.wild) cadence *= st.wander ? 0.25 : 0.6;   // los salvajes atacan poco, y menos mientras deambulan
   if (rnd() > cadence) return aim(inp, toFoe, skill);
   st.mayAttack = true;
-  st.reserve = skill > 0.45 ? P.reserve : 0;
+  st.reserve = skill > 0.45 ? P.reserve : 0;   // (las buenas guardan energía para escapar; las jugadas, igual)
 
   const opening = (foeFlags & (F.STUN | F.REC | F.WIND)) && rnd() < 0.3 + 0.7 * skill;   // ¿lo ve vendido?
   const blocked = lineBlocked(b, side, target);
-  const reserve = skill > 0.45 ? P.reserve : 0;    // las buenas guardan energía para escapar
+  const reserve = st.reserve;    // las buenas guardan energía para escapar
   let best = null, bestU = 0;
   moves.forEach((m, i) => {
     if (mon.cds[i] > 0 || side.energy < m.cost) return;
@@ -445,4 +445,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, BASE_PARAMS, TUNED_PARAMS, PARAMS };
+module.exports = { aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, angleDiff, BASE_PARAMS, TUNED_PARAMS, PARAMS };

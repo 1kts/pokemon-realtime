@@ -21,9 +21,10 @@ function rng(seed) {
   return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 const seedOf = name => [...name].reduce((h, ch) => Math.imul(h ^ ch.charCodeAt(0), 16777619), 2166136261);
+const realRandom = Math.random;
 const check = async (name, fn) => {
   Math.random = rng(seedOf(name + (process.env.AI_TEST_SEED || '')));   // (AI_TEST_SEED=x: otras semillas, para ver el margen)
-  try { await fn(); console.log('✓', name); } catch (e) { fails++; console.log('✗', name, '\n ', e.message); }
+  try { await fn(); console.log('✓', name); } catch (e) { fails++; console.log('✗', name, '\n ', e.message); } finally { Math.random = realRandom; }
 };
 // Nunca colgado: como mucho 2 minutos
 setTimeout(() => { console.log('✗ ai-test: más de 2 minutos'); process.exit(1); }, 120e3).unref();
@@ -187,7 +188,7 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
   });
   // Lo que una jugada no puede pisar: la jugada se aplica a mano (leaderPlay) sobre la entrada que dejaría la IA
   const AI = require('../server/ai.js');
-  const helpers = { aimMove: AI.aimMove, lineBlocked: AI.lineBlocked };
+  const helpers = { aimMove: AI.aimMove, lineBlocked: AI.lineBlocked, angleDiff: AI.angleDiff };
   // Blanca con poca vida (quiere ir a la baldosa) y el rival lejos y tocado (acoso posible)
   const whitney = () => {
     const b = duelLeader('g-normal', 'whitney', { dex: 1, level: 19 }, { dex: 241, level: 19, moves: ['placaje', 'golpeCuerpo', 'ataqueRapido', 'descanso'] });
@@ -225,6 +226,36 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     inp = fresh(); inp.c = rest;
     tactics.leaderPlay(b, side, inp, S.DT, helpers);
     assert.strictEqual(inp.c, rest, 'si la IA ha elegido curarse, la jugada no lo cambia por un ataque');
+  });
+  await check('una jugada que no avanza hacia su sitio (esquivando todo el rato, una roca en medio) descansa', () => {
+    const { b, side, st } = whitney();
+    const inp = () => ({ mx: 0, my: 0, c: -1, sw: -1, a: 0, tx: 0, ty: 0 });
+    st.play = null; st.playHold = 0;
+    let first = null;
+    for (let i = 0; i < Math.round(2 / S.DT); i++) {
+      b.t += S.DT; st.evade = true;   // (sin moverse: el combate no avanza, solo el reloj)
+      const play = tactics.leaderPlay(b, side, inp(), S.DT, helpers);
+      if (i === 0) first = play;
+    }
+    assert.strictEqual(first, 'curacion');
+    assert(st.rest.curacion > b.t, 'tras 1,5 s sin acercarse, la curación descansa');
+    assert.notStrictEqual(tactics.leaderPlay(b, side, inp(), S.DT, helpers), 'curacion');
+  });
+  await check('cerca de la pared, el empujón suave del borde no cuenta como esquiva (las jugadas pueden llegar ahí)', () => {
+    const b = battle();
+    run(b, 0.5);
+    b.sides[1].x = 40; b.sides[1].y = 300;
+    run(b, S.DT);
+    assert.strictEqual(b.sides[1].aiState.evade, false);
+  });
+  await check('Ver qué piensa la IA: con dos de la misma especie, tras el debilitado no se manda nada hasta que el nuevo decide', () => {
+    const b = battle({ aiDebug: true, sides: [{ name: 'A', team: [{ dex: 25, level: 50 }] }, { name: 'Bot', team: [{ dex: 68, level: 50 }, { dex: 68, level: 50 }], ai: 0.8 }] });
+    run(b, 1);
+    b.sides[1].team[0].hp = 0;
+    let forcedSent = 0, after = 0;
+    for (let i = 0; i < 120; i++) { run(b, S.DT); const ai = b.sideSnap(b.sides[1], 0).ai; if (ai && b.sides[1].forced > 0) forcedSent++; if (ai && b.sides[1].act === 1) after++; }
+    assert.strictEqual(forcedSent, 0, 'mientras elige al siguiente, nada');
+    assert(after > 0 && b.sides[1].act === 1, 'y luego lo del segundo Machamp');
   });
   await check('Ver qué piensa la IA: tras un debilitado no enseña lo del Pokémon de antes', () => {
     const b = battle({ aiDebug: true, sides: [{ name: 'A', team: [{ dex: 25, level: 50 }] }, { name: 'Bot', team: [{ dex: 68, level: 50 }, { dex: 9, level: 50 }], ai: 0.8 }] });
