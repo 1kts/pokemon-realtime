@@ -1843,12 +1843,12 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-gym .league-ico { width: 40px; height: 40px; image-rendering: pixelated; }
 .sp-gym .sp-dot:has(.sp-face) { overflow: hidden; }
 .sp-gym.done .sp-dot { box-shadow: 0 0 0 4px #121834, 0 0 14px var(--tc), 0 6px 14px rgba(0,0,0,.45); }
-.sp-gym:not(.done) .sp-badge { filter: brightness(0) invert(1) opacity(.4); }
+.sp-gym:not(.done) .sp-badge { filter: grayscale(1) brightness(.8) opacity(.5); }
 .sp-ord { position: absolute; top: calc((var(--now) - var(--gym)) / 2 - 6px); left: calc(50% - var(--gym) / 2 - 6px); width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%;
   font: 900 11px var(--display); font-style: normal; color: #2a1c00; background: #d6e2f5; box-shadow: 0 0 0 2px #121834; }
 /* Lo que toca: más grande, dorado y lo único que late */
 .sp-gym.now .sp-dot { width: var(--now); height: var(--now); margin-top: 0; border-color: var(--gold); animation: spNow 1.6s ease-in-out infinite; }
-.sp-gym.now .sp-badge { width: 44px; height: 44px; filter: brightness(0) invert(1) opacity(.9); }
+.sp-gym.now .sp-badge { width: 44px; height: 44px; filter: grayscale(1) brightness(.9) opacity(.8); }
 .sp-gym.now .sp-ord { top: -6px; left: calc(50% - var(--now) / 2 - 4px); background: var(--gold); }
 .sp-gym.now .sp-name { padding: 3px 10px; border-radius: 9px; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; -webkit-line-clamp: 3; }
 @keyframes spNow { 50% { box-shadow: 0 0 0 4px #121834, 0 0 0 10px rgba(255,203,5,.22), 0 0 28px rgba(255,203,5,.75); } }

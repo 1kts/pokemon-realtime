@@ -2,22 +2,24 @@
    Propuesta C · «Ruta» (docs/propuestas-ui.md). Solo con ?tema=c: se carga después de las demás hojas y todo va
    bajo body.tema-c, así que sin el tema no cambia nada.
    La idea: el protagonista es el mundo 3D que ya tiene el juego, no las tarjetas. La interfaz se queda en lo justo:
-   velos oscuros sin bordes ni sombras, letra grande y clara, y casi sin cajas dentro de cajas. Lo atrevido: en el
+   velos azul noche sin bordes ni sombras, cada cosa con su color, letra grande y clara, y casi sin cajas dentro de cajas. Lo atrevido: en el
    menú, Historia como portada (el título grande sobre el mundo); en Historia, el camino, que al entrar se dibuja
-   desde el pueblo hasta el siguiente reto (el único movimiento). El blanco es lo recorrido; el dorado, solo lo que
-   toca.
+   desde el pueblo hasta el siguiente reto (el único movimiento). El celeste es lo recorrido; el dorado, solo lo
+   que toca.
    =================================================================================== */
 body.tema-c {
-  --tc-veil: rgba(8, 10, 20, .8);   /* velo de los paneles (el texto se lee sobre cualquier fondo) */
-  --tc-row: rgba(255, 255, 255, .07);
-  --tc-hair: rgba(255, 255, 255, .16);
+  --tc-veil: rgba(20, 32, 84, .8);  /* velo de los paneles: azul noche, no negro (el texto se lee sobre cualquier fondo) */
+  --tc-veil-2: rgba(26, 42, 104, .88);
+  --tc-row: rgba(140, 180, 255, .13);
+  --tc-hair: rgba(170, 200, 255, .3);
   --tc-text: #ffffff;
-  --tc-mute: #c3cad9;               /* texto secundario (9:1 sobre el velo) */
+  --tc-mute: #d2ddf5;               /* texto secundario (7:1 o más sobre el velo) */
+  --tc-done: #5fd8ff;               /* lo recorrido: celeste */
   --tc-now: #ffcb05;
 }
 
 /* ---------- Lo común: velos sin borde ---------- */
-body.tema-c #screen { background: linear-gradient(90deg, rgba(6,8,16,.55), rgba(6,8,16,.1) 60%, rgba(6,8,16,.35)); }
+body.tema-c #screen { background: linear-gradient(90deg, rgba(14,24,70,.35), transparent 60%, rgba(14,24,70,.2)); }
 body.tema-c .menu-card, body.tema-c .panel, body.tema-c .node-info, body.tema-c .story-head .map-goal, body.tema-c .story-info,
 body.tema-c .feature-sign, body.tema-c .subbar, body.tema-c .hub-mod, body.tema-c .story-pathwrap, body.tema-c .howto {
   background: var(--tc-veil); color: var(--tc-text); backdrop-filter: none;
@@ -33,11 +35,11 @@ body.tema-c button.primary:hover:not(:disabled) { background: #ffd83d; box-shado
 body.tema-c :focus-visible { outline: 2px solid #fff !important; outline-offset: 3px; }
 
 /* ---------- Cabecera: casi invisible ---------- */
-body.tema-c .hub-mod { background: rgba(8,10,20,.75); }
+body.tema-c .hub-mod { background: rgba(20,32,84,.75); }
 body.tema-c .hub-mod .tb-btn, body.tema-c .hub-me .pill.coins, body.tema-c .hub-me .pill.gems, body.tema-c .hub-mod .lang-cur, body.tema-c .inner-bar .tb-left .back {
   background: none; border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .hub-mod .tb-btn:hover:not(:disabled), body.tema-c .inner-bar .tb-left .back:hover { background: var(--tc-row); box-shadow: none; }
-body.tema-c .hub-left .hub-tz { border: 0; box-shadow: none; background: rgba(8,10,20,.75); }
+body.tema-c .hub-left .hub-tz { border: 0; box-shadow: none; background: rgba(20,32,84,.75); }
 body.tema-c .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--tc-text); filter: none; }
 body.tema-c .hub-tz small { color: var(--tc-mute) !important; }
 body.tema-c .hub-sep { background: var(--tc-hair); }
@@ -47,11 +49,12 @@ body.tema-c .menu-sec .sec-head h3 { font: 800 15px var(--text); color: var(--tc
 body.tema-c .menu-sec .sec-head h3::before { content: none; }
 body.tema-c .menu-sec .sec-head small { color: var(--tc-mute); text-shadow: 0 1px 6px rgba(0,0,0,.8); }
 /* Los demás modos: filas bajas, con su color solo en un punto */
-body.tema-c .menu-card { min-height: 92px; padding: 14px 18px; transition: background .12s; }
-body.tema-c .menu-card:hover:not(:disabled) { transform: none; background: rgba(20,24,44,.9); box-shadow: inset 0 -2px 0 var(--c); }
+body.tema-c .menu-card { min-height: 92px; padding: 14px 18px; transition: background .12s;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--c) 42%, rgb(20,32,84)) , var(--tc-veil) 72%); box-shadow: inset 4px 0 0 var(--c); }
+body.tema-c .menu-card:hover:not(:disabled) { transform: none; background: linear-gradient(100deg, color-mix(in srgb, var(--c) 58%, rgb(20,32,84)), var(--tc-veil-2) 80%); box-shadow: inset 6px 0 0 var(--c); }
 body.tema-c .menu-card b { font: 800 22px var(--display); color: var(--tc-text); text-shadow: none; }
 body.tema-c .menu-card b .card-ico { background: none; box-shadow: none; width: 30px; height: 30px; }
-body.tema-c .menu-card b::after { content: ''; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c); order: -1; }
+body.tema-c .menu-card b::after { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent); order: -1; }
 body.tema-c .menu-card span { color: var(--tc-mute); text-shadow: none; font-weight: 600; }
 body.tema-c .menu-card .art { width: 80px; height: 80px; filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
 body.tema-c .menu-card:hover .art { transform: none; }
@@ -59,11 +62,11 @@ body.tema-c .menu-card .go { display: none; }
 body.tema-c .menu-card .pvp-live { background: none; padding-left: 0; color: var(--tc-mute); }
 body.tema-c .menu-card .pvp-live .dot { box-shadow: none; }
 /* Historia, la portada: sin caja, el título grande sobre el mundo y el único botón dorado */
-body.tema-c .menu-card.story { min-height: 220px; padding: 26px 30px; background: linear-gradient(90deg, rgba(8,10,20,.82), rgba(8,10,20,.55) 55%, transparent); }
-body.tema-c .menu-card.story:hover:not(:disabled) { background: linear-gradient(90deg, rgba(8,10,20,.9), rgba(8,10,20,.62) 55%, transparent); box-shadow: none; }
-body.tema-c .menu-card.story b { font: 900 64px/1 var(--display); letter-spacing: -1px; }
+body.tema-c .menu-card.story { min-height: 220px; padding: 26px 30px; background: linear-gradient(90deg, rgba(200,40,40,.9), rgba(232,90,40,.62) 55%, rgba(255,140,60,0)); box-shadow: none; }
+body.tema-c .menu-card.story:hover:not(:disabled) { background: linear-gradient(90deg, rgba(214,44,44,.95), rgba(240,100,44,.72) 55%, rgba(255,140,60,0)); box-shadow: none; }
+body.tema-c .menu-card.story b { font: 900 64px/1 var(--display); letter-spacing: -1px; text-shadow: 0 3px 0 rgba(90,10,10,.45); }
 body.tema-c .menu-card.story b::after, body.tema-c .menu-card.story b .card-ico { display: none; }
-body.tema-c .menu-card.story span { font-size: 17px; color: #e3e8f2; max-width: 50%; }
+body.tema-c .menu-card.story span { font-size: 17px; color: #fff; max-width: 50%; text-shadow: 0 1px 3px rgba(90,10,10,.6); }
 body.tema-c .menu-card.story .art { width: 190px; height: 190px; }
 body.tema-c .menu-card.story .go { display: inline-block; transform: none; margin-top: 14px; padding: 8px 22px; border-radius: 4px; background: var(--tc-now); color: #1a1405; box-shadow: none; font: 900 16px var(--display); }
 body.tema-c .menu-card.story:hover .go { transform: none; box-shadow: none; }
@@ -82,41 +85,42 @@ body.tema-c .coll-tile .coll-txt small { color: var(--tc-mute); }
 body.tema-c .missions-widget.has-ready { border: 0 !important; }
 body.tema-c .mw-head .go { color: var(--tc-mute); }
 body.tema-c .mw-head button.claim-all { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); box-shadow: none; border-radius: 4px; }
-body.tema-c .mw-head button.claim-all small { background: var(--tc-text); color: #0b0d18; }
+body.tema-c .mw-head button.claim-all small { background: #38c96a; color: #062312; }
 body.tema-c .mw-sub { font: 700 12px var(--text); color: var(--tc-mute); }
 body.tema-c .mission, body.tema-c .mission.done:not(.claimed) { background: none; border: 0; border-radius: 0; box-shadow: none; padding-left: 0; }
 body.tema-c .mission .m-body b { color: var(--tc-text); }
 body.tema-c .m-ico { background: none; box-shadow: none; filter: none; }
 body.tema-c .m-bar { background: var(--tc-row); border: 0; border-radius: 2px; box-shadow: none; }
-body.tema-c .m-bar i, body.tema-c .mission.done .m-bar i { background: #fff; box-shadow: none; border-radius: 2px; }
+body.tema-c .m-bar i { background: linear-gradient(90deg, #3fb6ff, var(--tc-done)); box-shadow: none; border-radius: 2px; }
+body.tema-c .mission.done .m-bar i { background: linear-gradient(90deg, #38c96a, #7ef0a0); }
 body.tema-c .m-bar span { color: var(--tc-text); text-shadow: 0 1px 2px #000; mix-blend-mode: difference; }
 
 /* ---------- Historia ---------- */
 body.tema-c .feature-sign { background: none; padding-left: 4px; }
 body.tema-c .feature-sign h2 { font: 900 40px/1 var(--display); letter-spacing: -.5px; text-shadow: 0 2px 14px rgba(0,0,0,.7); }
 body.tema-c .feature-sign small { font: 700 14px var(--text); color: var(--tc-mute); text-shadow: 0 1px 6px rgba(0,0,0,.9); }
-body.tema-c .subbar { background: rgba(8,10,20,.75); }
+body.tema-c .subbar { background: rgba(20,32,84,.75); }
 /* Regiones: texto; la elegida, subrayada en blanco */
 body.tema-c .subbar .region-tabs button.rg { background: none; border: 0; border-radius: 0; box-shadow: none; }
 body.tema-c .subbar .region-tabs button.rg:hover:not(.sel) { transform: none; background: var(--tc-row); }
-body.tema-c .subbar .region-tabs button.rg.sel { background: none; box-shadow: inset 0 -3px 0 #fff; }
+body.tema-c .subbar .region-tabs button.rg.sel { background: none; box-shadow: inset 0 -3px 0 var(--tc-done); }
 body.tema-c .subbar .region-tabs button.rg b { text-shadow: none; }
 body.tema-c .subbar .region-tabs button.rg small { color: var(--tc-mute); }
 body.tema-c .rg-pips i { box-shadow: none; }
 body.tema-c .rg-soon { background: none; border: 0; }
 body.tema-c .rg-soon > small { font: 700 12px var(--text); color: var(--tc-mute); }
 body.tema-c .subbar .rg-soon button.soon { background: none; }
-body.tema-c .region-chips .rgc { background: rgba(8,10,20,.7); border: 0; border-radius: 4px; box-shadow: none; }
-body.tema-c .region-chips .rgc.sel { border: 0; box-shadow: inset 0 -3px 0 #fff; }
+body.tema-c .region-chips .rgc { background: rgba(20,32,84,.7); border: 0; border-radius: 4px; box-shadow: none; }
+body.tema-c .region-chips .rgc.sel { border: 0; box-shadow: inset 0 -3px 0 var(--tc-done); }
 body.tema-c .badge-slot { background: rgba(255,255,255,.06); box-shadow: none; }
-body.tema-c .story-head .map-goal { background: linear-gradient(90deg, rgba(8,10,20,.85), rgba(8,10,20,.75)); }
+body.tema-c .story-head .map-goal { background: linear-gradient(90deg, color-mix(in srgb, var(--tc, #5fd8ff) 30%, rgb(20,32,84)), var(--tc-veil) 70%); }
 body.tema-c .story-head .map-goal > small:first-child { font: 700 13px var(--text); color: var(--tc-mute); }
 body.tema-c .story-head .map-goal b { font: 900 26px var(--display); letter-spacing: -.3px; }
 body.tema-c .story-head .map-goal small, body.tema-c .story-head .map-goal .where { color: var(--tc-mute); }
 body.tema-c .goal-leader { background: none; }
-body.tema-c .goal-badge { background: rgba(8,10,20,.7); box-shadow: none; }
+body.tema-c .goal-badge { background: rgba(20,32,84,.7); box-shadow: none; }
 body.tema-c .goal-routes .chip { background: var(--tc-row); border: 0; border-radius: 4px; box-shadow: none; color: var(--tc-text); }
-body.tema-c .story-info { background: rgba(8,10,20,.75); }
+body.tema-c .story-info { background: rgba(20,32,84,.75); }
 body.tema-c .story-info .rotation { color: var(--tc-mute); font-weight: 700; }
 body.tema-c .story-info .rotation b { color: var(--tc-text); text-shadow: none; font-variant-numeric: tabular-nums; }
 body.tema-c .story-info .help { background: none; color: var(--tc-text); border: 1px solid var(--tc-hair); border-radius: 4px; box-shadow: none; }
@@ -124,14 +128,14 @@ body.tema-c .story-info .help svg { color: var(--tc-text); }
 
 /* El camino: lo atrevido de esta pantalla. Velo más claro (se ve el mundo detrás), eje blanco que se dibuja al
    entrar desde el pueblo hasta lo que toca */
-body.tema-c .story-pathwrap { background: linear-gradient(180deg, rgba(8,10,20,.74), rgba(8,10,20,.86)); }
-body.tema-c .story-pathwrap > .story-mode { background: rgba(8,10,20,.85); border: 0; border-radius: 4px; box-shadow: none; }
+body.tema-c .story-pathwrap { background: linear-gradient(180deg, rgba(20,32,84,.74), rgba(20,32,84,.86)); }
+body.tema-c .story-pathwrap > .story-mode { background: rgba(20,32,84,.85); border: 0; border-radius: 4px; box-shadow: none; }
 body.tema-c .story-mode button { border-radius: 3px; }
-body.tema-c .story-mode button.sel { background: #fff; color: #0b0d18; }
-body.tema-c .sp-start::before { background: #fff; box-shadow: none; }
-body.tema-c .sp-start::after, body.tema-c .sp-ch.done .sp-spine::before { background: #fff; }
-body.tema-c .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, #fff 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 4px, transparent 4px 12px); }
-body.tema-c .sp-spine::before { background: repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 4px, transparent 4px 12px); }
+body.tema-c .story-mode button.sel { background: var(--tc-done); color: #06213a; }
+body.tema-c .sp-start::before { background: var(--tc-done); box-shadow: none; }
+body.tema-c .sp-start::after, body.tema-c .sp-ch.done .sp-spine::before { background: var(--tc-done); }
+body.tema-c .sp-ch.now .sp-spine::before { background: linear-gradient(90deg, var(--tc-done) 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
+body.tema-c .sp-spine::before { background: repeating-linear-gradient(90deg, rgba(170,200,255,.4) 0 4px, transparent 4px 12px); }
 @keyframes tcDraw { from { transform: scaleX(0); } }
 @media (prefers-reduced-motion: no-preference) {
   body.tema-c .sp-start::after, body.tema-c .sp-ch.done .sp-spine::before, body.tema-c .sp-ch.now .sp-spine::before { transform-origin: left; animation: tcDraw .22s linear both; }
@@ -151,22 +155,22 @@ body.tema-c .sp-spine::before { background: repeating-linear-gradient(90deg, rgb
   body.tema-c .sp-ch:nth-child(8).now { --tc-at: 7; } body.tema-c .sp-ch:nth-child(9).now { --tc-at: 8; } body.tema-c .sp-ch:nth-child(10).now { --tc-at: 9; }
 }
 @keyframes tcArrive { from { transform: scale(.7); box-shadow: 0 0 0 0 rgba(255,203,5,.9); } to { transform: none; } }
-body.tema-c .sp-gym .sp-dot { background: rgba(14,17,32,.95); box-shadow: none; }
-body.tema-c .sp-gym.done .sp-dot { box-shadow: none; }
-body.tema-c .sp-route:not(.locked) .sp-dot { background: rgba(255,255,255,.14); box-shadow: none; }
+body.tema-c .sp-gym .sp-dot { background: rgba(24,38,96,.95); box-shadow: none; }
+body.tema-c .sp-gym.done .sp-dot { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tc) 45%, rgb(24,38,96)), rgb(24,38,96) 75%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 30%, transparent); }
+body.tema-c .sp-route:not(.locked) .sp-dot { background: rgba(140,200,120,.3); box-shadow: none; }
 body.tema-c .sp-route .sp-dot .mon-icon { filter: none; }
 body.tema-c .sp-route.locked .sp-dot { border: 2px dashed rgba(255,255,255,.3); }
 body.tema-c .sp-routes:not(:empty)::after { border-left-color: rgba(255,255,255,.3); }
-body.tema-c .sp-ord { background: #fff; color: #0b0d18; box-shadow: none; }
+body.tema-c .sp-ord { background: var(--tc-done); color: #06213a; box-shadow: none; }
 body.tema-c .sp-count { background: none; }
-body.tema-c .sp-new { background: #fff; color: #0b0d18; box-shadow: none; border-radius: 3px; }
+body.tema-c .sp-new { background: #ff5a8a; color: #fff; box-shadow: none; border-radius: 3px; }
 body.tema-c .sp-name { text-shadow: 0 1px 3px rgba(0,0,0,.9); }
 body.tema-c .sp-gym.now .sp-dot { border-color: var(--tc-now); box-shadow: 0 0 0 4px rgba(255,203,5,.25); }
 body.tema-c .sp-gym.now .sp-name { background: var(--tc-now); color: #1a1405; border-radius: 4px; box-shadow: none; text-shadow: none; }
 body.tema-c .sp-gym.now .sp-ord { background: var(--tc-now); }
 body.tema-c .sp-go { border-radius: 4px; }
 body.tema-c .sp-legend { border-top: 1px solid var(--tc-hair); color: var(--tc-mute); }
-body.tema-c .sp-k.done { background: #fff; box-shadow: none; }
+body.tema-c .sp-k.done { background: var(--tc-done); box-shadow: none; }
 body.tema-c .sp-k.now { box-shadow: none; }
 
 /* La ficha del sitio */
