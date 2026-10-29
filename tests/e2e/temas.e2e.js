@@ -70,18 +70,17 @@ module.exports = async ({ page, player, ok }) => {
   await enter('?tema=d');
   await page.waitFor(`document.body.classList.contains('tema-d') && document.querySelector('#tema-css').sheet`, 10000);
 
-  // Colores limpios y que se leen. Historia, en bloque: empieza en su rojo (con el blanco encima a 4,5:1 o más) y
-  // acaba en rojo oscuro, no en transparente. Los demás modos, como las tarjetas de siempre: azul noche (el blanco se
-  // lee) con su color encendido detrás del sprite, distinto en cada uno; Clasificatoria en oro, no en marrón
+  // Colores limpios y que se leen. Los modos, como las tarjetas de siempre: azul noche (el blanco se lee) con su color
+  // encendido detrás del sprite, distinto en cada uno: Historia en rojo y Clasificatoria en oro, no en marrón
   const modes = await page.eval(`(() => { ${TD}
     return [...document.querySelectorAll('.menu-card')].map(c => { const st = stops(c), a = st[0], z = st[st.length - 1];
       const glow = st.find(x => (x.length < 4 || x[3] >= .5) && hsl(x)[1] > .5 && x.slice(0, 3).some(v => v > 40)) || a;
       return { m: c.classList[1], white: +onWhite(a).toFixed(2), whiteZ: +onWhite(z).toFixed(2), hA: Math.round(hsl(a)[0]), hZ: Math.round(hsl(z)[0]), lZ: +hsl(z)[2].toFixed(2), alphaZ: z.length > 3 ? z[3] : 1,
         glow: [Math.round(hsl(glow)[0]), +hsl(glow)[1].toFixed(2), +hsl(glow)[2].toFixed(2)], gold: gold(glow) }; }); })()`);
   const hueGap = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
-  const story = modes.find(m => m.m === 'story'), rest = modes.filter(m => m.m !== 'story'), ranked = modes.find(m => m.m === 'ranked');
-  ok(story && story.white >= 4.5 && hueGap(story.hA, story.hZ) <= 12 && story.alphaZ === 1 && story.lZ < .3, `con la D, Historia es un bloque rojo que se lee y acaba en rojo oscuro (${JSON.stringify(story)})`);
-  ok(rest.length >= 6 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los demás modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
+  const story = modes.find(m => m.m === 'story'), rest = modes, ranked = modes.find(m => m.m === 'ranked');
+  ok(story && (story.glow[0] <= 12 || story.glow[0] >= 350) && story.glow[1] > .8, `con la D, Historia brilla en rojo (${JSON.stringify(story && story.glow)})`);
+  ok(rest.length >= 7 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
   ok(rest.every(m => m.glow[1] > .5) && rest.every((m, i) => rest.every((o, j) => i === j || hueGap(m.glow[0], o.glow[0]) >= 12)), `con la D, cada modo lleva su color encendido y distinto del de los demás (${rest.map(m => m.m + ' ' + m.glow[0] + '°').join(', ')})`);
   ok(ranked && ranked.gold, `con la D, Clasificatoria brilla en oro y no en marrón (${JSON.stringify(ranked && ranked.glow)})`);
 

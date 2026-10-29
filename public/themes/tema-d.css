@@ -24,9 +24,9 @@ body.tema-d {
   --td-relief: inset 0 2px 0 rgba(255,255,255,.3), inset 0 -4px 0 rgba(0,0,0,.25);
   --td-drop: 0 10px 22px rgba(0,0,0,.45);
 }
-/* El color de cada modo: --c (vivo), --c1 y --c2 (el bloque de Historia, arriba y abajo) y --g (los demás: su color en
-   r, g, b, encendido sobre el azul noche) */
-body.tema-d .menu-card.story    { --c: #ff5a3a; --c1: #d63a30; --c2: #6a0f0f; }
+/* El color de cada modo: --c (vivo, para el borde y el brillo), --c1 y --c2 (arriba y abajo, donde se pinta lleno) y --g
+   (el mismo en r, g, b, encendido sobre el azul noche de las tarjetas) */
+body.tema-d .menu-card.story    { --c: #ff5a3a; --c1: #d63a30; --c2: #6a0f0f; --g: 255, 90, 58; }
 body.tema-d .menu-card.tower    { --c: #a070ff; --c1: #7b3fe0; --c2: #2e1270; --g: 160, 112, 255; }
 body.tema-d .menu-card.ranked   { --c: #ffcb05; --c1: #a86200; --c2: #452200; --g: 255, 203, 5; }
 body.tema-d .menu-card.casual   { --c: #4f8cff; --c1: #2f6ad8; --c2: #11286a; --g: 79, 140, 255; }
@@ -95,25 +95,32 @@ body.tema-d .menu-card:hover:not(:disabled) { transform: translateY(-3px); borde
   background: linear-gradient(170deg, var(--c1) 0%, color-mix(in srgb, var(--c1) 55%, var(--c2)) 55%, var(--c2) 100%);
   box-shadow: var(--td-relief), 0 8px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 0 30px color-mix(in srgb, var(--c) 60%, transparent), 0 16px 30px rgba(0,0,0,.5); }
 body.tema-d .menu-card:active:not(:disabled) { transform: translateY(2px); box-shadow: var(--td-relief), 0 2px 0 color-mix(in srgb, var(--c2) 70%, #000); }
-/* Los modos que no son Historia, como las tarjetas de siempre: fondo azul noche, el color del modo encendido detrás
-   del sprite (a la derecha), rayas finas y una franja de su color arriba, con el relieve de la D. Así cada modo se
-   reconoce por su color sin que siete bloques de color compitan con Historia y con los premios; y un amarillo o un
-   naranja no se oscurecen a marrón (--g, su color en r, g, b) */
-body.tema-d .menu-card:not(.story) {
+/* Los modos, como las tarjetas de siempre: fondo azul noche, el color del modo encendido detrás del sprite (a la
+   derecha), rayas finas y una franja de su color arriba, con el relieve de la D. Así cada modo se reconoce por su
+   color sin que los bloques de color compitan con los premios; y un amarillo o un naranja no se oscurecen a marrón
+   (--g, su color en r, g, b). Historia, la portada, con su rojo más encendido */
+body.tema-d .menu-card {
   background: repeating-linear-gradient(115deg, rgba(255,255,255,.045) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
     radial-gradient(110% 140% at 100% 55%, rgba(var(--g), .62), rgba(var(--g), .16) 45%, transparent 68%),
     linear-gradient(170deg, #1d2c78, #121c52);
   border-color: rgba(var(--g), .8);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 4px 0 #0b1238, 0 8px 18px rgba(0,0,0,.4); }
-body.tema-d .menu-card:not(.story)::before { inset: 0 0 auto 0; height: 4px; border-radius: 14px 14px 0 0; opacity: 1;
+body.tema-d .menu-card::before { inset: 0 0 auto 0; height: 4px; border-radius: 14px 14px 0 0; opacity: 1;
   background: linear-gradient(90deg, rgb(var(--g)), rgba(var(--g), .5) 50%, transparent); }
-body.tema-d .menu-card:not(.story):hover:not(:disabled) { border-color: rgb(var(--g));
+body.tema-d .menu-card:hover:not(:disabled) { border-color: rgb(var(--g));
   background: repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
     radial-gradient(110% 140% at 100% 55%, rgba(var(--g), .8), rgba(var(--g), .22) 45%, transparent 70%),
     linear-gradient(170deg, #22328a, #14205a);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 6px 0 #0b1238, 0 0 26px rgba(var(--g), .45), 0 12px 24px rgba(0,0,0,.45); }
-body.tema-d .menu-card:not(.story) b { text-shadow: 0 3px 0 rgba(0,0,0,.4), 0 0 18px rgba(var(--g), .45); }
-body.tema-d .menu-card:not(.story) b .card-ico { background: rgba(var(--g), .25); box-shadow: inset 0 0 0 1.5px rgba(var(--g), .8); }
+body.tema-d .menu-card b { text-shadow: 0 3px 0 rgba(0,0,0,.4), 0 0 18px rgba(var(--g), .45); }
+body.tema-d .menu-card b .card-ico { background: rgba(var(--g), .25); box-shadow: inset 0 0 0 1.5px rgba(var(--g), .8); }
+body.tema-d .menu-card.story { background: repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
+    radial-gradient(90% 150% at 85% 55%, rgba(var(--g), .8), rgba(var(--g), .25) 45%, transparent 72%),
+    linear-gradient(120deg, rgba(var(--g), .35), transparent 40%), linear-gradient(170deg, #1d2c78, #121c52);
+  border: 2px solid rgba(var(--g), .9); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 5px 0 #0b1238, 0 0 30px rgba(var(--g), .25), var(--td-drop); }
+body.tema-d .menu-card.story:hover:not(:disabled) { background: repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
+    radial-gradient(90% 150% at 85% 55%, rgba(var(--g), .95), rgba(var(--g), .32) 45%, transparent 74%),
+    linear-gradient(120deg, rgba(var(--g), .42), transparent 42%), linear-gradient(170deg, #22328a, #14205a); }
 body.tema-d .menu-card b { position: relative; z-index: 2; font: 900 26px var(--display); color: var(--td-text); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
 body.tema-d .menu-card b .card-ico { width: 34px; height: 34px; background: rgba(0,0,0,.22); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
 body.tema-d .menu-card span { position: relative; z-index: 2; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5); font-weight: 600; }
@@ -328,9 +335,7 @@ body.tema-d .story-tools .coll-tile .coll-txt small { color: #fff; }
   body.tema-d .menu > .menu-top { height: calc(100dvh - 98px); }
   body.tema-d.has-tip .menu > .menu-top { height: calc(100dvh - 140px); }
   body.tema-d .menu-card, body.tema-d .menu-card.wide { min-height: 0; padding: 7px 9px; border-radius: 12px; }
-  body.tema-d .menu-card.story { box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 6px 12px rgba(0,0,0,.4); }
-  body.tema-d .menu-card.story::before { border-radius: 10px 10px 40% 40% / 10px 10px 12px 12px; }
-  body.tema-d .menu-card:not(.story)::before { border-radius: 10px 10px 0 0; }
+  body.tema-d .menu-card::before { border-radius: 10px 10px 0 0; }
   body.tema-d .menu-card b, body.tema-d .menu-card.wide b { font-size: 14px; text-shadow: 0 2px 0 rgba(0,0,0,.35); }
   /* (sin el icono: el sprite ya dice qué es, y así «Partida rápida» cabe) */
   body.tema-d .menu-card b .card-ico { display: none; }
