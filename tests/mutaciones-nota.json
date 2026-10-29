@@ -1,0 +1,249 @@
+{
+ "fecha": "2026-10-29",
+ "cazadas": 28,
+ "total": 38,
+ "escapadas": [
+  "resultados-sin-medalla",
+  "tienda-compra-otro",
+  "tienda-precio-mentiroso",
+  "resultados-dinero-doble",
+  "tutorial-premio-repetido",
+  "tesoros-precio-mentiroso",
+  "tooltip-pegado-al-tocar",
+  "amigos-enviada-sin-nombre",
+  "idioma-ignorado",
+  "traduccion-sin-traducir"
+ ],
+ "mutaciones": {
+  "camino-desafiar-mudo": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/camino.e2e.js"
+   ],
+   "motivo": "camino.e2e.js: ✗ error: Tiempo agotado esperando: document.querySelector('.leader-intro b')?.textContent === 'Lt. Surge' || document.querySelector('.tname .tname-face[src=\"trainers/surge.png\"]')"
+  },
+  "medalla-no-se-da": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ vencer a Pegaso da la Medalla Céfiro y premios | ✗ la Ruta 32 saca un Pokémon de sus encuentros reales"
+  },
+  "resultados-sin-medalla": {
+   "resultado": "escapada"
+  },
+  "captura-no-se-guarda": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: TypeError: Cannot read properties of undefined (reading 'hp')"
+  },
+  "liga-no-reinicia": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ perder uno te devuelve al primero | ✗ ganar los 5 seguidos completa la región, con el premio del Campeón; después, tope 100"
+  },
+  "tienda-cobra-de-mas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ comprar 3 Poké Balls | ✗ perder no da dinero"
+  },
+  "tienda-compra-otro": {
+   "resultado": "escapada"
+  },
+  "tienda-precio-mentiroso": {
+   "resultado": "escapada"
+  },
+  "vender-paga-mal": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ vender un Pokémon da 102 ₽ y lo quita"
+  },
+  "resultados-dinero-doble": {
+   "resultado": "escapada"
+  },
+  "diario-sin-premio": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/diario.e2e.js"
+   ],
+   "motivo": "diario.e2e.js: ✗ da el dinero y las Poké Balls del día 1"
+  },
+  "tutorial-premio-repetido": {
+   "resultado": "escapada"
+  },
+  "tesoros-gratis": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/tesoros.e2e.js"
+   ],
+   "motivo": "tesoros.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.profile.gems === 140"
+  },
+  "tesoros-precio-mentiroso": {
+   "resultado": "escapada"
+  },
+  "misiones-cambio-gratis-infinito": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/misiones.e2e.js"
+   ],
+   "motivo": "misiones.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.profile.missions.freeRerolls.daily === 1"
+  },
+  "golpes-no-restan-ps": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: al descubierto sí"
+  },
+  "rendirse-no-rinde": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/rendirse.e2e.js"
+   ],
+   "motivo": "rendirse.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.view === 'results'"
+  },
+  "elo-al-reves": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js",
+    "tests/e2e/entrenadores-ia.e2e.js"
+   ],
+   "motivo": "server-test.js: ✗ historial de clasificatorias y puesto en el ranking | ✗ el ranking no filtra datos privados · entrenadores-ia.e2e.js: ✗ el resultado cuenta para el ELO"
+  },
+  "buscar-partida-sin-equipo": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/clasificatoria.e2e.js"
+   ],
+   "motivo": "clasificatoria.e2e.js: ✗ sin equipo, el botón de buscar está desactivado y los 3 huecos vacíos"
+  },
+  "ia-sin-etiqueta": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/entrenadores-ia.e2e.js"
+   ],
+   "motivo": "entrenadores-ia.e2e.js: ✗ error: Tiempo agotado esperando: document.querySelectorAll('.ladder-rows tbody tr .ia-tag').length >= 10"
+  },
+  "joystick-al-reves": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil.e2e.js"
+   ],
+   "motivo": "movil.e2e.js: ✗ el joystick a la derecha lo mueve a la derecha (140 → 23)"
+  },
+  "movil-sin-aviso-girar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil.e2e.js"
+   ],
+   "motivo": "movil.e2e.js: ✗ desde el menú, en vertical pide girar el móvil | ✗ en vertical pide girar el móvil"
+  },
+  "tooltip-pegado-al-tocar": {
+   "resultado": "escapada"
+  },
+  "barra-legal-tapa": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/barra-legal.e2e.js",
+    "tests/e2e/pantallas-escritorio.e2e.js"
+   ],
+   "motivo": "barra-legal.e2e.js: ✗ 1280×800: pegada al borde de abajo, centrada y sin pasarse del ancho | ✗ 1280×800: va al final de la pantalla y no tapa nada | ✗ 820×700: pegada al borde de abajo, centrada y sin pasarse del ancho · pantallas-escritorio.e2e.js: ✗ la barra legal no se monta sobre el contenido de ninguna pantalla:"
+  },
+  "esc-no-cierra-ficha": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/evoluciones.e2e.js"
+   ],
+   "motivo": "evoluciones.e2e.js: ✗ error: Tiempo agotado esperando: !document.querySelector('.mon-sheet')"
+  },
+  "ficha-siguiente-no-pasa": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/ficha.e2e.js"
+   ],
+   "motivo": "ficha.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.sheet.uid !== 1"
+  },
+  "buscador-no-filtra": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/mis-pokemon.e2e.js"
+   ],
+   "motivo": "mis-pokemon.e2e.js: ✗ buscar «mew» deja a Mew y Mewtwo | ✗ el título de la caja dice cuántos tienes (sin tope) y cuántos se ven"
+  },
+  "mote-cuela-html": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/motes.e2e.js"
+   ],
+   "motivo": "motes.e2e.js: ✗ error: Tiempo agotado esperando: [...document.querySelectorAll('.mon-card .mon-name')].some(x => x.textContent.includes('<b>Rayo</b>'))"
+  },
+  "pokedex-cuenta-mal": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/pokedex.e2e.js"
+   ],
+   "motivo": "pokedex.e2e.js: ✗ la Pokédex dice 1 / 251"
+  },
+  "amigos-enviada-sin-nombre": {
+   "resultado": "escapada"
+  },
+  "musica-volumen-se-olvida": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/musica.e2e.js"
+   ],
+   "motivo": "musica.e2e.js: ✗ bajar el volumen a 0 la silencia y se recuerda | ✗ «Sin música» la vuelve a encender | ✗ el volumen se mantiene al recargar"
+  },
+  "aviso-legal-sin-afiliacion": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/barra-legal.e2e.js"
+   ],
+   "motivo": "barra-legal.e2e.js: ✗ avisa de que no está afiliado a Nintendo, Creatures ni GAME FREAK"
+  },
+  "idioma-ignorado": {
+   "resultado": "escapada"
+  },
+  "traduccion-sin-traducir": {
+   "resultado": "escapada"
+  },
+  "traduccion-hueco-roto": {
+   "resultado": "cazada",
+   "por": [
+    "tools/i18n-check.js --strict"
+   ],
+   "motivo": "i18n-check.js: "
+  },
+  "admin-2fa-cualquiera": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/admin.e2e.js",
+    "tools/admin-test.js"
+   ],
+   "motivo": "admin.e2e.js: ✗ error: Tiempo agotado esperando: document.querySelector('#login-err').textContent · admin-test.js: ✗ código 2FA malo: no entra"
+  },
+  "codigo-correo-reutilizable": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js",
+    "tests/e2e/login-enlace.e2e.js"
+   ],
+   "motivo": "server-test.js: Error: timeout esperando autherr · login-enlace.e2e.js: ✗ error: Tiempo agotado esperando: document.querySelector('.login-modal .auth-msg.bad') && /Código incorrecto o caducado/.test(document.querySelector('.login-modal .auth-msg').textContent)"
+  },
+  "web-sin-csp": {
+   "resultado": "cazada",
+   "por": [
+    "tools/security-test.js"
+   ],
+   "motivo": "security-test.js: ✗ la CSP permite el importmap de la página por su hash | TypeError: Cannot read properties of undefined (reading 'split')"
+  }
+ }
+}
