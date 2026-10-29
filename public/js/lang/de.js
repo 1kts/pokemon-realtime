@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': 'Neuer Look und Weg mit Fotos',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'Das Spiel hat einen neuen Look: jeder Modus mit eigener Farbe, Karten mit mehr Tiefe und Gold nur für das, was als Nächstes kommt oder abholbereit ist.',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': 'Die Effekte deines Avatars und die Pokémon-Partikel in den Menüs sind jetzt Pixel-Art: Flammen, Blasen, Blitze, Blätter oder Schneeflocken je nach Typ, mehrere gleichzeitig.',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': 'Story ist jetzt nur noch der Weg: Arenen und Routen sind Karten mit einem Foto des Ortes, «Du bist hier» zeigt, wo du stehst, und beim Öffnen ist die erste Route zum Fangen gewählt.',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': 'Auf der Karte jeder Route stehen ihr besonderes Pokémon und die umherstreifenden Pokémon in Gold in derselben Liste wie die anderen.',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': 'Auf dem Handy zeigen die Kampfknöpfe den ganzen Namen, das Typ-Symbol und die Energie, die sie kosten, und «Weiter» ist bei den Ergebnissen immer zu sehen.',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': 'Öffnest du Schnelles Spiel ohne Team, stellst du es direkt dort zusammen, statt in der Rangliste zu landen; und im Kleiderschrank siehst du beim Darüberfahren, woher jedes Teil kommt.',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Arenaleiter mit eigenen Taktiken',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Jeder Arenaleiter, jedes Mitglied der Top Vier und jeder Champ hat Taktiken passend zu Typ und Arena: Rocko verschanzt sich hinter Felsen, Pyro kämpft aus der Lava und Bianka eilt zum Heilen.',

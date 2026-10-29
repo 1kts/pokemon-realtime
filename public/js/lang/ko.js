@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': '새로운 모습과 사진이 있는 여정',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': '게임이 새로운 모습으로 바뀌었어요. 모드마다 고유한 색, 더 입체적인 카드, 그리고 금색은 다음 도전과 받을 수 있는 보상에만 쓰여요.',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': '아바타 효과와 메뉴의 포켓몬 파티클이 이제 픽셀 아트예요. 타입에 따라 불꽃, 거품, 번개, 나뭇잎, 눈송이가 여러 개 함께 나와요.',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': '스토리는 이제 여정 하나뿐이에요. 체육관과 도로는 그 장소의 사진이 있는 카드이고, \'현재 위치\'가 어디까지 왔는지 보여 주며, 열면 처음 잡을 도로가 선택되어 있어요.',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': '각 도로 정보에서 특별한 포켓몬과 떠도는 포켓몬이 다른 포켓몬과 같은 목록에 금색으로 나와요.',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': '모바일에서는 배틀 버튼에 기술 이름 전체, 타입 아이콘, 드는 에너지가 표시되고, 결과 화면에서는 \'계속\'이 항상 보여요.',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': '팀 없이 빠른 배틀을 열어도 랭크 배틀로 넘어가지 않고 그 자리에서 팀을 꾸릴 수 있어요. 옷장에서는 마우스를 올리면 각 아이템을 어디서 얻는지 알 수 있어요.',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': '관장마다 고유 전술',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '모든 체육관 관장, 사천왕, 챔피언이 자신의 타입과 경기장에 맞는 전술을 써요. 웅은 바위 뒤에 진을 치고, 강연은 용암 위에서 싸우고, 꼭두는 회복하러 달려가요.',

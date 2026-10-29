@@ -185,21 +185,12 @@
   .story-head .map-goal.has-leader { padding-right: 110px; }
 }
 @media (max-height: 500px) {
-  /* Mapa de la Historia en el móvil: en horizontal, que quepa entero en la pantalla; la leyenda, fuera (tapaba
-   medio mapa) */
-  .story .map { width: min(100%, calc((100vh - 20px) * 1.6)); justify-self: center; margin-inline: auto; }
-}
-@media (max-height: 500px), (max-width: 560px) {
-  .story .map-legend { display: none; }
-}
-@media (max-height: 500px) {
   /* Historia en el móvil en horizontal: el mapa arriba (las regiones y el objetivo, debajo) y la ficha del sitio a su
    lado, de su misma altura y con su propio scroll; el botón de jugar siempre a la vista, abajo. Los nodos, más
    pequeños para que se vea el mapa */
   .story > .inner-bar { order: -2; }
   .story > .story-body { order: -1; margin-bottom: 10px; }
   .story-body { grid-template-columns: min(calc((100vh - 76px) * 1.6), calc(100% - 250px)) minmax(0, 1fr); gap: 8px; align-items: stretch; }
-  .story .story-body .map { width: 100%; margin: 0; }
   .story-side { height: 0; min-height: 100%; }
    /* tan alta como el mapa, sin estirar la fila */
   .story-side .node-info { overflow: auto; flex: 1 1 auto; min-height: 0; padding: 10px 12px; }
@@ -210,12 +201,7 @@
   .story-side .node-info .mini { min-width: 52px; }
   .story-side .node-info .mini canvas, .story-side .node-info .mini img.portrait { width: 36px !important; height: 36px !important; }
   .story-side .node-info button.primary { position: sticky; bottom: -10px; z-index: 3; margin-top: 8px; padding: 8px 14px; box-shadow: 0 -8px 14px rgba(14,18,40,.9), 0 4px 0 #b97a00; }
-  .story-list { max-height: calc(100vh - 76px); }
-  /* Mapa pequeño (móvil): el nombre de una ruta solo al seleccionarla (se pisaban con los de los líderes); la ficha
-   de al lado ya dice cuál es */
-   .story .map .node.route:not(.sel) > label { display: none !important; }
   .story > .subbar { display: none; }
-  .story .map .node.locked:not(.sel) > label { display: none !important; }
   .panel.online-me > h3, .online-me > .league, .online-me > .big-elo, .online-me > p.small:first-of-type, .online-me:has(> .warn) > p.small { display: none; }
   /* Móvil en horizontal: elegir inicial (las regiones en la cabecera y los tres en fila) y la Liga (los cinco
    rivales en una fila, más bajos) */
@@ -242,8 +228,6 @@
      que se explica solo */
   .story-pathwrap { height: calc(100vh - 76px); height: calc(100dvh - 76px); min-height: 250px; }   /* (sin la barra del navegador) */
   .story-path { --gw: 110px; --gh: 136px; --nw: 140px; --nh: 168px; --rw: 106px; --rh: 84px; --road: 14px; --nm: 15px; --goh: 30px; --stopm: 8px; padding: 10px 14px 6px; }
-  .story-pathwrap > .story-mode { top: auto; bottom: 5px; left: 6px; padding: 2px; }
-  .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
   .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 12px; padding: 4px 8px 4px 158px; font-size: 9.5px; }
   .sp-legend .sp-k-lock { display: none; }
   .sp-k { width: 28px; height: 20px; }

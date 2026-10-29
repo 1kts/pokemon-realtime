@@ -21,7 +21,7 @@ module.exports = async ({ page, player, ok, env }) => {
   const enter = async who => {
     await page.loginAs(who.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
-    await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);
+    await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);   // atajo: fuera las ventanas de bienvenida (novedades, premio diario), que no son lo que se prueba
   };
   await page.resize(1280, 800);
 

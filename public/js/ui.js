@@ -263,7 +263,7 @@ export class UI {
     card(online, t('Partida rápida'), t('Online sin ELO, con tu equipo de Clasificatoria'), 'casual', 6, () => {
       // (sin equipo, primero se prepara: la misma pantalla, pero de Partida rápida, que busca partida rápida)
       if (!Data.pvpTeam(p.pvpTeam)) { this.onlineMode = 'casual'; return this.show('online'); }
-      this.lastMode = 'casual'; this.net.send({ t: 'queue', mode: 'casual' }); });
+      this.lastMode = 'casual'; this.casualBack = 'menu'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
@@ -1213,7 +1213,7 @@ export class UI {
     const mode = casual ? 'casual' : 'ranked';
     const go = el('button', 'primary', casual ? t('Buscar partida rápida') : t('Buscar partida clasificatoria'));
     go.disabled = !Data.pvpTeam(p.pvpTeam);
-    go.onclick = () => { this.lastMode = mode; this.net.send({ t: 'queue', mode }); };
+    go.onclick = () => { this.lastMode = mode; if (casual) this.casualBack = 'online'; this.net.send({ t: 'queue', mode }); };
     me.append(go);
     if (go.disabled) me.append(el('p', 'warn', t('Prepara tu equipo de 3 para poder buscar partida.')));
     const col = el('div', 'online-col');
@@ -1619,6 +1619,7 @@ export class UI {
   // Adónde se va tras un combate: la pantalla desde la que se empezó
   afterBattleView() {
     const lm = this.lastMode;
+    if (lm === 'casual' && this.casualBack === 'online') return 'online';   // (Partida rápida empezada desde su pantalla)
     if (lm && lm.kind === 'story' && lm.a === 'gym' && Data.NODES[lm.id] && Data.NODES[lm.id].index >= Data.LEAGUE_FROM) { this.leagueRegion = Data.NODES[lm.id].region; return 'league'; }
     return lm && lm.kind === 'story' ? 'story' : lm === 'ranked' ? 'online' : lm && lm.kind === 'practice' ? 'practice' : lm && lm.kind === 'tower' ? 'tower' : 'menu';
   }

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': 'New look and a Path with photos',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'The game has a new look: each mode with its own colour, chunkier cards and gold only for what\'s next or ready to claim.',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': 'Your avatar effects and the Pokémon particles in the menus are now pixel art: flames, bubbles, sparks, leaves or snowflakes by type, several at once.',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': 'Story is now just the Path: gyms and routes are cards with a photo of the place, «You are here» shows where you are and the first route to catch is picked when you open it.',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': 'On each route\'s card, its special Pokémon and the roamers appear in gold in the same list as the rest.',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': 'On mobile, battle buttons show the full name, the type icon and the energy they cost, and «Continue» is always visible on the results.',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': 'If you open Quick match without a team, you set it up right there instead of ending up in Ranked; and in the Wardrobe you see where each item comes from on hover.',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Leaders with signature plays',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Every Gym Leader, Elite Four member and Champion has plays that fit their type and arena: Brock digs in behind the rocks, Blaine fights from the lava and Whitney runs off to heal.',

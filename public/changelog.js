@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.34.0', date: '2026-10-29', title: 'Aspecto nuevo y Camino con fotos',
+      items: [
+        ['nuevo', 'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.'],
+        ['nuevo', 'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.'],
+        ['cambio', 'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.'],
+        ['cambio', 'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.'],
+        ['cambio', 'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.'],
+        ['arreglo', 'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.'],
+      ],
+    },
+    {
       v: '0.33.0', date: '2026-10-29', title: 'Líderes con jugadas propias',
       items: [
         ['nuevo', 'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.'],

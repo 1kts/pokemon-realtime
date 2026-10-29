@@ -130,9 +130,6 @@ body.tema-b .story-info .help svg { color: var(--tb-text); }
 
 /* El camino: la pantalla de la Pokédex, más oscura; el eje recorrido en blanco y lo que falta, punteado */
 body.tema-b .story-pathwrap { background: #101217; }
-body.tema-b .story-pathwrap > .story-mode { background: var(--tb-body); border: 1px solid var(--tb-line); border-radius: 4px; box-shadow: none; }
-body.tema-b .story-mode button { border-radius: 3px; }
-body.tema-b .story-mode button.sel { background: var(--tb-text); color: var(--tb-body); }
 body.tema-b .sp-ord { background: var(--tb-text); color: var(--tb-body); box-shadow: 0 0 0 2px #101217; }
 body.tema-b .sp-count { background: var(--tb-row); border-radius: 3px; }
 body.tema-b .sp-new { background: var(--tb-text); color: var(--tb-body); border-radius: 3px; box-shadow: 0 0 0 2px #101217; }

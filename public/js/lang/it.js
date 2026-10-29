@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': 'Nuovo look e Cammino con foto',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'Il gioco ha un nuovo look: ogni modalità ha il suo colore, carte con più spessore e l\'oro solo per la prossima sfida e per ciò che è pronto da riscattare.',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': 'Gli effetti del tuo avatar e le particelle dei Pokémon nei menu ora sono in pixel art: fiamme, bolle, fulmini, foglie o fiocchi di neve in base al tipo, più di uno insieme.',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': 'La Storia ora è solo il Cammino: palestre e percorsi sono carte con la foto del luogo, «Sei qui» mostra dove sei e all\'apertura è già scelto il primo percorso da catturare.',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': 'Nella scheda di ogni percorso, il suo Pokémon speciale e quelli vaganti appaiono in oro nella stessa lista degli altri.',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': 'Su mobile, i pulsanti della lotta mostrano il nome intero, l\'icona del tipo e l\'energia che costano, e nei risultati «Continua» è sempre in vista.',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': 'Se apri Partita rapida senza squadra, la prepari lì stesso invece di finire in Classificate; e nel Guardaroba vedi da dove arriva ogni cosa passandoci sopra con il mouse.',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Capipalestra con mosse da maestro',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Ogni Capopalestra, membro dei Superquattro e Campione ha tattiche legate al suo tipo e alla sua arena: Brock si trincera dietro le rocce, Blaine combatte dalla lava e Chiara corre a curarsi.',

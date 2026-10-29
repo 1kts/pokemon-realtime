@@ -99,10 +99,20 @@ function installGuide() {
   document.body.append(box);
 }
 
-// Nombre de un movimiento para un botón pequeño: cada palabra en su línea (como mucho dos), recortada a 8 letras
-// El nombre en el botón redondo: entero (sin recortar), una palabra por línea, y más pequeño cuanto más larga la palabra
-const nameCls = s => { const n = Math.max(...s.trim().split(/\s+/).map(w => w.length)); return n > 9 ? ' xs' : n > 7 ? ' s' : ''; };
-const shortName = s => s.trim().split(/\s+/).slice(0, 2).join('<br>');
+// El nombre en el botón redondo: entero (sin recortar), en dos líneas como mucho (con tres palabras o más, partido
+// por donde quedan más parejas: «Pantalla / de Humo»), y más pequeño cuanto más larga la línea
+const nameLines = s => {
+  const w = s.trim().split(/\s+/);
+  if (w.length <= 2) return w;
+  let best = null;
+  for (let i = 1; i < w.length; i++) {
+    const l = [w.slice(0, i).join(' '), w.slice(i).join(' ')];
+    if (!best || Math.max(...l.map(x => x.length)) < Math.max(...best.map(x => x.length))) best = l;
+  }
+  return best;
+};
+const nameCls = s => { const n = Math.max(...nameLines(s).map(w => w.length)); return n > 9 ? ' xs' : n > 7 ? ' s' : ''; };
+const shortName = s => nameLines(s).join('<br>');
 
 const capture = (node, id) => { try { node.setPointerCapture(id); } catch {} };   // el dedo sigue siendo de ese botón aunque se salga
 const el = (tag, cls, html = '') => { const e = document.createElement(tag); e.className = cls; e.innerHTML = html; return e; };

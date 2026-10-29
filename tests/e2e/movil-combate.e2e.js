@@ -1,7 +1,7 @@
 // En el móvil (844×390 y 667×375), los botones del combate se entienden: cada movimiento con su nombre entero (sin
 // recortar), el icono de su tipo y lo que gasta de energía, y la barra de energía con su ⚡. Al acabar, la ventana de
 // resultados va en corto: lo ganado en una fila, cada Pokémon en una ficha pequeña, y «Continuar» siempre a la vista
-// sin tener que bajar
+// sin tener que bajar. Un nombre de tres palabras («Pantalla de Humo») sale entero, en dos líneas
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'combatemovil' });
   for (const d of [4, 7, 1]) { me.client.send({ t: 'dev', dex: d, level: 12, region: 'kanto' }); await me.client.wait(m => m.t === 'profile'); }
@@ -43,4 +43,20 @@ module.exports = async ({ page, player, ok }) => {
     await page.click('Continuar');
     await page.waitFor(`window.__app.ui.view !== 'results'`);
   }
+
+  // Grimer en una ruta: «Pantalla de Humo» entera (antes se quedaba en «Pantalla de»), en dos líneas y dentro del botón
+  const g = await player({ user: 'combatemovil2' });
+  g.client.send({ t: 'dev', dex: 88, level: 30, region: 'kanto' }); await g.client.wait(m => m.t === 'profile');
+  await page.resize(667, 375);
+  await page.goto('/');
+  await page.eval(`localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.touch', '1'); localStorage.setItem('arena.iosTip', '1'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
+  await page.loginAs(g.token);
+  await page.waitFor(`window.__app.ui.view === 'menu'`);
+  await page.eval(`window.__app.net.send({ t: 'story', a: 'route', id: 'k-ruta1' }); true`);   // atajo: empezar un combate de ruta (entrar por el Camino lo prueba camino.e2e)
+  await page.waitFor(`window.__app.battle && window.__app.battle.latest && document.querySelector('#hud.touch .mv .tc-name')`, 20000);
+  const smoke = await page.eval(`(() => { const b = [...document.querySelectorAll('#hud.touch .mv')].find(x => x.querySelector('b').textContent.trim() === 'Pantalla de Humo');
+    if (!b) return null; const n = b.querySelector('.tc-name'), r = b.getBoundingClientRect(), nr = n.getBoundingClientRect();
+    return { name: n.innerText.replace(/\\s+/g, ' ').trim(), lines: n.innerText.trim().split('\\n').length, fits: nr.left >= r.left - 1 && nr.right <= r.right + 1 && n.scrollWidth <= n.clientWidth + 1 }; })()`);
+  ok(smoke && smoke.name === 'Pantalla de Humo' && smoke.lines === 2 && smoke.fits, `667×375: «Pantalla de Humo» sale entera, en dos líneas y dentro de su botón (${JSON.stringify(smoke)})`);
+  await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);   // atajo: acabar el combate
 };

@@ -174,9 +174,6 @@ body.tema-c .story-info .help svg { color: var(--tc-text); }
 /* El camino: lo atrevido de esta pantalla. Velo más claro (se ve el mundo detrás) y el camino recorrido en baldosas
    celestes que se dibujan al entrar desde el pueblo hasta lo que toca */
 body.tema-c .story-pathwrap { background: linear-gradient(180deg, rgba(20,32,84,.74), rgba(20,32,84,.86)); }
-body.tema-c .story-pathwrap > .story-mode { background: rgba(20,32,84,.85); border: 0; border-radius: 4px; box-shadow: none; }
-body.tema-c .story-mode button { border-radius: 3px; }
-body.tema-c .story-mode button.sel { background: var(--tc-done); color: #06213a; }
 /* (lo recorrido, baldosas celestes; lo que falta, baldosas apagadas) */
 body.tema-c :is(.sp-start, .sp-ch.done, .sp-ch.now)::before { border-block: 2px solid #2b6c9e;
   background: repeating-linear-gradient(90deg, var(--tc-done) 0 18px, color-mix(in srgb, var(--tc-done) 70%, #06213a) 18px 20px); }

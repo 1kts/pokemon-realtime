@@ -34,8 +34,10 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`document.querySelector('.q-mode').textContent`) === 'Partida rápida', 'con el equipo listo, «Buscar partida rápida» busca partida rápida');
   await page.click('.q-cancel');
   await page.waitFor(`!document.querySelector('.q-mode')`, 15000);
+  await page.waitFor(`window.__app.ui.view === 'online'`);
+  ok((await page.eval(shown)).sign === 'Partida rápida', 'al cancelar la búsqueda vuelves a Partida rápida, donde estabas');
   // Clasificatoria sigue abriendo Clasificatoria
-  if (await page.eval(`window.__app.ui.view !== 'menu'`)) await page.click('.inner-bar .back');
+  await page.click('.inner-bar .back');
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.click('.menu-card.ranked');
   await page.waitFor(`window.__app.ui.view === 'online'`);

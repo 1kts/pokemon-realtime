@@ -323,7 +323,6 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 6px rgba(0,0,0,
 .story-info .rotation b { font-size: 18px; }
 .story-info .help { margin-left: auto; }
 .story-body { flex: none; }                    /* la fila mide lo que el mapa: todo el ancho a 16:10 */
-.story .map { max-height: none; }
 .story-side .node-info { overflow: visible; flex: 1 0 auto; }  /* alta como el mapa como mínimo; si no cabe, crece */
 .story-side .node-info { padding: 14px 16px; }
 .story-side .node-info h3 { font-size: 20px; }
@@ -783,32 +782,6 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 .story-head .map-goal > small:first-child { font: 900 11px var(--display); letter-spacing: 1.2px; color: #ffd76a; }
 .story-info .rotation { display: flex; flex-direction: column; gap: 2px; font-weight: 800; color: #c4d0e4; }
 .story-info .rotation b { font: 900 30px/1 var(--display); color: #fff; letter-spacing: 1px; text-shadow: 0 0 16px rgba(255,210,63,.35); font-variant-numeric: tabular-nums; }
-/* Mapa: marco de luz, viñeta y leyenda en tarjeta */
-.story .map { border-radius: 20px; border: 2px solid rgba(255,230,160,.5); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3), 0 0 0 4px rgba(20,26,60,.6), 0 18px 40px rgba(0,0,0,.5); }
-.story .map::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 4; border-radius: inherit; box-shadow: inset 0 0 70px rgba(0,20,60,.45); }
-.story .map-legend { z-index: 6; gap: 6px 14px; padding: 7px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #e2e9f8;
-  background: linear-gradient(135deg, rgba(39,48,106,.92), rgba(20,26,60,.92)); border: 1px solid rgba(170,190,255,.25); box-shadow: 0 6px 16px rgba(0,0,0,.4); }
-/* Nodos */
-.story .node label { padding: 1px 7px; border-radius: 7px; background: rgba(14,18,40,.82); text-shadow: none; box-shadow: 0 2px 4px rgba(0,0,0,.4); line-height: 1.25; }
-.story .node label small { color: #ffe9a8; }
-.story .node.gym { width: 46px; height: 46px; border-width: 3px; box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.45); }
-.story .node.gym .node-badge { width: 32px; height: 32px; }
-.story .node.gym.done { box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 16px var(--tc), 0 4px 10px rgba(0,0,0,.45); }
-.story .node.gym.next { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 0 6px rgba(255,210,63,.35), 0 0 24px rgba(255,210,63,.7); animation: nodeNext 1.4s ease-in-out infinite; }
-@keyframes nodeNext { 50% { box-shadow: 0 0 0 3px rgba(14,18,40,.6), 0 0 0 10px rgba(255,210,63,.15), 0 0 30px rgba(255,210,63,.9); } }
-.story .node.route { width: 30px; height: 30px; border: 3px solid #fff; background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 3px 8px rgba(0,0,0,.45); }
-.story .node.route .mon-icon { width: 34px; height: auto; margin-top: -10px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)); }
-.story .node.route.new { box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 0 0 5px #ffd23f, 0 0 18px #ffd23f; }
-.story .node .goal-tag, .story .node .new-tag { padding: 2px 8px; border-radius: 6px; font: 900 9px var(--display); letter-spacing: .8px; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
-.story .node .new-tag { color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); }
-.story .node .goal-tag { color: #2a1c00; background: #fff; }
-.story .node.sel { outline: 3px solid var(--gold); outline-offset: 4px; }
-/* «Estás aquí»: el fondo blanco es solo de la etiqueta, no del hueco del avatar (que es otro span) */
-/* El borde es el de su marco (bronce, oro, maestro…); sin marco, blanco para que se vea sobre el mapa */
-.you-pin .ava { --s: 34px !important; border-width: 3px; border-radius: 50%; overflow: hidden; }
-.you-pin .ava.frame-none { --ring: #fff; background: #141a33; box-shadow: 0 0 0 2px rgba(14,18,40,.6), 0 4px 10px rgba(0,0,0,.5); }
-.you-pin .ava:not(.frame-maestro) { background-color: #141a33; }
-.you-pin .ava .ava-pic { margin: 0; padding: 0; background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.2), transparent 70%); border-radius: 50%; box-shadow: none; width: 100%; height: 100%; display: grid; place-items: center; }
 
 /* Ficha del líder o la ruta */
 .story-side .node-info .leader-head { margin: -14px -16px 8px; padding: 14px 16px 0; border-radius: 20px 20px 0 0;
@@ -1015,38 +988,6 @@ body.in-battle .ui-confirm { cursor: auto; }
 .tc-chip.fav { background: rgba(255,140,60,.18); border-color: rgba(255,150,70,.55); color: #ffd2a8; }
 @media (max-width: 980px) { .tc-mid { display: none; } }
 
-/* ---------- Mapa de Historia: lo que toca resalta, lo demás se apaga ---------- */
-.map.focus .node.locked { width: 16px !important; height: 16px !important; opacity: .45; filter: grayscale(1) brightness(.7); }
-.map.focus .node.locked > *:not(.lock) { display: none !important; }
-.map.focus .node.locked .lock { transform: scale(.75); }
-.map .paths .leg { stroke: #ffcb05 !important; stroke-width: 3 !important; stroke-dasharray: 7 6; animation: legMove 1.1s linear infinite; filter: drop-shadow(0 0 3px rgba(255,203,5,.7)); }
-.map .paths .leg.goal { stroke-width: 4 !important; }
-@keyframes legMove { to { stroke-dashoffset: -13; } }
-.node .ord { position: absolute; left: -8px; top: -8px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 900 11px var(--display); font-style: normal; color: #2a1c00; background: var(--gold, #ffcb05); box-shadow: 0 2px 4px rgba(0,0,0,.45); z-index: 2; }
-.node.gym.done .ord { background: #d6e2f5; }
-/* Mapa / Lista */
-.story-mode { display: inline-flex; }
-.map > .story-mode { position: absolute; top: 12px; right: 12px; left: auto; z-index: 6; background: rgba(10,14,34,.75); backdrop-filter: blur(4px); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
-.story-listwrap { position: relative; display: flex; flex-direction: column; min-height: 0; }
-.story-listwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
-.story-listwrap .story-list { padding-top: 56px; }
-.story-list { display: flex; flex-direction: column; gap: 6px; padding: 10px; max-height: 70vh; overflow: auto; border-radius: 16px; background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 10px 30px rgba(0,0,0,.45); }
-.sl-step { display: grid; grid-template-columns: 28px 44px 1fr auto; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; text-align: left; background: #222b58; border: 1px solid rgba(255,255,255,.1); color: #e6edf7; }
-.sl-step:hover { background: #2a346a; }
-.sl-step.leader { background: linear-gradient(90deg, color-mix(in srgb, var(--tc) 28%, #222b58), #222b58); border-color: color-mix(in srgb, var(--tc) 45%, transparent); }
-.sl-step.now { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 16px rgba(255,203,5,.3); }
-.sl-step.sel { outline: 2px solid #fff; outline-offset: 1px; }
-.sl-step.locked { opacity: .55; }
-.sl-step.done .sl-st { color: #4fd06a; font-size: 16px; }
-.sl-n { font: 900 13px var(--display); color: #8d9bbb; text-align: center; }
-.sl-ico { display: grid; place-items: center; width: 44px; height: 44px; }
-.sl-ico img, .sl-ico canvas { max-width: 40px; max-height: 40px; image-rendering: pixelated; }
-.sl-face { height: 40px; }
-.sl-t { display: flex; flex-direction: column; font-weight: 800; }
-.sl-t small { color: #9fb0cc; font-weight: 600; font-size: 12px; }
-.sl-st { font-style: normal; font-weight: 800; font-size: 12px; color: var(--gold-hi, #ffe27a); white-space: nowrap; }
-.sl-st svg { width: 14px; height: 14px; color: #8d9bbb; }
-
 /* Tarjeta de entrenador: barra hacia la siguiente liga */
 .tc-lbar { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; max-width: 280px; }
 .tc-lbar .bar { height: 8px; border-radius: 99px; background: rgba(0,0,0,.35); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
@@ -1057,7 +998,6 @@ body.in-battle .ui-confirm { cursor: auto; }
 .story-info .help { margin-left: 0 !important; order: -1; padding: 12px 18px; font-size: 15px; background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; border: 0; box-shadow: 0 3px 0 #b97a00; }
 .story-info .help svg { color: #2a1c00; }
 .story-info .rotation { text-align: right; align-items: flex-end; }
-.story .map-legend, .map-legend { left: auto !important; right: 12px; bottom: 10px; max-width: 46%; justify-content: flex-end; font-size: 10.5px; }
 
 /* Logros › Líneas: una fila por línea que se despliega con sus retos */
 .lg-grid.lg-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1139,14 +1079,7 @@ body.in-battle .ui-confirm { cursor: auto; }
 .pvp-mv.on { background: color-mix(in srgb, var(--tc) 40%, #222b58); border-color: color-mix(in srgb, var(--tc) 80%, transparent); }
 .pvp-mv:disabled { opacity: .45; }
 
-/* ---------- Liga: edificio en el mapa y su pantalla ---------- */
-.node.league-hq { width: 52px !important; height: 52px !important; border-radius: 14px; background: radial-gradient(circle at 50% 35%, #3a3368, #161a36) !important; border: 3px solid var(--gold, #ffcb05) !important; z-index: 3; }
-.node.league-hq .league-ico { width: 36px; height: 36px; }
-.node.league-hq label { display: block !important; }
-.node.league-hq.locked .league-ico { filter: grayscale(1) brightness(.7); }
-.node.league-hq.locked { border-color: #6a7090 !important; }
-.node.league-hq .crown { position: absolute; top: -14px; color: var(--gold, #ffcb05); font-style: normal; font-size: 16px; text-shadow: 0 2px 2px #000; }
-.sl-ico .league-ico { width: 34px; height: 34px; }
+/* ---------- Liga: su pantalla ---------- */
 .league-view .lv-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
 .lv-hall { padding: 18px; background: linear-gradient(180deg, #232a5c, #141936 70%), var(--panel, #1a2140); }
 .lv-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -1177,18 +1110,6 @@ body.in-battle .ui-confirm { cursor: auto; }
 
 /* Etiqueta del nombre (Ash#4821): discreta, para distinguir a quien se llama igual */
 .ntag { margin-left: 2px; font-size: .62em; font-weight: 700; color: #8d9bbb; letter-spacing: .3px; }
-
-/* Liga Pokémon en el mapa: su edificio (dorado), sin recuadro; bloqueada se ve en gris, sin nombre */
-.node.league-hq { width: 56px !important; height: 56px !important; background: none !important; border: 0 !important; box-shadow: none !important; }
-.node.league-hq .league-ico { width: 56px; height: 56px; image-rendering: pixelated; filter: drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
-.node.league-hq.next .league-ico { filter: drop-shadow(0 0 6px var(--gold, #ffcb05)) drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
-.map.focus .node.league-hq.locked > .league-ico { display: block !important; filter: grayscale(1) brightness(.8); opacity: .8; }
-.map.focus .node.league-hq.locked > .lock { position: absolute; bottom: -4px; right: -4px; }
-.sl-ico .league-ico { image-rendering: pixelated; }
-.map.focus .node.league-hq.locked { width: 44px !important; height: 44px !important; opacity: 1; filter: none; }
-.map.focus .node.league-hq.locked .league-ico { width: 44px; height: 44px; }
-/* Sin líneas discontinuas hacia lo nuevo: ya lo marcan las etiquetas «Nueva» y «Siguiente reto» */
-.map .paths .leg { display: none; }
 
 /* ---------- Combate táctil (móvil y tablet): joystick a la izquierda, movimientos a la derecha ---------- */
 body.touch-battle { touch-action: none; overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -1290,10 +1211,6 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .tz-chip span { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
 .tz-chip b { font: 900 12px var(--display); color: #fff; }
 .tz-chip small { font-size: 10px; font-weight: 800; color: #c4d0e4; }
-/* Nodos a la escala del mapa (--ms la pone la pantalla al medir el mapa); las etiquetas encogen menos para que
-   se sigan leyendo */
-.story .map .node, .story .map .city, .story .map .you-pin { scale: var(--ms, 1); }
-.story .map .node label, .story .map .city span { scale: max(1, calc(.72 / var(--ms, 1))); transform-origin: 50% 0; }
 
 /* ---------- Logo: al estilo del de Pokémon. Letras gruesas con borde azul y relieve, «Poké» en blanco y
    «Arenas» en amarillo dorado con degradado, ligeramente inclinado, y una Poké Ball delante ---------- */
@@ -1436,9 +1353,6 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 @media (prefers-reduced-motion: reduce) { .hub-me .support svg, .hub-me .support img, .hub-me .support canvas { animation: none; } }
 /* Entrenador de la IA (Clasificatoria): etiqueta «IA» junto al nombre */
 .ia-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 6px; font: 900 10px/16px var(--display); letter-spacing: .5px; color: #0b1220; background: #7ae8ff; vertical-align: middle; }
-/* Liga en el mapa: la etiqueta como la de los gimnasios (con la ciudad debajo) y la corona sobre el tejado */
-.node.league-hq label { top: 100%; margin-top: 2px; }
-.node.league-hq .crown { top: -16px; left: 50%; transform: translateX(-50%); font-size: 20px; line-height: 1; z-index: 3; filter: drop-shadow(0 0 4px rgba(255,203,5,.8)); }
 /* Contadores rojos (premios por recoger…): siempre por delante del brillo y del parpadeo de su tarjeta, y dentro
    de ella (las tarjetas recortan lo que sobresale) */
 .nbadge { z-index: 6; }
@@ -1695,35 +1609,6 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .install-guide p { margin: 0 0 14px; font-size: 12.5px; color: #c4d0e4; }
 .install-guide button { width: 100%; }
 
-/* ---------- Mapa de Historia pequeño (móvil, ventana estrecha): nodos, rótulos y etiquetas a su escala ----------
-   (.map es un contenedor: esto mira el ancho del propio mapa, no el de la ventana) */
-@container (max-width: 640px) {
-  .story .node.gym { width: 34px; height: 34px; border-width: 2px; }
-  .story .node.gym .node-badge { width: 22px; height: 22px; }
-  .story .node.route { width: 26px; height: 26px; border-width: 2px; }   /* (26: lo mínimo para el dedo) */
-  .story .node.route .mon-icon { width: 26px; margin-top: -8px; }
-  .story .node.elite, .story .node.champion { width: 32px; height: 32px; }
-  .story .node.league-hq { width: 38px !important; height: 38px !important; border-radius: 10px; }
-  .story .node.league-hq .league-ico { width: 26px; height: 26px; }
-  .story .node label { margin-top: 2px; padding: 0 4px; border-radius: 5px; font-size: 9px; line-height: 1.2; }
-  .story .node label small { font-size: 7.5px; }
-  .story .node .goal-tag, .story .node .new-tag { padding: 1px 4px; border-radius: 4px; font-size: 7px; letter-spacing: .3px; }
-  .story .node .ord { left: -6px; top: -6px; width: 14px; height: 14px; font-size: 9px; }
-  .story .node .lock { width: 13px; height: 13px; right: -6px; top: -6px; }
-  .story .node .lock svg { width: 8px; height: 8px; }
-  .story .node .caught-count { top: -12px; padding: 0 3px; font-size: 7.5px; }
-  .story .node.sel { outline-width: 2px; outline-offset: 2px; }
-  .story .you-pin { margin-top: -12px; }
-  .story .you-pin .ava { --s: 20px; }
-  .story .you-pin span { font-size: 7px; padding: 0 4px; }
-  .map > .story-mode { top: 6px; right: 6px; padding: 2px; border-radius: 9px; }
-  .map > .story-mode button { min-height: 26px; padding: 3px 10px; font-size: 11px; }
-}
-/* Muy pequeño: la ciudad, solo en el sitio elegido */
-@container (max-width: 470px) {
-  .story .node:not(.sel) label small { display: none; }
-}
-
 /* Combate en el móvil: flecha con la cara del rival en el borde cuando queda fuera de la pantalla */
 .foe-arrow { position: fixed; left: 0; top: 0; z-index: 25; width: 40px; height: 40px; pointer-events: none; }
 .foe-arrow[hidden] { display: none; }
@@ -1731,56 +1616,6 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
   background: #1a2042; border: 2px solid #ff5a4a; box-shadow: 0 0 10px rgba(255,90,74,.6); }
 .foe-arrow i { position: absolute; inset: 0; }
 .foe-arrow i::after { content: ''; position: absolute; right: -9px; top: 50%; margin-top: -7px; border: 7px solid transparent; border-left: 9px solid #ff5a4a; border-right: 0; }
-
-/* Mapa de Historia: cada sitio responde al dedo en un círculo más grande que su dibujo (el mapa 3D los encoge con
-   la perspectiva, y los bloqueados son un punto); no se ve. No más grande: los de sitios vecinos se pisarían */
-.story .map .node::before { content: ''; position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; transform: translate(-50%, -50%); border-radius: 50%; }
-
-/* ---------- Mapa de Historia: jerarquía ----------
-   Un solo foco, el siguiente reto: anillo dorado que late, el único rótulo dorado y el camino hasta él. Lo demás
-   se calla: los gimnasios ganados enseñan su medalla y el líder (la ciudad, al elegirlos), las rutas cuentan sus
-   capturas con un anillo alrededor (no con un número encima) y las nuevas llevan una estrella, sin parpadear. Sin
-   etiquetas en mayúsculas: los textos que se ven son nombres. Los textos que se quitan de la vista siguen ahí para
-   los lectores de pantalla. Con #screen delante: gana también a las reglas del mapa 3D (.map.map3d-on), que eran
-   más específicas */
-#screen .story .map .node .caught-count, #screen .story .map .node .goal-tag { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
-/* Rutas: el anillo de capturas (verde lo capturado; entero y dorado si están todas) */
-#screen .story .map .node.route:not(.locked)::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
-  background: conic-gradient(#8fe36a calc(var(--prog, 0) * 1turn), rgba(255,255,255,.22) 0);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); }
-#screen .story .map .node.route:not(.locked):has(.caught-count.full)::after { background: var(--gold); }
-/* Ruta nueva: una estrella en su esquina (antes «NUEVA» encima y la ruta latiendo) */
-#screen .story .map .node.route.new { animation: none; box-shadow: 0 0 0 2px rgba(14,18,40,.55), 0 3px 8px rgba(0,0,0,.45); }
-#screen .story .map .node.route .new-tag { left: auto; right: -9px; top: -9px; bottom: auto; transform: none; width: 17px; height: 17px; padding: 0; display: grid; place-items: center;
-  border-radius: 50%; font-size: 0; letter-spacing: 0; color: #2a1c00; background: var(--gold); box-shadow: 0 0 0 2px rgba(14,18,40,.7), 0 0 10px rgba(255,203,5,.7); }
-#screen .story .map .node.route .new-tag::before { content: '✦'; font-size: 11px; line-height: 1; }
-/* Rótulos: nombres en minúsculas y sin la ciudad, salvo en el siguiente reto y en lo que eliges. Las rutas, solo al
-   elegirlas o al pasar por encima (sus nombres son largos y se montaban sobre los gimnasios; las nuevas ya salen en
-   «Tu objetivo») */
-#screen .story .map .node.route:not(.sel):not(:hover):not(:focus-visible) > label { display: none; }
-#screen .story .map .node.route:is(.sel, :hover, :focus-visible) > label { display: block; z-index: 6; }
-#screen .story .map .node label { font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: none; }
-#screen .story .map .node:not(.next):not(.sel) label small { display: none; }
-#screen .story .map .node.gym.done:not(.sel) label { background: rgba(14,18,40,.62); color: #dfe6f5; font-weight: 600; }
-/* El siguiente reto: su rótulo es el único dorado */
-#screen .story .map .node.next > label { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #2a1c00; font-weight: 800; box-shadow: 0 2px 0 #b97a00, 0 4px 10px rgba(0,0,0,.45); }
-#screen .story .map .node.next > label small { color: #5a4300; }
-/* Estás aquí: el avatar en su chincheta, por encima del sitio (no encima de su medalla) y en minúsculas */
-#screen .story .map .you-pin { margin-top: -30px; }
-#screen .story .map .you-pin span { text-transform: none; letter-spacing: 0; font-size: 10px; }
-/* Leyenda: la estrella de las rutas nuevas, como en el mapa */
-#screen .story .map-legend .lg.new { display: inline-grid; place-items: center; width: 14px; height: 14px; background: var(--gold); box-shadow: none; animation: none; }
-#screen .story .map-legend .lg.new::before { content: '✦'; font-size: 9px; color: #2a1c00; }
-/* Mapa pequeño: menos rótulos (solo el siguiente reto, lo elegido y los líderes), la chincheta sin texto */
-@container (max-width: 640px) {
-  #screen .story .map .node label { font-size: 8.5px; }
-  #screen .story .map .node.route:not(.locked)::after { inset: -4px; }
-  #screen .story .map .node.route .new-tag { width: 12px; height: 12px; right: -6px; top: -6px; }
-  #screen .story .map .node.route .new-tag::before { font-size: 8px; }
-  #screen .story .map .you-pin { margin-top: -20px; }
-  #screen .story .map .you-pin span { display: none; }
-  #screen .story .map .you-pin::after { border-width: 4px; }
-}
 
 /* ---------- Historia: el camino (storypath.js) ----------
    Un viaje por un camino de tierra: los gimnasios son tarjetas con la foto de su arena y su líder de pie, en el
@@ -1790,7 +1625,6 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .story-body > .story-pathwrap { align-self: start; }   /* (de su altura, no de la del panel de al lado) */
 .story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
   background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
-.story-pathwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 .story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 /* Medidas: tarjetas de gimnasio (--gw × --gh), la del siguiente reto (--nw × --nh), las de ruta (--rw × --rh), el
    ancho del camino (--road), el sitio para el nombre debajo (--nm) y el del botón de jugar (--goh) */
@@ -1852,7 +1686,7 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-badge { width: 30px; height: 30px; margin-top: -3px; padding: 2px; border-radius: 50%; background: radial-gradient(circle, rgba(8,12,32,.7) 62%, transparent 66%); image-rendering: pixelated; filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
 .sp-gym:not(.done) .sp-badge { filter: grayscale(1) brightness(.85) opacity(.75); }
 .sp-gym.done .sp-card { box-shadow: 0 0 0 3px rgba(8,12,32,.7), 0 0 16px color-mix(in srgb, var(--tc) 70%, transparent), 0 6px 14px rgba(0,0,0,.45); }
-.story .badge-slot:not(.got) .badge-img, .story .badges-mini .badge-img:not(.got), .story .sl-step:not(.done) .badge-img, .story .node-badge:not(.got) { filter: grayscale(1) brightness(.95) opacity(.6); }
+.story .badge-slot:not(.got) .badge-img, .story .badges-mini .badge-img:not(.got), .story .node-badge:not(.got) { filter: grayscale(1) brightness(.95) opacity(.6); }
 /* Lo que toca: más grande, dorado y lo único que late; el jugador de pie a su lado, en el camino */
 .sp-gym.now .sp-card { width: var(--nw); height: var(--nh); border: 4px solid var(--gold); animation: spNow 1.6s ease-in-out infinite; }
 .sp-gym.now .sp-ord { background: var(--gold); }

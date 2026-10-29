@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': '全新外观与带照片的路线',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': '游戏换上了新外观：每个模式都有自己的颜色，卡片更有立体感，金色只留给下一个挑战和可以领取的奖励。',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': '你的头像特效和菜单里宝可梦的粒子现在都是像素风：按属性出现火焰、泡泡、闪电、树叶或雪花，还会好几种一起出现。',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': '故事模式现在只有路线：道馆和道路都是带有当地照片的卡片，“你在这里”标出你走到了哪里，打开时会自动选中第一条要捕捉的道路。',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': '在每条道路的信息里，它的特别宝可梦和游走宝可梦会以金色出现在同一个列表中。',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': '在手机上，对战按钮会显示完整的招式名、属性图标和消耗的能量，结算画面里“继续”始终可见。',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': '没有队伍时打开快速对战，可以直接在那里组队，不会再跳到排位赛；在衣柜里，鼠标悬停就能看到每件物品从哪里获得。',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': '道馆馆主的拿手战术',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '每位道馆馆主、四天王和冠军都有符合自己属性和场地的战术：小刚会躲到岩石后面，夏伯在熔岩上战斗，小茜会跑去回复。',

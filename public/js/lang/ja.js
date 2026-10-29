@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': '新しい見た目と写真つきの道のり',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'ゲームの見た目が新しくなりました。モードごとに色が分かれ、カードに厚みが出て、金色は次の目標と受け取れるものだけに使われます。',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': 'アバターのエフェクトとメニューのポケモンのパーティクルがドット絵になりました。タイプごとに炎、泡、稲妻、葉っぱ、雪の結晶などが重なって出ます。',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': 'ストーリーは道のりだけになりました。ジムとルートはその場所の写真つきカードになり、「現在地」で今どこにいるかがわかり、開くと最初につかまえるルートが選ばれています。',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': '各ルートの情報では、特別なポケモンと徘徊するポケモンがほかのポケモンと同じリストに金色で表示されます。',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': 'スマホでは、バトルのボタンに技の名前全体、タイプのアイコン、使うエネルギーが表示され、結果画面では「つづける」がいつも見えます。',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': 'チームがないままクイックバトルを開いても、ランクバトルに飛ばされずその場でチームを組めます。衣装では、マウスを乗せると各アイテムの入手場所がわかります。',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'ジムリーダーの とくいわざ せんじゅつ',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'ジムリーダー、四天王、チャンピオンは タイプと バトルフィールドに あった せんじゅつを つかう。タケシは いわの かげに たてこもり、カツラは ようがんの うえで たたかい、アカネは かいふくに はしる。',

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.0 ----------
+    'Aspecto nuevo y Camino con fotos': 'Nouveau look et Chemin en photos',
+    'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'Le jeu change de look : chaque mode a sa couleur, les cartes ont plus de relief et l\'or est réservé à ton prochain défi et à ce qui est prêt à récupérer.',
+    'Los efectos de tu avatar y las partículas de los Pokémon en los menús son ahora pixel art: llamas, burbujas, rayos, hojas o copos según el tipo, varios a la vez.': 'Les effets de ton avatar et les particules des Pokémon dans les menus passent en pixel art : flammes, bulles, éclairs, feuilles ou flocons selon le type, plusieurs à la fois.',
+    'Historia es solo el Camino: gimnasios y rutas son tarjetas con la foto del lugar, «Estás aquí» marca dónde vas y al entrar sale elegida la primera ruta por capturar.': 'L\'Histoire, c\'est maintenant le Chemin : arènes et routes sont des cartes avec la photo du lieu, «Tu es ici» montre où tu en es et la première route à capturer est choisie à l\'ouverture.',
+    'En la ficha de cada ruta, su Pokémon especial y los errantes salen en dorado en la misma lista que los demás.': 'Sur la fiche de chaque route, son Pokémon spécial et les Pokémon errants s\'affichent en or dans la même liste que les autres.',
+    'En el móvil, los botones del combate llevan el nombre entero, el icono del tipo y la energía que gastan, y en los resultados «Continuar» se ve siempre.': 'Sur mobile, les boutons de combat affichent le nom entier, l\'icône du type et l\'énergie qu\'ils coûtent, et «Continuer» reste toujours visible dans les résultats.',
+    'Si entras en Partida rápida sin equipo, lo preparas allí mismo en vez de acabar en Clasificatoria; y en el Vestuario ves de dónde sale cada cosa al pasar el ratón.': 'Si tu ouvres Partie rapide sans équipe, tu la prépares sur place au lieu d\'atterrir en Classé ; et dans la Garde-robe, tu vois d\'où vient chaque objet en passant la souris.',
     // ---------- Novedades v0.33.0 ----------
     'Líderes con jugadas propias': 'Des champions avec leurs propres tactiques',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'Chaque champion d\'arène, membre du Conseil 4 et Maître a des tactiques liées à son type et à son arène : Pierre se retranche derrière les rochers, Auguste se bat depuis la lave et Blanche file se soigner.',
