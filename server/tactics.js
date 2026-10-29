@@ -1,8 +1,11 @@
 // Jugadas de los líderes: una capa pequeña encima de la IA de utilidad (server/ai.js). Cada líder, Alto Mando y
 // Campeón tiene 2 o 3 jugadas propias que encajan con su tipo y su arena (Brock se atrinchera tras las rocas,
 // Blaine pelea desde la lava, Blanca va a las baldosas de curación…). Cada jugada tiene una condición; si se cumple,
-// retoca la entrada que ya ha decidido la IA (adónde va y, a veces, qué ataque usa) y deja el resto igual: las
-// esquivas, la Protección y los cambios siguen siendo de la IA de utilidad.
+// retoca la entrada que ya ha decidido la IA (adónde va y, a veces, qué ataque usa) y deja el resto igual:
+//   - si la IA está esquivando, saliendo de una zona, apartándose del borde o desatascándose, su movimiento manda;
+//   - solo ataca cuando a la IA le tocaba atacar (sus dudas y su cadencia, que dependen de la habilidad), con la
+//     misma disciplina de energía, sin disparar contra una roca y sin pisar una Protección, un cambio ni un
+//     movimiento de huida (Teletransporte, muro, humo, curarse) que haya elegido la IA.
 // Sin trampas: ven lo mismo que la IA (al rival con el retraso de reacción, st.view) y lo que el jugador también ve
 // (avisos de la arena, terreno, baldosas). La primera vez que usa cada jugada se anuncia (evento 'tactic').
 const D = require('../public/data.js');
@@ -16,6 +19,8 @@ const typesOf = mon => D.SPECIES[mon.dex].types;
 // telarañas a los de bicho)
 const SAFE = [[T.LAVA, ['fuego']], [T.POISON, ['veneno', 'acero']], [T.WEB, ['bicho']]];
 const COVER = new Set(['rock', 'rockwall', 'pillar', 'mirror']);
+// Movimientos con los que la IA se pone a salvo: si los ha elegido, ninguna jugada los cambia
+const ESCAPE = new Set(['blink', 'wall', 'smoke', 'heal']);
 
 // Jugadas de cada líder (por id del nodo), en orden de preferencia
 const LEADER_PLAYS = {
@@ -30,11 +35,16 @@ const LEADER_PLAYS = {
 };
 
 // ---------- Ayudas ----------
-function steer(inp, from, to, w = 1) {
-  const dx = to.x - from.x, dy = to.y - from.y, d = Math.hypot(dx, dy);
+// Llevarlo hacia un punto, mezclado con lo que ya quería hacer la IA. Si la IA está esquivando o escapando, no se
+// toca: su movimiento manda. Devuelve la distancia que queda
+function steer(c, to, w = 0.8) {
+  const { inp, side } = c;
+  const dx = to.x - side.x, dy = to.y - side.y, d = Math.hypot(dx, dy);
+  if (c.st.evade) return d;
+  c.steered = true;
   if (d < 6) { inp.mx *= 0.3; inp.my *= 0.3; return d; }
-  inp.mx = clamp(inp.mx * 0.35 + dx / d * w, -1, 1);
-  inp.my = clamp(inp.my * 0.35 + dy / d * w, -1, 1);
+  inp.mx = clamp(inp.mx * 0.5 + dx / d * w, -1, 1);
+  inp.my = clamp(inp.my * 0.5 + dy / d * w, -1, 1);
   return d;
 }
 // ¿Llega este movimiento al rival desde aquí?
@@ -48,32 +58,48 @@ function reaches(m, dist, fr) {
   if (m.kind === 'area') return m.at === 'self' ? dist < m.radius * 0.85 : dist < m.maxRange;
   return false;
 }
-// El mejor movimiento que se puede usar ya y que cumple ok(m); score(m) decide entre varios
+// El mejor movimiento que se puede usar ya y que cumple ok(m); score(m) decide entre varios. Con la misma disciplina
+// que la IA: guarda su reserva de energía (salvo para rematar) y no tira proyectiles ni rayos contra una roca
 function pick(c, ok, score = m => m.dmg * D.typeMult(m.type, typesOf(c.fmon))) {
+  const blocked = c.ai.lineBlocked(c.b, c.side, c.view);
+  const reserve = c.foeHp <= 0.25 ? 0 : (c.st.reserve || 0);
   let best = -1, bs = -Infinity;
   c.mon.moves.forEach((k, i) => {
     const m = D.MOVES[k];
     if (!m || c.mon.cds[i] > 0 || c.side.energy < m.cost || m.selfKO || !m.dmg || !reaches(m, c.view.dist, c.fmon.r) || !ok(m)) return;
+    if (m.cost > 0 && c.side.energy - m.cost < reserve) return;
+    if (blocked && (m.kind === 'proj' || m.kind === 'beam')) return;
     const s = score(m);
     if (s > bs) { bs = s; best = i; }
   });
   return best;
 }
-// Lanza el movimiento i al rival (con la misma anticipación que la IA de utilidad)
+// Lanza el movimiento i al rival (con la misma anticipación que la IA de utilidad). Solo si a la IA le tocaba atacar
+// en este tick y no ha elegido protegerse, cambiar o ponerse a salvo
 function cast(c, i) {
-  if (i < 0 || c.inp.c === 4 || c.inp.sw >= 0 || !c.b.canAct(c.side)) return false;
+  if (i < 0 || !c.st.mayAttack || c.inp.c === 4 || c.inp.sw >= 0 || !c.b.canAct(c.side)) return false;
+  const chosen = c.inp.c >= 0 && c.inp.c < 4 && D.MOVES[c.mon.moves[c.inp.c]];
+  if (chosen && ESCAPE.has(chosen.kind)) return false;
   c.ai.aimMove(c.inp, c.side, c.view, c.view.dist, D.MOVES[c.mon.moves[i]], c.skill);
   c.inp.c = i;
   return true;
 }
 const nearest = (list, p) => list.reduce((best, q) => (!best || Math.hypot(q.x - p.x, q.y - p.y) < Math.hypot(best.x - p.x, best.y - p.y) ? q : best), null);
+// Centros de las casillas de un tipo de terreno del mapa (b.base), una vez por combate: luego basta con mirar si
+// siguen siendo de ese tipo (la hierba se quema, los charcos crecen…)
+function cellsOf(b, t) {
+  b.cellCache = b.cellCache || new Map();
+  if (!b.cellCache.has(t)) b.cellCache.set(t, b.base.flatMap((x, i) => (x === t ? [{ i, ...S.cellCenter(i) }] : [])));
+  return b.cellCache.get(t);
+}
 
 // ---------- Jugadas ----------
-// Cada una: fits(b) = ¿tiene sentido en esta arena? · when(c) = ¿ahora? · act(c) = qué hace · max = cuánto dura como mucho (s)
+// Cada una: fits(b) = ¿tiene sentido en esta arena? · when(c) = ¿ahora? · act(c) = qué hace · max = cuánto dura como
+// mucho (s); luego descansa otro tanto. Si al ir hacia su sitio no avanza (una roca en medio), también descansa
 const PLAYS = {
-  // Ponerse detrás de una roca (o pilar, espejo, roca caída) respecto al rival cuando carga un ataque a distancia o
-  // cuando hay que recargar energía con poca vida, y atacar desde ahí con lo que no necesita línea de tiro (áreas).
-  // Poco rato: escondido todo el combate tampoco pega
+  // Ponerse detrás de una roca (o pilar, espejo, roca caída) respecto al rival cuando le apunta de lejos o cuando hay
+  // que recargar energía con poca vida, y atacar desde ahí con lo que no necesita línea de tiro (áreas). Poco rato:
+  // escondido todo el combate tampoco pega
   trinchera: {
     max: 3,
     fits: (b) => b.obstacles.some(o => COVER.has(o.kind)) || !!(b.arena.m.rockfall || b.arena.m.pillars),
@@ -89,7 +115,7 @@ const PLAYS = {
         if (d < bd) { bd = d; best = p; }
       }
       if (!best) return false;
-      const d = steer(c.inp, c.side, best);
+      const d = steer(c, best, 1);
       if (d < 30) cast(c, pick(c, m => m.kind === 'area' && m.at !== 'self'));
       return true;
     },
@@ -104,23 +130,24 @@ const PLAYS = {
   // Pelear desde el terreno que a su tipo no le afecta y al rival sí (que tenga que entrar para pegarle), cuando el
   // rival se acerca o solo pega de cerca
   refugio: {
+    max: 8,
     fits: (b) => SAFE.some(([t]) => b.base.includes(t)),
     when: c => !c.view.hidden && c.safe && c.foeAvoids(c.safe) && (c.view.dist < 130 || !c.foeRanged),
     act(c) {
-      if (c.b.terrain[S.cellIndex(c.side.x, c.side.y)] === c.safe) { c.inp.mx *= 0.5; c.inp.my *= 0.5; return true; }
+      if (c.b.terrain[S.cellIndex(c.side.x, c.side.y)] === c.safe) { if (!c.st.evade) { c.inp.mx *= 0.5; c.inp.my *= 0.5; } return true; }
       let best = null, bd = 300;
-      c.b.terrain.forEach((t, i) => {
-        if (t !== c.safe) return;
-        const p = S.cellCenter(i), d = Math.hypot(p.x - c.side.x, p.y - c.side.y);
+      for (const p of cellsOf(c.b, c.safe)) {
+        if (c.b.terrain[p.i] !== c.safe) continue;
+        const d = Math.hypot(p.x - c.side.x, p.y - c.side.y);
         if (d < bd && Math.hypot(p.x - c.view.x, p.y - c.view.y) > 90) { bd = d; best = p; }
-      });
+      }
       if (!best) return false;
-      steer(c.inp, c.side, best);
+      steer(c, best);
       return true;
     },
   },
-  // Esconderse (hierba alta, niebla u oscuridad) mientras recarga energía, sin atacar para no descubrirse, y salir a
-  // pegar cuando el rival se acerca
+  // Esconderse (hierba alta, niebla u oscuridad) mientras recarga energía, sin gastarla, y salir a pegar cuando el
+  // rival se acerca
   emboscada: {
     max: 3,
     fits: (b) => b.base.includes(T.GRASS) || !!b.arena.m.fog || !!b.arena.dark || !!b.arena.m.regrow,
@@ -133,21 +160,22 @@ const PLAYS = {
         if (c.view.dist > c.b.arena.dark + 30) spot = { x: c.side.x, y: c.side.y };
         else { const a = Math.atan2(c.side.y - c.view.y, c.side.x - c.view.x); spot = { x: clamp(c.view.x + Math.cos(a) * (c.b.arena.dark + 60), 60, S.ARENA.w - 60), y: clamp(c.view.y + Math.sin(a) * (c.b.arena.dark + 60), 60, S.ARENA.h - 60) }; }
       } else {
-        const spots = [...c.b.arena.fog];
-        c.b.terrain.forEach((t, i) => { if (t === T.GRASS) spots.push(S.cellCenter(i)); });
+        const spots = [...c.b.arena.fog, ...cellsOf(c.b, T.GRASS).filter(p => c.b.terrain[p.i] === T.GRASS)];
         spot = nearest(spots.filter(p => Math.hypot(p.x - c.view.x, p.y - c.view.y) > 140), c.side);
       }
       if (!spot) return false;
-      steer(c.inp, c.side, spot);
-      if (c.inp.c >= 0 && c.inp.c < 4 && D.MOVES[c.mon.moves[c.inp.c]].cost > 0) c.inp.c = -1;   // (la energía, para salir a pegar)
+      steer(c, spot);
+      const chosen = c.inp.c >= 0 && c.inp.c < 4 && D.MOVES[c.mon.moves[c.inp.c]];
+      if (chosen && chosen.cost > 0 && !ESCAPE.has(chosen.kind)) c.inp.c = -1;   // (la energía, para salir a pegar)
       return true;
     },
   },
   // Con poca vida, a las baldosas de curación mientras les quede carga (las flores de Erika curan muy despacio: no compensa)
   curacion: {
+    max: 8,
     fits: (b) => !!b.arena.pads,
     when: c => { const p = c.myHp < 0.55 && !c.b.sudden && c.healSpot(); return !!p && Math.hypot(p.x - c.side.x, p.y - c.side.y) < 300; },
-    act(c) { steer(c.inp, c.side, c.healSpot()); return true; },
+    act(c) { steer(c, c.healSpot(), 1); return true; },
   },
   // El rival está mojado: hielo o electricidad, que le hacen más daño
   mojado: {
@@ -155,18 +183,20 @@ const PLAYS = {
     when: c => !c.view.hidden && !!(c.view.flags & F.WET),
     act: c => cast(c, pick(c, m => m.type === 'hielo' || m.type === 'electrico')),
   },
-  // El rival está tocado y yo no: a por él, con lo más fuerte y sin guardar energía
+  // El rival está tocado y yo no: a por él, con lo más fuerte (sin reserva de energía si ya está para rematar)
   acoso: {
+    max: 6,
     fits: () => true,
     when: c => !c.view.hidden && c.foeHp < 0.35 && c.myHp > c.foeHp + 0.15,
     act(c) {
-      if (c.view.dist > 90) steer(c.inp, c.side, c.view, 0.9);
+      if (c.view.dist > 90) steer(c, c.view, 0.7);
       cast(c, pick(c, () => true));
       return true;
     },
   },
   // Con poca vida y el rival encima: escapar por el teletransporte más cercano
   teletransporte: {
+    max: 4,
     fits: (b) => S.parseMap(b.mapName).pads.length > 0 && !!b.arena.m.warp,
     when: c => c.myHp < 0.3 && c.view.dist < 180 && c.b.arena.warpCd && c.b.arena.warpCd[c.side.idx] <= 0,
     act(c) {
@@ -174,7 +204,7 @@ const PLAYS = {
         .filter(p => Math.hypot(p.to.x - c.view.x, p.to.y - c.view.y) > 220);
       const pad = nearest(ends, c.side);
       if (!pad) return false;
-      steer(c.inp, c.side, pad);
+      steer(c, pad, 1);
       return true;
     },
   },
@@ -191,11 +221,12 @@ function context(b, side, inp, ai) {
   const st = side.aiState, f = b.foe(side), mon = b.mon(side), fmon = b.mon(f);
   const myTypes = typesOf(mon), foeTypes = typesOf(fmon);
   const safeOf = types => (SAFE.find(([t, ok]) => ok.some(x => types.includes(x)) && b.base.includes(t)) || [])[0];
-  const c = {
+  const angleTo = a => Math.abs(Math.atan2(Math.sin(Math.atan2(side.y - f.y, side.x - f.x) - a), Math.cos(Math.atan2(side.y - f.y, side.x - f.x) - a)));
+  return {
     b, side, st, inp, ai, f, mon, fmon, view: st.view, skill: st.skill,
     myHp: mon.hp / mon.maxHp, foeHp: fmon.hp / fmon.maxHp,
     // (el rival carga algo a distancia apuntado hacia mí, o ya viene un proyectil suyo hacia mí: lo mismo que ve un jugador)
-    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && Math.abs(Math.atan2(Math.sin(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a), Math.cos(Math.atan2(side.y - f.y, side.x - f.x) - f.wind.a))) < 0.5)
+    foeAiming: !!(f.wind && !f.hidden && ['proj', 'beam', 'wave'].includes(f.wind.m.kind) && angleTo(f.wind.a) < 0.5)
       || b.projectiles.some(p => p.owner === f && (p.vx * (side.x - p.x) + p.vy * (side.y - p.y)) > 0.9 * Math.hypot(p.vx, p.vy) * Math.hypot(side.x - p.x, side.y - p.y)),
     foeRanged: fmon.moves.some(k => ['proj', 'beam', 'wave'].includes(D.MOVES[k] && D.MOVES[k].kind)),
     safe: safeOf(myTypes) ?? null,
@@ -205,7 +236,6 @@ function context(b, side, inp, ai) {
       return null;
     },
   };
-  return c;
 }
 
 // Las jugadas que tiene un líder en esta arena (las que no encajan con ella no se usan)
@@ -225,9 +255,14 @@ function leaderPlay(b, side, inp, dt, ai) {
   const ready = k => !(st.rest[k] > b.t) && PLAYS[k].when(c);
   const play = st.playHold > 0 && st.play && ready(st.play) ? st.play : st.plays.find(ready);
   if (!play || !PLAYS[play].act(c)) { st.play = null; return null; }
-  if (play !== st.play) { st.playHold = 0.6; st.playSince = b.t; }
+  if (play !== st.play) { st.playHold = 0.6; st.playSince = b.t; st.playStuck = 0; }
   st.play = play;
   if (PLAYS[play].max && b.t - st.playSince > PLAYS[play].max) st.rest[play] = b.t + PLAYS[play].max;
+  // Atascada: la jugada lo lleva hacia su sitio y no avanza (una roca en medio): descansa 3 s
+  const moved = st.playLast ? Math.hypot(side.x - st.playLast.x, side.y - st.playLast.y) : 1;
+  st.playLast = { x: side.x, y: side.y };
+  st.playStuck = c.steered && Math.hypot(inp.mx, inp.my) > 0.3 && moved < 0.3 ? (st.playStuck || 0) + dt : 0;
+  if (st.playStuck > 0.6) { st.rest[play] = b.t + 3; st.playStuck = 0; }
   // (pasado el «¡A combatir!», que si no el aviso se pierde entre los de la cuenta atrás)
   st.announced = st.announced || new Set();
   if (!st.announced.has(play) && (b.fightT || 0) > 1.2) { st.announced.add(play); b.ev({ k: 'tactic', s: side.idx, id: play }); }

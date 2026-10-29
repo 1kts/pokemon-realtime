@@ -155,7 +155,7 @@ function adaptiveSkill(b, side, st, dt, P = PARAMS) {
 // Entrada de la IA en este tick: la de utilidad y, si es un líder, su jugada encima (server/tactics.js)
 function aiInput(b, side, dt) {
   const inp = utilityInput(b, side, dt);
-  if (side.leader && !side.wild) tactics.leaderPlay(b, side, inp, dt, { aimMove });
+  if (side.leader && !side.wild) tactics.leaderPlay(b, side, inp, dt, { aimMove, lineBlocked });
   return inp;
 }
 
@@ -188,9 +188,11 @@ function utilityInput(b, side, dt) {
   // (lo que ve, para las jugadas de los líderes: lo mismo que ella, con el mismo retraso)
   st.view = { x: target.x, y: target.y, vx: vel.x, vy: vel.y, dist, flags: foeFlags, hidden: !!f.hidden };
   st.skill = skill;
+  st.evade = false;   // ¿esquiva, sale de una zona, se aparta del borde o se desatasca? (las jugadas no lo pisan)
+  st.mayAttack = false;   // ¿le tocaba atacar en este tick? (dudas, cadencia: las jugadas respetan lo mismo)
 
   // Cambio forzado tras un debilitado: el que mejor aguante al rival
-  if (side.forced > 0) { if (side.swapTo < 0) inp.sw = bestSwap(side, fmon, -1); return inp; }
+  if (side.forced > 0) { st.dbg = null; if (side.swapTo < 0) inp.sw = bestSwap(side, fmon, -1); return inp; }
 
   // ---------- Agresividad y estado ----------
   const pers = personality(mon.dex, P);
@@ -211,7 +213,7 @@ function utilityInput(b, side, dt) {
   if (prevMode === 'atacar' && aggro > P.atacarAt - P.hyst) mode = 'atacar';
   if (prevMode === 'defender' && aggro < P.defenderAt + P.hyst) mode = 'defender';
   st.mode = mode;
-  st.dbg = { m: mode, g: aggro, p: pers.style };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
+  st.dbg = { m: mode, g: aggro, p: pers.style, dex: mon.dex };   // lo que se enseña en Práctica con «Ver qué piensa la IA»
 
   // ---------- Movimiento ----------
   const moves = mon.moves.map(k => D.MOVES[k]);
@@ -270,7 +272,7 @@ function utilityInput(b, side, dt) {
     if (decide(st, 'd' + p.id, dodgeP)) {
       const len = Math.hypot(th.vx, th.vy);
       const s1 = (side.x - p.x) * -th.vy + (side.y - p.y) * th.vx >= 0 ? 1 : -1;
-      mx += (-th.vy / len) * s1 * 2; my += (th.vx / len) * s1 * 2;
+      mx += (-th.vy / len) * s1 * 2; my += (th.vx / len) * s1 * 2; st.evade = true;
     }
   }
   // Salir de las zonas marcadas
@@ -278,7 +280,7 @@ function utilityInput(b, side, dt) {
     if (ar.owner === side) continue;
     const d = Math.hypot(side.x - ar.x, side.y - ar.y);
     if (d < ar.m.radius + r + 10 && decide(st, 'a' + ar.x + ':' + ar.y, dodgeP)) {
-      mx += (side.x - ar.x) / (d || 1) * 2.5; my += (side.y - ar.y) / (d || 1) * 2.5;
+      mx += (side.x - ar.x) / (d || 1) * 2.5; my += (side.y - ar.y) / (d || 1) * 2.5; st.evade = true;
     }
   }
   // Ataque cargándose contra mí: apartarse de la línea o del círculo
@@ -286,12 +288,12 @@ function utilityInput(b, side, dt) {
     const m = f.wind.m;
     const key = 'w' + Math.floor(b.t * 2) + ':' + f.wind.c;
     if (m.kind === 'area' && m.at === 'cursor' && Math.hypot(side.x - f.wind.tx, side.y - f.wind.ty) < m.radius + r) {
-      if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.wind.ty, side.x - f.wind.tx); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; }
+      if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.wind.ty, side.x - f.wind.tx); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; st.evade = true; }
     } else if (m.kind === 'cone' && dist < m.range + r + 30) {
       // Cono: salir hacia atrás, fuera de su alcance
-      if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.y, side.x - f.x); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; }
+      if (decide(st, key, dodgeP)) { const a = Math.atan2(side.y - f.y, side.x - f.x); mx += Math.cos(a) * 2.5; my += Math.sin(a) * 2.5; st.evade = true; }
     } else if ((m.kind === 'beam' || m.kind === 'proj' || m.kind === 'dash' || m.kind === 'wave') && Math.abs(angleDiff(f.wind.a, Math.atan2(side.y - f.y, side.x - f.x))) < (m.kind === 'wave' ? 0.7 : 0.35)) {
-      if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; }
+      if (decide(st, key, dodgeP * 0.85)) { mx += -Math.sin(f.wind.a) * st.strafe * 2.5; my += Math.cos(f.wind.a) * st.strafe * 2.5; st.evade = true; }
     }
   }
   // Terremoto de la arena en camino: ponerse detrás de la roca más cercana (vista desde el epicentro)
@@ -305,22 +307,23 @@ function utilityInput(b, side, dt) {
       const d = Math.hypot(cx - side.x, cy - side.y);
       if (d < bd) { bd = d; best = { x: cx, y: cy }; }
     }
-    if (best && bd > 4) { mx += (best.x - side.x) / bd * 2.5; my += (best.y - side.y) / bd * 2.5; }
+    if (best && bd > 4) { mx += (best.x - side.x) / bd * 2.5; my += (best.y - side.y) / bd * 2.5; st.evade = true; }
   }
   // Peligros de la arena avisados (rocas, erupciones, placas): salir de la zona
   for (const d of (b.arena && b.arena.danger) || []) {
     const dd = Math.hypot(side.x - d.x, side.y - d.y);
     if (dd < d.r + r + 8 && decide(st, 'z' + Math.round(d.x) + ':' + Math.round(d.y), dodgeP)) {
-      mx += (side.x - d.x) / (dd || 1) * 2.5; my += (side.y - d.y) / (dd || 1) * 2.5;
+      mx += (side.x - d.x) / (dd || 1) * 2.5; my += (side.y - d.y) / (dd || 1) * 2.5; st.evade = true;
     }
   }
   // Fuego, lava, veneno, bordes y atascos (su propio tipo no lo nota)
   const types = D.SPECIES[b.mon(side).dex].types;
   const bad = t => t === T.FIRE || (t === T.LAVA && !types.includes('fuego')) || (t === T.POISON && skill > 0.3 && !types.includes('veneno') && !types.includes('acero'));
   const ahead = b.terrain[S.cellIndex(side.x + mx * 30, side.y + my * 30)];
-  if (bad(ahead) && skill > 0.15) { const t = mx; mx = -my; my = t; }
-  if (bad(b.terrain[S.cellIndex(side.x, side.y)])) { mx += (S.ARENA.w / 2 - side.x) / 250; my += (S.ARENA.h / 2 - side.y) / 250; }
+  if (bad(ahead) && skill > 0.15) { const t = mx; mx = -my; my = t; st.evade = true; }
+  if (bad(b.terrain[S.cellIndex(side.x, side.y)])) { mx += (S.ARENA.w / 2 - side.x) / 250; my += (S.ARENA.h / 2 - side.y) / 250; st.evade = true; }
   const edge = 70;
+  if (side.x < edge || side.y < edge || side.x > S.ARENA.w - edge || side.y > S.ARENA.h - edge) st.evade = true;
   if (side.x < edge) mx += (edge - side.x) / edge * 1.5;
   if (side.x > S.ARENA.w - edge) mx -= (side.x - (S.ARENA.w - edge)) / edge * 1.5;
   if (side.y < edge) my += (edge - side.y) / edge * 1.5;
@@ -328,7 +331,9 @@ function utilityInput(b, side, dt) {
   const wantsMove = Math.abs(mx) + Math.abs(my) > 0.5;
   st.stuck = st.last && wantsMove && Math.hypot(side.x - st.last.x, side.y - st.last.y) < 0.3 ? (st.stuck || 0) + dt : 0;
   st.last = { x: side.x, y: side.y };
-  if (st.stuck > 0.4) { st.strafe *= -1; st.strafeT = 1; st.stuck = 0; const t = mx; mx = -my * 1.5; my = t * 1.5; }
+  if (st.stuck > 0.4) { st.strafe *= -1; st.strafeT = 1; st.stuck = 0; st.unstick = 0.5; const t = mx; mx = -my * 1.5; my = t * 1.5; }
+  st.unstick = Math.max(0, (st.unstick || 0) - dt);
+  if (st.unstick > 0) st.evade = true;   // (desatascándose: un momento sin que nada lo devuelva contra la roca)
   inp.mx = Math.max(-1, Math.min(1, mx)); inp.my = Math.max(-1, Math.min(1, my));
 
   // ---------- Protección / parry ----------
@@ -365,6 +370,8 @@ function utilityInput(b, side, dt) {
   let cadence = 0.05 + 0.4 * Math.pow(skill, 1.2) + (mode === 'atacar' ? P.cadenceAttack : mode === 'defender' ? P.cadenceDefend : 0);
   if (side.wild) cadence *= st.wander ? 0.25 : 0.6;   // los salvajes atacan poco, y menos mientras deambulan
   if (rnd() > cadence) return aim(inp, toFoe, skill);
+  st.mayAttack = true;
+  st.reserve = skill > 0.45 ? P.reserve : 0;
 
   const opening = (foeFlags & (F.STUN | F.REC | F.WIND)) && rnd() < 0.3 + 0.7 * skill;   // ¿lo ve vendido?
   const blocked = lineBlocked(b, side, target);
@@ -438,4 +445,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { aiInput, personality, adaptiveSkill, paramsFor, BASE_PARAMS, TUNED_PARAMS, PARAMS };
+module.exports = { aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, BASE_PARAMS, TUNED_PARAMS, PARAMS };

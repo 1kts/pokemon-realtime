@@ -14,7 +14,15 @@ const S = require('../public/shared.js');
 const { Battle } = require('../server/battle.js');
 
 let fails = 0;
+// Math.random con semilla, distinta para cada prueba (como tools/ai-tune.js): los combates de cada prueba salen
+// siempre iguales y npm test no falla unas veces sí y otras no (bloquearía el despliegue sin avisar)
+function rng(seed) {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const seedOf = name => [...name].reduce((h, ch) => Math.imul(h ^ ch.charCodeAt(0), 16777619), 2166136261);
 const check = async (name, fn) => {
+  Math.random = rng(seedOf(name + (process.env.AI_TEST_SEED || '')));   // (AI_TEST_SEED=x: otras semillas, para ver el margen)
   try { await fn(); console.log('✓', name); } catch (e) { fails++; console.log('✗', name, '\n ', e.message); }
 };
 // Nunca colgado: como mucho 2 minutos
@@ -128,16 +136,23 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     for (let n = 0; n < 3; n++) assert.deepStrictEqual(coverWhileFiring(null).seen, []);
   });
   await check('Lt. Surge cierra el cerco: si el rival está en una placa a punto de saltar, le lanza algo que aturde', () => {
-    const b = duelLeader('g-electrico', 'surge', { dex: 7, level: 21 }, { dex: 100, level: 21 });
-    run(b, 1);
-    b.sides[1].energy = 100;
-    let stunned = false;
-    for (let i = 0; i < 30 && !stunned; i++) {
-      b.arena.danger.push({ x: b.sides[0].x, y: b.sides[0].y, r: 30, t: 0.8 });
-      run(b, 0.05);
-      stunned = !!(b.sides[1].wind && b.sides[1].wind.m.stun);
-    }
-    assert(stunned && b.sides[1].aiState.play === 'cerco');
+    // (en cada tick: si empieza a cargar un ataque mientras hace el cerco, ¿es uno que aturde?)
+    const trial = () => {
+      const b = duelLeader('g-electrico', 'surge', { dex: 7, level: 21 }, { dex: 100, level: 21 });
+      run(b, 1);
+      b.sides[1].energy = 100;
+      for (let i = 0; i < 150; i++) {
+        b.arena.danger = [{ x: b.sides[0].x, y: b.sides[0].y, r: 30, t: 0.8 }];
+        const was = b.sides[1].wind;
+        run(b, S.DT);
+        const w = b.sides[1].wind;
+        if (w && w !== was && b.sides[1].aiState.play === 'cerco') return !!w.m.stun;
+      }
+      return false;
+    };
+    let ok = 0;
+    for (let n = 0; n < 6; n++) if (trial()) ok++;
+    assert(ok >= 5, `aturde en ${ok}/6`);
   });
   await check('Blaine pelea desde la lava (a su Growlithe no le hace nada; a un Squirtle, sí): más rato en ella que sin la jugada', () => {
     const lava = leader => {
@@ -170,6 +185,60 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
       assert(ls[ls.length - 1].ai > ls[0].ai + 0.2, `${r}: Campeón ${ls[ls.length - 1].ai} y primer gimnasio ${ls[0].ai}`);
     }
   });
+  // Lo que una jugada no puede pisar: la jugada se aplica a mano (leaderPlay) sobre la entrada que dejaría la IA
+  const AI = require('../server/ai.js');
+  const helpers = { aimMove: AI.aimMove, lineBlocked: AI.lineBlocked };
+  // Blanca con poca vida (quiere ir a la baldosa) y el rival lejos y tocado (acoso posible)
+  const whitney = () => {
+    const b = duelLeader('g-normal', 'whitney', { dex: 1, level: 19 }, { dex: 241, level: 19, moves: ['placaje', 'golpeCuerpo', 'ataqueRapido', 'descanso'] });
+    run(b, 0.5);
+    const side = b.sides[1], mon = side.team[0];
+    mon.hp = Math.round(mon.maxHp * 0.4);
+    run(b, 0.1);
+    return { b, side, st: side.aiState };
+  };
+  await check('una jugada no pisa a la IA cuando esquiva o escapa: su movimiento manda', () => {
+    const { b, side, st } = whitney();
+    const inp = { mx: 0.3, my: -0.7, c: -1, sw: -1, a: 0, tx: 0, ty: 0 };
+    st.evade = true; st.mayAttack = false; st.playHold = 0; st.play = null;
+    assert.strictEqual(tactics.leaderPlay(b, side, inp, S.DT, helpers), 'curacion');
+    assert.deepStrictEqual([inp.mx, inp.my], [0.3, -0.7], 'esquivando, la jugada no toca el movimiento');
+    st.evade = false;
+    tactics.leaderPlay(b, side, inp, S.DT, helpers);
+    assert(inp.mx !== 0.3 || inp.my !== -0.7, 'sin esquivar, sí lo lleva hacia la baldosa');
+  });
+  await check('una jugada solo ataca cuando a la IA le tocaba (dudas y cadencia de su habilidad) y no cambia una huida', () => {
+    const { b, side, st } = whitney();
+    side.team[0].hp = side.team[0].maxHp;   // (sana: le toca el acoso)
+    b.sides[0].team[0].hp = Math.round(b.sides[0].team[0].maxHp * 0.2);
+    side.energy = 100; side.team[0].cds = [0, 0, 0, 0]; side.wind = null; side.rec = 0; side.stun = 0;   // (libre para actuar)
+    const fresh = () => ({ mx: 0, my: 0, c: -1, sw: -1, a: 0, tx: 0, ty: 0 });
+    st.evade = false; st.view.dist = 120;
+    let inp = fresh(); st.mayAttack = false; st.play = null; st.playHold = 0;
+    assert.strictEqual(tactics.leaderPlay(b, side, inp, S.DT, helpers), 'acoso');
+    assert.strictEqual(inp.c, -1, 'sin tocarle atacar, no ataca');
+    inp = fresh(); st.mayAttack = true;
+    tactics.leaderPlay(b, side, inp, S.DT, helpers);
+    assert(inp.c >= 0 && inp.c < 4, 'tocándole, ataca con lo más fuerte');
+    const rest = side.team[0].moves.indexOf('descanso');
+    assert(rest >= 0, 'Miltank lleva Descanso');
+    inp = fresh(); inp.c = rest;
+    tactics.leaderPlay(b, side, inp, S.DT, helpers);
+    assert.strictEqual(inp.c, rest, 'si la IA ha elegido curarse, la jugada no lo cambia por un ataque');
+  });
+  await check('Ver qué piensa la IA: tras un debilitado no enseña lo del Pokémon de antes', () => {
+    const b = battle({ aiDebug: true, sides: [{ name: 'A', team: [{ dex: 25, level: 50 }] }, { name: 'Bot', team: [{ dex: 68, level: 50 }, { dex: 9, level: 50 }], ai: 0.8 }] });
+    run(b, 1);
+    assert.strictEqual(b.sideSnap(b.sides[1], 0).ai.p, 'luchador');
+    const mon = b.sides[1].team[0];
+    mon.hp = 0;
+    let saw = [];
+    for (let i = 0; i < 120; i++) { run(b, S.DT); const ai = b.sideSnap(b.sides[1], 0).ai; if (ai) saw.push(b.mon(b.sides[1]).dex + ':' + ai.p); }
+    assert(b.mon(b.sides[1]).dex === 9, 'ha salido Blastoise');
+    assert(!saw.some(x => x === '9:luchador'), `nunca Blastoise con la personalidad de Machamp (${[...new Set(saw)]})`);
+    assert(saw.some(x => x.startsWith('9:')), 'y luego enseña la suya');
+  });
+
   // Por WebSocket: la opción de la pantalla de Práctica llega al combate
   const { start } = require('../server/index.js');
   const server = await start(0);

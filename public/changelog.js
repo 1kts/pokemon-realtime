@@ -8,7 +8,7 @@
       items: [
         ['nuevo', 'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.'],
         ['nuevo', 'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.'],
-        ['cambio', 'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.'],
+        ['cambio', 'La IA hábil decide mejor cuándo cambiar de Pokémon, curarse y qué ataque usar: en Difícil, Maestro, la Torre, los entrenadores IA de Clasificatoria y casi todos los líderes.'],
         ['cambio', 'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.'],
       ],
     },

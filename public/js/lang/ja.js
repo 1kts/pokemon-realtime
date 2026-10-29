@@ -16,8 +16,8 @@ export default {
     'Líderes con jugadas propias': 'ジムリーダーの とくいわざ せんじゅつ',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': 'ジムリーダー、四天王、チャンピオンは タイプと バトルフィールドに あった せんじゅつを つかう。タケシは いわの かげに たてこもり、カツラは ようがんの うえで たたかい、アカネは かいふくに はしる。',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '練習で「AIの 考えを 見る」を オンに できる。ボットの 上に こうげき・さぐり・ぼうぎょの どれを したいか、こうげき性と せいかくが 表示される。',
-    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': 'むずかしい・マスター・タワーの AIは ポケモンを いれかえる タイミング、かいふくする タイミング、つかう わざを よりうまく えらぶ。かんたんと ふつうは そのまま。',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': 'リーダーの むずかしさが なだらかに あがるように なった。さいしょの ジムは すこし てごわく、四天王は すこし うでまえを おさえて たたかう。',
+    'La IA hábil decide mejor cuándo cambiar de Pokémon, curarse y qué ataque usar: en Difícil, Maestro, la Torre, los entrenadores IA de Clasificatoria y casi todos los líderes.': 'うでのいい AIは ポケモンを いれかえる タイミング、かいふく、つかう わざを よりうまく えらぶ。むずかしい・マスター・タワー・ランクバトルの AIトレーナー・ほとんどの ジムリーダーが たいしょう。',
     // ---------- Novedades v0.32.0 ----------
     'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': 'ストーリーのマップが見やすくなりました。次の挑戦は金色で目立ち、道路は捕まえた割合をリングで示し、新しい道路には星が付きます。',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': 'スマホでの起動が軽くなりました。音楽は開いたときにまとめてではなく、流れる直前にダウンロードされます（以前は15 MB）。',

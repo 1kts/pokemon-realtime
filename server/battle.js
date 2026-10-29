@@ -855,7 +855,8 @@ class Battle {
       e: Math.round(s.energy), w: s.wind ? { c: s.wind.c, p: +(s.wind.t / s.wind.m.wind).toFixed(2), a: +s.wind.a.toFixed(2), tx: Math.round(s.wind.tx), ty: Math.round(s.wind.ty) } : 0,
     };
     if (!hide) { o.x = +s.x.toFixed(1); o.y = +s.y.toFixed(1); }
-    const dbg = this.aiDebug && s.ai !== null && viewer !== s.idx && s.aiState.dbg;
+    // (solo si es del Pokémon que está fuera: tras un debilitado, hasta que el nuevo decide algo, no se manda)
+    const dbg = this.aiDebug && s.ai !== null && viewer !== s.idx && !(s.forced > 0) && s.aiState.dbg && s.aiState.dbg.dex === this.mon(s).dex && s.aiState.dbg;
     if (dbg) o.ai = { m: dbg.m, g: Math.round(dbg.g * 100), p: dbg.p };
     if (viewer === s.idx) {
       o.cds = mon.cds.map(c => +c.toFixed(2)); o.pcd = +s.pcd.toFixed(2); o.swcd = +s.swapCd.toFixed(2); o.ack = s.ack;

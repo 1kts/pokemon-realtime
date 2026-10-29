@@ -15,8 +15,8 @@ export default {
     'Líderes con jugadas propias': '道馆馆主的拿手战术',
     'Cada líder, Alto Mando y Campeón tiene jugadas de su tipo y su arena: Brock se atrinchera tras las rocas, Blaine pelea desde la lava y Blanca corre a curarse.': '每位道馆馆主、四天王和冠军都有符合自己属性和场地的战术：小刚会躲到岩石后面，夏伯在熔岩上战斗，小茜会跑去回复。',
     'En Práctica puedes activar «Ver qué piensa la IA»: encima del bot verás si quiere atacar, tantear o defenderse, su agresividad y su personalidad.': '在练习中可以开启「查看 AI 的想法」：机器人头顶会显示它想进攻、试探还是防守，以及它的攻击性和性格。',
-    'La IA en Difícil, Maestro y la Torre decide mejor cuándo cambiar de Pokémon, cuándo curarse y qué ataque usar. Fácil y Normal siguen igual.': '困难、大师和对战塔中的 AI 更懂得何时替换宝可梦、何时回复以及使用哪个招式。简单和普通保持不变。',
     'La dificultad de los líderes sube de forma más pareja: los primeros gimnasios aprietan algo más y el Alto Mando juega con algo menos de habilidad.': '馆主的难度提升得更平稳：前几个道馆稍微难一些，四天王的技巧则稍微降低。',
+    'La IA hábil decide mejor cuándo cambiar de Pokémon, curarse y qué ataque usar: en Difícil, Maestro, la Torre, los entrenadores IA de Clasificatoria y casi todos los líderes.': '高水平的 AI 更懂得何时替换宝可梦、何时回复以及使用哪个招式：困难、大师、对战塔、排位赛的 AI 训练家以及几乎所有馆主都是如此。',
     // ---------- Novedades v0.32.0 ----------
     'El mapa de Historia es más claro: el siguiente reto destaca en dorado, las rutas enseñan con un anillo lo que has capturado y las nuevas llevan una estrella.': '故事模式地图更清晰了：下一个挑战以金色突出，道路用圆环显示你已捕捉的进度，新道路带有星标。',
     'En el móvil el juego arranca más ligero: la música se descarga cuando va a sonar en vez de toda al abrir (eran 15 MB).': '手机上游戏启动更轻快：音乐在快要播放时才下载，不再在打开时全部下载（原来有 15 MB）。',
