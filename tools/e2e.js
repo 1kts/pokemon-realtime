@@ -29,6 +29,9 @@ function findChrome() {
   }
   return null;
 }
+// Teclas con nombre para page.key: [key, código de tecla]
+const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], Space: [' ', 32], Tab: ['Tab', 9], Backspace: ['Backspace', 8],
+  ArrowLeft: ['ArrowLeft', 37], ArrowUp: ['ArrowUp', 38], ArrowRight: ['ArrowRight', 39], ArrowDown: ['ArrowDown', 40] };
 const freePort = () => new Promise(r => { const s = net.createServer().listen(0, () => { const p = s.address().port; s.close(() => r(p)); }); });
 
 async function waitHttp(url, ms = 10000) {
@@ -73,6 +76,47 @@ async function setup(name, extraEnv = {}) {
   // El premio diario se abre solo una vez al día: en las pruebas cuenta como ya visto (si no, taparía la
   // pantalla en todas); la del premio diario lo quita poniendo 'arena.dailySeen' a 'nunca'
   await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('arena.dailySeen')) localStorage.setItem('arena.dailySeen', new Date().toISOString().slice(0, 10)); } catch {}` });
+
+  // En la página: lo que ve el jugador. visto(e) dice por qué no se ve un elemento (o null si se ve): sin tamaño,
+  // oculto o transparente, fuera de la ventana (o recortado por un contenedor con scroll) o tapado por otra cosa
+  // en su centro. nombre(e) es lo que «lee» el jugador de un botón: su texto, o su aria-label, title o data-tip
+  const LOOK = `const norm = s => String(s || '').replace(/\\s+/g, ' ').trim().toLowerCase();
+    const tag = n => n ? n.tagName.toLowerCase() + (typeof n.className === 'string' && n.className.trim() ? '.' + n.className.trim().split(/\\s+/).slice(0, 3).join('.') : '') + (n.textContent ? ' «' + n.textContent.trim().slice(0, 30) + '»' : '') : 'nada';
+    const visto = e => {
+      const r = e.getBoundingClientRect();
+      if (!r.width || !r.height) return 'no tiene tamaño (no se ve)';
+      for (let a = e; a && a.nodeType === 1; a = a.parentElement) {
+        const cs = getComputedStyle(a);
+        if (cs.visibility === 'hidden' || cs.display === 'none') return 'está oculto';
+        if (+cs.opacity < 0.1) return 'es transparente';
+      }
+      let L = Math.max(0, r.left), T = Math.max(0, r.top), R = Math.min(innerWidth, r.right), B = Math.min(innerHeight, r.bottom);
+      for (let a = e.parentElement; a && a !== document.documentElement; a = a.parentElement) {
+        const cs = getComputedStyle(a);
+        if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') { const q = a.getBoundingClientRect(); L = Math.max(L, q.left); T = Math.max(T, q.top); R = Math.min(R, q.right); B = Math.min(B, q.bottom); }
+      }
+      if (R - L < 2 || B - T < 2) return 'está fuera de la ventana (hay que desplazar para verlo)';
+      const top = document.elementFromPoint((L + R) / 2, (T + B) / 2);
+      if (!top || !(top === e || e.contains(top) || top.contains(e) || (e.htmlFor && top.id === e.htmlFor))) return 'está tapado por ' + tag(top);
+      return null;
+    };
+    const crudo = e => String(e.getAttribute('aria-label') || (e.matches('input') ? e.value : e.innerText) || e.title || e.dataset.tip || [...e.querySelectorAll('img[alt]')].map(i => i.alt).join(' ')).replace(/\\s+/g, ' ').trim();
+    const nombre = e => norm(crudo(e));
+    const sitio = s => { if (!s.startsWith('dentro:')) return document.querySelector(s); const w = JSON.parse(s.slice(7));
+      const l = [...document.querySelectorAll(w.sel)].filter(e => norm(e.innerText).includes(norm(w.text)));
+      const inner = l.filter(e => !l.some(o => o !== e && e.contains(o))); return inner.length === 1 ? inner[0] : null; };`;
+  // Busca, dentro de `scope`, los elementos más pequeños cuyo texto visible (innerText: sin lo oculto) contiene el
+  // texto (o cumple la expresión regular); los campos cuentan por lo que tienen escrito
+  const FIND_TEXT = (pat, scope) => `(() => { ${LOOK}
+    const P = ${JSON.stringify(pat)}, root = ${scope ? `sitio(${JSON.stringify(scope)})` : 'document.body'};
+    if (!root) return { err: 'no está ${scope ? 'el sitio donde buscar: ' + String(scope).replace(/'/g, '') : 'la página'}' };
+    const match = s => P.re ? new RegExp(P.re, P.fl).test(String(s || '').replace(/\\s+/g, ' ')) : norm(s).includes(norm(P.s));
+    const out = [];
+    const walk = e => { const kids = [...e.children].filter(k => match(k.innerText)); if (kids.length) kids.forEach(walk); else out.push(e); };
+    if (match(root.innerText)) walk(root);
+    for (const i of root.querySelectorAll('input, textarea')) if (i.value && match(i.value)) out.push(i);
+    return { list: out.map(e => { const why = visto(e); return { why, what: tag(e) }; }) };
+  })()`;
 
   const page = {
     base,
@@ -130,6 +174,94 @@ async function setup(name, extraEnv = {}) {
     },
     // (antes era un clic de mentira y este el de verdad; ahora los dos son de verdad)
     async realClick(sel) { await page.click(sel); },
+    // ¿Lo ve el jugador? true si el texto (o la expresión regular) está en pantalla: visible, dentro de la ventana
+    // (sin desplazar, salvo { scroll: true }) y sin nada encima; espera hasta `ms` (5 s) a que salga. No falla: es
+    // para ok(await page.see('…'), '…'); si es false, el ok() dice por qué (tapado, fuera de la ventana…).
+    // { in: selector } busca solo dentro de ese sitio (una ventana, una tarjeta)
+    async see(text, { in: scope, ms = 5000, scroll = false } = {}) {
+      const pat = text instanceof RegExp ? { re: text.source, fl: text.flags } : { s: String(text) };
+      const t0 = Date.now();
+      let last = { err: 'no está' };
+      for (;;) {
+        if (scroll) await page.eval(`(() => { ${LOOK} const P = ${JSON.stringify(pat)}; const match = s => P.re ? new RegExp(P.re, P.fl).test(String(s || '')) : norm(s).includes(norm(P.s));
+          const root = ${scope ? `sitio(${JSON.stringify(scope)})` : 'document.body'}; if (!root) return true;
+          let e = root; for (;;) { const k = [...e.children].find(k => match(k.innerText)); if (!k) break; e = k; } if (e !== root) e.scrollIntoView({ block: 'center', inline: 'nearest' }); return true; })()`).catch(() => {});
+        try { last = await page.eval(FIND_TEXT(pat, scope)); } catch (e) { last = { err: e.message }; }
+        if (last.list && last.list.some(x => !x.why)) { page.lastSee = null; return true; }
+        if (Date.now() - t0 >= ms) break;
+        await sleep(100);
+      }
+      const why = last.err || (last.list.length ? last.list.slice(0, 3).map(x => `${x.what} ${x.why}`).join('; ') : 'no está en la página');
+      page.lastSee = `no se ve «${text}»: ${why}`;
+      return false;
+    },
+    // Como see, pero para esperar: falla si en `ms` (15 s) no se ve
+    async waitSee(text, opts = {}) {
+      if (!(await page.see(text, { ms: 15000, ...opts }))) throw new Error(page.lastSee);
+    },
+    // El sitio (de los que cumplen `sel`, p. ej. '.shop-item') que dice `text`, para buscar dentro de él con
+    // { in }: page.tap('Comprar', { in: await page.within('Super Ball', '.shop-item') }). El más pequeño si hay
+    // varios anidados; falla si no hay ninguno o hay varios distintos. Se vuelve a buscar cada vez que se usa (la
+    // pantalla se repinta, p. ej. tras comprar)
+    async within(text, sel) {
+      const w = 'dentro:' + JSON.stringify({ text: String(text), sel });
+      const n = await page.eval(`(() => { ${LOOK} const l = [...document.querySelectorAll(${JSON.stringify(sel)})].filter(e => norm(e.innerText).includes(norm(${JSON.stringify(String(text))})));
+        return l.filter(e => !l.some(o => o !== e && e.contains(o))).length; })()`);
+      if (n !== 1) throw new Error(`¿Qué ${sel} dice «${text}»? ${n ? 'hay ' + n : 'no hay ninguno'}`);
+      return w;
+    },
+    // Lo que se lee en un sitio (innerText: solo lo visible), o '' si no está o no se ve; { in } como en see
+    async read(sel, { in: scope } = {}) {
+      return page.eval(`(() => { ${LOOK} const root = ${scope ? `sitio(${JSON.stringify(scope)})` : 'document'}; const e = root && (root.matches && root.matches(${JSON.stringify(sel)}) ? root : root.querySelector(${JSON.stringify(sel)}));
+        return e && e.getClientRects().length ? e.innerText.replace(/\\s+/g, ' ').trim() : ''; })()`);
+    },
+    // Pulsa como un jugador el botón (o enlace, pestaña, tarjeta pulsable…) que dice `name`: lo busca por lo que lee
+    // el jugador (su texto, o su aria-label o tooltip), primero igual y si no, que lo contenga, y hace un clic de
+    // verdad con page.click (que falla si está tapado). Si hay varios que se ven y dicen lo mismo, falla: di cuál con
+    // { in: selector } (dentro de qué) o { nth: i }. Con un RegExp, los que lo cumplen
+    async tap(name, { in: scope, nth, ms = 5000 } = {}) {
+      const pat = name instanceof RegExp ? { re: name.source, fl: name.flags } : { s: String(name) };
+      const t0 = Date.now();
+      let r;
+      for (;;) {
+        r = await page.eval(`(() => { ${LOOK}
+          const P = ${JSON.stringify(pat)}, root = ${scope ? `sitio(${JSON.stringify(scope)})` : 'document'};
+          if (!root) return { err: 'no está el sitio donde buscar' };
+          const CLICKABLE = 'button, a[href], summary, label, select, input[type=button], input[type=submit], input[type=checkbox], input[type=radio], [role=button], [role=tab], [role=link], [role=menuitem], [role=option], [role=switch], [tabindex]';
+          const all = [...root.querySelectorAll('*')].filter(e => e.matches(CLICKABLE) || typeof e.onclick === 'function' || typeof e.onpointerdown === 'function');
+          const shown = all.filter(e => !visto(e) || /fuera de la ventana/.test(visto(e)));
+          const fits = e => P.re ? new RegExp(P.re, P.fl).test(crudo(e)) : nombre(e).includes(norm(P.s));
+          const pick = P.re ? [shown.filter(fits)] : [shown.filter(e => nombre(e) === norm(P.s)), shown.filter(e => nombre(e).startsWith(norm(P.s))), shown.filter(e => nombre(e).includes(norm(P.s)))];
+          // (si uno está dentro de otro que también vale, p. ej. un <b> pulsable dentro del botón, cuenta el de fuera)
+          const level = pick.map(l => l.filter(e => !l.some(o => o !== e && o.contains(e)))).find(l => l.length) || [];
+          const nth = ${nth === undefined ? 'null' : +nth};
+          if (!level.length) { const hidden = all.filter(fits).map(e => tag(e) + ' ' + visto(e)); return { err: hidden.length ? 'no se ve: ' + hidden.slice(0, 2).join('; ') : 'no hay ningún botón que lo diga' }; }
+          if (level.length > 1 && nth === null) return { err: 'hay ' + level.length + ' que lo dicen (' + level.slice(0, 3).map(tag).join(', ') + '): di cuál con { in: selector } o { nth }' };
+          const e = level[nth || 0];
+          if (!e) return { err: 'no hay el n.º ' + nth };
+          const id = 'tap' + Math.random().toString(36).slice(2, 8);
+          e.setAttribute('data-e2e-tap', id);
+          return { sel: '[data-e2e-tap="' + id + '"]' };
+        })()`);
+        if (r.sel || Date.now() - t0 >= ms) break;
+        await sleep(100);
+      }
+      if (!r.sel) throw new Error(`No se puede pulsar «${name}»: ${r.err}`);
+      try { await page.click(r.sel); } finally { await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(r.sel)}); if (e) e.removeAttribute('data-e2e-tap'); return true; })()`).catch(() => {}); }
+    },
+    // Qué pantalla ve el jugador: el título de la ventana que haya abierta encima (su primer encabezado visible) o,
+    // si no hay ninguna, el de la pantalla (el letrero de su barra de arriba: «Tienda», «Mis Pokémon»…; en el menú
+    // y en la portada, el logo; en los resultados, «¡Victoria!» o «Derrota»). En combate, sin pantalla delante, ''
+    async title() {
+      return page.eval(`(() => { ${LOOK}
+        const seen = e => !visto(e) || /fuera de la ventana/.test(visto(e));
+        const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .mon-sheet-back, body > .ui-confirm')].filter(seen);
+        const scope = tops.length ? tops[tops.length - 1] : document.getElementById('screen');
+        if (!scope || scope.hidden) return '';
+        const h = (tops.length ? [] : [...scope.querySelectorAll('.feature-sign h2')]).concat([...scope.querySelectorAll(tops.length ? 'h1, h2, h3' : 'h1, h2')]).find(seen);
+        return h ? h.innerText.replace(/\\s+/g, ' ').trim() : '';
+      })()`);
+    },
     // Escribe en un campo como un teclado: lo enfoca, borra lo que haya y mete el texto (eventos input reales);
     // al acabar, change (como al salir del campo)
     async type(sel, text) {
@@ -144,10 +276,28 @@ async function setup(name, extraEnv = {}) {
     // El dedo de verdad (eventos táctiles del navegador): fingerDown pone el dedo sobre el elemento, fingerUp lo
     // levanta; press es un toque de `ms` milisegundos (corto, o una pulsación larga)
     async fingerDown(sel) {
-      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'center' });
+      // (solo se desplaza si no está a la vista, como haría el jugador: desplazar justo antes del toque dispara un
+      // scroll que esconde lo que el toque acaba de abrir, y tapaba fallos como un tooltip que se queda pegado)
+      const r = await page.eval(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return null; e.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const b = e.getBoundingClientRect(); return { x: b.left + Math.min(8, b.width / 2), y: b.top + Math.min(8, b.height / 2) }; })()`);
       if (!r) throw new Error('No encuentro qué tocar: ' + sel);
       await call('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: r.x, y: r.y }] });
+    },
+    // Una tecla de verdad (del teclado del navegador, no un evento inventado): `code` como en KeyboardEvent.code
+    // ('Escape', 'KeyD', 'Digit2', 'Space'…), pulsada `ms` milisegundos
+    async key(code, ms = 60) {
+      const k = KEYS[code] || (/^Key([A-Z])$/.test(code) ? [code.slice(3).toLowerCase(), code.charCodeAt(3)] : /^Digit(\d)$/.test(code) ? [code.slice(5), 48 + +code.slice(5)] : null);
+      if (!k) throw new Error('Tecla desconocida: ' + code);
+      const base = { code, key: k[0], windowsVirtualKeyCode: k[1], nativeVirtualKeyCode: k[1] };
+      await call('Input.dispatchKeyEvent', { type: k[0].length === 1 ? 'keyDown' : 'rawKeyDown', ...base, ...(k[0].length === 1 ? { text: k[0] } : {}) });
+      await sleep(ms);
+      await call('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
+    },
+    // El ratón de verdad en un punto de la pantalla (p. ej. apuntar en la arena 3D, que no tiene elementos):
+    // mouseAt(x, y) lo mueve; con { click: true } además pulsa (botón izquierdo, o 'right')
+    async mouseAt(x, y, { click = false, button = 'left' } = {}) {
+      await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+      if (click) for (const type of ['mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x, y, button, clickCount: 1 });
     },
     async fingerUp() { await call('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(80); },
     async press(sel, ms = 60) { await page.fingerDown(sel); await sleep(ms); await page.fingerUp(); },
@@ -231,15 +381,21 @@ async function runOne(file) {
   const name = path.basename(file).replace(/\.e2e\.js$/, '');
   const out = [`▶ ${name}`], t0 = Date.now();
   let ctx, results = [];
-  const t = { ok: (cond, msg) => { results.push([!!cond, msg]); out.push(`  ${cond ? '✓' : '✗'} ${msg}`); }, log: msg => out.push('    ' + msg) };
+  // (si un ok() falla justo después de un page.see que no vio algo, dice qué no se veía y por qué)
+  const t = { ok: (cond, msg) => {
+    const why = !cond && ctx && ctx.page.lastSee;
+    if (ctx) ctx.page.lastSee = null;
+    results.push([!!cond, msg]); out.push(`  ${cond ? '✓' : '✗'} ${msg}${why ? `\n      (${why})` : ''}`);
+  }, log: msg => out.push('    ' + msg) };
   try {
     const test = require(path.resolve(file));
     ctx = await setup(name, test.env);
     Object.assign(t, ctx);
     // Como mucho 5 minutos por prueba (con varias a la vez y el 3D por software del CI van más lentas): un test
-    // colgado no bloquea el CI
+    // colgado no bloquea el CI. En una máquina más lenta, E2E_TIMEOUT=segundos
+    const limit = +process.env.E2E_TIMEOUT || 300;
     await Promise.race([test(t),
-      new Promise((_, j) => setTimeout(() => j(new Error('más de 5 minutos: algo se ha quedado esperando')), 300e3).unref())]);
+      new Promise((_, j) => setTimeout(() => j(new Error(`más de ${limit / 60} minutos: algo se ha quedado esperando`)), limit * 1e3).unref())]);
     if (ctx.page.problems.length) t.ok(false, 'sin errores de JavaScript ni de CSP en la página:\n      ' + ctx.page.problems.join('\n      '));
     const external = ctx.page.requests.filter(u => !u.startsWith(ctx.page.base) && !u.startsWith('data:') && !u.startsWith('blob:') && u !== 'about:blank');
     if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));

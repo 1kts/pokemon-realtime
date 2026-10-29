@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Antes de cada push, solo comprobaciones instantáneas: las novedades traen tests e2e y el código trae tests
-# (tools/require-tests.js), y las notas de parche y las traducciones están bien. Los tests (npm test y la tanda
+# Antes de cada push, solo comprobaciones instantáneas: las novedades traen tests e2e y su mutación, el código trae
+# tests y la nota de mutaciones no baja (tools/require-tests.js), los e2e cambiados no añaden atajos ni comprobaciones
+# complacientes (tools/e2e-lint.js), el catálogo de mutaciones está al día (tools/mutar.js --lista), y las notas de
+# parche y las traducciones están bien. Rojo primero (tools/rojo-primero.js) lo pasa el CI: tarda. Los tests (npm test y la tanda
 # e2e completa) los pasa el CI en cada push a develop y main, y sin ellos no se despliega.
 # Para pasarlos también aquí: LOCAL_TESTS=1 git push (npm test y los e2e relacionados con lo que se sube) o
 # E2E_ALL=1 git push (npm test y todos los e2e).
@@ -15,13 +17,14 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   node tools/require-tests.js "$remote_sha" "$local_sha" "$remote_ref" || exit 1
   base="$remote_sha"
   if [ "$base" = "$zero" ]; then base=$(git merge-base "$local_sha" origin/develop 2>/dev/null || echo "$local_sha"); fi
+  node tools/e2e-lint.js --base "$base" >/dev/null || { node tools/e2e-lint.js --base "$base"; exit 1; }
   related="$related $(node tools/e2e-related.js "$base" "$local_sha")"
   checked=1
 done
 [ "$checked" = 1 ] || exit 0
 
-if ! node tools/changelog-check.js >/dev/null || ! node tools/i18n-check.js --strict >/dev/null; then
-  node tools/changelog-check.js; node tools/i18n-check.js --strict | grep -E "falta|✗" | head -20; exit 1
+if ! node tools/changelog-check.js >/dev/null || ! node tools/i18n-check.js --strict >/dev/null || ! node tools/mutar.js --lista >/dev/null; then
+  node tools/changelog-check.js; node tools/i18n-check.js --strict | grep -E "falta|✗" | head -20; node tools/mutar.js --lista; exit 1
 fi
 if [ -z "${LOCAL_TESTS:-}${E2E_ALL:-}" ]; then
   echo "✓ Comprobaciones correctas: se sube (los tests los pasa el CI)."
