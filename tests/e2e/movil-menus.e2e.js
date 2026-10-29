@@ -44,9 +44,19 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval(`window.__app.ui.show('menu'); true`);
   const tipSel = await page.eval(`(() => { const n = [...document.querySelectorAll('#screen [title], #screen [data-tip]')].find(e => e.offsetParent && !e.closest('#hud')); n.id = n.id || 'tip-e2e'; return '#' + n.id; })()`);
   // (con el dedo de verdad: toques del navegador, no eventos inventados)
-  await page.press(tipSel, 60);
+  // Un toque corto: la página mide cuánto duró de verdad (con la máquina cargada, los 60 ms pedidos pueden pasar del
+  // medio segundo y ser una pulsación larga, que sí saca el tooltip); si no fue corto, se repite
+  await page.eval(`(() => { const n = document.querySelector('${tipSel}'); window.__tap = null;
+    n.addEventListener('pointerdown', () => { window.__tapT = performance.now(); }, { capture: true });
+    n.addEventListener('pointerup', () => { window.__tap = performance.now() - window.__tapT; }, { capture: true }); return true; })()`);
+  let tap = null;
+  for (let i = 0; i < 4 && !(tap < 300); i++) {
+    await page.eval(`document.querySelectorAll('.ui-tip.on').forEach(t => t.classList.remove('on')); true`);
+    await page.press(tipSel, 60);
+    tap = await page.eval('window.__tap');
+  }
   await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
-  ok(await page.eval(`!document.querySelector('.ui-tip.on')`), 'con el dedo, tocar no deja un tooltip pegado');
+  ok(tap < 300 && await page.eval(`!document.querySelector('.ui-tip.on')`), `con el dedo, tocar (${Math.round(tap)} ms) no deja un tooltip pegado`);
   await page.fingerDown(tipSel);
   // (sale a los 500 ms; en el CI, lento, se espera a que aparezca en vez de un tiempo fijo)
   await page.waitFor(`!!document.querySelector('.ui-tip.on')`, 15000);
