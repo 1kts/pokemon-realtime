@@ -699,6 +699,8 @@ export class UI {
       const head = el('div', 'leader-head', `<div><h3>${title}</h3><p class="leader">${n.kind === 'gym' ? t('Líder') : n.kind === 'champion' ? t('Campeón') : t('Miembro')}: <b>${n.leader}</b> · ${t('tipo')} <span class="type" style="--tc:${TYPE_COLOR[n.type]}">${TYPE_LABEL[n.type]}</span></p></div>${trainerImg(n.id, 'leader-sprite')}`);
       head.style.setProperty('--tc', TYPE_COLOR[n.type]);
       box.append(head);
+      // Qué es un gimnasio, para quien no ha jugado nunca a Pokémon
+      if (n.kind === 'gym') box.append(el('p', 'small ni-what', t('Vence a su líder en un combate para ganar su medalla: cada medalla abre rutas nuevas y el siguiente gimnasio.')));
       const used = Data.leaderTeam(n, p.starter || (p.mons[0] && p.mons[0].dex));
       const team = el('div', 'mini-team');
       for (const [dex, lvl] of used) { const c = el('div', 'mini'); c.append(portrait(dex, 56)); c.append(el('small', '', `${SPECIES[dex].name}<br>${lv(lvl)}`)); team.append(c); }
@@ -716,7 +718,8 @@ export class UI {
       }
     } else {
       const w = Data.routeWild(n);
-      box.append(el('h3', '', n.name), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
+      // (y qué es una ruta: opcional)
+      box.append(el('h3', '', n.name), el('p', 'small ni-what', t('Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.')), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
       box.append(this.rotationTimer('short'));
       // Las 4 de esta tanda (cambian cada 6 horas) y, aparte, su especial y los errantes
       const list = el('div', 'mini-team route-list');

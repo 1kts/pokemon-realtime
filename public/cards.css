@@ -1804,124 +1804,90 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 }
 
 /* ---------- Historia: el camino (storypath.js) ----------
-   Un viaje en línea: el eje de gimnasios (dorado y continuo lo recorrido; discontinuo lo que falta) y, encima de
-   cada tramo, las rutas que se abren en él. Lo que toca es lo único grande, dorado y que late */
+   Un viaje en línea: el eje de gimnasios (dorado y continuo lo recorrido; discontinuo lo que falta) y, colgando encima
+   del trozo de camino que lleva a cada líder, las rutas que se abren en él, una al lado de otra. Lo que toca es lo
+   único grande, dorado y que late. Arriba, las pestañas y una frase de qué va; abajo, la leyenda */
 .story-body > .story-pathwrap { align-self: start; }   /* (de su altura, no de la del panel de al lado) */
-.story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
+.story-pathwrap { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; border-radius: 20px;
   background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
-.story-pathwrap > .story-mode { position: absolute; top: 12px; left: 12px; z-index: 3; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
-.story-path { --gym: 64px; --now: 84px; --rt: 44px; --ch: 150px; container-type: inline-size; flex: 1; display: flex; overflow-x: auto; overflow-y: hidden; padding: 64px 28px 18px; scroll-behavior: smooth; }
-.sp-track { display: flex; align-items: flex-end; margin-top: auto; }   /* (todos los tramos apoyados en el eje) */
+.story-pathwrap > .sp-box { display: contents; }
+.story-pathwrap > .story-mode { grid-area: 1 / 1; align-self: start; margin: 12px 0 0 12px; background: rgba(10,14,34,.9); border-radius: 12px; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.sp-intro { grid-area: 1 / 2; align-self: center; margin: 12px 18px 0 16px; font-size: 13px; line-height: 1.35; color: #c9d3ea; text-wrap: pretty; }
+.story-path { grid-area: 2 / 1 / 3 / 3; --sp-gym: 60px; --sp-now: 80px; --sp-rt: 44px; --sp-rw: 104px; --sp-gc: 116px; --sp-tick: 16px; --sp-lab: 40px;
+  display: flex; overflow-x: auto; overflow-y: hidden; padding: 12px 28px 58px; scroll-behavior: smooth; }
+.sp-track { display: flex; align-items: flex-end; margin-block: auto; }   /* (todos los tramos apoyados en el eje; en una caja más alta, en medio) */
 /* Salida: el pueblo, al principio del eje */
-.sp-start { flex: none; align-self: flex-end; position: relative; width: 96px; height: calc(var(--now) + 40px); display: flex; flex-direction: column; align-items: center; }
-.sp-start::before { content: ''; width: 18px; height: 18px; margin-top: calc(var(--now) / 2 - 9px); border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px #121834; position: relative; z-index: 1; }
-.sp-start::after { content: ''; position: absolute; left: 50%; right: 0; top: calc(var(--now) / 2 - 2px); height: 4px; border-radius: 2px; background: var(--gold); }
+.sp-start { flex: none; align-self: flex-end; position: relative; width: 96px; height: calc(var(--sp-now) + var(--sp-lab)); display: flex; flex-direction: column; align-items: center; }
+.sp-start::before { content: ''; width: 18px; height: 18px; margin-top: calc(var(--sp-now) / 2 - 9px); border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px #121834; position: relative; z-index: 1; }
+.sp-start::after { content: ''; position: absolute; left: 50%; right: 0; top: calc(var(--sp-now) / 2 - 2px); height: 4px; border-radius: 2px; background: var(--gold); }
 .sp-start b { margin-top: 10px; font: 700 12px var(--display); color: #c9d3ea; white-space: nowrap; }
-/* Cada tramo: arriba sus rutas, abajo su líder en el eje */
-.sp-ch { flex: none; width: var(--ch); display: flex; flex-direction: column; justify-content: flex-end; }
-.sp-routes { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 10px; padding-bottom: 18px; }
-.sp-routes:not(:empty)::after { content: ''; position: absolute; left: 50%; bottom: 0; height: 18px; border-left: 2px solid rgba(255,255,255,.28); }
-.sp-spine { position: relative; display: flex; justify-content: center; height: calc(var(--now) + 40px); }
-/* El eje: una línea que cruza el tramo a la altura del centro de los líderes */
-.sp-spine::before { content: ''; position: absolute; left: 0; right: 0; top: calc(var(--now) / 2 - 2px); height: 4px; border-radius: 2px;
+/* Cada tramo: el trozo de eje que lleva a su líder (a la derecha) y, encima, sus rutas; si está bloqueado, arriba
+   dice qué lo abre */
+.sp-ch { flex: none; position: relative; display: grid; grid-template-columns: auto var(--sp-gc); align-items: end; }
+.sp-ch::before { content: ''; position: absolute; left: 0; right: 0; bottom: calc(var(--sp-lab) + var(--sp-now) / 2 - 2px); height: 4px; border-radius: 2px;
   background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
-.sp-ch.done .sp-spine::before { background: var(--gold); }
-.sp-ch.now .sp-spine::before { background: linear-gradient(90deg, var(--gold) 50%, transparent 50%), repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
+.sp-ch.done::before { background: var(--gold); }
+.sp-ch.now::before { background: linear-gradient(90deg, var(--gold) calc(100% - var(--sp-gc) / 2), transparent 0), repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 10px, transparent 10px 18px); }
+.sp-row { grid-area: 2 / 1; display: flex; align-items: flex-end; gap: 4px; min-width: 24px; padding: 0 4px; margin-bottom: calc(var(--sp-lab) + var(--sp-now) / 2 + var(--sp-tick)); }
+.sp-spine { grid-area: 2 / 2; display: flex; justify-content: center; height: calc(var(--sp-now) + var(--sp-lab)); }
+/* (de lo que ocupa el tramo, sin ensancharlo) */
+.sp-lock { grid-area: 1 / 1 / 2 / 3; width: 0; min-width: 100%; box-sizing: border-box; margin: 0 0 10px; padding: 0 8px; text-align: center; font-size: 11px; line-height: 1.3; color: #8a93b8; }
 /* Los sitios: un círculo y su nombre debajo */
 .sp-node { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; border: 0; background: none; box-shadow: none; color: #e6edf7; cursor: pointer; }
 .sp-node:hover:not(:disabled) { background: none; }
 .sp-dot { position: relative; display: grid; place-items: center; border-radius: 50%; }
-.sp-name { max-width: calc(var(--ch) - 16px); text-align: center; font: 600 12px/1.2 var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sp-name { max-width: calc(var(--sp-gc) - 8px); text-align: center; font: 600 12px/1.2 var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .sp-name b { font: 800 13px var(--display); display: block; }
 .sp-name small { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
 .sp-node.sel .sp-dot { outline: 2px solid #fff; outline-offset: 4px; }
 .sp-node:focus-visible .sp-dot { outline: 2px solid var(--yellow); outline-offset: 4px; }
 /* Líderes: el color de su tipo; con la medalla en color si ya es tuya */
-.sp-gym .sp-dot { width: var(--gym); height: var(--gym); margin-top: calc((var(--now) - var(--gym)) / 2); border: 4px solid var(--tc, #8a93b8); background: radial-gradient(circle at 50% 38%, #2c3560, #121834); box-shadow: 0 0 0 4px #121834, 0 6px 14px rgba(0,0,0,.45); }
+.sp-gym .sp-dot { width: var(--sp-gym); height: var(--sp-gym); margin-top: calc((var(--sp-now) - var(--sp-gym)) / 2); border: 4px solid var(--tc, #8a93b8); background: radial-gradient(circle at 50% 38%, #2c3560, #121834); box-shadow: 0 0 0 4px #121834, 0 6px 14px rgba(0,0,0,.45); }
 .sp-gym .sp-badge { width: 34px; height: 34px; image-rendering: pixelated; }
 .sp-gym .sp-face { width: 120%; height: 120%; border-radius: 50%; object-fit: cover; }
 .sp-gym .league-ico { width: 40px; height: 40px; image-rendering: pixelated; }
 .sp-gym .sp-dot:has(.sp-face) { overflow: hidden; }
 .sp-gym.done .sp-dot { box-shadow: 0 0 0 4px #121834, 0 0 14px var(--tc), 0 6px 14px rgba(0,0,0,.45); }
 .sp-gym:not(.done) .sp-badge { filter: brightness(0) invert(1) opacity(.4); }
-.sp-ord { position: absolute; top: calc((var(--now) - var(--gym)) / 2 - 6px); left: calc(50% - var(--gym) / 2 - 6px); width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%;
+.sp-ord { position: absolute; top: calc((var(--sp-now) - var(--sp-gym)) / 2 - 6px); left: calc(50% - var(--sp-gym) / 2 - 6px); width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%;
   font: 900 11px var(--display); font-style: normal; color: #2a1c00; background: #d6e2f5; box-shadow: 0 0 0 2px #121834; }
 /* Lo que toca: más grande, dorado y lo único que late */
-.sp-gym.now .sp-dot { width: var(--now); height: var(--now); margin-top: 0; border-color: var(--gold); animation: spNow 1.6s ease-in-out infinite; }
+.sp-gym.now .sp-dot { width: var(--sp-now); height: var(--sp-now); margin-top: 0; border-color: var(--gold); animation: spNow 1.6s ease-in-out infinite; }
 .sp-gym.now .sp-badge { width: 44px; height: 44px; filter: brightness(0) invert(1) opacity(.9); }
-.sp-gym.now .sp-ord { top: -6px; left: calc(50% - var(--now) / 2 - 4px); background: var(--gold); }
-.sp-gym.now .sp-name { padding: 3px 10px; border-radius: 9px; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; -webkit-line-clamp: 3; }
+.sp-gym.now .sp-ord { top: -6px; left: calc(50% - var(--sp-now) / 2 - 4px); background: var(--gold); }
+.sp-gym.now .sp-name { max-width: none; padding: 3px 10px; border-radius: 9px; white-space: nowrap; color: #2a1c00; background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: 0 2px 0 #b97a00; }
 @keyframes spNow { 50% { box-shadow: 0 0 0 4px #121834, 0 0 0 10px rgba(255,203,5,.22), 0 0 28px rgba(255,203,5,.75); } }
-/* Rutas: su Pokémon y el anillo de lo capturado; las nuevas, con estrella */
-.sp-route .sp-dot { width: var(--rt); height: var(--rt); background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 3px #121834, 0 4px 10px rgba(0,0,0,.4); }
+/* Rutas: su Pokémon, el anillo de lo capturado y su cuenta; un palito las cuelga del eje */
+.sp-route { width: var(--sp-rw); }
+.sp-route::after { content: ''; position: absolute; top: 100%; left: 50%; height: var(--sp-tick); border-left: 2px solid rgba(255,255,255,.28); }
+.sp-route .sp-dot { width: var(--sp-rt); height: var(--sp-rt); background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 3px #121834, 0 4px 10px rgba(0,0,0,.4); }
 .sp-route .sp-dot .mon-icon { width: 34px; height: auto; margin-top: -8px; image-rendering: pixelated; filter: drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
 .sp-route:not(.locked) .sp-dot::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; pointer-events: none;
   background: conic-gradient(#8fe36a calc(var(--prog, 0) * 1turn), rgba(255,255,255,.22) 0);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); }
 .sp-route.full .sp-dot::after { background: var(--gold); }
-.sp-route .sp-name { font-size: 11px; color: #c9d3ea; }
+.sp-route .sp-name { max-width: 100%; font-size: 11px; color: #c9d3ea; }
 /* Lo capturado de cada ruta: una Poké Ball y «2/7» (con todos, en verde y con ✓); las nuevas dicen «Nueva» */
-.sp-count { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px 1px 4px; border-radius: 99px; font: 800 11px var(--display); color: #e6edf7; background: rgba(255,255,255,.1); }
+.sp-count { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px 1px 3px; border-radius: 99px; font: 800 11px var(--display); font-style: normal; color: #e6edf7; background: rgba(255,255,255,.12); white-space: nowrap; }
 .sp-count img { image-rendering: pixelated; }
 .sp-count.full { color: #0f2a0c; background: #8fe36a; }
-.sp-new { position: absolute; top: -10px; left: calc(50% + var(--rt) / 2 - 14px); padding: 1px 7px; border-radius: 99px; font: 800 10px var(--display); font-style: normal; color: #2a1c00; background: var(--gold); box-shadow: 0 0 0 2px #121834; }
+.sp-new { position: absolute; top: -10px; left: calc(50% + var(--sp-rt) / 2 - 14px); padding: 1px 7px; border-radius: 99px; font: 800 10px var(--display); font-style: normal; color: #2a1c00; background: var(--gold); box-shadow: 0 0 0 2px #121834; }
 /* Lo que falta: apagado, sin Pokémon ni medalla a la vista */
 .sp-node.locked { color: #8a93b8; }
 .sp-node.locked .sp-dot { filter: grayscale(1) brightness(.6); }
 .sp-route.locked .sp-dot { background: none; box-shadow: none; border: 2px dashed rgba(200,210,240,.35); filter: none; }
-.sp-end { display: grid; place-items: center; width: var(--gym); height: var(--gym); margin-top: calc((var(--now) - var(--gym)) / 2); color: var(--gold); font-size: 26px; }
+.sp-route.locked::after { border-left-style: dashed; opacity: .7; }
+.sp-end { display: grid; place-items: center; width: var(--sp-gym); height: var(--sp-gym); margin-top: calc((var(--sp-now) - var(--sp-gym)) / 2); color: var(--gold); font-size: 26px; }
 @media (prefers-reduced-motion: reduce) { .sp-gym.now .sp-dot { animation: none; } .story-path { scroll-behavior: auto; } }
-/* Camino pequeño (móvil): todo algo más pequeño para que quepan más tramos */
-@container (max-width: 640px) {
-  .sp-track { min-height: 0; }
-}
-@media (max-height: 500px) {
-  .story-pathwrap { height: calc(100vh - 76px); min-height: 250px; }
-  .story-path { --gym: 48px; --now: 62px; --rt: 34px; --ch: 112px; padding: 50px 14px 8px; }
-  .sp-routes { gap: 6px; padding-bottom: 12px; }
-  .sp-routes:not(:empty)::after { height: 12px; }
-  .sp-spine { height: calc(var(--now) + 34px); }
-  .sp-gym .sp-badge { width: 26px; height: 26px; }
-  .sp-gym.now .sp-badge { width: 34px; height: 34px; }
-  .sp-route .sp-dot .mon-icon { width: 26px; margin-top: -6px; }
-  .sp-name { font-size: 10px; }
-  .sp-name b { font-size: 11px; }
-  .sp-route .sp-name { font-size: 9.5px; }
-  .sp-start { width: 74px; height: calc(var(--now) + 34px); }
-  .sp-start b { font-size: 10px; margin-top: 6px; }
-  .sp-gym.now .sp-name small { display: none; }
-}
-
-/* El camino y su leyenda */
-.story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.sp-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; padding: 8px 14px 12px; border-top: 1px solid rgba(255,255,255,.08); font-size: 12px; color: #c9d3ea; }
-.sp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+/* El siguiente reto: su botón de jugar debajo, el único del camino (sin alargar el tramo: el eje sigue recto) */
+.sp-nowbox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+.sp-go { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 7px 18px; font-size: 14px; white-space: nowrap; }
+/* La leyenda: qué es cada cosa, en palabras sencillas */
+.sp-legend { grid-area: 3 / 1 / 4 / 3; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 14px; padding: 9px 14px 12px; border-top: 1px solid rgba(255,255,255,.08); font-size: 12px; color: #c9d3ea; }
+.sp-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .sp-legend img { image-rendering: pixelated; }
-.sp-k { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.sp-k { flex: none; width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .sp-k.done { background: #6aa8ff; box-shadow: 0 0 0 2px #121834, 0 0 0 4px #6aa8ff; }
 .sp-k.now { background: var(--gold); box-shadow: 0 0 0 2px #121834, 0 0 0 4px var(--gold); }
+.sp-k.route { width: 14px; height: 14px; background: radial-gradient(circle at 50% 35%, #d8f6b0, #5eb43c); box-shadow: 0 0 0 2px #8fe36a; }
 .sp-k.locked { border: 2px dashed rgba(200,210,240,.45); }
-/* El siguiente reto: su botón de jugar debajo, el único del camino */
-.sp-nowbox { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-/* (debajo de su nombre, sin alargar el tramo: el eje sigue recto) */
-.sp-go { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 7px 18px; font-size: 14px; white-space: nowrap; }
-.story-path { padding-bottom: 60px; }
-/* Un tramo bloqueado dice qué lo abre */
-.sp-lock { margin: 0 4px; max-width: calc(var(--ch) - 12px); text-align: center; font-size: 11px; line-height: 1.3; color: #8a93b8; }
-@media (max-height: 500px) {
-  /* Móvil: las pestañas abajo, en la fila de la leyenda (arriba tapaban las primeras rutas), y la leyenda solo con lo
-     que no se explica solo; las rutas más bajitas (el contador sobre el círculo, el nombre en una línea) */
-  .story-pathwrap > .story-mode { top: auto; bottom: 5px; left: 6px; padding: 2px; }
-  .story-pathwrap > .story-mode button { min-height: 26px; padding: 2px 9px; font-size: 11px; }
-  .story-path { padding-top: 12px; }
-  .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 10px; padding: 4px 8px 4px 170px; font-size: 10px; }
-  .sp-legend span:first-child, .sp-legend span:last-child { display: none; }
-  .sp-route .sp-dot { margin-bottom: 4px; }
-  .sp-route .sp-count { position: absolute; top: calc(var(--rt) - 8px); left: 50%; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 0 2px #121834; }
-  .sp-route .sp-name { -webkit-line-clamp: 1; margin-top: 6px; }
-  .sp-new { top: -8px; font-size: 8.5px; padding: 0 5px; }
-  .sp-go { display: none; }   /* (en el móvil, el «¡Desafiar!» grande de la ficha de al lado está siempre a la vista) */
-  .story-path { padding-bottom: 10px; }
-  .sp-count { font-size: 9.5px; padding: 0 5px 0 3px; }
-  .sp-lock { font-size: 9.5px; }
-}

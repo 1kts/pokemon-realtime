@@ -22,15 +22,17 @@ export const storyPathViews = {
     const wrap = el('div', 'story-path scroll');
     const track = el('div', 'sp-track');
     wrap.append(track);
-    const legend = el('div', 'sp-legend', `<span><i class="sp-k done"></i>${t('Medalla ganada')}</span><span><i class="sp-k now"></i>${t('Tu siguiente reto')}</span>`
-      + `<span>${itemImg('pokeball', 14)}${t('Rutas: Pokémon capturados')}</span><span><i class="sp-k locked"></i>${t('Aún bloqueado')}</span>`);
+    // La leyenda, en palabras de quien no ha jugado nunca: qué es cada cosa y qué quiere decir el «2/7»
+    const legend = el('div', 'sp-legend', `<span class="sp-l-done"><i class="sp-k done"></i>${t('Medalla ganada')}</span><span class="sp-l-now"><i class="sp-k now"></i>${t('Tu siguiente reto')}</span>`
+      + `<span class="sp-l-route"><i class="sp-k route"></i>${t('Ruta: opcional, para capturar Pokémon')}</span>`
+      + `<span class="sp-l-count"><i class="sp-count">${itemImg('pokeball', 16)}2/7</i>${t('Ya capturados de los que viven allí')}</span><span class="sp-l-locked"><i class="sp-k locked"></i>${t('Aún bloqueado')}</span>`);
     const all = [];
     const pick = (b, n, unlocked, done) => {
       all.forEach(x => x.classList.remove('sel'));
       b.classList.add('sel');
       this.nodeInfo(info, n, unlocked, done);
     };
-    // Una ruta: su Pokémon, el anillo de lo capturado y la estrella si es nueva
+    // Una ruta: su Pokémon, el anillo de lo capturado, la cuenta («2/7») y «Nueva» si se acaba de abrir
     const route = n => {
       const unlocked = n.req <= prog, isNew = unlocked && n.req === prog;
       const dexes = [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => p.caught.includes(d)).length;
@@ -41,7 +43,7 @@ export const storyPathViews = {
       if (unlocked && n.wild.length) dot.append(monIcon(n.wild[0][0], 32));
       b.append(dot, el('span', 'sp-name', n.name));
       // (lo que has capturado de los que salen en ella: con todos, en verde y con ✓)
-      if (unlocked) b.append(el('span', 'sp-count' + (got === dexes.length ? ' full' : ''), `${itemImg('pokeball', 14)}${got === dexes.length ? '✓ ' : ''}${got}/${dexes.length}`));
+      if (unlocked) b.append(el('span', 'sp-count' + (got === dexes.length ? ' full' : ''), `${itemImg('pokeball', 16)}${got === dexes.length ? '✓ ' : ''}${got}/${dexes.length}`));
       if (isNew) b.append(el('em', 'sp-new', t('Nueva')));
       b.onclick = () => pick(b, n, unlocked, false);
       all.push(b);
@@ -66,15 +68,17 @@ export const storyPathViews = {
       box.append(b, go);
       return box;
     };
-    // Cada tramo: arriba, las rutas que se abren con las medallas que llevas hasta él; abajo, en el eje, su líder
+    // Cada tramo: el trozo de camino que lleva hasta su líder (al final, a la derecha) y, colgando encima, una al
+    // lado de otra, las rutas que se abren en él (con las medallas que llevas hasta ahí); así el camino es bajito
+    // y cabe entero de alto también en el móvil
     const chapter = (routes, head, state, opener) => {
       const ch = el('div', 'sp-ch ' + state);
-      const top = el('div', 'sp-routes');
-      if (state === 'locked' && opener) top.append(el('p', 'sp-lock', t('Se abre al vencer a {who}', { who: opener })));
-      routes.forEach(n => top.append(route(n)));
+      if (state === 'locked' && opener) ch.append(el('p', 'sp-lock', t('Se abre al vencer a {who}', { who: opener })));
+      const row = el('div', 'sp-row');
+      routes.forEach(n => row.append(route(n)));
       const spine = el('div', 'sp-spine');
       spine.append(head);
-      ch.append(top, spine);
+      ch.append(row, spine);
       track.append(ch);
       return ch;
     };
@@ -104,10 +108,12 @@ export const storyPathViews = {
       if (!cur) return;
       if (!cur.classList.contains('sp-league')) cur.click();
       const a = cur.getBoundingClientRect(), w = wrap.getBoundingClientRect();
-      wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - w.width / 2 + a.width / 2), behavior: 'instant' });
+      wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - w.width / 2 + a.width / 2), top: wrap.scrollHeight, behavior: 'instant' });
     });
+    // Arriba, junto a las pestañas, de qué va todo en una frase (en el móvil no cabe: lo dice la ficha de al lado)
+    const intro = el('p', 'sp-intro', t('Vence a los líderes de gimnasio en orden para ganar sus medallas: cada medalla abre el siguiente tramo del camino.'));
     const box = el('div', 'sp-box');
-    box.append(wrap, legend);
+    box.append(intro, wrap, legend);
     return box;
   },
 
