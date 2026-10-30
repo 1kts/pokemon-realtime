@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.1 ----------
+    'Resultados y Lucky Spin más claros': 'Risultati e Lucky Spin più chiari',
+    'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': 'Alla fine di una lotta, la finestra dei risultati si apre sempre dall’alto e vedi il «Vittoria!».',
+    'En Lucky Spin ves arriba las gemas que tienes para tirar.': 'In Lucky Spin vedi in alto le gemme che hai per girare.',
+    'En el móvil, la ventana de rendirse se queda abierta al levantar el dedo.': 'Su mobile, la finestra di resa resta aperta quando sollevi il dito.',
     // ---------- Novedades v0.34.0 ----------
     'Aspecto nuevo y Camino con fotos': 'Nuovo look e Cammino con foto',
     'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'Il gioco ha un nuovo look: ogni modalità ha il suo colore, carte con più spessore e l\'oro solo per la prossima sfida e per ciò che è pronto da riscattare.',

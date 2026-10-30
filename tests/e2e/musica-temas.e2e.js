@@ -13,8 +13,8 @@ module.exports = async ({ page, ok }) => {
   // El de los líderes (menos de un minuto) enlaza con el de combate en vez de volver a empezar
   await page.realClick('body');
   await page.eval(`window.__app.music.play('leader'); true`);
-  await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 20000);
-  ok(true, 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
+  // atajo: la música no se ve: se mira qué grabaciones encadena el tema
+  ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 20000).then(() => true, () => false), 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
 
   // Cada tipo de combate pide su tema: Práctica, Clasificatoria y Partida rápida, Torre, salvajes y gimnasios de cada región
   const byMode = await page.eval(`import('/js/music.js').then(m => {
@@ -56,7 +56,7 @@ module.exports = async ({ page, ok }) => {
   // y los gimnasios con tema propio enlazan con los de los líderes de su región
   for (const [name, next, n] of [['tower', 'maligno', 2], ['wild', 'ruta', 2], ['wildJohto', 'viaje', 2], ['leaderJohto', 'lider', 2], ['gym-fuego', 'lider y desierto', 3], ['gym-dragon', 'gimnasio y lider', 3]]) {
     await page.eval(`window.__app.music.play('${name}'); true`);
-    await page.waitFor(`window.__app.music.file && window.__app.music.file.name === '${name}' && window.__app.music.file.list.filter(Boolean).length === ${n}`, 60000)   // (al empezar se están descargando las demás grabaciones: en el CI va lento);
-    ok(true, `el tema «${name}», al acabar, enlaza con ${next}`);
+    // atajo: la música no se ve (ver arriba). Hasta 60 s: al empezar se están descargando las demás grabaciones
+    ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === '${name}' && window.__app.music.file.list.filter(Boolean).length === ${n}`, 60000).then(() => true, () => false), `el tema «${name}», al acabar, enlaza con ${next}`);
   }
 };

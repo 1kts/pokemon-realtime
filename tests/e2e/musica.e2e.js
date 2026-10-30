@@ -5,12 +5,14 @@ module.exports = async ({ page, ok }) => {
   await page.eval(`localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
   await page.reload();
   await page.waitFor(`document.querySelector('.title-panel')`);
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current === 'menu' && !window.__app.music.running`), 'la portada pide el tema del menú, pero no suena hasta tocar la página');
 
   await page.type('.title-panel input', 'Melómano');
   await page.realClick('.title-panel button.primary');
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.waitFor(`window.__app.music.running && window.__app.music.sounding`);
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.source`) === 'archivo', 'al tocar la página suena la grabación del menú (public/music/pueblo.mp3, de jannetty)');
   // Fuera de combate, al de jannetty le siguen tres de HydroGene, en su orden (por la duración de cada uno)
   await page.waitFor(`window.__app.music.file && window.__app.music.file.list.filter(Boolean).length === 4`, 20000);
@@ -20,25 +22,37 @@ module.exports = async ({ page, ok }) => {
 
   // Fuera de combate suena siempre el mismo tema: moverse por los menús no la corta
   const starts0 = await page.eval(`window.__app.music.starts`);
-  for (const v of ['story', 'team', 'shop', 'dex', 'settings', 'menu']) await page.eval(`window.__app.ui.show('${v}'); true`);
+  await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de Historia, ya vista)
+  for (const b of [/^Historia/, 'Mis Pokémon', /^Tienda/, /^Pokédex/, 'Ajustes']) { await page.tap(b); await page.waitFor(`document.querySelector('.inner-bar')`); await page.tap('Volver'); await page.waitSee('Aventura'); }
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'menu', 'mapa, equipo, tienda, Pokédex y ajustes usan el mismo tema que el menú');
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.starts`) === starts0 && await page.eval(`window.__app.music.sounding`), 'y sigue sonando sin reiniciarse al pasar de uno a otro');
 
   // Sin archivo (no está o no carga) suena el mismo tema sintetizado: se simula con el del combate
   await page.eval(`window.__app.music.bytes.set('desierto', Promise.resolve(null)); true`);
-  await page.eval(`window.__app.ui.show('menu'); window.__app.net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0]], skill: 0.1 }); true`);
-  await page.waitFor(`window.__app.battle`);
+  await page.tap(/^Práctica/);
+  await page.click('.pool-card');
+  await page.click('.draft button.primary');
+  await page.waitFor(`window.__app.battle`, 20000);
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'battle', 'un combate pone el tema de combate');
   await page.waitFor(`window.__app.music.sounding`);
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.source`) === 'sintetizado', 'si el archivo del tema falta, suena la versión sintetizada');
-  await page.eval(`window.__app.net.send({ t: 'forfeit' }); true`);
-  await page.waitFor(`window.__app.music.current === 'menu'`);
-  ok(true, 'al acabar el combate vuelve el tema del menú (sin fanfarria ni melodía de derrota)');
-  await page.waitFor(`window.__app.ui.view === 'results'`);
+  await page.waitFor(`window.__app.battle.latest`, 15000);
+  await page.key('Escape');
+  await page.tap('Rendirse', { in: '.ui-confirm-box' });
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
+  ok(await page.waitFor(`window.__app.music.current === 'menu'`).then(() => true, () => false), 'al acabar el combate vuelve el tema del menú (sin fanfarria ni melodía de derrota)');
+  await page.waitSee('Derrota');
   await page.waitFor(`window.__app.music.sounding`);
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'menu' && await page.eval(`window.__app.music.source`) === 'archivo', 'y en los resultados sigue sonando la grabación del menú');
 
-  await page.eval(`window.__app.ui.show('settings'); true`);
+  await page.tap('Continuar');
+  await page.tap('Volver');
+  await page.tap('Ajustes');
   await page.waitFor(`document.querySelector('.music-panel input[type=range]')`);
   await page.slide('.music-panel input[type=range]', 0);
   await page.waitFor(`window.__app.music.volume === 0`);
@@ -48,5 +62,6 @@ module.exports = async ({ page, ok }) => {
   await page.waitFor(`window.__app.music.volume > 0 && window.__app.music.running && window.__app.music.sounding`);
   ok(await page.eval(`+localStorage.getItem('arena.music')`) > 0, '«Sin música» la vuelve a encender');
   await page.reload();
+  // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.volume`) > 0 && await page.eval(`window.__app.music.volume`) === await page.eval(`+localStorage.getItem('arena.music')`), 'el volumen se mantiene al recargar');
 };

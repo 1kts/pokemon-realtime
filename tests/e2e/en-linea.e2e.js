@@ -7,18 +7,15 @@ module.exports = async ({ page, player, ok }) => {
   rival.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
   await rival.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  await page.waitFor(`document.querySelector('.menu-card.casual .pvp-live')`);
-  ok(await page.eval(`/\\d+ en línea/.test(document.querySelector('.menu-card.casual .pvp-live').textContent) && !document.querySelector('.menu-card.casual .pvp-live.hot')`), 'las tarjetas de PvP dicen cuántos hay en línea');
+  ok(await page.see(/\d+ en línea/, { in: '.menu-card.casual' }) && !(await page.see('buscando rival', { in: '.menu-card.casual', ms: 0 })), 'las tarjetas de PvP dicen cuántos hay en línea');
 
   // Alguien se pone a buscar partida rápida: en esa tarjeta se enciende, en Clasificatoria no
   rival.client.send({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] }); await rival.client.wait(m => m.t === 'profile');
   rival.client.send({ t: 'queue', mode: 'casual' });
-  await page.waitFor(`/1 buscando rival/.test(document.querySelector('.menu-card.casual .pvp-live').textContent)`, 15000);
-  ok(await page.eval(`!!document.querySelector('.menu-card.casual .pvp-live.hot') && !document.querySelector('.menu-card.ranked .pvp-live.hot')`), 'si alguien busca partida rápida, su tarjeta lo dice y se ilumina');
+  await page.waitSee('1 buscando rival', { in: '.menu-card.casual', ms: 15000 });
+  ok(!(await page.see('buscando rival', { in: '.menu-card.ranked', ms: 0 })) && await page.eval(`!!document.querySelector('.menu-card.casual .pvp-live.hot')`), 'si alguien busca partida rápida, su tarjeta lo dice (la de Clasificatoria no) y se ilumina');
   rival.client.send({ t: 'unqueue' });
-  await page.waitFor(`!document.querySelector('.menu-card.casual .pvp-live.hot')`, 15000);
-  ok(true, 'cuando deja de buscar, se apaga');
+  ok(await page.waitFor(`!/buscando rival/.test(document.querySelector('.menu-card.casual').innerText)`, 15000).then(() => true, () => false), 'cuando deja de buscar, deja de decirlo');
 
   // Partida rápida sin equipo: se prepara en su propia pantalla, sin ELO, y busca partida rápida
   const shown = `(() => { const b = [...document.querySelectorAll('.online button.primary')].find(x => /Buscar partida/.test(x.textContent));

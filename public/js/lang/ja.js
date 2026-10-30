@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.1 ----------
+    'Resultados y Lucky Spin más claros': '結果画面とLucky Spinが見やすく',
+    'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': 'バトル終了時、結果画面は常に一番上から開き、「勝利!」が見えるようになりました。',
+    'En Lucky Spin ves arriba las gemas que tienes para tirar.': 'Lucky Spinでは、回すために使えるジェムが上に表示されます。',
+    'En el móvil, la ventana de rendirse se queda abierta al levantar el dedo.': 'スマホでは、指を離しても降参ウィンドウが開いたままになります。',
     // ---------- Novedades v0.34.0 ----------
     'Aspecto nuevo y Camino con fotos': '新しい見た目と写真つきの道のり',
     'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.': 'ゲームの見た目が新しくなりました。モードごとに色が分かれ、カードに厚みが出て、金色は次の目標と受け取れるものだけに使われます。',

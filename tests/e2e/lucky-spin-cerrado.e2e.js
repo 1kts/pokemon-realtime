@@ -28,16 +28,17 @@ module.exports = async ({ page, player, ok, env }) => {
   setSpin(false);
   await enter(me);
   ok(await page.eval(spinBtn) === null, 'cerrado, el jugador no ve Lucky Spin arriba');
+  const menu = await page.title();
   await page.click('.hub-me .pill.gems');
-  await page.waitFor(`[...document.querySelectorAll('.toast')].some(x => /cerrado/.test(x.textContent))`);
-  ok(await page.eval(`window.__app.ui.view`) === 'menu', 'y tocar sus gemas no lo abre: le dice que está cerrado');
+  await page.waitSee(/cerrado/, { in: '.toast' });
+  ok(await page.title() === menu, 'y tocar sus gemas no lo abre: le dice que está cerrado');
 
   await enter(boss);
   const b = await page.eval(spinBtn);
   ok(b && b.seen && /Cerrado para los jugadores/.test(b.text), `la admin sí lo ve, con el aviso de que está cerrado para los demás (${b && b.text})`);
   await page.click('.hub-tz');
   await page.waitFor(`window.__app.ui.view === 'treasure'`);
-  ok(true, 'y puede entrar para probarlo');
+  ok(await page.title() === 'Lucky Spin', 'y puede entrar para probarlo');
 
   setSpin(true);
   await enter(me);

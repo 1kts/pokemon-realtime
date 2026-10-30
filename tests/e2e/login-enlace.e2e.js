@@ -27,20 +27,20 @@ module.exports = async ({ page, client, player, ok }) => {
   const link = /\/(#entrar=\S+)/.exec(text)[1];
   await page.goto('/?correo=1' + link);   // (como al tocarlo en el correo: una página nueva, en el navegador que lo pidió)
   await page.waitFor(`document.querySelector('.login-modal .code-input') && document.querySelector('.login-modal .code-input').value.length === 6`);
-  ok(await page.eval(`!location.hash && window.__app.ui.view === 'title' && /Vas a entrar como/.test(document.querySelector('.login-modal').textContent) && !document.querySelector('.login-modal .warn')`),
+  ok(await page.eval(`!location.hash && !!document.querySelector('.title-panel') && !document.querySelector('.login-modal .warn')`) && await page.see('Vas a entrar como', { in: '.login-modal' }),
     'abrir el enlace no entra solo: enseña con qué correo vas a entrar, con el código ya escrito, y lo quita de la dirección');
   await page.click('.login-modal button.primary');
   await page.waitFor(`document.querySelector('.login-modal input[autocomplete=nickname]')`);   // (cuenta nueva: su nombre)
   await page.type('.login-modal input[autocomplete=nickname]', 'Ash');
   await page.click('Crear cuenta y jugar');
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`window.__app.ui.profile.name === 'Ash' && window.__app.ui.profile.account.email === 'ash@example.com'`), 'un toque en «Entrar» y dentro');
+  await page.waitSee('Aventura');
+  ok(await page.see('Ash', { in: '.hub-me' }), 'un toque en «Entrar» y dentro, con su nombre');
   await page.eval(`localStorage.clear(); localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
   await page.goto('/?otra=1' + link);
   await page.waitFor(`document.querySelector('.login-modal .code-input')`);
   await page.click('.login-modal button.primary');
   await page.waitFor(`document.querySelector('.login-modal .auth-msg.bad') && /Código incorrecto o caducado/.test(document.querySelector('.login-modal .auth-msg').textContent)`);
-  ok(await page.eval(`window.__app.ui.view === 'title'`), 'el mismo enlace ya no sirve una segunda vez, y lo dice en la ventana');
+  ok(!(await page.see('Aventura', { ms: 0 })) && await page.eval(`!!document.querySelector('.title-panel')`), 'el mismo enlace ya no sirve una segunda vez, y lo dice en la ventana');
 
   // Un enlace que este navegador no pidió (el de otro, para meterte en su cuenta, o el tuyo abierto en otro sitio)
   const askFor = async email => {
@@ -67,17 +67,17 @@ module.exports = async ({ page, client, player, ok }) => {
   await page.waitFor(`document.querySelector('.login-modal input[autocomplete=nickname]')`);
   await page.type('.login-modal input[autocomplete=nickname]', 'Misty2');
   await page.click('Crear cuenta y jugar');
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`(() => { const p = window.__app.ui.profile; return p.account.email === 'misty2@example.com' && p.name === 'Misty2' && p.token !== ${JSON.stringify(inv.token)}; })()`),
-    'sin partida guardada se puede entrar: cuenta nueva, sin la partida de otro');
+  await page.waitSee('Aventura');
+  ok(await page.see('Misty2', { in: '.hub-me' }) && await page.eval(`localStorage.getItem('arena.token') !== ${JSON.stringify(inv.token)}`),
+    'sin partida guardada se puede entrar: cuenta nueva (Misty2), sin la partida de otro');
   // Con el juego ya abierto en la pestaña, el enlace (solo cambia el #) también abre la ventana
-  await page.eval(`window.__app.ui.logout ? window.__app.ui.logout() : null; true`);
+  await page.eval(`localStorage.clear(); localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
   await page.goto('/');
   await page.waitFor(`document.querySelector('.title-panel')`);
   const again = await askFor('misty2@example.com');
   await page.eval(`location.hash = ${JSON.stringify(again)}; true`);
-  await page.waitFor(`document.querySelector('.login-modal .code-input') && !location.hash`);
-  ok(true, 'con el juego ya abierto, el enlace abre la ventana de entrar y se quita de la dirección');
+  ok(await page.waitFor(`document.querySelector('.login-modal .code-input') && !location.hash`).then(() => true, () => false),
+    'con el juego ya abierto, el enlace abre la ventana de entrar y se quita de la dirección');
   api.close();
 };
 

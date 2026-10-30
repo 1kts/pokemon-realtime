@@ -18,17 +18,20 @@ module.exports = async ({ page, player, ok }) => {
   // La medalla de Brock: su avatar
   const badgeBtn = `[...document.querySelectorAll('.collect .mission')].find(r => r.querySelector('.m-ico > .badge-img'))`;
   ok(await page.eval(`!!${badgeBtn}`), 'la medalla ganada sale para recoger');
-  await page.eval(`${badgeBtn}.querySelector('.claim-btn').click(); true`);
-  await page.waitFor(`document.querySelector('.loot-pop')`);
-  await page.waitFor(`(window.__app.ui.profile.cosmetics.avatars || []).includes('badge:kanto:0')`);
-  ok(true, 'recogerla da el avatar de la medalla, con la animación de premio');
-  await page.eval(`[...document.querySelectorAll('.loot-pop .acts button')].find(b => !b.classList.contains('primary')).click(); true`);
+  await page.eval(`${badgeBtn}.querySelector('.claim-btn').id = 'badge-e2e'; true`);
+  await page.click('#badge-e2e');
+  await page.waitSee('Usar de avatar', { in: '.loot-pop' });
+  ok(true, 'recogerla saca la animación de premio, que ofrece usarla de avatar');
+  await page.tap('Usar de avatar', { in: '.loot-pop' });
   await page.waitFor(`window.__app.ui.profile.avatar === 'badge:kanto:0'`);
-  ok(await page.eval(`!!window.__app.ui.meModule().querySelector('.hub-ava .ava.ava-icon')`), '«Usar de avatar» la pone en el perfil');
+  await page.tap('Volver');
+  ok(await page.waitFor(`document.querySelector('.hub-ava .ava.ava-icon')`).then(() => true, () => false), '«Usar de avatar» la pone en tu avatar, arriba en el menú');
 
   // Cambiar una misión
-  const free = await page.eval(`window.__app.ui.profile.missions.freeRerolls.daily`);
-  await page.eval(`document.querySelector('.missions.daily .reroll').click(); true`);
-  await page.waitFor(`window.__app.ui.profile.missions.freeRerolls.daily === ${free - 1}`);
-  ok(true, 'cambiar una misión gasta un cambio gratis');
+  await page.tap('Ver todas');
+  // (los de las diarias: las semanales tienen los suyos)
+  const free = +(await page.read('.m-rerolls', { in: '.missions.daily' })).replace(/\D/g, '');
+  await page.click('.missions.daily .reroll');
+  await page.waitSee(`Cambios gratis: ${free - 1}`, { in: '.missions.daily' });
+  ok(true, `cambiar una misión diaria gasta un cambio gratis (quedan ${free - 1})`);
 };

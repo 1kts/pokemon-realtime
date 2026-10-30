@@ -113,13 +113,13 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
   ok(/1\/\d+/.test(r1), `la Ruta 1 dice cuántos llevas con la Poké Ball (${r1})`);
   // Tocar una ruta abre su ficha al lado
   await page.click('.r1-test');
-  await page.waitFor(`document.querySelector('.story-side .node-info h3')?.textContent.startsWith('Ruta 1 ')`);
+  await page.waitSee(/^Ruta 1 /, { in: '.story-side .node-info h3' });
   ok(true, 'tocar la Ruta 1 abre su ficha al lado');
   // Pulsar «Desafiar» en el camino empieza el combate contra Erika
   await page.eval(`(() => { const w = document.querySelector('.story-path'), n = document.querySelector('.sp-node.now'); w.scrollLeft += n.getBoundingClientRect().left - w.getBoundingClientRect().left - w.clientWidth / 2 + n.offsetWidth / 2; return true; })()`);   // atajo: volver a lo que toca
   await page.click('.story-path .sp-go');
-  await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Erika' || !!document.querySelector('.tname .tname-face[src="trainers/erika.png"]')`);
-  ok(true, '«Desafiar» empieza el combate contra Erika');
+  ok(await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Erika' || !!document.querySelector('.tname .tname-face[src="trainers/erika.png"]')`, 20000).then(() => true, () => false),
+    '«Desafiar» del camino empieza el combate contra Erika (su nombre en la presentación o su cara en el marcador)');
 };
 module.exports = camino([[1280, 800, false]], true);
 module.exports.camino = camino;

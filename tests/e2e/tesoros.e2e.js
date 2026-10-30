@@ -15,27 +15,32 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'treasure' && document.querySelector('.tz-board')`);
   ok(await page.eval(`document.querySelectorAll('.tz-tab').length === 3 && document.querySelectorAll('.tz-card').length === 10 && document.querySelector('.tz-card:first-child').classList.contains('big')`), '3 ruletas, cada una con 10 premios y el más raro en grande en el centro');
   // Tocar un premio: su rareza y su probabilidad
-  await page.eval(`document.querySelector('.tz-card.r-mitico').click(); true`);
+  await page.click('.tz-card.r-mitico');
   await page.waitFor(`document.querySelector('.tz-card.r-mitico.sel')`);
   ok(await page.eval(`/Mítico/.test(document.querySelector('.tz-info').textContent) && /%/.test(document.querySelector('.tz-info').textContent)`), 'un premio enseña su rareza y su probabilidad');
   // Tiradas hasta que salga un retrato (o 6 como mucho)
+  // (lo que se ve: las gemas de la cabecera y el precio de la tirada)
+  const num = async sel => +(await page.read(sel)).replace(/\D/g, '');
+  let spins = 0, gotPortrait = false;
   for (let i = 0; i < 6; i++) {
-    const gems = await page.eval(`window.__app.ui.profile.gems`);
-    const cost = await page.eval(`Data.SPIN_COST[(window.__app.ui.profile.treasure.got[window.__app.ui.tzSel] || []).length]`);
-    await page.eval(`document.querySelector('.tz-go').click(); true`);
+    const gems = await num('.inner-bar .pill.gems'), cost = await num('.tz-price b');
+    if (i === 0) ok(gems === 150 && cost > 0, `arriba salen tus gemas (${gems}) y la tirada dice lo que cuesta (${cost})`);
+    await page.tap('¡Tirar!');
     await page.waitFor(`document.querySelector('.loot-pop')`, 15000);
-    await page.waitFor(`window.__app.ui.profile.gems === ${gems - cost}`);
-    if (i === 0) ok(await page.eval(`/Premio/.test(document.querySelector('.loot-pop h2').textContent)`), 'la tirada enciende las cartas por turnos y sale el premio con su rareza');
-    await page.eval(`document.querySelector('.loot-pop .acts .primary').click(); true`);
-    await page.waitFor(`!document.querySelector('.loot-pop')`);
-    if (await page.eval(`(window.__app.ui.profile.cosmetics.avatars || []).some(a => a.startsWith('pt:'))`)) break;
+    if (i === 0) ok(await page.see(/Premio/, { in: '.loot-pop' }), 'la tirada enciende las cartas por turnos y sale el premio con su rareza');
+    // (un retrato se puede poner de avatar desde el propio premio)
+    const portrait = await page.see('Usar de avatar', { in: '.loot-pop', ms: 0 });
+    if (portrait) await page.tap('Usar de avatar', { in: '.loot-pop' }); else await page.click('.loot-pop .acts .primary');
+    await page.waitFor(`!document.querySelector('.loot-pop:not(.out)')`);
+    const left = await num('.inner-bar .pill.gems');
+    ok(left === gems - cost, `la tirada ${i + 1} cuesta lo que decía: ${gems} − ${cost} = ${left}`);
+    spins++;
+    if (portrait) { gotPortrait = true; break; }
   }
-  const n = await page.eval(`window.__app.ui.profile.treasure.got[window.__app.ui.tzSel].length`);
-  ok(await page.eval(`document.querySelectorAll('.tz-card.got').length === ${n} && document.querySelector('.tz-bar .tz-progress b').textContent === '${n}/10'`), `lo conseguido queda marcado (${n}/10) y cada tirada cuesta lo suyo`);
-  const pt = await page.eval(`(window.__app.ui.profile.cosmetics.avatars || []).find(a => a.startsWith('pt:')) || ''`);
-  if (pt) {
-    await page.eval(`window.__app.net.send({ t: 'look', avatar: '${pt}' }); true`);
-    await page.waitFor(`window.__app.ui.profile.avatar === '${pt}'`);
-    ok(await page.eval(`!!window.__app.ui.meModule().querySelector('.hub-ava .pt-face img.pt-img')`), 'el retrato ganado se pone de avatar: la cara de cerca con su efecto');
+  const n = await page.eval(`document.querySelectorAll('.tz-card.got').length`);
+  ok(n === spins && await page.read('.tz-bar .tz-progress b') === `${n}/10`, `lo conseguido queda marcado (${n} de ${spins} tiradas: ${n}/10)`);
+  if (gotPortrait) {
+    await page.tap('Volver');
+    ok(await page.waitFor(`document.querySelector('.hub-ava .pt-face img.pt-img')`).then(() => true, () => false), '«Usar de avatar» en el retrato ganado lo pone de avatar: la cara de cerca con su efecto');
   }
 };

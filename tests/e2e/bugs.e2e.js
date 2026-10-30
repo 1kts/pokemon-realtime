@@ -7,11 +7,9 @@ const totp = require('../../server/totp.js');
 module.exports = async ({ page, player, env, ok }) => {
   const me = await player({ user: 'reportero', pass: 'clave-larga-1' });
   await page.loginAs(me.token);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);
-  await page.click('.hub-bar .bug-btn');
+  await page.tap('Reportar un bug', { in: '.hub-bar' });
   await page.waitFor(`document.querySelector('.bug-report textarea')`);
-  ok(true, 'arriba, en la barra del menú, el botón de la mariquita abre la ventana de reportar un bug');
+  ok(await page.title() !== '' && await page.eval(`!!document.querySelector('.bug-report textarea')`), 'arriba, en la barra del menú, el botón de la mariquita abre la ventana de reportar un bug');
   ok(/Reportar un bug/.test(await page.eval(`document.querySelector('.legal-bar').textContent`)), 'y la barra de abajo también tiene «Reportar un bug»');
   await page.type('.bug-report textarea', 'corto');
   await page.click('.bug-report button.primary');
@@ -21,8 +19,8 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.click('.bug-report button.primary');
   await page.waitFor(`[...document.querySelectorAll('.toast')].some(x => /Gracias/.test(x.textContent))`);
   ok(await page.eval(`!document.querySelector('.bug-report')`), 'al enviarlo da las gracias y se cierra');
-  await page.eval(`window.__app.ui.show('settings'); true`);
-  await page.waitFor(`[...document.querySelectorAll('.settings-view button')].some(b => /Reportar un bug/.test(b.textContent))`);
+  await page.tap('Ajustes');
+  await page.waitSee('Reportar un bug', { in: '.settings-view', scroll: true });
   ok(true, 'también se puede desde Ajustes');
 
   // Al admin le sale en el panel, con quién, la pantalla en la que estaba y la versión
@@ -34,7 +32,7 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.type('#login [name=user]', 'reportero');
   await page.type('#login [name=pass]', 'clave-larga-1');
   await page.type('#login [name=code]', totp.code(secret, Math.floor(Date.now() / totp.STEP)));
-  await page.eval(`document.querySelector('#login').requestSubmit(); true`);
+  await page.key('Enter');
   await page.waitFor(`!document.querySelector('#top').hidden`);
   await page.waitFor(`document.querySelector('#bugs-n') && !document.querySelector('#bugs-n').hidden`);
   ok(await page.eval(`document.querySelector('#bugs-n').textContent`) === '1', 'la pestaña Bugs avisa de que hay uno nuevo');
@@ -42,7 +40,6 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.waitFor(`document.querySelector('#bugs-list .bug')`);
   ok(await page.eval(`(() => { const b = document.querySelector('#bugs-list .bug'); return /ficha se queda en blanco/.test(b.textContent) && /reportero/.test(b.textContent) && /menu/.test(b.textContent); })()`),
     'en el panel sale el bug con el texto, quién lo mandó y la pantalla');
-  await page.click('Marcar resuelto');
-  await page.waitFor(`!document.querySelector('#bugs-list .bug')`);
-  ok(true, 'se marca como resuelto y deja de salir entre los nuevos');
+  await page.tap('Marcar resuelto');
+  ok(await page.waitFor(`!document.querySelector('#bugs-list .bug')`).then(() => true, () => false) && !(await page.see('ficha se queda en blanco', { ms: 0 })), 'se marca como resuelto y deja de salir entre los nuevos');
 };

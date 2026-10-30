@@ -15,12 +15,12 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.type('#login [name=user]', 'jefa');
   await page.type('#login [name=pass]', 'clave-larga-1');
   await page.type('#login [name=code]', '000000');
-  await page.eval(`document.querySelector('#login').requestSubmit(); true`);
+  await page.key('Enter');   // (Intro en el campo del código, como quien entra)
   await page.waitFor(`document.querySelector('#login-err').textContent`);
   ok(await page.eval(`document.querySelector('#top').hidden`), 'con un código 2FA malo no entra');
 
   await page.type('#login [name=code]', totp.code(secret, Math.floor(Date.now() / totp.STEP)));
-  await page.eval(`document.querySelector('#login').requestSubmit(); true`);
+  await page.key('Enter');
   await page.waitFor(`!document.querySelector('#top').hidden`);
   ok(/jefa/.test(await page.eval(`document.querySelector('#who').textContent`)), 'con contraseña y código buenos entra');
   await page.waitFor(`document.querySelectorAll('#resumen .stat').length > 5`);
@@ -45,7 +45,7 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.waitFor(`[...document.querySelectorAll('#bal tbody tr')].some(tr => /Charizard/.test(tr.textContent))`);
   ok(await page.eval(`(() => { const tr = [...document.querySelectorAll('#bal tbody tr')].find(tr => /Charizard/.test(tr.textContent)); return tr.children[1].textContent === '1' && tr.children[2].textContent === '0 %' && /pocos datos/.test(tr.textContent); })()`),
     'Balance: el combate cuenta para Charizard (1 partida, 0 % de victorias, con aviso de pocos datos)');
-  await page.eval(`[...document.querySelectorAll('#bal th')].find(th => /% victoria/.test(th.textContent)).click(); true`);
+  await page.click('#bal table th:nth-child(3)');   // (el «% victoria» de la primera tabla, la de los Pokémon)
   ok(await page.eval(`!!document.querySelector('#bal th.sort.on')`), 'las columnas se ordenan al tocarlas');
   ok(await page.eval(`[...document.querySelectorAll('#bal h2')].some(h => /Por tipo/.test(h.textContent)) && [...document.querySelectorAll('#bal h2')].some(h => /Torre Batalla/.test(h.textContent))`),
     'Combate: además por tipo y la Torre combate a combate');
@@ -54,31 +54,31 @@ module.exports = async ({ page, player, env, ok }) => {
   pr.client.send({ t: 'ctx', device: 'pc', lang: 'es' }); pr.client.send({ t: 'view', v: 'menu' });
   await new Promise(r => setTimeout(r, 200));
   await page.click('[data-tab=metricas]');
-  await page.waitFor(`[...document.querySelectorAll('#met .dist')].some(d => /aparato/.test(d.textContent) && /PC/.test(d.textContent))`);
-  ok(true, 'Actividad: sesiones por aparato, idioma y pantallas visitadas');
+  await page.waitSee('PC', { in: await page.within('aparato', '#met .dist'), scroll: true });
+  ok(true, 'Actividad: sesiones por aparato (PC)');
   // Progreso: el viaje del jugador y dónde está cada uno en la historia
   await page.click('[data-tab=progreso]');
   await page.waitFor(`document.querySelector('#progreso .funnel tr')`);
   ok(await page.eval(`/Han entrado/.test(document.querySelector('#progreso .funnel').textContent) && [...document.querySelectorAll('#progreso .dist h2')].some(h => /Kanto: dónde están/.test(h.textContent))`),
     'Progreso: el embudo del jugador y en qué medalla está cada uno, con el líder que le toca');
   await page.eval(`document.querySelector('#progreso .who-f [name=who]').value = 'cuentas'; document.querySelector('#progreso .who-f').dispatchEvent(new Event('change')); true`);
-  await page.waitFor(`/tienen cuenta/.test(document.querySelector('#progreso .stat span').textContent)`);
+  await page.waitSee('tienen cuenta', { in: '#progreso .stat span' });
   ok(true, 'Progreso: se filtra por los que tienen cuenta');
   // Colección y Economía
   await page.click('[data-tab=coleccion]');
-  await page.waitFor(`[...document.querySelectorAll('#coleccion .dist h2')].some(h => /Los que más gente tiene/.test(h.textContent)) && /Pokémon en total/.test(document.querySelector('#coleccion .stats').textContent)`);
-  ok(true, 'Colección: qué Pokémon tiene la gente y cuáles usa');
+  await page.waitSee('Los que más gente tiene', { in: '#coleccion', scroll: true });
+  ok(await page.see('Pokémon en total', { in: '#coleccion .stats', scroll: true }), 'Colección: qué Pokémon tiene la gente (los que más gente tiene y cuántos en total)');
   await page.click('[data-tab=economia]');
-  await page.waitFor(`[...document.querySelectorAll('#economia .dist h2')].some(h => /Dinero de cada jugador/.test(h.textContent))`);
-  ok(true, 'Economía: dinero, gemas, objetos y logros de los jugadores');
+  await page.waitSee('Dinero de cada jugador', { in: '#economia', scroll: true });
+  ok(true, 'Economía: el dinero de cada jugador');
 
   await page.click('[data-tab=jugadores]');
   await page.waitFor(`document.querySelectorAll('#results tr.click').length >= 2`);
   ok(await page.eval(`/perfiles en total/.test(document.querySelector('#results').textContent)`), 'Jugadores: al entrar sale la lista de todos, con cuántas cuentas e invitados hay');
   await page.type('#search [name=q]', 'gamber');
-  await page.eval(`document.querySelector('#search').requestSubmit(); true`);
-  await page.waitFor(`document.querySelector('#results tr.click')`);
-  await page.eval(`document.querySelector('#results tr.click').click(); true`);
+  await page.key('Enter');
+  await page.waitFor(`document.querySelector('#results tr.click') && /Gamberro/.test(document.querySelector('#results').innerText)`);
+  await page.click(await page.within('Gamberro', '#results tr.click'));
   await page.waitFor(`document.querySelector('#player h1')`);
   ok(/Gamberro/.test(await page.eval(`document.querySelector('#player h1').textContent`)), 'buscar un jugador y abrir su ficha');
   ok(boss.id && await page.eval(`!document.querySelector('#player').textContent.includes('Desbloquear todo')`), 'en la ficha de otro no sale «Desbloquear todo»');

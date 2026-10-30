@@ -9,7 +9,7 @@ y `public/regions.js`. Ver `README.md` (jugar y modos) y `deploy/README.md` (ser
 
 ```bash
 npm start                                   # http://localhost:3000
-npm test                                    # servidor, tienda, seguridad, admin, arenas, i18n, notas, legal y 60 combates simulados
+npm test                                    # lint de e2e, mutaciones, servidor, tienda, seguridad, admin, arenas, i18n, notas, legal y 60 combates
 node tools/e2e.js tests/e2e/movil.e2e.js    # un e2e (ver tests/e2e/README.md); sin argumentos, todos
 ```
 
@@ -35,13 +35,26 @@ En esta máquina el Chrome de los e2e se pasa con `CHROME=~/.cache/ms-playwright
 
 ## Tests que no sean complacientes
 
+Siempre que se escriba, cambie o revise un test, o se añada una funcionalidad: skill `tests`
+(`.claude/skills/tests/SKILL.md`). En resumen:
+
 - Un test comprueba lo que ve y hace el jugador (texto visible, que nada tape un botón, que quepa en pantalla),
-  no clases CSS ni detalles de cómo está hecho.
-- Pulsar y escribir como un jugador (`page.click`, `page.type`, `page.slide`, `page.press`: entradas reales) en vez de
-  `.click()` dentro de `eval` o de `ui.show()`; si hace falta un atajo, `// atajo: motivo` (`tools/e2e-lint.js`).
+  no clases CSS ni `window.__app`: `page.see`, `page.title`, `page.read` en los `ok()`; `ok(true, …)` solo justo
+  después de `await page.waitSee(…)`, y el mensaje dice solo lo que se comprueba.
+- Entradas reales: `page.tap` (por lo que lee el jugador), `page.click`, `page.type`, `page.key`, `page.slide`,
+  `page.press`. Nada de `.click()` en `eval`, `ui.show()`, `__app.net.send` para jugar ni eventos inventados; si de
+  verdad hace falta, `// atajo: motivo`. `tools/e2e-lint.js` lo vigila: un e2e nuevo no puede tener ninguno, uno
+  cambiado no más que antes, y los topes de `tests/e2e/lint-base.json` solo bajan.
+- Rojo primero: un test nuevo o cambiado tiene que fallar con el código de antes (`tools/rojo-primero.js`, job
+  `rojo-primero` del CI). Si se endurece sin cambiar el juego, `Rojo-con: <mutación>` en el commit; `Sin-rojo: motivo`
+  solo si de verdad no aplica.
+- Mutaciones: `tests/mutaciones.js` (fallos que el jugador notaría y los tests que los cazan) y `tools/mutar.js`. Cada
+  punto `nuevo` de las notas añade una; la nota (`tests/mutaciones-nota.json`) no baja (hook y CI; cada noche el CI
+  las pasa todas).
 - Si un test falla, primero se sospecha del código. Cambiar un test para que pase solo cuando el comportamiento ha
   cambiado a propósito, y diciéndolo.
-- Lo de móvil se prueba en 844×390 y 667×375 (horizontal) con `localStorage arena.touch = '1'`.
+- Lo de móvil se prueba en 844×390 y 667×375 (horizontal) con `localStorage arena.touch = '1'`; en WebKit con
+  `E2E_BROWSER=webkit` (job `webkit` del CI).
 
 ## Convenciones
 

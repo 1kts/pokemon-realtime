@@ -13,6 +13,5 @@ module.exports = async ({ page, ok }) => {
   await page.reload();
   await page.waitFor(`document.querySelector('.title-panel')`);
   await page.click('Créditos');   // el botón de la barra legal
-  await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`);
-  ok(true, 'el aviso del juego enlaza a la página legal');
+  ok(await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`).then(() => true, () => false) && await page.title() !== '', 'el botón «Créditos» abre una ventana con el enlace a la página legal');
 };

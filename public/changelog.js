@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.34.1', date: '2026-10-30', title: 'Resultados y Lucky Spin más claros',
+      items: [
+        ['arreglo', 'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».'],
+        ['arreglo', 'En Lucky Spin ves arriba las gemas que tienes para tirar.'],
+        ['arreglo', 'En el móvil, la ventana de rendirse se queda abierta al levantar el dedo.'],
+      ],
+    },
+    {
       v: '0.34.0', date: '2026-10-29', title: 'Aspecto nuevo y Camino con fotos',
       items: [
         ['nuevo', 'El juego estrena aspecto: cada modo con su color, tarjetas con más cuerpo y el dorado solo para lo que toca o lo que tienes listo para recoger.'],

@@ -5,9 +5,8 @@ module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'rutera' });
   me.client.send({ t: 'dev', dex: 4, level: 10, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.click('.menu-card.story');
+  await page.tap(/^Historia/);
   await page.waitFor(`[...document.querySelectorAll('.story-path .sp-route')].some(b => /Bosque Verde/.test(b.textContent))`);
   // (en el Camino, la tarjeta del Bosque Verde: se lleva a la vista y se toca)
   await page.eval(`(() => { const b = [...document.querySelectorAll('.story-path .sp-route')].find(b => /Bosque Verde/.test(b.textContent)); b.classList.add('bv-test'); document.querySelector('.story-path').style.scrollBehavior = 'auto'; b.scrollIntoView({ inline: 'center', block: 'nearest' }); return true; })()`);   // atajo: desplazar el camino hasta el Bosque Verde

@@ -4,36 +4,40 @@ module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'fichas' });
   for (const [dex, level] of [[6, 36], [25, 30]]) { me.client.send({ t: 'dev', dex, level, region: 'kanto' }); await me.client.wait(m => m.t === 'profile'); }
   me.client.send({ t: 'dev', item: 'proteina', qty: 2 }); await me.client.wait(m => m.t === 'profile');
-  await page.goto('/');
-  await page.eval(`localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
-  await page.reload(); await page.loginAs(me.token);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  await page.eval(`window.__app.ui.show('team'); true`);
+  await page.loginAs(me.token);
+  await page.tap('Mis Pokémon');
   await page.waitFor(`document.querySelectorAll('.mon-card').length === 2`);
-  await page.eval(`document.querySelector('.mon-card .mon-name').click(); true`);
+  await page.click(await page.within('Charizard', '.mon-card'));
   await page.waitFor(`document.querySelector('.mon-sheet')`);
-  ok(await page.eval(`document.querySelectorAll('.ms-tab').length === 4 && document.querySelectorAll('.ms-stat').length === 4`), 'tocar la tarjeta abre la ficha con 4 pestañas y sus estadísticas');
+  ok(await page.title() === 'Charizard' && await page.eval(`document.querySelectorAll('.ms-tab').length === 4 && document.querySelectorAll('.ms-stat').length === 4`),
+    'tocar la tarjeta de Charizard abre su ficha, con 4 pestañas y sus estadísticas');
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/ficha-stats.png');
 
-  // Vitamina desde la ficha: sube el EV de Ataque y la ficha sigue abierta
-  const uid = await page.eval(`window.__app.ui.sheet.uid`);
-  const ev0 = await page.eval(`window.__app.ui.profile.mons.find(m => m.uid === ${uid}).ev.atk`);
-  await page.eval(`[...document.querySelectorAll('.ms-vit')].find(b => /Proteína/.test(b.textContent)).click(); true`);
-  await page.waitFor(`window.__app.ui.profile.mons.find(m => m.uid === ${uid}).ev.atk > ${ev0} && document.querySelector('.mon-sheet')`);
-  ok(true, 'una Proteína desde la ficha sube el EV de Ataque y la ficha sigue abierta');
+  // Vitamina desde la ficha: suben los EV repartidos y la ficha sigue abierta
+  const evs = async () => +(await page.read('.ms-evtotal b')).split('/')[0].trim();
+  const ev0 = await evs();
+  await page.tap(/^Proteína/, { in: '.mon-sheet' });
+  await page.waitFor(`/^${ev0 + 10}\\b/.test(document.querySelector('.ms-evtotal b').textContent)`).catch(() => {});
+  ok(await evs() === ev0 + 10 && await page.title() === 'Charizard', `una Proteína desde la ficha sube los EV repartidos (${ev0} → ${await evs()}) y la ficha sigue abierta`);
 
   // Movimientos: quitar uno y guardar
-  await page.eval(`[...document.querySelectorAll('.ms-tab')].find(b => /Movimientos/.test(b.textContent)).click(); true`);
+  await page.tap('Movimientos', { in: '.mon-sheet' });
   await page.waitFor(`document.querySelector('.ms-slots')`);
-  const before = await page.eval(`window.__app.ui.profile.mons.find(m => m.uid === ${uid}).moves.length`);
-  await page.eval(`document.querySelector('.ms-movelist .move-row.sel').click(); true`);
-  await page.eval(`[...document.querySelectorAll('.ms-movebar button')].find(b => /Guardar/.test(b.textContent)).click(); true`);
-  await page.waitFor(`window.__app.ui.profile.mons.find(m => m.uid === ${uid}).moves.length === ${before - 1}`);
-  ok(true, 'en Movimientos se quita uno y se guarda');
+  const moves = () => page.eval(`[...document.querySelectorAll('.ms-movelist .move-row.sel')].length`);
+  const before = await moves();
+  await page.click('.ms-movelist .move-row.sel');
+  await page.tap(/Guardar/, { in: '.ms-movebar' });
+  // (se guarda de verdad: al volver a abrir la ficha, sigue con uno menos)
+  await page.key('Escape');
+  await page.waitFor(`!document.querySelector('.mon-sheet')`);
+  await page.click(await page.within('Charizard', '.mon-card'));
+  await page.tap('Movimientos', { in: '.mon-sheet' });
+  await page.waitFor(`document.querySelector('.ms-slots')`);
+  ok(await moves() === before - 1, `en Movimientos se quita uno y se guarda (${before} → ${await moves()})`);
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/ficha-moves.png');
 
   // Siguiente Pokémon
-  await page.eval(`document.querySelectorAll('.ms-nav .tb-btn')[1].click(); true`);
-  await page.waitFor(`window.__app.ui.sheet.uid !== ${uid}`);
-  ok(true, 'con › pasa al siguiente Pokémon sin cerrar la ficha');
+  await page.tap('Siguiente', { in: '.ms-nav' });
+  await page.waitFor(`document.querySelector('.mon-sheet') && !/Charizard/.test(document.querySelector('.mon-sheet').innerText.split('\\n')[0] || '')`).catch(() => {});
+  ok(await page.title() === 'Pikachu', 'con › pasa al siguiente Pokémon (Pikachu) sin cerrar la ficha');
 };
