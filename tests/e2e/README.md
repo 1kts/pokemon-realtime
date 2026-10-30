@@ -15,7 +15,7 @@ E2E_JOBS=1 npm run test:e2e                   # uno detrás de otro
 E2E_SHARD=2/3 npm run test:e2e                # solo el trozo 2 de 3 (el CI reparte la tanda en 6 máquinas)
 E2E_TIMES=1 npm run test:e2e                  # con lo que tarda cada prueba
 E2E_SLOW=4 node tools/e2e.js tests/e2e/x.e2e.js   # con el navegador 4 veces más lento (para lo que solo falla en el CI)
-E2E_TIMEOUT=600 node tools/e2e.js …           # hasta 10 min por prueba (máquinas lentas; por defecto 5)
+E2E_TIMEOUT=600 node tools/e2e.js …           # hasta 10 min por prueba y todas las esperas el doble (máquinas lentas)
 E2E_BROWSER=webkit node tools/e2e.js tests/e2e/movil.e2e.js   # en WebKit, el motor del Safari del iPhone (abajo)
 ```
 
@@ -67,7 +67,8 @@ Entradas de verdad:
 | `page.key(code, ms)` | una tecla del navegador: `'Escape'`, `'KeyD'`, `'Digit2'`, `'Space'`, flechas… |
 | `page.mouseAt(x, y, { click, button })` | el ratón en un punto (apuntar en la arena 3D) |
 | `page.slide(selector, valor)` | mueve un deslizador pulsando en su barra |
-| `page.press(selector, ms)`, `page.fingerDown(selector)`, `page.fingerUp()` | el dedo de verdad: un toque, o una pulsación larga |
+| `page.press(selector, ms)`, `page.fingerDown(selector)`, `page.fingerUp()` | el dedo de verdad en el centro del elemento: un toque, o una pulsación larga (como el clic, falla si no se ve o algo lo tapa) |
+| `page.fingerAt(x, y)`, `page.fingerMove(x, y)` | el dedo en un punto y arrastrándolo (el joystick, apuntar un movimiento) |
 
 Y además: `page.goto/reload/eval/waitFor/shot/resize/loginAs`, `player({ name | user, pass })`, `client()`
 (WebSocket directo, con `send/wait/ask`), `env` (el del servidor: `DB_FILE`…), `ok(cond, texto)`, `log(texto)`.
@@ -108,4 +109,5 @@ E2E_BROWSER=webkit node tools/e2e.js tests/e2e/movil.e2e.js tests/e2e/pantallas-
 El CI pasa así los de móvil (`movil*.e2e.js` y `pantallas-movil*.e2e.js`) en el job `webkit`. Diferencias con
 Chrome: `E2E_SLOW` no hace nada, y un dedo que se queda puesto (`fingerDown` de más de 300 ms) son eventos de
 puntero y de toque de la página (Playwright solo tiene toques enteros); un toque corto sí es de verdad.
-`E2E_BROWSER=chromium-pw` hace lo mismo con el Chromium de Playwright (para comprobar el arnés sin WebKit).
+`E2E_BROWSER=chromium-pw` hace lo mismo con el Chromium de Playwright (para comprobar el arnés sin WebKit); con él aún
+fallan `movil` y `movil-menus` por esa diferencia del dedo (por eso el job `webkit` no tumba el CI).
