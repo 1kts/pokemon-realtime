@@ -90,7 +90,8 @@ const CHECK = (touch, geom) => `(() => {
   return { out: [...new Set(out)], g };
 })()`;
 
-// only: 'pantallas' o 'ventanas' para mirar solo una parte (juntas, en escritorio, pasaban de los 5 minutos del CI)
+// only: 'pantallas', 'ventanas' o una lista de pantallas, para mirar solo una parte (todo junto, en escritorio, pasaba
+// de los 5 minutos del CI)
 module.exports = (SIZES, only) => async ({ page, player, ok }) => {
   const other = await player({ user: 'Vecina' });
   other.client.send({ t: 'dev', dex: 6, level: 40, region: 'kanto', badges: 3 });
@@ -123,13 +124,13 @@ module.exports = (SIZES, only) => async ({ page, player, ok }) => {
         return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, ej: v.nodes.slice(0, 2).map(x => x.target.join(' ') + ' · ' + (x.failureSummary || '').split('\\n')[1]) })); })()`);
       for (const v of ax) a11y.push({ where: `${W}×${H} ${label}`, ...v });
     };
-    for (const v of only === 'ventanas' ? [] : VIEWS) {
+    for (const v of only === 'ventanas' ? [] : Array.isArray(only) ? only : VIEWS) {
       await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); window.__app.ui.show('${v}'); true`);   // atajo: el barrido mira el diseño de cada pantalla
       await page.waitFor(`window.__app.ui.view === '${v}'`);
       await look(v);
     }
     await page.eval(`window.__app.ui.show('menu'); true`);   // atajo: vuelta al menú para abrir las ventanas encima
-    for (const [m, js] of only === 'pantallas' ? [] : Object.entries(MODALS)) {
+    for (const [m, js] of only === 'pantallas' || Array.isArray(only) ? [] : Object.entries(MODALS)) {
       await page.eval(`(() => { const ui = window.__app.ui, OTHER = ${JSON.stringify(op.p.id)}; document.querySelectorAll('body > .modal').forEach(x => x.remove()); ui.sheet && ui.closeSheet(); ${js}; return true; })()`);
       await page.waitFor(`document.querySelector('body > .modal')`, 5000).catch(() => {});
       await look('ventana ' + m);
@@ -152,3 +153,4 @@ module.exports = (SIZES, only) => async ({ page, player, ok }) => {
   ok(!bad.length, bad.length ? `accesibilidad:\n      ${bad.slice(0, 10).map(v => `${v.where}: ${v.id} (${v.impact}) ${v.ej[0] || ''}`).join('\n      ')}` : 'sin problemas de accesibilidad graves (axe-core, WCAG 2 A y AA)');
   if (SIZES.some(([, , touch]) => touch)) say(/pequeño para el dedo/, `con el dedo, los botones miden al menos ${MIN_TAP} px`);
 };
+module.exports.VIEWS = VIEWS;
