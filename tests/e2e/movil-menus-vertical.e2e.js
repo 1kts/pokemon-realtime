@@ -13,6 +13,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);
     const over = [];
     for (const v of views) {
+      // atajo: el barrido mira el diseño de cada pantalla, no cómo se llega a ella
       await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); window.__app.ui.show('${v}'); true`);
       await page.waitFor(`window.__app.ui.view === '${v}'`);
       await new Promise(r => setTimeout(r, 250));
@@ -21,7 +22,7 @@ module.exports = async ({ page, player, ok }) => {
     ok(!over.length, `${W}×${H}: ninguna de las ${views.length} pantallas se sale de ancho${over.length ? ' (se salen: ' + over.join(', ') + ')' : ''}`);
     const legal = await page.eval(`Math.round(document.querySelector('.legal-bar').getBoundingClientRect().height)`);
     ok(legal <= 48, `${W}×${H}: la barra legal ocupa poco (${legal} px)`);
-    await page.eval(`window.__app.ui.show('menu'); true`);
+    await page.eval(`window.__app.ui.show('menu'); true`);   // atajo: vuelta al menú tras el barrido
     await page.waitFor(`document.querySelector('.hub-bar .hub-me')`);
     ok(await page.eval(`(() => { const r = document.querySelector('.hub-bar .hub-me').getBoundingClientRect(); return r.right <= innerWidth + 1 && r.left >= -1; })()`), `${W}×${H}: la cabecera del menú cabe`);
   }

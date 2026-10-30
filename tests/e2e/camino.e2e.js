@@ -116,6 +116,6 @@ module.exports = async ({ page, player, ok }) => {
   await openStory();
   await page.waitFor(`document.querySelector('.story-path .sp-go')`);
   await page.click('.story-path .sp-go');
-  await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Lt. Surge' || document.querySelector('.tname .tname-face[src="trainers/surge.png"]')`, 20000);
-  ok(true, '«Desafiar» del camino empieza el combate contra Lt. Surge');
+  ok(await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Lt. Surge' || /Lt\\. Surge/.test((document.querySelector('.tname') || {}).innerText || '')`, 20000).then(() => true, () => false),
+    '«Desafiar» del camino empieza el combate contra Lt. Surge (su nombre en la presentación o en el marcador)');
 };

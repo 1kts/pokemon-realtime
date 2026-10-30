@@ -20,6 +20,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('.node.gym.next');
   await page.click('.node-info button.primary');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);
+  // atajo: en qué arena es el combate se ve en el 3D (sin texto): se mira cuál ha cargado
   ok(await page.eval(`window.__app.battle.mapName === 'g-fuego'`), 'el combate contra Blaine es en su volcán');
   // Sin tocar nada: Blaine lo anuncia (el aviso que sale en pantalla) y se pone sobre la lava
   const said = `window.__banners.some(b => /Blaine pelea desde un terreno que a su equipo no le hace nada/.test(b))`;

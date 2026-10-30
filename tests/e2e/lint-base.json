@@ -1,7 +1,7 @@
 {
- "atajos": 108,
- "directos": 47,
- "appEnOk": 43,
- "okVacio": 58,
+ "atajos": 0,
+ "directos": 0,
+ "appEnOk": 0,
+ "okVacio": 0,
  "nota": "Topes de tools/e2e-lint.js: solo bajan (los ajusta el lint solo)"
 }

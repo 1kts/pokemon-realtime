@@ -1,5 +1,5 @@
 {
- "fecha": "2026-10-29",
+ "fecha": "2026-10-30",
  "cazadas": 41,
  "total": 41,
  "escapadas": [],
@@ -107,7 +107,7 @@
    "por": [
     "tests/e2e/misiones.e2e.js"
    ],
-   "motivo": "misiones.e2e.js: ✗ error: Tiempo agotado esperando: window.__app.ui.profile.missions.freeRerolls.daily === 1"
+   "motivo": "misiones.e2e.js: ✗ error: no se ve «Cambios gratis: 1»: no está en la página"
   },
   "golpes-no-restan-ps": {
    "resultado": "cazada",

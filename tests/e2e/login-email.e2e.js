@@ -48,11 +48,10 @@ module.exports = async ({ page, client, player, ok }) => {
   await page.waitFor(`document.querySelector('.login-modal input[autocomplete=nickname]')`);
   await page.type('.login-modal input[autocomplete=nickname]', 'Ash');
   await page.click('Crear cuenta y jugar');
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`(() => { const p = window.__app.ui.profile; return p.name === 'Ash' && p.account && p.account.email === 'ash@example.com' && !document.querySelector('.login-modal'); })()`),
-    'crea la cuenta con el correo y el nombre elegido, y entra al menú');
-  await page.eval(`window.__app.ui.show('profile'); true`);
-  ok(await page.eval(`document.querySelector('.account').textContent.includes('ash@example.com') && !document.querySelector('.account details.pw')`), 'en el perfil: entra con su correo y no hay contraseña que cambiar');
+  await page.waitSee('Aventura');
+  ok(await page.see('Ash', { in: '.hub-me' }) && !(await page.eval(`!!document.querySelector('.login-modal')`)), 'crea la cuenta con el nombre elegido y entra al menú');
+  await page.tap('Perfil');
+  ok(await page.see('ash@example.com', { in: '.account', scroll: true }) && !(await page.eval(`!!document.querySelector('.account details.pw')`)), 'en el perfil: la cuenta es la de su correo y no hay contraseña que cambiar');
 
   // ---------- Invitado → perfil → «Entrar con email»: su partida pasa a la cuenta ----------
   const guest = await player({ name: 'Gary' });
@@ -61,34 +60,38 @@ module.exports = async ({ page, client, player, ok }) => {
   guest.client.close();
   await page.eval(`localStorage.clear(); true`);
   await page.loginAs(guest.token);
-  await page.eval(`window.__app.ui.show('profile'); true`);
+  await page.tap('Perfil');
   await page.waitFor(`document.querySelector('.account .alt-btn.mail')`);
   await page.click('.account .alt-btn.mail');
   await page.type('.login-modal input[type=email]', 'gary@example.com');
   await page.click('Mandarme un código');
   await page.waitFor(`document.querySelector('.login-modal .code-input')`);
   await page.type('.login-modal .code-input', await codeFor('gary@example.com'));
-  await page.waitFor(`window.__app.ui.profile.account`);
-  ok(await page.eval(`(() => { const p = window.__app.ui.profile; return p.token === ${JSON.stringify(guest.token)} && p.mons.length === 1 && p.account.email === 'gary@example.com'; })()`),
-    'el invitado se lleva su partida (y su Squirtle) a la cuenta');
+  await page.waitSee('gary@example.com', { in: '.account', scroll: true });
+  await page.tap('Volver');
+  await page.tap('Mis Pokémon');
+  ok(await page.see('Squirtle') && await page.eval(`document.querySelectorAll('.mon-card').length`) === 1, 'el invitado se lleva su partida (y su Squirtle) a la cuenta del correo');
 
   // ---------- Google desde la portada ----------
   await title();
   await page.click('.title-panel .alt-btn.google');
   await page.waitFor(`document.querySelector('.login-modal .gsi-slot')`);
+  // atajo: el botón de Google es de Google (en las pruebas no se carga): se le pasa al juego lo que devolvería
   await page.eval(`window.__app.ui.googleCredential(${JSON.stringify(googleToken('g-1', 'misty@example.com'))}); true`);
   await page.waitFor(`document.querySelector('.login-modal input[autocomplete=nickname]')`);
   await page.type('.login-modal input[autocomplete=nickname]', 'Misty');
   await page.click('Crear cuenta y jugar');
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`(() => { const p = window.__app.ui.profile; return p.name === 'Misty' && p.account.google && p.account.email === 'misty@example.com'; })()`), 'con Google crea la cuenta y entra');
+  await page.waitSee('Aventura');
+  await page.tap('Perfil');
+  ok(await page.see('Misty', { in: '.trainer-card' }) && await page.see('misty@example.com', { in: '.account', scroll: true }), 'con Google crea la cuenta (Misty, con su correo) y entra');
   // Google con el correo de una cuenta que ya existe: entra en ella (sin pedir nombre)
   await title();
   await page.click('.title-panel .alt-btn.google');
   await page.waitFor(`document.querySelector('.login-modal .gsi-slot')`);
+  // atajo: lo que devolvería el botón de Google (ver arriba)
   await page.eval(`window.__app.ui.googleCredential(${JSON.stringify(googleToken('g-2', 'ash@example.com'))}); true`);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  ok(await page.eval(`window.__app.ui.profile.name === 'Ash' && window.__app.ui.profile.account.google`), 'con Google y el correo de una cuenta que ya existe, entra en ella');
+  await page.waitSee('Aventura');
+  ok(await page.see('Ash', { in: '.hub-me' }), 'con Google y el correo de una cuenta que ya existe, entra en ella (sin pedir nombre)');
 
   api.close();
 };

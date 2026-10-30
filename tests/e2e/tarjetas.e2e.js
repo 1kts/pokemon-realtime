@@ -32,10 +32,11 @@ module.exports = async ({ page, player, ok }) => {
   ok(zard.anim === 'holoTurn' && pika.anim !== 'holoTurn', 'solo el shiny tiene el borde holográfico');
 
   // Práctica: el elegido se marca con ✓; los demás no
-  await page.eval(`window.__app.ui.show('practice'); true`);
+  await page.tap('Volver');
+  await page.tap(/^Práctica/);
   await page.waitFor(`document.querySelectorAll('.pool-card').length > 3`);
   const before = await page.eval(`getComputedStyle(document.querySelector('.pool-card'), '::before').content`);
-  await page.eval(`document.querySelector('.pool-card').click(); true`);
+  await page.click('.pool-card');
   const after = await page.eval(`getComputedStyle(document.querySelector('.pool-card.sel'), '::before').content`);
   const tinted = await page.eval(`[...document.querySelectorAll('.pool-card')].every(c => c.style.getPropertyValue('--tc'))`);
   ok(!before.includes('✓') && after.includes('✓'), 'al elegir un Pokémon en Práctica se marca con ✓');
@@ -43,8 +44,10 @@ module.exports = async ({ page, player, ok }) => {
 
   // Tooltips del juego en vez de los blancos del navegador: al pasar por una tarjeta sale .ui-tip con su texto
   const title = await page.eval(`document.querySelector('.pool-card:nth-child(2)').title`);
-  await page.eval(`document.querySelector('.pool-card:nth-child(2)').dispatchEvent(new PointerEvent('pointerover', { bubbles: true })); true`);
-  ok(await page.eval(`(t => !!t && t.classList.contains('on') && t.textContent === ${JSON.stringify(title)} && !document.querySelector('.pool-card:nth-child(2)').hasAttribute('title'))(document.querySelector('.ui-tip'))`),
+  // (el ratón de verdad encima de la tarjeta)
+  const at = await page.eval(`(() => { const r = document.querySelector('.pool-card:nth-child(2)').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+  await page.mouseAt(at.x, at.y);
+  ok(await page.see(title, { in: '.ui-tip' }) && !(await page.eval(`document.querySelector('.pool-card:nth-child(2)').hasAttribute('title')`)),
     'al pasar el ratón sale el tooltip del juego con el texto y sin el del navegador');
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/tip.png');
 };

@@ -40,12 +40,17 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`[...document.getElementById('screen').children].every(c => c.getAnimations().every(a => a.playState === 'finished'))`);   // tras su animación de entrada
   const g = await geo();
   ok(g.shown && g.bottom === 0 && !g.covers, 'también está en el menú del juego, al final y sin tapar nada');
-  await page.eval(`document.body.classList.add('in-battle'); true`);
-  await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display === 'none'`);
-  ok(true, 'en combate se esconde');
-  await page.eval(`document.body.classList.remove('in-battle'); true`);
-  await page.waitFor(`getComputedStyle(document.querySelector('.legal-bar')).display !== 'none'`);
-  await page.eval(`[...document.querySelectorAll('.legal-bar button.link')].find(b => /Créditos/.test(b.textContent)).click(); true`);
-  await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`);
-  ok(true, '«Créditos» abre los créditos, con el enlace al aviso legal completo');
+  // En un combate de verdad (Práctica) se esconde, y al acabar vuelve
+  await page.tap(/^Práctica/);
+  await page.click('.pool-card');
+  await page.click('.draft button.primary');
+  await page.waitFor(`window.__app.battle && window.__app.battle.latest`, 20000);
+  ok(!(await page.see('fan-game no oficial', { ms: 0 })), 'en combate se esconde');
+  await page.key('Escape');
+  await page.tap('Rendirse', { in: '.ui-confirm-box' });
+  await page.tap('Continuar');
+  await page.waitSee('Créditos', { in: '.legal-bar', scroll: true });
+  ok(true, 'al acabar el combate vuelve');
+  await page.tap('Créditos', { in: '.legal-bar' });
+  ok(await page.waitFor(`document.querySelector('.modal a[href^="/legal"]')`).then(() => true, () => false), '«Créditos» abre los créditos, con el enlace al aviso legal completo');
 };

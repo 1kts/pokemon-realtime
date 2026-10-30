@@ -19,7 +19,18 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.battle && document.querySelectorAll('.tm img.face').length >= 2`);
   ok(await page.eval(`[...document.querySelectorAll('.tm img.face')].every(i => /portraits\\/emo\\/\\d+\\/(s\\/)?Normal\\.png$/.test(i.src))`),
     'en combate la barra de equipos lleva la cara normal de cada Pokémon');
-  await page.eval(`window.__app.battle.emote(window.__app.battle.foeIdx, 'Pain', 4000); true`);
-  await page.waitFor(`[...document.querySelectorAll('.team.foe .tm.active img.face')].some(i => /Pain\\.png$/.test(i.src))`);
-  ok(true, 'al recibir un golpe, el Pokémon pone cara de dolor');
+  // Un golpe de verdad: acercarse con WASD y pulsar con el ratón encima del muñeco hasta acertarle.
+  // atajo: dónde están tu Pokémon y el muñeco en la pantalla (la arena es 3D, sin elementos que buscar)
+  const where = `(() => { const b = window.__app.battle; if (!b || !b.pred) return null; const me = b.pred, f = b.posOf(b.foeIdx), p = b.toScreen(f.x, f.y);
+    return { dx: f.x - me.x, dy: f.y - me.y, x: Math.round(p.x), y: Math.round(p.y) }; })()`;
+  // (la cara de dolor dura un segundo: se apunta cada cara que sale en la barra del rival)
+  await page.eval(`window.__faces = []; new MutationObserver(() => document.querySelectorAll('.team.foe img.face').forEach(i => window.__faces.push(i.src))).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] }); true`);
+  const pain = `window.__faces.some(s => /Pain\\.png$/.test(s))`;
+  for (let i = 0; i < 200 && !(await page.eval(pain)); i++) {
+    const w = await page.eval(where);
+    if (!w) continue;
+    if (Math.hypot(w.dx, w.dy) > 140) await page.key(Math.abs(w.dx) > Math.abs(w.dy) ? (w.dx > 0 ? 'KeyD' : 'KeyA') : (w.dy > 0 ? 'KeyS' : 'KeyW'), 150);
+    await page.mouseAt(w.x, w.y, { click: true });
+  }
+  ok(await page.eval(pain), 'al recibir un golpe, el Pokémon pone cara de dolor');
 };

@@ -21,9 +21,10 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(`[...document.querySelectorAll('.practice-dbg button')].some(b => b.textContent === 'Ver qué piensa la IA' && b.getAttribute('aria-pressed') === 'false')`),
     'en Práctica está la opción «Ver qué piensa la IA», apagada de entrada');
   await fight();
-  ok(await page.eval(plate) === null && await page.eval(`!window.__app.battle.latest.ps.some(p => p.ai)`), 'apagada, encima del bot no sale nada (y el servidor no lo manda)');
-  // atajo: Esc es la tecla para rendirse (no hay botón en pantalla con teclado y ratón)
-  await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true })); true`);
+  ok(await page.eval(plate) === null, 'apagada, encima del bot no sale nada');
+  // atajo: que el servidor no mande lo que piensa la IA no se ve (es lo que se comprueba: no gastar red)
+  ok(await page.eval(`!window.__app.battle.latest.ps.some(p => p.ai)`), 'y el servidor no lo manda');
+  await page.key('Escape');   // (la tecla de rendirse: con teclado y ratón no hay botón en pantalla)
   await page.waitFor(`document.querySelector('.ui-confirm-box .ok')`);
   await page.click('.ui-confirm-box .ok');
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
@@ -33,8 +34,10 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('Ver qué piensa la IA');
   ok(await page.eval(`localStorage.getItem('arena.aiDebug') === '1' && document.querySelector('.practice-dbg button').getAttribute('aria-pressed') === 'true'`), 'al pulsarla se enciende y se recuerda');
   await fight();
-  await page.waitFor(plate, 8000);
-  const p = await page.eval(plate);
+  // (encima del bot, en cuanto la IA decide algo; la etiqueta se repinta: se lee la primera vez que se ve)
+  let p = null;
+  for (const t0 = Date.now(); !p && Date.now() - t0 < 20000; ) { p = await page.eval(plate); if (!p) await new Promise(r => setTimeout(r, 200)); }
+  if (!p) throw new Error('encima del bot no sale qué piensa la IA');
   ok(/^(Atacar|Tantear|Defender) · Agresividad \d+ % · (Luchador|Francotirador|Controlador|Tanque)$/.test(p.text), `encendida, encima del bot sale qué piensa: «${p.text}»`);
   ok(p.on, 'y se ve en la pantalla');
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/ia-pensamiento.png');

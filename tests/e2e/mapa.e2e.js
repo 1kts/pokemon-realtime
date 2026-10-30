@@ -7,13 +7,11 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', badges: 3, region: 'kanto' });
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.waitFor(`window.__app.ui.view === 'menu'`);
-  await page.eval(`window.__app.ui.show('story'); true`);
+  await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
   // (Historia abre en el Camino: lo que se prueba aquí es el mapa; la vista elegida se recuerda)
-  await page.waitFor(`document.querySelector('.story-mode')`); await page.eval(`localStorage.setItem('arena.storyGuide', '1'); document.querySelectorAll('body > .modal').forEach(m => m.remove()); true`);
-  await page.click('.story-mode button:nth-child(2)');
+  await page.tap(/^Historia/);
+  await page.tap('Mapa', { in: '.story-mode' });
   await page.waitFor(`document.querySelector('.you-pin')`);
-  await page.eval(`document.querySelectorAll('.modal').forEach(m => m.remove()); true`);   // la guía de la primera vez
 
   ok(await page.eval(`document.querySelectorAll('.node.gym.done .node-badge.got').length`) === 3, 'las 3 medallas conseguidas salen en color en sus gimnasios');
   ok(await page.eval(`document.querySelectorAll('.node.gym:not(.done) .node-badge:not(.got)').length`) === 5, 'las otras 5, sin conseguir');
@@ -31,9 +29,11 @@ module.exports = async ({ page, player, ok }) => {
   // La Liga: su nodo queda encima del rascacielos, transparente y del tamaño del edificio, y se puede pulsar
   ok(await page.eval(`(() => { const b = document.querySelector('.node.league-hq').getBoundingClientRect(); return b.height > b.width && b.width > 10; })()`), 'el nodo de la Liga cubre su rascacielos');
   // Volver a Historia: la maqueta ya está montada y sale al instante
-  await page.eval(`window.__app.ui.show('menu'); window.__app.ui.show('story'); true`);
+  await page.tap('Volver');
+  await page.tap(/^Historia/);
   ok(await page.eval(`!!document.querySelector('.map.map3d-on') && !document.querySelector('.mapart')`), 'al volver, el mapa 3D sale ya montado, sin pasar por el SVG');
   ok(await page.eval(`document.querySelectorAll('.map-goal .goal-routes .chip').length`) === fresh, 'el objetivo lista las rutas nuevas');
-  await page.eval(`document.querySelector('.node.league-hq').click(); true`);
-  await page.waitFor(`window.__app.ui.view === 'league'`);
+  await page.click('.node.league-hq');
+  await page.waitSee('Liga Pokémon');
+  ok(await page.title() === 'Liga Pokémon', 'el edificio de la Liga se puede pulsar y abre su pantalla');
 };
