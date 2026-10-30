@@ -38,8 +38,24 @@ module.exports = async ({ page, player, ok }) => {
   ok(/^(Atacar|Tantear|Defender) · Agresividad \d+ % · (Luchador|Francotirador|Controlador|Tanque)$/.test(p.text), `encendida, encima del bot sale qué piensa: «${p.text}»`);
   ok(p.on, 'y se ve en la pantalla');
   if (process.env.SHOTS) await page.shot(process.env.SHOTS + '/ia-pensamiento.png');
-  // Cambia con el combate: la agresividad se mueve (vida, energía, distancia…) en unos segundos
-  const seen = new Set([p.text]);
-  for (let i = 0; i < 20 && seen.size < 2; i++) { await new Promise(r => setTimeout(r, 400)); const q = await page.eval(plate); if (q) seen.add(q.text); }
-  ok(seen.size >= 2, `se actualiza durante el combate (${[...seen].join(' | ')})`);
+  // Cambia con el combate: la agresividad se mueve (vida, energía, tipos…) en unos segundos. Si se queda en un tope
+  // (100 % o 0 %: p. ej. un Luchador con ventaja de tipo contra un rival que no hace nada) no tiene por qué moverse:
+  // se rinde y prueba con otro bot al azar, hasta 3 combates
+  let seen = new Set([p.text]), tries = [];
+  for (let n = 0; ; n++) {
+    for (let i = 0; i < 20 && seen.size < 2; i++) { await new Promise(r => setTimeout(r, 400)); const q = await page.eval(plate); if (q) seen.add(q.text); }
+    tries.push([...seen].join(' | '));
+    if (seen.size >= 2 || n === 2 || ![...seen].every(x => / (100|0) % /.test(x))) break;
+    // atajo: Esc es la tecla para rendirse (como arriba)
+    await page.eval(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true })); true`);
+    await page.waitFor(`document.querySelector('.ui-confirm-box .ok')`);
+    await page.click('.ui-confirm-box .ok');
+    await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
+    await page.click('Continuar');
+    await page.waitFor(`window.__app.ui.view === 'practice' && document.querySelector('.pool-card')`);
+    await fight();
+    await page.waitFor(plate, 8000);
+    seen = new Set([(await page.eval(plate)).text]);
+  }
+  ok(seen.size >= 2, `se actualiza durante el combate (${tries.join(' · otro combate: ')})`);
 };

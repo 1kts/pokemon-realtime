@@ -29,6 +29,7 @@ module.exports = async ({ page, player, ok }) => {
     return b.world.types[cell] === 9; })()`;   // (9: lava)
   await page.waitFor(said, 30000).catch(() => {});
   ok(await page.eval(said), `Blaine anuncia su jugada (avisos: ${(await page.eval('window.__banners')).join(' | ')})`);
-  // (se mueve un poco dentro de la lava y a ratos pisa el borde: basta con verlo encima)
-  ok(await page.waitFor(onLava, 20000).then(() => true, () => false), 'y su Pokémon se planta en la lava');
+  // (se mueve un poco dentro de la lava y a ratos pisa el borde: basta con verlo encima. Hasta 45 s: si se atasca de
+  // camino descansa 3 s, y con el CI cargado 20 s se quedaban cortos alguna vez)
+  ok(await page.waitFor(onLava, 45000).then(() => true, () => false), 'y su Pokémon se planta en la lava');
 };
