@@ -83,6 +83,27 @@ jobs:
           E2E_JOBS: 2
           E2E_TIMES: 1
 
+  # Los e2e del móvil en WebKit (el motor del Safari del iPhone), con Playwright: E2E_BROWSER=webkit (ver
+  # tests/e2e/README.md). Nuevo: hasta ver que es estable avisa (sale en rojo en su job) pero no tumba el CI ni el despliegue
+  webkit:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save playwright@1.63.0 && npx playwright install --with-deps webkit
+      - run: node tools/e2e.js tests/e2e/movil*.e2e.js tests/e2e/pantallas-movil*.e2e.js
+        env:
+          E2E_BROWSER: webkit
+          E2E_JOBS: 2
+          E2E_TIMES: 1
+
   # Pruebas de mutación (cada noche y a mano): cada mutación de tests/mutaciones.js con sus tests, en 4 máquinas; falla
   # si alguna que la nota daba por cazada se escapa. Tarda (cada mutación pasa sus e2e): por eso no va en cada push;
   # en cada push solo se mira que la nota guardada no baje (tools/require-tests.js)
