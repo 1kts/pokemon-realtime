@@ -54,7 +54,7 @@ const CHECK = (touch, geom) => `(() => {
     // bloqueados del mapa solo dicen que están cerrados)
     const hit = (dx, dy) => { const n = document.elementFromPoint(x + dx, y + dy); return !!n && (n === e || e.contains(n) || sticky(n)); };
     const d = ${MIN_TAP} / 2 - 1, cut = (R - L < ${MIN_TAP} && r.width >= ${MIN_TAP}) || (B - T < ${MIN_TAP} && r.height >= ${MIN_TAP});
-    if (${touch} && e.matches('button, a[href], [role=button], summary') && !e.closest('.legal-bar, .node.locked') && !cut && !(hit(-d, 0) && hit(d, 0) && hit(0, -d) && hit(0, d)))
+    if (${touch} && e.matches('button, a[href], [role=button], summary') && !e.closest('.legal-bar') && !cut && !(hit(-d, 0) && hit(d, 0) && hit(0, -d) && hit(0, d)))
       out.push('pequeño para el dedo (' + Math.round(r.width) + '×' + Math.round(r.height) + '): ' + name(e));
   }
   // La barra legal (al final de la pantalla, sin fondo) no puede quedar encima de textos de la pantalla
@@ -90,7 +90,8 @@ const CHECK = (touch, geom) => `(() => {
   return { out: [...new Set(out)], g };
 })()`;
 
-module.exports = SIZES => async ({ page, player, ok }) => {
+// only: 'pantallas' o 'ventanas' para mirar solo una parte (juntas, en escritorio, pasaban de los 5 minutos del CI)
+module.exports = (SIZES, only) => async ({ page, player, ok }) => {
   const other = await player({ user: 'Vecina' });
   other.client.send({ t: 'dev', dex: 6, level: 40, region: 'kanto', badges: 3 });
   const op = await other.client.wait(m => m.t === 'profile');
@@ -122,13 +123,13 @@ module.exports = SIZES => async ({ page, player, ok }) => {
         return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, ej: v.nodes.slice(0, 2).map(x => x.target.join(' ') + ' · ' + (x.failureSummary || '').split('\\n')[1]) })); })()`);
       for (const v of ax) a11y.push({ where: `${W}×${H} ${label}`, ...v });
     };
-    for (const v of VIEWS) {
+    for (const v of only === 'ventanas' ? [] : VIEWS) {
       await page.eval(`document.querySelectorAll('body > .modal').forEach(m => m.remove()); window.__app.ui.show('${v}'); true`);   // atajo: el barrido mira el diseño de cada pantalla
       await page.waitFor(`window.__app.ui.view === '${v}'`);
       await look(v);
     }
     await page.eval(`window.__app.ui.show('menu'); true`);   // atajo: vuelta al menú para abrir las ventanas encima
-    for (const [m, js] of Object.entries(MODALS)) {
+    for (const [m, js] of only === 'pantallas' ? [] : Object.entries(MODALS)) {
       await page.eval(`(() => { const ui = window.__app.ui, OTHER = ${JSON.stringify(op.p.id)}; document.querySelectorAll('body > .modal').forEach(x => x.remove()); ui.sheet && ui.closeSheet(); ${js}; return true; })()`);
       await page.waitFor(`document.querySelector('body > .modal')`, 5000).catch(() => {});
       await look('ventana ' + m);
@@ -138,9 +139,7 @@ module.exports = SIZES => async ({ page, player, ok }) => {
   if (process.env.E2E_REPORT) fs.writeFileSync(process.env.E2E_REPORT, problems.join('\n'));
   if (process.env.E2E_A11Y) fs.writeFileSync(process.env.E2E_A11Y, JSON.stringify(a11y, null, 1));
   // Fallos conocidos que aún no tienen arreglo (a la vista aquí, no escondidos): se avisa de ellos en la salida
-  const KNOWN = [
-    [/667×375 story: pequeño para el dedo .*Ruta 24/, 'en el mapa de 667 de ancho, la Ruta 24 está tan cerca del gimnasio de Misty que sus zonas de toque se pisan'],
-  ];
+  const KNOWN = [];   // ([/patrón/, 'por qué'])
   for (const [re, why] of KNOWN) if (problems.some(p => re.test(p))) console.log('    (conocido) ' + why);
   const known = p => KNOWN.some(([re]) => re.test(p));
   const say = (re, what) => { const l = problems.filter(p => re.test(p) && !known(p)); ok(!l.length, l.length ? `${what}:\n      ${l.slice(0, 12).join('\n      ')}${l.length > 12 ? `\n      … y ${l.length - 12} más` : ''}` : what); };

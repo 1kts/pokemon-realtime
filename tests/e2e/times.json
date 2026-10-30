@@ -5,6 +5,7 @@
   "clasificatoria": 99, "efectos": 88, "ficha": 74, "lideres": 62, "misiones": 56, "mapa-equipo": 69, "pokedex": 45, "recoger-todo": 50,
   "movil-menus": 110, "movil-menus-vertical": 95, "sonido": 129, "torre": 70, "barra-legal": 120, "capturas": 155, "en-linea": 57,
   "derrota": 96, "fondo-menu": 41, "liga": 67, "mapa": 60, "movil": 104, "motes": 146, "portada": 37, "rendirse": 82, "tarjetas": 72,
-  "tutorial": 94, "mecanicas": 90, "practica-arena": 70, "cola": 75, "login-email": 100, "tienda-historia": 50, "clasificatoria-movimientos": 50, "mapa-respaldo": 50,
-  "login-enlace": 117, "pantallas-movil": 100, "pantallas-movil-pequeno": 100, "pantallas-ventana": 140, "pantallas-escritorio": 140
+  "tutorial": 94, "mecanicas": 90, "practica-arena": 70, "cola": 75, "login-email": 100, "tienda-historia": 50, "clasificatoria-movimientos": 50,
+  "login-enlace": 117, "pantallas-movil": 100, "pantallas-movil-pequeno": 100, "pantallas-ventana": 140, "pantallas-escritorio": 200, "pantallas-escritorio-ventanas": 120,
+  "camino": 120, "camino-movil": 200, "temas": 100, "tema-d": 180
 }

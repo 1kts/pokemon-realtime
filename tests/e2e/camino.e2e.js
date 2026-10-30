@@ -4,8 +4,9 @@
 // antes de sus rutas (no junto al líder, que parecería que ya las ha hecho), y al abrir está elegida la primera de
 // ellas con Pokémon por capturar. El siguiente líder es lo más grande y tiene el único «Desafiar», a la vista y sin
 // nada encima; lo bloqueado dice qué lo abre. En el móvil en horizontal cabe entero de alto (se desplaza de lado).
-// Pulsar «Desafiar» empieza el combate
-module.exports = async ({ page, player, ok }) => {
+// Pulsar «Desafiar» empieza el combate. Aquí, el escritorio; el móvil, en camino-movil.e2e.js (los tres tamaños juntos
+// pasaban de los 5 minutos que tiene cada prueba en el CI)
+const camino = (SIZES, more) => async ({ page, player, ok }) => {
   const me = await player({ user: 'camino' });
   // (con un Pidgey, que sale en la Ruta 1: en su tarjeta, él en color y los demás en silueta)
   for (const dex of [4, 16]) { me.client.send({ t: 'dev', dex, level: 20, region: 'kanto' }); await me.client.wait(m => m.t === 'profile'); }
@@ -54,7 +55,7 @@ module.exports = async ({ page, player, ok }) => {
         && document.getAnimations().every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity); })()`);
   };
 
-  for (const [W, H, touch] of [[1280, 800, false], [844, 390, true], [667, 375, true]]) {
+  for (const [W, H, touch] of SIZES) {
     const at = `${W}×${H}`;
     await open(W, H, touch);
     // Al abrir, la ficha de al lado es la de la primera ruta del tramo con Pokémon por capturar, y está a la vista
@@ -100,6 +101,7 @@ module.exports = async ({ page, player, ok }) => {
     ok(/Gimnasio: combate por su medalla/.test(legend) && /Ruta: captura Pokémon/.test(legend), `${at}: la leyenda explica qué es un gimnasio y qué una ruta (${legend.replace(/\n/g, ' · ')})`);
   }
 
+  if (!more) return;
   // Los Pokémon de la Ruta 1: Pidgey (capturado) en color; los demás, siluetas oscuras
   await open(1280, 800, false);
   const r1 = await page.eval(`(() => { const b = [...document.querySelectorAll('.sp-route')].find(b => b.querySelector('.sp-name').textContent.startsWith('Ruta 1 ')); b.scrollIntoView({ inline: 'center' }); b.classList.add('r1-test'); return b.querySelector('.sp-count').innerText; })()`);   // atajo: marcar la tarjeta para leerla
@@ -119,3 +121,5 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.leader-intro b')?.textContent === 'Erika' || !!document.querySelector('.tname .tname-face[src="trainers/erika.png"]')`);
   ok(true, '«Desafiar» empieza el combate contra Erika');
 };
+module.exports = camino([[1280, 800, false]], true);
+module.exports.camino = camino;

@@ -248,7 +248,8 @@ async function runOne(file) {
     if (external.length) t.ok(false, 'nada cargado de terceros: ' + [...new Set(external)].slice(0, 5).join(', '));
   } catch (e) {
     t.ok(false, 'error: ' + e.message);
-    if (ctx) { const shot = path.join(os.tmpdir(), `e2e-${name}.png`); try { await ctx.page.shot(shot); out.push(`    captura: ${shot}`); } catch {} }
+    // (la captura, como mucho 20 s: con la página bloqueada no llega nunca y dejaba colgado el trozo entero del CI)
+    if (ctx) { const shot = path.join(os.tmpdir(), `e2e-${name}.png`); try { await Promise.race([ctx.page.shot(shot), new Promise((_, j) => setTimeout(() => j(new Error('sin captura')), 20e3).unref())]); out.push(`    captura: ${shot}`); } catch {} }
   } finally { if (ctx) await ctx.teardown(); }
   if (process.env.E2E_TIMES) out[0] += ` (${((Date.now() - t0) / 1000).toFixed(1)} s)`;
   return { name, out, failed: results.some(r => !r[0]) || !results.length };
