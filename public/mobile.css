@@ -615,3 +615,70 @@
   #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) .ball.sel { width: 46px; height: 46px; }
   #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) .ball.sel i { width: 28px; height: 28px; }
 }
+/* Ladder del menú en horizontal: el sitio de una tarjeta pequeña, con los 2 primeros y tu puesto */
+@media (max-height: 500px) {
+  .menu-card.ladder-panel { gap: 1px; padding: 5px 8px; }
+  .lp-title { font-size: 13px; }
+  .lp-title .card-ico { display: none; }
+  .lp-all { font-size: 10px; }
+  .lp-rows li { padding: 0 3px; font-size: 10.5px; line-height: 14px; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 3px; }
+  .lp-rows li:nth-child(n+3) { display: none; }
+  .lp-rows i, .lp-rows b { font-size: 10.5px; }
+  .lp-me { padding: 0 3px; font-size: 10px; line-height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+/* (en el móvil no hay sitio para el letrero del tema que suena: el crédito sigue en Ajustes y en la barra de abajo) */
+@media (max-height: 500px), (max-width: 760px) { .now-playing { display: none; } }
+
+/* ========== Móvil en horizontal: lo justo a la vista (lo demás, en cada ficha) ========== */
+@media (max-height: 500px) {
+  /* Ficha de ruta: cada Pokémon en una línea con su probabilidad; el nivel va en la cabecera de la ruta */
+  .story-side .route-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .story-side .node-info .route-list .mini { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; min-width: 0; padding: 1px 5px; text-align: left; }
+  .story-side .route-list .mini canvas, .story-side .route-list .mini img.portrait { width: 32px !important; height: 32px !important; grid-row: span 2; }
+  .story-side .route-list .mini small { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 10px; line-height: 1.15; }
+  .story-side .route-list .mini-lv { display: none; }
+  .story-side .route-list .catch-pips { justify-content: flex-start; margin: 0; gap: 1px; }
+  .story-side .route-list .catch-pips i { width: 6px; height: 6px; }
+  /* Mis Pokémon: tarjetas pequeñas, muchas de un vistazo; tocar una abre su ficha con todo lo demás */
+  .teamview .mon-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; padding-bottom: 8px; }
+  .teamview .mon-card { display: grid; grid-template-columns: 40px minmax(0, 1fr) 28px; align-items: center; gap: 0 6px; padding: 3px 6px 3px 9px; }
+  .teamview .mon-card > :is(canvas, img) { grid-area: 1 / 1; width: 40px !important; height: 40px !important; }
+  .teamview .mon-card .mi { grid-area: 1 / 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0 5px; min-width: 0; }
+  .teamview .mon-card .mon-name { flex: 1 0 100%; overflow: hidden; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
+  .teamview .mon-card .mi > small { font-size: 11px; }
+  .teamview .mon-card .types { display: flex; gap: 3px; margin: 0; zoom: .8; }
+  .teamview .mon-card :is(.species, .xp, .movechips, .newmoves, .moves, .mastery, .shiny-star) { display: none; }
+  /* (el botón del equipo, redondo: + para meterlo y − para sacarlo, con su nombre para el lector de pantalla) */
+  .teamview .mon-card .acts { grid-area: 1 / 3; display: block; margin: 0; padding: 0; }
+  .teamview .mon-card .acts > :not(:first-child) { display: none; }
+  .teamview .mon-card .acts > button:first-child { width: 28px; min-width: 0; height: 28px; min-height: 0; padding: 0; overflow: hidden; border-radius: 50%; font-size: 0; }
+  .teamview .mon-card .acts > button:first-child::before { content: '+'; font: 900 18px/28px var(--display); }
+  .teamview .mon-card .acts > button.on:first-child::before { content: '−'; }
+  .teamview .mon-card.in::before { display: none; }
+  .teamview .sec-title { margin: 4px 0; font-size: 14px; }
+  /* Editor del avatar: pestañas, filtro y buscador en una fila; la foto a un lado y la lista, grande */
+  .modal-box.ava-edit { grid-template-columns: 112px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; padding: 8px 10px; }
+  .ava-edit > h3 { display: none; }
+  .ae-bar { grid-column: 1 / -1; flex-wrap: nowrap; padding-right: 30px; }
+  .ae-bar .ae-tabs { flex: none; flex-wrap: nowrap; gap: 3px; overflow: visible; }
+  .ae-bar .ae-tabs button { padding: 4px 8px; font-size: 12px; }
+  .ae-bar .own-filter { flex: none; margin: 0; }
+  .ae-bar input[type=search] { flex: 1 1 0; min-width: 0; margin: 0; padding: 4px 8px; }
+  .ae-preview { grid-row: 2 / 4; padding: 4px; }
+  .ae-preview .ava { --s: 88px !important; }
+  .ae-who b { font-size: 14px; }
+  .ae-body, .ae-more { grid-column: 2; }
+  /* Tarjeta de perfil: pequeña y los botones de la cuenta a la derecha */
+  .pv-flow .trainer-card, .trainer-card { gap: 12px; padding: 8px 12px; }
+  .trainer-card .ava { --s: 72px !important; border-width: 3px; }
+  .trainer-card .tc-info { position: relative; min-width: 0; padding-right: 150px; }
+  .tc-acc { position: absolute; top: 50%; right: 0; flex-direction: column; flex-wrap: nowrap; width: 138px; gap: 5px; margin: 0; transform: translateY(-50%); }
+  .tc-acc button { width: 100%; padding: 5px 8px; font-size: 12px; }
+  /* Combate: el ataque principal en la esquina y los demás en un arco regular a su alrededor, al alcance del pulgar;
+     las Balls, encima del arco */
+  #hud.touch .mv:nth-child(2) { right: 128px; bottom: 58px; width: 56px; height: 56px; }
+  #hud.touch .mv:nth-child(3) { right: 76px; bottom: 116px; width: 56px; height: 56px; }
+  #hud.touch .mv:nth-child(4) { right: 16px; bottom: 124px; width: 56px; height: 56px; }
+  #hud.touch .mv.protect { right: 134px; bottom: 2px; width: 54px; height: 54px; }
+  #hud.touch .balls { bottom: 208px; max-height: 118px; flex-wrap: wrap-reverse; }
+}

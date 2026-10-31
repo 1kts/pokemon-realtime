@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.36.2', date: '2026-10-31', title: 'Móvil más cómodo y ladder a la vista',
+      items: [
+        ['cambio', 'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.'],
+        ['cambio', 'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.'],
+        ['cambio', 'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.'],
+        ['cambio', 'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.'],
+      ],
+    },
+    {
       v: '0.36.0', date: '2026-10-31', title: 'Tus Pokémon al PvP',
       items: [
         ['nuevo', 'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.'],

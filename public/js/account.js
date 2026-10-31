@@ -860,6 +860,10 @@ export const accountViews = {
           body.append(chips);
         }
         box.append(body);
+        // Pestañas, filtro y buscador, en una fila encima de la lista
+        const bar = el('div', 'ae-bar');
+        tabs.before(bar);
+        bar.append(tabs, ...body.querySelectorAll(':scope > .own-filter, :scope > input[type=search]'));
         const more = el('button', 'ae-more', t('Ver cómo conseguir más en Logros'));
         more.onclick = () => { document.querySelectorAll('.modal').forEach(m => m.remove()); this.avaEditDraw = null; this.openCollection(tabId === 'avatar' ? 'art' : tabId === 'title' ? 'titles' : tabId === 'effect' ? 'effects' : tabId === 'frame' ? 'frames' : 'aura'); };
         box.append(more);

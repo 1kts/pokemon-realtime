@@ -446,6 +446,7 @@ function handle(c, msg) {
   if (msg.t === 'dev' && process.env.ARENA_DEV) {
     const p = c.profile;
     if (Number.isFinite(msg.coins)) p.coins += msg.coins;
+    if (Number.isInteger(msg.ranked)) p.ranked = msg.ranked;
     if (Number.isFinite(msg.elo)) { rewards.migrate(p); p.elo = msg.elo; p.peakElo = Math.max(p.peakElo, p.elo); p.season.peak = Math.max(p.season.peak, p.elo); }
     if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);

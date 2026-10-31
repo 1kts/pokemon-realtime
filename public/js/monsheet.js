@@ -144,6 +144,13 @@ export const monSheetViews = {
     const sell = el('button', 'danger', t('Vender por {price}', { price: price.toLocaleString() + ' ₽' }));
     sell.disabled = mine.length <= 1;
     sell.onclick = () => { confirmBox({ title: t('Vender'), text: t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: monLabel(mon), lv: lv(mon.level), price }), ok: t('Vender'), danger: true }).then(yes => { if (yes) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); } }); };
+    // (el Caramelo Raro también aquí: en el móvil la tarjeta va solo con lo justo)
+    if ((p.items.caramelo || 0) > 0) {
+      const candy = el('button', '', `${SHOP.find(i => i.id === 'caramelo').name} (${p.items.caramelo})`);
+      candy.disabled = mon.level >= Data.levelCap(p, mon.region);
+      candy.onclick = () => this.net.send({ t: 'story', a: 'use', item: 'caramelo', uid: mon.uid });
+      foot.append(candy);
+    }
     foot.append(sell);
     main.append(foot);
 

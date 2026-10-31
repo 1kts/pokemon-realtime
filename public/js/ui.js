@@ -268,7 +268,7 @@ export class UI {
       // (sin equipo, primero se prepara: la misma pantalla, pero de Partida rápida, que busca partida rápida)
       if (!Data.pvpTeam(p.pvpTeam, p.mons)) { this.onlineMode = 'casual'; return this.show('online'); }
       this.lastMode = 'casual'; this.casualBack = 'menu'; this.net.send({ t: 'queue', mode: 'casual' }); });
-    card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
+    online.append(this.ladderPanel());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
     card(training, t('Práctica'), t('Contra la IA, con la dificultad que quieras'), 'practice', 68, () => this.show('practice'));
     card(training, t('Tutorial'), p.tutorial ? t('Repasa los controles en 1 minuto') : t('Aprende a jugar en 1 minuto y llévate un premio'), 'tutorial' + (p.tutorial ? '' : ' ready'), 52, () => this.startTutorial());
@@ -597,7 +597,7 @@ export class UI {
         const c = el('div', 'mini' + (p.caught.includes(dex) ? ' caught' : ''));
         c.append(portrait(dex, 56));
         const pct = weight * normal * 100;
-        c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} % · ${lv(min === max ? min : min + '-' + max)}`));
+        c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} %<span class="mini-lv"> · ${lv(min === max ? min : min + '-' + max)}</span>`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen} · ${this.catchText(dex)}`;
         c.append(this.catchPips(dex));
         list.append(c);
@@ -608,7 +608,7 @@ export class UI {
         const known = p.caught.includes(x.dex);
         const c = el('div', 'mini rare' + (known ? ' caught' : ''));
         c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
-        c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} % · ${lv(w.level)}`));
+        c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} %<span class="mini-lv"> · ${lv(w.level)}</span>`));
         c.title = x.roam ? t('Vaga por todas las rutas de Johto') : x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
         list.append(c);
       }

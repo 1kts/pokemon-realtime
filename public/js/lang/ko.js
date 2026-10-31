@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': '더 편해진 모바일, 한눈에 보는 래더',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': '메뉴의 래더 패널에 랭크 상위 5명과 내 순위가 나오고, ‘모두 보기’로 전체 표를 열 수 있어요.',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': '모바일에서 기술이 엄지 근처에 깔끔한 호로 놓이고, 내 포켓몬, 길, 프로필이 공간을 덜 차지해 한눈에 보여요.',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': '아직 없는 항목은 어둡게 자물쇠와 함께 표시되어 내 것과 잘 구분돼요.',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': '모바일에서는 재생 중인 곡 표시가 나오지 않아 화면이 깔끔해요.',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': '내 포켓몬으로 PvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': '랭크전과 빠른 대전에서 전설을 포함한 내 포켓몬을 개체값과 노력치 그대로 Lv.50으로 써요. 스토리를 안 해도 대여 포켓몬이 있어요.',
@@ -782,6 +788,8 @@ export default {
     'Retirada de contenido': '콘텐츠 삭제',
     'Hecho por {who}': '제작: {who}',
     'Música de {who}': '음악: {who}',
+    'Ver todo': '모두 보기',
+    'Juega Clasificatoria para entrar': '랭크전을 하면 들어가요',
     'Está en tu equipo de Clasificatoria: cámbialo antes': '랭크 팀에 있어요: 먼저 교체하세요',
     'Sal de la cola antes': '먼저 대기열에서 나가세요',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': '팀에 포켓몬이 부족해요: 다른 포켓몬을 골라 대전을 찾으세요.',
@@ -1333,7 +1341,6 @@ export default {
     'Torre Batalla': '배틀타워',
     'Racha en curso: {s} · bloque {b}': '연승 중: {s} · {b}블록',
     'Combates seguidos a Nv.50 · récord {n}': 'Lv.50 연속 배틀 · 기록 {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': '랭크 배틀·타워·도감 랭킹: 어떤 트레이너든 찾아보기',
     'Ver perfil': '프로필 보기',
     'Juegas como invitado': '게스트로 플레이 중',
     'Crea una cuenta para no perder tu partida': '진행 상황을 잃지 않도록 계정을 만드세요',

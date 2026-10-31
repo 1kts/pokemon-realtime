@@ -934,6 +934,9 @@ body.in-battle .ui-confirm { cursor: auto; }
 .own-filter button.sel { background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; }
 .ae-tabs button { padding: 6px 14px; border-radius: 99px; font-weight: 800; }
 .ae-tabs button.sel { background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; border-color: transparent; }
+.ae-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ae-bar .own-filter { margin: 0; }
+.ae-bar input[type=search] { flex: 1 1 160px; min-width: 0; margin: 0; }
 .ae-body { min-height: 180px; max-height: 46vh; overflow: auto; padding-right: 4px; }
 .ae-body .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
 .ae-more { align-self: center; font-size: 13px; }
@@ -1026,7 +1029,11 @@ body.in-battle .ui-confirm { cursor: auto; }
 .ms-wear small { font-size: 11px; color: #9fb0cc; text-align: center; }
 .ms-wear.sel { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 14px rgba(255,203,5,.3); }
 .ms-wear.sel small { color: var(--gold-hi, #ffe27a); font-weight: 800; }
-.ms-wear.locked { cursor: default; background: rgba(34,43,88,.55); border-style: dashed; }
+.ms-wear.locked { cursor: default; background: rgba(34,43,88,.55); }
+/* Lo que aún no tienes (Vestuario y editor del avatar): apagado del todo y con candado, sin borde de rayas */
+:is(.ms-wear, .frame-opt).locked { position: relative; border-style: solid; border-color: rgba(190,205,240,.16); box-shadow: none; }
+:is(.ms-wear, .frame-opt).locked :is(.ava, canvas, img) { filter: grayscale(1) brightness(.5); }
+:is(.ms-wear, .frame-opt).locked::after { content: '🔒'; position: absolute; top: 6px; right: 6px; font-size: 13px; line-height: 1; opacity: .9; }
 .ms-wear.locked > b, .ms-wear.locked > small { opacity: .6; }
 .ms-wear:not(.locked):not(.sel):hover { background: #2a346a; }
 /* Ficha › Retos */
@@ -1787,3 +1794,24 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 /* (los botones, pegados abajo mientras se baja) */
 .results .acts { position: sticky; bottom: 0; z-index: 3; margin: 8px 0 0; padding: 10px 0 6px;
   background: linear-gradient(180deg, transparent, rgba(16,24,66,.96) 35%); }
+
+/* Ladder en el menú: una tarjeta más, con el top 5 dentro */
+/* (siempre en la fila Online: bajando de línea en 1280 se quedaría fuera de la pantalla) */
+@media (min-width: 961px) and (min-height: 501px) { .menu-sec .menu-grid:has(.ladder-panel) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.menu-card.ladder-panel { display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; cursor: default; }
+.ladder-panel::after { display: none; }
+.lp-head { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.lp-head button { padding: 0; background: none; border: 0; color: #fff; cursor: pointer; box-shadow: none; }
+.lp-title { display: inline-flex; align-items: center; gap: 6px; font: 900 19px var(--display); }
+.lp-all { flex: none; font: 800 12px var(--text); color: #ffe08a !important; text-decoration: underline; text-underline-offset: 2px; }
+.lp-body { position: relative; z-index: 2; min-height: 0; }
+.lp-body .small { margin: 2px 0 0; color: #fff; }
+.lp-rows { margin: 0; padding: 0; list-style: none; }
+.lp-rows li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 1px 6px; border-radius: 6px; font-size: 13px; line-height: 20px; color: #fff; cursor: pointer; }
+.lp-rows li:hover { background: rgba(255,255,255,.1); }
+.lp-rows li.me { background: rgba(255,210,63,.18); }
+.lp-rows i { font: 900 12px var(--display); font-style: normal; color: #ffe08a; text-align: center; }
+.lp-rows b { overflow: hidden; font: 700 13px var(--text); text-overflow: ellipsis; white-space: nowrap; text-shadow: none; }
+.menu-card.ladder-panel .lp-rows span { max-width: none; font-weight: 800; font-variant-numeric: tabular-nums; }   /* (no el hueco del sprite de las tarjetas) */
+.lp-me { margin: 2px 0 0; padding: 0 6px; font: 800 12px var(--text); color: #ffe08a; }
+

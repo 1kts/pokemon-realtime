@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': 'スマホがより快適に、ラダーも一目で',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'メニューのラダーパネルにランク上位5人と自分の順位を表示し、「すべて見る」で全体の表を開けます。',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': 'スマホでは技が親指の近くにきれいな弧で並び、マイポケモン、ルート、プロフィールが省スペースで一目で分かるようになりました。',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': '未所持のものは暗くなり鍵が付くので、自分の物とはっきり区別できます。',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': 'スマホでは再生中の曲の表示が出なくなり、画面がすっきりしました。',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': '自分のポケモンでPvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'ランクとクイックマッチで、伝説を含む自分のポケモンを個体値・努力値つきのLv.50で使えます。ストーリーをしなくてもレンタルで遊べます。',
@@ -782,6 +788,8 @@ export default {
     'Retirada de contenido': 'コンテンツの削除',
     'Hecho por {who}': '制作：{who}',
     'Música de {who}': '音楽: {who}',
+    'Ver todo': 'すべて見る',
+    'Juega Clasificatoria para entrar': 'ランクをプレイして参加',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'ランクのチームに入っています。先に入れ替えてください',
     'Sal de la cola antes': '先に待機列を抜けてください',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'チームのポケモンが足りません。別のポケモンを選ぶと対戦を探せます。',
@@ -1333,7 +1341,6 @@ export default {
     'Torre Batalla': 'バトルタワー',
     'Racha en curso: {s} · bloque {b}': '連勝中：{s} · 第{b}ブロック',
     'Combates seguidos a Nv.50 · récord {n}': 'Lv.50 の 連続バトル · 記録 {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': 'ランクバトル・タワー・図鑑の ランキング：どの トレーナーでも さがせる',
     'Ver perfil': 'プロフィールを 見る',
     'Juegas como invitado': 'ゲストで プレイ中',
     'Crea una cuenta para no perder tu partida': 'データを なくさないよう アカウントを 作ろう',

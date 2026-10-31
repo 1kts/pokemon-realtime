@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': '手机更顺手,天梯一目了然',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': '菜单的天梯面板显示排位赛前 5 名和你的名次,点“查看全部”可打开完整榜单。',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': '在手机上,招式按钮沿拇指整齐排成弧形,我的宝可梦、道路和个人资料更省空间,一眼可见。',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': '尚未拥有的内容会变暗并带锁,与已拥有的清楚区分。',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': '手机上不再显示正在播放的歌曲提示,让屏幕更清爽。',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': '用你的宝可梦打 PvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': '在排位赛和快速对战中,你可以用自己的宝可梦作战,包括传说宝可梦,保留个体值和努力值,等级为 50。不想玩剧情也可以用租借宝可梦。',
@@ -781,6 +787,8 @@ export default {
     'Retirada de contenido': '内容移除',
     'Hecho por {who}': '作者：{who}',
     'Música de {who}': '音乐:{who}',
+    'Ver todo': '查看全部',
+    'Juega Clasificatoria para entrar': '玩排位赛即可上榜',
     'Está en tu equipo de Clasificatoria: cámbialo antes': '它在你的排位队伍中:请先替换',
     'Sal de la cola antes': '请先退出队列',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': '队伍缺少一只宝可梦:再选一只才能寻找对战。',
@@ -1402,7 +1410,6 @@ export default {
     'Torre Batalla': '对战塔',
     'Racha en curso: {s} · bloque {b}': '当前连胜：{s} · 第 {b} 轮',
     'Combates seguidos a Nv.50 · récord {n}': 'Lv.50 连续对战 · 纪录 {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': '排位赛、对战塔和图鉴排行榜：查找任何训练家',
     'Ver perfil': '查看个人资料',
     'Juegas como invitado': '你正在以游客身份游戏',
     'Crea una cuenta para no perder tu partida': '注册账号以免丢失进度',

@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': 'Bequemer am Handy, Rangliste im Blick',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'Das Menü zeigt im Ladder-Feld die Top 5 der Rangliste und deinen Platz, mit „Alle ansehen“ für die ganze Tabelle.',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': 'Am Handy liegen die Attacken in einem sauberen Bogen am Daumen, und Meine Pokémon, Routen und Profil brauchen weniger Platz und sind auf einen Blick lesbar.',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': 'Was du noch nicht hast, erscheint abgedunkelt mit Schloss und hebt sich klar von deinen Sachen ab.',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': 'Am Handy erscheint die Anzeige des laufenden Lieds nicht mehr, damit der Bildschirm frei bleibt.',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': 'Deine Pokémon im PvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'In Rangliste und Schnelles Match spielst du mit deinen Pokémon, auch legendären, samt DVs und EVs auf Lv.50. Ohne Story gibt es Leih-Pokémon.',
@@ -781,6 +787,8 @@ export default {
     'Retirada de contenido': 'Entfernung von Inhalten',
     'Hecho por {who}': 'Von {who}',
     'Música de {who}': 'Musik von {who}',
+    'Ver todo': 'Alle ansehen',
+    'Juega Clasificatoria para entrar': 'Spiele Rangliste, um reinzukommen',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'Es ist in deinem Ranglisten-Team: tausche es zuerst aus',
     'Sal de la cola antes': 'Verlasse zuerst die Warteschlange',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'Deinem Team fehlt ein Pokémon: Wähle ein anderes, um ein Match zu suchen.',
@@ -1332,7 +1340,6 @@ export default {
     'Torre Batalla': 'Duellturm',
     'Racha en curso: {s} · bloque {b}': 'Aktuelle Serie: {s} · Block {b}',
     'Combates seguidos a Nv.50 · récord {n}': 'Kämpfe am Stück auf Lv.50 · Rekord {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': 'Ranglisten für Rangliste, Turm und Pokédex: Finde jeden Trainer',
     'Ver perfil': 'Profil ansehen',
     'Juegas como invitado': 'Du spielst als Gast',
     'Crea una cuenta para no perder tu partida': 'Erstelle ein Konto, damit du deinen Spielstand nicht verlierst',

@@ -8,10 +8,11 @@ import { showcaseHtml } from './achievements.js';
 import { t, tServer, locale } from './i18n.js';
 import { prizeHtml } from './missions.js';
 import { confirmBox } from './dialog.js';
-import { icon, badgeImg } from './pixicons.js';
+import { icon, badgeImg, item as itemImg } from './pixicons.js';
 
 const { SPECIES, RANKED_POOL, REGIONS, LEAGUES } = Data;
 const { level: LEVEL, block: BLOCK, brainEvery: BRAIN_EVERY } = Data.TOWER;
+const LADDER_EVERY = 60000;   // ms entre peticiones de la ladder del menú
 const BOARDS = [
   ['ranked', 'Clasificatoria', 'ELO'],
   ['tower', 'Torre Batalla', 'Mejor racha'],
@@ -301,8 +302,45 @@ export const towerViews = {
     this.net.send({ t: 'ladder', board: this.ladderBoard || 'ranked', page: this.ladderPage || 0, q: this.ladderQ || '' });
   },
 
-  // Respuesta del servidor: va a la ladder o a la tabla lateral de la Torre
+  // Ladder en el menú: el top 5 de Clasificatoria y tu puesto. La tabla es cara de calcular y el menú se repinta a menudo:
+  // se pide como mucho una vez por minuto y mientras tanto se pinta lo último que llegó
+  ladderPanel() {
+    const box = el('div', 'menu-card ladder ladder-panel');
+    const head = el('div', 'lp-head');
+    const name = el('button', 'lp-title', `${itemImg('medal-box', 24, 'card-ico')}${t('Ladder')}`);
+    const all = el('button', 'lp-all', `${t('Ver todo')} ›`);
+    name.onclick = all.onclick = () => { this.ladderBoard = 'ranked'; this.ladderPage = 0; this.ladderQ = ''; this.openLadder(); };
+    head.append(name, all);
+    box.append(head, el('div', 'lp-body'));
+    const seen = this.menuLadder;
+    if (seen) this.drawLadderPanel(seen.msg, box);
+    else box.lastChild.append(el('p', 'small', t('Cargando…')));
+    if (!seen || Date.now() - seen.at > LADDER_EVERY) {
+      if (seen) seen.at = Date.now();   // (no pedirla otra vez en cada repintado mientras llega)
+      this.net.send({ t: 'ladder', board: 'ranked', page: 0, q: '' });
+    }
+    return box;
+  },
+
+  drawLadderPanel(msg, box = this.root.querySelector('.ladder-panel')) {
+    const body = box && box.querySelector('.lp-body');
+    if (!body) return;
+    body.innerHTML = '';
+    if (!msg.rows.length) return body.append(el('p', 'small', t('Esta tabla todavía está vacía.')));
+    const ol = el('ol', 'lp-rows');
+    for (const r of msg.rows.slice(0, 5)) {
+      const li = el('li', r.id === this.profile.id ? 'me' : '', `<i>${r.rank}</i><b>${escapeHtml(r.name)}</b><span>${r.elo}</span>`);
+      li.onclick = () => this.userModal(r.id);
+      ol.append(li);
+    }
+    body.append(ol);
+    const me = msg.me;
+    if (!(me && me.rank <= 5)) body.append(el('p', 'lp-me', me ? t('Tú: puesto {n} de {total}', { n: me.rank, total: msg.total }) : t('Juega Clasificatoria para entrar')));
+  },
+
+  // Respuesta del servidor: va a la ladder, a la tabla lateral de la Torre o al panel del menú
   onLadder(msg) {
+    if (msg.board === 'ranked' && !msg.page && !msg.q) { this.menuLadder = { at: Date.now(), msg }; if (this.view === 'menu') this.drawLadderPanel(msg); }
     if (this.view === 'tower' && msg.board === 'tower') return this.renderTowerBoard(msg);
     if (this.view === 'ladder' && msg.board === this.ladderBoard) this.renderLadder(msg);
   },

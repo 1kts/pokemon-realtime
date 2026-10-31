@@ -135,7 +135,12 @@ body.tema-d .menu-card:hover .art { transform: scale(1.08) rotate(-3deg); }
 body.tema-d .menu-card .go { display: none; }
 body.tema-d .menu-card .pvp-live { position: relative; z-index: 2; background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.2); color: #fff; }
 body.tema-d .menu-card .pvp-live.hot { background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.5); }
+/* (con la tarjeta estrecha, «buscando rival» baja de línea dentro de su chapa) */
+@media (min-height: 501px) { body.tema-d .menu-card .pvp-live { max-width: 100%; border-radius: 12px; } body.tema-d .menu-card .pvp-live > span { max-width: none; white-space: normal; } }
 /* (sin esto, ganan las letras grandes de los títulos de las tarjetas) */
+/* (la ladder del menú: tampoco con la letra de los títulos) */
+body.tema-d .menu-card.ladder-panel .lp-rows b { display: block; font: 700 13px var(--text); letter-spacing: 0; text-shadow: none; }
+@media (max-height: 500px) { body.tema-d .menu-card.ladder-panel .lp-rows b { font-size: 10.5px; } }
 body.tema-d .menu-card .pvp-live b { position: static; font: inherit; font-weight: 800; letter-spacing: 0; text-shadow: none; }
 body.tema-d .menu-card .pvp-live.hot b { color: #fff; }
 body.tema-d .menu-card em.ready { color: #ffe680; }

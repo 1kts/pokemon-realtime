@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': 'Telefono più comodo, classifica in vista',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'Il menu mostra la top 5 di Classificata e la tua posizione nel pannello Ladder, con «Vedi tutto» per aprire la tabella completa.',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': 'Su telefono le mosse stanno in un arco ordinato vicino al pollice, e I miei Pokémon, i percorsi e il profilo occupano meno e si leggono a colpo d\'occhio.',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': 'Ciò che non hai ancora appare spento con un lucchetto, per distinguerlo bene da ciò che è tuo.',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': 'Su telefono non appare più l\'etichetta del brano in riproduzione, per lasciare lo schermo libero.',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': 'I tuoi Pokémon nel PvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'In Classificata e Partita rapida giochi con i tuoi Pokémon, leggendari inclusi, con IV ed EV al Liv.50. Se non vuoi fare la Storia, ci sono quelli a noleggio.',
@@ -782,6 +788,8 @@ export default {
     'Retirada de contenido': 'Rimozione di contenuti',
     'Hecho por {who}': 'Creato da {who}',
     'Música de {who}': 'Musica di {who}',
+    'Ver todo': 'Vedi tutto',
+    'Juega Clasificatoria para entrar': 'Gioca Classificata per entrare',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'È nella tua squadra Classificata: sostituiscilo prima',
     'Sal de la cola antes': 'Esci prima dalla coda',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'Manca un Pokémon nella tua squadra: scegline un altro per cercare una partita.',
@@ -1333,7 +1341,6 @@ export default {
     'Torre Batalla': 'Torre Lotta',
     'Racha en curso: {s} · bloque {b}': 'Serie in corso: {s} · blocco {b}',
     'Combates seguidos a Nv.50 · récord {n}': 'Lotte di fila al Lv.50 · record {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': 'Classifiche di classificate, Torre e Pokédex: cerca qualsiasi Allenatore',
     'Ver perfil': 'Vedi profilo',
     'Juegas como invitado': 'Giochi come ospite',
     'Crea una cuenta para no perder tu partida': 'Crea un account per non perdere la partita',

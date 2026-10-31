@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.2 ----------
+    'Móvil más cómodo y ladder a la vista': 'Comfier mobile, ladder in view',
+    'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'The menu shows the Ranked top 5 and your position in the Ladder panel, with “See all” to open the full table.',
+    'En el móvil, los ataques van en un arco ordenado junto al pulgar, y Mis Pokémon, las rutas y el perfil ocupan menos y se ven de un vistazo.': 'On mobile, moves sit in a tidy arc by your thumb, and My Pokémon, routes and the profile take less space and read at a glance.',
+    'Lo que aún no tienes sale apagado y con candado, para distinguirlo bien de lo tuyo.': 'What you don\'t own yet looks dimmed with a padlock, so it stands apart from what\'s yours.',
+    'En el móvil ya no sale el letrero de la canción que suena, para dejar la pantalla despejada.': 'On mobile the now-playing label no longer appears, keeping the screen clear.',
     // ---------- Novedades v0.36.0 ----------
     'Tus Pokémon al PvP': 'Your Pokémon in PvP',
     'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'In Ranked and Quick Match you play with your own Pokémon, legendaries included, with their IVs and EVs at Lv.50. If you\'d rather skip Story, rentals are there.',
@@ -781,6 +787,8 @@ export default {
     'Retirada de contenido': 'Content removal',
     'Hecho por {who}': 'Made by {who}',
     'Música de {who}': 'Music by {who}',
+    'Ver todo': 'See all',
+    'Juega Clasificatoria para entrar': 'Play Ranked to join',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'It\'s in your Ranked team: swap it out first',
     'Sal de la cola antes': 'Leave the queue first',
     'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'A Pokémon is missing from your team: pick another to search for a match.',
@@ -1403,7 +1411,6 @@ export default {
     'Torre Batalla': 'Battle Tower',
     'Racha en curso: {s} · bloque {b}': 'Current streak: {s} · block {b}',
     'Combates seguidos a Nv.50 · récord {n}': 'Back-to-back battles at Lv.50 · record {n}',
-    'Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador': 'Ranked, Tower and Pokédex rankings: look up any trainer',
     'Ver perfil': 'View profile',
     'Juegas como invitado': 'You\'re playing as a guest',
     'Crea una cuenta para no perder tu partida': 'Create an account so you don\'t lose your game',
