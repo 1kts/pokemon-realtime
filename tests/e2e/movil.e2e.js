@@ -54,9 +54,14 @@ module.exports = async ({ page, ok }) => {
   const x1 = await page.eval(`window.__app.battle.pred.x`);
   await page.fingerUp();
   ok(x1 > x0 + 40, `el joystick a la derecha lo mueve a la derecha (${Math.round(x0)} → ${Math.round(x1)})`);
-  // (al soltarlo se para: un rato después sigue donde estaba. Desde que el joystick vuelve a su sitio, que es cuando
-  // la página ha recibido el dedo levantado, y con el reloj de la página: con el CI cargado, 300 ms medidos desde
-  // fuera a veces no llegaban ni a que se procesara)
+  // (al soltarlo se para: un rato después sigue donde estaba. Con un empujón corto hacia el lado con más sitio, que
+  // con el CI cargado el arrastre de antes lo lleva hasta la pared y contra la pared «se para» aunque no se suelte.
+  // Se mide desde que el joystick vuelve a su sitio, que es cuando la página ha recibido el dedo levantado, y con
+  // el reloj de la página: 300 ms medidos desde fuera a veces no llegaban ni a que se procesara)
+  const away = (await page.eval(`window.__app.battle.pred.x`)) > (await page.eval(`Shared.ARENA.w`)) / 2 ? -1 : 1;
+  await page.fingerAt(120, 280);
+  await page.fingerMove(120 + away * 60, 280);
+  await page.fingerUp();
   await page.waitFor(`!document.querySelector('.tc-base.on')`);
   const [x2, x3] = await page.eval(`new Promise(r => setTimeout(() => { const a = window.__app.battle.pred.x; setTimeout(() => r([a, window.__app.battle.pred.x]), 600); }, 300))`);
   ok(Math.abs(x3 - x2) < 3, `al soltar el joystick se para (${Math.round(x2)} → ${Math.round(x3)})`);

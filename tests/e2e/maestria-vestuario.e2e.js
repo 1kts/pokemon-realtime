@@ -1,6 +1,6 @@
 // Logros (2): lo ganado con los retos de una línea se pone fuera de Logros. El glow, desde el editor del Perfil (sale
 // alrededor del avatar); la skin Edición Oro, desde el Vestuario de la ficha del Pokémon, donde la pestaña Retos
-// enseña los de su línea (se ve en la tarjeta de Historia). Ganarlos y recogerlos, en maestria.e2e.js
+// enseña los de su línea (se ve en la tarjeta de Historia y en combate). Ganarlos y recogerlos, en maestria.e2e.js
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'maestria' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
@@ -43,4 +43,12 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`!document.querySelector('.mon-sheet')`);
   await page.tap('Volver');
   ok(await page.waitFor(`document.querySelector('.menu-card.story .art.skinfx-oro[data-fx], .menu-card.story .art.skin-oro')`).then(() => true, () => false), 'la skin Oro, puesta en su Vestuario, se ve en la tarjeta de Historia con tu Charmander');
+
+  // En combate: el sprite lleva la skin (práctica con Charizard, de la misma línea)
+  await page.tap(/^Práctica/);
+  await page.click(await page.within('Charizard', '.pool-card'));
+  await page.click('.draft button.primary');
+  await page.waitFor(`window.__app.battle && window.__app.battle.actors && window.__app.battle.actors[0]`, 20000);
+  // atajo: la skin en combate la pinta el shader del 3D (sin elemento que mirar): se mira el uniforme de cada sprite
+  ok(await page.eval(`window.__app.battle.actors[0].skinU.uSkin.value === 1 && window.__app.battle.actors[1].skinU.uSkin.value === 0`), 'en combate, tu Charizard lleva la skin Oro y el rival no');
 };

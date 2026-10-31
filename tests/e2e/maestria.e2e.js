@@ -1,8 +1,7 @@
 // Logros (antes Maestría): con victorias de una línea evolutiva, sus retos salen para recoger (aviso en el
 // menú) y se recogen con la animación de premio. Logros enseña lo que tienes y cómo se consigue lo demás,
 // pero no equipa (el glow se pone en el Perfil y la skin en la ficha del Pokémon: maestria-vestuario.e2e.js).
-// Los retos generales van por categorías y los marcos de tipo salen de debilitar con movimientos de ese tipo.
-// La skin ganada se ve en combate
+// Los retos generales van por categorías y los marcos de tipo salen de debilitar con movimientos de ese tipo
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'maestria' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
@@ -48,17 +47,6 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.frames-grid')`);
   ok(await page.eval(`[...document.querySelectorAll('.frames-grid .frame-item.locked')].some(b => /Marco Fuego/.test(b.textContent) && /Próximamente/.test(b.textContent))`), 'en Marcos se ve el de Fuego bloqueado, para más adelante');
 
-  // (el glow desde el Perfil, la ficha y la tarjeta de Historia: maestria-vestuario.e2e.js; juntas pasaban de los 5 minutos)
-  // La skin Oro recién ganada, puesta (ponérsela desde el Vestuario lo prueba maestria-vestuario.e2e.js)
-  me.client.send({ t: 'look', skin: { dex: 4, skin: 'oro' } });
-  await me.client.wait(m => m.t === 'profile' && m.p.skins && m.p.skins[4] === 'oro');
-  await page.tap('Volver');
-
-  // En combate: el sprite lleva la skin (práctica con Charizard, de la misma línea)
-  await page.tap(/^Práctica/);
-  await page.click(await page.within('Charizard', '.pool-card'));
-  await page.click('.draft button.primary');
-  await page.waitFor(`window.__app.battle && window.__app.battle.actors && window.__app.battle.actors[0]`, 20000);
-  // atajo: la skin en combate la pinta el shader del 3D (sin elemento que mirar): se mira el uniforme de cada sprite
-  ok(await page.eval(`window.__app.battle.actors[0].skinU.uSkin.value === 1 && window.__app.battle.actors[1].skinU.uSkin.value === 0`), 'en combate, tu Charizard lleva la skin Oro y el rival no');
+  // (el glow desde el Perfil, la ficha, la tarjeta de Historia y la skin en combate: maestria-vestuario.e2e.js;
+  // juntas pasaban de los 5 minutos del CI)
 };
