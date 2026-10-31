@@ -30,8 +30,9 @@ function clientIp(req) {
   return fwd || direct;
 }
 
-// Reloj monotónico (ms): si el de pared retrocede (un ajuste de NTP, el equipo que vuelve de suspensión), con
-// Date.now() los cubos perdían fichas y se descartaban en silencio los mensajes de todos los conectados
+// Reloj monotónico (ms): si el de pared retrocede (un ajuste de NTP o del reloj del sistema), con Date.now() los
+// cubos perdían fichas y se descartaban en silencio los mensajes de todos los conectados. (No avanza mientras la
+// máquina está suspendida: las ventanas se alargan lo que dure la suspensión, que en el servidor no pasa)
 const clock = () => performance.now();
 
 // ---------- Ventanas de tiempo ----------
