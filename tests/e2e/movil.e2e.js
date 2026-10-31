@@ -22,10 +22,11 @@ module.exports = async ({ page, ok }) => {
   ok(await page.eval(`document.body.classList.contains('touch') && getComputedStyle(document.querySelector('.rotate-gate')).display !== 'none'`), 'desde el menú, en vertical pide girar el móvil');
   await page.resize(844, 390);
   // Lo que se manda al servidor: el último movimiento lanzado y el último cambio
-  // atajo: Práctica con un rival quieto (passive), que la interfaz no deja elegir; lo que se manda, se apunta
+  // atajo: Práctica con un rival quieto (passive), que la interfaz no deja elegir, y siempre en la pradera (al azar,
+  // una roca o un pilar en el camino del joystick paraba al Pokémon aunque no se soltara); lo que se manda, se apunta
   await page.eval(`(() => { const net = window.__app.net, send = net.send.bind(net);
     net.send = m => { if (m.t === 'in') { if (m.c >= 0) { const b = window.__app.battle, f = b.renderPos[b.foeIdx]; window.__cast = { ...m, foe: { x: f.x, y: f.y } }; } if (m.sw >= 0) window.__swap = m; } return send(m); };
-    net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0], Data.RANKED_POOL[1]], skill: 0, passive: true }); return true; })()`);
+    net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0], Data.RANKED_POOL[1]], skill: 0, passive: true, map: 'pradera' }); return true; })()`);
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 15000);
   ok(await page.eval(`!!document.querySelector('#hud.touch .tc-zone') && !!document.querySelector('#hud.touch .tc-quit') && getComputedStyle(document.querySelector('.mv kbd')).display === 'none'`),
     'con pantalla táctil salen el joystick y el botón de rendirse, y los movimientos sin teclas');
@@ -54,16 +55,12 @@ module.exports = async ({ page, ok }) => {
   const x1 = await page.eval(`window.__app.battle.pred.x`);
   await page.fingerUp();
   ok(x1 > x0 + 40, `el joystick a la derecha lo mueve a la derecha (${Math.round(x0)} → ${Math.round(x1)})`);
-  // (al soltarlo se para: un rato después sigue donde estaba. Con un empujón corto hacia el lado con más sitio, que
-  // con el CI cargado el arrastre de antes lo lleva hasta la pared y contra la pared «se para» aunque no se suelte.
-  // Se mide desde que el joystick vuelve a su sitio, que es cuando la página ha recibido el dedo levantado, y con
-  // el reloj de la página: 300 ms medidos desde fuera a veces no llegaban ni a que se procesara)
-  const away = (await page.eval(`window.__app.battle.pred.x`)) > (await page.eval(`Shared.ARENA.w`)) / 2 ? -1 : 1;
-  await page.fingerAt(120, 280);
-  await page.fingerMove(120 + away * 60, 280);
-  await page.fingerUp();
+  // (al soltarlo se para: un rato después sigue donde estaba. Desde que el joystick vuelve a su sitio, que es cuando
+  // la página ha recibido el dedo levantado, y en fotogramas de la página, no en milisegundos medidos desde fuera:
+  // con el CI cargado, a los 300 ms el dedo levantado a veces ni había llegado y seguía andando (924 → 937))
   await page.waitFor(`!document.querySelector('.tc-base.on')`);
-  const [x2, x3] = await page.eval(`new Promise(r => setTimeout(() => { const a = window.__app.battle.pred.x; setTimeout(() => r([a, window.__app.battle.pred.x]), 600); }, 300))`);
+  const [x2, x3] = await page.eval(`new Promise(r => { const frames = (n, f) => n ? requestAnimationFrame(() => frames(n - 1, f)) : f();
+    frames(20, () => { const a = window.__app.battle.pred.x; frames(30, () => r([a, window.__app.battle.pred.x])); }); })`);
   ok(Math.abs(x3 - x2) < 3, `al soltar el joystick se para (${Math.round(x2)} → ${Math.round(x3)})`);
 
   // Tocar el ataque básico: sale hacia el rival
