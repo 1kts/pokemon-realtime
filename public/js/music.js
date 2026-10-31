@@ -288,7 +288,7 @@ export class Music {
     document.addEventListener('visibilitychange', () => {
       if (!this.ctx) return;
       if (document.hidden) this.ctx.suspend();
-      else if (this.volume > 0) this.ctx.resume().then(() => { if (this.seq) this.seq.time = this.ctx.currentTime + 0.05; });
+      else if (this.volume > 0) this.ctx.resume().then(() => { if (this.seq) this.seq.time = this.ctx.currentTime + 0.05; }).catch(() => {});
     });
   }
 
@@ -314,7 +314,7 @@ export class Music {
       for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
       this.timer = setInterval(() => this.tick(), 25);
     }
-    if (this.volume > 0 && this.ctx.state !== 'running') this.ctx.resume();
+    if (this.volume > 0 && this.ctx.state !== 'running') this.ctx.resume().catch(() => {});   // (sin altavoz o bloqueado: se sigue sin sonido)
     if (this.want && !this.seq && !this.file) this.launch(this.want);
   }
 

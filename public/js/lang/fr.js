@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': 'Succès épurés, mieux sur iPhone',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Les Succès n\'ont plus l\'onglet Lignées : les défis de chaque lignée se voient et se récupèrent sur la fiche de chaque Pokémon, dans Mes Pokémon, et « Tout récupérer » les encaisse toujours.',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': 'Sur iPhone, le bouton d\'abandon en combat répond dès le premier appui.',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': 'En Entraînement sur mobile, la barre du bas ne couvre plus le nom des cartes.',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'Face-à-face en PvP',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'Quand tu trouves une partie en Classée ou en Partie rapide, les cartes des deux dresseurs s\'entrechoquent : photo, ligue, ELO et badges, et l\'adversaire IA est indiqué.',
@@ -405,7 +410,6 @@ export default {
     'Quitarlas': 'Les retirer',
     'Quitársela': 'La retirer',
     'Racha de 50 en la Torre con su línea': 'Série de 50 dans la Tour avec sa lignée',
-    'Ver todos los retos en Logros': 'Voir tous les défis dans Succès',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': 'Défis de la lignée de {m} : {n} victoires. Chaque combat gagné avec un Pokémon de la lignée dans l\'équipe en ajoute une.',
     'Vestuario': 'Garde-robe',
     // ---------- Objetos de intercambio ----------
@@ -535,7 +539,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': 'Pour l\'équiper, va dans ton Profil › Personnaliser',
     'Lo tienes': 'Obtenu',
     'La tienes': 'Obtenue',
-    '¡Recógela en Líneas!': 'Récupère-la dans Lignées !',
+    '¡Recógela con Recoger todo!': 'Récupère-la avec Tout récupérer !',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': 'Une lumière autour de ton avatar. Ceux de type s\'obtiennent avec {n} victoires d\'une lignée de ce type, dans Lucky Spin ou le coffre hebdomadaire ; les spéciaux, avec des défis.',
     'Reto de línea: racha de {n} en la Torre': 'Défi de lignée : série de {n} dans la Tour',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': 'Effets sur le sprite du Pokémon, visibles dans les menus et en combat, aussi par tes rivaux. Chaque lignée gagne les siens ; ils s\'équipent depuis la fiche du Pokémon.',
@@ -546,7 +550,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': 'Un avatar avec le visage du Pokémon en gros plan. Combine-le avec l\'effet, le cadre et le halo de ton choix.',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': 'Roues de skins, effets, halos et portraits à tourner avec des gemmes.',
     // ---------- Logros ----------
-    'Líneas': 'Lignées',
     'Retos': 'Défis',
     'Marcos': 'Cadres',
     'Efectos': 'Effets',
@@ -556,7 +559,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': 'Mets K.O. {n} Pokémon avec des capacités de type {type}.',
     'Marco {type}': 'Cadre {type}',
     'Ver logros y colección': 'Voir les succès et la collection',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': 'Chaque combat gagné ajoute une victoire à la lignée de chaque Pokémon de ton équipe. Les skins Holo et Galaxie demandent de gagner en ligne et d\'aller loin à la Tour avec cette lignée.',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': 'Le contour décoré de ton avatar. Ceux de type viennent des défis de Combat (mettre K.O. avec des capacités de ce type) ; les autres, de la ligue et d\'autres défis.',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': 'Le titre s\'affiche sous ton nom. Tu les obtiens avec les défis, la ligue et les défis de lignée.',
     'En Lucky Spin': 'Dans Lucky Spin',
@@ -566,7 +568,6 @@ export default {
     'Ponérselo': 'Le mettre',
     'Reto: {name}': 'Défi : {name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': 'Un effet animé par-dessus ton avatar, quel qu\'il soit. Ils viennent de Lucky Spin.',
-    '{a}/{b} retos': '{a}/{b} défis',
     'brillo prismático': 'aura prismatique',
     'título «Maestro de {m}»': 'titre « Maître {m} »',
     'Recoger en Logros': 'Récupérer dans Succès',
@@ -1843,7 +1844,6 @@ export default {
     'Avatar de la medalla para tu perfil': 'Avatar du badge pour ton profil',
     'Misiones': 'Missions',
     'Misiones diarias': 'Missions du jour',
-    '¡{n} por recoger!': '{n} à récupérer !',
     'Ver todas': 'Tout voir',
     '¡Nuevo avatar!': 'Nouvel avatar !',
     '¡Logro recogido!': 'Succès récupéré !',
@@ -1899,7 +1899,6 @@ export default {
     'Añadir': 'Ajouter',
     'Añadir al equipo': 'Ajouter à l\'équipe',
     'Gestionar': 'Gérer',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': 'Capture des Pokémon et gagne des combats avec eux pour commencer.',
     'Aún no la tienes': 'Tu ne l\'as pas encore',
     'Brillo de burbuja': 'Halo de bulle',
     'Brillo prismático': 'Halo prismatique',

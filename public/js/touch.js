@@ -135,7 +135,7 @@ export class TouchControls {
     const quit = this.quit = el('button', 'tc-quit', '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 3v18M6 4h11l-2.5 4L17 12H6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>');
     // (al soltar el dedo, no al ponerlo: si se abría al ponerlo, el clic de soltarlo caía en el fondo de la ventana
     // recién abierta y la cerraba)
-    quit.onpointerdown = e => e.preventDefault();
+    // (sin preventDefault al poner el dedo: en Safari se perdería el clic)
     quit.onclick = () => dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' }));
     this.root.append(quit);
   }

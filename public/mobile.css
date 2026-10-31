@@ -433,7 +433,7 @@
   .ladder-table .pod-card .pod-val small { display: none; }
   .ladder-table .pod-card .pod-rank { top: 50%; left: 6px; transform: translateY(-50%); }
   /* Práctica: Pokémon y arenas más pequeños */
-  .draft:has(.practice-body) { height: calc(100dvh - 8px); min-height: 0; }
+  #screen > .draft:has(.practice-body) { flex: 1 1 0; height: auto; min-height: 0; }   /* (el hueco que deja la barra legal, sin solaparla) */
   .practice-body { gap: 8px; }
   .practice-col .intro { display: none; }
   .practice-col .diff { gap: 4px; margin: 2px 0; }

@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': 'Erfolge aufgeräumt, besser auf dem iPhone',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Erfolge hat keinen Linien-Tab mehr: Die Herausforderungen jeder Linie siehst und holst du im Steckbrief jedes Pokémon unter Meine Pokémon, und „Alles abholen“ sammelt sie weiter ein.',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': 'Auf dem iPhone reagiert der Aufgeben-Knopf im Kampf schon beim ersten Tippen.',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': 'Im Training auf dem Handy verdeckt die untere Leiste keine Kartennamen mehr.',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'Duell im PvP',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'Findest du ein Match in Rangliste oder Schnelles Match, prallen die Karten beider Trainer aufeinander: Bild, Liga, ELO und Orden, und eine KI wird als solche angezeigt.',
@@ -405,7 +410,6 @@ export default {
     'Quitarlas': 'Ablegen',
     'Quitársela': 'Ablegen',
     'Racha de 50 en la Torre con su línea': 'Serie von 50 im Turm mit seiner Linie',
-    'Ver todos los retos en Logros': 'Alle Herausforderungen unter Erfolge ansehen',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': 'Herausforderungen der Linie von {m}: {n} Siege. Jeder gewonnene Kampf mit einem Pokémon der Linie im Team zählt einen.',
     'Vestuario': 'Kleiderschrank',
     // ---------- Objetos de intercambio ----------
@@ -535,7 +539,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': 'Zum Anlegen: Profil › Anpassen',
     'Lo tienes': 'Besitzt du',
     'La tienes': 'Besitzt du',
-    '¡Recógela en Líneas!': 'Hol sie dir unter Linien!',
+    '¡Recógela con Recoger todo!': 'Hol sie mit „Alles abholen“!',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': 'Ein Licht um deinen Avatar. Typ-Glows gibt es für {n} Siege mit einer Linie dieses Typs, im Lucky Spin oder in der Wochentruhe; besondere für Herausforderungen.',
     'Reto de línea: racha de {n} en la Torre': 'Linien-Herausforderung: Serie von {n} im Turm',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': 'Effekte auf dem Sprite des Pokémon, sichtbar in Menüs und im Kampf, auch für Gegner. Jede Entwicklungslinie verdient ihre eigenen; angelegt werden sie im Datenblatt des Pokémon.',
@@ -546,7 +550,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': 'Ein Avatar mit dem Gesicht des Pokémon aus der Nähe. Kombiniere ihn mit beliebigem Effekt, Rahmen und Glow.',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': 'Glücksräder mit Skins, Effekten, Glows und Porträts, die du mit Edelsteinen drehst.',
     // ---------- Logros ----------
-    'Líneas': 'Reihen',
     'Retos': 'Herausforderungen',
     'Marcos': 'Rahmen',
     'Efectos': 'Effekte',
@@ -556,7 +559,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': 'Besiege {n} Pokémon mit Attacken vom Typ {type}.',
     'Marco {type}': '{type}-Rahmen',
     'Ver logros y colección': 'Erfolge und Sammlung ansehen',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': 'Jeder gewonnene Kampf zählt einen Sieg für die Entwicklungsreihe jedes Pokémon in deinem Team. Für Holo- und Galaxie-Skins musst du mit der Reihe online gewinnen und im Turm weit kommen.',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': 'Der verzierte Rand deines Avatars. Typ-Rahmen gibt es bei Kampf-Herausforderungen (mit Attacken dieses Typs besiegen), die anderen über die Liga und andere Herausforderungen.',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': 'Der Titel steht unter deinem Namen. Du bekommst ihn durch Herausforderungen, die Liga und Reihen-Herausforderungen.',
     'En Lucky Spin': 'Bei Lucky Spin',
@@ -566,7 +568,6 @@ export default {
     'Ponérselo': 'Anlegen',
     'Reto: {name}': 'Herausforderung: {name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': 'Ein animierter Effekt über deinem Avatar, egal welcher. Es gibt sie bei Lucky Spin.',
-    '{a}/{b} retos': '{a}/{b} Herausforderungen',
     'brillo prismático': 'prismatischer Schimmer',
     'título «Maestro de {m}»': 'Titel „{m}-Meister“',
     'Recoger en Logros': 'In Erfolgen abholen',
@@ -1848,7 +1849,6 @@ export default {
     'Avatar de la medalla para tu perfil': 'Orden-Avatar für dein Profil',
     'Misiones': 'Missionen',
     'Misiones diarias': 'Tagesmissionen',
-    '¡{n} por recoger!': '{n} zum Abholen!',
     'Ver todas': 'Alle ansehen',
     '¡Nuevo avatar!': 'Neuer Avatar!',
     '¡Logro recogido!': 'Erfolg abgeholt!',
@@ -1904,7 +1904,6 @@ export default {
     'Añadir': 'Hinzufügen',
     'Añadir al equipo': 'Zum Team hinzufügen',
     'Gestionar': 'Verwalten',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': 'Fange Pokémon und gewinne Kämpfe mit ihnen, um loszulegen.',
     'Aún no la tienes': 'Hast du noch nicht',
     'Brillo de burbuja': 'Blasenglanz',
     'Brillo prismático': 'Prismaglanz',

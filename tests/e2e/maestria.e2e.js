@@ -1,5 +1,5 @@
-// Logros (antes Maestría): con victorias de una línea evolutiva, sus retos salen para recoger (aviso en el
-// menú) y se recogen con la animación de premio. Logros enseña lo que tienes y cómo se consigue lo demás,
+// Logros: con victorias de una línea evolutiva, sus retos salen para recoger (aviso en el menú) en la ficha de cada
+// Pokémon, con la animación de premio. Logros enseña lo que tienes y cómo se consigue lo demás,
 // pero no equipa (el glow se pone en el Perfil y la skin en la ficha del Pokémon: maestria-vestuario.e2e.js).
 // Los retos generales van por categorías y los marcos de tipo salen de debilitar con movimientos de ese tipo
 module.exports = async ({ page, player, ok }) => {
@@ -13,25 +13,36 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   ok(+(await page.read('.coll-tile.wide .nbadge')) >= 5, 'el menú avisa de los premios de Logros por recoger');
 
+  // Logros avisa, pero los retos de cada línea están en la ficha de cada Pokémon
   await page.click('.coll-tile.wide');
-  await page.waitFor(`document.querySelector('.lg-card')`);
-  ok(await page.title() === 'Logros' && await page.eval(`document.querySelectorAll('.lg-card.ready .lg-row.ready').length`) === 5, 'la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 500 victorias)');
-  ok(await page.eval(`(() => { const asks = [...document.querySelectorAll('.lg-card .lg-row.k-skin small')].map(s => s.textContent); return document.querySelectorAll('.lg-card .lg-row').length >= 7 && asks.some(x => /online/.test(x)) && asks.some(x => /Torre/.test(x)); })()`), 'Holo pide victorias online y Galaxia la Torre, con su progreso');
+  await page.waitSee('Retos', { in: '.coll-tabs' });
+  ok(await page.title() === 'Logros' && !(await page.see('Líneas', { ms: 0 })) && await page.see('Recoger todo'), 'en Logros no hay pestaña de Líneas y «Recoger todo» sigue a mano');
+  await page.tap('Volver');
+  await page.tap('Mis Pokémon');
+  await page.click(await page.within('Charmander', '.mon-card'));
+  await page.waitFor(`document.querySelector('.mon-sheet')`);
+  await page.tap(/^Retos/, { in: '.mon-sheet' });
+  await page.waitFor(`document.querySelector('.ms-retos .lg-row')`);
+  ok(await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`) === 5, 'en su ficha, la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 500 victorias)');
+  ok(await page.eval(`(() => { const asks = [...document.querySelectorAll('.ms-retos .lg-row.k-skin small')].map(s => s.textContent); return document.querySelectorAll('.ms-retos .lg-row').length >= 7 && asks.some(x => /online/.test(x)) && asks.some(x => /Torre/.test(x)); })()`), 'Holo pide victorias online y Galaxia la Torre, con su progreso');
   // Se recogen uno a uno, cada uno con su animación (y se apunta qué dice cada premio)
   const prizes = [];
   for (let i = 0; i < 5; i++) {
-    await page.click('.lg-row.ready .claim-btn');
+    await page.click('.ms-retos .lg-row.ready .claim-btn');
     await page.waitFor(`document.querySelector('.loot-pop .acts .primary')`);
     prizes.push(await page.read('.loot-pop'));
     await page.click('.loot-pop .acts .primary');
     await page.waitFor(`!document.querySelector('.loot-pop')`);
   }
   const all = prizes.join(' | ');
-  ok(/Caramelo Raro/.test(all) && /Maestro de Charmander/.test(all) && /Retrato/i.test(all) && !(await page.eval(`!!document.querySelector('.lg-row.ready')`)),
+  ok(/Caramelo Raro/.test(all) && /Maestro de Charmander/.test(all) && /Retrato/i.test(all) && (await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`)) === 0,
     'recogidos uno a uno, con su premio: Caramelo Raro, retrato, título «Maestro de Charmander»… y ya no queda nada por recoger');
 
+  await page.key('Escape');
+  await page.tap('Volver');
+  await page.click('.coll-tile.wide');
+
   // Retos: por categorías, con los de debilitar por tipo en Combate
-  await page.tap(/^Retos/, { in: '.coll-tabs, .collection' });
   await page.waitFor(`document.querySelector('.retos-grid')`);
   await page.tap(/^Combate/, { in: '.coll-cats' });
   await page.waitFor(`document.querySelectorAll('.retos-grid .ach-card').length === Data.TYPE_NAMES.length`);

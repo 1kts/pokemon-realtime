@@ -254,8 +254,5 @@ export const monSheetViews = {
     const tiers = this.lineTiers(line);
     tiers.classList.add('ms-retos');
     body.append(tiers);
-    const all = el('button', 'link', t('Ver todos los retos en Logros'));
-    all.onclick = () => { this.closeSheet(); this.openCollection('mastery'); };
-    body.append(all);
   },
 };

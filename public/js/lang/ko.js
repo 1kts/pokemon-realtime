@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': '업적은 간결하게, iPhone은 더 편하게',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '업적에서 라인 탭이 사라졌어요. 각 라인의 도전은 내 포켓몬의 포켓몬 정보에서 보고 받을 수 있고, ‘모두 받기’로도 받을 수 있어요.',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': 'iPhone에서 전투의 항복 버튼이 첫 터치에 작동해요.',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': '모바일 연습에서 아래쪽 바가 맵 이름을 가리지 않아요.',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'PvP 맞대결 연출',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': '랭크전이나 빠른 대전에서 상대를 찾으면 두 트레이너의 카드가 부딪쳐요. 사진, 리그, ELO, 배지가 나오고 상대가 AI면 표시돼요.',
@@ -406,7 +411,6 @@ export default {
     'Quitarlas': '빼기',
     'Quitársela': '빼기',
     'Racha de 50 en la Torre con su línea': '그 계열로 타워 50연승',
-    'Ver todos los retos en Logros': '업적에서 모든 도전 보기',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m} 계열 도전: {n}승. 계열 포켓몬을 팀에 넣고 이길 때마다 1승이 더해집니다.',
     'Vestuario': '옷장',
     // ---------- Objetos de intercambio ----------
@@ -536,7 +540,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': '장착하려면 프로필 › 꾸미기로 가세요',
     'Lo tienes': '보유',
     'La tienes': '보유',
-    '¡Recógela en Líneas!': '계열에서 받으세요!',
+    '¡Recógela con Recoger todo!': '‘모두 받기’로 받으세요!',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': '아바타 주위의 빛. 타입 글로우는 해당 타입 계열로 {n}승, 럭키 스핀, 주간 상자에서 얻고, 특별한 것은 도전으로 얻습니다.',
     'Reto de línea: racha de {n} en la Torre': '계열 도전: 타워 {n}연승',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': '포켓몬 스프라이트에 적용되는 효과로, 메뉴와 배틀에서 상대에게도 보입니다. 진화 계열마다 따로 얻으며 포켓몬 상세 화면에서 장착합니다.',
@@ -547,7 +551,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': '포켓몬 얼굴을 가까이 담은 아바타. 원하는 효과, 프레임, 글로우와 조합하세요.',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': '젬으로 돌리는 스킨, 효과, 글로우, 초상화 룰렛.',
     // ---------- Logros ----------
-    'Líneas': '계열',
     'Retos': '도전',
     'Marcos': '테두리',
     'Efectos': '효과',
@@ -557,7 +560,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': '{type} 타입 기술로 포켓몬 {n}마리를 쓰러뜨리세요.',
     'Marco {type}': '{type} 테두리',
     'Ver logros y colección': '업적과 컬렉션 보기',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': '이길 때마다 팀에 있는 포켓몬의 진화 계열에 1승이 더해져요. 홀로와 갤럭시 스킨은 그 계열로 온라인에서 이기고 타워에서 멀리 가야 해요.',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': '아바타의 장식 테두리예요. 타입 테두리는 배틀 도전(그 타입 기술로 쓰러뜨리기)에서, 나머지는 리그와 다른 도전에서 얻어요.',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': '칭호는 이름 아래에 보여요. 도전, 리그, 계열 도전으로 얻어요.',
     'En Lucky Spin': 'Lucky Spin에서',
@@ -567,7 +569,6 @@ export default {
     'Ponérselo': '적용',
     'Reto: {name}': '도전: {name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': '어떤 아바타 위에도 얹는 애니메이션 효과예요. Lucky Spin에서 얻어요.',
-    '{a}/{b} retos': '도전 {a}/{b}',
     'brillo prismático': '프리즘 광채',
     'título «Maestro de {m}»': '칭호 「{m} 마스터」',
     'Recoger en Logros': '업적에서 받기',
@@ -1849,7 +1850,6 @@ export default {
     'Avatar de la medalla para tu perfil': '프로필용 배지 아바타',
     'Misiones': '미션',
     'Misiones diarias': '일일 미션',
-    '¡{n} por recoger!': '받을 보상 {n}개!',
     'Ver todas': '모두 보기',
     '¡Nuevo avatar!': '새 아바타!',
     '¡Logro recogido!': '업적 보상 받음!',
@@ -1905,7 +1905,6 @@ export default {
     'Añadir': '추가',
     'Añadir al equipo': '팀에 추가',
     'Gestionar': '관리',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': '포켓몬을 잡고 함께 배틀에서 이겨 보세요.',
     'Aún no la tienes': '아직 없어요',
     'Brillo de burbuja': '버블 광채',
     'Brillo prismático': '프리즘 광채',

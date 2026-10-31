@@ -3,18 +3,17 @@
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
 import { t } from './i18n.js';
-import { portrait, typeTint } from './sprites.js';
+import { portrait } from './sprites.js';
 import { masteryPrize, SKIN_LABEL, applySkin, auraName, frameBadge } from './frames.js';
 import { achIcon, achName, achDesc, frameName } from './achievements.js';
 import { effectName, avatarArt, avatarName } from './missions.js';
 import { icon, typeIcon, item as itemImg } from './pixicons.js';
 
 const { SPECIES, TYPE_NAMES, TYPE_LABEL, MASTERY_TIERS, SKINS } = Data;
-const escapeAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
-// Logros: retos por línea evolutiva, retos generales (por categorías) y la colección de todo lo que se
+// Logros: retos generales (por categorías) y la colección de todo lo que se
 // puede conseguir (con de dónde sale lo que falta), donde también se equipa
-const TABS = [['mastery', 'Líneas'], ['retos', 'Retos'], ['skin', 'Skins'], ['frames', 'Marcos'], ['aura', 'Glows'], ['effects', 'Efectos'], ['art', 'Ilustraciones'], ['titles', 'Títulos']];
+const TABS = [['retos', 'Retos'], ['skin', 'Skins'], ['frames', 'Marcos'], ['aura', 'Glows'], ['effects', 'Efectos'], ['art', 'Ilustraciones'], ['titles', 'Títulos']];
 const winsFor = kind => (MASTERY_TIERS.find(x => x.kind === kind || x.skin === kind || x.aura === kind) || {}).wins;
 const CAT_LABEL = { progreso: 'Progreso', combate: 'Combate', coleccion: 'Colección', torre: 'Torre', pvp: 'Online' };
 // Qué pide cada reto de línea
@@ -48,7 +47,7 @@ export const collectionViews = {
   },
 
   view_collection() {
-    const tab = this.collTab = TABS.some(([id]) => id === this.collTab) ? this.collTab : 'mastery';
+    const tab = this.collTab = TABS.some(([id]) => id === this.collTab) ? this.collTab : 'retos';
     const p = this.profile;
     const wrap = el('div', 'collection');
     const bar = this.topbar(t('Logros'), this.collBack || 'menu');
@@ -62,8 +61,8 @@ export const collectionViews = {
       (bar.querySelector('.tb-ctx') || bar).append(all);
     }
     TABS.forEach(([id, label], i) => {
-      if (i === 2) tabs.append(el('span', 'coll-sep'));
-      const n = id === 'mastery' ? ready : id === 'retos' ? retos : 0;
+      if (i === 1) tabs.append(el('span', 'coll-sep'));
+      const n = id === 'retos' ? retos : 0;
       const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label) + (n ? `<i class="nbadge">${n}</i>` : ''));
       b.onclick = () => { this.collTab = id; this.show('collection'); };
       tabs.append(b);
@@ -73,7 +72,7 @@ export const collectionViews = {
     wrap.append(body);
     // La colección solo enseña lo que tienes y cómo se consigue lo demás; se equipa en el Perfil
     // (las skins, en la ficha de cada Pokémon)
-    if (TABS.findIndex(([id]) => id === tab) >= 2) {
+    if (TABS.findIndex(([id]) => id === tab) >= 1) {
       const go = el('button', 'coll-where', tab === 'skin' ? t('Las skins se ponen en la ficha de cada Pokémon (Mis Pokémon)') : t('Para ponértelo, ve a tu Perfil › Personalizar'));
       go.onclick = () => tab === 'skin' ? this.openFrom('team') : this.show('profile');
       body.append(go);
@@ -85,34 +84,8 @@ export const collectionViews = {
     tabs.scrollLeft = sel.offsetLeft - (tabs.clientWidth - sel.offsetWidth) / 2;
   },
 
-  // Líneas: una tarjeta por línea evolutiva con sus retos (victorias, online y Torre), su progreso y recoger
-  coll_mastery(body) {
-    const p = this.profile;
-    body.append(el('p', 'small coll-intro', t('Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.')));
-    const ready = r => Data.masteryReady(p, r).length, done = r => Data.masteryClaimed(p, r).length;
-    const roots = lineRoots(p).sort((a, b) => (ready(b) - ready(a)) || (done(b) - done(a)) || (Data.masteryWins(p, b) - Data.masteryWins(p, a)) || a - b);
-    if (!roots.length) body.append(el('p', 'small', t('Atrapa Pokémon y gana combates con ellos para empezar.')));
-    // Una fila por línea (retrato, victorias, un punto por reto y cuántos van); al tocarla se despliegan sus
-    // retos. Las que tienen algo por recoger salen desplegadas
-    const open = this.lgOpen || (this.lgOpen = new Set());
-    const grid = el('div', 'lg-grid lg-list');
-    for (const root of roots) {
-      const claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root), name = SPECIES[root].name;
-      const isOpen = open.has(root) || (can.length > 0 && !open.has(-root));
-      const card = typeTint(el('div', 'lg-card' + (can.length ? ' ready' : '') + (isOpen ? ' open' : '')), root);
-      const pips = MASTERY_TIERS.map((x, i) => `<i class="pip${claimed.includes(i) ? ' got' : can.includes(i) ? ' ready' : ''}" title="${escapeAttr(masteryPrize(x, root, t))}"></i>`).join('');
-      const head = el('button', 'lg-head', `<b>${name}<small>${t('{n} victorias', { n: Data.masteryWins(p, root) })}</small></b><span class="lg-pips">${pips}</span><small class="lg-count">${t('{a}/{b} retos', { a: claimed.length, b: MASTERY_TIERS.length })}</small>${can.length ? `<em class="lg-ready">${t('¡{n} por recoger!', { n: can.length })}</em>` : ''}<i class="lg-chev">▾</i>`);
-      head.prepend(this.skinned(portrait(root, 40), root));
-      head.onclick = () => { const now = !card.classList.contains('open'); card.classList.toggle('open', now); open.delete(now ? -root : root); open.add(now ? root : -root); };
-      card.append(head);
-      card.append(this.lineTiers(root));
-      grid.append(card);
-    }
-    body.append(grid);
-  },
-
-  // Los retos de una línea evolutiva (victorias, online y Torre) con su progreso y el botón de recoger; se
-  // usan en Logros › Líneas y en la ficha de cada Pokémon
+  // Los retos de una línea evolutiva (victorias, online y Torre) con su progreso y el botón de recoger, en la
+  // ficha de cada Pokémon
   lineTiers(root) {
     const p = this.profile, claimed = Data.masteryClaimed(p, root), can = Data.masteryReady(p, root), name = SPECIES[root].name;
     const tiers = el('div', 'lg-tiers');
@@ -233,7 +206,7 @@ export const collectionViews = {
         }
       } else {
         const w = Data.masteryWins(p, root);
-        const it = el('div', 'coll-item locked', `<small>${SPECIES[root].name}</small><em>${w >= n ? t('¡Recógela en Líneas!') : `${w}/${n}`}</em>`);
+        const it = el('div', 'coll-item locked', `<small>${SPECIES[root].name}</small><em>${w >= n ? t('¡Recógela con Recoger todo!') : `${w}/${n}`}</em>`);
         it.prepend(portrait(root, 64, { silhouette: true }));
         it.title = t('Gana {n} combates con la línea de {m}', { n, m: SPECIES[root].name });
         grid.append(it);

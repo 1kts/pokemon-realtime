@@ -8,6 +8,13 @@ module.exports = async ({ page, player, ok }) => {
   await page.goto('/');
   for (const [W, H] of [[390, 844]]) {
     await page.resize(W, H);
+    // (en un móvil de verdad, como WebKit en el CI, vertical no se juega: pide girarlo y lo de abajo es de ventana estrecha)
+    if (await page.eval(`matchMedia('(pointer: coarse)').matches`)) {
+      await page.eval(`localStorage.setItem('arena.lang', 'es'); true`);
+      await page.reload();
+      ok(await page.see('Gira el móvil'), 'en un móvil en vertical pide girarlo y no deja ver nada detrás');
+      return;
+    }
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
     await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);

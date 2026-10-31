@@ -65,7 +65,10 @@ async function playwrightCall(kind, problems, requests) {
   let finger = null;
   // (el dedo como eventos de la página, en el elemento que hay en ese punto)
   const touch = (type, x, y) => p.evaluate(([type, x, y]) => {
-    const e = document.elementFromPoint(x, y) || document.body, o = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 11, pointerType: 'touch', isPrimary: true };
+    const held = window.__e2eFinger;
+    const e = (type !== 'start' && held && held.isConnected && held) || document.elementFromPoint(x, y) || document.body;   // (como un dedo de verdad: todo le llega a donde empezó)
+    if (type === 'start') window.__e2eFinger = e;
+    const o = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerId: 11, pointerType: 'touch', isPrimary: true };
     const kind = { start: ['pointerdown', 'touchstart'], move: ['pointermove', 'touchmove'], end: ['pointerup', 'touchend'] }[type];
     e.dispatchEvent(new PointerEvent(kind[0], o));
     try { const t = new Touch({ identifier: 11, target: e, clientX: x, clientY: y }); e.dispatchEvent(new TouchEvent(kind[1], { bubbles: true, cancelable: true, touches: type === 'end' ? [] : [t], changedTouches: [t] })); } catch {}

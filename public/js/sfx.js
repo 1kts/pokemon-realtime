@@ -46,7 +46,7 @@ export class Sfx {
       const d = this.noiseBuf.getChannelData(0);
       for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     }
-    if (this.volume > 0 && this.ctx.state !== 'running') this.ctx.resume();
+    if (this.volume > 0 && this.ctx.state !== 'running') this.ctx.resume().catch(() => {});
   }
   get running() { return !!this.ctx && this.ctx.state === 'running'; }
 
@@ -55,7 +55,7 @@ export class Sfx {
     storage.set(KEY, String(this.volume));
     if (!this.ctx) return;
     this.master.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
-    if (this.volume > 0) this.ctx.resume();
+    if (this.volume > 0) this.ctx.resume().catch(() => {});
   }
 
   // ---------- Piezas ----------

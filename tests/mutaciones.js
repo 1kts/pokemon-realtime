@@ -81,7 +81,7 @@ module.exports = [
     archivo: 'public/mobile.css', buscar: 'body.touch .rotate-gate { position: fixed; inset: 0; z-index: 1000; display: flex;', poner: 'body.touch .rotate-gate { position: fixed; inset: 0; z-index: 1000; display: none;',
     tests: ['tests/e2e/movil.e2e.js'] },
   { id: 'movil-rendirse-se-cierra', que: 'En el móvil, la bandera de rendirse abre la ventana y se cierra sola al levantar el dedo',
-    archivo: 'public/js/touch.js', buscar: "quit.onpointerdown = e => e.preventDefault();\n    quit.onclick = () => dispatchEvent(", poner: "quit.onpointerdown = e => { e.preventDefault(); dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' })); };\n    quit.onclick = () => (",
+    archivo: 'public/js/touch.js', buscar: "quit.onclick = () => dispatchEvent(", poner: "quit.onpointerdown = () => dispatchEvent(",
     tests: ['tests/e2e/movil.e2e.js'] },
   { id: 'tooltip-pegado-al-tocar', que: 'Con el dedo, tocar algo deja su tooltip pegado',
     archivo: 'public/js/tips.js', buscar: 'hold = setTimeout(() => show(n), 500);', poner: 'show(n); hold = setTimeout(() => {}, 500);',

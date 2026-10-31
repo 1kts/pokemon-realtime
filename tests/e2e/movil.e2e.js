@@ -33,8 +33,9 @@ module.exports = async ({ page, ok }) => {
   const fits = await page.eval(`[...document.querySelectorAll('.mv, .team .tm, .tc-quit')].every(e => { const r = e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight; })`);
   ok(fits, 'en 844×390 los movimientos, el equipo y el botón de rendirse caben en pantalla');
   // Cámara cerca, siguiendo a tu Pokémon (sin seguir, a 844×390 va a 23,6 de altura); el rival lejos sale como flecha en el borde
+  // (se acerca poco a poco desde el campo entero: con pocos fotogramas tarda más)
   // atajo: lo cerca que va la cámara del 3D no tiene nada que leer: se mira su altura
-  ok(await page.eval(`window.__app.camera.position.y < 16`), 'la cámara del combate va más cerca que en el ordenador');
+  ok(await page.waitFor(`window.__app.camera.position.y < 16`, 8000).then(() => true, () => false), 'la cámara del combate va más cerca que en el ordenador');
   // atajo: si el rival queda fuera de la pantalla se calcula con su posición en el 3D
   ok(await page.waitFor(`document.querySelector('.foe-arrow') && (document.querySelector('.foe-arrow').hidden === !(() => { const b = window.__app.battle, f = b.renderPos[b.foeIdx], p = b.toScreen(f.x, f.y); return p.x < 0 || p.y < 0 || p.x > innerWidth || p.y > innerHeight; })())`).then(() => true, () => false),
     'la flecha del rival sale solo cuando el rival queda fuera de la pantalla');

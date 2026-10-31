@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': 'Tidier Achievements, better on iPhone',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Achievements no longer has the Lines tab: each line\'s challenges are viewed and claimed on each Pokémon\'s sheet in My Pokémon, and “Claim all” still collects them.',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': 'On iPhone, the battle surrender button works on the first tap.',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': 'In Practice on mobile, the bottom bar no longer covers map names.',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'Face-off in PvP',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'When you find a Ranked or Quick Match game, both trainers\' cards clash: picture, league, ELO and badges, and it says so if your rival is an AI.',
@@ -405,7 +410,6 @@ export default {
     'Quitarlas': 'Take them off',
     'Quitársela': 'Take it off',
     'Racha de 50 en la Torre con su línea': 'Streak of 50 in the Tower with its line',
-    'Ver todos los retos en Logros': 'See all challenges in Achievements',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m} line challenges: {n} wins. Every battle you win with a Pokémon of the line in your team adds one.',
     'Vestuario': 'Wardrobe',
     // ---------- Objetos de intercambio ----------
@@ -535,7 +539,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': 'To equip it, go to your Profile › Customize',
     'Lo tienes': 'Owned',
     'La tienes': 'Owned',
-    '¡Recógela en Líneas!': 'Claim it in Lines!',
+    '¡Recógela con Recoger todo!': 'Claim it with Claim all!',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': 'A light around your avatar. Type glows come from {n} wins with a line of that type, Lucky Spin or the weekly chest; special ones, from challenges.',
     'Reto de línea: racha de {n} en la Torre': 'Line challenge: streak of {n} in the Tower',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': 'Effects on the Pokémon\'s sprite, shown in menus and in battle, to your rivals too. Each evolution line earns its own; equip them from the Pokémon\'s sheet.',
@@ -546,7 +550,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': 'An avatar with the Pokémon\'s face up close. Combine it with any effect, frame and glow.',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': 'Wheels of skins, effects, glows and portraits you spin with gems.',
     // ---------- Logros ----------
-    'Líneas': 'Lines',
     'Retos': 'Challenges',
     'Marcos': 'Frames',
     'Efectos': 'Effects',
@@ -556,7 +559,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': 'Knock out {n} Pokémon with {type}-type moves.',
     'Marco {type}': '{type} Frame',
     'Ver logros y colección': 'See achievements and collection',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': 'Every battle you win adds a win to the evolutionary line of each Pokémon on your team. The Holo and Galaxy skins ask you to win online and go far in the Tower with that line.',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': 'The decorated border of your avatar. Type frames come from Battle challenges (knocking out with moves of that type); the rest, from your league and other challenges.',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': 'Your title shows under your name. You get them from challenges, your league and line challenges.',
     'En Lucky Spin': 'In Lucky Spin',
@@ -566,7 +568,6 @@ export default {
     'Ponérselo': 'Put it on',
     'Reto: {name}': 'Challenge: {name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': 'An animated effect on top of your avatar, whatever it is. They come from Lucky Spin.',
-    '{a}/{b} retos': '{a}/{b} challenges',
     'brillo prismático': 'prismatic glow',
     'título «Maestro de {m}»': '“{m} Master” title',
     'Recoger en Logros': 'Claim in Achievements',
@@ -1839,7 +1840,6 @@ export default {
     'Avatar de la medalla para tu perfil': 'Badge avatar for your profile',
     'Misiones': 'Missions',
     'Misiones diarias': 'Daily missions',
-    '¡{n} por recoger!': '{n} to collect!',
     'Ver todas': 'See all',
     '¡Nuevo avatar!': 'New avatar!',
     '¡Logro recogido!': 'Achievement collected!',
@@ -1895,7 +1895,6 @@ export default {
     'Añadir': 'Add',
     'Añadir al equipo': 'Add to team',
     'Gestionar': 'Manage',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': 'Catch Pokémon and win battles with them to get started.',
     'Aún no la tienes': 'You don\'t have it yet',
     'Brillo de burbuja': 'Bubble glow',
     'Brillo prismático': 'Prismatic glow',

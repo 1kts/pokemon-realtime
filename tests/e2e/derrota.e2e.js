@@ -28,7 +28,7 @@ module.exports = async ({ page, player, ok }) => {
   // resultados llegan después y tapan Logros)
   await page.waitFor(`!window.__app.battle && window.__app.ui.view === 'results'`, 15000);
   // atajo: desde los resultados se llega a Logros con «Recoger en Logros», que solo sale si hay algo por recoger
-  await page.eval(`window.__app.ui.openCollection('mastery'); true`);
+  await page.eval(`window.__app.ui.openCollection('retos'); true`);
   await page.waitFor(`window.__app.ui.view === 'collection'`);
   await page.tap('Volver');
   await page.waitSee('Desafiar');

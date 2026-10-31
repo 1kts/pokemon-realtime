@@ -26,15 +26,19 @@ module.exports = async ({ page, player, ok }) => {
   await openRoute();
   ok(await page.eval(`${card}.querySelectorAll('.catch-pips i.on').length === 2 && /12\\/25/.test(${card}.title || ${card}.dataset.tip)`), `con 12 capturas de ${name}, su tarjeta en la ruta enseña 2 de 5 Poké Balls y «12/25»`);
 
-  // 25: se recoge en Logros
+  // 25: se recoge en la ficha de un Pokémon de la línea
+  me.client.send({ t: 'dev', dex, level: 5, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await setCatches(25);
-  await page.click('.coll-tile.wide');
+  await page.tap('Mis Pokémon');
+  await page.click(await page.within(name, '.mon-card'));
+  await page.tap(/^Retos/, { in: '.mon-sheet' });
   await page.waitFor(`document.querySelector('.lg-row.k-perfect.ready button')`);
-  ok(await page.see('IV perfectos', { in: '.lg-row.k-perfect', scroll: true }), 'a las 25 capturas, «IV perfectos» sale para recoger en Logros');
+  ok(await page.see('IV perfectos', { in: '.lg-row.k-perfect', scroll: true }), 'a las 25 capturas, «IV perfectos» sale para recoger en su ficha');
   await page.click('.lg-row.k-perfect.ready button');
   await page.waitSee('IV perfectos', { in: '.loot-pop' });
   ok(true, 'al recogerlo sale el premio «IV perfectos» de su línea');
   await page.click('.loot-pop .acts .primary');
+  await page.key('Escape');
   await page.tap('Volver');
   await openRoute();
   ok(await page.eval(`!!${card}.querySelector('.catch-pips.perfect') && /Siempre con IV perfectos/.test(${card}.title || ${card}.dataset.tip)`), 'después, en la ruta sus Poké Balls salen doradas');

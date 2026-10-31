@@ -4,6 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.35.1', date: '2026-10-31', title: 'Logros al grano y mejor en iPhone',
+      items: [
+        ['cambio', 'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.'],
+        ['arreglo', 'En iPhone, el botón de rendirse del combate funciona al primer toque.'],
+        ['arreglo', 'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.'],
+      ],
+    },
+    {
       v: '0.35.0', date: '2026-10-31', title: 'Cara a cara en el PvP',
       items: [
         ['nuevo', 'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.'],

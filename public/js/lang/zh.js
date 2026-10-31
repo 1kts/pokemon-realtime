@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': '成就更简洁,iPhone 更顺手',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '成就不再有“进化线”标签:各进化线的挑战可在我的宝可梦的宝可梦资料中查看和领取,“全部领取”仍可领取。',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': '在 iPhone 上,战斗中的投降按钮一按即可使用。',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': '在手机的练习模式中,底部栏不再遮挡地图名称。',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'PvP 正面交锋',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': '在排位赛或快速对战中匹配成功时,两位训练家的卡片会相撞:头像、段位、ELO 和徽章,对手是 AI 也会标明。',
@@ -405,7 +410,6 @@ export default {
     'Quitarlas': '取下',
     'Quitársela': '取下',
     'Racha de 50 en la Torre con su línea': '用该系列在对战塔连胜 50 场',
-    'Ver todos los retos en Logros': '在成就中查看所有挑战',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m}系列挑战：{n} 胜。队伍中有该系列宝可梦时，每赢一场加一胜。',
     'Vestuario': '衣柜',
     // ---------- Objetos de intercambio ----------
@@ -535,7 +539,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': '要装备，请前往个人资料 › 自定义',
     'Lo tienes': '已拥有',
     'La tienes': '已拥有',
-    '¡Recógela en Líneas!': '去系列中领取！',
+    '¡Recógela con Recoger todo!': '用“全部领取”领取吧!',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': '头像周围的光。属性光晕通过该属性系列赢得 {n} 场、幸运转盘或每周宝箱获得；特殊光晕来自挑战。',
     'Reto de línea: racha de {n} en la Torre': '系列挑战：在对战塔连胜 {n} 场',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': '宝可梦精灵图上的特效，在菜单和对战中可见，对手也能看到。每个进化系列各自获得，在宝可梦详情页装备。',
@@ -546,7 +550,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': '宝可梦面部特写的头像。可搭配任意特效、头像框和光晕。',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': '用宝石转动的皮肤、特效、光晕和肖像转盘。',
     // ---------- Logros ----------
-    'Líneas': '进化链',
     'Retos': '挑战',
     'Marcos': '边框',
     'Efectos': '效果',
@@ -556,7 +559,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': '用{type}属性招式打倒{n}只宝可梦。',
     'Marco {type}': '{type}边框',
     'Ver logros y colección': '查看成就和收藏',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': '每赢一场，队伍中每只宝可梦的进化链都会加一次胜利。全息和银河皮肤需要用该进化链在线上获胜，并在对战塔走得更远。',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': '头像的装饰边框。属性边框来自战斗挑战（用该属性招式打倒宝可梦）；其他来自段位和其他挑战。',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': '称号显示在你的名字下方。可以通过挑战、段位和进化链挑战获得。',
     'En Lucky Spin': '在 Lucky Spin 中',
@@ -566,7 +568,6 @@ export default {
     'Ponérselo': '使用',
     'Reto: {name}': '挑战：{name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': '叠加在任何头像上的动态效果。来自 Lucky Spin。',
-    '{a}/{b} retos': '{a}/{b} 项挑战',
     'brillo prismático': '棱彩光芒',
     'título «Maestro de {m}»': '“{m}大师”称号',
     'Recoger en Logros': '在成就中领取',
@@ -1838,7 +1839,6 @@ export default {
     'Avatar de la medalla para tu perfil': '用于个人资料的徽章头像',
     'Misiones': '任务',
     'Misiones diarias': '每日任务',
-    '¡{n} por recoger!': '{n}个待领取！',
     'Ver todas': '查看全部',
     '¡Nuevo avatar!': '新头像！',
     '¡Logro recogido!': '成就已领取！',
@@ -1894,7 +1894,6 @@ export default {
     'Añadir': '添加',
     'Añadir al equipo': '加入队伍',
     'Gestionar': '管理',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': '捕捉宝可梦并用它们赢得对战吧。',
     'Aún no la tienes': '尚未获得',
     'Brillo de burbuja': '头像光晕',
     'Brillo prismático': '棱彩光晕',

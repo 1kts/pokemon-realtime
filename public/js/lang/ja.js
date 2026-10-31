@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.1 ----------
+    'Logros al grano y mejor en iPhone': '実績がすっきり、iPhoneも快適に',
+    'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '実績のラインタブを廃止しました。各ラインの挑戦はマイポケモンの各ポケモンの詳細で確認して受け取れます。「まとめて受け取る」でも受け取れます。',
+    'En iPhone, el botón de rendirse del combate funciona al primer toque.': 'iPhoneで、バトルの降参ボタンが1回のタップで反応するようになりました。',
+    'En Práctica, en el móvil, la barra de abajo ya no pisa los nombres de los mapas.': 'スマホの練習で、下部バーがマップ名に重ならなくなりました。',
     // ---------- Novedades v0.35.0 ----------
     'Cara a cara en el PvP': 'PvPの対面演出',
     'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'ランクやクイックマッチで対戦が決まると、2人のカードがぶつかります。画像、リーグ、ELO、バッジを表示し、相手がAIならそう表示されます。',
@@ -406,7 +411,6 @@ export default {
     'Quitarlas': 'はずす',
     'Quitársela': 'はずす',
     'Racha de 50 en la Torre con su línea': 'その系統でタワー50連勝',
-    'Ver todos los retos en Logros': '実績ですべてのチャレンジを見る',
     'Retos de la línea de {m}: {n} victorias. Cada combate que ganas con un Pokémon de la línea en el equipo suma una.': '{m}系統のチャレンジ：{n}勝。系統のポケモンをチームに入れて勝つたびに1勝追加されます。',
     'Vestuario': '衣装',
     // ---------- Objetos de intercambio ----------
@@ -536,7 +540,7 @@ export default {
     'Para ponértelo, ve a tu Perfil › Personalizar': '装備するにはプロフィール › カスタマイズへ',
     'Lo tienes': '所持',
     'La tienes': '所持',
-    '¡Recógela en Líneas!': '系統で受け取ろう！',
+    '¡Recógela con Recoger todo!': '「まとめて受け取る」で受け取ろう!',
     'Una luz alrededor de tu avatar. Los de tipo salen con {n} victorias de una línea de ese tipo, en Lucky Spin o en el cofre semanal; los especiales, de los retos.': 'アバターの周りの光。タイプ別は、そのタイプの系統で{n}勝、ラッキースピン、週間宝箱で入手。特別なものはチャレンジで入手。',
     'Reto de línea: racha de {n} en la Torre': '系統チャレンジ：タワーで{n}連勝',
     'Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.': 'ポケモンのスプライトにかかるエフェクト。メニューやバトルで相手にも見えます。系統ごとに入手し、ポケモンの詳細画面で装備します。',
@@ -547,7 +551,6 @@ export default {
     'Un avatar con la cara del Pokémon de cerca. Combínalo con el efecto, el marco y el glow que quieras.': 'ポケモンの顔のアップのアバター。好きなエフェクト・フレーム・グローと組み合わせよう。',
     'Ruletas de skins, efectos, glows y retratos que se giran con gemas.': 'ジェムで回す、スキン・エフェクト・グロー・ポートレートのルーレット。',
     // ---------- Logros ----------
-    'Líneas': '系統',
     'Retos': 'チャレンジ',
     'Marcos': 'フレーム',
     'Efectos': 'エフェクト',
@@ -557,7 +560,6 @@ export default {
     'Debilita {n} Pokémon con movimientos de tipo {type}.': '{type}タイプの技でポケモンを{n}匹倒す。',
     'Marco {type}': '{type}フレーム',
     'Ver logros y colección': '実績とコレクションを見る',
-    'Cada combate que ganas suma una victoria a la línea evolutiva de cada Pokémon de tu equipo. Las skins Holo y Galaxia piden ganar online y llegar lejos en la Torre con esa línea.': '勝つたびに、チームのポケモンの進化系統に1勝ずつ加わります。ホロとギャラクシーのスキンは、その系統でオンラインで勝ち、タワーで遠くまで進む必要があります。',
     'El contorno decorado de tu avatar. Los de tipo salen de los retos de Combate (debilitar con movimientos de ese tipo); los demás, de la liga y de otros retos.': 'アバターの飾り枠です。タイプのフレームはバトルのチャレンジ（そのタイプの技で倒す）で、ほかはリーグや別のチャレンジで手に入ります。',
     'El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.': '称号は名前の下に表示されます。チャレンジ、リーグ、系統のチャレンジで手に入ります。',
     'En Lucky Spin': 'Lucky Spinで',
@@ -567,7 +569,6 @@ export default {
     'Ponérselo': '付ける',
     'Reto: {name}': 'チャレンジ：{name}',
     'Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.': 'どんなアバターにも重ねられるアニメーション効果。Lucky Spinで手に入ります。',
-    '{a}/{b} retos': 'チャレンジ {a}/{b}',
     'brillo prismático': 'プリズムの輝き',
     'título «Maestro de {m}»': '称号「{m}マスター」',
     'Recoger en Logros': '実績で受け取る',
@@ -1849,7 +1850,6 @@ export default {
     'Avatar de la medalla para tu perfil': 'プロフィール用のバッジアバター',
     'Misiones': 'ミッション',
     'Misiones diarias': 'デイリーミッション',
-    '¡{n} por recoger!': '{n}個受け取れます！',
     'Ver todas': 'すべて見る',
     '¡Nuevo avatar!': '新しいアバター！',
     '¡Logro recogido!': '実績を受け取った！',
@@ -1905,7 +1905,6 @@ export default {
     'Añadir': '追加',
     'Añadir al equipo': 'チームに追加',
     'Gestionar': '編集',
-    'Atrapa Pokémon y gana combates con ellos para empezar.': 'ポケモンをつかまえて、いっしょにバトルで勝とう。',
     'Aún no la tienes': 'まだ持っていない',
     'Brillo de burbuja': 'バブルの輝き',
     'Brillo prismático': 'プリズムの輝き',

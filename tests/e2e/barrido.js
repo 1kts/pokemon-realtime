@@ -120,7 +120,12 @@ module.exports = (SIZES, only) => async ({ page, player, ok }) => {
       if (r.g) geom[`${W}x${H} ${label}`] = r.g;
       // Accesibilidad (WCAG 2 A y AA) de lo que hay a la vista: la ventana de encima o la pantalla
       const ax = await page.eval(`(async () => { const tops = [...document.querySelectorAll('body > .modal, body > .loot-pop, body > .install-guide, body > .mon-sheet-back')], scope = tops.length ? tops[tops.length - 1] : document.getElementById('screen');
-        const r = await axe.run(scope, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }, resultTypes: ['violations'] });
+        // (el contraste es el del aspecto final: un repintado a medias de axe no debe medir una entrada a media opacidad)
+        const still = document.createElement('style');
+        still.textContent = '*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition: none !important; }';   // (sin quitarlas: las que acaban visibles se quedan así)
+        document.head.append(still);
+        let r;
+        try { r = await axe.run(scope, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] }, resultTypes: ['violations'] }); } finally { still.remove(); }
         return r.violations.map(v => ({ id: v.id, impact: v.impact, n: v.nodes.length, ej: v.nodes.slice(0, 2).map(x => x.target.join(' ') + ' · ' + (x.failureSummary || '').split('\\n')[1]) })); })()`);
       for (const v of ax) a11y.push({ where: `${W}×${H} ${label}`, ...v });
     };

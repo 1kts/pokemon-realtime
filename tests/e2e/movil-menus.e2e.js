@@ -59,6 +59,7 @@ module.exports = async ({ page, player, ok, log }) => {
     await page.press(tipSel, 60);
     tap = await page.eval('window.__tap');
   }
+  await page.waitFor(`window.__early !== undefined`, 3000);   // (lo apunta 100 ms después de poner el dedo)
   ok(tap !== null && await page.eval(`window.__early === false`), 'con el dedo, tocar no saca el tooltip al momento (solo al mantenerlo)');
   await new Promise(r => setTimeout(r, 650));   // más que la pulsación larga: no debe salir nada
   if (tap < 300) ok(await page.eval(`!document.querySelector('.ui-tip.on')`), `y un toque corto (${Math.round(tap)} ms) no lo deja pegado`);
@@ -73,7 +74,7 @@ module.exports = async ({ page, player, ok, log }) => {
   await page.tap('Novedades');
   await page.waitFor(`document.querySelector('.notes-list')`);
   ok(await page.eval(`(() => { const l = document.querySelector('.notes-list'); l.scrollTop = 400; const b = document.querySelector('.modal-box').getBoundingClientRect(); return l.scrollTop > 100 && b.bottom <= innerHeight + 1; })()`), 'las novedades se desplazan dentro de su ventana, que cabe en la pantalla');
-  await page.key('Escape');
+  await page.tap('¡A jugar!');   // (en el móvil no hay Esc)
 
   // La barra legal: en una línea, y al tocar el texto se ve entero
   await page.resize(844, 390);

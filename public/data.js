@@ -1383,7 +1383,7 @@
   for (const s of Object.values(SPECIES)) for (const [to] of (!s.evo ? [] : Array.isArray(s.evo[0]) ? s.evo : [s.evo])) if (!PRE[to]) PRE[to] = s.dex;
   const lineOf = dex => { let d = dex, n = 0; while (PRE[d] && SPECIES[PRE[d]] && n++ < 4) d = PRE[d]; return d; };
   const lineMembers = root => Object.values(SPECIES).filter(s => lineOf(s.dex) === root).map(s => s.dex).sort((a, b) => a - b);
-  // Retos de cada línea evolutiva (pestaña Líneas de Logros). La mayoría cuentan victorias con la línea en el
+  // Retos de cada línea evolutiva (en la ficha de cada Pokémon). La mayoría cuentan victorias con la línea en el
   // equipo; Holo, las victorias online (clasificatoria o rápida) con ella, y Galaxia, la mejor racha de la
   // Torre con ella en el equipo. Los marcos de tipo ya no son de aquí: salen de los logros de debilitar con
   // movimientos de ese tipo (ACHIEVEMENTS ko-<tipo>).

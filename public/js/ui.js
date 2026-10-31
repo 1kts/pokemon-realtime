@@ -1571,7 +1571,7 @@ export class UI {
       const up = el('div', 'mastery-up', r.mastery.map(u => `<div>${portrait(u.dex, 40).outerHTML}<span>${t('Maestría de la línea de <b>{m}</b>', { m: SPECIES[u.dex].name })} <i class="mstars">${'★'.repeat(u.tier)}${'☆'.repeat(n - u.tier)}</i><small>${masteryPrize(Data.MASTERY_TIERS[u.tier - 1], u.dex, t)}</small></span></div>`).join(''));
       up.querySelectorAll('canvas').forEach((c, i) => c.replaceWith(portrait(r.mastery[i].dex, 40)));
       const go = el('button', 'claim-btn', t('Recoger en Logros'));
-      go.onclick = () => this.openCollection('mastery');
+      go.onclick = () => this.openCollection();   // (con su «Recoger todo»)
       up.append(go);
       box.append(up);
     }
