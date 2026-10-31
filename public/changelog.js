@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.35.0', date: '2026-10-31', title: 'Cara a cara en el PvP',
+      items: [
+        ['nuevo', 'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.'],
+        ['nuevo', 'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.'],
+        ['nuevo', 'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.'],
+        ['cambio', 'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.'],
+        ['cambio', 'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.'],
+        ['cambio', 'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.'],
+      ],
+    },
+    {
       v: '0.34.2', date: '2026-10-31', title: 'Pantallas más claras',
       items: [
         ['cambio', 'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.'],

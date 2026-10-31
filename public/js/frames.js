@@ -144,6 +144,11 @@ function typeFrame(type, id) {
 }
 
 const FX = {
+  eclipse: id => `<g>${around(14, R + 9, i => `<path d="M-2.5,5 L0,${i % 2 ? -9 : -14} L2.5,5Z" fill="${i % 2 ? '#ff7a2a' : '#ffd23f'}"/>`)}${spin(18)}</g>${ring(id, ['#3a2a40', '#0a0812', '#3a2a40'], 7)}`,
+  engranaje: id => `<g>${around(12, R + 8, () => `<rect x="-4.5" y="-6" width="9" height="11" rx="1.2" fill="#c89a4a" stroke="#5a3a10" stroke-width="1"/>`)}${spin(14)}</g>
+    ${ring(id, ['#f0d08a', '#a87a2a', '#5a3a10'], 8)}${around(6, R + 2, () => `<circle r="2.2" fill="#5a3a10"/><circle r=".9" fill="#f0d08a"/>`)}`,
+  vidriera: id => `${around(8, R + 7, i => `<path d="M-13,-9 L13,-9 L9,8 L-9,8Z" fill="${['#e8403a', '#ffcb05', '#3a8ce8', '#4fd06a'][i % 4]}" stroke="#14141e" stroke-width="2">${blink(3, i * .35, .55)}</path>`)}
+    ${ring(id, ['#2a2a38', '#14141e'], 4)}`,
   bronce: id => `${ring(id, ['#f3c08a', '#c27c46', '#7a4420', '#c27c46'], 6)}
     ${[45, 135, 225, 315].map(d => { const [x, y] = polar(d, R - 1); return `<circle cx="${x}" cy="${y}" r="2.6" fill="#f3c08a" stroke="#5a2e10" stroke-width=".8"/>`; }).join('')}`,
   plata: id => `${ring(id, ['#ffffff', '#cfd8e3', '#8794a6', '#e8eef5'], 6, 4)}
@@ -209,12 +214,14 @@ export function masteryHtml(p, dex, t) {
 }
 
 // Nombre del premio de un nivel de maestría para la línea de dex
-export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia', elemental: 'Skin Elemental' };
+export const SKIN_LABEL = { oro: 'Skin Edición Oro', holo: 'Skin Holo', galaxia: 'Skin Galaxia', elemental: 'Skin Elemental', cristal: 'Skin Cristal', neon: 'Skin Neón', sombra: 'Skin Sombra', retro: 'Skin Retro', tinta: 'Skin Tinta', caramelo: 'Skin Caramelo' };
 // Nombre de un glow del avatar (la luz de alrededor): de tipo o especial
-const AURA_LABEL = { dorado: 'Dorado', sombra: 'Sombra', estelar: 'Estelar', prisma: 'Prismático' };
+const AURA_LABEL = { dorado: 'Dorado', sombra: 'Sombra', estelar: 'Estelar', prisma: 'Prismático', fenix: 'Fénix', marea: 'Marea' };
+// Los marcos que aún no se pueden conseguir (sus nombres; los demás, en account.js)
+export const FRAME_SOON_LABEL = { eclipse: 'Marco Eclipse', engranaje: 'Marco Engranaje', vidriera: 'Marco Vidriera' };
 const AURA_COLOR = { dorado: '#ffcb05', sombra: '#7a3cff', estelar: '#bfe6ff' };
 export const auraDot = g => `<i class="glow-dot${g === 'prisma' ? ' glow-prisma' : ''}" style="--gc:${g.startsWith('tipo-') ? Data.TYPE_COLOR[g.slice(5)] : AURA_COLOR[g] || '#fff'}"></i>`;
-export const auraName = (g, t) => t('Glow {type}', { type: g.startsWith('tipo-') ? Data.TYPE_LABEL[g.slice(5)] : t(AURA_LABEL[g]) });
+export const auraName = (g, t) => g === 'vacio' ? t('Glow del vacío') : t('Glow {type}', { type: g.startsWith('tipo-') ? Data.TYPE_LABEL[g.slice(5)] : t(AURA_LABEL[g]) });
 
 // Pone una skin a un retrato en los menús. Con canvas (sprites), la skin es el shader del combate, que menufx.js
 // pinta en el propio canvas, y el CSS solo pone el brillo de alrededor (skinfx-*): así las partículas, que se

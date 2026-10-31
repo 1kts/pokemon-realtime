@@ -210,7 +210,7 @@ export const towerViews = {
     me.append(tools);
     const board = el('div', 'panel board tower-board');
     board.innerHTML = `<h3>${t('Ranking de la Torre')}</h3><p class="small">${t('Cargando…')}</p>`;
-    const all = el('button', '', t('Ver la ladder completa'));
+    const all = el('button', 'tb-btn tower-all', t('Ver la ladder completa'));
     all.onclick = () => { this.ladderBoard = 'tower'; this.openLadder(); };
     side.append(me, board, all);
     return side;

@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'Faccia a faccia nel PvP',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'Quando trovi una partita in Classificata o Partita rapida, le carte dei due allenatori si scontrano: foto, lega, ELO e medaglie, e se il rivale è un\'IA viene indicato.',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': 'Ogni stile di percorso ha il suo suono, i selvatici speciali hanno un tema proprio e ogni lotta alla Torre Lotta inizia con un brano diverso.',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': 'Mentre suona un brano vedi titolo e autore, con il link alla sua pagina, e la barra in basso nomina chi crea la musica.',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': 'L\'editor del profilo e il Guardaroba mostrano tutto ciò che esiste, bloccato se non lo hai, con un interruttore per vedere solo il tuo. E arrivano nuove skin, effetti, cornici e aloni.',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': 'Il Cammino della Storia si trascina col mouse, la Torre Lotta dà più spazio al tuo record e alla classifica e la musica del menu cambia meno spesso.',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': 'Menu e lotte consumano meno con un limite di 30 e 60 FPS, e la Poké Ball ha un nuovo aspetto, con la scia e i segni di ogni tipo.',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': 'Schermate più chiare',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'La Storia va al sodo: regioni e medaglie accanto al titolo, carte del Cammino più pulite, «Come si gioca» e il timer sopra il Cammino.',
@@ -102,6 +110,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': 'Ti piace PokéArenas? Condividilo con i tuoi amici!',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': '{n} medaglie',
+    '1 medalla': '1 medaglia',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': 'La sua squadra per le Classificate',
     // ---------- Ficha pública ----------
@@ -763,6 +772,7 @@ export default {
     'Aviso legal y privacidad': 'Note legali e privacy',
     'Retirada de contenido': 'Rimozione di contenuti',
     'Hecho por {who}': 'Creato da {who}',
+    'Música de {who}': 'Musica di {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Proiettili come sempre',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'I proiettili tornano al loro aspetto di sempre, un nucleo luminoso con un alone colorato, anche nelle arene di ghiaccio e neve, invece di apparire diversi.',
@@ -1999,6 +2009,26 @@ export default {
     'Hojas': 'Foglie',
     'Copos': 'Fiocchi',
     'Sombras': 'Ombre',
+    'Equipado': "Equipaggiato",
+    'Glow del vacío': "Glow del vuoto",
+    'Solo los míos': "Solo i miei",
+    'Skin Retro': 'Skin Retrò',
+    'Skin Tinta': 'Skin Inchiostro',
+    'Skin Caramelo': 'Skin Caramella',
+    'Monedas': 'Monete',
+    'Fantasmas': 'Fantasmi',
+    'Cometas': 'Comete',
+    'Marco Eclipse': 'Cornice Eclissi',
+    'Marco Engranaje': 'Cornice Ingranaggio',
+    'Marco Vidriera': 'Cornice Vetrata',
+    'Fénix': 'Fenice',
+    'Marea': 'Marea',
+    'Skin Cristal': 'Skin Cristallo',
+    'Skin Neón': 'Skin Neon',
+    'Skin Sombra': 'Skin Ombra',
+    'Pétalos': 'Petali',
+    'Corazones': 'Cuori',
+    'Notas': 'Note',
     'Estrellas': 'Stelle',
     'Destellos': 'Bagliori',
     'Aurora': 'Aurora',

@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'PvP 맞대결 연출',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': '랭크전이나 빠른 대전에서 상대를 찾으면 두 트레이너의 카드가 부딪쳐요. 사진, 리그, ELO, 배지가 나오고 상대가 AI면 표시돼요.',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': '길 스타일마다 음악이 다르고, 특별한 야생 포켓몬은 전용 테마가 있으며, 배틀타워는 전투마다 다른 곡으로 시작해요.',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': '곡이 재생되는 동안 제목과 작곡가가 페이지 링크와 함께 나오고, 아래쪽 바에도 음악을 만든 사람들이 표시돼요.',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': '프로필 편집과 옷장에서 모든 항목을 볼 수 있고, 없는 것은 잠겨 있으며 내 것만 보는 스위치도 있어요. 새 스킨, 효과, 프레임, 글로우도 추가됐어요.',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': '스토리의 길을 마우스로 끌 수 있고, 배틀타워는 내 기록과 랭킹에 공간을 더 주며, 메뉴 음악도 덜 자주 바뀌어요.',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': '메뉴와 전투를 30, 60 FPS로 제한해 부담을 줄였고, 몬스터볼은 궤적과 종류별 무늬가 있는 새 모습이 됐어요.',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': '더 깔끔해진 화면',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': '스토리가 간결해졌어요: 지방과 배지는 제목 옆으로, 길 카드는 더 깔끔하게, ‘플레이 방법’과 타이머는 길 위로 옮겼어요.',
@@ -102,6 +110,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': 'PokéArenas가 마음에 드나요? 친구들에게 공유하세요!',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': '배지 {n}개',
+    '1 medalla': '배지 1개',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': '랭크 배틀 팀',
     // ---------- Ficha pública ----------
@@ -763,6 +772,7 @@ export default {
     'Aviso legal y privacidad': '법적 고지 및 개인정보',
     'Retirada de contenido': '콘텐츠 삭제',
     'Hecho por {who}': '제작: {who}',
+    'Música de {who}': '음악: {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '예전 그대로의 투사체',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '투사체가 얼음과 눈 아레나에서도 다르게 보이지 않고, 빛나는 중심과 색이 있는 빛무리라는 평소 모습으로 돌아왔어.',
@@ -1999,6 +2009,26 @@ export default {
     'Hojas': '나뭇잎',
     'Copos': '눈송이',
     'Sombras': '그림자',
+    'Equipado': "장착 중",
+    'Glow del vacío': "공허 글로우",
+    'Solo los míos': "내 것만",
+    'Skin Retro': '레트로 스킨',
+    'Skin Tinta': '잉크 스킨',
+    'Skin Caramelo': '캔디 스킨',
+    'Monedas': '동전',
+    'Fantasmas': '유령',
+    'Cometas': '혜성',
+    'Marco Eclipse': '일식 프레임',
+    'Marco Engranaje': '톱니바퀴 프레임',
+    'Marco Vidriera': '스테인드글라스 프레임',
+    'Fénix': '불사조',
+    'Marea': '파도',
+    'Skin Cristal': '크리스탈 스킨',
+    'Skin Neón': '네온 스킨',
+    'Skin Sombra': '섀도 스킨',
+    'Pétalos': '꽃잎',
+    'Corazones': '하트',
+    'Notas': '음표',
     'Estrellas': '별',
     'Destellos': '반짝임',
     'Aurora': '오로라',

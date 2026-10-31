@@ -19,6 +19,7 @@ import { confirmBox } from './dialog.js';
 import { Net, storage } from './net.js';
 import { t, tServer, getLang } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
+import { showTrack } from './nowplaying.js';
 import { Sfx } from './sfx.js';
 import { lowerQuality } from './gfx.js';
 
@@ -56,6 +57,7 @@ const app = {
   // Al cambiar de idioma: los textos fijos de index.html (las pantallas se vuelven a pintar solas)
   onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
 };
+app.music.onTrack = showTrack;
 app.onLang();
 app.ui = new UI(app);
 window.__app = app;   // para depurar y para las pruebas automáticas
@@ -100,11 +102,19 @@ function checkFps(raw) {
 let last = performance.now();
 const basePos = new THREE.Vector3();
 const calm = matchMedia('(prefers-reduced-motion: reduce)');
+const MENU_FPS = 30, BATTLE_FPS = 60;
+let nextFrame = 0;
+app.bloomFrames = 0;   // pasadas con resplandor (para las pruebas)
 function loop(now) {
   requestAnimationFrame(loop);
+  // Tope de FPS, por la velocidad de la pantalla (hay de 160 Hz y más): en los menús el fondo se mece despacio y casi todo
+  // queda detrás de los paneles, así que 30 bastan; en combate, 60. Se cuenta contra una cita, no desde el último
+  // fotograma, para no acabar por debajo del tope
+  if (now < nextFrame - 1) return;
+  nextFrame = Math.max(nextFrame + 1000 / (app.battle ? BATTLE_FPS : MENU_FPS), now);
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw);
   last = now;
-  checkFps(raw);
+  if (app.battle) checkFps(raw);   // (la calidad automática solo mira los combates: en el menú el tope no es que vaya lento)
   world.placeCamera(innerWidth / innerHeight);
   if (app.battle) {
     app.battle.frame(now, dt);
@@ -122,7 +132,7 @@ function loop(now) {
   world.update(dt, particles);
   effects.update(dt);
   particles.update(dt);
-  if (gfx.bloom) composer.render();
+  if (gfx.bloom && app.battle) { composer.render(); app.bloomFrames++; }
   else renderer.render(world.scene, world.camera);   // sin el composer: el tono y el color los pone el renderer
 }
 requestAnimationFrame(loop);

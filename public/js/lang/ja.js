@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'PvPの対面演出',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'ランクやクイックマッチで対戦が決まると、2人のカードがぶつかります。画像、リーグ、ELO、バッジを表示し、相手がAIならそう表示されます。',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': '道のスタイルごとに音楽が変わり、特別な野生ポケモンには専用曲が流れ、バトルタワーは戦闘ごとに別の曲で始まります。',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': '曲が流れている間はタイトルと作者が作者ページへのリンク付きで表示され、下部バーにも音楽の作者が載ります。',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': 'プロフィール編集と衣装部屋ではすべてのアイテムが見られ、未所持はロック表示です。自分の物だけ見る切り替えも追加。新しいスキン、エフェクト、フレーム、グローも登場。',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': 'ストーリーの道をマウスでドラッグできるようになり、バトルタワーは記録とランキングが広くなり、メニュー曲の切り替わりもゆっくりになりました。',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': 'メニューは30、バトルは60FPSを上限にして負荷を軽減。モンスターボールも新デザインになり、軌跡と種類ごとの模様が付きました。',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': '見やすくなった画面',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'ストーリーがすっきり:地方とバッジはタイトルの隣に、道のカードはシンプルに、「遊び方」とタイマーは道の上に移動しました。',
@@ -102,6 +110,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': 'PokéArenasを楽しんでる？友だちにシェアしよう！',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': 'バッジ{n}個',
+    '1 medalla': 'バッジ1個',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': 'ランクマッチのチーム',
     // ---------- Ficha pública ----------
@@ -763,6 +772,7 @@ export default {
     'Aviso legal y privacidad': '法的通知とプライバシー',
     'Retirada de contenido': 'コンテンツの削除',
     'Hecho por {who}': '制作：{who}',
+    'Música de {who}': '音楽: {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'いつもの弾に戻った',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弾はいつもの見た目、光る芯と色つきのハローに戻った。氷や雪のアリーナでも違って見えなくなった。',
@@ -1999,6 +2009,26 @@ export default {
     'Hojas': 'はっぱ',
     'Copos': 'ゆき',
     'Sombras': 'かげ',
+    'Equipado': "装備中",
+    'Glow del vacío': "虚空グロー",
+    'Solo los míos': "自分のものだけ",
+    'Skin Retro': 'レトロスキン',
+    'Skin Tinta': 'インクスキン',
+    'Skin Caramelo': 'キャンディスキン',
+    'Monedas': 'コイン',
+    'Fantasmas': 'ゴースト',
+    'Cometas': 'すいせい',
+    'Marco Eclipse': '日食フレーム',
+    'Marco Engranaje': '歯車フレーム',
+    'Marco Vidriera': 'ステンドグラスフレーム',
+    'Fénix': 'フェニックス',
+    'Marea': '潮',
+    'Skin Cristal': 'クリスタルスキン',
+    'Skin Neón': 'ネオンスキン',
+    'Skin Sombra': 'シャドウスキン',
+    'Pétalos': 'はなびら',
+    'Corazones': 'ハート',
+    'Notas': 'おんぷ',
     'Estrellas': 'ほし',
     'Destellos': 'きらめき',
     'Aurora': 'オーロラ',

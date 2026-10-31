@@ -41,7 +41,7 @@ export const legalBarViews = {
     const bug = el('button', 'link', t('Reportar un bug'));
     bug.onclick = () => this.bugReport();
     nav.append(bug, credits, link(page, t('Aviso legal y privacidad')), link(takedown, t('Retirada de contenido')), mail,
-      el('span', '', t('Hecho por {who}', { who: '1kts' })), news);
+      el('span', '', t('Hecho por {who}', { who: '1kts' })), el('span', 'lb-music', t('Música de {who}', { who: 'jannetty, rckbtm, Spring Spring y HydroGene' })), news);
     bar.append(nav);
   },
 };

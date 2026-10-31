@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'Face-à-face en PvP',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'Quand tu trouves une partie en Classée ou en Partie rapide, les cartes des deux dresseurs s\'entrechoquent : photo, ligue, ELO et badges, et l\'adversaire IA est indiqué.',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': 'Chaque style de route a sa musique, les sauvages spéciaux ont leur thème et chaque combat de la Tour de Combat commence par un morceau différent.',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': 'Pendant qu\'un morceau joue, tu vois son titre et son auteur, avec un lien vers sa page, et la barre du bas nomme les auteurs de la musique.',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': 'L\'éditeur de profil et le Vestiaire montrent tout ce qui existe, verrouillé si tu ne l\'as pas, avec un bouton pour ne voir que le tien. Et voici de nouveaux skins, effets, cadres et halos.',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': 'Le Chemin de l\'Histoire se fait glisser à la souris, la Tour de Combat laisse plus de place à ton record et au classement, et la musique du menu change moins souvent.',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': 'Les menus et les combats consomment moins avec des limites de 30 et 60 FPS, et la Poké Ball change de look, avec sa traînée et les motifs de chaque type.',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': 'Des écrans plus clairs',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'L\'Histoire va à l\'essentiel : régions et badges près du titre, cartes du Chemin épurées, « Comment jouer » et le minuteur au-dessus du Chemin.',
@@ -101,6 +109,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': 'Tu aimes PokéArenas ? Partage-le avec tes amis !',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': '{n} badges',
+    '1 medalla': '1 badge',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': 'Son équipe de Classée',
     // ---------- Ficha pública ----------
@@ -762,6 +771,7 @@ export default {
     'Aviso legal y privacidad': 'Mentions légales et confidentialité',
     'Retirada de contenido': 'Retrait de contenu',
     'Hecho por {who}': 'Créé par {who}',
+    'Música de {who}': 'Musique de {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Les projectiles comme avant',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Les projectiles retrouvent leur aspect habituel, un noyau brillant avec un halo de couleur, même dans les arènes de glace et de neige, au lieu d’avoir un autre aspect.',
@@ -1993,6 +2003,26 @@ export default {
     'Hojas': 'Feuilles',
     'Copos': 'Flocons',
     'Sombras': 'Ombres',
+    'Equipado': "Équipé",
+    'Glow del vacío': "Lueur du néant",
+    'Solo los míos': "Seulement les miens",
+    'Skin Retro': 'Skin Rétro',
+    'Skin Tinta': 'Skin Encre',
+    'Skin Caramelo': 'Skin Bonbon',
+    'Monedas': 'Pièces',
+    'Fantasmas': 'Fantômes',
+    'Cometas': 'Comètes',
+    'Marco Eclipse': 'Cadre Éclipse',
+    'Marco Engranaje': 'Cadre Engrenage',
+    'Marco Vidriera': 'Cadre Vitrail',
+    'Fénix': 'Phénix',
+    'Marea': 'Marée',
+    'Skin Cristal': 'Skin Cristal',
+    'Skin Neón': 'Skin Néon',
+    'Skin Sombra': 'Skin Ombre',
+    'Pétalos': 'Pétales',
+    'Corazones': 'Cœurs',
+    'Notas': 'Notes',
     'Estrellas': 'Étoiles',
     'Destellos': 'Éclats',
     'Aurora': 'Aurore',

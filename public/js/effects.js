@@ -32,19 +32,36 @@ function glowSprite(color, size) {
 }
 const bright = (hex, k = 1.8) => new THREE.Color(hex).multiplyScalar(k);
 
-// Textura de Poké Ball
-function ballTexture(top) {
+// Textura de Poké Ball: dos caras con su botón y las marcas de cada Ball. Una por tipo, compartida entre lanzamientos
+const ballTextures = {};
+function ballTexture(kind) {
+  if (ballTextures[kind]) return ballTextures[kind];
   const c = document.createElement('canvas');
-  c.width = 64; c.height = 32;
+  c.width = 256; c.height = 128;
   const g = c.getContext('2d');
-  g.fillStyle = top; g.fillRect(0, 0, 64, 16);
-  g.fillStyle = '#f4f4f4'; g.fillRect(0, 16, 64, 16);
-  g.fillStyle = '#222'; g.fillRect(0, 14, 64, 4);
-  const t = new THREE.CanvasTexture(c);
+  g.fillStyle = BALL_COLORS[kind]; g.fillRect(0, 0, 256, 64);
+  g.fillStyle = '#f4f4f4'; g.fillRect(0, 64, 256, 64);
+  for (const x of [64, 192]) {
+    if (kind === 'superball') { g.fillStyle = '#e83030'; g.fillRect(x - 40, 14, 22, 34); g.fillRect(x + 18, 14, 22, 34); }
+    if (kind === 'ultraball') { g.fillStyle = '#ffcb05'; g.fillRect(x - 38, 18, 18, 44); g.fillRect(x + 20, 18, 18, 44); g.fillRect(x - 38, 34, 76, 10); }
+    if (kind === 'masterball') {
+      g.fillStyle = '#ff5ab0'; for (const dx of [-34, 34]) { g.beginPath(); g.arc(x + dx, 28, 11, 0, 7); g.fill(); }
+      g.fillStyle = '#fff'; g.font = '900 30px sans-serif'; g.textAlign = 'center'; g.fillText('M', x, 44);
+    }
+  }
+  g.fillStyle = '#1c1c22'; g.fillRect(0, 57, 256, 14);
+  for (const x of [64, 192]) {
+    g.fillStyle = '#1c1c22'; g.beginPath(); g.arc(x, 64, 18, 0, 7); g.fill();
+    g.fillStyle = '#f4f4f4'; g.beginPath(); g.arc(x, 64, 11, 0, 7); g.fill();
+  }
+  const t = ballTextures[kind] = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  t.userData.shared = true;   // (la limpieza de los efectos no la libera: la usan todos los lanzamientos)
   return t;
 }
 const BALL_COLORS = { pokeball: '#e83030', superball: '#2f6fe0', ultraball: '#303030', masterball: '#7a3cc8' };
+const BALL_GLOW = { pokeball: '#ff8a70', superball: '#7ab4ff', ultraball: '#ffe27a', masterball: '#e08aff' };
 
 // Forma pixel de cada proyectil (las de PokéSurvivor); los que no están, la de su tipo
 const PIX_MOVE = { ascuas: 'fire', llamarada: 'fire', fuegoFatuo: 'ball', pistolaAgua: 'drop', rayoBurbuja: 'bubble', hojaAfilada: 'leaf',
@@ -237,9 +254,15 @@ export class Effects {
   makeProjectile(pr) {
     const p = this.p;
     if (pr.ball) {
-      const m = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), new THREE.MeshStandardMaterial({ map: ballTexture(BALL_COLORS[pr.ball]), roughness: 0.3 }));
+      const glow = BALL_GLOW[pr.ball] || '#ffffff';
+      const mat = new THREE.MeshStandardMaterial({ map: ballTexture(pr.ball), roughness: 0.22, metalness: 0.15, emissive: glow, emissiveIntensity: 0.12 });
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.27, 28, 20), mat);
       m.castShadow = true;
-      return { obj: m, h: 0.6, update: (_, pos, dt) => { m.rotation.z -= dt * 14; p.trickle(30, dt, pos.x, pos.y, pos.z, { colors: ['#ffffff'], layer: 'glow', speed: 0.3, life: 0.25, size: 0.2 }); } };
+      return { obj: m, h: 0.65, dispose: () => { m.geometry.dispose(); mat.dispose(); },
+        update: (_, pos, dt) => {
+          m.rotation.z -= dt * 16; m.rotation.x += dt * 5;
+          p.trickle(70, dt, pos.x, pos.y, pos.z, { colors: ['#ffffff', glow, glow], layer: 'glow', speed: 0.35, life: 0.4, size: 0.34, jitter: 0.06 });
+        } };
     }
     const m = MOVES[pr.mk];
     const ty = m.type, pal = PALETTE[ty] || ['#ffffff'];
@@ -759,7 +782,7 @@ export class Effects {
     const IN = 1.0, SHAKE = 0.75, CLICK = 0.9, BREAK = 0.5;
     const pos = toWorld(e.x, e.y, 0);
     const ball = new THREE.Group();
-    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 14), new THREE.MeshStandardMaterial({ map: ballTexture(BALL_COLORS[e.ball] || '#e83030'), roughness: 0.25, metalness: 0.1 }));
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 14), new THREE.MeshStandardMaterial({ map: ballTexture(e.ball), roughness: 0.25, metalness: 0.1 }));
     sphere.castShadow = true;
     const button = new THREE.Mesh(new THREE.CircleGeometry(0.08, 16), new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }));
     button.position.z = 0.301;

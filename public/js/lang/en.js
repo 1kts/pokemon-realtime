@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'Face-off in PvP',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': 'When you find a Ranked or Quick Match game, both trainers\' cards clash: picture, league, ELO and badges, and it says so if your rival is an AI.',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': 'Each route style has its own sound, special wild Pokémon get their own theme, and every Battle Tower fight starts with a different song.',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': 'While a song plays you see its title and author, with a link to their page, and the bottom bar names the people behind the music.',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': 'The profile editor and the Wardrobe show everything there is, locked if you don\'t own it, with a switch to see only yours. Plus new skins, effects, frames and glows.',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': 'You can drag the Story Path with the mouse, Battle Tower gives more room to your record and the ranking, and the menu music changes less often.',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': 'Menus and battles use less power with caps of 30 and 60 FPS, and the Poké Ball has a new look, with a trail and each type\'s markings.',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': 'Clearer screens',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'Story gets to the point: regions and badges next to the title, cleaner Path cards, and “How to play” and the timer above the Path.',
@@ -101,6 +109,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': 'Enjoying PokéArenas? Share it with your friends!',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': '{n} badges',
+    '1 medalla': '1 badge',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': 'Their Ranked team',
     // ---------- Ficha pública ----------
@@ -762,6 +771,7 @@ export default {
     'Aviso legal y privacidad': 'Legal notice and privacy',
     'Retirada de contenido': 'Content removal',
     'Hecho por {who}': 'Made by {who}',
+    'Música de {who}': 'Music by {who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Projectiles as before',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Projectiles go back to their usual look, a glowing core with a coloured halo, also in the ice and snow arenas, instead of looking different.',
@@ -1989,6 +1999,26 @@ export default {
     'Hojas': 'Leaves',
     'Copos': 'Snowflakes',
     'Sombras': 'Shadows',
+    'Equipado': "Equipped",
+    'Glow del vacío': "Void glow",
+    'Solo los míos': "Only mine",
+    'Skin Retro': 'Retro skin',
+    'Skin Tinta': 'Ink skin',
+    'Skin Caramelo': 'Candy skin',
+    'Monedas': 'Coins',
+    'Fantasmas': 'Ghosts',
+    'Cometas': 'Comets',
+    'Marco Eclipse': 'Eclipse Frame',
+    'Marco Engranaje': 'Gear Frame',
+    'Marco Vidriera': 'Stained Glass Frame',
+    'Fénix': 'Phoenix',
+    'Marea': 'Tide',
+    'Skin Cristal': 'Crystal skin',
+    'Skin Neón': 'Neon skin',
+    'Skin Sombra': 'Shadow skin',
+    'Pétalos': 'Petals',
+    'Corazones': 'Hearts',
+    'Notas': 'Notes',
     'Estrellas': 'Stars',
     'Destellos': 'Sparkles',
     'Aurora': 'Aurora',

@@ -77,7 +77,7 @@ class Battle {
 
   makeSide(s, i) {
     return {
-      idx: i, name: s.name, npc: !!s.npc, ws: s.ws || null, ai: s.ai ?? null, aiParams: s.aiParams || null, leader: s.leader || null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
+      idx: i, name: s.name, card: s.card || null, npc: !!s.npc, ws: s.ws || null, ai: s.ai ?? null, aiParams: s.aiParams || null, leader: s.leader || null, passive: !!s.passive, wild: !!s.wild, rare: !!s.rare, perfect: !!s.perfect, balls: s.balls || null,
       // Los salvajes aguantan menos y pegan algo menos: combates de ruta rápidos
       team: s.team.map(m => {
         const mon = makeMon(m.dex, m.level, { uid: m.uid, nick: m.nick || undefined, moves: m.moves, ev: m.ev, iv: m.iv, nat: m.nat, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null });
@@ -96,7 +96,7 @@ class Battle {
   startMsg(side) {
     return {
       t: 'start', you: side.idx, mode: this.mode, map: this.mapName, mod: this.mod || undefined,
-      sides: this.sides.map(s => ({ name: s.name, npc: s.npc || undefined, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null, spdMult: m.spdMult, r: m.r })) })),
+      sides: this.sides.map(s => ({ name: s.name, card: s.card || undefined, npc: s.npc || undefined, wild: s.wild, rare: s.rare, perfect: s.perfect, team: s.team.map(m => ({ dex: m.dex, nick: m.nick, level: m.level, maxHp: m.maxHp, moves: m.moves, shiny: m.shiny, skin: m.skin || null, parts: m.parts || null, spdMult: m.spdMult, r: m.r })) })),
       terrain: this.terrain, balls: side.balls,
     };
   }

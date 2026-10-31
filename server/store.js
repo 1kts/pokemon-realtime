@@ -416,6 +416,10 @@ function publicUser(id, online = new Set()) {
   };
 }
 
+// Lo que el rival ve de ti al encontrar partida: solo lo público de tu perfil (nada de cuenta, correo ni sesión)
+const versusCard = p => ({ ...face(p), name: p.name, tag: p.npc ? null : p.tag, npc: !!p.npc, title: p.title || null, frame: p.frame || null,
+  elo: p.elo, badges: badgesOf(p), prog: Object.fromEntries(Object.entries(p.prog || {}).map(([r, n]) => [r, Math.min(8, n || 0)])) });
+
 // Puesto en el ranking de clasificatoria (1 = primero) o null si no ha jugado
 function rankOf(p) {
   const { has, cmp } = BOARDS.ranked;
@@ -425,6 +429,6 @@ function rankOf(p) {
   return rank;
 }
 
-module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, register, login, changePassword,
+module.exports = { db, setName, fullName, get, has, release, save, flush, leaderboard, rankOf, ladder, publicUser, versusCard, register, login, changePassword,
   check, setPassword, byIdentity, linkIdentity, identityAccount, use, banned, persist, remove, onRemove, byNameTag, addNpc, purgeGuests, GUEST_DAYS, byId, byUser, search, stats, all: () => profiles.values(),
   reindex: index };   // (reindex: para las pruebas, que simulan cuentas de antes)

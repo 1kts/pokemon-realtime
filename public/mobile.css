@@ -593,3 +593,16 @@
   .legal-bar.open .legal-text { white-space: normal; }
   .legal-nav { gap: 1px 10px; }
 }
+
+/* Enfrentamiento: las dos tarjetas caben en un móvil en horizontal */
+@media (max-height: 500px) {
+  .versus { padding: 0 max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px)); }
+  .vs-card { gap: 8px; padding: 8px 10px; }
+  .vs-npc, .vs-card .ava { --s: 76px; }
+  .vs-npc { width: 76px; height: 76px; }
+  .vs-info b { font-size: 17px; }
+  .vs-elo { font-size: 12px; }
+  .vs-mark { font-size: 30px; }
+}
+/* (en vertical la barra se queda en una línea: el autor ya sale en el letrero de cada tema) */
+@media (max-width: 560px) { .legal-bar .lb-music { display: none; } }

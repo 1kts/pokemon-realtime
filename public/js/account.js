@@ -8,8 +8,9 @@ import { Net, storage } from './net.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
-import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
+import { showcaseHtml } from './achievements.js';
 import { avatarArt, avatarName, effectHtml, effectName } from './missions.js';
+import { wearPanel, frameLabel } from './wardrobe.js';
 import { achName } from './achievements.js';
 import { frameFx, frameRing, frameBadge, auraHtml, applySkin, auraName } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
@@ -49,8 +50,6 @@ const BOOK_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7.
 const GLOBE_SVG = '<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 8h13M8 1.5c2 2 2.6 4.2 2.6 6.5S10 12.5 8 14.5M8 1.5C6 3.5 5.4 5.7 5.4 8S6 12.5 8 14.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
 const SEEN_KEY = 'arena.seenVersion';
 const TAG_LABEL = { nuevo: 'Nuevo', cambio: 'Cambio', arreglo: 'Arreglo' };
-const FRAME_LABEL = { bronce: 'Bronce', plata: 'Plata', oro: 'Oro', platino: 'Platino', diamante: 'Diamante', maestro: 'Maestro', ...FRAME_LABEL_EXTRA };
-const frameLabel = f => f.startsWith('tipo-') ? t('Marco {type}', { type: Data.TYPE_LABEL[f.slice(5)] }) : t(FRAME_LABEL[f] || f);
 const swatch = f => `<i class="sw frame-${f || 'none'}"${frameRing(f) ? ` style="--ring:${frameRing(f)}"` : ''}></i>`;
 const itemName = id => (SHOP.find(i => i.id === id) || { name: id }).name;
 const fmtDate = ts => new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
@@ -845,26 +844,8 @@ export const accountViews = {
         }
         box.append(tabs);
         const body = el('div', 'ae-body scroll');
-        const opts = (list, render, msg) => {
-          const g = el('div', 'frame-grid');
-          for (const v of list) {
-            const [node, label, sel, locked] = render(v);
-            const b = el('button', 'frame-opt' + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
-            b.append(node, el('small', '', label));
-            if (locked) { b.disabled = true; b.append(el('em', '', t('En Lucky Spin'))); b.title = `${label} · ${t('En Lucky Spin')}`; }
-            else b.onclick = () => this.net.send({ t: 'look', ...msg(v) });
-            g.append(b);
-          }
-          return g;
-        };
         if (tabId === 'avatar') this.avatarOptions(body);
-        if (tabId === 'frame') body.append(opts([null, ...(cos.frames || [])], f => [this.avatar(56, false, f), f ? frameLabel(f) : t('Ninguno'), (p.frame || null) === f], f => ({ frame: f })));
-        if (tabId === 'aura') body.append(opts([null, ...(cos.auras || [])], au => [this.avatar(56, false, undefined, au), au ? auraName(au, t) : t('Ninguno'), (p.aura || null) === au], au => ({ aura: au })));
-        if (tabId === 'effect') {
-          // Todos los efectos: los que aún no tienes, apagados (salen en Lucky Spin)
-          const own = cos.effects || [];
-          body.append(opts([null, ...own, ...Data.EFFECTS.filter(fx => !own.includes(fx))], fx => [this.avatar(56, false, undefined, undefined, fx), fx ? effectName(fx) : t('Ninguno'), (p.effect || null) === fx, !!fx && !own.includes(fx)], fx => ({ effect: fx })));
-        }
+        if (tabId === 'frame' || tabId === 'aura' || tabId === 'effect') wearPanel(body, this, [{ kind: tabId }], draw);
         if (tabId === 'title') {
           const chips = el('div', 'chips');
           for (const ti of [null, ...(cos.titles || [])]) {
@@ -1054,7 +1035,7 @@ export const accountViews = {
       const card = el('div', `lr ${name.toLowerCase()}${reached ? ' reached' : ''}${reached && !claimed ? ' ready' : ''}${claimed && reached ? ' claimed' : ''}`);
       const loot = [r.coins ? coins(r.coins) : '', ...Object.entries(r.items).map(([id, n]) => `${itemName(id)} ×${n}`)].filter(Boolean);
       card.innerHTML = `${frameBadge(r.frame, 42)}<b>${t(name)}</b><small>${min ? min + ' ELO' : t('inicio')}</small>
-        <div class="loot">${loot.map(x => `<span>${x}</span>`).join('')}<span class="title-chip">${escapeHtml(t(r.title))}</span><span>${t('Marco {name}', { name: t(FRAME_LABEL[r.frame]) })}</span></div>`;
+        <div class="loot">${loot.map(x => `<span>${x}</span>`).join('')}<span class="title-chip">${escapeHtml(t(r.title))}</span><span>${t('Marco {name}', { name: frameLabel(r.frame) })}</span></div>`;
       if (min === 0) card.append(el('em', 'state', t('De serie')));
       else if (!reached) card.append(el('em', 'state', t('Faltan {n}', { n: min - s.peak })));
       else if (claimed) card.append(el('em', 'state', t('✓ Reclamado')));

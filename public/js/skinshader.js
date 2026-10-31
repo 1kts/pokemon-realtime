@@ -9,7 +9,7 @@
 import * as THREE from 'three';
 import { elementalPalette, ELEM_FAMILY } from './skinfx.js';
 
-export const SKIN_ID = { oro: 1, holo: 2, galaxia: 3, elemental: 4 };
+export const SKIN_ID = { oro: 1, holo: 2, galaxia: 3, elemental: 4, cristal: 5, neon: 6, sombra: 7, retro: 8, tinta: 9, caramelo: 10 };
 const SKIN_PARS = `uniform float uSkin;
 uniform float uFam;
 uniform float uTime;
@@ -37,7 +37,47 @@ const SKIN_GLSL = `
   vec2 q = cell - floor(uFrame.xy / uTexel + 0.5);
   bool inFrame = q.x >= 0.0 && q.y >= 0.0 && q.x < fsz.x && q.y < fsz.y;
   if (!inFrame) diffuseColor.a = 0.0;
-  if (uSkin > 3.5) {
+  if (uSkin > 4.5) {
+    vec3 base = diffuseColor.rgb / max(diffuse, vec3(0.001));
+    float l = dot(base, vec3(0.299, 0.587, 0.114));
+    vec3 c;
+    if (uSkin < 5.5) {
+      // Cristal: hielo en facetas (rombos de 4 píxeles, cada uno con su tono) que cruza un reflejo blanco
+      vec2 f = floor(vec2(q.x + q.y, q.x - q.y) / 5.0);
+      c = mix(vec3(0.12, 0.38, 0.72), vec3(0.72, 0.95, 1.0), clamp(l * 0.75 + skinHash(f) * 0.4, 0.0, 1.0));
+      c = mix(c, vec3(1.0), pow(max(0.0, sin((q.x - q.y) * 0.11 - uTime * 1.8)), 16.0) * 0.9);
+    } else if (uSkin < 6.5) {
+      // Neón: cuerpo casi negro y el borde de la silueta encendido, con el color corriendo a lo largo
+      float rim = 0.0;
+      vec2 d[4]; d[0] = vec2(uTexel.x, 0.0); d[1] = vec2(-uTexel.x, 0.0); d[2] = vec2(0.0, uTexel.y); d[3] = vec2(0.0, -uTexel.y);
+      for (int i = 0; i < 4; i++) {
+        vec2 p = uv0 + d[i];
+        if (p.x <= lo.x || p.y <= lo.y || p.x >= hi.x || p.y >= hi.y || texture2D(map, p).a < 0.5) rim = 1.0;
+      }
+      vec3 hue = 0.5 + 0.5 * cos(6.2831 * (vec3(0.0, 0.33, 0.67) + (q.x + q.y) * 0.015 - uTime * 0.3));
+      c = rim > 0.5 ? hue * 1.25 : base * 0.1 + hue * (0.04 + l * 0.2);
+    } else if (uSkin > 9.5) {
+      // Caramelo: rayas diagonales de tres colores pastel que bajan, con la luz del sprite
+      float st = mod(floor((q.x + q.y + uTime * 7.0) / 4.0), 3.0);
+      vec3 pal = st < 0.5 ? vec3(1.0, 0.55, 0.72) : st < 1.5 ? vec3(0.55, 0.95, 0.8) : vec3(1.0, 0.92, 0.55);
+      c = pal * (0.55 + 0.6 * l);
+    } else if (uSkin > 8.5) {
+      // Tinta: dibujo a plumilla sobre papel; el trazado tiembla a saltos, como una animación a mano
+      float boil = floor(uTime * 4.0);
+      float hatch = mod(q.x + q.y + boil, 3.0);
+      c = l > 0.62 ? vec3(0.95, 0.92, 0.84) : l > 0.3 ? (hatch < 1.0 ? vec3(0.06) : vec3(0.95, 0.92, 0.84)) : vec3(0.05, 0.05, 0.07);
+    } else if (uSkin > 7.5) {
+      // Retro: los cuatro verdes de las consolas portátiles, con trama de puntos
+      float v = clamp(l + (mod(q.x + q.y, 2.0) - 0.5) * 0.14, 0.0, 0.999);
+      c = v < 0.25 ? vec3(0.06, 0.22, 0.06) : v < 0.5 ? vec3(0.19, 0.38, 0.19) : v < 0.75 ? vec3(0.55, 0.67, 0.06) : vec3(0.61, 0.74, 0.06);
+    } else {
+      // Sombra: silueta oscura de la que sube humo morado y lo más claro del sprite arde en rojo
+      c = mix(vec3(0.02, 0.01, 0.05), vec3(0.24, 0.08, 0.38), l);
+      c += vec3(0.32, 0.04, 0.5) * smoothstep(0.55, 0.9, skinNoise(vec2(q.x * 0.25, q.y * 0.2 - uTime * 1.5)));
+      if (l > 0.72) c = mix(c, vec3(1.0, 0.12, 0.2), 0.6 + 0.4 * sin(uTime * 3.0));
+    }
+    diffuseColor.rgb = c * diffuse;
+  } else if (uSkin > 3.5) {
     // Elemental: paleta del tipo según la luz, con un dibujo propio de su familia (uFam, ver ELEM_FAMILY):
     // 0 llamas (vetas que suben y lenguas de fuego sobre la silueta), 1 agua (cáusticas que se mueven),
     // 2 chispa (grietas de luz que restallan a ratos), 3 naturaleza (venas con un pulso que sube),

@@ -20,6 +20,14 @@ const columnas = SIZES => async ({ page, player, ok }) => {
     ok(await page.see('Ranking de la Torre'), `${en}: el ranking de la Torre se ve sin bajar`);
     const torre = await lado(page, 'Elige tu equipo', 'Ranking de la Torre');
     ok(torre && torre.izq && torre.junto, `${en}: el equipo a la izquierda y el ranking a la derecha (${JSON.stringify(torre)})`);
+    // (en escritorio, el récord y el ranking tienen sitio de verdad, y lo que dice cada puesto se lee entero)
+    if (!touch) {
+      const reparto = await page.eval(`(() => { const r = q => document.querySelector(q).getBoundingClientRect(), cut = [...document.querySelectorAll('.tower-board .pod-who b')].filter(b => b.scrollWidth > b.clientWidth + 1).length;
+        return { parte: r('.tower-side').width / r('.tower-body').width, cut }; })()`);
+      ok(reparto.parte > 0.38, `${en}: el récord y el ranking ocupan más de un tercio (${reparto.parte.toFixed(2)})`);
+      ok(reparto.cut === 0, `${en}: los nombres del ranking se leen enteros (${reparto.cut} cortados)`);
+      ok(await page.see('Ver la ladder completa'), `${en}: «Ver la ladder completa» se ve sin bajar`);
+    }
     await page.tap('Volver');
 
     await page.tap(/^Partida rápida/);

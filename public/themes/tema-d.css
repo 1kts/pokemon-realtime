@@ -208,7 +208,7 @@ body.tema-d .hub-coll .coll-tile.ready, body.tema-d .mw-head button.claim-all { 
 body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .mw-head button.claim-all)::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 1;
   background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.45) 48%, rgba(255,255,255,.12) 54%, transparent 62%) no-repeat; background-size: 250% 100%; background-position: 130% 0; }
 @media (prefers-reduced-motion: no-preference) {
-  body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .missions-widget.has-ready) { animation: tdHalo 1.4s ease-in-out infinite; }
+  body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .missions-widget.has-ready) { animation: tdHalo 1.4s steps(4) infinite; }   /* (a saltos pequeños: repintar una sombra grande en cada fotograma pesa mucho) */
   body.tema-d .hub-left .hub-tz.ready::after { animation: tdSheen 3.2s ease-in-out infinite; }
   body.tema-d .hub-coll .coll-tile.ready::after { animation: tdSheen 3.2s .8s ease-in-out infinite; }
   body.tema-d .mw-head button.claim-all::after { animation: tdSheen 3.2s 1.6s ease-in-out infinite; }

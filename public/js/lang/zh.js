@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.35.0 ----------
+    'Cara a cara en el PvP': 'PvP 正面交锋',
+    'Al encontrar partida en Clasificatoria o Partida rápida, las tarjetas de los dos entrenadores chocan: foto, liga, ELO y medallas, y si el rival es una IA lo pone.': '在排位赛或快速对战中匹配成功时,两位训练家的卡片会相撞:头像、段位、ELO 和徽章,对手是 AI 也会标明。',
+    'Cada estilo de ruta suena distinto, los salvajes especiales tienen tema propio y en la Torre Batalla cada combate empieza con otra canción.': '每种道路风格都有不同的音乐,特殊野生宝可梦有专属主题曲,对战塔每场战斗都会换一首歌开始。',
+    'Mientras suena un tema ves su título y su autor, con enlace a su página, y en la barra de abajo se nombra a quienes hacen la música.': '音乐播放时会显示曲名和作者,并附上作者页面的链接,底部栏也会列出音乐的作者。',
+    'En el editor del perfil y en el Vestuario ves todo lo que hay, bloqueado si no lo tienes, con un interruptor para ver solo lo tuyo. Y llegan skins, efectos, marcos y glows nuevos.': '个人资料编辑器和衣橱会显示所有内容,未拥有的会锁定,并有开关可只看自己拥有的。还新增了皮肤、特效、头像框和光环。',
+    'El Camino de Historia se arrastra con el ratón, Torre Batalla da más sitio a tu récord y al ranking, y la música del menú tarda más en cambiar.': '现在可以用鼠标拖动剧情的旅途,对战塔为你的记录和排行榜留出更多空间,菜单音乐也不再频繁更换。',
+    'Los menús y los combates gastan menos con un tope de 30 y 60 FPS, y la Poké Ball estrena aspecto, con su estela y las marcas de cada tipo.': '菜单和战斗分别限制在 30 和 60 FPS,更省资源;精灵球也换了新外观,带有拖尾和各类型的花纹。',
     // ---------- Novedades v0.34.2 ----------
     'Pantallas más claras': '界面更清晰',
     'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': '剧情更简洁:地区和徽章移到标题旁,旅途卡片更清爽,“玩法说明”和倒计时位于旅途上方。',
@@ -101,6 +109,7 @@ export default {
     '¿Te está gustando PokéArenas? ¡Compártelo con tus amigos!': '喜欢 PokéArenas 吗？分享给你的朋友吧！',
     // ---------- Podio de la Pokédex ----------
     '{n} medallas': '{n} 枚徽章',
+    '1 medalla': '1枚徽章',
     // ---------- Ficha de un entrenador de la IA ----------
     'Su equipo de Clasificatoria': '排位赛队伍',
     // ---------- Ficha pública ----------
@@ -762,6 +771,7 @@ export default {
     'Aviso legal y privacidad': '法律声明与隐私',
     'Retirada de contenido': '内容移除',
     'Hecho por {who}': '作者：{who}',
+    'Música de {who}': '音乐:{who}',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '弹射物恢复原样',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弹射物恢复为一贯的样子：发光的核心加彩色光晕，在冰雪场地中也不再显得不同。',
@@ -1988,6 +1998,26 @@ export default {
     'Hojas': '叶子',
     'Copos': '雪花',
     'Sombras': '暗影',
+    'Equipado': "已装备",
+    'Glow del vacío': "虚空光边",
+    'Solo los míos': "只看我的",
+    'Skin Retro': '复古皮肤',
+    'Skin Tinta': '墨水皮肤',
+    'Skin Caramelo': '糖果皮肤',
+    'Monedas': '金币',
+    'Fantasmas': '幽灵',
+    'Cometas': '彗星',
+    'Marco Eclipse': '日食边框',
+    'Marco Engranaje': '齿轮边框',
+    'Marco Vidriera': '彩窗边框',
+    'Fénix': '凤凰',
+    'Marea': '潮汐',
+    'Skin Cristal': '水晶皮肤',
+    'Skin Neón': '霓虹皮肤',
+    'Skin Sombra': '暗影皮肤',
+    'Pétalos': '花瓣',
+    'Corazones': '爱心',
+    'Notas': '音符',
     'Estrellas': '星星',
     'Destellos': '闪光',
     'Aurora': '极光',

@@ -1,7 +1,7 @@
 {
  "fecha": "2026-10-31",
- "cazadas": 43,
- "total": 43,
+ "cazadas": 46,
+ "total": 46,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -308,6 +308,27 @@
     "tests/e2e/movil.e2e.js"
    ],
    "motivo": "movil.e2e.js: ✗ al soltar el joystick se para (348 → 400)"
+  },
+  "enfrentamiento-no-sale": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/enfrentamiento.e2e.js"
+   ],
+   "motivo": "enfrentamiento.e2e.js: ✗ error: no se ve «VS»: no está en la página"
+  },
+  "rutas-suenan-igual": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/musica-temas.e2e.js"
+   ],
+   "motivo": "musica-temas.e2e.js: ✗ cada estilo de ruta pide su tema y la pradera, el de siempre (wild,wildJohto,wild,wild)"
+  },
+  "musica-sin-autor": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/musica-credito.e2e.js"
+   ],
+   "motivo": "musica-credito.e2e.js: ✗ error: no se ve «Hidden Cavern»: no está el sitio donde buscar: .now-playing"
   }
  }
 }

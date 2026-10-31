@@ -223,7 +223,7 @@ function finishDraft(draft) {
   try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(draft.players, {
     mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), card: store.versusCard(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
   }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida

@@ -66,8 +66,11 @@ Siempre que se escriba, cambie o revise un test, o se añada una funcionalidad: 
   `body.touch` y `#hud.touch`. El mapa de Historia es un contenedor: se adapta con `@container`.
 - Tras tocar el CSS: `tests/e2e/pantallas-*.e2e.js` (nada tapado, desbordado ni inaccesible en 4 tamaños).
 - Comentarios en español, en el tono del código de alrededor.
-- Cosméticos (skins, partículas, efectos del avatar…): uno nuevo se añade a su lista de `public/data.js` (`SKINS`,
-  `EFFECTS`, los tipos) y sale solo donde se elige (Mis Pokémon › Vestuario, el editor del avatar), también para quien
-  no lo tiene: apagado, sin poder ponérselo y diciendo de dónde sale, debajo y al pasar el ratón. Si sale de algo nuevo,
-  su pista va en `SRC` (`public/js/monsheet.js`); sin pista dice «Próximamente». Lo comprueba `tests/e2e/vestuario.e2e.js`.
+- Cosméticos: un marco, glow, efecto, skin o partícula nuevo **solo se añade a su lista de `public/data.js`** (`SKINS`,
+  `EFFECTS`, `frameCatalog`, `auraCatalog`, los tipos; si aún no tiene fuente, además en su `*_SOON`). Prohibido pintarlos
+  por pantalla: las pestañas Marco, Glow y Efecto del editor del avatar y el Vestuario de cada Pokémon (skins y partículas)
+  salen de `wearPanel` (`public/js/wardrobe.js`). Así sale solo donde toca, también para quien no lo tiene: apagado, sin
+  poder elegirlo y con su procedencia, y con el interruptor «Solo los míos / Todos» (empieza en Todos y se recuerda). Si
+  sale de algo nuevo, su procedencia va en `wardrobe.js`; sin ella dice «Próximamente». `tests/e2e/vestuario.e2e.js`
+  recorre esas listas: un cosmético nuevo que no salga hace fallar el test.
   Las formas de pixel art de partículas y efectos están en `public/js/pixshapes.js` (las mismas en combate y en los menús).

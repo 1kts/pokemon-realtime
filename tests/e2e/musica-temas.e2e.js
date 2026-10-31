@@ -46,15 +46,25 @@ module.exports = async ({ page, ok }) => {
     const heads = ['menu', 'battle', 'ranked', 'tower', 'wild', 'wildJohto', 'leader', 'leaderJohto', 'champion', ...Object.keys(m.GYM_THEMES).map(t => 'gym-' + t)];
     const synth = heads.every(n => { try { return m.compile(n).steps.length > 0; } catch { return false; } });
     const chained = Object.values(m.CHAIN).flat().every(n => m.FILES[n]);
-    return { out, synth, chained }; })`);
+    const ruta = (map, region) => m.trackForBattle({ mode: 'wild', map: 'r:x' }, { NODES: { x: { map, region } } });
+    const torre = new Set(Array.from({ length: 5 }, () => m.trackForBattle({ mode: 'tower' }, {}))).size;
+    const especial = m.trackForBattle({ mode: 'wild', map: 'r:x', you: 0, sides: [{}, { rare: true }] }, { NODES: { x: { map: 'cueva', region: 'kanto' } } });
+    const rutas = [ruta('cueva', 'kanto'), ruta('lago', 'johto'), ruta('bosque', 'kanto'), ruta('pradera', 'kanto')].join();
+    const hold = [m.passes('menu', 41), m.passes('menu', 119), m.passes('wild', 46)];
+    return { out, synth, chained, hold, rutas, torre, especial, castillo: m.FILES[especial] }; })`);
   for (const [name, f] of Object.entries(files.out)) ok(f.ok, `existe public/music/${f.file}.mp3 (tema «${name}»)`);
-  ok(Object.keys(files.out).length === 25, `hay 25 grabaciones (${Object.keys(files.out).length})`);
+  const grabaciones = new Set(Object.values(files.out).map(f => f.file)).size;   // (varios temas comparten grabación)
+  ok(grabaciones === 25, `hay 25 grabaciones (${grabaciones})`);
   ok(files.synth, 'cada tema que puede sonar solo tiene su versión sintetizada');
   ok(files.chained, 'cada tema enlazado tiene su grabación');
+  ok(files.castillo === 'castillo', `un salvaje especial suena con Demon King Castle, sea cual sea la ruta (${files.castillo})`);
+  ok(files.torre === 5, `cinco combates seguidos de la Torre empiezan con 5 temas distintos (${files.torre})`);
+  ok(files.rutas === 'route-cueva,route-lagoJohto,route-bosque,wild', `cada estilo de ruta pide su tema y la pradera, el de siempre (${files.rutas})`);
+  ok(files.hold.join() === '5,2,1', `en el menú cada tema dura al menos 3 minutos antes de pasar al siguiente, y en combate pasa al acabar (${files.hold})`);
 
   // Las cadenas nuevas: Torre (Battle Theme IV y The Evil One), salvajes y gimnasios de Johto (enlazan con los de Kanto)
   // y los gimnasios con tema propio enlazan con los de los líderes de su región
-  for (const [name, next, n] of [['tower', 'maligno', 2], ['wild', 'ruta', 2], ['wildJohto', 'viaje', 2], ['leaderJohto', 'lider', 2], ['gym-fuego', 'lider y desierto', 3], ['gym-dragon', 'gimnasio y lider', 3]]) {
+  for (const [name, next, n] of [['tower', 'maligno', 2], ['wild', 'ruta', 2], ['wildJohto', 'viaje', 2], ['route-cueva', 'caverna, mina y salvajes', 4], ['route-lagoJohto', 'isla y salvajes', 3], ['leaderJohto', 'lider', 2], ['gym-fuego', 'lider y desierto', 3], ['gym-dragon', 'gimnasio y lider', 3]]) {
     await page.eval(`window.__app.music.play('${name}'); true`);
     // atajo: la música no se ve (ver arriba). Hasta 60 s: al empezar se están descargando las demás grabaciones
     ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === '${name}' && window.__app.music.file.list.filter(Boolean).length === ${n}`, 60000).then(() => true, () => false), `el tema «${name}», al acabar, enlaza con ${next}`);

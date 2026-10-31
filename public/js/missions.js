@@ -26,7 +26,7 @@ const CHEST_SVG = `<svg class="chest-svg" viewBox="0 0 32 28" aria-hidden="true"
   <rect x="14" y="13" width="4" height="12" fill="#ffd23f"/><rect x="15" y="16" width="2" height="3" fill="#5a2e0e"/></svg>`;
 
 // Avatar de colección: medalla ('badge:<región>:<n>'), objeto ('item:<sprite>') o retrato ('pt:<dex>[:<emoción>]')
-export const EFFECT_NAME = { llamas: 'Llamas', burbujas: 'Burbujas', chispas: 'Chispas', hojas: 'Hojas', copos: 'Copos', sombras: 'Sombras', estrellas: 'Estrellas', destellos: 'Destellos', aurora: 'Aurora' };
+export const EFFECT_NAME = { llamas: 'Llamas', burbujas: 'Burbujas', chispas: 'Chispas', hojas: 'Hojas', copos: 'Copos', sombras: 'Sombras', estrellas: 'Estrellas', destellos: 'Destellos', aurora: 'Aurora', petalos: 'Pétalos', corazones: 'Corazones', notas: 'Notas', monedas: 'Monedas', fantasmas: 'Fantasmas', cometas: 'Cometas' };
 // Partes de un retrato: dex y emoción (la emoción va con mayúscula; ids antiguos con efecto se ignoran)
 const ptParts = id => { const [, d, ...rest] = String(id).split(':'); return { dex: +d, emo: rest.find(x => /^[A-Z]/.test(x)) }; };
 export function avatarArt(id, size) {
@@ -60,6 +60,12 @@ const FX_ART = {
   destellos: { n: 8, sz: 26, art: [['twinkle', ['#7a8aa8', '#c8d8f0', '#e8f0ff', '#ffffff']], ['spark', ['#a87a00', '#ffd23a', '#fff3a0', '#ffffff']]] },
   aurora: { n: 8, sz: 26, art: [['twinkle', ['#7a1a5a', '#ff5ad1', '#ffb0ea', '#ffffff']], ['twinkle', ['#7a5a00', '#ffcb05', '#ffe680', '#ffffff']],
     ['twinkle', ['#1a5a2a', '#4fd06a', '#a8f0b8', '#ffffff']], ['twinkle', ['#1a4a7a', '#46d0ff', '#b0ecff', '#ffffff']]] },
+  petalos: { n: 8, sz: 24, art: [['petal', ['#a83a78', '#ff8ac0', '#ffc2de', '#fff0f8']], ['petal', ['#b85a8a', '#ffb0d0', '#ffdcec', '#ffffff']]] },
+  corazones: { n: 6, sz: 28, art: [['heart', ['#8a1040', '#e8305e', '#ff7a9a', '#ffd0dc']]] },
+  monedas: { n: 7, sz: 26, art: [['coin', ['#8a5a00', '#ffb21a', '#ffe680', '#fffbe0']]] },
+  fantasmas: { n: 5, sz: 34, art: [['ghost', ['#3a2a78', '#a890ff', '#dcd4ff', '#ffffff']]] },
+  cometas: { n: 6, sz: 36, art: [['comet', ['#1a4a9a', '#46a0ff', '#b0e0ff', '#ffffff']]] },
+  notas: { n: 6, sz: 30, art: [['note', ['#2a2a7a', '#6a7aff', '#a8b8ff', '#e8ecff']], ['note', ['#1a6a5a', '#3ad8b0', '#a0f0dc', '#e8fff8']]] },
 };
 const fxImg = {};
 export function effectHtml(fx) {

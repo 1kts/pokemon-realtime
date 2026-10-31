@@ -21,6 +21,11 @@ Grabaciones en `public/music/` (cuál suena en cada sitio: `public/js/music.js`)
   («Magic Temple», psíquico), `volcan.mp3` («Volcanic Crater», fuego), `complot.mp3` («Malicious Scheme», tierra),
   `cielo.mp3` («Traveling the Sky», volador), `castillo.mp3` («Demon King Castle», fantasma), `mina.mp3`
   («Dwarven Mine», acero) y `santuario.mp3` («Holy Sanctuary», dragón). Convertidos a MP3 de 128 kbps sin más cambios.
+  Además, en las rutas según su estilo: `caverna.mp3` y `mina.mp3` en las cuevas, `isla.mp3` en los lagos y
+  `espiritus.mp3` en los bosques; `castillo.mp3` con los salvajes especiales; y en la Torre Batalla cada combate empieza
+  con uno distinto entre `torre.mp3`, `duelo.mp3`, `maligno.mp3`, `gimnasio.mp3` y `ruta.mp3`.
+
+El juego dice título y autor de cada tema mientras suena y nombra a los cuatro en la barra de abajo.
 
 ## Mapas de región
 

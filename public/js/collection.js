@@ -178,7 +178,7 @@ export const collectionViews = {
     for (const f of all) {
       const has = own.includes(f), sel = p.frame === f;
       const b = el('div', 'coll-item frame-item' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
-      b.append(this.avatar(70, false, f, null, null), el('small', '', frameName(f)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : SRC[f] || t('Liga {name}', { name: t(f[0].toUpperCase() + f.slice(1)) })));
+      b.append(this.avatar(70, false, f, null, null), el('small', '', frameName(f)), el('em', '', has ? (sel ? t('Equipado') : t('Lo tienes')) : SRC[f] || t('Liga {name}', { name: t(f[0].toUpperCase() + f.slice(1)) })));
       grid.append(b);
     }
     body.append(grid);
@@ -189,10 +189,11 @@ export const collectionViews = {
     const p = this.profile, own = (p.cosmetics && p.cosmetics.effects) || [];
     body.append(el('p', 'small coll-intro', t('Un efecto animado por encima de tu avatar, sea cual sea. Salen en Lucky Spin.')));
     const grid = el('div', 'coll-grid frames-grid');
-    for (const fx of Data.EFFECTS) {
+    // (los que aún no se pueden conseguir solo salen en el editor del avatar)
+    for (const fx of Data.EFFECTS.filter(x => !Data.EFFECTS_SOON.includes(x) || own.includes(x))) {
       const has = own.includes(fx), sel = p.effect === fx;
       const b = el('div', 'coll-item frame-item' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
-      b.append(this.avatar(70, false, null, null, fx), el('small', '', effectName(fx)), el('em', '', has ? (sel ? t('Puesto') : t('Lo tienes')) : t('En Lucky Spin')));
+      b.append(this.avatar(70, false, null, null, fx), el('small', '', effectName(fx)), el('em', '', has ? (sel ? t('Equipado') : t('Lo tienes')) : t('En Lucky Spin')));
       grid.append(b);
     }
     body.append(grid);
@@ -253,7 +254,7 @@ export const collectionViews = {
       const has = own.includes(aura), sel = p.aura === aura;
       const b = el('div', 'coll-item aura' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'));
       b.append(this.avatar(52, false, undefined, aura), el('small', '', auraName(aura, t)));
-      if (has) b.append(el('em', '', sel ? t('Puesto') : t('Lo tienes')));
+      if (has) b.append(el('em', '', sel ? t('Equipado') : t('Lo tienes')));
       else b.append(el('em', '', SRC[aura] || ''));
       grid.append(b);
     }
@@ -264,7 +265,8 @@ export const collectionViews = {
   coll_skin(body) {
     const p = this.profile;
     body.append(el('p', 'small coll-intro', t('Efectos sobre el sprite del Pokémon que se ven en los menús y en combate, también para tus rivales. Cada línea evolutiva consigue las suyas; se ponen en la ficha del Pokémon.')));
-    for (const id of SKINS) {
+    // (las que aún no se pueden conseguir solo salen en el Vestuario)
+    for (const id of SKINS.filter(s => s === 'elemental' || MASTERY_TIERS.some(x => x.skin === s))) {
       const need = winsFor(id);
       const sec = el('section', 'skin-sec');
       const lines = lineRoots(p).filter(r => Data.hasSkin(p, r, id));

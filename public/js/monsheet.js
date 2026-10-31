@@ -10,7 +10,7 @@ import { t } from './i18n.js';
 import { item as itemImg, typeIcon } from './pixicons.js';
 import { usable } from './bag.js';
 import { evoChips } from './evos.js';
-import { SKIN_LABEL, applySkin } from './frames.js';
+import { wearPanel } from './wardrobe.js';
 
 const { SPECIES, MOVES, SHOP, TYPE_COLOR, TYPE_LABEL } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -239,39 +239,11 @@ export const monSheetViews = {
     body.append(list);
   },
 
-  // Vestuario: cada skin y las partículas de su línea, vistas sobre el propio Pokémon; las que tienes se ponen
-  // al tocarlas, las que no salen apagadas con de dónde salen (debajo y al pasar el ratón). Salen todas las de
-  // Data.SKINS y de todos los tipos: una skin nueva sale aquí sola (si no dice de dónde sale, «Próximamente»)
+  // Vestuario: las skins y las partículas de su línea, vistas sobre el propio Pokémon (ver wardrobe.js)
   sheet_look(body, mon) {
-    const p = this.profile, line = Data.lineOf(mon.dex), shiny = Data.looksShiny(mon);
-    const skinNow = Data.skinOf(p, mon.dex), partsNow = !!Data.particlesOf(p, mon.dex), hasP = Data.hasParticles(p, mon.dex);
-    const card = (cls, sel, locked, label, sub, paint, onClick) => {
-      const b = el('button', 'ms-wear ' + cls + (sel ? ' sel' : '') + (locked ? ' locked' : ''));
-      b.append(paint(portrait(mon.dex, 84, { shiny })), el('b', '', label), el('small', '', sub));
-      if (locked) { b.disabled = true; b.title = `${label} · ${sub}`; } else b.onclick = onClick;
-      return b;
-    };
-    const SRC = { oro: t('500 victorias con su línea'), holo: t('25 victorias online con su línea'), galaxia: t('Racha de 50 en la Torre con su línea'), elemental: t('En Lucky Spin') };
-    const src = id => SRC[id] || t('Próximamente');
-    body.append(el('h4', '', t('Skin de la línea de {m}', { m: SPECIES[line].name })));
-    const skins = el('div', 'ms-wardrobe');
-    skins.append(card('skin', !skinNow, false, t('Sin skin'), skinNow ? t('Quitársela') : t('Puesta'), n => n, () => this.net.send({ t: 'look', skin: { dex: line, skin: null } })));
-    for (const id of Data.SKINS) {
-      const has = Data.hasSkin(p, mon.dex, id), on = skinNow === id;
-      skins.append(card('skin', on, !has, t(SKIN_LABEL[id]), on ? t('Puesta') : has ? t('Ponérsela') : src(id), n => applySkin(n, id, line), () => this.net.send({ t: 'look', skin: { dex: line, skin: id } })));
-    }
-    body.append(skins);
-    // Partículas de la línea: aparte de la skin, se encienden o se apagan
-    body.append(el('h4', '', t('Partículas')));
-    const parts = el('div', 'ms-wardrobe');
-    parts.append(card('parts', !partsNow, false, t('Sin partículas'), !partsNow ? t('Puesto') : t('Quitarlas'), n => n, () => this.net.send({ t: 'look', particles: { dex: line, on: false } })));
-    const own = SPECIES[line].types[0];
-    parts.append(card('parts', partsNow, !hasP, t('Partículas de {type}', { type: Data.TYPE_LABEL[own] }), partsNow ? t('Puestas') : hasP ? t('Ponérselas') : t('En Lucky Spin'), n => applySkin(n, null, line, true), () => this.net.send({ t: 'look', particles: { dex: line, on: true } })));
-    // Las de los demás tipos, sobre el propio Pokémon pero bloqueadas: aún no se pueden conseguir
-    for (const type of Data.TYPE_NAMES) if (type !== own) {
-      parts.append(card('parts', false, true, t('Partículas de {type}', { type: Data.TYPE_LABEL[type] }), t('Próximamente'), n => applySkin(n, null, line, type)));
-    }
-    body.append(parts);
+    const line = Data.lineOf(mon.dex);
+    wearPanel(body, this, [{ kind: 'skin', title: t('Skin de la línea de {m}', { m: SPECIES[line].name }) }, { kind: 'parts', title: t('Partículas') }],
+      () => { body.replaceChildren(); this.sheet_look(body, mon); }, mon);
     body.append(el('p', 'small', t('La skin y las partículas se ponen a toda la línea evolutiva y se ven en los menús y en combate.')));
   },
 

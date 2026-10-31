@@ -939,6 +939,10 @@ body.in-battle .ui-confirm { cursor: auto; }
 .ae-who b { font: 800 20px var(--display); }
 .ae-who small { color: #9fb0cc; }
 .ae-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+/* El interruptor «Solo los míos / Todos» (wardrobe.js), igual en el editor del avatar y en el Vestuario */
+.own-filter { display: inline-flex; gap: 2px; margin-bottom: 8px; padding: 3px; border-radius: 99px; background: rgba(0,0,0,.28); }
+.own-filter button { padding: 5px 13px; border: 0; border-radius: 99px; background: transparent; font-size: 12px; font-weight: 800; color: #d2ddf5; box-shadow: none; }
+.own-filter button.sel { background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; }
 .ae-tabs button { padding: 6px 14px; border-radius: 99px; font-weight: 800; }
 .ae-tabs button.sel { background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; border-color: transparent; }
 .ae-body { min-height: 180px; max-height: 46vh; overflow: auto; padding-right: 4px; }
@@ -1674,6 +1678,8 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .story-path { --gw: 140px; --gh: 160px; --nw: 176px; --nh: 200px; --rw: 128px; --rh: 96px; --road: 22px; --nm: 34px; --goh: 40px; --stopm: 14px;
   --below: calc(var(--road) / 2 + var(--nm) + var(--goh) + 10px);
   flex: 1; display: flex; overflow-x: auto; overflow-y: hidden; padding: 64px 28px 10px; scroll-behavior: smooth; }
+.story-path { cursor: grab; }
+.story-path.dragging { cursor: grabbing; scroll-behavior: auto; user-select: none; }
 .sp-track { position: relative; display: flex; align-items: flex-end; margin-top: auto; }   /* (todo apoyado en el camino) */
 /* El camino: una franja de tierra a la misma altura en todos los tramos; lo que falta, baldosas apagadas */
 .sp-start, .sp-ch, .sp-end { position: relative; flex: none; display: flex; align-items: flex-end; }

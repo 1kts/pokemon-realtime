@@ -18,12 +18,42 @@ const BALL = () => itemImg('pokeball', 14, 'sp-ball');
 const pic = key => { const i = el('img', 'sp-pic'); i.src = `img/arenas/${key}.webp`; i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; i.draggable = false; i.onerror = () => i.remove(); return i; };
 
 export const storyPathViews = {
+  // Con el ratón, el Camino se arrastra de lado, como con el dedo; al soltar tras arrastrar, el clic no elige la tarjeta
+  dragToScroll(wrap) {
+    wrap.ondragstart = e => e.preventDefault();
+    wrap.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0 || e.clientY > wrap.getBoundingClientRect().top + wrap.clientHeight) return;   // (la barra de abajo va a su aire)
+      const x0 = e.clientX, left0 = wrap.scrollLeft;
+      let moved = false;
+      const move = ev => {
+        if (!moved && Math.abs(ev.clientX - x0) < 6) return;
+        moved = true;
+        wrap.classList.add('dragging');
+        wrap.scrollLeft = left0 - (ev.clientX - x0);
+      };
+      const up = () => {
+        removeEventListener('pointermove', move);
+        removeEventListener('pointerup', up);
+        removeEventListener('pointercancel', up);
+        wrap.classList.remove('dragging');
+        if (!moved) return;
+        const eat = ev => { ev.preventDefault(); ev.stopPropagation(); };
+        addEventListener('click', eat, { capture: true, once: true });
+        setTimeout(() => removeEventListener('click', eat, { capture: true }));   // (si soltó fuera no hay clic que comerse)
+      };
+      addEventListener('pointermove', move);
+      addEventListener('pointerup', up);
+      addEventListener('pointercancel', up);
+    });
+  },
+
   storyPath(region, nodes, prog, nextLeader, info) {
     const p = this.profile, caught = new Set(p.caught);
     const leaders = nodes.filter(n => n.kind !== 'route');
     const cleared = prog >= leaders.length;
     const run = p.leagueRun && p.leagueRun.region === region ? p.leagueRun.step : 0;
     const wrap = el('div', 'story-path scroll');
+    this.dragToScroll(wrap);
     const track = el('div', 'sp-track');
     wrap.append(track);
     // La leyenda, con lo que es cada cosa en pequeño: un gimnasio es para combatir y una ruta, para capturar

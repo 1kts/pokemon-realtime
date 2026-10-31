@@ -1403,7 +1403,7 @@
   const tierGoal = x => x.goal || x.wins;
   const MASTERY = MASTERY_TIERS.filter(x => !x.stat).map(x => x.wins);   // victorias de cada estrella
   const MASTERY_ART = MASTERY_TIERS.find(x => x.kind === 'art').wins;
-  const SKINS = ['oro', 'holo', 'galaxia', 'elemental'];
+  const SKINS = ['oro', 'holo', 'galaxia', 'elemental', 'cristal', 'neon', 'sombra', 'retro', 'tinta', 'caramelo'];
   const masteryWins = (p, dex) => ((p.mastery || {})[lineOf(dex)] || 0);
   // Contador de un reto de línea: victorias, victorias online o mejor racha de la Torre con la línea
   const lineStat = (p, dex, stat = 'wins') => stat === 'wins' ? masteryWins(p, dex) : (((p.lineStats || {})[stat] || {})[lineOf(dex)] || 0);
@@ -1456,7 +1456,13 @@
   // Efectos del avatar: algo animado por encima de la imagen (cualquier retrato, medalla o Pokémon). Son
   // aparte de los retratos (la cara), los marcos (el contorno) y los glows (la luz de fuera): se consiguen
   // y se ponen por separado
-  const EFFECTS = ['llamas', 'burbujas', 'chispas', 'hojas', 'copos', 'sombras', 'estrellas', 'destellos', 'aurora'];
+  const EFFECTS_SOON = ['petalos', 'corazones', 'notas', 'monedas', 'fantasmas', 'cometas'];
+  const EFFECTS = ['llamas', 'burbujas', 'chispas', 'hojas', 'copos', 'sombras', 'estrellas', 'destellos', 'aurora', ...EFFECTS_SOON];
+  // Todo lo que se puede llevar (lo enseña wardrobe.js). Los _SOON aún no tienen fuente: salen apagados, «Próximamente»
+  const FRAMES_SOON = ['eclipse', 'engranaje', 'vidriera'];
+  const AURAS_SOON = ['fenix', 'marea', 'vacio'];
+  const frameCatalog = (own = []) => [...new Set(['bronce', 'plata', 'oro', 'platino', 'diamante', 'maestro', ...ACHIEVEMENTS.map(a => a.reward && a.reward.frame).filter(Boolean), ...TYPE_NAMES.map(ty => 'tipo-' + ty), ...FRAMES_SOON, ...own])];
+  const auraCatalog = (own = []) => [...new Set([...AURAS, ...AURAS_SOON, ...own])];
   // Retratos con emoción (public/portraits/emo, índice en portraits/emo.js, tools/import-collab.js): de momento
   // la Gen 1 y 2. En Tesoros, cada cara sale con una emoción según su rareza (si esa especie la tiene), como
   // variante distinta de la normal
@@ -1516,7 +1522,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

@@ -399,6 +399,14 @@ async function setup(name, extraEnv = {}) {
     },
     // El ratón de verdad en un punto de la pantalla (p. ej. apuntar en la arena 3D, que no tiene elementos):
     // mouseAt(x, y) lo mueve; con { click: true } además pulsa (botón izquierdo, o 'right')
+    // Arrastrar con el ratón, por pasos, como una mano
+    async mouseDrag(x0, y0, x1, y1) {
+      await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0, y: y0 });
+      await call('Input.dispatchMouseEvent', { type: 'mousePressed', x: x0, y: y0, button: 'left', clickCount: 1 });
+      for (let i = 1; i <= 8; i++) await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x0 + (x1 - x0) * i / 8, y: y0 + (y1 - y0) * i / 8 });
+      await call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 });
+      await sleep(150);
+    },
     async mouseAt(x, y, { click = false, button = 'left' } = {}) {
       await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       if (click) for (const type of ['mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x, y, button, clickCount: 1 });
