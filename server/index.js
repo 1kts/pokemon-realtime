@@ -450,7 +450,7 @@ function handle(c, msg) {
     if (Number.isFinite(msg.elo)) { rewards.migrate(p); p.elo = msg.elo; p.peakElo = Math.max(p.peakElo, p.elo); p.season.peak = Math.max(p.season.peak, p.elo); }
     if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
-    if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
+    if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region, msg.xp);   // (xp: la que ya lleva hacia el siguiente nivel)
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
     if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
     if (msg.tutorial === false) delete p.tutorial;

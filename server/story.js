@@ -333,4 +333,4 @@ function applyResult(p, setup, result, battle) {
   return reward;
 }
 
-module.exports = { action, battleSetup, applyResult, teamMons, migrate, learnable, devAddMon: (p, dex, level, shiny, region) => addMon(p, dex, level, { shiny, region }) };
+module.exports = { action, battleSetup, applyResult, teamMons, migrate, learnable, devAddMon: (p, dex, level, shiny, region, xp) => { const m = addMon(p, dex, level, { shiny, region }); m.xp = Math.max(0, Math.min(D.xpToNext(level) - 1, xp | 0)); return m; } };

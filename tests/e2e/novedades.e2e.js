@@ -56,11 +56,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Mis Pokémon');
   await page.click(await page.within('Charmander', '.mon-card'));
   await page.tap(/^Retos/, { in: '.mon-sheet' });
-  for (let i = 0; i < 12 && !(await page.see('Usar este título', { in: '.loot-pop', ms: 300 })); i++) {
-    if (await page.see('¡Genial!', { in: '.loot-pop', ms: 0 })) await page.tap('¡Genial!');
-    await page.tap('¡Recoger!', { in: '.ms-retos', nth: 0 });
-    await page.waitFor(`document.querySelector('.loot-pop:not(.out)')`);
-  }
+  // (el del título, directamente: recoger antes los otros cuatro, uno a uno, pasaba de los 5 minutos en el CI)
+  await page.tap('¡Recoger!', { in: await page.within('Maestro de Charmander', '.ms-retos .lg-row') });
+  await page.waitSee('Usar este título', { in: '.loot-pop' });
   await page.tap('Usar este título');
   await page.waitSee('Maestro de Charmander', { in: '.ms-retos', scroll: true });
   const puesto = await page.eval(`window.__app.ui.profile.title`);   // atajo: el título solo se ve en otra pantalla
