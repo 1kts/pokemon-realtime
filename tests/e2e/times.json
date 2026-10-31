@@ -1,11 +1,12 @@
 {
   "_": "Cuánto tarda cada prueba e2e en el CI (segundos, con 2 a la vez en cada máquina). Sirve para repartirlas en trozos que acaben a la vez; las que falten cuentan 60 s. Se actualiza a mano con los tiempos que salen en el CI (E2E_TIMES).",
   "admin": 9, "caras": 33, "bugs": 62, "diario": 98, "legal": 34, "entrenadores-ia": 117, "mis-pokemon": 51, "movil-balls": 53,
-  "maestria": 128, "proyectiles": 45, "rutas": 61, "musica": 110, "musica-temas": 100, "tesoros": 111, "camara": 73, "amigos": 97,
+  "maestria": 80, "proyectiles": 45, "rutas": 61, "musica": 60, "musica-temas": 100, "tesoros": 111, "camara": 73, "amigos": 97,
   "clasificatoria": 99, "efectos": 88, "ficha": 74, "lideres": 62, "misiones": 56, "mapa-equipo": 69, "pokedex": 45, "recoger-todo": 50,
-  "movil-menus": 110, "movil-menus-vertical": 95, "sonido": 129, "torre": 70, "barra-legal": 120, "capturas": 155, "en-linea": 57,
-  "derrota": 96, "fondo-menu": 41, "liga": 67, "mapa": 60, "movil": 104, "motes": 146, "portada": 37, "rendirse": 82, "tarjetas": 72,
-  "tutorial": 94, "mecanicas": 90, "practica-arena": 70, "cola": 75, "login-email": 100, "tienda-historia": 50, "clasificatoria-movimientos": 50,
+  "movil-menus": 110, "movil-menus-vertical": 95, "sonido": 129, "torre": 70, "barra-legal": 120, "capturas": 70, "en-linea": 57,
+  "derrota": 96, "fondo-menu": 41, "liga": 67, "mapa": 60, "movil": 104, "motes": 80, "portada": 37, "rendirse": 82, "tarjetas": 72,
+  "tutorial": 94, "mecanicas": 90, "practica-arena": 70, "cola": 75, "login-email": 60, "tienda-historia": 50, "clasificatoria-movimientos": 50,
   "login-enlace": 117, "pantallas-movil": 100, "pantallas-movil-pequeno": 100, "pantallas-ventana": 140, "pantallas-escritorio": 130, "pantallas-escritorio-2": 130, "pantallas-escritorio-ventanas": 120,
-  "camino": 120, "camino-movil": 200, "temas": 100, "tema-d": 180
+  "camino": 120, "camino-movil": 200, "temas": 100, "tema-d": 180,
+  "motes-combate": 80, "maestria-vestuario": 80, "capturas-reto": 100, "musica-combate": 90, "login-google": 60
 }

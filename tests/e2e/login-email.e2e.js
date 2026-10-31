@@ -1,9 +1,9 @@
-// Entrar sin contraseña: con un código por correo (en las pruebas los correos se quedan en el servidor y se
-// leen con 'devmail') y con Google (un token firmado con una clave de prueba que el servidor acepta en lugar
-// de las de Google; en las pruebas no se carga nada de Google). Desde la portada crea la cuenta pidiendo el
-// nombre de entrenador; desde el perfil de un invitado, la cuenta se queda con su partida.
+// Entrar sin contraseña con un código por correo (en las pruebas los correos se quedan en el servidor y se leen
+// con 'devmail'). Desde la portada crea la cuenta pidiendo el nombre de entrenador; desde el perfil de un invitado,
+// la cuenta se queda con su partida. Con Google, en login-google.e2e.js (juntas pasaban de los 5 minutos del CI)
 const crypto = require('crypto');
 
+// (la portada enseña «Continuar con Google» solo si el servidor tiene Google: el de las pruebas, con una clave de prueba)
 const key = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
 const CLIENT = 'e2e.apps.googleusercontent.com';
 module.exports = async ({ page, client, player, ok }) => {
@@ -15,11 +15,6 @@ module.exports = async ({ page, client, player, ok }) => {
       await new Promise(x => setTimeout(x, 100));
     }
     throw new Error('no llega el correo a ' + to);
-  };
-  const googleToken = (sub, email) => {
-    const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url'), now = Math.floor(Date.now() / 1000);
-    const data = b64({ alg: 'RS256', kid: 'e2e', typ: 'JWT' }) + '.' + b64({ iss: 'https://accounts.google.com', aud: CLIENT, sub, email, email_verified: true, iat: now, exp: now + 600 });
-    return data + '.' + crypto.sign('RSA-SHA256', Buffer.from(data), key.privateKey).toString('base64url');
   };
   const title = async () => {
     await page.eval(`localStorage.clear(); localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
@@ -73,31 +68,9 @@ module.exports = async ({ page, client, player, ok }) => {
   await page.tap('Mis Pokémon');
   ok(await page.see('Squirtle') && await page.eval(`document.querySelectorAll('.mon-card').length`) === 1, 'el invitado se lleva su partida (y su Squirtle) a la cuenta del correo');
 
-  // ---------- Google desde la portada ----------
-  await title();
-  await page.click('.title-panel .alt-btn.google');
-  await page.waitFor(`document.querySelector('.login-modal .gsi-slot')`);
-  // atajo: el botón de Google es de Google (en las pruebas no se carga): se le pasa al juego lo que devolvería
-  await page.eval(`window.__app.ui.googleCredential(${JSON.stringify(googleToken('g-1', 'misty@example.com'))}); true`);
-  await page.waitFor(`document.querySelector('.login-modal input[autocomplete=nickname]')`);
-  await page.type('.login-modal input[autocomplete=nickname]', 'Misty');
-  await page.click('Crear cuenta y jugar');
-  await page.waitSee('Aventura');
-  await page.tap('Perfil');
-  ok(await page.see('Misty', { in: '.trainer-card' }) && await page.see('misty@example.com', { in: '.trainer-card' }), 'con Google crea la cuenta (Misty, con su correo) y entra');
-  // Google con el correo de una cuenta que ya existe: entra en ella (sin pedir nombre)
-  await title();
-  await page.click('.title-panel .alt-btn.google');
-  await page.waitFor(`document.querySelector('.login-modal .gsi-slot')`);
-  // atajo: lo que devolvería el botón de Google (ver arriba)
-  await page.eval(`window.__app.ui.googleCredential(${JSON.stringify(googleToken('g-2', 'ash@example.com'))}); true`);
-  await page.waitSee('Aventura');
-  ok(await page.see('Ash', { in: '.hub-me' }), 'con Google y el correo de una cuenta que ya existe, entra en ella (sin pedir nombre)');
-
   api.close();
 };
 
-// Su servidor acepta como «Google» la clave de prueba de arriba
 module.exports.env = {
   MAIL_GAP_MS: '0',   // (aquí se piden códigos seguidos al mismo correo)
   GOOGLE_CLIENT_ID: CLIENT,
