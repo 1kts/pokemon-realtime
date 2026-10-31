@@ -15,11 +15,14 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitSee('Todo recogido', { in: '.loot-pop' });
   ok(await page.eval(`document.querySelectorAll('.loot-pop').length`) === 1, 'sale un solo premio: «¡Todo recogido!»');
   await page.waitFor(`window.__app.ui.profile.missions.daily.every(m => m.claimed) && window.__app.ui.profile.missions.chest.daily`);
-  // (se cierra con «¡Genial!»; si saliera otro premio detrás, también: se cuentan)
+  // (se cierra con «¡Genial!»; si saliera otro premio detrás, también: se cuentan. Cada uno se marca al contarlo, y
+  // se espera a que se cierre: con el CI lento, en 3 s el clic a veces no había llegado y el mismo contaba dos veces)
   let pops = 0;
-  for (let i = 0; i < 5 && await page.eval(`!!document.querySelector('.loot-pop:not(.out)')`); i++) {
+  for (let i = 0; i < 5 && await page.eval(`!!document.querySelector('.loot-pop:not(.out):not([data-e2e-visto])')`); i++) {
+    await page.eval(`document.querySelector('.loot-pop:not(.out)').dataset.e2eVisto = '1'; true`);
     await page.click('.loot-pop:not(.out) .acts .primary'); pops++;
-    await page.waitFor(`!document.querySelector('.loot-pop:not(.out)')`, 3000).catch(() => {});
+    await page.waitFor(`!document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')`);
+    await page.waitFor(`document.querySelector('.loot-pop:not(.out):not([data-e2e-visto])')`, 1500).catch(() => {});   // (por si sale otro detrás)
   }
   ok(pops === 1, `y es uno solo: al cerrarlo no sale otro detrás (${pops})`);
   ok(!(await page.see('Recoger todo', { ms: 0 })) && await money() > coins0, `y no queda nada por recoger en el menú, con el dinero sumado (${coins0} → ${await money()})`);

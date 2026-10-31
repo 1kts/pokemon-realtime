@@ -2,7 +2,8 @@
 // que le has vencido y que su medalla es tuya, y el dinero que enseñan es el que se suma de verdad arriba
 module.exports = async ({ page, player, ok, log }) => {
   const me = await player({ user: 'ganadora' });
-  me.client.send({ t: 'dev', dex: 7, level: 13, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
+  // (Nv.30: con el CI a pocos fotogramas los clics fallan más y a Nv.13 Brock llegaba a ganar aun con su equipo al 2 %)
+  me.client.send({ t: 'dev', dex: 7, level: 30, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
   const money = async () => +(await page.read('.hub-me .pill.coins')).replace(/\D/g, '');
