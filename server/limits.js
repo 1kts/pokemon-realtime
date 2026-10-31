@@ -30,20 +30,24 @@ function clientIp(req) {
   return fwd || direct;
 }
 
+// Reloj monotónico (ms): si el de pared retrocede (un ajuste de NTP, el equipo que vuelve de suspensión), con
+// Date.now() los cubos perdían fichas y se descartaban en silencio los mensajes de todos los conectados
+const clock = () => performance.now();
+
 // ---------- Ventanas de tiempo ----------
 const windows = new Map();   // clave -> instantes de cada intento
 const recent = (key, ms, now) => (windows.get(key) || []).filter(t => now - t < ms);
 // Cuenta un intento más; true si con él se pasa del tope
 function hit(key, max, ms) {
-  const now = Date.now(), list = recent(key, ms, now);
+  const now = clock(), list = recent(key, ms, now);
   list.push(now);
   windows.set(key, list);
   return list.length > max;
 }
 // ¿Ya está en el tope? (sin contar uno más)
-const full = (key, max, ms) => recent(key, ms, Date.now()).length >= max;
+const full = (key, max, ms) => recent(key, ms, clock()).length >= max;
 setInterval(() => {
-  const now = Date.now();
+  const now = clock();
   for (const [k, list] of windows) {
     const keep = list.filter(t => now - t < 3600e3);
     if (keep.length) windows.set(k, keep); else windows.delete(k);
@@ -53,9 +57,9 @@ setInterval(() => {
 // ---------- Cubos de mensajes ----------
 // rate por segundo, burst de golpe. take() gasta uno si queda.
 class Bucket {
-  constructor(rate, burst) { this.rate = rate; this.burst = burst; this.tokens = burst; this.t = Date.now(); }
+  constructor(rate, burst) { this.rate = rate; this.burst = burst; this.tokens = burst; this.t = clock(); }
   take() {
-    const now = Date.now();
+    const now = clock();
     this.tokens = Math.min(this.burst, this.tokens + (now - this.t) / 1000 * this.rate);
     this.t = now;
     if (this.tokens < 1) return false;

@@ -1,7 +1,7 @@
 {
- "fecha": "2026-10-30",
- "cazadas": 41,
- "total": 41,
+ "fecha": "2026-10-31",
+ "cazadas": 42,
+ "total": 42,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -294,6 +294,13 @@
     "tests/e2e/tesoros.e2e.js"
    ],
    "motivo": "tesoros.e2e.js: ✗ arriba salen tus gemas (0) y la tirada dice lo que cuesta (10) | ✗ la tirada 1 cuesta lo que decía: 0 − 10 = 0 | ✗ la tirada 2 cuesta lo que decía: 0 − 14 = 0"
+  },
+  "antispam-reloj-pared": {
+   "resultado": "cazada",
+   "por": [
+    "tools/security-test.js"
+   ],
+   "motivo": "security-test.js: ✗ con el reloj una hora atrás, los mensajes de un jugador normal se atienden (perdidos: 5 de 5)"
   }
  }
 }

@@ -89,6 +89,15 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
   for (let s = 0; s < 60; s++) { if (!limits.allow(l, 'in').ok) dropped++; await sleep(33); }
   ok(dropped === 0, 'un jugador normal (30 entradas/s y ráfagas) no pierde ninguna');
 
+  // El reloj del servidor retrocede (ajuste de NTP, vuelta de suspensión): nadie pierde mensajes por eso
+  const lc = limits.forConn('10.0.0.5');
+  limits.allow(lc, 'other');
+  const realNow = Date.now;
+  Date.now = () => realNow() - 3600e3;
+  let lost = 0;
+  try { for (let i = 0; i < 5; i++) if (!limits.allow(lc, 'other').ok) lost++; } finally { Date.now = realNow; }
+  ok(lost === 0, `con el reloj una hora atrás, los mensajes de un jugador normal se atienden (perdidos: ${lost} de 5)`);
+
   // Consultas caras (ladder): tope por IP aunque se repartan en varias conexiones
   const lad = [connect('10.0.0.3'), connect('10.0.0.3'), connect('10.0.0.3')];
   await Promise.all(lad.map(c => c.open));

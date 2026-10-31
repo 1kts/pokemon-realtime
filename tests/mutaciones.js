@@ -144,4 +144,7 @@ module.exports = [
   { id: 'web-sin-csp', que: 'La web sale sin su política de seguridad (CSP)',
     archivo: 'server/index.js', buscar: "if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));", poner: '',
     tests: ['tools/security-test.js'] },
+  { id: 'antispam-reloj-pared', que: 'Si el reloj del servidor retrocede, se pierden en silencio los mensajes de los jugadores',
+    archivo: 'server/limits.js', buscar: 'const clock = () => performance.now();', poner: 'const clock = () => Date.now();',
+    tests: ['tools/security-test.js'] },
 ];
