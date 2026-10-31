@@ -907,6 +907,9 @@ class Client {
     seasonMod.migrate(oldG);
     ok(oldG.cosmetics.auras.join() === 'estelar,tipo-agua' && !oldG.cosmetics.glows && !oldG.glows, 'los glows del sprite que tenías pasan a glows del avatar');
     ok(!D.ACHIEVEMENTS.find(a => a.id === 'shiny1').reward.aura && D.ACHIEVEMENTS.find(a => a.id === 'shiny5').reward.aura === 'estelar', 'Cazador de shinies con el primero; el glow Estelar, con 5 shinies');
+    // Esta conexión lleva ~25 mensajes seguidos y el anti-spam deja 40 de golpe (y 10 más por segundo): un respiro
+    // aquí y otro antes de las medallas, para no quedarse a un mensaje del tope (se descartaría en silencio)
+    await new Promise(r => setTimeout(r, 1500));
     // ---------- Tesoros ----------
     const treasure = require('../server/treasure.js');
     const rid = D.treasures()[0].id;
@@ -970,7 +973,7 @@ class Client {
     loot = mc.wait('loot'); mc.send({ t: 'achclaim', id: 'captura1' });
     l = await loot;
     ok(l.r.coins === 300 && prof.coins === c1 + 300 && l.r.avatar === 'item:poke-ball' && !prof.achClaim.includes('captura1'), 'recoger el logro: dinero y su avatar');
-    // Esta conexión ya ha mandado muchos mensajes seguidos: un respiro para no chocar con el límite anti-spam
+    // Otro respiro antes de las medallas, por lo mismo
     await new Promise(r => setTimeout(r, 1000));
     // Medallas: cada una da su avatar
     prof.prog.kanto = 1;
