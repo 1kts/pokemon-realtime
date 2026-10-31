@@ -58,9 +58,7 @@ export const towerViews = {
   towerPicker() {
     const p = this.profile;
     const box = el('div', 'panel tower-main');
-    // La explicación, en el móvil, en una línea que se despliega al tocarla
     const intro = el('p', 'small tower-intro', t('3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.', { n: LEVEL }));
-    intro.onclick = () => intro.classList.toggle('open');
     box.append(el('h3', '', t('Elige tu equipo')), intro);
     const chosen = (this.towerPick || []).filter(e => e.uid ? p.mons.some(m => m.uid === e.uid) : RANKED_POOL.includes(e.dex));
     this.towerPick = chosen;

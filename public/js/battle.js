@@ -569,7 +569,7 @@ export class BattleClient {
     this.floatEl = el('div', 'floats');
     this.plates = [0, 1].map(i => el('div', 'plate ' + (i === this.you ? 'mine' : 'foe')));
     const bottom = el('div', 'bottom');
-    bottom.append(this.energyEl, this.movesEl);
+    bottom.append(this.movesEl, this.energyEl);
     root.append(this.floatEl, ...this.plates, this.timerEl, this.teamsEl[1], this.teamsEl[0], bottom, this.bannerEl);
     if (this.ballEl) root.append(this.ballEl);
     const help = el('div', 'help-hint', touchMode() ? t('Joystick para moverte · toca un movimiento para lanzarlo al rival o arrástralo para apuntar · toca tu equipo para cambiar') : t('WASD mover · Ratón apuntar · Espacio Protección · 1-3 cambiar') + (this.balls ? ' · ' + t('F lanzar Ball · R cambiar Ball') : '') + ' · ' + t('Esc rendirse'));
@@ -677,7 +677,6 @@ export class BattleClient {
       pe.classList.toggle('on', !!(me.f & F.PROTECT));
     }
     this.energyEl.firstChild.style.width = (me.e / ENERGY.max * 100) + '%';
-    this.energyEl.style.setProperty('--en', (me.e / ENERGY.max * 100) + '%');   // (barra vertical en el móvil)
     // Probabilidad de captura de cada Ball con la vida y el estado actuales del salvaje
     if (this.ballEl) {
       const fs = ps[this.foeIdx], fm = this.sides[this.foeIdx].team[fs.act];

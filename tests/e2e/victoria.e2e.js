@@ -26,7 +26,7 @@ module.exports = async ({ page, player, ok, log }) => {
   }
   log(`(${await page.title({ ms: 0 }) || 'sin acabar'} en ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   ok(await page.see('¡Victoria!'), 'al vencer a Brock salen los resultados con «¡Victoria!»');
-  ok(await page.see('¡Has vencido a Brock!') && await page.see('Medalla Roca conseguida'), 'dicen que has vencido a Brock y que la Medalla Roca es tuya');
+  ok(await page.see('Has vencido a Brock') && await page.see('Medalla Roca conseguida'), 'dicen que has vencido a Brock y que la Medalla Roca es tuya');
   const won = +(await page.read('.results .reward')).replace(/\D/g, '');
   ok(won > 0, `y cuánto dinero has ganado (+${won})`);
 

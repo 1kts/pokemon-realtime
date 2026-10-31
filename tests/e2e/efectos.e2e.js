@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Perfil');
   await page.waitFor(`document.querySelector('.trainer-card .tc-ava .ava.editable')`);
   ok(await page.eval(`!document.querySelector('.panel.look')`), 'el Perfil ya no tiene el panel de personalizar: se edita desde la foto');
-  ok(await page.eval(`(() => { const k = [...document.querySelector('.pv-flow').children].map(x => x.classList.contains('trainer-card') ? 'card' : x.classList.contains('pv-stats') ? 'stats' : x.classList.contains('pv-cols') ? 'cols' : x.classList.contains('account') ? 'account' : '?'); return k.join() === 'card,stats,cols,account' && !!document.querySelector('.pv-cols .badge-case') && !!document.querySelector('.pv-cols .history'); })()`), 'el Perfil va en orden: tarjeta, estadísticas, medallas y partidas junto a los logros, y la cuenta al final');
+  ok(await page.eval(`(() => { const k = [...document.querySelector('.pv-flow').children].map(x => x.classList.contains('trainer-card') ? 'card' : x.classList.contains('pv-stats') ? 'stats' : x.classList.contains('pv-cols') ? 'cols' : '?'); return k.join() === 'card,stats,cols' && !!document.querySelector('.pv-cols .badge-case') && !!document.querySelector('.pv-cols .history'); })()`), 'el Perfil va en orden: tarjeta, estadísticas, medallas y partidas junto a los logros');
   await page.click('.trainer-card .tc-ava .ava.editable');
   await page.waitFor(`document.querySelector('.ava-edit .ae-tabs')`);
   await page.tap('Efecto', { in: '.ava-edit .ae-tabs' });

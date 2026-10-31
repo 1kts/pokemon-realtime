@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.2 ----------
+    'Pantallas más claras': '界面更清晰',
+    'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': '剧情更简洁:地区和徽章移到标题旁,旅途卡片更清爽,“玩法说明”和倒计时位于旅途上方。',
+    'Torre Batalla y Práctica van en dos columnas, y en Partida rápida y Práctica el botón de jugar está arriba, en la cabecera.': '对战塔和练习改为两栏布局,快速对战和练习的开始按钮移到顶部标题栏。',
+    'Tu foto de perfil se elige en una sola lista con buscador, y crear cuenta o iniciar y cerrar sesión están en tu tarjeta del Perfil.': '头像现在在同一个带搜索框的列表中选择,创建账号、登录和退出都在个人资料卡片上。',
+    'Lucky Spin cuesta un 10 % menos: la ruleta entera pasa de 300 a 270 gemas, y en el móvil se entiende mejor qué puedes ganar.': '幸运转盘便宜了 10%:整个转盘从 300 宝石降到 270 宝石,手机上也更容易看清能赢什么。',
+    'Las Poké Balls son más fáciles de acertar: tienen más margen y se curvan un poco hacia el Pokémon. En combate, la energía va en una línea bajo los ataques.': '精灵球更容易命中:判定范围更大,并会略微飞向宝可梦。战斗中,能量改为招式下方的一条细线。',
+    'La portada cabe entera en el móvil, la Mochila ya no mueve la ventana y los premios por recoger brillan con un halo dorado que se ve bien.': '标题画面在手机上可完整显示,背包不再滚动整个窗口,待领取的奖励会发出清晰的金色光芒。',
     // ---------- Novedades v0.34.1 ----------
     'Resultados y Lucky Spin más claros': '结果与 Lucky Spin 更清晰',
     'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': '战斗结束后,结果窗口总是从顶部打开,让你看到“胜利!”。',
@@ -1214,6 +1222,8 @@ export default {
     'Ya lo has comprado hoy: mañana habrá otros': '今天已经买过了：明天会有别的宝可梦',
     'capturados': '已捕捉',
     'Buscar por nombre o número': '按名字或编号搜索',
+    'Busca un Pokémon, una medalla o un objeto': '搜索宝可梦、徽章或道具',
+    'Nada coincide con tu búsqueda': '没有符合搜索的结果',
     'Gen {n}': '第{n}世代',
     'Todas': '全部',
     'Todos los tipos': '所有属性',
@@ -1955,6 +1965,7 @@ export default {
     'Lucky Spin': 'Lucky Spin',
     'Tienes todos sus premios.': '你已拥有全部奖品。',
     'Tirada {n} de {max}': '第{n}/{max}次',
+    'Cada tirada te da uno de estos premios, sin repetir.': '每次抽奖获得其中一项奖品，不会重复。',
     'Toca un premio para ver qué es.': '点击奖品查看详情。',
     'Un avatar con la cara del Pokémon de cerca y su efecto animado dentro de la burbuja.': '宝可梦脸部特写的头像,气泡内带动态特效。',
     'Un contorno de luz alrededor del sprite que se suma a cualquier skin. Se pone a la línea que quieras en Colección.': '可与任何皮肤叠加的光边。在收藏中用于任意进化链。',

@@ -79,6 +79,25 @@
   .feature-sign h2 { font-size: 18px; }
 }
 
+/* ========== Portada ========== */
+@media (max-height: 500px) {
+  /* En horizontal, a dos columnas para que quepa entera: a un lado el nombre del juego, al otro lo de entrar */
+  .title-panel { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; gap: 2px 16px; width: min(780px, 100%) !important; padding: 8px 14px !important; }
+  .title-panel .emblem { display: none; }
+  .title-panel .logo { grid-column: 1; margin: 22px 0 0; font-size: 30px; }
+  .title-panel .tag { grid-column: 1; margin: 0; font-size: 11px; }
+  .title-panel .title-mons { grid-column: 1; zoom: .5; margin: 0; padding: 4px 0; }
+  .title-panel .auth { grid-column: 2; grid-row: 1 / span 3; gap: 4px; }
+  .title-panel .lang-pick.corner { top: 6px; left: 8px; right: auto; }
+  .title-panel .auth-tabs button { padding: 5px 4px; font-size: 12px; }
+  .title-panel .field { gap: 1px; }
+  .title-panel .field span { font-size: 10px; }
+  .title-panel .field input { padding: 5px 10px; min-height: 34px; }
+  .title-panel .auth button.primary { margin-top: 2px; padding: 7px 24px; }
+  .title-panel .auth .small { margin: 0; font-size: 10px; line-height: 1.2; }
+  .title-panel .auth button.alt-btn:not(.go) { min-height: 34px; padding: 4px 8px; }
+}
+
 /* ========== Menú principal ========== */
 @media (max-height: 500px), (max-width: 560px) {
   /* Portada: sin logo ni nombre (el avatar ya dice quién eres), botones algo más pequeños */
@@ -100,7 +119,7 @@
   .hub-me { grid-column: 1 / -1; justify-self: stretch; justify-content: space-between; margin-left: 0; }
 }
 @media (max-height: 500px) {
-  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .bag-list, .bag-detail, .tower-pools, .ladder-table .scroll, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
+  .dex-grid, .team-sections, .shop-sections, .settings-body, .mv-body, .tower-pools, .ladder-table .scroll, .coll-body { overflow: visible; max-height: none; flex: none; min-height: auto; }
 }
 @media (max-width: 560px) {
   .hub-bar:not(.inner-bar) { flex-wrap: wrap; row-gap: 8px; }
@@ -170,18 +189,47 @@
 @media (max-height: 500px) {
   /* En pantallas bajas no caben cajas con scroll propio (se quedan en una rendija): las pantallas crecen con su
    contenido y se desplaza la página entera */
-  .story, .teamview, .shop, .draft, .profile-view, .dexview, .missions-view, .bagview, .collection, .settings-view, .league-view { height: auto; min-height: 100%; }
-  .story-body, .pv-body, .bag-body, .tz-body { flex: none; min-height: auto; }
+  .story, .teamview, .shop, .draft, .profile-view, .dexview, .missions-view, .collection, .settings-view, .league-view { height: auto; min-height: 100%; }
+  .story-body, .pv-body, .tz-body { flex: none; min-height: auto; }
+}
+/* ========== Mochila, Tienda y Logros ========== */
+/* Mochila: la pantalla no se desplaza, solo la lista y el detalle por dentro (flex: comparte #screen con la barra legal) */
+#screen > .bagview { flex: 1 1 0; height: auto; min-height: 0; }
+@media (max-height: 500px), (max-width: 860px) {
+  .bag-body { grid-template-columns: minmax(200px, 36%) minmax(0, 1fr); gap: 8px; }
+  .bag-list, .bag-detail { padding: 8px; }
+  .bag-item { grid-template-columns: 30px 1fr auto; gap: 6px; padding: 3px 8px 3px 3px; border-radius: 10px; }
+  .bag-item img { width: 28px; height: 28px; }
+  .bag-head { gap: 10px; padding-bottom: 8px; }
+  .bag-head img { width: 44px; height: 44px; padding: 3px; border-radius: 12px; }
+  .bag-head h3 { font-size: 18px; }
+  .bag-hint { margin-top: 8px; font-size: 13px; }
+  .bag-mons { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; }
+}
+@media (max-width: 560px) {
+  .bag-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 2fr) minmax(0, 3fr); }
+}
+@media (max-height: 500px) {
+  .shop-tabs { flex-wrap: nowrap; overflow-x: auto; gap: 6px; padding: 4px 6px; margin-bottom: 6px; scrollbar-width: none; }
+  .shop-tabs button { flex: none; padding: 5px 10px; font-size: 12px; }
+  .shop-tabs button small { display: none; }
+  .shop-sections .sec-title { margin: 6px 0 4px; font-size: 14px; }
+  .shop-grid { gap: 6px; }
+  .coll-tab { padding: 6px 11px; font-size: 12px; }
+  .coll-intro { display: none; }
+}
+@media (max-width: 560px) {
+  /* (en vertical no caben en la línea del título: fila propia, justo debajo) */
+  .inner-bar:has(> .coll-tabs) { grid-template-columns: auto auto minmax(0, 1fr); }
+  .coll-tabs { grid-column: 1 / -1; order: 5; }
 }
 @media (max-height: 500px), (max-width: 560px) {
   .subbar .region-tabs button { min-width: 96px; padding: 5px 10px; }
   .subbar .region-tabs button b { font-size: 14px; }
-  .story-head { margin-bottom: 10px; gap: 10px; }
   .story-head .map-goal { padding: 8px 12px; }
   .story-head .map-goal b { font-size: 16px; }
 }
 @media (max-width: 560px) {
-  .story-head { grid-template-columns: 1fr; }
   .story-head .map-goal.has-leader { padding-right: 110px; }
 }
 @media (max-height: 500px) {
@@ -201,7 +249,6 @@
   .story-side .node-info .mini { min-width: 52px; }
   .story-side .node-info .mini canvas, .story-side .node-info .mini img.portrait { width: 36px !important; height: 36px !important; }
   .story-side .node-info button.primary { position: sticky; bottom: -10px; z-index: 3; margin-top: 8px; padding: 8px 14px; box-shadow: 0 -8px 14px rgba(14,18,40,.9), 0 4px 0 #b97a00; }
-  .story > .subbar { display: none; }
   .panel.online-me > h3, .online-me > .league, .online-me > .big-elo, .online-me > p.small:first-of-type, .online-me:has(> .warn) > p.small { display: none; }
   /* Móvil en horizontal: elegir inicial (las regiones en la cabecera y los tres en fila) y la Liga (los cinco
    rivales en una fila, más bajos) */
@@ -224,17 +271,21 @@
 
 @media (max-height: 500px) {
   /* El camino de la Historia en el móvil en horizontal: entero de alto (se desplaza de lado), con las tarjetas más
-     pequeñas; las pestañas abajo, en la fila de la leyenda (arriba tapaban las primeras rutas), y la leyenda sin lo
-     que se explica solo */
+     pequeñas y sin la leyenda */
   .story-pathwrap { height: calc(100vh - 76px); height: calc(100dvh - 76px); min-height: 250px; }   /* (sin la barra del navegador) */
   .story-path { --gw: 110px; --gh: 136px; --nw: 140px; --nh: 168px; --rw: 106px; --rh: 84px; --road: 14px; --nm: 15px; --goh: 30px; --stopm: 8px; padding: 10px 14px 6px; }
-  .sp-legend { justify-content: flex-end; min-height: 36px; align-items: center; gap: 2px 12px; padding: 4px 8px 4px 158px; font-size: 9.5px; }
-  .sp-legend .sp-k-lock { display: none; }
-  .sp-k { width: 28px; height: 20px; }
-  .sp-k-face { width: 22px; height: 22px; }
+  .sp-legend { display: none; }
+  /* La ficha, en corto: qué es cada sitio lo dice la guía, y cada Pokémon, en dos líneas */
+  .story-side .ni-what { display: none; }
+  .story-side .route-list .mini small { font-size: 9.5px; white-space: nowrap; }
+  .story-head { grid-column: 1 / -1; grid-row: 2; }
+  .sp-bar { padding: 6px 8px 0; gap: 8px; }
+  .sp-bar .help { height: 28px; padding: 0 9px; font-size: 11.5px; }
+  .sp-bar .rotation { font-size: 10px; gap: 5px; }
+  .sp-bar .rotation b { font-size: 15px; }
   .sp-name { font-size: 10px; -webkit-line-clamp: 1; }
   .sp-name b { font-size: 11px; }
-  .sp-gym.now .sp-name small, .sp-league .sp-name small { display: none; }
+  .sp-league .sp-name small { display: none; }
   .sp-route .sp-name { font-size: 9.5px; }
   .sp-leg { gap: 8px; padding: 0 8px; }
   .sp-branch { padding-bottom: calc(var(--below) + var(--road) / 2 + 8px); }
@@ -242,17 +293,12 @@
   .sp-start { width: 84px; }
   .sp-sign { font-size: 10px; padding: 3px 7px; }
   .sp-card { border-radius: 10px; }
-  .sp-tag { font-size: 9px; padding: 2px 3px; gap: 3px; border-top-width: 2px; }
-  .sp-tag svg { width: 10px; height: 10px; }
-  .sp-tag .item-img { width: 11px; height: 11px; }
   .sp-ord { width: 19px; height: 19px; font-size: 10px; top: 4px; left: 4px; }
   .sp-badge { width: 24px; height: 24px; }
   .sp-medal { right: 5px; }
   .sp-medal::before { width: 10px; height: 9px; }
   .sp-leader { bottom: 14px; }
   .sp-stadium { bottom: 16px; }
-  .sp-mons { bottom: 17px; }
-  .sp-mons .mon-icon { width: 23px; }
   .sp-count { font-size: 9.5px; padding: 0 5px 0 2px; top: 3px; right: 3px; }
   .sp-count .item-img { width: 11px; height: 11px; }
   .sp-new { top: 3px; left: 3px; font-size: 8.5px; padding: 0 5px; }
@@ -345,20 +391,32 @@
   /* Lucky Spin en el móvil: las ruletas en la cabecera, la tira de premios en vez del tablero y la barra de
      abajo en pequeño */
   .treasure > .tz-tabs, .treasure .tz-board { display: none; }
-  .treasure .tz-strip { display: block; }
-  .tz-bar { gap: 10px; padding: 8px 10px 8px 12px; border-radius: 14px; }
+  .treasure .tz-strip { display: block; margin-bottom: 8px; padding: 8px 0; }
+  /* Qué es esto, de un vistazo: qué da una tirada, y en cada carta el premio entero y su rareza; el gran premio, en oro */
+  .tz-lead { display: block; margin-bottom: 6px; padding: 0 4px; font-size: 13px; text-align: center; color: #fff; text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8); }
+  .tz-scard { width: 138px; height: 124px; gap: 3px; padding: 6px 6px 7px; }
+  .tz-scard .tz-name { max-height: none; font-weight: 700; }
+  .tz-scard .tz-rar { padding: 1px 8px; border-radius: 6px; font: 900 10px var(--display); font-style: normal; color: #fff; background: color-mix(in srgb, var(--rc) 66%, #000); }
+  .tz-scard.r-legendario .tz-rar { color: #2a1c00; background: var(--rc); }
+  .tz-scard.big { border: 2px solid var(--gold); border-bottom-width: 4px; box-shadow: 0 0 14px rgba(255,190,40,.45); }
+  .tz-scard.big .tz-rar { color: #2a1c00; background: var(--gold); }
+  .tz-bar { flex-wrap: nowrap; gap: 10px; padding: 6px 10px 6px 12px; border-radius: 14px; }
   .tz-prog { width: auto; gap: 4px; }
   .tz-progress b { font-size: 18px; }
-  .tz-progress span { display: none; }
-  .tz-seg i { width: 9px; height: 5px; }
-  .tz-bar .tz-info { font-size: 12px; padding: 0 10px; }
+  .tz-progress span { font-size: 11px; }
+  .tz-seg i { width: 7px; height: 5px; }
+  .tz-bar .tz-info { order: 0; flex: 1 1 0; min-width: 0; font-size: 12px; line-height: 1.25; padding: 0; }
   .tz-bar .tz-info small { display: none; }
-  .tz-odds-btn { height: 36px; padding: 0 10px; }
-  .tz-odds-btn span { display: none; }
+  .tz-odds-btn { flex: none; height: 36px; padding: 0 10px; font-size: 12px; }
   .tz-price { min-width: 84px; height: 46px; padding: 0 10px; border-radius: 12px; }
   .tz-price b { font-size: 18px; }
   .tz-price small { font-size: 9px; }
-  .tz-go { padding: 10px 22px; font-size: 17px; }
+  .treasure .tz-go { height: 46px; min-width: 0; padding: 0 18px; font-size: 18px; white-space: nowrap; }
+  .tz-buy { gap: 8px; }
+}
+/* (en lo más estrecho, las ruletas solo con su cara y lo conseguido: si no, el letrero pisa las gemas) */
+@media (max-height: 500px) and (max-width: 700px) {
+  .tz-chip b { display: none; }
 }
 
 /* ========== Torre, Clasificatoria, Práctica y draft ========== */
@@ -375,12 +433,21 @@
   .ladder-table .pod-card .pod-val small { display: none; }
   .ladder-table .pod-card .pod-rank { top: 50%; left: 6px; transform: translateY(-50%); }
   /* Práctica: Pokémon y arenas más pequeños */
-  .draft:has(.practice-arenas) > .pool { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+  .draft:has(.practice-body) { height: calc(100dvh - 8px); min-height: 0; }
+  .practice-body { gap: 8px; }
+  .practice-col .intro { display: none; }
+  .practice-col .diff { gap: 4px; margin: 2px 0; }
+  .practice-col .diff button { padding: 4px 8px; font-size: 12px; min-height: 28px; }
+  .practice-arenas h4 { margin: 6px 2px 3px; font-size: 11px; }
+  .arena-pool { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 5px; }
+  .arena-card { padding: 4px; }
+  .arena-card b { font-size: 11px; }
+  .draft:has(.practice-arenas) .pool { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
   .draft:has(.practice-arenas) .pool-card { padding: 4px 2px; gap: 1px; }
   .draft:has(.practice-arenas) .pool-card canvas, .draft:has(.practice-arenas) .pool-card img { max-width: 44px; max-height: 44px; }
   .draft:has(.practice-arenas) .pool-card b { font-size: 12px; }
   .draft:has(.practice-arenas) .pool-card .types { transform: scale(.85); }
-  .draft:has(.practice-arenas) > button.primary { bottom: 40px; padding: 8px 20px; min-width: 200px; }
+  .inner-bar .tb-ctx > button.primary { padding: 7px 14px; font-size: 14px; }
   /* Movimientos de Clasificatoria: tarjetas más bajas */
   .pvp-mvbox { padding: 8px; margin: 8px 0 2px; }
   .pvp-mvbox .pvp-mvlist { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 6px; }
@@ -390,12 +457,21 @@
   .draft:has(.practice-arenas) .pool-card .types > * { font-size: 9px; padding: 1px 4px; }
   /* Torre: la explicación en una línea (tocarla la despliega), los 3 huecos en fila con el botón de empezar y
      pegados arriba al bajar, y los Pokémon en cartas pequeñas */
-  .tower-body { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  /* Torre: a la izquierda el equipo; a la derecha el ranking, con su propio scroll (tu récord, la guía y los premios
+     van en la cabecera) */
+  .tower-body { grid-template-columns: minmax(0, 1fr) 200px; gap: 8px; }
+  .tower-side > .panel:first-child { display: none; }
+  .tower-side { gap: 6px; }
+  .tower-board { max-height: calc(100dvh - 110px); min-height: 0; }
+  .tower-board h3 { font-size: 14px; }
+  .tower-board .podium { display: flex; flex-direction: column; gap: 4px; }
+  .tower-board .pod-card { flex-direction: row; padding: 4px 6px 4px 26px !important; }
+  .tower-board .pod-card small, .tower-board li small { display: none; }
+  .tower-side > button { padding: 6px 8px; font-size: 12px; }
   .tower-main { min-width: 0; gap: 6px; padding: 10px 12px; }
   .tower-main h3 { font-size: 16px; }
   .tower-main h4 { margin: 4px 0 0; font-size: 13px; }
-  .tower-intro { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-  .tower-intro.open { white-space: normal; }
+  .tower-intro { display: none; }   /* (lo cuenta «Cómo se juega», en la cabecera) */
   .tower-main > button.primary { display: none; }
   /* (top: -8px, lo que mide el padding de arriba de #screen en el móvil, para que no asome nada por encima) */
   .tower-slots { position: sticky; top: -8px; z-index: 5; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 6px; margin: 0 -12px; padding: 6px 12px;
@@ -414,6 +490,7 @@
   /* Clasificatoria: el bloque del ELO, solo con el botón de buscar (lo demás va en la cabecera); los 3 huecos
      en fila (el Pokémon y los iconos de sus movimientos) */
   .online-body, .online-col { gap: 10px; }
+  .online.casual .online-me:not(:has(.warn)) { display: none; }
   .online-me { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px; }
   .online-me > p.small { flex: 1 1 240px; margin: 0; font-size: 12px; }
   .online-me > button.primary { order: -1; padding: 8px 20px; }
@@ -440,7 +517,12 @@
    .rh-mid h1 { font-size: 40px; }
 }
 @media (max-height: 500px) {
-  .results.is-win, .results.is-lose, .results.is-draw { padding: 12px 16px; }
+  .results.is-win, .results.is-lose, .results.is-draw, .results.is-capture { padding: 12px 16px; }
+  .results.is-capture h1 { font-size: 24px; margin-bottom: 2px; }
+  .results.is-capture .caught-home, .results.is-capture .caught canvas { width: 64px !important; height: 64px !important; }
+  .results .nick-form { margin: 2px auto 4px; }
+  .results .nick-form input { padding: 6px 10px; }
+  .results .nick-form button { padding: 6px 12px; }
   .res-hero { margin-bottom: 8px; }
   .rh-side .face, .rh-side canvas, .rh-side .rh-trainer { width: 60px; height: 60px; border-radius: 14px; }
   .rh-mid h1 { font-size: 34px; }
@@ -455,9 +537,14 @@
    y Lucky Spin con el tablero a la medida de la pantalla */
   .modal-box { max-height: calc(100vh - 12px); }
   .modal-box.ava-edit { max-height: calc(100vh - 12px); width: min(760px, 96vw); gap: 6px; padding: 10px 14px; }
-  .ae-preview { padding: 6px 10px; gap: 10px; }
-  .ae-preview .ava { --s: 56px !important; }
-  .ae-body { max-height: none; flex: 1 1 auto; min-height: 120px; }
+  .modal-box.ava-edit { display: grid; height: calc(100vh - 12px); grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; }
+  .ava-edit h3 { grid-column: 1 / -1; }
+  .ae-preview { grid-column: 1; grid-row: 2 / 5; flex-direction: column; justify-content: center; padding: 6px; gap: 8px; text-align: center; }
+  .ae-who { align-items: center; }
+  .ae-tabs, .ae-body, .ae-more { grid-column: 2; }
+  .ae-tabs { flex-wrap: nowrap; overflow-x: auto; }
+  .ae-tabs button { padding: 5px 10px; }
+  .ae-body { max-height: none; min-height: 0; }
   /* Ventanas en pantallas bajas: lo de dentro (novedades, créditos…) con su propio scroll, también con el dedo */
   .modal-box .notes-list, .modal-box .scroll { overflow-y: auto; min-height: 0; flex: 1 1 auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
   /* Victoria y derrota en pantallas bajas (móvil en horizontal): sin la fila de equipos (ya salen arriba), las

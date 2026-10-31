@@ -233,7 +233,7 @@ async function setup(name, extraEnv = {}) {
         else try { e = document.querySelector(s); } catch { /* no es un selector: se busca por texto */ }
         if (!e) e = [...document.querySelectorAll('button, a, summary, [role=button]')].find(x => shown(x) && x.textContent.trim().toLowerCase().includes(s.toLowerCase()));
         if (!e) return { err: 'no está' };
-        e.scrollIntoView({ block: ${JSON.stringify(block)}, inline: ${JSON.stringify(block)} });
+        e.scrollIntoView({ behavior: 'instant', block: ${JSON.stringify(block)}, inline: ${JSON.stringify(block)} });   // (sin el suave del Camino, que cada lectura relanzaría y parecería quieto)
         const b = e.getBoundingClientRect();
         if (!b.width || !b.height || !shown(e)) return { err: 'no se ve' };
         const x = Math.min(innerWidth - 1, Math.max(0, b.x + b.width / 2)), y = Math.min(innerHeight - 1, Math.max(0, b.y + b.height / 2));

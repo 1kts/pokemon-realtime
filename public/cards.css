@@ -148,6 +148,20 @@
 .shop-item .si b { font: 800 16px var(--display); }
 .shop-item .price { padding: 2px 10px 2px 6px; border-radius: 99px; background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 1px rgba(255,210,63,.3); align-self: flex-start; }
 .shop-item.locked { opacity: .55; filter: saturate(.4); }
+/* Resumida: una fila por artículo (dibujo, nombre, precio y lo que tienes, y a la derecha comprar); la descripción, en
+   una línea y entera al pasar el ratón */
+.shop-grid { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 8px; }
+.shop-item { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 2px 10px; padding: 6px 10px; border-radius: 14px; }
+.shop-item > canvas, .shop-item > img { width: 44px !important; height: 44px !important; }
+.shop-item .item-pic { width: 44px; height: 44px; border-radius: 12px; }
+.shop-item .item-pic img { width: 32px; height: 32px; }
+.shop-item .si { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1px 8px; min-width: 0; }
+.shop-item .si b { flex: 0 0 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.shop-item .si > small:first-of-type { flex: 0 0 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; }
+.shop-item .si .price { padding: 0 8px 0 4px; font-size: 13px; }
+.shop-item .acts { grid-column: auto; flex-wrap: wrap; justify-content: flex-end; max-width: 116px; gap: 4px; }
+.shop-item .acts button { padding: 5px 10px; font-size: 12px; min-height: 28px; }
+.shop-item .acts .warn { max-width: 84px; font-size: 11px; line-height: 1.2; text-align: right; }
 
 /* ---------- Lateral del menú: colección y misiones ---------- */
 .coll-tile { position: relative; overflow: clip; isolation: isolate; transition: transform .18s cubic-bezier(.2,.9,.3,1.4), border-color .18s, box-shadow .18s; }
@@ -316,12 +330,14 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 6px rgba(0,0,0,
 /* Historia: bajo las regiones, «Tu objetivo» (receta de las tarjetas en dorado) y un bloque con el siguiente
    la rotación de rutas y la guía; debajo el mapa a todo el ancho y la ficha entera. Más ancha que el resto */
 .story > .inner-bar ~ :not(button) { width: min(1560px, 100%); }
-.story-head { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+/* A la izquierda el objetivo sobre el Camino; a la derecha la ficha, de arriba abajo */
+@media (min-width: 961px) and (min-height: 501px) {
+  .story-body { grid-template-rows: auto 1fr; }
+  .story-head { grid-column: 1; grid-row: 1; }
+  .story-pathwrap { grid-column: 1; grid-row: 2; }
+  .story-side { grid-column: 2; grid-row: 1 / 3; }
+}
 .story-head .map-goal { position: static; max-width: none; align-content: center; padding: 12px 16px; border-radius: 22px; }
-.story-info { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; padding: 12px 16px 12px 20px; }
-.story-info .rotation { flex: 1; font-size: 14px; }
-.story-info .rotation b { font-size: 18px; }
-.story-info .help { margin-left: auto; }
 .story-body { flex: none; }                    /* la fila mide lo que el mapa: todo el ancho a 16:10 */
 .story-side .node-info { overflow: visible; flex: 1 0 auto; }  /* alta como el mapa como mínimo; si no cabe, crece */
 .story-side .node-info { padding: 14px 16px; }
@@ -780,8 +796,6 @@ button.claim-all small { display: grid; place-items: center; min-width: 22px; he
 .goal-badge img { filter: grayscale(1) brightness(.85) opacity(.7); }
 .story-head .map-goal b { font-size: 19px; }
 .story-head .map-goal > small:first-child { font: 900 11px var(--display); letter-spacing: 1.2px; color: #ffd76a; }
-.story-info .rotation { display: flex; flex-direction: column; gap: 2px; font-weight: 800; color: #c4d0e4; }
-.story-info .rotation b { font: 900 30px/1 var(--display); color: #fff; letter-spacing: 1px; text-shadow: 0 0 16px rgba(255,210,63,.35); font-variant-numeric: tabular-nums; }
 
 /* Ficha del líder o la ruta */
 .story-side .node-info .leader-head { margin: -14px -16px 8px; padding: 14px 16px 0; border-radius: 20px 20px 0 0;
@@ -808,9 +822,13 @@ body.in-battle .ui-confirm { cursor: auto; }
 .tz-art .ava { --s: 100% !important; }
 
 /* Logros: tarjetas de línea con sus retos, separador de la colección y rejillas */
-.coll-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.coll-sep { display: inline-flex; align-items: center; gap: 6px; margin: 0 4px 0 10px; padding-left: 12px; border-left: 1px solid rgba(170,190,255,.25); }
-.coll-sep small { font: 900 10px var(--display); letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); }
+/* (los filtros, en la cabecera junto al título: si no caben, se deslizan) */
+.inner-bar:has(> .coll-tabs) { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+.sign-collection small { display: none; }
+.coll-tabs { position: relative; flex-wrap: nowrap; align-items: center; gap: 6px; min-width: 0; margin: 0; padding: 6px 2px; overflow-x: auto; scrollbar-width: none; }
+.coll-tabs > * { flex: none; }
+.coll-tab { padding: 7px 13px; font-size: 13px; }
+.coll-sep { width: 1px; height: 22px; margin: 0 3px; background: rgba(170,190,255,.3); }
 .lg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
 .lg-card { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 18px;
   background: radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--tc) 22%, transparent), transparent 60%), linear-gradient(170deg, #232a58, #161b3e);
@@ -926,6 +944,16 @@ body.in-battle .ui-confirm { cursor: auto; }
 .ae-body { min-height: 180px; max-height: 46vh; overflow: auto; padding-right: 4px; }
 .ae-body .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
 .ae-more { align-self: center; font-size: 13px; }
+/* Imagen: una sola lista, con el buscador siempre a la vista y el nombre debajo de cada una */
+.ae-body input[type=search] { position: sticky; top: 0; z-index: 2; width: 100%; margin-bottom: 8px; }
+.ae-body .ava-grid { grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); max-height: none; overflow: visible; }
+.ae-body .ava-opt { align-content: start; gap: 2px; }
+.ava-opt .ao-name { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+.ava-opt em { font-size: 10px; font-style: normal; line-height: 1.15; color: #c9d4ea; }
+.ava-opt.locked :is(img, canvas, svg, .col-art) { filter: grayscale(1) brightness(.6); }
+/* La cuenta, en la tarjeta de entrenador */
+.tc-acc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.tc-acc button { padding: 6px 14px; font-size: 13px; }
 /* Rendirse: el mismo aire que la pantalla de derrota (fondo rojizo, título grande y las dos caras) */
 .ui-confirm-box.danger { background: linear-gradient(160deg, rgba(120,30,40,.6), rgba(20,18,40,.95) 55%), var(--panel, #1a2140); border: 1px solid rgba(255,110,110,.45); box-shadow: 0 0 40px rgba(255,90,80,.18), 0 24px 60px rgba(0,0,0,.6); }
 .ui-confirm-box.forfeit { width: min(480px, 100%); }
@@ -995,9 +1023,6 @@ body.in-battle .ui-confirm { cursor: auto; }
 .tc-lbar small { color: #9fb0cc; font-size: 11.5px; font-weight: 700; }
 
 /* Historia: «Cómo se juega» a la izquierda, grande, y la leyenda del mapa abajo a la derecha */
-.story-info .help { margin-left: 0 !important; order: -1; padding: 12px 18px; font-size: 15px; background: linear-gradient(180deg, var(--gold-hi, #ffe27a), var(--gold, #ffcb05)); color: #2a1c00; border: 0; box-shadow: 0 3px 0 #b97a00; }
-.story-info .help svg { color: #2a1c00; }
-.story-info .rotation { text-align: right; align-items: flex-end; }
 
 /* Logros › Líneas: una fila por línea que se despliega con sus retos */
 .lg-grid.lg-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1180,6 +1205,7 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
    pequeño, los nombres de lo bloqueado también se quitan (la Liga, cerrada, tapaba el «Tu reto» del líder) */
 .tb-mobile { display: none !important; }
 .region-chips { align-items: center; gap: 6px; }
+.story-regions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
 .region-chips .rgc { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 4px 11px; border-radius: 10px; line-height: 1.1;
   border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--rc) 28%, #141b33), #10162b); }
 .region-chips .rgc.sel { border: 2px solid var(--gold); box-shadow: 0 0 12px rgba(255,190,40,.25); }
@@ -1204,6 +1230,7 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .tz-scard.sel { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
 .tz-scard.win { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold), 0 0 28px var(--rc); transform: scale(1.06); transition: transform .2s; }
 .tz-scard .tz-check { top: 4px; right: 4px; }
+.tz-lead { display: none; }
 .tz-chips { align-items: center; gap: 6px; }
 .tz-chip { display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--tc) 45%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--tc) 25%, #141b33), #10162b); }
 .tz-chip.sel { border: 2px solid var(--gold); box-shadow: 0 0 12px rgba(255,190,40,.25); }
@@ -1296,13 +1323,10 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 #hud.touch .mv .tc-name.xs { font-size: 7.5px; letter-spacing: -.2px; }
 #hud.touch .mv:nth-child(1) .tc-name.s, #hud.touch .mv:nth-child(1) .tc-name.xs { font-size: 11px; }
 #hud.touch .mv .tc-cost { position: relative; z-index: 1; padding: 0 4px; border-radius: 6px; font: 800 8px/11px var(--text); font-style: normal; color: #dff6ff; background: rgba(0,20,60,.55); }
-#hud.touch .bottom::before { content: '⚡'; position: absolute; left: -19px; bottom: 182px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; color: #ffd23a;
-  background: rgba(10,16,40,.75); box-shadow: 0 0 0 1px rgba(122,232,255,.6), 0 0 8px rgba(122,232,255,.5); }
+#hud.touch .bottom::before { content: '⚡'; position: absolute; left: -16px; bottom: -11px; font-size: 11px; line-height: 12px; color: #ffd23a; text-shadow: 0 1px 2px #000; }
 #hud.touch .mv .cdt { z-index: 2; }
-/* Energía: barra vertical a la izquierda de los botones, que se llena de abajo arriba */
-#hud.touch .energy { left: -14px; right: auto; bottom: 4px; top: auto; width: 12px; height: 176px; max-width: none; border-radius: 6px; }
-#hud.touch .energy .fill { position: absolute; left: 0; right: 0; bottom: 0; width: 100% !important; height: var(--en, 0%); transition: height .1s; background: linear-gradient(0deg, #2f8fff, #7ae8ff); }
-#hud.touch .energy span { display: none; }
+/* Energía: línea fina debajo de los botones */
+#hud.touch .energy { left: 0; right: 0; bottom: -9px; top: auto; width: auto; height: 5px; border-radius: 3px; }
 /* Poké Balls: la elegida, grande y con «Lanzar»; las demás, pequeñas para cambiar */
 #hud.touch .balls { right: 262px; bottom: 14px; align-items: flex-end; }
 #hud.touch .balls .ball { width: 40px; height: 40px; }
@@ -1368,7 +1392,7 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 /* Práctica: elegir la arena en tarjetas con su plano en miniatura */
 .practice-arenas { text-align: left; }
 .practice-arenas h4 { margin: 10px 4px 4px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
-.arena-pool { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); padding-bottom: 4px; }
+.arena-pool { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); padding-bottom: 4px; }
 .arena-card { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 7px; border-radius: 12px; background: var(--panel); border: 2px solid transparent; text-align: left; transition: transform .15s, border-color .15s; }
 .arena-card:hover { transform: translateY(-2px); }
 .arena-card.sel { border-color: var(--yellow, #ffcb05); box-shadow: 0 0 0 1px var(--yellow, #ffcb05), 0 6px 16px rgba(0,0,0,.35); }
@@ -1377,10 +1401,21 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .arena-card b { font-size: 13px; line-height: 1.15; }
 .arena-card small { font-size: 11px; line-height: 1.25; opacity: .75; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .arena-card.mech small { color: #ffd98a; opacity: .95; }
-/* Con las arenas debajo, la Práctica se desplaza entera (la rejilla de Pokémon no se aplasta) */
-.draft:has(.practice-arenas) { height: auto; min-height: 100%; }
-.draft:has(.practice-arenas) > .pool.scroll { flex: none; overflow: visible; max-height: none; }
-.draft:has(.practice-arenas) > button.primary { position: sticky; bottom: 14px; z-index: 5; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+/* Práctica: dos columnas que se desplazan cada una por su cuenta; lo de cada arena, en su tooltip */
+.practice-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; text-align: left; }
+.practice-col { min-height: 0; min-width: 0; overflow: auto; padding: 10px 12px; }
+.practice-col .intro { margin: 0 0 4px; }
+.practice-col .diff { justify-content: flex-start; margin: 4px 0; }
+.practice-col .pool.scroll { flex: none; overflow: visible; max-height: none; }
+.practice-arenas h4:first-child { margin-top: 0; }
+.arena-card small { display: none; }
+@media (max-width: 560px) {
+  .practice-body { grid-template-columns: minmax(0, 1fr); }
+  .practice-col { overflow: visible; }
+  .draft:has(.practice-body) { height: auto; min-height: 100%; }
+}
+/* En la cabecera, los botones de empezar o buscar de cada modo */
+.inner-bar .tb-ctx > button.primary { min-width: 0; margin: 0; padding: 10px 22px; white-space: nowrap; }
 /* «Entrar» y «Crear cuenta y jugar», con la misma forma que «Entrar con email» (sin inclinar ni flecha) */
 .title-panel .auth button.primary.alt-btn.go { align-self: stretch; width: 100%; min-width: 0; margin-top: 4px; padding: 8px 10px; border-radius: 12px; transform: none; font: inherit; font-size: 15px; font-weight: 800; letter-spacing: 0; text-transform: none; font-style: normal; }
 .title-panel .auth button.primary.alt-btn.go::after { content: none; }
@@ -1565,7 +1600,7 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .pvp-mvbox .mv-check { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-weight: 900; font-size: 13px; background: rgba(255,255,255,.12); }
 .pvp-mvbox .pvp-mv.on .mv-check { background: #5fe08a; color: #0b2a14; }
 .q-tip:has(.q-share) span { flex: 1 1 180px; }
-.draft:has(.practice-arenas) > button.primary:disabled { opacity: 1; filter: grayscale(.6) brightness(.7); }
+.inner-bar .tb-ctx > button.primary:disabled, .tower-slots .tslot-go:disabled, .tower-main > button.primary:disabled { opacity: 1; filter: none; color: #d2ddf5; text-shadow: none; background: #3a4578; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
 
 /* ---------- Móvil en horizontal: Torre Batalla, Clasificatoria y menú ---------- */
 /* Lo que solo sale en el móvil (tower.js, ui.js): la racha y el récord de la Torre y el ELO en la cabecera, y el
@@ -1626,6 +1661,12 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .story-pathwrap { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; border-radius: 20px;
   background: linear-gradient(180deg, #1c2450, #121834); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 18px 40px rgba(0,0,0,.4); }
 .story-pathwrap > .sp-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+/* La barra del Camino: «Cómo se juega» arriba a la izquierda y la cuenta atrás a la derecha */
+.sp-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 0; }
+.sp-bar .help { flex: none; height: 34px; padding: 0 12px; font-size: 13px; white-space: nowrap; }
+.sp-bar .rotation { display: flex; align-items: baseline; gap: 8px; min-width: 0; font: 700 12px var(--text); color: #d2ddf5; }
+.sp-bar .rotation span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sp-bar .rotation b { flex: none; font: 900 20px/1 var(--display); color: #5fd8ff; font-variant-numeric: tabular-nums; }
 /* Medidas: tarjetas de gimnasio (--gw × --gh), la del siguiente reto (--nw × --nh), las de ruta (--rw × --rh), el
    ancho del camino (--road), el sitio para el nombre debajo (--nm) y el del botón de jugar (--goh) */
 .story-path { --gw: 140px; --gh: 160px; --nw: 176px; --nh: 200px; --rw: 128px; --rh: 96px; --road: 22px; --nm: 34px; --goh: 40px; --stopm: 14px;
@@ -1671,10 +1712,7 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-node.sel .sp-card { outline: 3px solid #fff; outline-offset: 3px; }
 .sp-node:focus-visible .sp-card { outline: 3px solid var(--yellow); outline-offset: 3px; }
 /* Lo que se hace en cada sitio, en una franja abajo: «Gimnasio · combate» o «Ruta · captura» */
-.sp-tag { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 3px 4px;
-  font: 800 11px/1.15 var(--display); color: #fff; background: rgba(8,12,32,.9); border-top: 2px solid var(--tc, #8fe36a); white-space: nowrap; }
-.sp-tag svg { width: 12px; height: 12px; flex: none; color: var(--tc, #8fe36a); }
-.sp-tag img, .sp-count img, .sp-k img.item-img { image-rendering: pixelated; flex: none; }
+.sp-count img, .sp-k img.item-img { image-rendering: pixelated; flex: none; }
 /* Gimnasios: la foto de su arena, el líder de pie delante, el marco del color de su tipo, su número y su medalla */
 .sp-gym .sp-card { width: var(--gw); height: var(--gh); border-color: var(--tc, #8a93b8); }
 .sp-leader { position: absolute; z-index: 1; left: 50%; bottom: 18px; height: 70%; width: auto; aspect-ratio: 1; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 3px 2px rgba(0,0,0,.6)); }
@@ -1702,10 +1740,7 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 .sp-route .sp-card { width: var(--rw); height: var(--rh); border-width: 2px; }
 .sp-route .sp-name { max-width: calc(var(--rw) + 10px); height: auto; max-height: var(--nm); font-size: 11px; color: #d4dcef; }
 .sp-route.full .sp-card { border-color: var(--gold); }
-.sp-mons { position: absolute; z-index: 1; left: 2px; right: 2px; bottom: 22px; display: flex; justify-content: center; }
-.sp-mons .mon-icon { width: 30px; height: auto; image-rendering: pixelated; filter: drop-shadow(0 2px 1px rgba(0,0,0,.6)); }
 /* (los que no tienes: siluetas oscuras con un borde claro, como «¿quién es ese Pokémon?») */
-.sp-mons .mon-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1px rgba(255,255,255,.85)) drop-shadow(0 0 1px rgba(255,255,255,.5)); opacity: .9; }
 .sp-count { position: absolute; z-index: 2; top: 4px; right: 4px; display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px 1px 3px; border-radius: 99px;
   font: 800 11px var(--display); color: #fff; background: rgba(8,12,32,.85); }
 .sp-count.full { color: #0f2a0c; background: #8fe36a; }
@@ -1714,8 +1749,6 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 .sp-node.locked { color: #a4adc8; }
 .sp-node.locked .sp-pic, .sp-node.locked .sp-leader, .sp-node.locked .sp-stadium { filter: grayscale(1) brightness(.45); }
 .sp-node.locked .sp-card { border-color: rgba(190,205,240,.3); border-style: dashed; box-shadow: none; }
-.sp-node.locked .sp-tag { color: #c9d1e6; border-top-color: rgba(190,205,240,.3); }
-.sp-node.locked .sp-tag svg { color: #c9d1e6; }
 .sp-locknote { position: absolute; z-index: 2; inset: 0 0 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 4px 8px; text-align: center; color: #e6ebf7; }
 .sp-lock-ico { width: 22px; height: 22px; filter: drop-shadow(0 1px 2px #000); }
 .sp-locknote small { font: 700 11px/1.25 var(--text); text-shadow: 0 1px 3px #000, 0 0 6px #000; }

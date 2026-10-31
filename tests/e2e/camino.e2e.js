@@ -1,6 +1,5 @@
 // El Camino de la Historia (storypath.js) se entiende sin haber jugado nunca a Pokémon: cada gimnasio es una tarjeta
-// con su líder que dice «Gimnasio · combate» y cada ruta una con sus Pokémon que dice «Ruta · captura»; los Pokémon
-// que no tienes salen como una silueta oscura y los que sí, en color. El jugador está de pie al principio de su tramo,
+// con su líder y cada ruta una con su primer nombre y lo capturado. El jugador está de pie al principio de su tramo,
 // antes de sus rutas (no junto al líder, que parecería que ya las ha hecho), y al abrir está elegida la primera de
 // ellas con Pokémon por capturar. El siguiente líder es lo más grande y tiene el único «Desafiar», a la vista y sin
 // nada encima; lo bloqueado dice qué lo abre. En el móvil en horizontal cabe entero de alto (se desplaza de lado).
@@ -15,23 +14,13 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
 
   // Lo que se ve de cada tarjeta: su etiqueta (texto, si cabe y si se ve sin nada encima) y su tamaño
   const CARDS = `[...document.querySelectorAll('.story-path .sp-node')].map(b => {
-    const card = b.querySelector('.sp-card'), tag = b.querySelector('.sp-tag'), r = card.getBoundingClientRect(), tr = tag.getBoundingClientRect();
+    const card = b.querySelector('.sp-card'), tag = b.querySelector('.sp-name'), r = card.getBoundingClientRect(), tr = tag.getBoundingClientRect();
     const hit = document.elementFromPoint(tr.left + tr.width / 2, tr.top + tr.height / 2);
     return { kind: b.classList.contains('sp-route') ? 'route' : b.classList.contains('sp-league') ? 'league' : 'gym', name: b.querySelector('.sp-name').innerText.replace(/\\s+/g, ' ').trim(),
-      tag: tag.innerText.trim(), fits: tag.scrollWidth <= tag.clientWidth + 1, onTop: !hit || tag.contains(hit) || hit === tag, lock: (b.querySelector('.sp-locknote') || {}).innerText || '',
+      fits: tag.scrollWidth <= tag.clientWidth + 1, onTop: !hit || tag.contains(hit) || hit === tag, lock: (b.querySelector('.sp-locknote') || {}).innerText || '',
       w: r.width, h: r.height, x: r.left + r.width / 2, label: b.getAttribute('aria-label') || '' };
   })`;
   // Lo que se pinta de cada Pokémon de una tarjeta: cuánto de su dibujo es casi negro (una silueta) con el filtro que lleva
-  const DARK = sel => `(async () => Promise.all([...document.querySelectorAll(${JSON.stringify(sel)})].map(async img => {
-    if (!img.complete) await new Promise(r => { img.onload = r; img.onerror = r; });
-    const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d', { willReadFrequently: true });
-    x.drawImage(img, 0, 0); const base = x.getImageData(0, 0, w, h).data;
-    x.clearRect(0, 0, w, h); x.filter = getComputedStyle(img).filter; x.drawImage(img, 0, 0); const seen = x.getImageData(0, 0, w, h).data;
-    let n = 0, dark = 0;
-    for (let i = 0; i < base.length; i += 4) if (base[i + 3] > 200) { n++; if (Math.max(seen[i], seen[i + 1], seen[i + 2]) < 40) dark++; }
-    return { dex: +img.src.match(/(\\d+)\\.png/)[1], dark: n ? dark / n : 0 };
-  })))()`;
   const go = `(() => { const bs = [...document.querySelectorAll('.story-path button')].filter(b => /Desafiar/.test(b.textContent)), b = bs[0];
     if (!b) return { n: 0 };
     const r = b.getBoundingClientRect(), w = document.querySelector('.story-path').getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
@@ -73,9 +62,7 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
     }
     const cards = [...seen.values()], gyms = cards.filter(c => c.kind === 'gym'), routes = cards.filter(c => c.kind === 'route');
     ok(gyms.length === 8 && routes.length >= 12 && cards.some(c => c.kind === 'league'), `${at}: se ven los 8 gimnasios, la Liga y las rutas (${gyms.length}, ${routes.length})`);
-    ok(gyms.every(c => c.tag === 'Gimnasio · combate' && c.fits && c.onTop), `${at}: cada gimnasio dice «Gimnasio · combate», cabe y no lo tapa nada (${gyms.filter(c => c.tag !== 'Gimnasio · combate' || !c.fits || !c.onTop).map(c => c.name)})`);
-    ok(routes.every(c => c.tag === 'Ruta · captura' && c.fits && c.onTop), `${at}: cada ruta dice «Ruta · captura», cabe y no lo tapa nada (${routes.filter(c => c.tag !== 'Ruta · captura' || !c.fits || !c.onTop).map(c => c.name)})`);
-    ok(cards.find(c => c.kind === 'league').tag === 'Liga · combate', `${at}: la Liga dice que es un combate`);
+    ok(cards.every(c => c.fits && c.onTop), `${at}: el nombre de cada sitio cabe y no lo tapa nada (${cards.filter(c => !c.fits || !c.onTop).map(c => c.name)})`);
     // Lo que toca: el más grande, con su líder y el único «Desafiar», a la vista y sin nada encima
     await page.eval(`(() => { const w = document.querySelector('.story-path'), n = document.querySelector('.sp-node.now'); w.scrollLeft += n.getBoundingClientRect().left - w.getBoundingClientRect().left - w.clientWidth / 2 + n.offsetWidth / 2; return true; })()`);   // atajo: volver a lo que toca
     const now = (await page.eval(CARDS)).find(c => c.name.startsWith('Erika'));
@@ -84,7 +71,7 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
     ok(g.n === 1 && g.text === 'Desafiar' && g.free && g.inside, `${at}: un solo «Desafiar» en el camino, a la vista y sin nada encima (${JSON.stringify(g)})`);
     // «Estás aquí»: al principio del tramo, justo antes de su primera ruta y después del último líder vencido
     const you = await page.eval(`(() => { const y = [...document.querySelectorAll('.story-path *')].find(e => e.children.length === 0 && e.textContent === 'Estás aquí');
-      const cards = [...document.querySelectorAll('.story-path .sp-node')], i = cards.findIndex(b => b.querySelector('.sp-name').textContent.startsWith('Ruta 11 '));
+      const cards = [...document.querySelectorAll('.story-path .sp-node')], i = cards.findIndex(b => b.querySelector('.sp-name').textContent === 'Ruta 11');
       if (!y || i < 1) return null; const a = y.getBoundingClientRect(), next = cards[i].querySelector('.sp-card').getBoundingClientRect(), prev = cards[i - 1].querySelector('.sp-card').getBoundingClientRect();
       return { before: prev.right <= a.left, gap: Math.round(next.left - a.right), prev: cards[i - 1].querySelector('.sp-name').innerText.split('\\n')[0], seen: a.width > 0 && a.top >= 0 }; })()`);
     ok(you && you.seen && you.before && you.prev === 'Lt. Surge' && you.gap >= 0 && you.gap < 60, `${at}: «Estás aquí», con el jugador, al principio de su tramo: entre Lt. Surge y la Ruta 11 (${JSON.stringify(you)})`);
@@ -96,20 +83,14 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
       return { inScreen: r.bottom <= innerHeight + 1, track: t.top >= r.top - 1 && t.bottom <= r.bottom + 1 }; })()`);
     if (touch) ok(fit.inScreen && fit.track, `${at}: el camino cabe entero de alto en la pantalla (${JSON.stringify(fit)})`);
     else ok(fit.track, `${at}: el camino se ve entero de alto (${JSON.stringify(fit)})`);
-    // La leyenda: un gimnasio es para combatir y una ruta, para capturar
-    const legend = await page.eval(`document.querySelector('.sp-legend').innerText`);
-    ok(/Gimnasio: combate por su medalla/.test(legend) && /Ruta: captura Pokémon/.test(legend), `${at}: la leyenda explica qué es un gimnasio y qué una ruta (${legend.replace(/\n/g, ' · ')})`);
+    // La leyenda: un gimnasio es para combatir y una ruta, para capturar (en el móvil en horizontal no hay sitio)
+    if (!touch) ok(await page.see('Gimnasio: combate por su medalla') && await page.see('Ruta: captura Pokémon'), `${at}: la leyenda explica qué es un gimnasio y qué una ruta`);
   }
 
   if (!more) return;
-  // Los Pokémon de la Ruta 1: Pidgey (capturado) en color; los demás, siluetas oscuras
+  // La Ruta 1: lo capturado, en su tarjeta
   await open(1280, 800, false);
-  const r1 = await page.eval(`(() => { const b = [...document.querySelectorAll('.sp-route')].find(b => b.querySelector('.sp-name').textContent.startsWith('Ruta 1 ')); b.scrollIntoView({ inline: 'center' }); b.classList.add('r1-test'); return b.querySelector('.sp-count').innerText; })()`);   // atajo: marcar la tarjeta para leerla
-  const mons = await page.eval(DARK('.r1-test .sp-mons img'));
-  const pidgey = mons.find(m => m.dex === 16), rest = mons.filter(m => m.dex !== 16);
-  ok(mons.length >= 3 && mons.length <= 4, `la Ruta 1 enseña 3 o 4 de sus Pokémon (${mons.length})`);
-  ok(pidgey && pidgey.dark < 0.3, `Pidgey, que ya tienes, se ve en color (${pidgey && pidgey.dark.toFixed(2)})`);
-  ok(rest.length && rest.every(m => m.dark > 0.9), `los que no tienes se ven como una silueta oscura (${rest.map(m => m.dark.toFixed(2))})`);
+  const r1 = await page.eval(`(() => { const b = [...document.querySelectorAll('.sp-route')].find(b => b.querySelector('.sp-name').textContent === 'Ruta 1'); b.scrollIntoView({ inline: 'center' }); b.classList.add('r1-test'); return b.querySelector('.sp-count').innerText; })()`);   // atajo: marcar la tarjeta para leerla
   ok(/1\/\d+/.test(r1), `la Ruta 1 dice cuántos llevas con la Poké Ball (${r1})`);
   // Tocar una ruta abre su ficha al lado
   await page.click('.r1-test');

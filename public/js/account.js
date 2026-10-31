@@ -10,6 +10,7 @@ import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml, FRAME_LABEL_EXTRA } from './achievements.js';
 import { avatarArt, avatarName, effectHtml, effectName } from './missions.js';
+import { achName } from './achievements.js';
 import { frameFx, frameRing, frameBadge, auraHtml, applySkin, auraName } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
 import { DEFAULT_VOLUME as DEFAULT_MUSIC } from './music.js';
@@ -18,6 +19,8 @@ import { DEFAULT_SFX } from './sfx.js';
 const KOFI_URL = 'https://ko-fi.com/1kts_';
 
 const { SPECIES, SHOP, LEAGUES, SEASON, RANKED_REWARDS, SEASON_REWARDS, RANKED_PAY, STARTERS } = Data;
+// Para buscar sin que importen mayúsculas ni tildes
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const coins = n => `<span class="coin">${icon('coin', 16)}</span>${n.toLocaleString(locale())}`;
 const VERSION = CHANGELOG[0].v;
@@ -686,7 +689,7 @@ export const accountViews = {
     const wrap = el('div', 'profile-view');
     wrap.append(this.topbar(t('Perfil'), 'menu'));
     // Orden: tarjeta de entrenador arriba (a todo el ancho), una franja con todas las estadísticas, y debajo
-    // dos columnas (medallas y últimas partidas | logros); la cuenta, al final
+    // dos columnas (medallas y últimas partidas | logros); la cuenta, en la tarjeta
     const body = el('div', 'pv-body pv-flow scroll');
     const left = el('div', 'pv-col');
     const mid = el('div', 'pv-col');
@@ -731,6 +734,7 @@ export const accountViews = {
       const from = LEAGUES[li][0], pct = Math.max(0, Math.min(100, (p.elo - from) / (nextL[0] - from) * 100));
       info.append(el('div', 'tc-lbar', `<div class="bar"><i style="width:${pct}%"></i></div><small>${t('Faltan {n} ELO para {league}', { n: nextL[0] - p.elo, league: t(nextL[1]) })}</small>`));
     } else info.append(el('div', 'tc-lbar', `<small>${t('Liga máxima')}</small>`));
+    info.append(this.accountActions());
     card.append(info);
     // En medio: tu equipo de la región en la que más has avanzado y datos destacados (tu Pokémon favorito,
     // que es la línea con más victorias, y tu récord en la Torre)
@@ -815,7 +819,7 @@ export const accountViews = {
     mid.append(this.achievementsPanel());
     const cols = el('div', 'pv-cols');
     cols.append(left, mid);
-    body.append(cols, this.accountPanel());
+    body.append(cols);
     wrap.append(body);
     this.root.append(wrap);
   },
@@ -880,31 +884,33 @@ export const accountViews = {
     }, () => { this.avaEditDraw = null; });
   },
 
-  // Imágenes para el avatar: las de colección (medallas, logros, retratos) y cualquier Pokémon atrapado
+  // Imágenes para el avatar, todas en una lista con un buscador: las de colección (medallas, logros, retratos) y
+  // cualquier Pokémon atrapado (shiny e ilustración, si los tienes). Las medallas y logros que aún no tienes salen
+  // apagadas y diciendo de dónde salen
   avatarOptions(box) {
     const p = this.profile;
     const col = (p.cosmetics && p.cosmetics.avatars) || [];
-    box.append(el('h4', '', t('Colección')));
-    const cgrid = el('div', 'ava-grid ava-col');
-    if (!col.length) cgrid.append(el('p', 'small', t('Recoge medallas y logros en Misiones para conseguir avatares de colección.')));
-    for (const id of col) {
-      const b = el('button', 'ava-opt' + (p.avatar === id ? ' sel' : ''), avatarArt(id, 48));
-      b.title = avatarName(id);
-      b.onclick = () => this.net.send({ t: 'look', avatar: id });
-      cgrid.append(b);
-    }
-    box.append(cgrid, el('h4', '', t('Pokémon')));
-    box.append(el('p', 'small', t('Cualquiera que hayas atrapado, también en shiny si lo tienes. Con {n} victorias de su línea evolutiva, también su ilustración oficial. Por defecto, el primero de tu equipo.', { n: Data.MASTERY_ART })));
+    const key = s => norm(s).replace(/[^\p{L}\p{N}]/gu, '');   // «pokeball» encuentra «Poké Ball»
     const search = el('input');
-    search.type = 'search'; search.placeholder = t('Buscar por nombre o número'); search.value = this.avaQ || '';
+    search.type = 'search'; search.placeholder = t('Busca un Pokémon, una medalla o un objeto'); search.value = this.avaQ || '';
+    search.setAttribute('aria-label', search.placeholder);
     const grid = el('div', 'ava-grid');
-    const empty = el('p', 'small', t('No hay ningún Pokémon con esos filtros.'));
+    const empty = el('p', 'small', t('Nada coincide con tu búsqueda'));
     empty.hidden = true;
     const auto = el('button', 'ava-opt' + (!p.avatar ? ' sel' : ''), `<small>${t('Automático')}</small>`);
     auto.onclick = () => this.net.send({ t: 'look', avatar: null });
     grid.append(auto);
-    const shinies = new Set(p.shinies || []);
     const opts = [];
+    const add = (b, label, q) => { b.append(el('small', 'ao-name', escapeHtml(label))); b.title = label; b.dataset.q = key(`${label} ${q}`); grid.append(b); opts.push(b); };
+    // Una medalla se llama como es; un objeto de logro, como en la Tienda si está (si no, por su logro)
+    const shopName = id => { const it = Data.SHOP.find(i => key(i.id) === key(id.split(':')[1])); return it && t(it.name); };
+    const label = id => shopName(id) || avatarName(id);
+    for (const id of col) {
+      const b = el('button', 'ava-opt' + (p.avatar === id ? ' sel' : ''), avatarArt(id, 48));
+      b.onclick = () => this.net.send({ t: 'look', avatar: id });
+      add(b, label(id), `${avatarName(id)} ${id}`);
+    }
+    const shinies = new Set(p.shinies || []);
     for (const dex of [...p.caught].sort((a, b) => a - b)) {
       if (!SPECIES[dex]) continue;
       // Con la maestría de su línea, también la ilustración oficial
@@ -914,18 +920,29 @@ export const accountViews = {
         if (art) b.innerHTML = `<img class="ava-art" src="art/${shiny ? 'shiny/' : ''}${dex}.png" alt="" loading="lazy" draggable="false"><i class="art-tag">${t('Arte')}</i>`;
         else b.append(portrait(dex, 48, { shiny }));
         if (shiny) b.append(el('i', 'shiny-star', '✦'));
-        b.title = SPECIES[dex].name + (shiny ? ' ✦' : '') + (art ? ' · ' + t('Ilustración oficial') : '');
-        b.dataset.q = `${SPECIES[dex].name.toLowerCase()} ${dex}`;
         b.onclick = () => this.net.send({ t: 'look', avatar: dex, avatarShiny: shiny, avatarArt: art });
-        grid.append(b);
-        opts.push(b);
+        add(b, SPECIES[dex].name + (shiny ? ' ✦' : ''), `${dex} ${art ? t('Ilustración oficial') : ''}`);
       }
+    }
+    const locked = (id, hint) => {
+      if (col.includes(id)) return;
+      const b = el('button', 'ava-opt locked', avatarArt(id, 48));
+      b.disabled = true;
+      add(b, label(id), `${avatarName(id)} ${id} ${hint}`);
+      b.append(el('em', '', escapeHtml(hint)));
+      b.title = `${label(id)} · ${hint}`;
+    };
+    for (const r of Data.REGION_IDS) Data.leadersOf(r).slice(0, 8).forEach((g, i) => locked(Data.badgeAvatar(r, i), i < Data.progOf(p, r) ? t('¡Recoge el avatar de la {badge}!', { badge: g.badge }) : t('Vence a {who} para conseguirla', { who: g.leader })));
+    const seen = new Set();
+    for (const a of Data.ACHIEVEMENTS) {
+      const id = Data.achievementAvatar(a);
+      if (id && !seen.has(id)) { seen.add(id); locked(id, t('Logro: {name}', { name: achName(a) })); }
     }
     const filter = () => {
       this.avaQ = search.value;
-      const q = search.value.trim().toLowerCase().replace('#', '').replace(/^0+(?=\d)/, '');
+      const q = key(search.value.replace(/^\s*#?0*(?=\d)/, ''));
       let n = 0;
-      for (const b of opts) { b.hidden = !!q && !b.dataset.q.split(' ').some(w => w.startsWith(q)) && !b.dataset.q.includes(q); n += !b.hidden; }
+      for (const b of opts) { b.hidden = !!q && !b.dataset.q.includes(q); n += !b.hidden; }
       auto.hidden = !!q;
       empty.hidden = !q || n > 0;
     };
@@ -934,9 +951,29 @@ export const accountViews = {
     box.append(search, empty, grid);
   },
 
+  // Lo de la cuenta, a mano en la tarjeta de entrenador; lo que lleva formulario, en su ventana
+  accountActions() {
+    const p = this.profile;
+    const row = el('div', 'tc-acc');
+    const btn = (cls, label, fn) => { const b = el('button', cls, t(label)); b.onclick = fn; row.append(b); };
+    if (!p.account) {
+      btn('primary', 'Crear cuenta', () => this.accountModal());
+      // (la misma ventana: entrar con Google o con tu correo se lleva esta partida, sin perderla)
+      btn('', 'Iniciar sesión', () => this.accountModal());
+    } else {
+      btn('', p.account.pass ? 'Cambiar contraseña' : 'Cuenta', () => this.accountModal());
+      btn('danger', 'Cerrar sesión', () => this.logout());
+    }
+    return row;
+  },
+
+  accountModal() {
+    this.accClose = modal('account-modal', box => box.append(this.accountPanel()), () => { this.accClose = null; this.authMsg = null; });
+  },
+
   accountPanel() {
     const p = this.profile;
-    const box = el('div', 'panel account');
+    const box = el('div', 'account');
     box.append(el('h3', '', t('Cuenta')));
     const msg = el('p', 'auth-msg');
     this.authMsg = msg;
@@ -978,13 +1015,9 @@ export const accountViews = {
       d.append(fo, fn, f2, go);
       box.append(d, msg);
     }
-    const out = el('button', 'danger', t('Cerrar sesión'));
-    out.onclick = () => {
-      if (p.account) return this.logout();
-      confirmBox({ title: t('Cerrar sesión'), text: t('Eres invitado: si cierras sesión sin crear una cuenta, perderás esta partida para siempre. ¿Seguro?'), ok: t('Cerrar sesión'), danger: true })
-        .then(yes => yes && this.logout());
-    };
-    box.append(out);
+    const back = el('button', '', t('Cerrar'));
+    back.onclick = () => this.accClose && this.accClose();
+    box.append(back);
     return box;
   },
 

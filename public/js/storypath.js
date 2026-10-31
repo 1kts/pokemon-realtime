@@ -1,11 +1,11 @@
 // Historia como un camino (vista «Camino»): el viaje de la región por un camino de tierra, de izquierda a derecha.
 // Cada sitio es una tarjeta con la foto de su arena, para que se entienda de un vistazo aunque no se haya jugado
-// nunca a Pokémon: los gimnasios (con su líder de pie, su medalla colgando y «Gimnasio · combate») van en el
+// nunca a Pokémon: los gimnasios (con su líder de pie y su medalla colgando) van en el
 // camino, en orden y luego la Liga; las rutas que abre cada medalla salen del tramo de antes de cada gimnasio (con
-// sus Pokémon: los capturados en color y los que no en silueta, y «Ruta · captura»). Lo recorrido es tierra clara;
+// lo capturado y su primer nombre; el resto, en su ficha). Lo recorrido es tierra clara;
 // lo que falta, apagado. El siguiente reto es lo único grande y dorado, con el jugador al lado y el único botón de
 // jugar. Lo bloqueado, en gris con candado y diciendo qué lo abre. Tocar un sitio abre su ficha al lado
-import { monIcon, trainerImg } from './sprites.js';
+import { trainerImg } from './sprites.js';
 import { badgeImg, item as itemImg } from './pixicons.js';
 import { t } from './i18n.js';
 import { REGION_ART } from './regionmap.js';
@@ -13,13 +13,9 @@ import { REGION_ART } from './regionmap.js';
 const { TYPE_COLOR } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const LOCK = '<svg class="sp-lock-ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
-// (las etiquetas de lo que se hace en cada sitio: dos espadas para combatir, una Poké Ball para capturar)
-const SWORDS = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2l7.5 7.5M14 2L6.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 11.5l-3 3M8 11.5l3 3M4 9.5l2.5 2.5M12 9.5L9.5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 const BALL = () => itemImg('pokeball', 14, 'sp-ball');
 // Las fotos de las arenas (de tools/arena-thumbs.e2e.js), pequeñas y solo cuando se ven
 const pic = key => { const i = el('img', 'sp-pic'); i.src = `img/arenas/${key}.webp`; i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; i.draggable = false; i.onerror = () => i.remove(); return i; };
-// Cuántos Pokémon de cada ruta se enseñan en su tarjeta
-const SHOWN = 4;
 
 export const storyPathViews = {
   storyPath(region, nodes, prog, nextLeader, info) {
@@ -43,23 +39,20 @@ export const storyPathViews = {
       this.nodeInfo(info, n, unlocked, done);
     };
     const lockNote = who => who ? `<span class="sp-locknote">${LOCK}<small>${t('Se abre al vencer a {who}', { who })}</small></span>` : `<span class="sp-locknote">${LOCK}</span>`;
-    // Una ruta: la foto de su terreno, sus Pokémon (en silueta los que no tienes), lo capturado y si es nueva
+    // Una ruta: la foto de su terreno, lo capturado y si es nueva; sus Pokémon y sus otros nombres, en la ficha
     const route = n => {
       const unlocked = n.req <= prog, isNew = unlocked && n.req === prog;
-      const dexes = [...new Set(n.wild.map(([d]) => d))], have = dexes.filter(d => caught.has(d)), got = have.length, full = got === dexes.length;
+      const dexes = [...new Set(n.wild.map(([d]) => d))], got = dexes.filter(d => caught.has(d)).length, full = got === dexes.length;
       const b = el('button', 'sp-node sp-route' + (unlocked ? '' : ' locked') + (isNew ? ' new' : '') + (unlocked && full ? ' full' : ''));
       b.title = n.name;
       b.setAttribute('aria-label', `${n.name} · ${t('Ruta · captura')} · ${unlocked ? t('{a}/{b} capturados', { a: got, b: dexes.length }) : t('Aún bloqueado')}${isNew ? ' · ' + t('Nueva') : ''}`);
       const card = el('span', 'sp-card');
-      card.append(pic(n.map), el('span', 'sp-tag', `${BALL()}${t('Ruta · captura')}`));
+      card.append(pic(n.map));
       if (unlocked) {
-        // (los que tienes primero, y el resto en silueta: «¿quién es ese Pokémon?»)
-        const mons = el('span', 'sp-mons');
-        for (const d of [...have, ...dexes.filter(d => !caught.has(d))].slice(0, SHOWN)) mons.append(monIcon(d, 32, { silhouette: !caught.has(d) }));
-        card.append(mons, el('span', 'sp-count' + (full ? ' full' : ''), `${BALL()}${full ? '✓ ' : ''}${got}/${dexes.length}`));
+        card.append(el('span', 'sp-count' + (full ? ' full' : ''), `${BALL()}${full ? '✓ ' : ''}${got}/${dexes.length}`));
         if (isNew) card.append(el('em', 'sp-new', t('Nueva')));
       } else card.insertAdjacentHTML('beforeend', lockNote(n.req > 0 && leaders[n.req - 1] && leaders[n.req - 1].leader));
-      b.append(card, el('span', 'sp-name', n.name));
+      b.append(card, el('span', 'sp-name', n.name.split(' · ')[0]));
       b.onclick = () => pick(b, n, unlocked, false);
       all.push(b);
       // (cuelga del camino por un caminito propio)
@@ -82,9 +75,9 @@ export const storyPathViews = {
       const card = el('span', 'sp-card');
       card.append(pic(n.map));
       card.insertAdjacentHTML('beforeend', `${trainerImg(n.id, 'sp-leader')}<em class="sp-ord">${n.index + 1}</em>`
-        + `<span class="sp-medal">${badgeImg(region, n.index, done, 30, 'sp-badge')}</span><span class="sp-tag">${SWORDS}${t('Gimnasio · combate')}</span>`
+        + `<span class="sp-medal">${badgeImg(region, n.index, done, 30, 'sp-badge')}</span>`
         + (unlocked ? '' : lockNote(n.index > 0 && leaders[n.index - 1].leader)));
-      b.append(card, el('span', 'sp-name', `<b>${n.leader}</b>${now ? `<small>${n.name}</small>` : ''}`));
+      b.append(card, el('span', 'sp-name', `<b>${n.leader}</b>`));
       b.onclick = () => pick(b, n, unlocked, done);
       all.push(b);
       return stop(b, now && (() => this.startStory('gym', n.id)));
@@ -116,7 +109,7 @@ export const storyPathViews = {
         b.setAttribute('aria-label', `${t('Liga Pokémon')} · ${t('Liga · combate')} · ${cleared ? t('¡Has completado {r}!', { r: Data.REGIONS[region].name }) : open ? t('Combate {n} de {m}', { n: run + 1, m: total }) : t('Aún bloqueado')}`);
         const card = el('span', 'sp-card');
         card.append(pic(L.map));
-        card.insertAdjacentHTML('beforeend', `<img class="sp-stadium" src="tiles/league.png" alt="" draggable="false" loading="lazy"><span class="sp-tag">${SWORDS}${t('Liga · combate')}</span>`
+        card.insertAdjacentHTML('beforeend', `<img class="sp-stadium" src="tiles/league.png" alt="" draggable="false" loading="lazy">`
           + (cleared ? '<em class="sp-crown">♛</em>' : '') + (open ? '' : lockNote(leaders[Data.LEAGUE_FROM - 1] && leaders[Data.LEAGUE_FROM - 1].leader)));
         b.append(card, el('span', 'sp-name', `<b>${t('Liga Pokémon')}</b>${open && !cleared ? `<small>${t('Combate {n} de {m}', { n: run + 1, m: total })}</small>` : ''}`));
         // (su «Desafiar» también abre su pantalla, que explica los 5 combates seguidos antes de empezar)
@@ -140,7 +133,9 @@ export const storyPathViews = {
       if (!cur) return;
       if (!cur.classList.contains('sp-league')) cur.click();
       const a = cur.getBoundingClientRect(), w = wrap.getBoundingClientRect();
-      wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - w.width / 2 + a.width / 2), behavior: 'instant' });
+      // (en el móvil, pegada a la izquierda: así cabe lo que viene después y «Desafiar» no se queda cortado)
+      const at = matchMedia('(max-height: 500px), (max-width: 760px)').matches ? 70 : w.width / 2 - a.width / 2;
+      wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - at), behavior: 'instant' });
     });
     const box = el('div', 'sp-box');
     box.append(wrap, legend);

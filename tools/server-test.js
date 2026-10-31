@@ -761,7 +761,7 @@ class Client {
     const fortnight = 2 * week + D.TREASURE_DAYS * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
     const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
     const perDay = fortnight / D.TREASURE_DAYS / (allWheels / 3 / D.SPIN_COST.length);
-    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 300 && perDay >= 0.8 && perDay <= 1.5, `una ruleta entera son 300 gemas: entrando a diario (premio diario y misiones diarias) sale una tirada al día (${perDay.toFixed(2)})`);
+    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 270 && perDay >= 0.8 && perDay <= 1.5, `una ruleta entera son 270 gemas: entrando a diario (premio diario y misiones diarias) sale una tirada al día (${perDay.toFixed(2)})`);
   }
 
   // ---------- Premio del tutorial: una sola vez ----------

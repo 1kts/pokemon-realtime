@@ -228,6 +228,11 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .results h1.lose { color: #ff8a80; text-shadow: 0 4px 0 #5a1a1a; }
 .results > * { position: relative; }
 .caught { display: flex; flex-direction: column; align-items: center; }
+/* Al capturar, en corto: el Pokémon junto a la frase */
+.results.is-capture h1 { font-size: 38px; margin-bottom: 6px; }
+.results.is-capture .caught { flex-direction: row; justify-content: center; gap: 14px; text-align: left; }
+.results.is-capture .caught p { margin: 0; }
+.results.is-capture .caught-home, .results.is-capture .caught canvas { width: 104px !important; height: 104px !important; }
 .nick-form { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center; width: min(360px, 100%); margin: 6px auto 10px; text-align: left; }
 .nick-form label { grid-column: 1 / -1; font-weight: 700; }
 .nick-form input { padding: 9px 12px; }
@@ -279,10 +284,10 @@ body:not(.in-battle) #hud { display: none; }
 .hp > div.mid { background: linear-gradient(180deg, #ffe878, #dca800); }
 .hp > div.low { background: linear-gradient(180deg, #ff9a8a, #d8322a); }
 .bottom { bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 7px; }
-.energy { position: relative; width: 440px; height: 15px; border-radius: 9px; background: rgba(0,0,0,.6); border: 1px solid var(--line); overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
-.energy .fill { height: 100%; background: linear-gradient(90deg, #2f8fff, #7ae8ff); box-shadow: 0 0 12px rgba(122,232,255,.6); transition: width .1s; }
-.energy::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(0,0,0,.45) calc(10% - 1px) 10%); }
-.energy span { position: absolute; inset: 0; z-index: 1; text-align: center; font-size: 11px; font-weight: 700; line-height: 15px; text-shadow: 0 1px 2px #000; }
+/* La energía es secundaria: una línea fina debajo de los ataques (lo que gasta cada uno ya sale en su botón) */
+.energy { position: relative; align-self: stretch; height: 6px; border-radius: 3px; background: rgba(0,0,0,.55); overflow: hidden; }
+.energy .fill { height: 100%; background: linear-gradient(90deg, #2f8fff, #7ae8ff); transition: width .1s; }
+.energy span { display: none; }
 .moves { display: flex; gap: 7px; }
 .mv { position: relative; width: 116px; padding: 7px 9px 8px; border-radius: 12px; background: linear-gradient(180deg, rgba(26,38,64,.95), rgba(13,21,38,.92)); border: 1px solid var(--line); overflow: hidden; font-size: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 3px 0 var(--tc); }
 .mv::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 80% 0%, var(--tc), transparent 65%); opacity: .25; }
@@ -340,7 +345,6 @@ body:not(.in-battle) #hud { display: none; }
   .team { width: 172px; }
   .tinfo small { display: none; }
   .mv { width: 86px; font-size: 11px; }
-  .energy { width: 300px; }
   .help-hint { display: none; }
   .logo { font-size: 40px; } .logo span { font-size: 48px; }
 }
@@ -640,7 +644,14 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .tcard .acts button { padding: 2px 9px; }
 .tower-acts { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; }
 .tower-acts .primary { min-width: 220px; }
-.tower-side { display: flex; flex-direction: column; gap: 14px; }
+.tower-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; }
+/* Tu récord, en dos líneas, para que el ranking se vea entero */
+.tower-side > .panel:first-child { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 12px; padding: 12px 16px; }
+.tower-side > .panel:first-child > h3, .tower-side > .panel:first-child > .symbols, .tower-side > .panel:first-child > .tower-tools { grid-column: 1 / -1; }
+.tower-side > .panel:first-child > .big-elo { font-size: 44px; line-height: 1; }
+.tower-side > .panel:first-child > p.small { margin: 0; }
+.tower-side .tower-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.tower-board { max-height: calc(100vh - 380px); min-height: 160px; overflow: auto; }
 .symbols { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .symbol { display: inline-block; width: 26px; height: 26px; transform: rotate(45deg); border-radius: 5px; background: rgba(255,255,255,.06); border: 2px solid rgba(255,255,255,.16); }
 .symbol.got.plata { background: radial-gradient(circle at 35% 35%, #fff, #b8c4d8 50%, #4a5468); border-color: #dfe6f2; box-shadow: 0 0 10px rgba(220,230,255,.6); }
@@ -678,6 +689,7 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 
 @media (max-width: 960px) {
   .tower-body { grid-template-columns: 1fr; }
+  .tower-side { position: static; }
   .tower-slots, .tower-team { grid-template-columns: 1fr; }
   .tower-pools { max-height: none; }
   .ladder-bar input { width: 100%; margin-left: 0; }

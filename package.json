@@ -1,6 +1,6 @@
 {
   "name": "pokearenas",
-  "version": "0.34.1",
+  "version": "0.34.2",
   "description": "Combates Pokémon en tiempo real en el navegador: historia, clasificatoria y práctica (HD-2D con Three.js)",
   "main": "server.js",
   "scripts": {

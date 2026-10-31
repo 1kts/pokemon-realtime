@@ -7,7 +7,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); localStorage.removeItem('arena.storyMode'); true`);   // (la guía, ya vista)
   await page.tap(/^Historia/);
   await page.waitFor(`document.querySelector('.story-path .sp-league')`);
-  ok(await page.eval(`document.querySelectorAll('.story-path .sp-league').length === 1 && !document.querySelector('.story-path .sp-league.locked') && /Liga · combate/.test(document.querySelector('.sp-league').textContent)`), 'en el Camino, la Liga es un solo lugar, abierto con las 8 medallas');
+  ok(await page.eval(`document.querySelectorAll('.story-path .sp-league').length === 1 && !document.querySelector('.story-path .sp-league.locked') && /Liga Pokémon/.test(document.querySelector('.sp-league').textContent)`), 'en el Camino, la Liga es un solo lugar, abierto con las 8 medallas');
   await page.eval(`(() => { const w = document.querySelector('.story-path'); w.style.scrollBehavior = 'auto'; document.querySelector('.sp-league').scrollIntoView({ inline: 'center', block: 'nearest' }); return true; })()`);   // atajo: desplazar el camino hasta la Liga
   await page.click('.story-path .sp-league');
   await page.waitFor(`document.querySelectorAll('.lv-step').length === 5`);

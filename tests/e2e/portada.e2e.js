@@ -17,5 +17,5 @@ module.exports = async ({ page, ok }) => {
   ok(cols.join() === 'Controles,Combate,Terreno,Arenas', `«Cómo se juega» se despliega con sus 4 apartados (${cols.join(', ')})`);
 
   await page.tap('Perfil');
-  ok(await page.see('Invitado', { in: '.account', scroll: true }), 'y en su perfil pone que es invitado (sin cuenta)');
+  ok(await page.see('Invitado', { in: '.trainer-card' }), 'y en su perfil pone que es invitado (sin cuenta)');
 };

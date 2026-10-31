@@ -62,14 +62,15 @@ export const collectionViews = {
       (bar.querySelector('.tb-ctx') || bar).append(all);
     }
     TABS.forEach(([id, label], i) => {
-      if (i === 2) tabs.append(el('span', 'coll-sep', `<small>${t('Colección')}</small>`));
+      if (i === 2) tabs.append(el('span', 'coll-sep'));
       const n = id === 'mastery' ? ready : id === 'retos' ? retos : 0;
       const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label) + (n ? `<i class="nbadge">${n}</i>` : ''));
       b.onclick = () => { this.collTab = id; this.show('collection'); };
       tabs.append(b);
     });
     const body = el('div', 'coll-body scroll');
-    wrap.append(tabs, body);
+    bar.querySelector('.tb-ctx').before(tabs);
+    wrap.append(body);
     // La colección solo enseña lo que tienes y cómo se consigue lo demás; se equipa en el Perfil
     // (las skins, en la ficha de cada Pokémon)
     if (TABS.findIndex(([id]) => id === tab) >= 2) {
@@ -79,6 +80,9 @@ export const collectionViews = {
     }
     this['coll_' + tab](body);
     this.root.append(wrap);
+    // (si los filtros no caben, el elegido se queda a la vista)
+    const sel = tabs.querySelector('.sel');
+    tabs.scrollLeft = sel.offsetLeft - (tabs.clientWidth - sel.offsetWidth) / 2;
   },
 
   // Líneas: una tarjeta por línea evolutiva con sus retos (victorias, online y Torre), su progreso y recoger

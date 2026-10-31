@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.2 ----------
+    'Pantallas más claras': '見やすくなった画面',
+    'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'ストーリーがすっきり:地方とバッジはタイトルの隣に、道のカードはシンプルに、「遊び方」とタイマーは道の上に移動しました。',
+    'Torre Batalla y Práctica van en dos columnas, y en Partida rápida y Práctica el botón de jugar está arriba, en la cabecera.': 'バトルタワーと練習は2列表示になり、クイックマッチと練習のプレイボタンは上部のヘッダーに移動しました。',
+    'Tu foto de perfil se elige en una sola lista con buscador, y crear cuenta o iniciar y cerrar sesión están en tu tarjeta del Perfil.': 'プロフィール画像は検索付きの1つのリストから選べます。アカウント作成、ログイン、ログアウトはプロフィールカードから行えます。',
+    'Lucky Spin cuesta un 10 % menos: la ruleta entera pasa de 300 a 270 gemas, y en el móvil se entiende mejor qué puedes ganar.': 'Lucky Spinが10%お得に:1周の費用が300ジェムから270ジェムになり、スマホでも何がもらえるか分かりやすくなりました。',
+    'Las Poké Balls son más fáciles de acertar: tienen más margen y se curvan un poco hacia el Pokémon. En combate, la energía va en una línea bajo los ataques.': 'モンスターボールが当てやすくなりました。当たり判定が広がり、ポケモンの方へ少し曲がります。バトルのエネルギーは技の下の細い線になりました。',
+    'La portada cabe entera en el móvil, la Mochila ya no mueve la ventana y los premios por recoger brillan con un halo dorado que se ve bien.': 'タイトル画面がスマホに全部収まり、バッグでウィンドウ全体が動かなくなり、受け取れる報酬は見やすい金色に輝きます。',
     // ---------- Novedades v0.34.1 ----------
     'Resultados y Lucky Spin más claros': '結果画面とLucky Spinが見やすく',
     'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': 'バトル終了時、結果画面は常に一番上から開き、「勝利!」が見えるようになりました。',
@@ -1484,6 +1492,8 @@ export default {
     // ---------- ポケモン図鑑 ----------
     'capturados': '匹 つかまえた',
     'Buscar por nombre o número': 'なまえ か 番号で さがす',
+    'Busca un Pokémon, una medalla o un objeto': 'ポケモン・バッジ・アイテムを検索',
+    'Nada coincide con tu búsqueda': '一致するものがありません',
     'Gen {n}': '第{n}世代',
     'Todas': 'すべて',
     'Todos los tipos': 'すべての タイプ',
@@ -1966,6 +1976,7 @@ export default {
     'Lucky Spin': 'Lucky Spin',
     'Tienes todos sus premios.': '賞品をすべて持っている。',
     'Tirada {n} de {max}': '{max}回中{n}回目',
+    'Cada tirada te da uno de estos premios, sin repetir.': '1回まわすごとに、この中から賞品を1つ、重複なしで獲得。',
     'Toca un premio para ver qué es.': '賞品をタップすると内容が見られる。',
     'Un avatar con la cara del Pokémon de cerca y su efecto animado dentro de la burbuja.': 'ポケモンの顔のアップと、バブルの中のアニメーション効果のアバター。',
     'Un contorno de luz alrededor del sprite que se suma a cualquier skin. Se pone a la línea que quieras en Colección.': 'どのスキンとも重ねられる光の輪郭。コレクションで好きな系統につけられる。',

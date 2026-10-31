@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.2 ----------
+    'Pantallas más claras': 'Klarere Bildschirme',
+    'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': 'Die Story kommt auf den Punkt: Regionen und Orden neben dem Titel, schlichtere Wegkarten, „So wird gespielt“ und der Timer über dem Weg.',
+    'Torre Batalla y Práctica van en dos columnas, y en Partida rápida y Práctica el botón de jugar está arriba, en la cabecera.': 'Duellturm und Training haben zwei Spalten, und bei Schnelles Match und Training sitzt der Spielen-Knopf oben in der Kopfzeile.',
+    'Tu foto de perfil se elige en una sola lista con buscador, y crear cuenta o iniciar y cerrar sesión están en tu tarjeta del Perfil.': 'Dein Profilbild wählst du aus einer Liste mit Suche. Konto erstellen, anmelden und abmelden findest du auf deiner Profilkarte.',
+    'Lucky Spin cuesta un 10 % menos: la ruleta entera pasa de 300 a 270 gemas, y en el móvil se entiende mejor qué puedes ganar.': 'Lucky Spin kostet 10 % weniger: Ein ganzes Rad kostet 270 statt 300 Edelsteine, und auf dem Handy siehst du besser, was du gewinnen kannst.',
+    'Las Poké Balls son más fáciles de acertar: tienen más margen y se curvan un poco hacia el Pokémon. En combate, la energía va en una línea bajo los ataques.': 'Pokébälle treffen leichter: Sie haben mehr Spielraum und ziehen leicht zum Pokémon hin. Im Kampf ist die Energie jetzt eine Linie unter deinen Attacken.',
+    'La portada cabe entera en el móvil, la Mochila ya no mueve la ventana y los premios por recoger brillan con un halo dorado que se ve bien.': 'Der Startbildschirm passt ganz aufs Handy, der Beutel verschiebt nicht mehr das Fenster und abholbare Belohnungen leuchten in gut sichtbarem Gold.',
     // ---------- Novedades v0.34.1 ----------
     'Resultados y Lucky Spin más claros': 'Klarere Ergebnisse und Lucky Spin',
     'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': 'Nach einem Kampf öffnet sich das Ergebnisfenster immer von oben, sodass du den „Sieg!“ siehst.',
@@ -1483,6 +1491,8 @@ export default {
     // ---------- Pokédex ----------
     'capturados': 'gefangen',
     'Buscar por nombre o número': 'Nach Name oder Nummer suchen',
+    'Busca un Pokémon, una medalla o un objeto': 'Suche ein Pokémon, einen Orden oder ein Item',
+    'Nada coincide con tu búsqueda': 'Nichts passt zu deiner Suche',
     'Gen {n}': 'Gen {n}',
     'Todas': 'Alle',
     'Todos los tipos': 'Alle Typen',
@@ -1965,6 +1975,7 @@ export default {
     'Lucky Spin': 'Lucky Spin',
     'Tienes todos sus premios.': 'Du hast alle Preise.',
     'Tirada {n} de {max}': 'Dreh {n} von {max}',
+    'Cada tirada te da uno de estos premios, sin repetir.': 'Jeder Dreh gibt dir einen dieser Preise, ohne Wiederholung.',
     'Toca un premio para ver qué es.': 'Tippe einen Preis an, um ihn zu sehen.',
     'Un avatar con la cara del Pokémon de cerca y su efecto animado dentro de la burbuja.': 'Ein Avatar mit dem Gesicht des Pokémon aus der Nähe und seinem animierten Effekt in der Blase.',
     'Un contorno de luz alrededor del sprite que se suma a cualquier skin. Se pone a la línea que quieras en Colección.': 'Ein Lichtrand um das Sprite, passend zu jedem Skin. In der Sammlung einer beliebigen Reihe geben.',

@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.34.2', date: '2026-10-31', title: 'Pantallas más claras',
+      items: [
+        ['cambio', 'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.'],
+        ['cambio', 'Torre Batalla y Práctica van en dos columnas, y en Partida rápida y Práctica el botón de jugar está arriba, en la cabecera.'],
+        ['cambio', 'Tu foto de perfil se elige en una sola lista con buscador, y crear cuenta o iniciar y cerrar sesión están en tu tarjeta del Perfil.'],
+        ['cambio', 'Lucky Spin cuesta un 10 % menos: la ruleta entera pasa de 300 a 270 gemas, y en el móvil se entiende mejor qué puedes ganar.'],
+        ['cambio', 'Las Poké Balls son más fáciles de acertar: tienen más margen y se curvan un poco hacia el Pokémon. En combate, la energía va en una línea bajo los ataques.'],
+        ['arreglo', 'La portada cabe entera en el móvil, la Mochila ya no mueve la ventana y los premios por recoger brillan con un halo dorado que se ve bien.'],
+      ],
+    },
+    {
       v: '0.34.1', date: '2026-10-30', title: 'Resultados y Lucky Spin más claros',
       items: [
         ['arreglo', 'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».'],

@@ -150,6 +150,7 @@ net.on('profile', m => { if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.b
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
 net.on('flags', m => {
   ui.flags = m.flags;
+  if (ui.root.hidden) return;   // (en combate no se repinta nada: se verá al volver)
   if (ui.view === 'treasure' && !ui.spinOpen()) { ui.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad'); ui.tzSpin = null; ui.show(ui.tzBack || 'menu'); }
   else if ((ui.view === 'menu' || ui.view === 'treasure') && !ui.tzSpin) ui.show(ui.view, true);   // (no en mitad de una tirada)
 });

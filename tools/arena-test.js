@@ -453,4 +453,49 @@ check('los modificadores funcionan en cualquier arena', () => {
   }
 });
 
+// Poké Balls: lanzar de verdad (la entrada c: 5 con su ángulo) a un rival quieto y mirar si empieza la captura
+function ballThrow(deg, dist, opts = {}) {
+  const bt = new Battle({ mode: 'wild', map: 'pradera', sides: [{ name: 'A', team: [{ dex: 25, level: 30 }], balls: { pokeball: 5 } }, { name: 'B', team: [{ dex: 19, level: 4 }], wild: true, passive: true }], onEnd: () => {} });
+  bt.stop();
+  bt.state = 'fight';
+  bt.obstacles = [];
+  const [me, foe] = bt.sides;
+  Object.assign(me, { x: 200, y: 300 });
+  const d = typeof dist === 'function' ? dist(bt.rad(foe)) : dist;
+  Object.assign(foe, { x: 200 + d, y: 300, ...opts });
+  me.inputs.push({ mx: 0, my: 0, a: deg * Math.PI / 180, c: 5 });
+  for (let i = 0; i < 90 && bt.state === 'fight'; i++) { foe.x = 200 + d; foe.y = 300; bt.tick(); }
+  return bt.state === 'capture';
+}
+
+check('la Poké Ball perdona: la que pasa rozando acierta', () => {
+  // (a 60° la ayuda de puntería no actúa: pasa a R + 18 del centro, donde R = radio del rival, ya con la Ball)
+  assert(ballThrow(60, r => (r + 18) / Math.sin(Math.PI / 3)), 'rozando');
+});
+
+check('la Poké Ball se corrige un poco hacia el rival que tienes delante', () => {
+  assert(ballThrow(0, 200), 'recta');
+  assert(ballThrow(15, 200), 'desviada 15°');
+  assert(ballThrow(-15, 200), 'desviada 15° al otro lado');
+});
+
+check('la ayuda es poca: lanzar a otro lado sigue fallando', () => {
+  assert(!ballThrow(45, 300), 'a 45°');
+  assert(!ballThrow(180, 300), 'de espaldas');
+  assert(!ballThrow(0, 200, { invuln: 9 }), 'rival invulnerable');
+});
+
+check('los ataques no se corrigen: siguen recto', () => {
+  const bt = battle('pradera');
+  bt.obstacles = [];
+  const [me, foe] = bt.sides;
+  Object.assign(me, { x: 200, y: 300 });
+  Object.assign(foe, { x: 400, y: 300 });
+  const a = 15 * Math.PI / 180;
+  const p = { id: 9, owner: me, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 1 }, x: 230, y: 300, vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 };
+  bt.projectiles.push(p);
+  run(bt, 0.2);
+  assert(Math.abs(Math.atan2(p.vy, p.vx) - a) < 1e-9, 'el ataque no cambia de rumbo');
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

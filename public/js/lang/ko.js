@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.34.2 ----------
+    'Pantallas más claras': '더 깔끔해진 화면',
+    'Historia va al grano: regiones y medallas junto al título, tarjetas del Camino más limpias y «Cómo se juega» y el contador encima del Camino.': '스토리가 간결해졌어요: 지방과 배지는 제목 옆으로, 길 카드는 더 깔끔하게, ‘플레이 방법’과 타이머는 길 위로 옮겼어요.',
+    'Torre Batalla y Práctica van en dos columnas, y en Partida rápida y Práctica el botón de jugar está arriba, en la cabecera.': '배틀타워와 연습은 두 칸으로 바뀌었고, 빠른 대전과 연습의 시작 버튼은 위쪽 헤더로 옮겼어요.',
+    'Tu foto de perfil se elige en una sola lista con buscador, y crear cuenta o iniciar y cerrar sesión están en tu tarjeta del Perfil.': '프로필 사진은 검색이 되는 하나의 목록에서 골라요. 계정 만들기, 로그인, 로그아웃은 프로필 카드에 있어요.',
+    'Lucky Spin cuesta un 10 % menos: la ruleta entera pasa de 300 a 270 gemas, y en el móvil se entiende mejor qué puedes ganar.': 'Lucky Spin이 10% 저렴해졌어요: 룰렛 전체 비용이 300젬에서 270젬으로 내려갔고, 모바일에서 얻을 수 있는 보상도 더 잘 보여요.',
+    'Las Poké Balls son más fáciles de acertar: tienen más margen y se curvan un poco hacia el Pokémon. En combate, la energía va en una línea bajo los ataques.': '몬스터볼을 맞히기 쉬워졌어요: 판정이 넓어지고 포켓몬 쪽으로 살짝 휘어요. 배틀의 에너지는 기술 아래 가는 선으로 바뀌었어요.',
+    'La portada cabe entera en el móvil, la Mochila ya no mueve la ventana y los premios por recoger brillan con un halo dorado que se ve bien.': '타이틀 화면이 모바일에 전부 들어오고, 가방에서 창 전체가 움직이지 않으며, 받을 보상은 잘 보이는 금빛으로 빛나요.',
     // ---------- Novedades v0.34.1 ----------
     'Resultados y Lucky Spin más claros': '더 선명해진 결과 화면과 Lucky Spin',
     'Al acabar un combate, la ventana de resultados siempre se abre desde arriba y ves el «¡Victoria!».': '전투가 끝나면 결과 창이 항상 맨 위부터 열려 「승리!」를 볼 수 있습니다.',
@@ -1484,6 +1492,8 @@ export default {
     // ---------- 포켓몬 도감 ----------
     'capturados': '마리 잡음',
     'Buscar por nombre o número': '이름이나 번호로 찾기',
+    'Busca un Pokémon, una medalla o un objeto': '포켓몬, 배지, 아이템 검색',
+    'Nada coincide con tu búsqueda': '검색 결과가 없습니다',
     'Gen {n}': '{n}세대',
     'Todas': '전체',
     'Todos los tipos': '모든 타입',
@@ -1966,6 +1976,7 @@ export default {
     'Lucky Spin': 'Lucky Spin',
     'Tienes todos sus premios.': '상품을 모두 가졌어요.',
     'Tirada {n} de {max}': '{max}회 중 {n}회차',
+    'Cada tirada te da uno de estos premios, sin repetir.': '돌릴 때마다 이 상품 중 하나를 중복 없이 받습니다.',
     'Toca un premio para ver qué es.': '상품을 눌러 무엇인지 보세요.',
     'Un avatar con la cara del Pokémon de cerca y su efecto animado dentro de la burbuja.': '포켓몬 얼굴 클로즈업과 버블 안의 움직이는 효과가 있는 아바타.',
     'Un contorno de luz alrededor del sprite que se suma a cualquier skin. Se pone a la línea que quieras en Colección.': '어떤 스킨과도 겹쳐지는 빛 테두리. 컬렉션에서 원하는 계열에 입혀요.',

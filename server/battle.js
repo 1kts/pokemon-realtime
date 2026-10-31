@@ -26,6 +26,8 @@ const SUDDEN = 120, LIMIT = 180, SUDDEN_MULT = 1.5;
 // Proyectiles: margen de impacto (px) y radio mínimo del blanco, para que acertar a un Pokémon pequeño con un
 // proyectil fino no sea cuestión de píxeles. Vale igual para el jugador y para la IA.
 const PROJ_FORGIVE = 9, PROJ_MIN_TARGET = 18;
+// Poké Ball: perdona un poco más que un ataque y, si el rival va casi de frente, se corrige hacia él en vuelo
+const BALL_FORGIVE = 18, BALL_TURN = 0.6, BALL_CONE = 20 * Math.PI / 180;   // px, rad/s y medio cono
 
 // moves: los que lleva (los elige el jugador); por defecto, los 4 de la especie.
 // ev, iv, nat (naturaleza) · shiny · r: radio de colisión según el tamaño de la especie.
@@ -570,6 +572,7 @@ class Battle {
   updateProjectiles(dt) {
     for (const p of this.projectiles) {
       this.arena.bend(p, dt);
+      if (p.ball) this.steerBall(p, dt);
       const steps = 2;   // dos subpasos para que los rápidos no atraviesen nada
       for (let k = 0; k < steps && p.left > 0; k++) {
         p.x += p.vx * dt / steps; p.y += p.vy * dt / steps;
@@ -586,7 +589,7 @@ class Battle {
         if (p.m.type === 'fuego' && this.terrain[i] === T.GRASS && p.m.terrain === 'fuego') this.paint(i, 'fuego');
         // Rival
         const f = this.foe(p.owner);
-        if (Math.hypot(f.x - p.x, f.y - p.y) < Math.max(this.rad(f), PROJ_MIN_TARGET) + p.r + (p.ball ? 0 : PROJ_FORGIVE) && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
+        if (Math.hypot(f.x - p.x, f.y - p.y) < Math.max(this.rad(f), PROJ_MIN_TARGET) + p.r + (p.ball ? BALL_FORGIVE : PROJ_FORGIVE) && !this.mon(f).fainted && f.invuln <= 0 && f.forced <= 0) {
           if (p.ball) { this.ballHit(p, f); p.left = 0; break; }
           if (this.hit(p.owner, f, p.m, p.x, p.y, { proj: p, a: Math.atan2(p.vy, p.vx) })) { p.hitFoe = true; this.projectileEnd(p, true); }
           break;
@@ -596,6 +599,17 @@ class Battle {
       }
     }
     this.projectiles = this.projectiles.filter(p => p.left > 0);
+  }
+
+  // Ayuda de puntería de la Ball: gira poco y solo si el rival va dentro del cono; lo que sale torcido sigue fallando
+  steerBall(p, dt) {
+    const f = this.foe(p.owner);
+    if (f.invuln > 0 || f.forced > 0 || this.mon(f).fainted) return;
+    const a = Math.atan2(p.vy, p.vx);
+    const diff = Math.atan2(Math.sin(Math.atan2(f.y - p.y, f.x - p.x) - a), Math.cos(Math.atan2(f.y - p.y, f.x - p.x) - a));
+    if (Math.abs(diff) > BALL_CONE) return;
+    const na = a + Math.sign(diff) * Math.min(Math.abs(diff), BALL_TURN * dt), v = Math.hypot(p.vx, p.vy);
+    p.vx = Math.cos(na) * v; p.vy = Math.sin(na) * v;
   }
 
   // Frente de la ola: moja el suelo bajo todo su ancho y golpea una vez a quien pille

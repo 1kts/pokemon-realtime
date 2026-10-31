@@ -131,9 +131,9 @@ export const treasureViews = {
     // el centro: al tirar, la tira corre y frena con el premio bajo la marca, como las cajas de los shooters
     const strip = el('div', 'tz-strip');
     const track = el('div', 'tz-track');
-    for (const x of sorted) track.append(this.stripCard(x, mine.includes(x.id), pick === x));
+    for (const x of sorted) track.append(this.stripCard(x, mine.includes(x.id), pick === x, x === big));
     strip.append(el('i', 'tz-marker'), track);
-    left.append(board, strip);
+    left.append(board, el('div', 'tz-lead', `<b>${t('Cada tirada te da uno de estos premios, sin repetir.')}</b>`), strip);
 
     // Barra de abajo: lo elegido o el progreso, las probabilidades y el precio con el botón de tirar
     const bar = el('div', 'tz-bar');
@@ -175,11 +175,11 @@ export const treasureViews = {
   },
 
   // Carta pequeña de la tira del móvil
-  stripCard(x, has = false, sel = false) {
-    const b = el('button', `tz-scard r-${x.rarity}${has ? ' got' : ''}${sel ? ' sel' : ''}`);
+  stripCard(x, has = false, sel = false, big = false) {
+    const b = el('button', `tz-scard r-${x.rarity}${big ? ' big' : ''}${has ? ' got' : ''}${sel ? ' sel' : ''}`);
     b.style.setProperty('--rc', RARITY[x.rarity].color);
     b.dataset.id = x.id;
-    b.append(this.prizeArt(x, 48), el('span', 'tz-name', prizeName(x)));
+    b.append(this.prizeArt(x, 48), el('span', 'tz-name', prizeName(x)), el('i', 'tz-rar', big ? t('Gran premio') : t(RARITY[x.rarity].name)));
     if (has) b.append(el('i', 'tz-check', '✓'));
     b.title = `${prizeName(x)} · ${t(RARITY[x.rarity].name)}`;
     b.onclick = () => { if (this.tzSpin) return; this.tzPick = x.id; this.show('treasure'); };

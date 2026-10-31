@@ -90,6 +90,7 @@ export class UI {
 
   setProfile(p, board, rank) {
     const first = !this.profile;
+    if (this.accClose && p.account && !this.profile.account) this.accClose();   // ya tiene cuenta: fuera su ventana
     if (!first) this.celebrateAchievements(this.profile.achievements, p.achievements);
     this.profile = p;
     this.board = board || this.board;
@@ -423,19 +424,16 @@ export class UI {
     const prog = Data.progOf(p, region);
     const wrap = el('div', 'story');
     const bar = this.topbar(t('Historia'), 'menu');
-    const sb = this.regionBar(region, rid => { this.region = rid; this.show('story'); }, true);
-    // En el móvil, las regiones y las medallas van en la cabecera (a la derecha le sobra sitio) y no bajo el mapa
-    bar.querySelector('.tb-ctx').append(this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true));
-    // Bajo las regiones, dos bloques: tu objetivo (más abajo) y la rotación de las rutas con la guía. El
-    // «Siguiente: líder · tope» de la barra sobra aquí: lo dice ya «Tu objetivo»
-    sb.querySelector('.next-goal').remove();
-    const tools = el('div', 'panel story-info');
-
+    // Las regiones y las medallas, en la cabecera junto al título, en todos los tamaños
+    const chips = this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true);
+    chips.classList.replace('tb-mobile', 'story-regions');
+    bar.querySelector('.tb-ctx').append(chips);
+    // Lo que acompaña al Camino, en su panel: «Cómo se juega» arriba a la izquierda y la cuenta atrás a la derecha
+    const tools = el('div', 'sp-bar');
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
     help.onclick = () => this.storyGuide();
-    // «Cómo se juega» delante, a la izquierda (es lo primero que mira quien empieza), y la cuenta atrás después
     tools.append(help, this.rotationTimer('long'));
-    wrap.append(bar, sb);
+    wrap.append(bar);
     if (!storage.get('arena.storyGuide')) { storage.set('arena.storyGuide', '1'); setTimeout(() => this.storyGuide(), 400); }
     const body = el('div', 'story-body');
     const art = REGION_ART[region];
@@ -466,7 +464,7 @@ export class UI {
       const row = el('div', 'goal-routes', `<small>${t('Rutas nuevas')}:</small>`);
       // (cada una lleva a su tarjeta del Camino: elegida y a la vista)
       for (const n of fresh) {
-        const c = el('button', 'chip', n.name);
+        const c = el('button', 'chip', n.name.split(' · ')[0]);
         c.onclick = () => { const b = [...body.querySelectorAll('.sp-route')].find(x => x.title === n.name); if (!b) return; b.click(); b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); };
         row.append(c);
       }
@@ -475,11 +473,11 @@ export class UI {
     const side = el('div', 'story-side');
     side.append(info);
     const view = el('div', 'story-pathwrap');
-    view.append(this.storyPath(region, nodes, prog, nextLeader, info));
-    body.append(view, side);
+    view.append(tools, this.storyPath(region, nodes, prog, nextLeader, info));
     const head = el('div', 'story-head');
-    head.append(goal, tools);
-    wrap.append(head, body);
+    head.append(goal);
+    body.append(head, view, side);
+    wrap.append(body);
     this.root.append(wrap);
   }
 
@@ -590,7 +588,6 @@ export class UI {
       const w = Data.routeWild(n);
       // (y qué es una ruta: opcional)
       box.append(el('h3', '', n.name), el('p', 'small ni-what', t('Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.')), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
-      box.append(this.rotationTimer('short'));
       // Las 4 de esta tanda (cambian cada 6 horas) y, en la misma lista y en dorado, su especial y los errantes
       const list = el('div', 'mini-team route-list');
       const normal = 1 - w.chance - w.roamChance;
@@ -973,11 +970,11 @@ export class UI {
     const f = el('form', 'nick-form');
     const input = el('input');
     Object.assign(input, { maxLength: Data.NICK_MAX, placeholder: SPECIES[dex].name, autocomplete: 'off', spellcheck: false });
-    input.setAttribute('aria-label', t('Mote'));
+    input.setAttribute('aria-label', t('¿Le pones un mote?'));
+    input.title = t('Opcional: puedes cambiarlo cuando quieras en Mis Pokémon');
     const save = el('button', '', t('Guardar mote'));
     save.type = 'submit';
-    const note = el('small', 'nick-note', t('Opcional: puedes cambiarlo cuando quieras en Mis Pokémon'));
-    f.append(el('label', '', t('¿Le pones un mote?')), input, save, note);
+    f.append(input, save);
     input.oninput = () => { save.textContent = t('Guardar mote'); save.classList.remove('saved'); };
     f.onsubmit = e => {
       e.preventDefault();
@@ -1173,6 +1170,7 @@ export class UI {
         const pic = item.dex ? portrait(item.dex, 64) : el('span', 'item-pic', itemImg(item.id, 48));
         c.append(pic);
         const desc = item.daily ? t('IV perfectos · Nv.{n}', { n: Data.shopLevel(p, this.region || 'kanto') }) : item.desc;
+        c.title = desc;
         c.append(el('div', 'si', `<b>${item.name}</b><small>${desc}</small><span class="price">${coins(item.price)}</span>${item.dex ? '' : `<small>${t('Tienes: {n}', { n: p.items[item.id] || 0 })}</small>`}`));
         const acts = el('div', 'acts');
         if (locked) acts.append(el('small', 'warn', t('Requiere {n} medallas', { n: item.req })));
@@ -1208,7 +1206,7 @@ export class UI {
     wrap.append(bar);
     const body = el('div', 'online-body');
     const me = el('div', 'panel online-me');
-    if (casual) me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><p class="small">${t('Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.', { n: Data.RANKED_LEVEL })}</p>`;
+    if (casual) me.innerHTML = `<p class="small">${t('Online sin ELO: no ganas ni pierdes puntos. Usas tu equipo de Clasificatoria: 3 Pokémon, todos a Nv.{n}.', { n: Data.RANKED_LEVEL })}</p>`;
     else me.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="league">${t(p.league)}</div><div class="big-elo">${p.elo}</div>
       <p class="small">${t('{w} victorias · {l} derrotas', { w: p.wins, l: p.losses })}${next ? ` · ${t('{n} puntos para {league}', { n: next[0] - p.elo, league: t(next[1]) })}` : ''}</p>
       <p class="small">${t('Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.', { n: Data.RANKED_LEVEL })}</p>`;
@@ -1216,7 +1214,8 @@ export class UI {
     const go = el('button', 'primary', casual ? t('Buscar partida rápida') : t('Buscar partida clasificatoria'));
     go.disabled = !Data.pvpTeam(p.pvpTeam);
     go.onclick = () => { this.lastMode = mode; if (casual) this.casualBack = 'online'; this.net.send({ t: 'queue', mode }); };
-    me.append(go);
+    // (en Partida rápida no hay nada más que mirar antes: buscar, en la cabecera)
+    (casual ? bar.querySelector('.tb-ctx') : me).append(go);
     if (go.disabled) me.append(el('p', 'warn', t('Prepara tu equipo de 3 para poder buscar partida.')));
     const col = el('div', 'online-col');
     col.append(me, this.pvpTeamPanel());
@@ -1404,7 +1403,8 @@ export class UI {
   // ---------- Práctica ----------
   view_practice() {
     const wrap = el('div', 'draft');
-    wrap.append(this.topbar(t('Práctica contra la IA'), 'menu'));
+    const bar = this.topbar(t('Práctica contra la IA'), 'menu');
+    wrap.append(bar);
     const chosen = [];
     let skill = 0.28;
     const grid = el('div', 'pool scroll');
@@ -1479,7 +1479,15 @@ export class UI {
       this.lastMode = { kind: 'practice', dexes: [...chosen], skill, map, mod, aiDebug };
       this.net.send({ t: 'practice', dexes: chosen, skill, map, mod, aiDebug });
     };
-    wrap.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), grid, diff, dbgRow, arenas, start);
+    // A la izquierda, tus Pokémon y la dificultad; a la derecha, los mapas; «Empezar» en la cabecera, siempre a la vista
+    bar.querySelector('.tb-ctx').append(start);
+    const left = el('div', 'panel practice-col');
+    left.append(el('p', 'intro', t('Elige hasta 3 Pokémon (nivel 50). El bot lleva el mismo número.')), diff, dbgRow, grid);
+    const right = el('div', 'panel practice-col');
+    right.append(arenas);
+    const body = el('div', 'practice-body');
+    body.append(left, right);
+    wrap.append(body);
     this.root.append(wrap);
     this.refreshLegalBar();
   }
@@ -1492,7 +1500,7 @@ export class UI {
     this.root.scrollTop = 0;   // (desde arriba: si se había bajado en la pantalla de antes, el resultado quedaba fuera de la vista)
     const r = msg.reward || {};
     const won = msg.winner === msg.you, draw = msg.winner === -1;
-    const box = el('div', 'panel results');
+    const box = el('div', 'panel results' + (msg.captured ? ' is-capture' : ''));
     const title = t(msg.captured ? '¡Capturado!' : draw ? 'Empate' : won ? '¡Victoria!' : 'Derrota');
     if (won || msg.captured) {
       const conf = el('div', 'confetti');
@@ -1542,7 +1550,8 @@ export class UI {
       const up = r.xp.filter(x => x.level > x.fromLevel || x.evolved);
       if (up.length) setTimeout(() => this.app.sfx.levelUp(up.some(x => x.evolved)), 600);
       const list = el('div', 'xp-list');
-      for (const x of r.xp) {
+      // (al capturar, en corto: solo quien sube de nivel o evoluciona)
+      for (const x of msg.captured ? up : r.xp) {
         const row = el('div', 'xp-row');
         const pm = this.profile && this.profile.mons.find(m => m.uid === x.uid);
         // Quien evoluciona posa y quien sube de nivel salta; los demás, cara de victoria o de derrota
@@ -1555,7 +1564,7 @@ export class UI {
         row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b><small>${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}</small>${x.evolved ? `<span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span>` : ''}`));
         list.append(row);
       }
-      box.append(list);
+      if (list.children.length) box.append(list);
     }
     if (r.mastery && r.mastery.length) {
       const n = Data.MASTERY.length;

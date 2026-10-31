@@ -1447,8 +1447,8 @@
     epico: { w: 13, name: 'Épico', color: '#a35cff' }, legendario: { w: 6, name: 'Legendario', color: '#ffb21a' },
     mitico: { w: 3, name: 'Mítico', color: '#ff3d6e' },
   };
-  // Cada tirada, más cara (300 gemas la ruleta entera): entrando a diario sale 1 tirada al día; jugando más, 2
-  const SPIN_COST = [10, 14, 18, 22, 26, 30, 34, 39, 48, 59];
+  // Cada tirada, más cara (270 gemas la ruleta entera): entrando a diario sale 1 tirada al día; jugando más, 2
+  const SPIN_COST = [9, 13, 16, 20, 23, 27, 31, 35, 43, 53];
   // Efecto dentro de la burbuja de los retratos, según el tipo; 'aurora' es el especial (prismático)
   const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
     fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };

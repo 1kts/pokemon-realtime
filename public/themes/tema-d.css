@@ -23,6 +23,9 @@ body.tema-d {
   /* relieve de las tarjetas y los botones: luz arriba, sombra abajo, y la sombra de debajo */
   --td-relief: inset 0 2px 0 rgba(255,255,255,.3), inset 0 -4px 0 rgba(0,0,0,.25);
   --td-drop: 0 10px 22px rgba(0,0,0,.45);
+  /* el halo de lo que tiene premio: un anillo que recorta contra el fondo y una luz ancha; late sin apagarse */
+  --td-halo: 0 0 0 2px rgba(255,210,63,.6), 0 0 14px 4px rgba(255,210,63,.8), 0 0 36px 10px rgba(255,190,40,.55);
+  --td-halo-max: 0 0 0 3px rgba(255,225,110,.85), 0 0 20px 7px rgba(255,220,90,.95), 0 0 52px 16px rgba(255,190,40,.7);
 }
 /* El color de cada modo: --c (vivo, para el borde y el brillo), --c1 y --c2 (arriba y abajo, donde se pinta lleno) y --g
    (el mismo en r, g, b, encendido sobre el azul noche de las tarjetas) */
@@ -36,7 +39,7 @@ body.tema-d .menu-card.tutorial { --c: #ff6fb5; --c1: #b82a70; --c2: #4e0c2c; --
 
 /* ---------- Lo común: paneles azul noche con algo de cuerpo ---------- */
 body.tema-d #screen { background: linear-gradient(90deg, rgba(14,24,70,.3), transparent 60%, rgba(14,24,70,.18)); }
-body.tema-d .panel, body.tema-d .node-info, body.tema-d .story-head .map-goal, body.tema-d .story-info, body.tema-d .subbar,
+body.tema-d .panel, body.tema-d .node-info, body.tema-d .story-head .map-goal, body.tema-d .subbar,
 body.tema-d .hub-mod, body.tema-d .story-pathwrap, body.tema-d .howto {
   background: linear-gradient(180deg, rgba(29,44,120,.92), rgba(20,32,90,.92) 40%, rgba(15,24,70,.94)); color: var(--td-text); backdrop-filter: none;
   border: 2px solid var(--td-rim); border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop);
@@ -73,7 +76,7 @@ body.tema-d .hub-mod .news-btn:has(.ndot.news) { border-color: var(--td-gold); }
 body.tema-d .hub-left .hub-tz { border: 2px solid var(--td-gold); border-radius: 12px;
   background: radial-gradient(120% 160% at 100% 0%, rgba(255,190,40,.55), transparent 60%), linear-gradient(180deg, #6a3e9a, #2a1858);
   box-shadow: inset 0 2px 0 rgba(255,240,180,.5), inset 0 -3px 0 rgba(0,0,0,.25), 0 3px 0 #120a2e, 0 0 18px rgba(255,190,40,.35), var(--td-drop); }
-body.tema-d .hub-left .hub-tz.ready { box-shadow: inset 0 2px 0 rgba(255,240,180,.6), 0 3px 0 #120a2e, 0 0 26px rgba(255,203,5,.7); }
+body.tema-d .hub-left .hub-tz.ready { --td-base: inset 0 2px 0 rgba(255,240,180,.6), 0 3px 0 #120a2e; box-shadow: var(--td-base), var(--td-halo); }
 body.tema-d .hub-tz b { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--td-gold); filter: none; text-shadow: 0 2px 0 rgba(0,0,0,.45); }
 body.tema-d .hub-tz small { color: #ffe9a8 !important; }
 body.tema-d .hub-tz span { white-space: nowrap; }   /* (con gemas, el nombre no se parte en dos líneas) */
@@ -105,8 +108,10 @@ body.tema-d .menu-card {
     linear-gradient(170deg, #1d2c78, #121c52);
   border-color: rgba(var(--g), .8);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 4px 0 #0b1238, 0 8px 18px rgba(0,0,0,.4); }
-body.tema-d .menu-card::before { inset: 0 0 auto 0; height: 4px; border-radius: 14px 14px 0 0; opacity: 1;
-  background: linear-gradient(90deg, rgb(var(--g)), rgba(var(--g), .5) 50%, transparent); }
+/* (la franja, de 4 px, dentro de una caja tan alta como la curva: en una de 4 px el navegador encoge el radio y las
+   esquinas se salen de la tarjeta, que no recorta porque los sprites asoman) */
+body.tema-d .menu-card::before { inset: 0 0 auto 0; height: 14px; border-radius: 14px 14px 0 0; opacity: 1;
+  background: linear-gradient(90deg, rgb(var(--g)), rgba(var(--g), .5) 50%, transparent) top / 100% 4px no-repeat; }
 body.tema-d .menu-card:hover:not(:disabled) { border-color: rgb(var(--g));
   background: repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 14px) right / 55% 100% no-repeat,
     radial-gradient(110% 140% at 100% 55%, rgba(var(--g), .8), rgba(var(--g), .22) 45%, transparent 70%),
@@ -169,10 +174,11 @@ body.tema-d .coll-tile .coll-txt b { color: var(--td-text); text-shadow: 0 2px 0
 body.tema-d .coll-tile .coll-txt small, body.tema-d .coll-tile.mons .coll-txt small { color: #fff; }
 /* Algo que recoger (la Tienda ha rotado, Logros con premios): borde dorado y brillo */
 body.tema-d .hub-coll .coll-tile.ready { border-color: var(--td-gold) !important;
-  box-shadow: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000), 0 0 16px rgba(255,203,5,.5); }
+  --td-base: var(--td-relief), 0 3px 0 color-mix(in srgb, var(--c2) 70%, #000); box-shadow: var(--td-base), var(--td-halo); }
 body.tema-d .coll-tile.ready .coll-txt small { color: #ffe680; }
 /* Misiones: el panel con borde dorado si hay premios, y «Recoger todo» dorado con relieve */
-body.tema-d .missions-widget.has-ready { border: 2px solid var(--td-gold) !important; }
+body.tema-d .missions-widget.has-ready { border: 2px solid var(--td-gold) !important;
+  --td-base: inset 0 1px 0 rgba(255,255,255,.16), var(--td-drop); box-shadow: var(--td-base), var(--td-halo); }
 body.tema-d .mw-head .go { color: var(--td-mute); }
 body.tema-d .mw-head button.claim-all { background: linear-gradient(180deg, #ffe680, var(--td-now) 50%, #f2a900); color: #2a1c00; border: 0; border-radius: 99px;
   box-shadow: inset 0 2px 0 rgba(255,255,255,.6), 0 3px 0 #a86a00; }
@@ -197,10 +203,12 @@ body.tema-d .howto summary { font-weight: 800; }
    tirada y «Recoger todo» que late. Con prefers-reduced-motion no se mueve nada: quedan el borde dorado y el brillo */
 @keyframes tdSheen { 0%, 62% { background-position: 130% 0; } 82%, 100% { background-position: -30% 0; } }
 @keyframes tdWheel { to { transform: rotate(360deg); } }
+@keyframes tdHalo { 50% { box-shadow: var(--td-base), var(--td-halo-max); } }
 body.tema-d .hub-coll .coll-tile.ready, body.tema-d .mw-head button.claim-all { position: relative; overflow: clip; isolation: isolate; }
 body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .mw-head button.claim-all)::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 1;
   background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.45) 48%, rgba(255,255,255,.12) 54%, transparent 62%) no-repeat; background-size: 250% 100%; background-position: 130% 0; }
 @media (prefers-reduced-motion: no-preference) {
+  body.tema-d :is(.hub-left .hub-tz.ready, .hub-coll .coll-tile.ready, .missions-widget.has-ready) { animation: tdHalo 1.4s ease-in-out infinite; }
   body.tema-d .hub-left .hub-tz.ready::after { animation: tdSheen 3.2s ease-in-out infinite; }
   body.tema-d .hub-coll .coll-tile.ready::after { animation: tdSheen 3.2s .8s ease-in-out infinite; }
   body.tema-d .mw-head button.claim-all::after { animation: tdSheen 3.2s 1.6s ease-in-out infinite; }
@@ -244,7 +252,7 @@ body.tema-d .region-chips .badges-mini { background: linear-gradient(180deg, #1d
 body.tema-d .badge-slot.got { background: radial-gradient(circle, rgba(255,214,90,.45), rgba(255,214,90,.06) 70%); }
 /* El objetivo: lo que toca, como una tarjeta del menú: azul noche con el color del tipo del líder encendido detrás
    de él, una franja del tipo a la izquierda y la medalla en un anillo de su color */
-body.tema-d .story-head .map-goal { position: relative; isolation: isolate;
+body.tema-d .story-head .map-goal { position: relative; left: auto; top: auto; isolation: isolate;   /* (relative respetaría el left/top de .map-goal) */
   background: repeating-linear-gradient(115deg, rgba(255,255,255,.04) 0 2px, transparent 2px 14px) right / 45% 100% no-repeat,
     radial-gradient(70% 140% at 88% 55%, color-mix(in srgb, var(--tc, #5fd8ff) 55%, transparent), transparent 70%), linear-gradient(170deg, #1d2c78, #121c52);
   border-color: color-mix(in srgb, var(--tc, #5fd8ff) 75%, transparent);
@@ -256,13 +264,12 @@ body.tema-d .goal-leader { background: none; }
 body.tema-d .goal-badge { background: radial-gradient(circle at 50% 35%, #2a3c92, #121c50); box-shadow: inset 0 0 0 3px var(--tc), 0 0 14px color-mix(in srgb, var(--tc) 50%, transparent), 0 3px 0 #0b1238; }
 /* (las rutas nuevas, en verde hierba con relieve) */
 body.tema-d .goal-routes .chip { background: linear-gradient(180deg, #2f7f20, #1c5212); border: 1px solid #8fe36a; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 0 #10380a; color: #fff; }
-body.tema-d .story-info .rotation { color: var(--td-mute); font-weight: 700; }
-body.tema-d .story-info .rotation b { color: var(--td-done); text-shadow: 0 2px 0 rgba(0,0,0,.4); font-variant-numeric: tabular-nums; }
+body.tema-d .sp-bar .rotation b { color: var(--td-done); text-shadow: 0 2px 0 rgba(0,0,0,.4); font-variant-numeric: tabular-nums; }
 /* «Cómo se juega»: un botón con relieve, pero no dorado (no es lo que toca) */
-body.tema-d .story-info .help { background: linear-gradient(180deg, #34489e, #1f2d78); color: #fff; border: 1px solid #5468c4; border-radius: 10px;
+body.tema-d .sp-bar .help { background: linear-gradient(180deg, #34489e, #1f2d78); color: #fff; border: 1px solid #5468c4; border-radius: 10px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 0 #0b1238; text-shadow: none; }
-body.tema-d .story-info .help:hover { background: linear-gradient(180deg, #3d53b0, #24348a); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 3px 0 #0b1238, 0 0 14px rgba(120,160,255,.4); }
-body.tema-d .story-info .help svg { color: #fff; }
+body.tema-d .sp-bar .help:hover { background: linear-gradient(180deg, #3d53b0, #24348a); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 3px 0 #0b1238, 0 0 14px rgba(120,160,255,.4); }
+body.tema-d .sp-bar .help svg { color: #fff; }
 
 /* El camino: lo recorrido en celeste; lo que falta, punteado. Al entrar, la línea se dibuja desde el pueblo y lo
    que toca aparece cuando llega (el único movimiento de esta pantalla) */
