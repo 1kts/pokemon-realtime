@@ -1197,22 +1197,35 @@
   const BALL_IDS = SHOP.filter(i => i.ball).map(i => i.id);
 
   // ---------- Clasificatoria ----------
-  // Todos a nivel 50; draft con 1 veto y 3 elecciones por jugador.
+  // Todos a nivel 50. Cada uno juega con el equipo que se prepara: tus Pokémon, con sus IV, EV y naturaleza, legendarios
+  // incluidos, o de alquiler (RANKED_POOL, sin extras)
   const RANKED_POOL = [3, 6, 9, 18, 26, 34, 38, 59, 65, 68, 76, 94, 112, 121, 123, 130, 131, 135, 143, 149];
   const RANKED_LEVEL = 50;
-  // Equipo de PvP (Clasificatoria y Partida rápida): 3 Pokémon distintos del pool, cada uno con hasta 4 de
-  // los movimientos que sabe a Nv.50 (sin ninguno válido, los de por defecto). null si no vale
-  function pvpTeam(team) {
-    if (!Array.isArray(team) || team.length !== 3) return null;
+  // Movimientos que puede llevar un Pokémon en PvP: los que sabe a Nv.50 y los que ya conoce
+  const pvpMoves = (dex, mon) => [...new Set([...learnedAt(dex, RANKED_LEVEL), ...((mon && mon.moves) || [])])];
+  // Equipo de PvP (Clasificatoria y Partida rápida): 3 especies distintas, cada una uno de tus Pokémon (uid, de mons) o
+  // uno de alquiler (dex del pool), con hasta 4 movimientos que sepa (sin ninguno válido, los de por defecto).
+  // null si no vale, también si ya no tienes uno de ellos
+  function pvpEntry(x, mons, taken) {
+    const mon = x && Number.isInteger(x.uid) ? mons.find(m => m.uid === x.uid) : null;
+    if (!x || (Number.isInteger(x.uid) && !mon)) return null;
+    const dex = mon ? mon.dex : +x.dex;
+    if ((!mon && !RANKED_POOL.includes(dex)) || taken.some(o => o && o.dex === dex)) return null;
+    const can = pvpMoves(dex, mon);
+    const moves = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))].filter(m => can.includes(m)).slice(0, 4);
+    const base = mon && mon.moves && mon.moves.length ? mon.moves.slice(0, 4) : defaultMoves(dex, RANKED_LEVEL);
+    return { ...(mon ? { uid: mon.uid } : {}), dex, moves: moves.length ? moves : base };
+  }
+  // Los 3 huecos del equipo: los que no valgan (lo vendiste, o evolucionó a una especie repetida), a null
+  function pvpSlots(team, mons = []) {
     const out = [];
-    for (const x of team) {
-      const dex = +(x && x.dex);
-      if (!RANKED_POOL.includes(dex) || out.some(o => o.dex === dex)) return null;
-      const can = learnedAt(dex, RANKED_LEVEL);
-      const moves = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))].filter(m => can.includes(m)).slice(0, 4);
-      out.push({ dex, moves: moves.length ? moves : defaultMoves(dex, RANKED_LEVEL) });
-    }
+    for (let i = 0; i < 3; i++) out.push(pvpEntry((team || [])[i], mons, out));
     return out;
+  }
+  function pvpTeam(team, mons = []) {
+    if (!Array.isArray(team) || team.length !== 3) return null;
+    const out = pvpSlots(team, mons);
+    return out.every(Boolean) ? out : null;
   }
   // Largo máximo del mote de un Pokémon (como en los juegos)
   const NICK_MAX = 12;
@@ -1522,7 +1535,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

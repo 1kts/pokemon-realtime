@@ -201,8 +201,6 @@ net.on('authname', () => ui.onAuthName());
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' || (ui.queueMode === 'casual' && ui.casualBack === 'online') ? 'online' : 'menu'));
 net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); });
-net.on('draft', m => ui.draft(m));
-net.on('draftwait', () => {});
 net.on('ladder', m => ui.onLadder(m));
 net.on('user', m => ui.onUser(m));
 net.on('start', m => {

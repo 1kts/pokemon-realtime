@@ -7,7 +7,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.pvp-team')`);
   ok(await page.eval(`[...document.querySelectorAll('.online button.primary')].find(b => /Buscar partida/.test(b.textContent)).disabled && document.querySelectorAll('.pvp-slot.empty').length === 3`), 'sin equipo, el botón de buscar está desactivado y los 3 huecos vacíos');
   for (const dex of [6, 9, 3]) {
-    await page.tap(await page.eval(`Data.SPECIES[${dex}].name`), { in: '.pvp-pool' });
+    await page.tap(await page.eval(`Data.SPECIES[${dex}].name`), { in: '.pvp-pool.rent' });
     await page.waitFor(`document.querySelectorAll('.pvp-slot:not(.empty)').length >= ${[6, 9, 3].indexOf(dex) + 1}`);
   }
   await page.waitFor(`(window.__app.ui.profile.pvpTeam || []).length === 3`);

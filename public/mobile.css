@@ -84,9 +84,11 @@
   /* En horizontal, a dos columnas para que quepa entera: a un lado el nombre del juego, al otro lo de entrar */
   .title-panel { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; gap: 2px 16px; width: min(780px, 100%) !important; padding: 8px 14px !important; }
   .title-panel .emblem { display: none; }
-  .title-panel .logo { grid-column: 1; margin: 22px 0 0; font-size: 30px; }
-  .title-panel .tag { grid-column: 1; margin: 0; font-size: 11px; }
-  .title-panel .title-mons { grid-column: 1; zoom: .5; margin: 0; padding: 4px 0; }
+  .title-panel .logo { grid-column: 1; justify-self: center; margin: 26px 0 0; font-size: 40px; text-align: center; }
+  .title-panel .tag { grid-column: 1; justify-self: center; margin: 0; font-size: 12px; text-align: center; }
+  /* (los Pokémon, sueltos y grandes bajo el logo, sin la tira de rayos) */
+  .title-panel .title-mons { grid-column: 1; justify-self: center; zoom: .8; margin: 0; padding: 0; background: none; border: 0; box-shadow: none; }
+  .title-panel .title-mons::before { display: none; }
   .title-panel .auth { grid-column: 2; grid-row: 1 / span 3; gap: 4px; }
   .title-panel .lang-pick.corner { top: 6px; left: 8px; right: auto; }
   .title-panel .auth-tabs button { padding: 5px 4px; font-size: 12px; }
@@ -606,3 +608,10 @@
 }
 /* (en vertical la barra se queda en una línea: el autor ya sale en el letrero de cada tema) */
 @media (max-width: 560px) { .legal-bar .lb-music { display: none; } }
+/* (con las 4 Balls, más pequeñas: la columna no llega al equipo rival) */
+@media (max-height: 500px) {
+  #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) { gap: 4px; }
+  #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) .ball { width: 30px; height: 30px; }
+  #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) .ball.sel { width: 46px; height: 46px; }
+  #hud.touch .balls:has(.ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none) ~ .ball:not(.none)) .ball.sel i { width: 28px; height: 28px; }
+}

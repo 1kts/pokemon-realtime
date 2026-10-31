@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': '내 포켓몬으로 PvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': '랭크전과 빠른 대전에서 전설을 포함한 내 포켓몬을 개체값과 노력치 그대로 Lv.50으로 써요. 스토리를 안 해도 대여 포켓몬이 있어요.',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': '스킨, 프레임, 칭호를 얻으면 바로 장착할 수 있고, 금색 점이 내 포켓몬, 프로필, 업적, 미션의 새 항목으로 안내해요.',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': '배틀타워에서 전설을 포함한 내 포켓몬 무엇이든 써서 기록을 깰 수 있어요.',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': '스토리에서 배지를 얻으면 캐릭터가 길을 걷고, 루트를 완성할 때마다 앞으로 나아가요.',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': '야생 포켓몬의 HP가 거의 없으면 볼을 던지라고 알려 주고, 기술을 배우면 결과 화면에서 바로 설정할 수 있어요.',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': '모바일에서 타이틀 화면이 더 보기 좋아졌고 몬스터볼은 오른쪽 기술 위로 옮겼어요.',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': '업적은 간결하게, iPhone은 더 편하게',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '업적에서 라인 탭이 사라졌어요. 각 라인의 도전은 내 포켓몬의 포켓몬 정보에서 보고 받을 수 있고, ‘모두 받기’로도 받을 수 있어요.',
@@ -661,7 +669,7 @@ export default {
     'Entendido': '알겠어요',
     'Cómo se juega a la Torre Batalla': '배틀타워 플레이 방법',
     'El desafío': '도전',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': '포켓몬 3마리를 골라 모두 <b>Lv.{n}</b>로 싸워요. 내 포켓몬(모든 지방, 전설 제외)이나 대여 포켓몬을 쓸 수 있어요.',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': '포켓몬 3마리를 골라 모두 <b>Lv.{n}</b>로 싸워요. 내 포켓몬(모든 지방, 전설 포함)이나 대여 포켓몬을 쓸 수 있어요.',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': 'AI 트레이너와 연속으로 싸워요. 매번 다음 상대를 실루엣으로 볼 수 있어요.',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': '전투 사이에 팀 순서는 바꿀 수 있지만 포켓몬은 바꿀 수 없어요.',
     'La racha': '연승',
@@ -774,6 +782,17 @@ export default {
     'Retirada de contenido': '콘텐츠 삭제',
     'Hecho por {who}': '제작: {who}',
     'Música de {who}': '음악: {who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': '랭크 팀에 있어요: 먼저 교체하세요',
+    'Sal de la cola antes': '먼저 대기열에서 나가세요',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': '팀에 포켓몬이 부족해요: 다른 포켓몬을 골라 대전을 찾으세요.',
+    'Encender las partículas': '입자 켜기',
+    'Ponerme el marco': '프레임 착용',
+    'Usar este título': '이 칭호 사용',
+    'Novedad': '새 소식',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "내 포켓몬은 개체값·노력치·성격을 그대로 쓰고 전설도 가능해요. 대여 포켓몬은 추가 능력이 없어요.",
+    'Editar movimientos': '기술 편집',
+    '¡Lanza una Ball para capturarlo!': '볼을 던져 잡으세요!',
+    '¡Pulsa F para capturarlo!': 'F를 눌러 잡으세요!',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '예전 그대로의 투사체',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '투사체가 얼음과 눈 아레나에서도 다르게 보이지 않고, 빛나는 중심과 색이 있는 빛무리라는 평소 모습으로 돌아왔어.',
@@ -1536,14 +1555,8 @@ export default {
     'Buscando rival para clasificatoria…': '랭크 배틀 상대를 찾는 중…',
     'Buscando rival para partida rápida…': '빠른 배틀 상대를 찾는 중…',
     'Para probar solo, abre otra pestaña y busca partida también.': '혼자 시험해 보려면 다른 탭을 열어 거기서도 찾아보세요.',
-    'Fase de veto': '금지 단계',
     'Elige tu equipo': '포켓몬 고르기',
-    'contra <b>{foe}</b>': '상대 <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': '1마리 금지: 아무도 쓸 수 없게 된다',
     'Elige 3 Pokémon': '3마리 고르기',
-    'Vetar': '금지',
-    'Confirmar equipo': '포켓몬 확정',
-    'Esperando al rival…': '상대를 기다리는 중…',
 
     // ---------- 연습 ----------
     'Práctica contra la IA': 'AI 와 연습',
@@ -1581,7 +1594,7 @@ export default {
     'Buscar otra': '한 판 더 찾기',
 
     // ---------- 배틀타워 ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '포켓몬 3마리, <b>모두 Lv.{n}</b>. 내 포켓몬(어느 지방이든, 전설 제외)은 개체값·노력치·성격·색·기술을 그대로, 대여 포켓몬은 종의 기본값. 연승 중에는 포켓몬을 바꿀 수 없고 순서만 바꿀 수 있다.',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '포켓몬 3마리, <b>모두 Lv.{n}</b>. 내 포켓몬(어느 지방이든, 전설 포함)은 개체값·노력치·성격·색·기술을 그대로, 대여 포켓몬은 종의 기본값. 연승 중에는 포켓몬을 바꿀 수 없고 순서만 바꿀 수 있다.',
     'Empezar desafío': '도전 시작',
     'tuyo': '내 것',
     'alquiler': '대여',
@@ -1592,7 +1605,6 @@ export default {
     'Total de stats base {n}': '종족값 합계 {n}',
     'Tus Pokémon': '내 포켓몬',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': '참가할 수 있는 포켓몬이 아직 없어요: 대여 포켓몬을 쓰거나 스토리에서 잡으세요.',
-    'Tus legendarios y singulares no pueden entrar.': '전설과 환상의 포켓몬은 참가할 수 없어요.',
     'De alquiler': '대여 포켓몬',
     'Racha': '연승',
     'Combate {n}': '{n}번째 배틀',
@@ -2044,7 +2056,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, '$1의 하나뿐인 포켓몬입니다'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, '먼저 $1의 스타팅 포켓몬을 고르세요'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `아직 ${LEAGUE[l] || l}에 도달하지 않았습니다`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1: 전설과 환상의 포켓몬은 타워에 들어갈 수 없습니다'],
     [/^¡Hola de nuevo, (.+)!$/, '다시 오셨군요, $1!'],
     [/^Temporada (\d+)$/, '시즌 $1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],

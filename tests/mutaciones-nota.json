@@ -1,7 +1,7 @@
 {
  "fecha": "2026-10-31",
- "cazadas": 46,
- "total": 46,
+ "cazadas": 48,
+ "total": 48,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -329,6 +329,20 @@
     "tests/e2e/musica-credito.e2e.js"
    ],
    "motivo": "musica-credito.e2e.js: ✗ error: no se ve «Hidden Cavern»: no está el sitio donde buscar: .now-playing"
+  },
+  "novedades-sin-bolita": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/novedades.e2e.js"
+   ],
+   "motivo": "novedades.e2e.js: ✗ con una skin nueva, Mis Pokémon lleva bolita"
+  },
+  "premio-sin-equipar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/novedades.e2e.js"
+   ],
+   "motivo": "novedades.e2e.js: ✗ error: No se puede pulsar «¡Recoger!»: no hay ningún botón que lo diga"
   }
  }
 }

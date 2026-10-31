@@ -1,5 +1,5 @@
 // Torre Batalla: rachas de combates seguidos contra entrenadores de la IA.
-// Equipo de 3: tus Pokémon (de cualquier región, sin legendarios) o de alquiler del RANKED_POOL;
+// Equipo de 3: tus Pokémon (de cualquier región, legendarios incluidos) o de alquiler del RANKED_POOL;
 // todos normalizados a Nv.50. Durante la racha no se cambian los Pokémon, solo su orden.
 // Cada 7 victorias se sube de bloque (IA más lista, rivales más fuertes) y cada 21 combates
 // espera el Cerebro de la Frontera. Perder termina la racha; retirarse la guarda como récord.
@@ -61,7 +61,6 @@ function checkTeam(p, list) {
     if (e && Number.isInteger(e.uid)) {
       const m = p.mons.find(x => x.uid === e.uid);
       if (!m) return { error: 'Ese Pokémon no es tuyo' };
-      if (D.SPECIES[m.dex].leg) return { error: `${D.SPECIES[m.dex].name}: los legendarios y singulares no pueden entrar en la Torre` };
       team.push({ uid: m.uid });
     } else if (e && D.RANKED_POOL.includes(e.dex)) team.push({ dex: e.dex });
     else return { error: 'Equipo no válido' };
@@ -201,4 +200,4 @@ function view(p) {
   };
 }
 
-module.exports = { action, battleSetup, applyResult, endRun, state, view, trainer, checkTeam, LEVEL, BLOCK, BRAIN_EVERY, BRAINS };
+module.exports = { action, battleSetup, applyResult, endRun, state, view, trainer, checkTeam, battleMon, LEVEL, BLOCK, BRAIN_EVERY, BRAINS };

@@ -1,5 +1,5 @@
 // Servidor HTTP (archivos estáticos) + WebSocket: perfiles, modo historia, práctica,
-// colas online (partida rápida y clasificatoria con draft y ELO) y combates.
+// colas online (partida rápida y clasificatoria con ELO) y combates.
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -111,7 +111,7 @@ function publicProfile(p) {
 }
 // Qué está haciendo un jugador conectado (para su lista de amigos), o null si no está
 function doingOf(id) {
-  for (const x of clients) if (x.profile && x.profile.id === id) return x.battle ? 'combate' : x.queue ? 'cola' : x.draft ? 'combate' : 'menu';
+  for (const x of clients) if (x.profile && x.profile.id === id) return x.battle ? 'combate' : x.queue ? 'cola' : 'menu';
   return null;
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
@@ -149,7 +149,7 @@ const adminPanel = createAdmin({ clients, send, sendProfile, queues, version: VE
 // Cada 2 s se manda a quien no tenga ya los números de ahora (los recién llegados lo reciben enseguida)
 function popInfo() {
   let online = 0, battling = 0;
-  for (const c of clients) if (c.profile) { online++; if (c.battle || c.draft) battling++; }
+  for (const c of clients) if (c.profile) { online++; if (c.battle) battling++; }
   return { online, battling, queue: { ranked: queues.ranked.length, casual: queues.casual.length } };
 }
 setInterval(() => {
@@ -159,7 +159,7 @@ setInterval(() => {
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
-  if (!D.pvpTeam(c.profile.pvpTeam)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
+  if (!D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
   c.queue = mode;
   c.queuedAt = Date.now();
   queues[mode].push(c);
@@ -177,7 +177,18 @@ function leaveQueue(c) {
 // otra pestaña o navegador). En local y en los tests se permite, salvo con SAME_IP_BLOCK
 const sameOrigin = (a, b) => a.ip === b.ip && (process.env.NODE_ENV === 'production' || !!process.env.SAME_IP_BLOCK);
 
+// Quien ya no tenga un equipo válido sale de la cola con un aviso, en vez de romper el emparejamiento
+function dropBadTeams(mode) {
+  for (const c of [...queues[mode]]) {
+    if (D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) continue;
+    leaveQueue(c);
+    send(c, { t: 'unqueued' });
+    send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
+  }
+}
+
 function matchmake(mode) {
+  dropBadTeams(mode);
   const q = queues[mode];
   // Clasificatoria: el que más lleva esperando contra el de ELO más parecido; rápida, el primero que haya
   for (let ai = 0; ai < q.length; ai++) {
@@ -200,49 +211,51 @@ function matchmake(mode) {
 function npcMatch() {
   if (maintenance) return;
   const now = Date.now();
-  for (const mode of ['ranked', 'casual']) for (const c of [...queues[mode]]) {
+  for (const mode of ['ranked', 'casual']) { dropBadTeams(mode); for (const c of [...queues[mode]]) {
     if (now - c.queuedAt < npc.WAIT_MS) continue;
     const o = npc.pick(c.profile.elo);
     if (!o) continue;
     leaveQueue(c);
-    finishDraft({ mode, players: [c, { profile: o, npc: true }], teams: [D.pvpTeam(c.profile.pvpTeam), D.pvpTeam(o.pvpTeam)],
-      picks: [D.pvpTeam(c.profile.pvpTeam).map(x => x.dex), o.pvpTeam.map(x => x.dex)], bans: [] });
-  }
+    startPvp({ mode, players: [c, { profile: o, npc: true }] });
+  } }
 }
 
-// Sin draft: cada uno combate con el equipo de 3 que se preparó (Pokémon y movimientos, a Nv.50)
+// Cada uno combate con el equipo de 3 que se preparó (a Nv.50): los suyos con sus extras, como en la Torre
 function startDuel(players, mode) {
-  const teams = players.map(c => D.pvpTeam(c.profile.pvpTeam));
-  finishDraft({ mode, players, teams, picks: teams.map(tm => tm.map(x => x.dex)), bans: [] });
+  startPvp({ mode, players });
 }
 
-function finishDraft(draft) {
-  const [a, b] = draft.players;
+const pvpMon = (p, x) => x.uid ? { ...tower.battleMon(p, x), moves: x.moves }
+  : { dex: x.dex, level: D.RANKED_LEVEL, moves: x.moves, skin: D.skinOf(p, x.dex), parts: D.particlesOf(p, x.dex) };
+function startPvp(match) {
+  match.teams = match.players.map(c => D.pvpTeam(c.profile.pvpTeam, c.profile.mons));
+  match.picks = match.teams.map(tm => tm.map(x => x.dex));
+  const [a, b] = match.players;
   const maps = Object.keys(D.MAPS);
   const lvl = D.RANKED_LEVEL;
-  try { balance.draft(draft.mode, draft.picks, draft.bans); } catch (e) { console.error('Datos de equilibrio:', e); }
-  startBattle(draft.players, {
-    mode: draft.mode, map: maps[Math.floor(Math.random() * maps.length)],
-    sides: draft.players.map((c, i) => ({ name: store.fullName(c.profile), card: store.versusCard(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: draft.teams[i].map(({ dex, moves }) => ({ dex, level: lvl, moves, skin: D.skinOf(c.profile, dex), parts: D.particlesOf(c.profile, dex) })) })),
+  try { balance.draft(match.mode, match.picks, []); } catch (e) { console.error('Datos de equilibrio:', e); }
+  startBattle(match.players, {
+    mode: match.mode, map: maps[Math.floor(Math.random() * maps.length)],
+    sides: match.players.map((c, i) => ({ name: store.fullName(c.profile), card: store.versusCard(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: match.teams[i].map(x => pvpMon(c.profile, x)) })),
   }, (result, battle) => {
     if (result.winner < 0) return [];
     // Maestría para el ganador, en clasificatoria y en rápida
-    const mastery = rewards.addMastery(draft.players[result.winner].profile, draft.picks[result.winner]);
-    rewards.addLineStat(draft.players[result.winner].profile, draft.picks[result.winner], 'pvp');
-    draft.players.forEach((c, i) => rewards.addKOs(c.profile, battle, i));
+    const mastery = rewards.addMastery(match.players[result.winner].profile, match.picks[result.winner]);
+    rewards.addLineStat(match.players[result.winner].profile, match.picks[result.winner], 'pvp');
+    match.players.forEach((c, i) => rewards.addKOs(c.profile, battle, i));
     // Misiones de los dos: combate online jugado, victoria (con los tipos de su equipo) y clasificatoria ganada
-    const before = draft.players.map(c => missions.snapshot(c.profile));
-    draft.players.forEach((c, i) => {
+    const before = match.players.map(c => missions.snapshot(c.profile));
+    match.players.forEach((c, i) => {
       missions.track(c.profile, 'online');
       if (result.winner === i) {
-        missions.track(c.profile, 'win', 1, missions.typesOf(draft.picks[i]));
-        if (draft.mode === 'ranked') missions.track(c.profile, 'rankedWin');
+        missions.track(c.profile, 'win', 1, missions.typesOf(match.picks[i]));
+        if (match.mode === 'ranked') missions.track(c.profile, 'rankedWin');
       }
     });
-    const progress = draft.players.map((c, i) => missions.diff(c.profile, before[i]));
-    if (draft.mode !== 'ranked') {
+    const progress = match.players.map((c, i) => missions.diff(c.profile, before[i]));
+    if (match.mode !== 'ranked') {
       store.save();
-      setTimeout(() => draft.players.filter(c => !c.npc).forEach(sendProfile), 50);
+      setTimeout(() => match.players.filter(c => !c.npc).forEach(sendProfile), 50);
       return progress.map((m, i) => ({ missions: m, ...(i === result.winner ? { mastery } : {}) }));
     }
     // ELO con K=32
@@ -262,14 +275,14 @@ function finishDraft(draft) {
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
     const [win, lose] = sa ? [pa, pb] : [pb, pa];
-    audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: draft.mode });
+    audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: match.mode });
     const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
     const pay = [
-      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: store.fullName(pb), foeElo: eb0, team: draft.picks[0], foeTeam: draft.picks[1] }),
-      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: store.fullName(pa), foeElo: ea0, team: draft.picks[1], foeTeam: draft.picks[0] }),
+      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: store.fullName(pb), foeElo: eb0, team: match.picks[0], foeTeam: match.picks[1] }),
+      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: store.fullName(pa), foeElo: ea0, team: match.picks[1], foeTeam: match.picks[0] }),
     ];
     store.save();
-    setTimeout(() => draft.players.filter(c => !c.npc).forEach(sendProfile), 50);
+    setTimeout(() => match.players.filter(c => !c.npc).forEach(sendProfile), 50);
     return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
       // (tier, no league: en los resultados 'league' es el desafío de la Liga Pokémon, y el cliente lo confundía)
       eloCapped: !eloOk, tier: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
@@ -350,7 +363,7 @@ wss.on('connection', (ws, req) => {
     ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
     return ws.close(1008);
   }
-  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, draft: null, authTries: [] };
+  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
   clients.add(c);
   send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
@@ -456,7 +469,7 @@ function handle(c, msg) {
   }
   // Equipo para Clasificatoria y Partida rápida: 3 Pokémon del pool, a Nv.50, con sus movimientos
   if (msg.t === 'pvpteam') {
-    const team = D.pvpTeam(msg.team);
+    const team = D.pvpTeam(msg.team, c.profile.mons);
     if (!team) return send(c, { t: 'error', msg: 'Elige 3 Pokémon distintos de la lista' });
     c.profile.pvpTeam = team;
     store.save();
@@ -510,6 +523,8 @@ function handle(c, msg) {
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
   if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
     if (c.battle) return;
+    // (en la cola, nada que cambie tus Pokémon: el equipo con el que entraste tiene que seguir valiendo al emparejar)
+    if (c.queue && ['use', 'sell'].includes(msg.a)) return send(c, { t: 'error', msg: 'Sal de la cola antes' });
     const coins = c.profile.coins;
     const err = story.action(c.profile, msg);
     if (err) send(c, { t: 'error', msg: err });
@@ -698,7 +713,7 @@ async function identityAuth(c, msg) {
 
 // ---------- Apagado ----------
 // Al desplegar llega SIGTERM: se dejan de aceptar colas y combates nuevos, se esperan los combates
-// y drafts en curso (como mucho DRAIN_MS; el hosting tiene que dar ese margen antes de matar el
+// en curso (como mucho DRAIN_MS; el hosting tiene que dar ese margen antes de matar el
 // proceso) y se guardan los perfiles en el acto. Una segunda señal apaga sin esperar.
 const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
@@ -717,7 +732,7 @@ function shutdown() {
   }
   const until = Date.now() + DRAIN_MS;
   (function wait() {
-    if ([...clients].some(c => c.battle || c.draft) && Date.now() < until) return setTimeout(wait, 1000);
+    if ([...clients].some(c => c.battle) && Date.now() < until) return setTimeout(wait, 1000);
     store.flush();
     process.exit(0);
   })();

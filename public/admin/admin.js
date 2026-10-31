@@ -105,7 +105,7 @@ async function overview(onlyServer) {
   box.replaceChildren(
     h('div', { class: 'stats' },
       stat('jugadores conectados', o.online), stat(`combates (${modes})`, o.battles),
-      stat('en cola (clasif. / rápida)', `${o.queues.ranked || 0} / ${o.queues.casual || 0}`), stat('drafts', o.drafts),
+      stat('en cola (clasif. / rápida)', `${o.queues.ranked || 0} / ${o.queues.casual || 0}`),
       stat('perfiles · cuentas', `${s.profiles} · ${s.accounts}`), stat('perfiles nuevos hoy', s.newToday),
       stat('suspendidos', s.banned, s.banned > 0), stat('mantenimiento', o.maintenance ? 'SÍ' : 'no', o.maintenance),
       stat('versión · en marcha', `v${o.version} · ${fmtDur(o.uptime)}`), stat('memoria del juego', fmtBytes(sv.rss)),

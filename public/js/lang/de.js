@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': 'Deine Pokémon im PvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'In Rangliste und Schnelles Match spielst du mit deinen Pokémon, auch legendären, samt DVs und EVs auf Lv.50. Ohne Story gibt es Leih-Pokémon.',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': 'Gewinnst du einen Skin, Rahmen oder Titel, kannst du ihn sofort anlegen, und ein goldener Punkt führt dich zu Neuem in Meine Pokémon, Profil, Erfolge und Missionen.',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': 'Im Duellturm kannst du jedes deiner Pokémon nutzen, auch legendäre, um deinen Rekord zu brechen.',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': 'In der Story läuft deine Figur beim Gewinn eines Ordens über den Weg und rückt mit jeder fertigen Route weiter.',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': 'Hat ein wildes Pokémon kaum noch KP, erinnert dich der Kampf an den Ball, und lernt eines eine Attacke, gehst du aus den Ergebnissen direkt dorthin.',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': 'Auf dem Handy sieht der Startbildschirm besser aus und die Pokébälle sind rechts über den Attacken.',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': 'Erfolge aufgeräumt, besser auf dem iPhone',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Erfolge hat keinen Linien-Tab mehr: Die Herausforderungen jeder Linie siehst und holst du im Steckbrief jedes Pokémon unter Meine Pokémon, und „Alles abholen“ sammelt sie weiter ein.',
@@ -660,7 +668,7 @@ export default {
     'Entendido': 'Verstanden',
     'Cómo se juega a la Torre Batalla': 'So funktioniert der Duellturm',
     'El desafío': 'Die Herausforderung',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': 'Du wählst 3 Pokémon, und alle kämpfen auf <b>Lv. {n}</b>: deine eigenen (aus jeder Region, ohne legendäre) oder Leih-Pokémon.',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': 'Du wählst 3 Pokémon, und alle kämpfen auf <b>Lv. {n}</b>: deine eigenen (aus jeder Region, legendäre inklusive) oder Leih-Pokémon.',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': 'Es sind Kämpfe am Stück gegen KI-Trainer. Vor jedem siehst du den nächsten Gegner als Silhouette.',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': 'Zwischen den Kämpfen kannst du die Reihenfolge ändern, aber keine Pokémon tauschen.',
     'La racha': 'Die Serie',
@@ -773,6 +781,17 @@ export default {
     'Retirada de contenido': 'Entfernung von Inhalten',
     'Hecho por {who}': 'Von {who}',
     'Música de {who}': 'Musik von {who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': 'Es ist in deinem Ranglisten-Team: tausche es zuerst aus',
+    'Sal de la cola antes': 'Verlasse zuerst die Warteschlange',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'Deinem Team fehlt ein Pokémon: Wähle ein anderes, um ein Match zu suchen.',
+    'Encender las partículas': 'Partikel einschalten',
+    'Ponerme el marco': 'Rahmen anlegen',
+    'Usar este título': 'Diesen Titel nutzen',
+    'Novedad': 'Neu',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "Deine eigenen behalten DVs, FP und Wesen, legendäre inklusive; Leih-Pokémon haben keine Extras.",
+    'Editar movimientos': 'Attacken bearbeiten',
+    '¡Lanza una Ball para capturarlo!': 'Wirf einen Ball, um es zu fangen!',
+    '¡Pulsa F para capturarlo!': 'Drücke F, um es zu fangen!',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Projektile wie gewohnt',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Projektile sehen wieder aus wie gewohnt, ein leuchtender Kern mit farbigem Halo, auch in den Eis- und Schneearenen, statt anders zu wirken.',
@@ -1535,14 +1554,8 @@ export default {
     'Buscando rival para clasificatoria…': 'Suche Gegner für die Rangliste…',
     'Buscando rival para partida rápida…': 'Suche Gegner für ein schnelles Spiel…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'Zum Alleine-Testen öffne einen weiteren Tab und suche dort auch einen Kampf.',
-    'Fase de veto': 'Sperrphase',
     'Elige tu equipo': 'Wähle dein Team',
-    'contra <b>{foe}</b>': 'gegen <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': 'Sperre 1 Pokémon: Niemand darf es benutzen',
     'Elige 3 Pokémon': 'Wähle 3 Pokémon',
-    'Vetar': 'Sperren',
-    'Confirmar equipo': 'Team bestätigen',
-    'Esperando al rival…': 'Warte auf den Gegner…',
 
     // ---------- Training ----------
     'Práctica contra la IA': 'Training gegen die KI',
@@ -1580,7 +1593,7 @@ export default {
     'Buscar otra': 'Noch einen suchen',
 
     // ---------- Duellturm ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>alle auf Lv.{n}</b>. Deine eigenen (aus jeder Region, keine legendären) behalten DVs, FP, Wesen, Schillern und Attacken; Leih-Pokémon die ihrer Art ohne Extras. Während der Serie werden die Pokémon nicht gewechselt, nur ihre Reihenfolge.',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>alle auf Lv.{n}</b>. Deine eigenen (aus jeder Region, legendäre inklusive) behalten DVs, FP, Wesen, Schillern und Attacken; Leih-Pokémon die ihrer Art ohne Extras. Während der Serie werden die Pokémon nicht gewechselt, nur ihre Reihenfolge.',
     'Empezar desafío': 'Herausforderung starten',
     'tuyo': 'deins',
     'alquiler': 'Leih',
@@ -1591,7 +1604,6 @@ export default {
     'Total de stats base {n}': 'Basiswertsumme {n}',
     'Tus Pokémon': 'Deine Pokémon',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': 'Du hast noch keine teilnahmeberechtigten Pokémon: Nutze Leih-Pokémon oder fange welche in der Story.',
-    'Tus legendarios y singulares no pueden entrar.': 'Deine legendären und mysteriösen Pokémon dürfen nicht teilnehmen.',
     'De alquiler': 'Leih-Pokémon',
     'Racha': 'Serie',
     'Combate {n}': 'Kampf {n}',
@@ -2043,7 +2055,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, 'Es ist dein einziges Pokémon aus $1'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, 'Wähle zuerst deinen Starter für $1'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `Du hast ${LEAGUE[l] || l} noch nicht erreicht`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1: Legendäre und mysteriöse Pokémon dürfen nicht in den Turm'],
     [/^¡Hola de nuevo, (.+)!$/, 'Willkommen zurück, $1!'],
     [/^Temporada (\d+)$/, 'Saison $1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],

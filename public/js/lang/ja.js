@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': '自分のポケモンでPvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'ランクとクイックマッチで、伝説を含む自分のポケモンを個体値・努力値つきのLv.50で使えます。ストーリーをしなくてもレンタルで遊べます。',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': 'スキン、フレーム、称号を獲得したらその場で装備でき、金色の点がマイポケモン、プロフィール、実績、ミッションの新着へ案内します。',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': 'バトルタワーでは、伝説を含む自分のポケモンを使って記録更新を狙えます。',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': 'ストーリーでは、バッジ獲得時にキャラクターが道を歩き、ルートを完成させるごとに進みます。',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': '野生ポケモンのHPが少なくなるとボールを投げるよう知らせ、技を覚えたら結果画面から直接設定できます。',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': 'スマホのタイトル画面が見やすくなり、モンスターボールは右側の技の上に移動しました。',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': '実績がすっきり、iPhoneも快適に',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '実績のラインタブを廃止しました。各ラインの挑戦はマイポケモンの各ポケモンの詳細で確認して受け取れます。「まとめて受け取る」でも受け取れます。',
@@ -661,7 +669,7 @@ export default {
     'Entendido': 'わかった',
     'Cómo se juega a la Torre Batalla': 'バトルタワーのあそびかた',
     'El desafío': 'チャレンジ',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': 'ポケモンを3匹えらび、全員<b>Lv.{n}</b>で戦います。自分のポケモン（どの地方でもOK、伝説は不可）かレンタルポケモンを使えます。',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': 'ポケモンを3匹えらび、全員<b>Lv.{n}</b>で戦います。自分のポケモン（どの地方でもOK、伝説もOK）かレンタルポケモンを使えます。',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': 'AIトレーナーと連続で戦います。毎回、次の相手がシルエットで見えます。',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': 'バトルの合間にチームの順番は変えられますが、ポケモンの入れ替えはできません。',
     'La racha': '連勝',
@@ -774,6 +782,17 @@ export default {
     'Retirada de contenido': 'コンテンツの削除',
     'Hecho por {who}': '制作：{who}',
     'Música de {who}': '音楽: {who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': 'ランクのチームに入っています。先に入れ替えてください',
+    'Sal de la cola antes': '先に待機列を抜けてください',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'チームのポケモンが足りません。別のポケモンを選ぶと対戦を探せます。',
+    'Encender las partículas': 'パーティクルをつける',
+    'Ponerme el marco': 'フレームを付ける',
+    'Usar este título': 'この称号を使う',
+    'Novedad': '新着',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "自分のポケモンは個体値・努力値・性格をそのまま使え、伝説もOK。レンタルは補正なしです。",
+    'Editar movimientos': '技を編集',
+    '¡Lanza una Ball para capturarlo!': 'ボールを投げて捕まえよう!',
+    '¡Pulsa F para capturarlo!': 'Fキーで捕まえよう!',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'いつもの弾に戻った',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弾はいつもの見た目、光る芯と色つきのハローに戻った。氷や雪のアリーナでも違って見えなくなった。',
@@ -1536,14 +1555,8 @@ export default {
     'Buscando rival para clasificatoria…': 'ランクバトルの あいてを さがしています…',
     'Buscando rival para partida rápida…': 'クイックバトルの あいてを さがしています…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'ひとりで ためすなら、べつの タブを 開いて そこでも さがそう。',
-    'Fase de veto': '禁止フェーズ',
     'Elige tu equipo': '手持ちを えらぶ',
-    'contra <b>{foe}</b>': 'あいて <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': '1匹 禁止：だれも 使えなくなる',
     'Elige 3 Pokémon': '3匹 えらぶ',
-    'Vetar': '禁止する',
-    'Confirmar equipo': '手持ちを 決定',
-    'Esperando al rival…': 'あいてを まっています…',
 
     // ---------- 練習 ----------
     'Práctica contra la IA': 'AI と 練習',
@@ -1581,7 +1594,7 @@ export default {
     'Buscar otra': 'もう 一戦 さがす',
 
     // ---------- バトルタワー ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': 'ポケモン 3匹、<b>全員 Lv.{n}</b>。じぶんの ポケモン（どの 地方でも、でんせつは ×）は 個体値・努力値・せいかく・色違い・わざを そのまま。レンタルは 種族の 標準。連勝中は ポケモンを 変えられず、順番だけ 変えられる。',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': 'ポケモン 3匹、<b>全員 Lv.{n}</b>。じぶんの ポケモン（どの 地方でも、でんせつも OK）は 個体値・努力値・せいかく・色違い・わざを そのまま。レンタルは 種族の 標準。連勝中は ポケモンを 変えられず、順番だけ 変えられる。',
     'Empezar desafío': '挑戦 スタート',
     'tuyo': 'じぶん',
     'alquiler': 'レンタル',
@@ -1592,7 +1605,6 @@ export default {
     'Total de stats base {n}': '種族値 合計 {n}',
     'Tus Pokémon': 'じぶんの ポケモン',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': '参加できる ポケモンが まだ いない：レンタルを 使うか、ストーリーで つかまえよう。',
-    'Tus legendarios y singulares no pueden entrar.': 'でんせつと まぼろしの ポケモンは 参加できない。',
     'De alquiler': 'レンタル',
     'Racha': '連勝',
     'Combate {n}': '第{n}戦',
@@ -2044,7 +2056,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, '$1の ゆいいつの ポケモンです'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, '先に $1の 最初の ポケモンを えらんでください'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `まだ ${LEAGUE[l] || l} に 到達していません`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1：でんせつと まぼろしの ポケモンは タワーに 入れません'],
     [/^¡Hola de nuevo, (.+)!$/, 'おかえりなさい、$1！'],
     [/^Temporada (\d+)$/, 'シーズン$1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],

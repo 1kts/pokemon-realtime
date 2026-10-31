@@ -9,6 +9,7 @@ import { trainerImg } from './sprites.js';
 import { badgeImg, item as itemImg } from './pixicons.js';
 import { t } from './i18n.js';
 import { REGION_ART } from './regionmap.js';
+import { storage } from './net.js';
 
 const { TYPE_COLOR } = Data;
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
@@ -16,6 +17,8 @@ const LOCK = '<svg class="sp-lock-ico" viewBox="0 0 16 16" aria-hidden="true"><r
 const BALL = () => itemImg('pokeball', 14, 'sp-ball');
 // Las fotos de las arenas (de tools/arena-thumbs.e2e.js), pequeñas y solo cuando se ven
 const pic = key => { const i = el('img', 'sp-pic'); i.src = `img/arenas/${key}.webp`; i.alt = ''; i.loading = 'lazy'; i.decoding = 'async'; i.draggable = false; i.onerror = () => i.remove(); return i; };
+
+const STAND_ASIDE = 50;   // px a la izquierda de la ruta donde se para el jugador
 
 export const storyPathViews = {
   // Con el ratón, el Camino se arrastra de lado, como con el dedo; al soltar tras arrastrar, el clic no elige la tarjeta
@@ -63,6 +66,7 @@ export const storyPathViews = {
     mini('pradera', BALL(), t('Ruta: captura Pokémon'));
     legend.append(el('span', 'sp-k-lock', `<i class="sp-k locked">${LOCK}</i>${t('Aún bloqueado')}`));
     const all = [];
+    let walker = null;   // (el jugador y las rutas de su tramo: ver walkPath)
     const pick = (b, n, unlocked, done) => {
       all.forEach(x => x.classList.remove('sel'));
       b.classList.add('sel');
@@ -121,8 +125,9 @@ export const storyPathViews = {
     // Cada tramo: el camino con las rutas que se abren en él y, al final, su gimnasio
     const chapter = (routes, head, state) => {
       const ch = el('div', 'sp-ch ' + state);
-      if (state === 'now') ch.append(you());
-      if (routes.length) { const leg = el('div', 'sp-leg'); routes.forEach(n => leg.append(route(n))); ch.append(leg); }
+      const stands = routes.map(route);
+      if (state === 'now') { const y = you(); ch.append(y); walker = { y, ch, stands }; }
+      if (stands.length) { const leg = el('div', 'sp-leg'); leg.append(...stands); ch.append(leg); }
       if (head) ch.append(head);
       track.append(ch);
       return ch;
@@ -167,9 +172,42 @@ export const storyPathViews = {
       const at = matchMedia('(max-height: 500px), (max-width: 760px)').matches ? 70 : w.width / 2 - a.width / 2;
       wrap.scrollTo({ left: Math.max(0, wrap.scrollLeft + a.left - w.left - at), behavior: 'instant' });
     });
+    if (walker) requestAnimationFrame(() => this.walkPath(walker, region, prog));
     const box = el('div', 'sp-box');
     box.append(wrap, legend);
     return box;
+  },
+
+  // El jugador avanza por su tramo: se queda en la última de sus rutas con todo capturado, sin pasar de ahí. Si desde la
+  // última vez has ganado una medalla o completado una ruta, llega andando (una vez: se recuerda por región en este
+  // navegador). Solo se mueve con transform: no estorba al arrastrar ni a tocar lo que hay debajo
+  walkPath({ y, ch, stands }, region, prog) {
+    const key = `arena.camino.${this.profile.id}.${region}`;
+    const done = stands.findLastIndex(s => s.querySelector('.sp-route.full')) + 1;
+    // (sin nada guardado no hay de dónde venir: se apunta dónde está y va directo, sin paseo)
+    const saved = storage.get(key);
+    const [oldProg, oldDone] = saved ? String(saved).split(':').map(Number) : [prog, done];
+    storage.set(key, `${prog}:${done}`);
+    const mid = e => { const r = e.getBoundingClientRect(); return r.left + r.width / 2; };
+    const home = mid(y);
+    const spot = n => n ? mid(stands[n - 1]) - home - STAND_ASIDE : 0;   // (junto a la ruta, sin tapar su nombre)
+    const to = spot(done);
+    const gym = ch.previousElementSibling && ch.previousElementSibling.querySelector('.sp-stop');
+    const medal = oldProg < prog;
+    const from = medal ? (gym ? mid(gym) - home : to) : oldProg === prog && oldDone < done ? spot(oldDone) : to;
+    y.style.transform = `translateX(${from}px)`;
+    if (from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) { y.style.transform = `translateX(${to}px)`; return; }
+    if (medal) stands.forEach(s => s.classList.add('sp-wait'));
+    const ms = Math.max(900, Math.min(2600, Math.abs(to - from) * 5));
+    y.getBoundingClientRect();   // (para que la transición salga de ahí)
+    y.classList.add('walking');
+    y.style.transition = `transform ${ms}ms ease-in-out`;
+    y.style.transform = `translateX(${to}px)`;
+    setTimeout(() => {
+      y.classList.remove('walking');
+      y.style.transition = '';
+      stands.forEach(s => s.classList.remove('sp-wait'));
+    }, ms);
   },
 
   // El sitio de salida de la región (el primer pueblo de su mapa)

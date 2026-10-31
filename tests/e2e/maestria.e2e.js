@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok }) => {
   // (el glow de fuego, como si saliera del cofre semanal: se ve más abajo, en Glows y en el Perfil)
   me.client.send({ t: 'dev', aura: 'tipo-fuego' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  ok(+(await page.read('.coll-tile.wide .nbadge')) >= 5, 'el menú avisa de los premios de Logros por recoger');
+  ok(await page.eval(`!!document.querySelector('.coll-tile.wide [aria-label="Novedad"]')`), 'el menú avisa con una bolita de los premios de Logros por recoger');
 
   // Logros avisa, pero los retos de cada línea están en la ficha de cada Pokémon
   await page.click('.coll-tile.wide');

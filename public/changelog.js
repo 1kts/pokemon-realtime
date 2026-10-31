@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.36.0', date: '2026-10-31', title: 'Tus Pokémon al PvP',
+      items: [
+        ['nuevo', 'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.'],
+        ['nuevo', 'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.'],
+        ['cambio', 'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.'],
+        ['cambio', 'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.'],
+        ['cambio', 'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.'],
+        ['arreglo', 'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.'],
+      ],
+    },
+    {
       v: '0.35.1', date: '2026-10-31', title: 'Logros al grano y mejor en iPhone',
       items: [
         ['cambio', 'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.'],

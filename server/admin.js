@@ -86,12 +86,11 @@ function createAdmin(ctx) {
       version, uptime: Date.now() - startedAt, maintenance: ctx.maintenance(), bugsNew: bugs.countNew(),
       online: players.length, admins: [...clients].filter(c => c.admin).length,
       battles: battles.size, byMode, queues: Object.fromEntries(Object.entries(queues).map(([k, q]) => [k, q.length])),
-      drafts: players.filter(c => c.draft).length / 2,
       server: { rss: mem.rss, heap: mem.heapUsed, load: os.loadavg(), cpus: os.cpus().length, freemem: os.freemem(), totalmem: os.totalmem(), node: process.version },
       store: store.stats(),
       events24h: audit.countsSince(day),
       onlineList: players.slice(0, 100).map(c => ({ id: c.profile.id, name: c.profile.name, ip: c.ip,
-        doing: c.battle ? c.battle.mode : c.draft ? 'draft' : c.queue ? 'cola ' + c.queue : 'menú' })),
+        doing: c.battle ? c.battle.mode : c.queue ? 'cola ' + c.queue : 'menú' })),
       recentAdmin: audit.query({ type: 'admin.', limit: 15 }).map(withNames),
     };
   }
@@ -107,7 +106,7 @@ function createAdmin(ctx) {
     for (const { ip } of ips) for (const a of audit.playersOnIp(ip)) if (a.id !== id) alts.set(a.id, { id: a.id, name: nameOf(a.id), ip });
     return {
       profile: adminView(p, live.length > 0),
-      connections: live.map(c => ({ ip: c.ip, doing: c.battle ? c.battle.mode : c.draft ? 'draft' : c.queue ? 'cola' : 'menú' })),
+      connections: live.map(c => ({ ip: c.ip, doing: c.battle ? c.battle.mode : c.queue ? 'cola' : 'menú' })),
       admin: !!adminRow(id), ips, alts: [...alts.values()].slice(0, 20),
       events: audit.query({ who: id, limit: 100 }).map(withNames),
       // Nombres de las especies que salen en su ficha (sus Pokémon y sus partidas)
@@ -325,6 +324,9 @@ function unlockAll(p) {
   for (const g of D.AURAS) rewards.unlock(p, 'auras', g);
   for (const fx of D.EFFECTS) rewards.unlock(p, 'effects', fx);
   for (const ty of D.TYPE_NAMES) rewards.unlock(p, 'frames', 'tipo-' + ty);
+  // (y lo que aún no sale en el juego: de esas listas sale solo, con lo que se vaya añadiendo)
+  for (const f of D.FRAMES_SOON) rewards.unlock(p, 'frames', f);
+  for (const g of D.AURAS_SOON) rewards.unlock(p, 'auras', g);
   p.lineStats = p.lineStats || {};
   for (const stat of ['pvp', 'tower', 'catch']) p.lineStats[stat] = p.lineStats[stat] || {};
   for (const root of lines) {
@@ -333,14 +335,14 @@ function unlockAll(p) {
     p.lineStats.tower[root] = Math.max(p.lineStats.tower[root] || 0, 50);
     p.lineStats.catch[root] = Math.max(p.lineStats.catch[root] || 0, 25);
     p.masteryClaimed[root] = D.MASTERY_TIERS.map((_, i) => i);
-    rewards.unlock(p, 'skins', 'elemental:' + root);
+    for (const s of D.SKINS) if (!D.hasSkin(p, root, s)) rewards.unlock(p, 'skins', s + ':' + root);
     rewards.unlock(p, 'particles', root);
     rewards.unlock(p, 'avatars', 'pt:' + root);
     rewards.unlock(p, 'titles', D.masteryTitle(root));
   }
   rewards.unlock(p, 'auras', 'prisma');
   p.gems = Math.max(p.gems || 0, 99999);
-  if (!D.pvpTeam(p.pvpTeam)) p.pvpTeam = D.pvpTeam(D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })));
+  if (!D.pvpTeam(p.pvpTeam, p.mons)) p.pvpTeam = D.pvpTeam(D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })));
   p.staff = true;
   story.migrate(p);   // medallas a partir del progreso
   return added;

@@ -58,7 +58,7 @@ export const towerViews = {
   towerPicker() {
     const p = this.profile;
     const box = el('div', 'panel tower-main');
-    const intro = el('p', 'small tower-intro', t('3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.', { n: LEVEL }));
+    const intro = el('p', 'small tower-intro', t('3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.', { n: LEVEL }));
     box.append(el('h3', '', t('Elige tu equipo')), intro);
     const chosen = (this.towerPick || []).filter(e => e.uid ? p.mons.some(m => m.uid === e.uid) : RANKED_POOL.includes(e.dex));
     this.towerPick = chosen;
@@ -106,7 +106,7 @@ export const towerViews = {
       c.onclick = () => toggle(e);
       return c;
     };
-    const own = p.mons.filter(m => !SPECIES[m.dex].leg).sort((a, b) => SPECIES[b.dex].bst - SPECIES[a.dex].bst || b.level - a.level);
+    const own = [...p.mons].sort((a, b) => SPECIES[b.dex].bst - SPECIES[a.dex].bst || b.level - a.level);
     box.append(slots);
     const scroll = el('div', 'tower-pools scroll');
     scroll.append(el('h4', '', `${t('Tus Pokémon')} <small>(${own.length})</small>`));
@@ -115,7 +115,6 @@ export const towerViews = {
       for (const m of own) grid.append(card({ uid: m.uid }, `${lv(m.level)} → ${LEVEL} · ${REGIONS[m.region || 'kanto'].name}`, !!m.shiny));
       scroll.append(grid);
     } else scroll.append(el('p', 'small', t('Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.')));
-    if (p.mons.some(m => SPECIES[m.dex].leg)) scroll.append(el('p', 'small', t('Tus legendarios y singulares no pueden entrar.')));
     scroll.append(el('h4', '', t('De alquiler')));
     const rent = el('div', 'pool');
     for (const dex of RANKED_POOL) rent.append(card({ dex }, `${lv(LEVEL)} · ${t('alquiler')}`, false));
@@ -236,7 +235,7 @@ export const towerViews = {
     const sec = (title, items) => `<section><h4>${title}</h4><ul>${items.map(x => `<li>${x}</li>`).join('')}</ul></section>`;
     this.towerModal(t('Cómo se juega a la Torre Batalla'), el('div', 'guide-body scroll', [
       sec(t('El desafío'), [
-        t('Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.', { n: LEVEL }),
+        t('Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.', { n: LEVEL }),
         t('Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.'),
         t('Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.'),
       ]),

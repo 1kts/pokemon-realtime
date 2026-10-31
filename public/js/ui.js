@@ -1,5 +1,5 @@
 // Pantallas fuera de combate: menú, historia (inicial, mapa, equipo, tienda),
-// clasificatoria (cola, draft, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
+// clasificatoria (cola, ranking), práctica y resultados. Torre Batalla y Ladder en tower.js;
 // la portada, el perfil, las recompensas y las novedades en account.js.
 import { confirmBox } from './dialog.js';
 import { portrait, monIcon, animatedPortrait, trainerImg, typeTint, face, hasAnim } from './sprites.js';
@@ -17,6 +17,7 @@ import { treasureViews } from './treasure.js';
 import { storyPathViews } from './storypath.js';
 import { dropdown, typeDropdown } from './dropdown.js';
 import { storage } from './net.js';
+import { newsDot, monNews, monsNews, avatarNews } from './news-dots.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { masteryHtml, frameBadge, masteryPrize } from './frames.js';
 import { accountViews } from './account.js';
@@ -265,7 +266,7 @@ export class UI {
     card(online, t('Clasificatoria'), `${t(p.league)} · ${p.elo} ELO · ${wl(p.wins, p.losses)}${ready ? ` · <em class="ready">${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}</em>` : ''}`, 'ranked', 149, () => { this.onlineMode = 'ranked'; this.show('online'); });
     card(online, t('Partida rápida'), t('Online sin ELO, con tu equipo de Clasificatoria'), 'casual', 6, () => {
       // (sin equipo, primero se prepara: la misma pantalla, pero de Partida rápida, que busca partida rápida)
-      if (!Data.pvpTeam(p.pvpTeam)) { this.onlineMode = 'casual'; return this.show('online'); }
+      if (!Data.pvpTeam(p.pvpTeam, p.mons)) { this.onlineMode = 'casual'; return this.show('online'); }
       this.lastMode = 'casual'; this.casualBack = 'menu'; this.net.send({ t: 'queue', mode: 'casual' }); });
     card(online, t('Ladder'), t('Rankings de clasificatoria, Torre y Pokédex: busca a cualquier entrenador'), 'ladder', 448, () => this.openLadder());
     const training = section(t('Entrenamiento'), t('Contra la IA, sin arriesgar nada'));
@@ -323,7 +324,7 @@ export class UI {
     const ava = el('button', 'hub-ava');
     ava.setAttribute('aria-label', t('Perfil'));
     ava.append(this.avatar(80, true));
-    if (this.claimable().length || !p.account || this.masteryReadyCount()) ava.append(el('i', 'ndot'));
+    if (this.claimable().length || !p.account || this.masteryReadyCount() || avatarNews(p)) ava.append(newsDot());
     ava.onclick = () => this.show('profile');
     const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
     const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
@@ -367,7 +368,8 @@ export class UI {
       grid.append(b);
       return b;
     };
-    tile('pokeball', t('Mis Pokémon'), t('{n} Pokémon', { n: p.mons.length }), 'team', 'mons');   // en rojo: lo que más se usa
+    const mons = tile('pokeball', t('Mis Pokémon'), t('{n} Pokémon', { n: p.mons.length }), 'team', 'mons');   // en rojo: lo que más se usa
+    if (monsNews(p)) mons.append(newsDot());
     tile('seal-bag', t('Mochila'), t('{n} objetos', { n: items }), 'bag');
     // La Tienda avisa cuando han rotado los Pokémon del día y aún no la has abierto
     tile('forage-bag', t('Tienda'), coins(p.coins), 'shop', storage.get('arena.shopSeen') === Data.dayKey() ? '' : 'ready');
@@ -375,7 +377,7 @@ export class UI {
     // Logros: retos de línea y generales, y la colección (con aviso si hay premios por recoger)
     const ready = this.masteryReadyCount() + (p.achClaim || []).length;
     const m = tile('relic-crown', t('Logros'), ready ? t('¡{n} premios por recoger!', { n: ready }) : t('Retos para conseguir skins, marcos, títulos y más'), () => this.openCollection(), 'wide' + (ready ? ' ready' : ''));
-    if (ready) m.append(el('i', 'nbadge', String(ready)));
+    if (ready) m.append(newsDot());
     box.append(grid);
     return box;
   }
@@ -898,6 +900,7 @@ export class UI {
       const grid = grids[team.includes(m.uid) ? 'team' : 'box'];
       const inTeam = team.includes(m.uid);
       const card = typeTint(el('div', 'mon-card' + (inTeam ? ' in' : '') + (m.shiny ? ' is-shiny' : '')), m.dex);
+      if (monNews(p, m.dex)) card.append(newsDot());
       Object.assign(card.dataset, { q: norm(`${nameOf(m)} ${SPECIES[m.dex].name} ${m.dex}`), types: SPECIES[m.dex].types.join(' '), shiny: m.shiny ? '1' : '', leg: SPECIES[m.dex].leg ? '1' : '', box: inTeam ? '' : '1' });
       // Los de la caja duermen (animación Sleep de SpriteCollab, si la especie la tiene)
       card.append(this.skinned(inTeam || !hasAnim(m.dex, 'Sleep') ? portrait(m.dex, 72, { shiny: Data.looksShiny(m) }) : animatedPortrait(m.dex, 72, 'Sleep', Data.looksShiny(m)), m.dex));
@@ -1212,7 +1215,7 @@ export class UI {
       <p class="small">${t('Combates con tu equipo de 3 (todos a Nv.{n}) contra un rival al azar de ELO parecido.', { n: Data.RANKED_LEVEL })}</p>`;
     const mode = casual ? 'casual' : 'ranked';
     const go = el('button', 'primary', casual ? t('Buscar partida rápida') : t('Buscar partida clasificatoria'));
-    go.disabled = !Data.pvpTeam(p.pvpTeam);
+    go.disabled = !Data.pvpTeam(p.pvpTeam, p.mons);
     go.onclick = () => { this.lastMode = mode; if (casual) this.casualBack = 'online'; this.net.send({ t: 'queue', mode }); };
     // (en Partida rápida no hay nada más que mirar antes: buscar, en la cabecera)
     (casual ? bar.querySelector('.tb-ctx') : me).append(go);
@@ -1225,15 +1228,18 @@ export class UI {
     this.root.append(wrap);
   }
 
-  // Equipo de PvP (Clasificatoria y Partida rápida): 3 huecos; tocas uno y eliges su Pokémon del pool y hasta
-  // 4 movimientos de los que sabe a Nv.50. Se guarda solo en cuanto está completo
+  // Equipo de PvP (Clasificatoria y Partida rápida): 3 huecos; tocas uno y eliges uno de tus Pokémon o de alquiler, y
+  // hasta 4 movimientos de los que sabe. Se guarda solo en cuanto está completo
   pvpTeamPanel() {
     const p = this.profile;
-    const team = this.pvpEdit || (this.pvpEdit = (Data.pvpTeam(p.pvpTeam) || []).map(x => ({ ...x, moves: [...x.moves] })));
+    // (el borrador es de esta cuenta y se repasa cada vez: lo vendido o evolucionado deja su hueco libre, sin perder los otros)
+    const draft = this.pvpEditOf === p.id && this.pvpEdit ? this.pvpEdit : p.pvpTeam;
+    const team = this.pvpEdit = Data.pvpSlots(draft, p.mons).map(x => x ? { ...x, moves: [...x.moves] } : undefined);
+    this.pvpEditOf = p.id;
     const sel = Math.min(this.pvpSel || 0, 2);
     const box = el('div', 'panel pvp-team');
     box.append(el('h3', '', t('Tu equipo (Nv.{n})', { n: Data.RANKED_LEVEL })));
-    const save = () => { const ok = Data.pvpTeam(team); if (ok && team.length === 3) this.net.send({ t: 'pvpteam', team }); else this.show('online'); };
+    const save = () => { const ok = Data.pvpTeam(team, p.mons); if (ok) this.net.send({ t: 'pvpteam', team }); else this.show('online'); };
     const slots = el('div', 'pvp-slots');
     for (let i = 0; i < 3; i++) {
       const m = team[i];
@@ -1247,6 +1253,7 @@ export class UI {
       slots.append(b);
     }
     box.append(slots);
+    if ((p.pvpTeam || []).length && team.some(x => !x)) box.append(el('p', 'small warn', t('Falta un Pokémon en tu equipo: elige otro para poder buscar partida.')));
     // Movimientos del Pokémon del hueco elegido (hasta 4), justo debajo del equipo: tarjetas con su tipo, daño,
     // energía y recarga; las elegidas, encendidas
     const cur = team[sel];
@@ -1254,7 +1261,7 @@ export class UI {
       const mvBox = el('div', 'pvp-mvbox');
       mvBox.append(el('h4', '', `${t('Movimientos de {m} ({n}/4)', { m: SPECIES[cur.dex].name, n: cur.moves.length })} <small>${t('Toca para añadir o quitar')}</small>`));
       const mv = el('div', 'pvp-mvlist');
-      for (const k of Data.learnedAt(cur.dex, Data.RANKED_LEVEL)) {
+      for (const k of Data.pvpMoves(cur.dex, p.mons.find(x => x.uid === cur.uid))) {
         const M = MOVES[k];
         if (!M) continue;
         const on = cur.moves.includes(k);
@@ -1268,24 +1275,33 @@ export class UI {
       mvBox.append(mv);
       box.append(mvBox);
     }
-    // Pool: tocar uno lo pone en el hueco elegido (si ya está en otro hueco, se cambian)
-    box.append(el('h4', '', t('Pokémon')));
-    const pool = el('div', 'pvp-pool');
-    for (const dex of Data.RANKED_POOL) {
-      const at = team.findIndex(x => x && x.dex === dex);
-      const c = typeTint(el('button', 'pvp-pick' + (at >= 0 ? ' in' : '')), dex);
-      c.append(this.skinned(portrait(dex, 40), dex));
-      c.title = SPECIES[dex].name;
+    // Tocar uno lo pone en el hueco elegido (si ya está, se cambian; si es la misma especie, ocupa su sitio)
+    const pick = (grid, dex, mon, title) => {
+      const entry = { ...(mon ? { uid: mon.uid } : {}), dex, moves: mon && mon.moves && mon.moves.length ? mon.moves.slice(0, 4) : Data.defaultMoves(dex, Data.RANKED_LEVEL) };
+      const same = team.findIndex(x => x && x.dex === dex), here = same >= 0 && (team[same].uid || 0) === (mon ? mon.uid : 0);
+      const c = typeTint(el('button', 'pvp-pick' + (here ? ' in' : '')), dex);
+      c.append(this.skinned(portrait(dex, 40, { shiny: !!(mon && mon.shiny) }), dex));
+      c.title = title;
       c.onclick = () => {
-        if (at >= 0) { [team[at], team[sel]] = [team[sel], team[at]]; }
-        else team[sel] = { dex, moves: Data.defaultMoves(dex, Data.RANKED_LEVEL) };
+        if (here) { [team[same], team[sel]] = [team[sel], team[same]]; }
+        else team[same >= 0 ? same : sel] = entry;
         for (let k = 0; k < 3; k++) if (!team[k]) team[k] = undefined;
         this.pvpSel = team.findIndex(x => !x) >= 0 ? team.findIndex(x => !x) : sel;
         save();
       };
-      pool.append(c);
+      grid.append(c);
+    };
+    box.append(el('p', 'small', t('Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.')));
+    if (p.mons.length) {
+      box.append(el('h4', '', t('Tus Pokémon')));
+      const own = el('div', 'pvp-pool');
+      for (const m of [...p.mons].sort((a, b) => SPECIES[b.dex].bst - SPECIES[a.dex].bst || b.level - a.level)) pick(own, m.dex, m, `${m.nick || SPECIES[m.dex].name} · ${t('Nv.{n}', { n: m.level })}`);
+      box.append(own);
     }
-    box.append(pool);
+    box.append(el('h4', '', t('De alquiler')));
+    const rent = el('div', 'pvp-pool rent');
+    for (const dex of Data.RANKED_POOL) pick(rent, dex, null, SPECIES[dex].name);
+    box.append(rent);
     if (team.filter(Boolean).length < 3) box.append(el('p', 'small', t('Elige 3 Pokémon distintos: se guarda solo.')));
     return box;
   }
@@ -1299,7 +1315,7 @@ export class UI {
       el('div', 'q-radar', '<i></i><i></i><i></i><div class="q-ball"></div>'),
       el('div', 'q-title', ranked ? t('Buscando rival para clasificatoria…') : t('Buscando rival para partida rápida…')),
       el('div', 'q-time', '0:00'));
-    const team = (Data.pvpTeam(this.profile.pvpTeam) || []).filter(Boolean);
+    const team = (Data.pvpTeam(this.profile.pvpTeam, this.profile.mons) || []).filter(Boolean);
     if (team.length) {
       const row = el('div', 'q-team');
       for (const m of team) row.append(this.skinned(portrait(m.dex, 52), m.dex));
@@ -1349,53 +1365,6 @@ export class UI {
       box.querySelector('.q-time').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
       if (s - last >= 6) { last = s; showTip(); }
       setTimeout(tick, 500);
-    };
-    tick();
-  }
-
-  // ---------- Draft ----------
-  draft(msg) {
-    this.view = 'draft';
-    this.root.hidden = false;
-    this.root.innerHTML = '';
-    const wrap = el('div', 'draft');
-    const ban = msg.phase === 'ban';
-    wrap.append(el('div', 'draft-head', `<h2>${ban ? t('Fase de veto') : t('Elige tu equipo')}</h2><p>${t('contra <b>{foe}</b>', { foe: escapeHtml(msg.foe) })}${msg.foeElo ? ` (${msg.foeElo})` : ''} · ${ban ? t('Veta 1 Pokémon: nadie podrá usarlo') : t('Elige 3 Pokémon')}</p><div class="dtimer"></div>`));
-    const grid = el('div', 'pool scroll');
-    const chosen = [];
-    const confirm = el('button', 'primary', ban ? t('Vetar') : t('Confirmar equipo'));
-    confirm.disabled = true;
-    for (const dex of msg.pool) {
-      const banned = msg.bans.includes(dex);
-      const c = typeTint(el('button', 'pool-card' + (banned ? ' banned' : '')), dex);
-      c.append(this.skinned(portrait(dex, 64), dex));
-      c.append(el('b', '', SPECIES[dex].name), el('div', 'types', typeChips(dex)));
-      c.title = SPECIES[dex].moves.map(k => `${MOVES[k].name}: ${describeMove(MOVES[k]).split('\n').join(' · ')}`).join('\n');
-      c.disabled = banned;
-      c.onclick = () => {
-        const i = chosen.indexOf(dex);
-        if (i >= 0) chosen.splice(i, 1);
-        else { if (chosen.length >= (ban ? 1 : 3)) chosen.shift(); chosen.push(dex); }
-        grid.querySelectorAll('.pool-card').forEach(x => x.classList.toggle('sel', chosen.includes(+x.dataset.dex)));
-        confirm.disabled = chosen.length !== (ban ? 1 : 3);
-      };
-      c.dataset.dex = dex;
-      grid.append(c);
-    }
-    confirm.onclick = () => {
-      this.net.send(ban ? { t: 'ban', dex: chosen[0] } : { t: 'pick', dexes: chosen });
-      confirm.disabled = true;
-      confirm.textContent = t('Esperando al rival…');
-      grid.querySelectorAll('.pool-card').forEach(x => { x.disabled = true; });
-    };
-    wrap.append(grid, confirm);
-    this.root.append(wrap);
-    const end = Date.now() + msg.time * 1000;
-    const tick = () => {
-      if (this.view !== 'draft' || !wrap.isConnected) return;
-      const s = Math.max(0, Math.ceil((end - Date.now()) / 1000));
-      wrap.querySelector('.dtimer').textContent = s + ' s';
-      setTimeout(tick, 250);
     };
     tick();
   }
@@ -1562,6 +1531,8 @@ export class UI {
         const lvl = x.level > x.fromLevel ? `<span class="lvup">${lv(x.fromLevel)} → ${lv(x.level)}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
         row.append(el('div', '', `<b>${pm && pm.nick ? escapeHtml(pm.nick) : SPECIES[x.from].name}</b><small>${x.capped && !x.xp ? `<span class="cap">${t('en el tope de nivel')}</span>` : `+${x.xp} EXP`} · ${lvl}</small>${x.evolved ? `<span class="evo">${t('¡Ha evolucionado a {m}!', { m: SPECIES[x.evolved].name })}</span>` : ''}${learned.length ? `<span class="lvup">${t('Nuevo movimiento: {list}', { list: learned.join(', ') })}</span>` : ''}`));
+        // Con un movimiento nuevo, un botón directo a su ficha para decidir si se lo pones
+        if (learned.length) { const edit = el('button', 'learn-go', t('Editar movimientos')); edit.onclick = () => this.monSheet(x.uid, 'moves'); row.append(edit); }
         list.append(row);
       }
       if (list.children.length) box.append(list);

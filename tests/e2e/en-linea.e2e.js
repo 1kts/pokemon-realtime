@@ -13,6 +13,8 @@ module.exports = async ({ page, player, ok }) => {
   rival.client.send({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] }); await rival.client.wait(m => m.t === 'profile');
   rival.client.send({ t: 'queue', mode: 'casual' });
   await page.waitSee('1 buscando rival', { in: '.menu-card.casual', ms: 15000 });
+  const chapa = await page.eval(`(() => { const live = document.querySelector('.menu-card.casual .pvp-live'), r = live.getBoundingClientRect(), b = live.querySelector('b'), q = b.getBoundingClientRect(); return { dentro: q.right <= r.right + 1 && q.left >= r.left - 1, igual: getComputedStyle(b).fontSize === getComputedStyle(live).fontSize }; })()`);
+  ok(chapa.dentro && chapa.igual, `«1 buscando rival» va dentro de su chapa y con la letra del resto (${JSON.stringify(chapa)})`);
   ok(!(await page.see('buscando rival', { in: '.menu-card.ranked', ms: 0 })) && await page.eval(`!!document.querySelector('.menu-card.casual .pvp-live.hot')`), 'si alguien busca partida rápida, su tarjeta lo dice (la de Clasificatoria no) y se ilumina');
   rival.client.send({ t: 'unqueue' });
   ok(await page.waitFor(`!/buscando rival/.test(document.querySelector('.menu-card.casual').innerText)`, 15000).then(() => true, () => false), 'cuando deja de buscar, deja de decirlo');
@@ -24,7 +26,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'online'`);
   const q1 = await page.eval(shown);
   ok(q1.sign === 'Partida rápida' && q1.go === 'Buscar partida rápida' && q1.off && !q1.elo, `«Partida rápida» sin equipo abre Partida rápida (no Clasificatoria), sin ELO y con el botón esperando al equipo (${JSON.stringify(q1)})`);
-  for (let i = 0; i < 3; i++) { await page.click(`.pvp-pool .pvp-pick:nth-child(${i + 1})`); await page.waitFor(`document.querySelectorAll('.pvp-slot:not(.empty)').length === ${i + 1}`); }
+  for (let i = 0; i < 3; i++) { await page.click(`.pvp-pool.rent .pvp-pick:nth-child(${i + 1})`); await page.waitFor(`document.querySelectorAll('.pvp-slot:not(.empty)').length === ${i + 1}`); }
   await page.waitFor(`![...document.querySelectorAll('.online button.primary')].find(x => /Buscar partida/.test(x.textContent)).disabled`);
   await page.click('Buscar partida rápida');
   await page.waitFor(`document.querySelector('.q-mode')`);

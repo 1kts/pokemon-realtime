@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': 'Tes Pokémon en PvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'En Classée et en Partie rapide, tu joues avec tes Pokémon, légendaires compris, avec leurs IV et EV au N.50. Sans passer par l\'Histoire, tu as ceux de location.',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': 'Quand tu gagnes un skin, un cadre ou un titre, tu peux l\'équiper tout de suite, et un point doré te guide vers les nouveautés dans Mes Pokémon, ton profil, Succès et Missions.',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': 'À la Tour de Combat, tu peux utiliser n\'importe lequel de tes Pokémon, légendaires compris, pour battre ton record.',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': 'Dans l\'Histoire, ton personnage marche sur le Chemin quand tu gagnes un badge et avance à chaque route terminée.',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': 'Quand un sauvage n\'a presque plus de PV, le combat te rappelle de lancer une Ball, et si un Pokémon apprend une attaque, tu y vas directement depuis les résultats.',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': 'Sur mobile, l\'écran titre est plus beau et les Poké Balls sont à droite, au-dessus des attaques.',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': 'Succès épurés, mieux sur iPhone',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Les Succès n\'ont plus l\'onglet Lignées : les défis de chaque lignée se voient et se récupèrent sur la fiche de chaque Pokémon, dans Mes Pokémon, et « Tout récupérer » les encaisse toujours.',
@@ -660,7 +668,7 @@ export default {
     'Entendido': 'Compris',
     'Cómo se juega a la Torre Batalla': 'Comment jouer à la Tour de Combat',
     'El desafío': 'Le défi',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': 'Tu choisis 3 Pokémon et ils combattent tous au <b>N.{n}</b> : les tiens (de n\'importe quelle région, sans légendaires) ou de location.',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': 'Tu choisis 3 Pokémon et ils combattent tous au <b>N.{n}</b> : les tiens (de n\'importe quelle région, légendaires compris) ou de location.',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': 'C\'est une suite de combats contre des Dresseurs de l\'IA. Avant chacun, tu vois la silhouette du prochain adversaire.',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': 'Entre deux combats, tu peux changer l\'ordre de ton équipe, mais pas les Pokémon.',
     'La racha': 'La série',
@@ -773,6 +781,17 @@ export default {
     'Retirada de contenido': 'Retrait de contenu',
     'Hecho por {who}': 'Créé par {who}',
     'Música de {who}': 'Musique de {who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': 'Il est dans ton équipe Classée : remplace-le d\'abord',
+    'Sal de la cola antes': 'Quitte d\'abord la file',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'Il manque un Pokémon dans ton équipe : choisis-en un autre pour chercher une partie.',
+    'Encender las partículas': 'Activer les particules',
+    'Ponerme el marco': 'Mettre le cadre',
+    'Usar este título': 'Utiliser ce titre',
+    'Novedad': 'Nouveau',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "Les tiens gardent leurs IV, EV et nature, légendaires compris ; ceux de location n'ont aucun extra.",
+    'Editar movimientos': 'Modifier les attaques',
+    '¡Lanza una Ball para capturarlo!': 'Lance une Ball pour le capturer !',
+    '¡Pulsa F para capturarlo!': 'Appuie sur F pour le capturer !',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Les projectiles comme avant',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Les projectiles retrouvent leur aspect habituel, un noyau brillant avec un halo de couleur, même dans les arènes de glace et de neige, au lieu d’avoir un autre aspect.',
@@ -1458,14 +1477,8 @@ export default {
     'Buscando rival para clasificatoria…': 'Recherche d\'un adversaire classé…',
     'Buscando rival para partida rápida…': 'Recherche d\'un adversaire pour une partie rapide…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'Pour essayer seul, ouvre un autre onglet et lance aussi une recherche.',
-    'Fase de veto': 'Phase de bannissement',
     'Elige tu equipo': 'Choisis ton équipe',
-    'contra <b>{foe}</b>': 'contre <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': 'Bannis 1 Pokémon : personne ne pourra l\'utiliser',
     'Elige 3 Pokémon': 'Choisis 3 Pokémon',
-    'Vetar': 'Bannir',
-    'Confirmar equipo': 'Confirmer l\'équipe',
-    'Esperando al rival…': 'En attente de l\'adversaire…',
 
     // ---------- Entraînement ----------
     'Práctica contra la IA': 'Entraînement contre l\'IA',
@@ -1503,7 +1516,7 @@ export default {
     'Buscar otra': 'En chercher une autre',
 
     // ---------- Tour de Combat ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>tous au N.{n}</b>. Les tiens (de n\'importe quelle région, sans légendaires) gardent leurs IV, EV, nature, chromatisme et capacités ; ceux de location, ceux de leur espèce sans extras. Pendant la série, on ne change pas les Pokémon, seulement leur ordre.',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>tous au N.{n}</b>. Les tiens (de n\'importe quelle région, légendaires compris) gardent leurs IV, EV, nature, chromatisme et capacités ; ceux de location, ceux de leur espèce sans extras. Pendant la série, on ne change pas les Pokémon, seulement leur ordre.',
     'Empezar desafío': 'Commencer le défi',
     'tuyo': 'à toi',
     'alquiler': 'location',
@@ -1514,7 +1527,6 @@ export default {
     'Total de stats base {n}': 'Total des stats de base {n}',
     'Tus Pokémon': 'Tes Pokémon',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': 'Tu n\'as pas encore de Pokémon qui peuvent participer : utilise ceux de location ou attrapes-en dans Histoire.',
-    'Tus legendarios y singulares no pueden entrar.': 'Tes Pokémon légendaires et fabuleux ne peuvent pas participer.',
     'De alquiler': 'De location',
     'Racha': 'Série',
     'Combate {n}': 'Combat {n}',
@@ -2038,7 +2050,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, 'C\'est ton seul Pokémon de $1'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, 'Choisis d\'abord ton starter de $1'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `Tu n'as pas encore atteint ${LEAGUE[l] || l}`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1 : les Pokémon légendaires et fabuleux ne peuvent pas entrer dans la Tour'],
     [/^¡Hola de nuevo, (.+)!$/, 'Re-bonjour, $1 !'],
     [/^Temporada (\d+)$/, 'Saison $1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],

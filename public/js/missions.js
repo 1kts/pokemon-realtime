@@ -3,6 +3,7 @@
 // animación al recoger. El servidor manda las misiones en p.missions (server/missions.js) y lo
 // recogido en un mensaje 'loot'. Se añaden como métodos de UI (ver el final de ui.js).
 import { t, locale } from './i18n.js';
+import { newsDot } from './news-dots.js';
 import { confirmBox } from './dialog.js';
 import { icon, item as itemImg, badgeImg, typeIcon } from './pixicons.js';
 import { frameBadge, SKIN_LABEL, applySkin, auraName, auraDot } from './frames.js';
@@ -263,6 +264,7 @@ export const missionViews = {
     const head = el('div', 'mw-head');
     const open = () => this.show('missions');
     const title = el('button', 'mw-title', `<b>${t('Misiones')}</b>`);
+    if (ready) title.append(newsDot());
     const go = el('button', 'go', `${t('Ver todas')} ›`);
     title.onclick = go.onclick = open;
     head.append(title, ready ? this.claimAllButton() : '', go);
@@ -372,6 +374,9 @@ export const missionViews = {
     if (r.aura || r.aura2) equip(t('Ponerme el glow'), { aura: r.aura2 || r.aura });
     if (r.effect) equip(t('Ponerme el efecto'), { effect: r.effect });
     if (r.skin) equip(t('Ponérsela'), { skin: { dex: skinDex, skin: r.skin } });
+    if (r.particles) equip(t('Encender las partículas'), { particles: { dex: r.particles, on: true } });
+    if (r.frame) equip(t('Ponerme el marco'), { frame: r.frame });
+    if (r.title) equip(t('Usar este título'), { title: r.title });
     const ok = el('button', 'primary', t('¡Genial!'));
     acts.append(ok);
     if (r.chestReady) acts.append(el('p', 'small chest-hint', t('¡Has completado las 3! Abre el cofre en Misiones.')));

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': 'Your Pokémon in PvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': 'In Ranked and Quick Match you play with your own Pokémon, legendaries included, with their IVs and EVs at Lv.50. If you\'d rather skip Story, rentals are there.',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': 'When you win a skin, frame or title you can equip it right there, and a golden dot leads you to what\'s new in My Pokémon, your profile, Achievements and Missions.',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': 'In Battle Tower you can use any of your Pokémon, legendaries included, to beat your record.',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': 'In Story, your character walks along the Path when you win a badge and moves on with each completed route.',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': 'When a wild Pokémon is almost out of HP, the battle reminds you to throw a Ball, and when one learns a move you can go straight to it from the results.',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': 'On mobile, the title screen looks better and Poké Balls sit on the right, above your moves.',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': 'Tidier Achievements, better on iPhone',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': 'Achievements no longer has the Lines tab: each line\'s challenges are viewed and claimed on each Pokémon\'s sheet in My Pokémon, and “Claim all” still collects them.',
@@ -660,7 +668,7 @@ export default {
     'Entendido': 'Got it',
     'Cómo se juega a la Torre Batalla': 'How the Battle Tower works',
     'El desafío': 'The challenge',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': 'You pick 3 Pokémon and they all battle at <b>Lv.{n}</b>: your own (from any region, no legendaries) or rentals.',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': 'You pick 3 Pokémon and they all battle at <b>Lv.{n}</b>: your own (from any region, legendaries included) or rentals.',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': 'It\'s a run of battles against AI trainers. Before each one you see the next opponent in silhouette.',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': 'Between battles you can reorder your team, but not swap Pokémon.',
     'La racha': 'The streak',
@@ -773,6 +781,17 @@ export default {
     'Retirada de contenido': 'Content removal',
     'Hecho por {who}': 'Made by {who}',
     'Música de {who}': 'Music by {who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': 'It\'s in your Ranked team: swap it out first',
+    'Sal de la cola antes': 'Leave the queue first',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': 'A Pokémon is missing from your team: pick another to search for a match.',
+    'Encender las partículas': 'Turn on the particles',
+    'Ponerme el marco': 'Wear the frame',
+    'Usar este título': 'Use this title',
+    'Novedad': 'New',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "Yours keep their IVs, EVs and nature, legendaries included; rentals have no extras.",
+    'Editar movimientos': 'Edit moves',
+    '¡Lanza una Ball para capturarlo!': 'Throw a Ball to catch it!',
+    '¡Pulsa F para capturarlo!': 'Press F to catch it!',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': 'Projectiles as before',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': 'Projectiles go back to their usual look, a glowing core with a coloured halo, also in the ice and snow arenas, instead of looking different.',
@@ -1537,14 +1556,8 @@ export default {
     'Buscando rival para clasificatoria…': 'Looking for a ranked opponent…',
     'Buscando rival para partida rápida…': 'Looking for a quick match opponent…',
     'Para probar solo, abre otra pestaña y busca partida también.': 'To try it alone, open another tab and search for a match there too.',
-    'Fase de veto': 'Ban phase',
     'Elige tu equipo': 'Choose your team',
-    'contra <b>{foe}</b>': 'vs <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': 'Ban 1 Pokémon: nobody will be able to use it',
     'Elige 3 Pokémon': 'Choose 3 Pokémon',
-    'Vetar': 'Ban',
-    'Confirmar equipo': 'Confirm team',
-    'Esperando al rival…': 'Waiting for the opponent…',
 
     // ---------- Práctica ----------
     'Práctica contra la IA': 'Practice against the AI',
@@ -1582,7 +1595,7 @@ export default {
     'Buscar otra': 'Find another',
 
     // ---------- Torre Batalla ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>all at Lv.{n}</b>. Yours (from any region, no legendaries) keep their IVs, EVs, nature, shiny and moves; rentals use their species\' defaults. During a streak you can\'t change the Pokémon, only their order.',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 Pokémon, <b>all at Lv.{n}</b>. Yours (from any region, legendaries included) keep their IVs, EVs, nature, shiny and moves; rentals use their species\' defaults. During a streak you can\'t change the Pokémon, only their order.',
     'Empezar desafío': 'Start challenge',
     'tuyo': 'yours',
     'alquiler': 'rental',
@@ -1593,7 +1606,6 @@ export default {
     'Total de stats base {n}': 'Base stat total {n}',
     'Tus Pokémon': 'Your Pokémon',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': 'You don\'t have any Pokémon that can enter yet: use rentals or catch some in Story.',
-    'Tus legendarios y singulares no pueden entrar.': 'Your legendary and mythical Pokémon can\'t enter.',
     'De alquiler': 'Rentals',
     'Racha': 'Streak',
     'Combate {n}': 'Battle {n}',
@@ -2034,7 +2046,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, 'It\'s your only $1 Pokémon'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, 'First choose your $1 starter'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `You haven't reached ${LEAGUE[l] || l} yet`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1: legendary and mythical Pokémon can\'t enter the Tower'],
     [/^¡Hola de nuevo, (.+)!$/, 'Welcome back, $1!'],
     [/^Temporada (\d+)$/, 'Season $1'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · S${n}`],

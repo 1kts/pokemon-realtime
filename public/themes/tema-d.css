@@ -135,6 +135,8 @@ body.tema-d .menu-card:hover .art { transform: scale(1.08) rotate(-3deg); }
 body.tema-d .menu-card .go { display: none; }
 body.tema-d .menu-card .pvp-live { position: relative; z-index: 2; background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.2); color: #fff; }
 body.tema-d .menu-card .pvp-live.hot { background: rgba(0,0,0,.3); border-color: rgba(255,255,255,.5); }
+/* (sin esto, ganan las letras grandes de los títulos de las tarjetas) */
+body.tema-d .menu-card .pvp-live b { position: static; font: inherit; font-weight: 800; letter-spacing: 0; text-shadow: none; }
 body.tema-d .menu-card .pvp-live.hot b { color: #fff; }
 body.tema-d .menu-card em.ready { color: #ffe680; }
 /* Historia, la portada: grande, en rojo que acaba en rojo oscuro, con el único «Jugar» (dorado y con relieve) */

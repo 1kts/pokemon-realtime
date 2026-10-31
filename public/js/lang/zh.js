@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.0 ----------
+    'Tus Pokémon al PvP': '用你的宝可梦打 PvP',
+    'En Clasificatoria y Partida rápida juegas con tus Pokémon, legendarios incluidos, con sus IV y EV a Nv.50. Si no quieres jugar Historia, tienes los de alquiler.': '在排位赛和快速对战中,你可以用自己的宝可梦作战,包括传说宝可梦,保留个体值和努力值,等级为 50。不想玩剧情也可以用租借宝可梦。',
+    'Al ganar una skin, un marco o un título puedes equipártelo ahí mismo, y una bolita dorada te lleva a lo nuevo en Mis Pokémon, tu perfil, Logros y Misiones.': '赢得皮肤、头像框或称号时可当场装备,金色小圆点会在我的宝可梦、个人资料、成就和任务中指引你找到新内容。',
+    'En Torre Batalla puedes usar cualquier Pokémon tuyo, legendarios incluidos, para romper tu récord.': '在对战塔中,你可以使用自己的任何宝可梦,包括传说宝可梦,来刷新记录。',
+    'En Historia, tu personaje anda por el Camino al ganar una medalla y avanza con cada ruta completada.': '在剧情中,赢得徽章时你的角色会沿着旅途行走,并随每条完成的道路前进。',
+    'Con el salvaje casi sin vida, el combate te avisa de lanzar la Ball, y al aprender un movimiento vas directo a ponérselo desde los resultados.': '野生宝可梦快没血时,战斗会提醒你扔精灵球;学会新招式时,可从结算画面直接去设置。',
+    'En el móvil, la portada se ve mejor y las Poké Balls van a la derecha, encima de los ataques.': '在手机上,标题画面更美观,精灵球移到右侧,位于招式上方。',
     // ---------- Novedades v0.35.1 ----------
     'Logros al grano y mejor en iPhone': '成就更简洁,iPhone 更顺手',
     'Logros ya no tiene la pestaña Líneas: los retos de cada línea se ven y se recogen en la ficha de cada Pokémon, en Mis Pokémon, y «Recoger todo» los sigue cobrando.': '成就不再有“进化线”标签:各进化线的挑战可在我的宝可梦的宝可梦资料中查看和领取,“全部领取”仍可领取。',
@@ -660,7 +668,7 @@ export default {
     'Entendido': '知道了',
     'Cómo se juega a la Torre Batalla': '对战塔玩法说明',
     'El desafío': '挑战',
-    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, sin legendarios) o de alquiler.': '选择 3 只宝可梦，全部以 <b>Lv.{n}</b> 出战：可以用自己的（任何地区，不含传说）或租借的。',
+    'Eliges 3 Pokémon y todos combaten a <b>Nv.{n}</b>: los tuyos (de cualquier región, legendarios incluidos) o de alquiler.': '选择 3 只宝可梦，全部以 <b>Lv.{n}</b> 出战：可以用自己的（任何地区，包括传说）或租借的。',
     'Son combates seguidos contra entrenadores de la IA. Antes de cada uno ves al siguiente rival en silueta.': '这是一连串对战 AI 训练家的战斗。每场之前都能看到下一位对手的剪影。',
     'Entre combates puedes cambiar el orden del equipo, pero no los Pokémon.': '两场之间可以调整队伍顺序，但不能更换宝可梦。',
     'La racha': '连胜',
@@ -773,6 +781,17 @@ export default {
     'Retirada de contenido': '内容移除',
     'Hecho por {who}': '作者：{who}',
     'Música de {who}': '音乐:{who}',
+    'Está en tu equipo de Clasificatoria: cámbialo antes': '它在你的排位队伍中:请先替换',
+    'Sal de la cola antes': '请先退出队列',
+    'Falta un Pokémon en tu equipo: elige otro para poder buscar partida.': '队伍缺少一只宝可梦:再选一只才能寻找对战。',
+    'Encender las partículas': '开启粒子',
+    'Ponerme el marco': '戴上头像框',
+    'Usar este título': '使用此称号',
+    'Novedad': '新内容',
+    'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "你自己的宝可梦保留个体值、努力值和性格,包括传说;租借的没有额外加成。",
+    'Editar movimientos': '编辑招式',
+    '¡Lanza una Ball para capturarlo!': '扔出精灵球捕捉它!',
+    '¡Pulsa F para capturarlo!': '按 F 捕捉它!',
     // ---------- Novedades v0.16.1 ----------
     'Proyectiles como siempre': '弹射物恢复原样',
     'Los proyectiles vuelven a su diseño de siempre, núcleo brillante con halo de color, también en las arenas de hielo y nieve, en vez de verse distintos.': '弹射物恢复为一贯的样子：发光的核心加彩色光晕，在冰雪场地中也不再显得不同。',
@@ -1536,14 +1555,8 @@ export default {
     'Buscando rival para clasificatoria…': '正在寻找排位赛对手…',
     'Buscando rival para partida rápida…': '正在寻找快速对战对手…',
     'Para probar solo, abre otra pestaña y busca partida también.': '想一个人试试的话，再打开一个标签页同时匹配即可。',
-    'Fase de veto': '禁用阶段',
     'Elige tu equipo': '选择你的队伍',
-    'contra <b>{foe}</b>': '对手 <b>{foe}</b>',
-    'Veta 1 Pokémon: nadie podrá usarlo': '禁用 1 只宝可梦：双方都不能使用',
     'Elige 3 Pokémon': '选择 3 只宝可梦',
-    'Vetar': '禁用',
-    'Confirmar equipo': '确认队伍',
-    'Esperando al rival…': '等待对手…',
 
     // ---------- 练习 ----------
     'Práctica contra la IA': '与 AI 练习',
@@ -1581,7 +1594,7 @@ export default {
     'Buscar otra': '再找一场',
 
     // ---------- 对战塔 ----------
-    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, sin legendarios) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 只宝可梦，<b>全部为 Lv.{n}</b>。你自己的宝可梦（任何地区，传说除外）保留个体值、努力值、性格、异色和招式；租借的使用该种类的默认配置。连胜期间不能更换宝可梦，只能调整顺序。',
+    '3 Pokémon, <b>todos a Nv.{n}</b>. Los tuyos (de cualquier región, legendarios incluidos) llevan sus IV, EV, naturaleza, shiny y movimientos; los de alquiler, los de su especie sin extras. Durante la racha no se cambian los Pokémon, solo su orden.': '3 只宝可梦，<b>全部为 Lv.{n}</b>。你自己的宝可梦（任何地区，包括传说）保留个体值、努力值、性格、异色和招式；租借的使用该种类的默认配置。连胜期间不能更换宝可梦，只能调整顺序。',
     'Empezar desafío': '开始挑战',
     'tuyo': '自己的',
     'alquiler': '租借',
@@ -1592,7 +1605,6 @@ export default {
     'Total de stats base {n}': '种族值总和 {n}',
     'Tus Pokémon': '你的宝可梦',
     'Aún no tienes Pokémon que puedan entrar: usa los de alquiler o captura en Historia.': '你还没有可以参加的宝可梦：使用租借宝可梦，或者去故事模式捕捉。',
-    'Tus legendarios y singulares no pueden entrar.': '你的传说和幻之宝可梦不能参加。',
     'De alquiler': '租借宝可梦',
     'Racha': '连胜',
     'Combate {n}': '第 {n} 战',
@@ -2033,7 +2045,6 @@ export default {
     [/^Es tu único Pokémon de (.+)$/, '这是你在$1唯一的宝可梦'],
     [/^Primero elige tu Pokémon inicial de (.+)$/, '请先选择$1的御三家'],
     [/^Aún no has llegado a (.+)$/, (m, l) => `你还没有达到${LEAGUE[l] || l}`],
-    [/^(.+): los legendarios y singulares no pueden entrar en la Torre$/, '$1：传说和幻之宝可梦不能进入对战塔'],
     [/^¡Hola de nuevo, (.+)!$/, '欢迎回来，$1！'],
     [/^Temporada (\d+)$/, '第 $1 赛季'],
     [/^(Bronce|Plata|Oro|Platino|Diamante|Maestro) · T(\d+)$/, (m, l, n) => `${LEAGUE[l]} · 第${n}赛季`],

@@ -1,5 +1,5 @@
 // Prueba de integración del servidor por WebSocket: perfil, historia, tienda, objetos,
-// combates (rendición), gimnasios en orden, clasificatoria con draft y ELO, recompensas de
+// combates (rendición), gimnasios en orden, clasificatoria con ELO, recompensas de
 // liga y temporada, cuentas con usuario y contraseña, con Google y con código por correo, Torre Batalla y ladder.
 //   node tools/server-test.js        (arranca su propio servidor en un puerto libre)
 const path = require('path');
@@ -278,24 +278,32 @@ class Client {
   const jroute = story.battleSetup(prof, { a: 'route', id: 'j-ruta32' });
   ok(!jroute.error && D.NODES['j-ruta32'].wild.some(w => w[0] === jroute.opts.sides[1].team[0].dex || D.routeWild(D.NODES['j-ruta32']).specials.concat(D.routeWild(D.NODES['j-ruta32']).roam.map(dex => ({ dex }))).some(x => x.dex === jroute.opts.sides[1].team[0].dex)), 'la Ruta 32 saca un Pokémon de sus encuentros reales');
 
-  // ---------- Clasificatoria con draft ----------
+  // ---------- Clasificatoria ----------
   const b = new Client(port), c = new Client(port);
   await b.open(); await c.open();
   await b.req({ t: 'hello', name: 'Azul' }); await c.req({ t: 'hello', name: 'Verde' });
   // Solo las cuentas registradas salen en los rankings: Azul y Verde se registran (conservan el perfil)
   await b.req({ t: 'register', user: 'azul', pass: 'clave-azul' }); await c.req({ t: 'register', user: 'verde', pass: 'clave-verde' });
-  // Sin draft: cada uno se prepara su equipo de 3 (con movimientos) y el rival es al azar
+  // Cada uno se prepara su equipo de 3 (con movimientos) y el rival es al azar
   let qe = b.wait('error'); b.send({ t: 'queue', mode: 'ranked' });
   ok(/Prepara antes tu equipo/.test((await qe).msg), 'sin equipo preparado no se puede buscar partida');
   qe = b.wait('error'); b.send({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 6 }, { dex: 9 }] });
   ok(/3 Pokémon distintos/.test((await qe).msg), 'el equipo son 3 Pokémon distintos del pool');
   m = await b.req({ t: 'pvpteam', team: [{ dex: 6, moves: ['lanzallamas', 'noExiste'] }, { dex: 9 }, { dex: 3 }] });
   ok(m.p.pvpTeam[0].moves.join() === 'lanzallamas' && m.p.pvpTeam[1].moves.length === 4, 'se guarda con los movimientos elegidos (solo los que sabe a Nv.50)');
-  await c.req({ t: 'pvpteam', team: [{ dex: 149 }, { dex: 65 }, { dex: 94 }] });
+  // Tus Pokémon entran en el equipo, legendarios incluidos; los de otro, no
+  m = await c.req({ t: 'pvpteam', team: [{ dex: 149 }, { dex: 65 }, { dex: 94 }] });
+  const verdeP = store.get(m.p.token), mewtwo = require('../server/story.js').devAddMon(verdeP, 150, 5, false, 'kanto');
+  mewtwo.nick = 'Mew2'; mewtwo.moves = mewtwo.moves.slice(0, 1);
+  qe = b.wait('error'); b.send({ t: 'pvpteam', team: [{ uid: mewtwo.uid }, { dex: 9 }, { dex: 3 }] });
+  ok(/3 Pokémon distintos/.test((await qe).msg), 'un Pokémon de otro no entra en tu equipo');
+  m = await c.req({ t: 'pvpteam', team: [{ uid: mewtwo.uid }, { dex: 65 }, { dex: 94 }] });
+  ok(m.p.pvpTeam[0].uid === mewtwo.uid && m.p.pvpTeam[0].dex === 150, 'tu Mewtwo entra en el equipo de Clasificatoria');
   const sb = b.wait('start'), sc = c.wait('start');
   b.send({ t: 'queue', mode: 'ranked' }); c.send({ t: 'queue', mode: 'ranked' });
   const [st] = await Promise.all([sb, sc]);
-  const mine = st.sides[st.you].team;
+  const mine = st.sides[st.you].team, rivalTeam = st.sides[1 - st.you].team;
+  ok(rivalTeam[0].dex === 150 && rivalTeam[0].level === 50 && rivalTeam[0].nick === 'Mew2', 'el tuyo combate a Nv.50 siendo Nv.5, con su mote y sus extras');
   ok(st.mode === 'ranked' && mine.every(x => x.level === 50) && mine.map(x => x.dex).join() === '6,9,3' && mine[0].moves.join() === 'lanzallamas', 'emparejados: el combate empieza ya, a Nv.50, con el equipo y los movimientos de cada uno');
   const ob = b.wait('over'), oc = c.wait('over');
   c.send({ t: 'forfeit' });
@@ -617,6 +625,35 @@ class Client {
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
 
   // Misma IP: no se emparejan (en producción; aquí se activa a mano). Y contra el mismo rival, el ELO solo
+  // Con tus Pokémon en el equipo: mientras buscas partida no se venden, y si aun así el equipo deja de valer (lo
+  // único que lo tumba son datos ya rotos) sales de la cola con un aviso: nadie se queda colgado ni cae el servidor
+  {
+    const stq = require('../server/story.js');
+    const h1 = new Client(port), h2 = new Client(port);
+    await h1.open(); await h2.open();
+    const r1 = await h1.req({ t: 'hello', name: 'Tendero' }); await h2.req({ t: 'hello', name: 'Rival' });
+    const pr = store.get(r1.p.token), propio = stq.devAddMon(pr, 150, 5, false, 'kanto');
+    stq.devAddMon(pr, 25, 5, false, 'kanto');
+    await h1.req({ t: 'pvpteam', team: [{ uid: propio.uid }, { dex: 9 }, { dex: 3 }] });
+    await h2.req({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
+    let eq = h1.wait('error');
+    h1.send({ t: 'story', a: 'sell', uid: propio.uid });
+    ok(/equipo de Clasificatoria/.test((await eq).msg), 'un Pokémon de tu equipo de Clasificatoria no se vende: hay que cambiarlo antes');
+    ok(pr.mons.some(x => x.uid === propio.uid), 'y sigue siendo tuyo');
+    const q = h1.wait('queue'); h1.send({ t: 'queue', mode: 'casual' }); await q;
+    const otro = pr.mons.find(x => x.uid !== propio.uid);
+    eq = h1.wait('error');
+    h1.send({ t: 'story', a: 'use', uid: otro.uid, item: 'caramelo' });
+    ok(/cola/.test((await eq).msg), 'mientras buscas partida no se usan objetos en tus Pokémon (un Pokémon no puede evolucionar y estropear el equipo)');
+    pr.mons = pr.mons.filter(x => x.uid !== propio.uid);   // (el equipo ya no vale, sea por lo que sea)
+    const fuera = h1.wait('unqueued'), aviso = h1.wait('error'), sigue = h2.wait('queue');
+    h2.send({ t: 'queue', mode: 'casual' });
+    await sigue;
+    ok(/Prepara antes tu equipo/.test((await aviso).msg) && !!(await fuera), 'con el equipo roto, al emparejar sales de la cola con un aviso, sin que caiga el servidor');
+    ok((await h2.req({ t: 'unqueue' }, 'unqueued')).t === 'unqueued', 'y el otro jugador sigue en la cola, sin quedarse colgado');
+    pr.pvpTeam = null;
+  }
+
   // cuenta en las 3 primeras partidas del día
   {
     process.env.SAME_IP_BLOCK = '1';
@@ -666,8 +703,7 @@ class Client {
   err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ dex: 6 }, { dex: 6 }, { dex: 9 }] });
   ok((await err).msg.includes('especie'), 'no se repite especie');
   const legend = story.devAddMon(twProf, 150, 70, false, 'kanto');
-  err = tw.wait('error'); tw.send({ t: 'tower', a: 'start', team: [{ uid: legend.uid }, { dex: 9 }, { dex: 3 }] });
-  ok((await err).msg.includes('legendarios'), 'los legendarios no entran');
+  ok(!tower.checkTeam(twProf, [{ uid: legend.uid }, { dex: 9 }, { dex: 3 }]).error, 'los legendarios también entran en la Torre');
   const low = story.devAddMon(twProf, 4, 5, false, 'kanto');
   m = await tw.req({ t: 'tower', a: 'start', team: [{ uid: low.uid }, { dex: 9 }, { dex: 3 }] });
   ok(m.p.tower.team.length === 3 && m.p.tower.streak === 0 && m.p.tower.next.team.length === 3 && m.p.tower.block === 1, 'empieza la racha con uno propio y dos de alquiler; ya se ve el siguiente rival');

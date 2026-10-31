@@ -11,6 +11,7 @@ import { icon, badgeImg } from './pixicons.js';
 import { showcaseHtml } from './achievements.js';
 import { avatarArt, avatarName, effectHtml, effectName } from './missions.js';
 import { wearPanel, frameLabel } from './wardrobe.js';
+import { newsDot, avatarNews, avatarTabNews, seeAvatarTab } from './news-dots.js';
 import { achName } from './achievements.js';
 import { frameFx, frameRing, frameBadge, auraHtml, applySkin, auraName } from './frames.js';
 import { CURSOR_COLORS, cursorSvg, getCursor, setCursor } from './cursor.js';
@@ -457,7 +458,7 @@ export const accountViews = {
 
   // El servidor ya va por otra versión (se ha desplegado mientras jugabas). La partida está en el
   // servidor, así que recargar no pierde nada: en los menús se recarga sola tras 5 s de aviso; en
-  // cola, draft, combate, resultados, con una ventana abierta o escribiendo, espera a que acabe.
+  // cola, combate, resultados, con una ventana abierta o escribiendo, espera a que acabe.
   versionCheck(serverVersion) {
     if (!serverVersion || serverVersion === VERSION || document.getElementById('update-bar')) return;
     const bar = el('div');
@@ -467,7 +468,7 @@ export const accountViews = {
     b.onclick = () => location.reload();
     bar.append(text, b);
     document.body.append(bar);
-    const idle = () => !this.app.battle && !['queue', 'draft', 'results'].includes(this.view) && !document.querySelector('.modal')
+    const idle = () => !this.app.battle && !['queue', 'results'].includes(this.view) && !document.querySelector('.modal')
       && !document.activeElement?.matches('input, textarea, select');
     let left = 5;
     const tick = () => {
@@ -704,6 +705,7 @@ export const accountViews = {
     const editAva = el('button', 'primary tc-edit', t('Editar'));
     editAva.onclick = () => this.avatarEditor();
     ava.append(pic, editAva);
+    if (avatarNews(this.profile)) ava.append(newsDot());   // (fuera de la foto, que recorta lo que le sobresale)
     card.append(ava);
     const info = el('div', 'tc-info');
     const nameRow = el('div', 'name-row', `<h2>${tagName(p.name, p.tag)}</h2>`);
@@ -837,8 +839,10 @@ export const accountViews = {
         prev.append(this.avatar(104, true), el('div', 'ae-who', `<b>${escapeHtml(p.name)}</b>${p.title ? `<span class="title-chip">${escapeHtml(t(p.title))}</span>` : `<small>${t('Sin título')}</small>`}`));
         box.append(prev);
         const tabs = el('div', 'ae-tabs');
+        seeAvatarTab(p, tabId);   // (visto: su bolita se apaga)
         for (const [id, label] of [['avatar', 'Imagen'], ['frame', 'Marco'], ['aura', 'Glow'], ['effect', 'Efecto'], ['title', 'Título']]) {
           const b = el('button', id === tabId ? 'sel' : '', t(label));
+          if (avatarTabNews(p, id)) b.append(newsDot());
           b.onclick = () => { this.avaTab = id; draw(); };
           tabs.append(b);
         }

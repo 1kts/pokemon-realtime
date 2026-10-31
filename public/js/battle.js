@@ -13,6 +13,7 @@ import { versusIntro } from './versus.js';
 
 const { TICK, SPEED, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
+const CATCH_HINT = 0.3;   // vida del salvaje a la que se avisa de que toca lanzar una Ball
 const INTERP_MS = 100;
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
 const BALLS = Data.BALL_IDS;
@@ -683,6 +684,10 @@ export class BattleClient {
     if (this.ballEl) {
       const fs = ps[this.foeIdx], fm = this.sides[this.foeIdx].team[fs.act];
       const status = !!(fs.f & (F.BURN | F.POISON | F.STUN | F.SLOW | F.SEED));
+      // Con poca vida es el momento: se avisa una vez por combate y el panel de las Balls se queda brillando
+      const fr = fs.hp[fs.act] / fm.maxHp, ready = fr > 0 && fr <= CATCH_HINT && Object.values(this.balls).some(n => n > 0);
+      this.ballEl.classList.toggle('catch-now', ready);
+      if (ready && !this.catchHinted) { this.catchHinted = true; this.banner(this.touch ? t('¡Lanza una Ball para capturarlo!') : t('¡Pulsa F para capturarlo!'), 'good'); }
       for (const row of this.ballEl.querySelectorAll('.ball')) row.querySelector('.pct').textContent = Math.round(Data.catchChance(Math.max(0, fs.hp[fs.act] / fm.maxHp), row.dataset.ball, status, fm.dex) * 100) + ' %';
     }
     this.energyEl.lastChild.textContent = `${me.e} ⚡`;

@@ -2,6 +2,7 @@
 // ilustraciones para el avatar, glows del avatar y skins, con lo que falta para conseguir cada cosa.
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
+import { newsDot } from './news-dots.js';
 import { t } from './i18n.js';
 import { portrait } from './sprites.js';
 import { masteryPrize, SKIN_LABEL, applySkin, auraName, frameBadge } from './frames.js';
@@ -63,7 +64,8 @@ export const collectionViews = {
     TABS.forEach(([id, label], i) => {
       if (i === 1) tabs.append(el('span', 'coll-sep'));
       const n = id === 'retos' ? retos : 0;
-      const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label) + (n ? `<i class="nbadge">${n}</i>` : ''));
+      const b = el('button', 'coll-tab' + (id === tab ? ' sel' : ''), t(label));
+      if (n) b.append(newsDot());
       b.onclick = () => { this.collTab = id; this.show('collection'); };
       tabs.append(b);
     });

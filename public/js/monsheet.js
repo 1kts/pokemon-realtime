@@ -3,6 +3,7 @@
 // naturaleza, equipo y aspecto shiny. Derecha, por pestañas: estadísticas (IV, EV y vitaminas), movimientos
 // (elegir 4 y su orden), objetos (Caramelo Raro y piedras evolutivas) y aspecto (skin de su línea).
 // Se queda abierta al llegar el perfil nuevo (cada cambio vuelve del servidor) y con ← → pasa al siguiente.
+import { newsDot, lookNews, retosNews, seeLook } from './news-dots.js';
 import { confirmBox } from './dialog.js';
 import { animatedPortrait, typeTint, portrait } from './sprites.js';
 import { monLabel, describeMove, moveStatsHtml } from './battle.js';
@@ -115,8 +116,10 @@ export const monSheetViews = {
     const main = el('div', 'ms-main');
     const head = el('div', 'ms-head');
     const tabs = el('div', 'ms-tabs');
+    if (s.tab === 'look') seeLook(p, mon.dex);   // (visto: se apaga aquí y, al volver, en su tarjeta y en Mis Pokémon)
     for (const [id, label] of TABS) {
       const b = el('button', 'ms-tab' + (s.tab === id ? ' sel' : ''), t(label));
+      if ((id === 'look' && lookNews(p, mon.dex)) || (id === 'retos' && retosNews(p, mon.dex))) b.append(newsDot());
       b.onclick = () => { s.tab = id; s.keepScroll = false; this.renderSheet(); s.keepScroll = true; };
       tabs.append(b);
     }

@@ -1,7 +1,7 @@
 # PokéArenas
 
 Combates Pokémon **en tiempo real** en el navegador, estilo HD-2D (arena 3D con Three.js y sprites de
-*Pokémon Mundo Misterioso*). Modo historia por Kanto, clasificatoria online con draft y ELO, partida
+*Pokémon Mundo Misterioso*). Modo historia por Kanto, clasificatoria online con ELO, partida
 rápida y práctica contra la IA. Proyecto de fans sin ánimo de lucro (ver [CREDITS.md](CREDITS.md)).
 
 ## Cómo jugar
@@ -39,10 +39,10 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
   tienda (Balls, Caramelos Raros, piedras evolutivas y Pokémon raros), vence a los 8 gimnasios, al Alto
   Mando y al Campeón. La IA de cada líder es más hábil que la anterior. Experiencia, niveles y
   evoluciones (por nivel o con piedra).
-- **Clasificatoria**: cola por ELO, draft (cada uno veta 1 y elige 3 de 20), todos a nivel 50, ligas de
+- **Clasificatoria**: cola por ELO, equipo de 3 de tus Pokémon (con IV y EV, legendarios incluidos) o de alquiler, todos a nivel 50, ligas de
   Bronce a Maestro y ranking.
 - **Partida rápida**: online sin veto ni ELO. **Práctica**: contra la IA con 4 dificultades.
-- **Torre Batalla**: combates seguidos contra la IA con 3 Pokémon tuyos (de cualquier región, sin legendarios)
+- **Torre Batalla**: combates seguidos contra la IA con 3 Pokémon tuyos (de cualquier región, legendarios incluidos, siempre a Nv.50)
   o de alquiler, todos a nivel 50. Cada 7 victorias sube el bloque (IA más lista, rivales más fuertes) y cada 21
   combates espera el Cerebro de la Frontera. Se ve el siguiente rival en silueta y entre combates se puede reordenar
   el equipo. Perder acaba la racha; retirarse la guarda. Premios en dinero, Caramelos Raros, vitaminas y símbolos
@@ -91,7 +91,7 @@ En local: `node tools/admin.js alta <usuario>` con el mismo `DB_FILE` que el ser
 
 - **Servidor autoritativo** (Node + `ws`, 30 ticks/s): `server/battle.js` simula el combate,
   `server/ai.js` la IA (usa la misma entrada que un jugador), `server/story.js` la historia,
-  `server/tower.js` la Torre Batalla, `server/index.js` conexiones, colas, draft y ELO, `server/store.js` los
+  `server/tower.js` la Torre Batalla, `server/index.js` conexiones, colas y ELO, `server/store.js` los
   perfiles (SQLite, solo se escribe lo que cambia) y la ladder, `server/limits.js` los límites contra abusos,
   `server/audit.js` el registro de auditoría y `server/admin.js` el panel de administración.
 - **Datos y reglas compartidos**: `public/data.js` (tipos, 62 movimientos, 78 Pokémon, mapas, rutas,

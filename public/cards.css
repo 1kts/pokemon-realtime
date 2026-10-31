@@ -124,9 +124,6 @@
   box-shadow: inset 0 3px 0 var(--gold), 0 0 0 2px var(--gold), 0 0 26px rgba(255,210,63,.45), 0 10px 24px rgba(0,0,0,.4); transform: translateY(-2px); }
 .pool-card.sel::before { content: '✓'; position: absolute; top: 6px; right: 6px; z-index: 3; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%;
   font: 900 13px/1 var(--text); color: #2a1c00; background: var(--gold); box-shadow: 0 2px 0 #b97a00, 0 0 12px rgba(255,210,63,.7); animation: pop .25s; }
-/* Vetado: tachado con una banda roja */
-.pool-card.banned { opacity: .5; text-decoration: none; }
-.pool-card.banned::before { content: ''; position: absolute; left: -20%; right: -20%; top: 50%; height: 6px; z-index: 3; background: #e8403a; transform: rotate(-24deg); box-shadow: 0 0 12px rgba(232,64,58,.8); }
 
 /* Huecos de la Torre: esperan a su Pokémon */
 .tslot { border-radius: 16px; }
@@ -1074,7 +1071,7 @@ body.in-battle .ui-confirm { cursor: auto; }
 .pvp-plus { font: 900 30px var(--display); color: var(--gold, #ffcb05); }
 .pvp-moves { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; }
 .pvp-moves i { display: inline-flex; align-items: center; gap: 2px; font-style: normal; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 6px; background: color-mix(in srgb, var(--tc) 30%, rgba(0,0,0,.3)); }
-.pvp-pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; }
+.pvp-pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 5px; max-height: 176px; overflow-y: auto; }
 .pvp-pick { display: grid; place-items: center; padding: 4px; border-radius: 10px; background: #222b58; border: 1px solid rgba(255,255,255,.1); }
 .pvp-pick.in { border: 2px solid var(--gold, #ffcb05); }
 .pvp-mvlist { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -1306,13 +1303,14 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 /* Energía: línea fina debajo de los botones */
 #hud.touch .energy { left: 0; right: 0; bottom: -9px; top: auto; width: auto; height: 5px; border-radius: 3px; }
 /* Poké Balls: la elegida, grande y con «Lanzar»; las demás, pequeñas para cambiar */
-#hud.touch .balls { right: 262px; bottom: 14px; align-items: flex-end; }
-#hud.touch .balls .ball { width: 40px; height: 40px; }
+/* A la derecha, en columna sobre los ataques: al alcance del pulgar derecho */
+#hud.touch .balls { right: 12px; bottom: 172px; flex-direction: column; align-items: flex-end; gap: 6px; }
+#hud.touch .balls .ball { width: 36px; height: 36px; }
 #hud.touch .balls .ball i { width: 22px; height: 22px; }
 #hud.touch .balls .ball.sel { width: 58px; height: 58px; box-shadow: 0 3px 12px rgba(0,0,0,.5), inset 0 0 0 3px var(--yellow, #ffcb05); }
 #hud.touch .balls .ball.sel i { width: 34px; height: 34px; }
 #hud.touch .balls .ball.press { transform: scale(.9); }
-#hud.touch .balls .bgo { display: block; position: absolute; left: 50%; top: -15px; transform: translateX(-50%); padding: 0 6px; border-radius: 6px; background: var(--yellow, #ffcb05); color: #2a1c00; font: 900 9px/14px var(--display); font-style: normal; text-transform: uppercase; white-space: nowrap; }
+#hud.touch .balls .bgo { display: block; position: absolute; right: calc(100% + 6px); top: 50%; transform: translateY(-50%); padding: 0 6px; border-radius: 6px; background: var(--yellow, #ffcb05); color: #2a1c00; font: 900 9px/14px var(--display); font-style: normal; text-transform: uppercase; white-space: nowrap; }
 /* Rendirse: bandera blanca sobre rojo, más grande */
 #hud.touch .tc-quit { width: 44px; height: 44px; margin-left: -100px; border-radius: 14px; color: #fff; background: linear-gradient(180deg, #ff5a4a, #c8302a); border: 2px solid rgba(255,255,255,.55); box-shadow: 0 4px 12px rgba(0,0,0,.45); }
 #hud.touch .tc-quit svg { width: 24px; height: 24px; }
@@ -1716,6 +1714,11 @@ body.touch .ms-slot kbd, body.touch .move-row .slot i { display: none; }
 .sp-you::after { content: ''; width: 30px; height: 7px; margin-top: -4px; border-radius: 50%; background: rgba(0,0,0,.35); }
 .sp-you-tag { padding: 1px 7px; border-radius: 99px; font: 800 10.5px var(--display); color: #1a1405; background: #fff; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
 .sp-end .sp-you { margin: 0 6px 0 0; }
+/* Andando por el camino: da saltitos; las rutas del tramo se encienden al llegar */
+.sp-you.walking .ava { animation: spStep .32s ease-in-out infinite; }
+.sp-branch { transition: opacity .35s, transform .35s cubic-bezier(.2,.9,.3,1.4); }
+.sp-branch.sp-wait { opacity: .25; transform: scale(.92); }
+@keyframes spStep { 50% { transform: translateY(-6px); } }
 /* El único botón de jugar del camino, debajo del nombre del siguiente reto */
 button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-content; height: var(--goh); min-height: 0; margin: 0 auto; padding: 0 22px; font-size: 15px; line-height: 1; white-space: nowrap; }
 /* Rutas: la foto de su terreno, sus Pokémon (en silueta los que no tienes), lo capturado y si es nueva */
