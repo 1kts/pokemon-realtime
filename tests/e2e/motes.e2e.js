@@ -1,5 +1,5 @@
-// Motes: ponerle uno al capturar, cambiarlo y quitarlo en Mis Pokémon, verlo en combate, y el filtro de
-// nombres ofensivos (mote y nombre de entrenador)
+// Motes: ponerle uno al capturar y cambiarlo en Mis Pokémon, y el filtro de nombres ofensivos (mote y nombre de
+// entrenador). Verlo en combate y quitarlo, en motes-combate.e2e.js (juntas pasaban de los 5 minutos del CI)
 module.exports = async ({ page, player, ok }) => {
   // En la portada, un nombre de entrenador ofensivo no entra y se puede probar con otro
   await page.goto('/');
@@ -53,31 +53,5 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.profile.mons.find(m => m.uid === ${uid}).nick === '<b>Rayo</b>'`);
   await page.waitFor(`[...document.querySelectorAll('.mon-card .mon-name')].some(x => x.textContent.includes('<b>Rayo</b>'))`);
   ok(await page.eval(`!document.querySelector('.mon-card .mon-name b')`), 'cambiarlo: el mote se ve tal cual lo escribió, sin colar HTML');
-
-  // En combate su Pokémon lleva el mote (explorando la Ruta 1)
-  await page.key('Escape');
-  await page.waitFor(`!document.querySelector('.mon-sheet')`);
-  await page.tap('Volver');
-  await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
-  await page.click('.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]');
-  await page.tap('Explorar', { in: '.story-side' });
-  await page.waitFor(`window.__app.battle && document.querySelector('.tinfo')`, 20000);
-  ok(await page.see('<b>Rayo</b>', { in: '.hud, #hud' }), `en combate se ve con su mote`);
-  await page.key('Escape');
-  await page.tap('Rendirse', { in: '.ui-confirm-box' });
-  await page.tap('Continuar');
-
-  // Quitarlo: vuelve a llamarse como su especie
-  await page.tap('Volver');
-  await page.tap('Mis Pokémon');
-  await page.click(await page.within('<b>Rayo</b>', '.mon-card'));
-  await page.waitFor(`document.querySelector('.mon-sheet')`);
-  await page.click('.ms-acts button:nth-child(2)');
-  await page.waitFor(`document.querySelector('.nick-modal')`);
-  await page.click('Quitar mote');
-  await page.waitFor(`[...document.querySelectorAll('.mon-card .mon-name')].some(x => x.textContent.trim() === 'Pikachu')`).catch(() => {});
-  await page.key('Escape');
-  await page.waitFor(`!document.querySelector('.mon-sheet')`);
-  ok(await page.see('Pikachu', { in: '.mon-card .mon-name' }) && !(await page.see('<b>Rayo</b>', { ms: 0 })), '«Quitar mote» lo deja con el nombre de la especie');
+  // (verlo en combate y quitarlo: motes-combate.e2e.js)
 };

@@ -1,6 +1,6 @@
-// Reto de capturas: cada línea evolutiva cuenta lo que atrapas de ella; en la ficha de la ruta, una Poké Ball llena
-// cada 5. A las 25 sale para recoger en Logros «IV perfectos» y desde entonces los de esa línea salen salvajes siempre
-// con IV perfectos (las bolas, en dorado)
+// Reto de capturas (2): con «IV perfectos» recogido (las 25 capturas de una línea), los salvajes de esa línea salen
+// siempre con IV perfectos, y en el combate salvaje se ven encima del rival las Poké Balls de su reto. Contarlas y
+// recogerlo en Logros, en capturas-reto.e2e.js
 module.exports = async ({ page, player, ok, log }) => {
   const me = await player({ user: 'capturador' });
   me.client.send({ t: 'dev', dex: 4, level: 12, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
@@ -21,23 +21,11 @@ module.exports = async ({ page, player, ok, log }) => {
   // (las capturas, con el gancho de pruebas; al volver a entrar, el juego ya las tiene)
   const setCatches = async n => { me.client.send({ t: 'dev', catches: { dex, n } }); await me.client.wait(m => m.t === 'profile'); await page.loginAs(me.token); };
 
-  // 12 capturas: 2 de 5 Poké Balls
-  await setCatches(12);
+  // (25 capturas e «IV perfectos» ya recogido: recogerlo por la interfaz es lo que prueba capturas-reto.e2e.js)
+  me.client.send({ t: 'dev', catches: { dex, n: 25 } }); await me.client.wait(m => m.t === 'profile');
+  me.client.send({ t: 'masteryclaim', dex, i: 7 }); await me.client.wait(m => m.t === 'loot');
+  await page.loginAs(me.token);
   await openRoute();
-  ok(await page.eval(`${card}.querySelectorAll('.catch-pips i.on').length === 2 && /12\\/25/.test(${card}.title || ${card}.dataset.tip)`), `con 12 capturas de ${name}, su tarjeta en la ruta enseña 2 de 5 Poké Balls y «12/25»`);
-
-  // 25: se recoge en Logros
-  await setCatches(25);
-  await page.click('.coll-tile.wide');
-  await page.waitFor(`document.querySelector('.lg-row.k-perfect.ready button')`);
-  ok(await page.see('IV perfectos', { in: '.lg-row.k-perfect', scroll: true }), 'a las 25 capturas, «IV perfectos» sale para recoger en Logros');
-  await page.click('.lg-row.k-perfect.ready button');
-  await page.waitSee('IV perfectos', { in: '.loot-pop' });
-  ok(true, 'al recogerlo sale el premio «IV perfectos» de su línea');
-  await page.click('.loot-pop .acts .primary');
-  await page.tap('Volver');
-  await openRoute();
-  ok(await page.eval(`!!${card}.querySelector('.catch-pips.perfect') && /Siempre con IV perfectos/.test(${card}.title || ${card}.dataset.tip)`), 'después, en la ruta sus Poké Balls salen doradas');
 
   // Y salvaje sale con IV perfectos (se explora hasta que salga uno de su línea)
   let seen = false;
