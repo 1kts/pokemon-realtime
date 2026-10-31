@@ -118,9 +118,14 @@ async function setup(name, extraEnv = {}) {
     const chrome = spawn(chromePath, ['--headless=new', '--no-sandbox', '--disable-gpu', '--enable-unsafe-swiftshader', '--use-angle=swiftshader',
       `--remote-debugging-port=${dbg}`, `--user-data-dir=${path.join(tmp, 'chrome')}`, '--window-size=1280,860',
       '--autoplay-policy=no-user-gesture-required', '--mute-audio', 'about:blank'], { stdio: 'ignore' });
-    let target;
-    for (let i = 0; i < 100 && !target; i++) { try { target = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find(x => x.type === 'page'); } catch {} if (!target) await sleep(100); }
-    if (!target) throw new Error('Chrome no abre la página de depuración');
+    // (al empezar un trozo del CI arrancan dos Chrome en frío a la vez y alguno pasaba de 10 s: hasta 30)
+    let target, exited = null;
+    chrome.once('exit', code => { exited = code; });
+    for (const end = Date.now() + 30e3 * PATIENCE; !target && exited === null && Date.now() < end;) {
+      try { target = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find(x => x.type === 'page'); } catch {}
+      if (!target) await sleep(100);
+    }
+    if (!target) throw new Error(exited !== null ? `Chrome se ha cerrado al arrancar (código ${exited})` : 'Chrome no abre la página de depuración');
     const cdp = new WebSocket(target.webSocketDebuggerUrl);
     await new Promise((r, j) => { cdp.on('open', r); cdp.on('error', j); });
     let id = 0;
