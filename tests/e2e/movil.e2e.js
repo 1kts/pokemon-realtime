@@ -54,11 +54,11 @@ module.exports = async ({ page, ok }) => {
   const x1 = await page.eval(`window.__app.battle.pred.x`);
   await page.fingerUp();
   ok(x1 > x0 + 40, `el joystick a la derecha lo mueve a la derecha (${Math.round(x0)} → ${Math.round(x1)})`);
-  // (al soltarlo se para: un rato después sigue donde estaba)
-  await new Promise(r => setTimeout(r, 300));
-  const x2 = await page.eval(`window.__app.battle.pred.x`);
-  await new Promise(r => setTimeout(r, 600));
-  const x3 = await page.eval(`window.__app.battle.pred.x`);
+  // (al soltarlo se para: un rato después sigue donde estaba. Desde que el joystick vuelve a su sitio, que es cuando
+  // la página ha recibido el dedo levantado, y con el reloj de la página: con el CI cargado, 300 ms medidos desde
+  // fuera a veces no llegaban ni a que se procesara)
+  await page.waitFor(`!document.querySelector('.tc-base.on')`);
+  const [x2, x3] = await page.eval(`new Promise(r => setTimeout(() => { const a = window.__app.battle.pred.x; setTimeout(() => r([a, window.__app.battle.pred.x]), 600); }, 300))`);
   ok(Math.abs(x3 - x2) < 3, `al soltar el joystick se para (${Math.round(x2)} → ${Math.round(x3)})`);
 
   // Tocar el ataque básico: sale hacia el rival

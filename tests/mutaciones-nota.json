@@ -1,7 +1,7 @@
 {
  "fecha": "2026-10-31",
- "cazadas": 42,
- "total": 42,
+ "cazadas": 43,
+ "total": 43,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -301,6 +301,13 @@
     "tools/security-test.js"
    ],
    "motivo": "security-test.js: ✗ con el reloj una hora atrás, los mensajes de un jugador normal se atienden (perdidos: 5 de 5)"
+  },
+  "joystick-no-para": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil.e2e.js"
+   ],
+   "motivo": "movil.e2e.js: ✗ al soltar el joystick se para (348 → 400)"
   }
  }
 }
