@@ -115,7 +115,11 @@ module.exports = (SIZES, only) => async ({ page, player, ok }) => {
     await page.eval(AXE + '; true');
     const look = async label => {
       await settle(); await sleep(150);
-      const r = await page.eval(CHECK(touch, !!geomFile));
+      // (y se mide el aspecto final: con WebKit a pocos fotogramas, una entrada a medias, p. ej. las tarjetas de Práctica
+      // aún 8 px más abajo, se montaba sobre la barra legal en una pantalla que acabada no la pisa)
+      await page.eval(`(() => { const s = document.createElement('style'); s.id = 'e2e-still'; s.textContent = '*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition: none !important; }'; document.head.append(s); return true; })()`);
+      let r;
+      try { r = await page.eval(CHECK(touch, !!geomFile)); } finally { await page.eval(`(document.getElementById('e2e-still') || { remove() {} }).remove(), true`); }
       for (const o of r.out) problems.push(`${W}×${H} ${label}: ${o}`);
       if (r.g) geom[`${W}x${H} ${label}`] = r.g;
       // Accesibilidad (WCAG 2 A y AA) de lo que hay a la vista: la ventana de encima o la pantalla

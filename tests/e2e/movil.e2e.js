@@ -112,7 +112,9 @@ module.exports = async ({ page, ok }) => {
   await page.press('.tc-quit');
   await page.waitSee('¿Rendirte?', { in: '.ui-confirm-box' });
   await new Promise(r => setTimeout(r, 400));
-  ok(await page.see('¿Rendirte?', { in: '.ui-confirm-box', ms: 0 }), 'el botón de la bandera abre la ventana de rendirse, y se queda abierta al levantar el dedo');
+  // (cerrada no vuelve a salir sola: se espera a que se vea, que en WebKit a pocos fotogramas el título aún podía estar
+  // al principio de su animación de entrada)
+  ok(await page.see('¿Rendirte?', { in: '.ui-confirm-box' }), 'el botón de la bandera abre la ventana de rendirse, y se queda abierta al levantar el dedo');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
   ok(await page.eval(`!document.querySelector('.tc-zone') && !document.body.classList.contains('touch-battle')`), 'al acabar, los controles táctiles se quitan');
