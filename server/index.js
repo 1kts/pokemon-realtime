@@ -465,6 +465,9 @@ function handle(c, msg) {
     if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
     // Rival del combate en curso con esa fracción de vida (las pruebas no esperan a debilitarlo a golpes)
     if (Number.isFinite(msg.foeHp) && c.battle) for (const m of c.battle.sides[1 - c.side].team) if (!m.fainted) m.hp = Math.max(1, Math.round(m.maxHp * msg.foeHp));
+    // Rival del combate en curso quieto y sin atacar, como el muñeco del tutorial (con el navegador del CI a 1-2
+    // fotogramas por segundo los clics no aciertan a un rival que se mueve, y llegaba a ganar él)
+    if (msg.foeIdle === true && c.battle) c.battle.sides[1 - c.side].passive = true;
     store.save();
     return sendProfile(c);
   }
