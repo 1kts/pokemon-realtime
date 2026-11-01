@@ -16,8 +16,9 @@ module.exports = async ({ page, player, ok }) => {
   const foeAt = `(() => { const b = window.__app.battle; if (!b || !b.renderPos) return null; const f = b.renderPos[b.foeIdx], m = b.renderPos[1 - b.foeIdx], p = b.toScreen(f.x, f.y);
     return { x: p.x, y: p.y, dx: f.x - m.x, dy: f.y - m.y, mx: m.x, my: m.y,
       free: (document.elementFromPoint(p.x, p.y) || {}).tagName === 'CANVAS', won: !b.latest.ps[b.foeIdx].hp.some(h => h > 0) }; })()`;
-  // Como un jugador: Ascuas (clic) desde lejos y andando hacia él (las rocas de la ruta paran el ascua y el paso: si no
-  // avanza, rodea la roca); al lado, Placaje (botón derecho), que no lo para nada
+  // Como un jugador: Ascuas (botón derecho) desde lejos y andando hacia él (las rocas de la ruta paran el ascua y el paso:
+  // si no avanza, rodea la roca); al lado, Arañazo (clic), que no lo para nada. (Con los movimientos reales, a Nv.7
+  // Charmander lleva Arañazo en el clic y Ascuas en el derecho: con el clic desde lejos no le llegaba nada)
   // (solo se pulsa si ahí está el combate, y hasta ganarlo: un aviso encima, p. ej. «¡Logro desbloqueado!» al acabar, no
   // se toca, que lleva a Misiones)
   const toward = (dx, dy) => Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'KeyD' : 'KeyA') : (dy > 0 ? 'KeyS' : 'KeyW');
@@ -28,8 +29,8 @@ module.exports = async ({ page, player, ok }) => {
     if (!p) { await page.waitFor('window.__app.battle && window.__app.battle.renderPos', 5000).catch(() => {}); continue; }
     if (p.won) break;
     await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');   // (un fotograma de la página entre vuelta y vuelta)
-    if (Math.hypot(p.dx, p.dy) < 60) { if (p.free) await page.mouseAt(p.x, p.y, { click: true, button: 'right' }); last = null; continue; }
-    if (p.free) await page.mouseAt(p.x, p.y, { click: true });
+    if (Math.hypot(p.dx, p.dy) < 60) { if (p.free) await page.mouseAt(p.x, p.y, { click: true }); last = null; continue; }
+    if (p.free) await page.mouseAt(p.x, p.y, { click: true, button: 'right' });
     if (last && Math.hypot(p.mx - last.mx, p.my - last.my) < 2) detour = 2;
     await page.key(detour-- > 0 ? toward(p.dy, -p.dx) : toward(p.dx, p.dy), 300);
     last = p;
