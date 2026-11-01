@@ -1,9 +1,10 @@
 // Mecánicas nuevas de las arenas en combate de verdad (sin errores en la página): pilares, espejos, cintas,
 // flores, niebla y las mecánicas extra de Práctica (gravedad, géiseres, tormenta) encima de una arena normal
-module.exports = async ({ page, player, ok }) => {
+// (las de los gimnasios aquí y las extra de Práctica en mecanicas-extra.e2e.js: juntas rozaban los 5 minutos en el CI)
+const prueba = arenas => async ({ page, player, ok }) => {
   const me = await player({ user: 'mecanico' });
   await page.loginAs(me.token);
-  for (const [map, mod, check] of [['g-lucha', null, 'pillar'], ['g-psiquico', null, 'mirrors'], ['g-electrico', null, 'belts'], ['g-planta', null, 'flowers'], ['lago', 'gravity', 'gravity'], ['pradera', 'storm', 'storm']]) {
+  for (const [map, mod, check] of arenas) {
     // atajo: Práctica con un rival quieto (passive) en cada arena: la interfaz no deja elegir un rival que no se mueva
     await page.eval(`window.__app.net.send({ t: 'practice', dexes: [Data.RANKED_POOL[0]], skill: 0, passive: true, map: '${map}', mod: ${mod ? `'${mod}'` : 'null'} }); true`);
     await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);
@@ -18,3 +19,5 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`!window.__app.battle`, 15000);
   }
 };
+module.exports = prueba([['g-lucha', null, 'pillar'], ['g-psiquico', null, 'mirrors'], ['g-electrico', null, 'belts'], ['g-planta', null, 'flowers']]);
+module.exports.prueba = prueba;

@@ -31,6 +31,8 @@ module.exports = async ({ page, player, ok }) => {
     await page.click('.ms-retos .lg-row.ready .claim-btn');
     await page.waitFor(`document.querySelector('.loot-pop .acts .primary')`);
     prizes.push(await page.read('.loot-pop'));
+    // (cuando ha acabado de entrar: con el CI lento, si la ventana aún crecía, el clic no llegaba al botón)
+    await page.waitFor(`[...document.querySelectorAll('.loot-pop, .loot-pop .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
     await page.click('.loot-pop .acts .primary');
     await page.waitFor(`!document.querySelector('.loot-pop')`);
   }
@@ -38,26 +40,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(/Caramelo Raro/.test(all) && /Maestro de Charmander/.test(all) && /Retrato/i.test(all) && (await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`)) === 0,
     'recogidos uno a uno, con su premio: Caramelo Raro, retrato, título «Maestro de Charmander»… y ya no queda nada por recoger');
 
-  await page.key('Escape');
-  await page.tap('Volver');
-  await page.click('.coll-tile.wide');
-
-  // Retos: por categorías, con los de debilitar por tipo en Combate
-  await page.waitFor(`document.querySelector('.retos-grid')`);
-  await page.tap(/^Combate/, { in: '.coll-cats' });
-  await page.waitFor(`document.querySelectorAll('.retos-grid .ach-card').length === Data.TYPE_NAMES.length`);
-  ok(await page.see('Debilita 100 Pokémon con movimientos de tipo Fuego', { in: '.retos-grid', scroll: true }), 'en Retos › Combate están los de debilitar con cada tipo, con su marco de premio');
-
-  // Glows: Logros solo enseña (sin botones); se pone en el Perfil
-  await page.tap(/^Glows/, { in: '.coll-tabs, .collection' });
-  await page.waitFor(`document.querySelector('.aura-grid')`);
-  ok(await page.eval(`document.querySelectorAll('.aura-grid .coll-item.own').length === 1 && !document.querySelector('.aura-grid button')`) && await page.see('Perfil', { in: '.coll-where' }), 'en Logros › Glows sale el de fuego como tuyo, sin equiparlo desde ahí (se pone en el Perfil)');
-  ok(await page.eval(`[...document.querySelectorAll('.aura-grid .coll-item.locked em')].some(e => /Campeón de Kanto/.test(e.textContent))`), 'los glows especiales dicen de qué reto salen');
-  // Marcos: todos, con de dónde sale cada uno
-  await page.tap(/^Marcos/, { in: '.coll-tabs, .collection' });
-  await page.waitFor(`document.querySelector('.frames-grid')`);
-  ok(await page.eval(`[...document.querySelectorAll('.frames-grid .frame-item.locked')].some(b => /Marco Fuego/.test(b.textContent) && /Próximamente/.test(b.textContent))`), 'en Marcos se ve el de Fuego bloqueado, para más adelante');
-
+  // (Retos por categorías, Glows y Marcos de Logros, en maestria-logros.e2e.js: juntas pasaban de los 5 minutos del CI)
   // (el glow desde el Perfil, la ficha, la tarjeta de Historia y la skin en combate: maestria-vestuario.e2e.js;
   // juntas pasaban de los 5 minutos del CI)
 };
