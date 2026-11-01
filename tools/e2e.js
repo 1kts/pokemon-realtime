@@ -286,7 +286,15 @@ async function setup(name, extraEnv = {}) {
           let e = root; for (;;) { const k = [...e.children].find(k => match(k.innerText)); if (!k) break; e = k; } if (e !== root) e.scrollIntoView({ block: 'center', inline: 'nearest' }); return true; })()`).catch(() => {});
         try { last = await page.eval(FIND_TEXT(pat, scope)); } catch (e) { last = { err: e.message }; }
         if (last.list && last.list.some(x => !x.why)) { page.lastSee = null; return true; }
-        if (Date.now() - t0 >= ms) break;
+        if (Date.now() - t0 >= ms) {
+          // (antes de decir que no se ve, se mira en el siguiente fotograma, que es lo que sale en pantalla: WebKit no pone
+          // el aspecto final de una animación ya acabada hasta pintar otro, y con el CI a 2-3 fotogramas por segundo la
+          // ventana de rendirse daba su título por «transparente» con la animación de entrada acabada; si en 3 s no pinta
+          // ninguno, se mira igual)
+          try { last = await page.eval(`new Promise(r => { let done = false; const go = () => { if (!done) { done = true; r(${FIND_TEXT(pat, scope)}); } }; requestAnimationFrame(go); setTimeout(go, 3000); })`); } catch (e) { last = { err: e.message }; }
+          if (last.list && last.list.some(x => !x.why)) { page.lastSee = null; return true; }
+          break;
+        }
         await sleep(100);
       }
       const why = last.err || (last.list.length ? last.list.slice(0, 3).map(x => `${x.what} ${x.why}`).join('; ') : 'no está en la página');
