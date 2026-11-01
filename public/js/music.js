@@ -277,6 +277,11 @@ export class Music {
     // entrar en su combate (son muchos y cada jugador oye pocos; si tarda, suena antes el sintetizado).
     // En el móvil o con ahorro de datos, solo el de los salvajes (lo siguiente más probable): todos eran 15 MB
     // nada más abrir el juego; los demás se piden al sonar
+    // (al salir o recargar, lo que se esté bajando se corta a mano: si no, Safari se queja de cada descarga cortada con
+    // «cannot load … due to access control checks»)
+    this.leaving = new AbortController();
+    addEventListener('pagehide', () => this.leaving.abort());
+    addEventListener('pageshow', e => { if (e.persisted) this.leaving = new AbortController(); });
     this.preload('menu');
     const light = touchMode() || !!(navigator.connection && navigator.connection.saveData);
     setTimeout(() => (light ? ['wild'] : Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-') && !n.startsWith('route-') && n !== 'wildRare')).forEach(n => this.preload(n)), 4000);
@@ -341,7 +346,7 @@ export class Music {
     if (!file) return Promise.resolve(null);
     if (!this.bytes.has(file)) {
       // (si falla, p. ej. un corte de red en el móvil, se olvida para volver a intentarlo la próxima vez)
-      const got = fetch(`/music/${file}.mp3`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+      const got = fetch(`/music/${file}.mp3`, { signal: this.leaving.signal }).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
       this.bytes.set(file, got);
       got.then(b => { if (!b && this.bytes.get(file) === got) this.bytes.delete(file); });
     }
