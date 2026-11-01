@@ -15,13 +15,13 @@ module.exports = async ({ page, player, ok, log }) => {
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 30000);
   // atajo: dejar a los Pokémon de Brock con poca vida (preparar el combate; vencerlo entero tardaría minutos)
   await page.eval(`window.__app.net.send({ t: 'dev', foeHp: 0.02 }); true`);
-  // A golpes: el ratón apunta al rival y pulsa (Pistola Agua). atajo: dónde está el rival en la pantalla (la arena es 3D,
+  // A golpes: el ratón apunta al rival y pulsa (su básico). atajo: dónde está el rival en la pantalla (la arena es 3D,
   // sin un elemento que buscar)
   const foeAt = `(() => { const b = window.__app.battle; if (!b || !b.renderPos) return null; const f = b.renderPos[b.foeIdx]; const p = b.toScreen(f.x, f.y); return { x: Math.round(p.x), y: Math.round(p.y) }; })()`;
   const t0 = Date.now();
   for (let i = 0; Date.now() - t0 < 180000 && !['¡Victoria!', 'Derrota'].includes(await page.title({ ms: 0 })); i++) {
     const p = await page.eval(foeAt);
-    // (clic: Pistola Agua; y de vez en cuando Q, Hidrobomba, que también va a donde apunta el ratón)
+    // (clic: su básico; y de vez en cuando Q, otro de sus ataques, que también va a donde apunta el ratón)
     if (p && p.x > 0 && p.y > 0) { await page.mouseAt(p.x, p.y, { click: true }); if (i % 4 === 3) await page.key('KeyQ'); }
     await new Promise(r => setTimeout(r, 200));
   }

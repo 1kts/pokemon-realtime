@@ -1,7 +1,7 @@
 {
- "fecha": "2026-10-31",
- "cazadas": 48,
- "total": 48,
+ "fecha": "2026-11-01",
+ "cazadas": 49,
+ "total": 49,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -343,6 +343,13 @@
     "tests/e2e/novedades.e2e.js"
    ],
    "motivo": "novedades.e2e.js: ✗ error: No se puede pulsar «¡Recoger!»: no hay ningún botón que lo diga"
+  },
+  "evolucion-sin-ventana": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/evolucion.e2e.js"
+   ],
+   "motivo": "evolucion.e2e.js: ✗ error: no se ve «¡Ha evolucionado a Charmeleon!»: no está el sitio donde buscar: .evo-scene"
   }
  }
 }

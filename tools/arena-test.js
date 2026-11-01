@@ -498,4 +498,24 @@ check('los ataques no se corrigen: siguen recto', () => {
   assert(Math.abs(Math.atan2(p.vy, p.vx) - a) < 1e-9, 'el ataque no cambia de rumbo');
 });
 
+check('cada Pokémon aprende lo suyo, no el kit de su tipo', () => {
+  const list = dex => D.learnset(dex).map(([, m]) => m);
+  // Casos conocidos de los juegos: el movimiento que da identidad a cada línea
+  assert(list(4).includes('colmilloIgneo'), 'Charmander aprende Colmillo Ígneo');
+  assert(list(7).includes('mordisco') && list(7).includes('giroRapido'), 'Squirtle aprende Mordisco y Giro Rápido');
+  assert(list(94).includes('tinieblas') && list(143).includes('descanso'), 'Gengar aprende Tinieblas y Snorlax, Descanso');
+  assert(list(129)[0] === 'salpicadura', 'Magikarp empieza con Salpicadura');
+  // Ninguna especie final comparte su lista entera con otra familia
+  const LEARN = require('../public/learn.js');
+  const finals = Object.values(D.SPECIES).filter(sp => !sp.evo && sp.gen <= 2 && !sp.leg && LEARN[sp.dex].length >= 4);
+  const seen = new Map();
+  for (const sp of finals) { const k = list(sp.dex).join(); assert(!seen.has(k), `${sp.name} y ${seen.get(k)} tienen la misma lista`); seen.set(k, sp.name); }
+  // Todos pueden combatir: un básico sin coste y 4 movimientos a Nv.50
+  for (const sp of Object.values(D.SPECIES)) {
+    const def = D.defaultMoves(sp.dex, 50);
+    assert((def.length === 4 || sp.dex === 129) && def.every(m => D.MOVES[m]), `${sp.name} lleva 4 movimientos válidos a Nv.50 (${def})`);
+    assert(D.MOVES[D.defaultMoves(sp.dex, 1)[0]].cost === 0, `${sp.name} empieza con uno sin coste`);
+  }
+});
+
 console.log(`\n${ok} pruebas de arenas correctas`);

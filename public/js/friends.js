@@ -16,14 +16,14 @@ export const friendViews = {
     const n = (this.profile.friendIn || []).length;
     const b = el('button', 'tb-btn icon friends-btn', `${icon('buddies', 24)}${n ? `<i class="nbadge">${n}</i>` : ''}`);
     b.setAttribute('aria-label', t('Amigos'));
-    b.onclick = () => this.openFrom('friends');
+    b.onclick = () => this.show('friends');
     return this.hoverTip(b, `<b>${t('Amigos')}</b><p>${n ? t('Tienes {n} solicitudes de amistad.', { n }) : t('Añade amigos, mira si están en línea y su perfil.')}</p>`);
   },
 
   view_friends() {
     const p = this.profile;
     const wrap = el('div', 'friends-view');
-    wrap.append(this.topbar(t('Amigos'), 'menu'));
+    wrap.append(this.topbar(t('Amigos')));
     const body = el('div', 'friends-body');
     wrap.append(body);
     this.root.append(wrap);

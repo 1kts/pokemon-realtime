@@ -43,7 +43,6 @@ export const collectionViews = {
 
   openCollection(tab) {
     if (tab) this.collTab = tab;
-    if (this.view !== 'collection') this.collBack = this.view;
     this.show('collection');
   },
 
@@ -51,7 +50,7 @@ export const collectionViews = {
     const tab = this.collTab = TABS.some(([id]) => id === this.collTab) ? this.collTab : 'retos';
     const p = this.profile;
     const wrap = el('div', 'collection');
-    const bar = this.topbar(t('Logros'), this.collBack || 'menu');
+    const bar = this.topbar(t('Logros'));
     wrap.append(bar);
     const tabs = el('div', 'coll-tabs');
     const ready = this.masteryReadyCount(), retos = (p.achClaim || []).length;
@@ -76,7 +75,7 @@ export const collectionViews = {
     // (las skins, en la ficha de cada Pokémon)
     if (TABS.findIndex(([id]) => id === tab) >= 1) {
       const go = el('button', 'coll-where', tab === 'skin' ? t('Las skins se ponen en la ficha de cada Pokémon (Mis Pokémon)') : t('Para ponértelo, ve a tu Perfil › Personalizar'));
-      go.onclick = () => tab === 'skin' ? this.openFrom('team') : this.show('profile');
+      go.onclick = () => tab === 'skin' ? this.show('team') : this.show('profile');
       body.append(go);
     }
     this['coll_' + tab](body);

@@ -70,7 +70,7 @@ export class Net {
       clearInterval(this.pingTimer);
       if (this.ws !== ws) return;
       this.emit({ t: 'disconnected' });
-      if (!this.closedByUs) setTimeout(() => this.open(), 1500);
+      if (!this.closedByUs) setTimeout(() => this.open(), this.hurry ? 300 : 1500);   // (en combate cada segundo cuenta)
     };
   }
 

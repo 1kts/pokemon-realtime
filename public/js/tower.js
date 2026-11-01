@@ -18,6 +18,7 @@ const BOARDS = [
   ['tower', 'Torre Batalla', 'Mejor racha'],
   ['dex', 'Pokédex', 'Especies'],
 ];
+const LP_ICON = { ranked: 'master-ball', tower: 'relic-crown', dex: 'rotom-catalog' };
 const symbolName = s => t(s);
 const leagueOf = elo => LEAGUES.filter(l => elo >= l[0]).pop()[1];
 const pct = v => Math.round(v * 100) + ' %';
@@ -27,7 +28,7 @@ export const towerViews = {
   view_tower() {
     const tw = this.profile.tower;
     const wrap = el('div', 'tower');
-    const bar = this.topbar(t('Torre Batalla'), 'menu');
+    const bar = this.topbar(t('Torre Batalla'));
     // En el móvil, la racha, tu récord, la guía y los premios van en la cabecera (a la derecha le sobra sitio)
     bar.querySelector('.tb-ctx').append(this.towerChips(tw));
     wrap.append(bar);
@@ -107,7 +108,7 @@ export const towerViews = {
       c.onclick = () => toggle(e);
       return c;
     };
-    const own = [...p.mons].sort((a, b) => SPECIES[b.dex].bst - SPECIES[a.dex].bst || b.level - a.level);
+    const own = [...p.mons].sort((a, b) => !!b.fav - !!a.fav || SPECIES[b.dex].bst - SPECIES[a.dex].bst || b.level - a.level);
     box.append(slots);
     const scroll = el('div', 'tower-pools scroll');
     scroll.append(el('h4', '', `${t('Tus Pokémon')} <small>(${own.length})</small>`));
@@ -270,14 +271,13 @@ export const towerViews = {
 
   // ---------- Ladder ----------
   openLadder() {
-    if (this.view !== 'ladder') this.ladderBack = this.view;
     this.show('ladder');
   },
 
   view_ladder() {
     const board = this.ladderBoard = this.ladderBoard || 'ranked';
     const wrap = el('div', 'ladder');
-    wrap.append(this.topbar(t('Ladder'), this.ladderBack && this.ladderBack !== 'ladder' ? this.ladderBack : 'menu'));
+    wrap.append(this.topbar(t('Ladder')));
     const bar = el('div', 'subbar ladder-bar');
     const tabs = el('div', 'region-tabs');
     for (const [id, name, what] of BOARDS) {
@@ -302,45 +302,130 @@ export const towerViews = {
     this.net.send({ t: 'ladder', board: this.ladderBoard || 'ranked', page: this.ladderPage || 0, q: this.ladderQ || '' });
   },
 
-  // Ladder en el menú: el top 5 de Clasificatoria y tu puesto. La tabla es cara de calcular y el menú se repinta a menudo:
-  // se pide como mucho una vez por minuto y mientras tanto se pinta lo último que llegó
+  // Ladder en el menú. En escritorio, una columna: temporada, tablas, podio, el resto y los premios; en móvil, el sitio de
+  // una tarjeta. La tabla es cara de calcular y el menú se repinta a menudo: cada una se pide como mucho una vez por
+  // minuto y mientras tanto se pinta lo último que llegó
   ladderPanel() {
-    const box = el('div', 'menu-card ladder ladder-panel');
-    const head = el('div', 'lp-head');
-    const name = el('button', 'lp-title', `${itemImg('medal-box', 24, 'card-ico')}${t('Ladder')}`);
-    const all = el('button', 'lp-all', `${t('Ver todo')} ›`);
-    name.onclick = all.onclick = () => { this.ladderBoard = 'ranked'; this.ladderPage = 0; this.ladderQ = ''; this.openLadder(); };
-    head.append(name, all);
-    box.append(head, el('div', 'lp-body'));
-    const seen = this.menuLadder;
-    if (seen) this.drawLadderPanel(seen.msg, box);
-    else box.lastChild.append(el('p', 'small', t('Cargando…')));
-    if (!seen || Date.now() - seen.at > LADDER_EVERY) {
-      if (seen) seen.at = Date.now();   // (no pedirla otra vez en cada repintado mientras llega)
-      this.net.send({ t: 'ladder', board: 'ranked', page: 0, q: '' });
+    const small = matchMedia('(max-height: 500px)').matches;
+    const box = el('div', small ? 'menu-card ladder ladder-panel' : 'panel ladder-panel lp-col');
+    const open = board => { this.ladderBoard = board; this.ladderPage = 0; this.ladderQ = ''; this.openLadder(); };
+    if (small) {
+      const head = el('div', 'lp-head');
+      const name = el('button', 'lp-title', `${itemImg('medal-box', 24, 'card-ico')}${t('Ladder')}`);
+      const all = el('button', 'lp-all', `${t('Ver todo')} ›`);
+      name.onclick = all.onclick = () => open('ranked');
+      head.append(name, all);
+      box.append(head, el('div', 'lp-body'));
+    } else {
+      const left = Math.max(0, Math.ceil((new Date(Data.SEASON.end + 'T23:59:59') - Date.now()) / 86400000));
+      box.append(el('div', 'lp-band', `${itemImg('medal-box', 30, 'card-ico')}<b>${t('Ladder')}<small>${t(Data.SEASON.name)}</small></b><span>${!left ? t('Último día') : left > 1 ? t('Termina en {n} días', { n: left }) : t('Termina en 1 día')}</span>`));
+      const tabs = el('div', 'lp-tabs');
+      for (const [id, name] of BOARDS) {
+        const b = el('button', '', itemImg(LP_ICON[id], 20));
+        b.title = t(name);
+        b.setAttribute('aria-label', t(name));
+        b.dataset.board = id;
+        b.onclick = () => { this.lpBoard = id; this.loadLadderPanel(box); };
+        tabs.append(b);
+      }
+      const all = el('button', 'lp-wide', t('Ver la ladder completa'));
+      all.onclick = () => open(this.lpBoard || 'ranked');
+      box.append(tabs, el('div', 'lp-body'), all);
     }
+    this.loadLadderPanel(box);
     return box;
   },
+
+  loadLadderPanel(box) {
+    const board = box.classList.contains('lp-col') ? this.lpBoard = this.lpBoard || 'ranked' : 'ranked';
+    this.menuLadders = this.menuLadders || {};
+    const seen = this.menuLadders[board];
+    if (seen) this.drawLadderPanel(seen.msg, box);
+    else { box.querySelector('.lp-body').replaceChildren(el('p', 'small', t('Cargando…'))); this.lpTabs(box, board); }
+    if (!seen || Date.now() - seen.at > LADDER_EVERY) {
+      if (seen) seen.at = Date.now();   // (no pedirla otra vez en cada repintado mientras llega)
+      this.net.send({ t: 'ladder', board, page: 0, q: '' });
+    }
+  },
+
+  // La pestaña elegida dice su nombre; las demás, solo el icono
+  lpTabs(box, board) {
+    for (const b of box.querySelectorAll('.lp-tabs button')) {
+      const on = b.dataset.board === board;
+      b.classList.toggle('sel', on);
+      b.querySelector('span')?.remove();
+      if (on) b.append(el('span', '', b.getAttribute('aria-label')));   // (el title lo vacía el tooltip del juego)
+    }
+  },
+
+  // Lo que se pinta de un puesto: la cara, o una Poké Ball si no tiene ninguna; el valor y lo que dice debajo de él
+  lpFace(r, size, big) {
+    // (el nodo y no su HTML: un retrato es un canvas, y copiado por HTML saldría en blanco)
+    if (!r.npcKey && !r.avatar && !(r.team && r.team.length)) return el('span', 'lp-face', itemImg('pokeball', Math.round(size * .6)));
+    if (r.npcKey) return el('span', `row-face npc${big ? ' lp-big' : ''}`, trainerImg(r.npcKey));
+    const a = big ? this.avatar(size, false, undefined, undefined, undefined, r) : this.avatar(size, false, undefined, null, null, r);
+    if (!big) a.classList.add('row-face');
+    return a;
+  },
+  lpValue(r, board) { return board === 'tower' ? r.best : board === 'dex' ? r.caught : r.elo; },
 
   drawLadderPanel(msg, box = this.root.querySelector('.ladder-panel')) {
     const body = box && box.querySelector('.lp-body');
     if (!body) return;
     body.innerHTML = '';
+    if (box.classList.contains('lp-col')) return this.drawLadderColumn(msg, box, body);
     if (!msg.rows.length) return body.append(el('p', 'small', t('Esta tabla todavía está vacía.')));
     const ol = el('ol', 'lp-rows');
-    for (const r of msg.rows.slice(0, 5)) {
-      const li = el('li', r.id === this.profile.id ? 'me' : '', `<i>${r.rank}</i><b>${escapeHtml(r.name)}</b><span>${r.elo}</span>`);
+    for (const r of msg.rows.slice(0, 2)) {
+      const li = el('li', r.id === this.profile.id ? 'me' : '', `<i class="m${r.rank}">${r.rank}</i><u></u><b>${escapeHtml(r.name)}</b><span>${r.elo}</span>`);
+      li.querySelector('u').replaceWith(this.lpFace(r, 20));
       li.onclick = () => this.userModal(r.id);
       ol.append(li);
     }
     body.append(ol);
     const me = msg.me;
-    if (!(me && me.rank <= 5)) body.append(el('p', 'lp-me', me ? t('Tú: puesto {n} de {total}', { n: me.rank, total: msg.total }) : t('Juega Clasificatoria para entrar')));
+    if (!(me && me.rank <= 2)) body.append(el('p', 'lp-me', me ? t('Tú: puesto {n} de {total}', { n: me.rank, total: msg.total }) : t('Juega Clasificatoria para entrar')));
+  },
+
+  drawLadderColumn(msg, box, body) {
+    const board = msg.board;
+    this.lpTabs(box, board);
+    box.dataset.board = board;
+    if (!msg.rows.length) return body.append(el('p', 'small', t('Esta tabla todavía está vacía.')));
+    const unit = BOARDS.find(b => b[0] === board)[2];
+    const sub = r => board === 'ranked' ? (r.title ? t(r.title) : t(leagueOf(r.elo))) : r.title ? t(r.title) : t(unit);
+    const top = el('div', 'lp-top');
+    for (const r of msg.rows.slice(0, 3)) {
+      const c = el('button', `lp-card m${r.rank}${r.id === this.profile.id ? ' me' : ''}`, `<u></u><i>${r.rank}</i><b>${escapeHtml(r.name)}<small>${escapeHtml(sub(r))}</small></b><span>${this.lpValue(r, board)}<small>${t(unit)}</small></span>`);
+      c.querySelector('u').replaceWith(this.lpFace(r, 54, true));
+      c.onclick = () => this.userModal(r.id);
+      top.append(c);
+    }
+    const row = r => {
+      const lg = board === 'ranked' ? leagueOf(r.elo) : null;
+      const li = el('li', r.id === this.profile.id ? 'me' : '', `<i>${r.rank}</i><u></u>${lg ? `<em class="lp-lg lg-${lg.toLowerCase()}" title="${t(lg)}"></em>` : ''}<b>${escapeHtml(r.name)}</b><span>${this.lpValue(r, board)}</span>`);
+      li.querySelector('u').replaceWith(this.lpFace(r, 26));
+      li.onclick = () => this.userModal(r.id);
+      return li;
+    };
+    const ol = el('ol', 'lp-rest');
+    for (const r of msg.rows.slice(3)) ol.append(row(r));
+    if (msg.me && msg.me.rank > msg.rows.length) ol.append(row(msg.me));
+    body.append(top, ol);
+    if (!msg.me && board === 'ranked') body.append(el('p', 'lp-me', t('Juega Clasificatoria para entrar')));
+    if (board === 'ranked') {
+      const league = this.profile.league || leagueOf(this.profile.elo);
+      body.append(el('p', 'lp-prize', `<b>${t('Premios de temporada')}</b><span>${t(league)}: ${coins(Data.SEASON_REWARDS[league])}</span>`));
+    }
   },
 
   // Respuesta del servidor: va a la ladder, a la tabla lateral de la Torre o al panel del menú
   onLadder(msg) {
-    if (msg.board === 'ranked' && !msg.page && !msg.q) { this.menuLadder = { at: Date.now(), msg }; if (this.view === 'menu') this.drawLadderPanel(msg); }
+    if (!msg.page && !msg.q && msg.rows) {
+      (this.menuLadders = this.menuLadders || {})[msg.board] = { at: Date.now(), msg };
+      const box = this.view === 'menu' && this.root.querySelector('.ladder-panel');
+      if (box && msg.board === (box.classList.contains('lp-col') ? this.lpBoard : 'ranked')) this.drawLadderPanel(msg, box);
+    }
     if (this.view === 'tower' && msg.board === 'tower') return this.renderTowerBoard(msg);
     if (this.view === 'ladder' && msg.board === this.ladderBoard) this.renderLadder(msg);
   },

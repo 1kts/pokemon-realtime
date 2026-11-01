@@ -344,10 +344,38 @@
   /* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
    sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
   .mon-sheet-back.modal { padding: 6px; }
-  .mon-sheet { grid-template-columns: 250px minmax(0, 1fr); height: calc(100vh - 12px); overflow: hidden; }
-  .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 10px; gap: 8px; }
-  .ms-stage { height: 120px; }
-   .ms-stage canvas { width: 110px !important; height: 110px !important; }
+  .mon-sheet { grid-template-columns: 200px minmax(0, 1fr); height: calc(100vh - 12px); height: calc(100dvh - 12px); overflow: hidden; }
+  /* (el lado, compacto: foto, nombre, tipo, nivel y botones; lo demás, plegado en «Más datos») */
+  .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 8px; gap: 5px; }
+  .ms-stage { flex: none; height: 76px; }
+   .ms-stage canvas { width: 72px !important; height: 72px !important; }
+  .ms-name h2 { font-size: 19px; }
+  .ms-name small { font-size: 10px; }
+  .ms-more summary { display: flex; align-items: center; min-height: 28px; font: 800 12px var(--text); color: #d2ddf5; cursor: pointer; }
+  .ms-more > .ms-facts { margin-top: 5px; }
+  .ms-more > .ms-seg { margin-top: 5px; }
+  .ms-acts { gap: 4px; }
+  .ms-acts .fav-star { color: #fff; font-size: 20px; }
+  .ms-acts > button { min-height: 34px; padding: 4px 8px; font-size: 12px; }
+  /* Cada estadística en una fila: nombre, valor, barra con IV y EV, y su vitamina en un botón con su icono */
+  .ms-head { padding: 6px 8px 0; }
+  .ms-body { padding: 6px 8px; gap: 5px; }
+  .ms-foot { padding: 4px 8px; }
+  .ms-foot > button { min-height: 36px; padding: 4px 12px; font-size: 13px; }
+  .ms-evtotal { font-size: 12px; gap: 6px; }
+  .ms-stats { gap: 3px; }
+  .ms-stat { grid-template-columns: 72px 48px minmax(0, 1fr) 44px !important; gap: 6px; padding: 1px 6px; font-size: 12px; min-height: 40px; }
+  .ms-stat > * { grid-column: auto !important; grid-row: 1; }
+  .ms-ivev { gap: 6px; }
+  .ms-nav small { display: none; }
+  .ms-nav .tb-btn { width: 32px; height: 32px; padding: 0; }
+  .ms-tab { padding: 6px 8px; font-size: 12px; }
+  .ms-acts > :first-child { flex: 1 1 100%; white-space: nowrap; }
+  .ms-acts > :not(:first-child) { flex: 1 1 0; }
+  .ms-ivev { font-size: 10px; }
+  .ms-vit { justify-content: center; width: 44px; height: 38px; padding: 2px; }
+  .ms-vit span { font-size: 0; }
+  .ms-vit small { font-size: 9px; }
   .user-card .ficha-head { margin-bottom: 8px; }
   .user-card .ficha-head .ava, .user-card .npc-face { --s: 64px !important; width: 72px; height: 72px; }
   /* (el retrato de dentro se pinta a 104 px: se ajusta al círculo, si no se salía y quedaba descentrado) */
@@ -620,8 +648,15 @@
   .menu-card.ladder-panel { gap: 1px; padding: 5px 8px; }
   .lp-title { font-size: 13px; }
   .lp-title .card-ico { display: none; }
-  .lp-all { font-size: 10px; }
-  .lp-rows li { padding: 0 3px; font-size: 10.5px; line-height: 14px; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 3px; }
+  .lp-all { padding: 1px 6px !important; font-size: 10px; }
+  .lp-rows { gap: 1px; }
+  .lp-rows li { min-height: 0; padding: 0 3px; font-size: 10.5px; line-height: 14px; grid-template-columns: 15px 20px minmax(0, 1fr) auto; gap: 3px; }
+  .lp-rows b small { display: none; }
+  .lp-rows i { width: 15px; height: 15px; }
+  .lp-rows .row-face.npc { width: 20px; height: 20px; }
+  .lp-rows .ava canvas, .lp-rows .ava img, .lp-rows .lp-face img { transform: scale(1.35); }   /* (la cara llena el círculo, tan pequeño) */
+  .lp-rows .row-face.npc .trainer-img { width: 18px; height: 18px; }
+  .menu-card.ladder-panel .lp-rows > li > span:last-child { font-size: 11px; }
   .lp-rows li:nth-child(n+3) { display: none; }
   .lp-rows i, .lp-rows b { font-size: 10.5px; }
   .lp-me { padding: 0 3px; font-size: 10px; line-height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -643,6 +678,7 @@
   .teamview .mon-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; padding-bottom: 8px; }
   .teamview .mon-card { display: grid; grid-template-columns: 40px minmax(0, 1fr) 28px; align-items: center; gap: 0 6px; padding: 3px 6px 3px 9px; }
   .teamview .mon-card > :is(canvas, img) { grid-area: 1 / 1; width: 40px !important; height: 40px !important; }
+  .teamview .mon-card > .fav-star { top: 2px; left: 2px; width: 24px; height: 24px; min-width: 24px; min-height: 24px; font-size: 15px; line-height: 24px; background: rgba(0,0,0,.6); }
   .teamview .mon-card .mi { grid-area: 1 / 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0 5px; min-width: 0; }
   .teamview .mon-card .mon-name { flex: 1 0 100%; overflow: hidden; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
   .teamview .mon-card .mi > small { font-size: 11px; }
@@ -682,3 +718,48 @@
   #hud.touch .mv.protect { right: 134px; bottom: 2px; width: 54px; height: 54px; }
   #hud.touch .balls { bottom: 208px; max-height: 118px; flex-wrap: wrap-reverse; }
 }
+/* Historia en el móvil, en una sola pantalla: el Camino arriba y, debajo, una franja con lo elegido y el botón de jugar.
+   El detalle sale con «Más», por encima del Camino */
+@media (max-height: 500px) {
+  #screen:has(> .story) { overflow: hidden; }
+  #screen:has(> .story) > .legal-bar, .story-head { display: none; }
+  .story { height: 100%; min-height: 0; }
+  .story-body { flex: 1 1 0; min-height: 0; margin: 0 !important; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
+  .story-pathwrap { grid-column: 1; grid-row: 1; height: auto; min-height: 0; overflow: hidden; }
+  .story-pathwrap .sp-box { min-height: 0; }
+  .story-side { grid-column: 1; grid-row: 2; height: auto; min-height: 0; }
+  .story-path { --gw: 84px; --gh: 104px; --nw: 104px; --nh: 126px; --rw: 92px; --rh: 70px; --road: 10px; --nm: 10px; --goh: 26px; --stopm: 4px; padding: 4px 14px 2px; }
+  .story-side .node-info:not(.open) { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: 't m more go' 'c m more go'; align-items: center; gap: 0 10px; overflow: hidden; flex: none; max-height: 72px; padding: 6px 12px; }
+  .story-side .node-info:not(.open) > * { display: none; }
+  .story-side .node-info:not(.open) > :is(h3, .leader-head, .ni-caught, .ni-more, .warn, .mini-team:not(.team-head ~ *), button.primary, .league-box) { display: block; }
+  .story-side .node-info:not(.open) > :is(h3, .leader-head) { grid-area: t; min-width: 0; margin: 0; padding: 0; box-shadow: none; }
+  .story-side .node-info:not(.open) h3 { overflow: hidden; font-size: 15px; white-space: nowrap; text-overflow: ellipsis; }
+  .story-side .node-info:not(.open) > .leader-head { margin: 0 !important; background: none; box-shadow: none !important; }
+  .story-side .node-info:not(.open) .leader-head .leader-sprite { display: none; }
+  .story-side .node-info:not(.open) .leader-head .leader { overflow: hidden; margin: 0; font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
+  .story-side .node-info:not(.open) > .ni-caught { grid-area: c; font-size: 11px; color: var(--td-mute, #d2ddf5); }
+  .story-side .node-info:not(.open) > .mini-team:not(.team-head ~ *) { grid-area: m; display: flex !important; flex-wrap: nowrap; gap: 3px; margin: 0; }
+  .story-side .node-info:not(.open) .mini { min-width: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+  .story-side .node-info:not(.open) .mini :is(small, .catch-pips) { display: none; }
+  .story-side .node-info:not(.open) .mini canvas, .story-side .node-info:not(.open) .mini img.portrait { width: 40px !important; height: 40px !important; }
+  .story-side .node-info:not(.open) > .ni-more { grid-area: more; min-height: 44px; padding: 0 12px; font: 800 13px var(--text); color: #fff; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.2); border-radius: 10px; }
+  .story-side .node-info:not(.open) > button.primary, .story-side .node-info:not(.open) > .warn { grid-area: go; position: static; margin: 0; min-height: 48px; padding: 0 22px; font-size: 17px; box-shadow: 0 3px 0 #a86a00; }
+  .story-side .node-info:not(.open) > .league-box { grid-area: go; margin: 0; padding: 0; background: none; border: 0; }
+  .story-side .node-info:not(.open) > .league-box > :not(button.primary) { display: none; }
+  .story-side .node-info.open { position: fixed; inset: 6px; z-index: 40; overflow: auto; }
+  .story-side .node-info.open > .ni-caught { display: block; }
+  .story-side .node-info.open > .ni-more { display: block; position: sticky; top: 0; z-index: 4; float: right; min-height: 40px; padding: 0 14px; font: 800 13px var(--text); color: #fff; background: #1a2766; border: 1px solid #3d53b0; border-radius: 10px; }
+}
+@media (max-height: 380px) {
+  .story-path { --gh: 92px; --nh: 112px; --rh: 60px; --goh: 24px; }
+}
+/* Quien aprende un movimiento: su fila a todo el ancho, el texto en horizontal y el botón a la derecha, para el dedo */
+@media (max-height: 500px), (max-width: 560px) {
+  .results .xp-row:has(.learn-go) { grid-column: 1 / -1; align-items: center; min-height: 48px; }
+  .results .xp-row:has(.learn-go) > div { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+  .results .xp-row:has(.learn-go) > div b { flex: none; max-width: 40%; }
+  .results .xp-row .learn-go { align-self: center; min-height: 44px; white-space: nowrap; }
+  .results:has(.learn-go) .res-sum { display: none; }   /* (sin sitio para todo: el movimiento nuevo importa más que las cifras) */
+}
+/* (en los móviles más bajos no caben dos puestos y el tuyo) */
+@media (max-height: 380px) { .ladder-panel:has(.lp-me) .lp-rows li:nth-child(2) { display: none; } }

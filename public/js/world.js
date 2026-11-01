@@ -429,7 +429,8 @@ export class World {
     this.camT = now;
     if (this.follow && this.focus) {
       const z = this.follow, cl = (v, a, b) => Math.min(b, Math.max(a, v));
-      const mx = COLS * z / 2 - 1.5, mz = ROWS * z / 2 - 2.5;
+      // (de lado casi lo sigue hasta el borde: si no, en las esquinas de abajo queda bajo el joystick o los ataques)
+      const mx = 3, mz = ROWS * z / 2 - 2.5;
       const tx = cl(this.focus.x / CELL, mx, COLS - mx), tz = cl(this.focus.y / CELL, mz, ROWS - mz);
       const c = this.camC || (this.camC = { x: cx, z: cz, f: 1 });
       const k = 1 - Math.exp(-dt * 7);

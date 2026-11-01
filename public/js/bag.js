@@ -40,7 +40,7 @@ export const bagViews = {
   view_bag() {
     const p = this.profile;
     const wrap = el('div', 'bagview');
-    wrap.append(this.topbar(t('Mochila'), this.returnTo || 'menu'));
+    wrap.append(this.topbar(t('Mochila')));
     const body = el('div', 'bag-body');
     const list = el('div', 'panel bag-list scroll');
     const detail = el('div', 'panel bag-detail');
@@ -50,7 +50,7 @@ export const bagViews = {
     if (!owned.length) {
       list.append(el('p', 'small', t('La mochila está vacía. Compra objetos en la Tienda o consíguelos venciendo a los líderes.')));
       const go = el('button', 'primary', t('Ir a la Tienda'));
-      go.onclick = () => this.openFrom('shop');
+      go.onclick = () => this.show('shop');
       list.append(go);
     }
     for (const [, title, test] of POCKETS) {

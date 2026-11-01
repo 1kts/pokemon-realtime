@@ -78,8 +78,8 @@ class Client {
   ok(JSON.stringify(m.p.mons[0].moves) === JSON.stringify(D.defaultMoves(4, 5)) && m.p.mons[0].moves.length === 2, 'a Nv.5 sabe sus 2 primeros movimientos');
   err = a.wait('error'); a.send({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['ascuas', 'llamarada'] });
   ok((await err).msg.includes('no sabe'), 'no puede llevar un movimiento que no ha aprendido');
-  m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['placaje', 'ascuas'] });
-  ok(m.p.mons[0].moves[0] === 'placaje', 'reordenar sus movimientos');
+  m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['ascuas', 'aranazo'] });
+  ok(m.p.mons[0].moves[0] === 'ascuas', 'reordenar sus movimientos');
   // Motes: se guardan limpios y con 12 caracteres como mucho, pasan el filtro y vacíos se quitan
   const uid0 = m.p.mons[0].uid;
   m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: '  Chispas\u200b el grande  ' });
@@ -88,6 +88,14 @@ class Client {
   ok((await err).msg.includes('mote no está permitido'), 'un mote ofensivo (aunque lo disimule) no se acepta');
   err = a.wait('error'); a.send({ t: 'story', a: 'nick', uid: 9999, nick: 'Otro' });
   ok((await err).msg.includes('no es tuyo'), 'no se le pone mote a un Pokémon que no es tuyo');
+  m = await a.req({ t: 'story', a: 'fav', uid: uid0, on: true });
+  ok(m.p.mons.find(x => x.uid === uid0).fav === true, 'marcar un Pokémon tuyo como favorito se guarda');
+  err = a.wait('error'); a.send({ t: 'story', a: 'fav', uid: 9999, on: true });
+  ok(/no es tuyo/.test((await err).msg), 'un Pokémon ajeno no se puede marcar');
+  err = a.wait('error'); a.send({ t: 'story', a: 'sell', uid: uid0 });
+  ok(/estrella/.test((await err).msg), 'un favorito no se vende sin quitarle la estrella');
+  m = await a.req({ t: 'story', a: 'fav', uid: uid0, on: false });
+  ok(!m.p.mons.find(x => x.uid === uid0).fav, 'quitar la estrella lo deja como antes');
   m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: '' });
   ok(m.p.mons[0].nick === undefined, 'un mote vacío lo quita');
   m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: 'Chispas' });
@@ -290,7 +298,7 @@ class Client {
   qe = b.wait('error'); b.send({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 6 }, { dex: 9 }] });
   ok(/3 Pokémon distintos/.test((await qe).msg), 'el equipo son 3 Pokémon distintos del pool');
   m = await b.req({ t: 'pvpteam', team: [{ dex: 6, moves: ['lanzallamas', 'noExiste'] }, { dex: 9 }, { dex: 3 }] });
-  ok(m.p.pvpTeam[0].moves.join() === 'lanzallamas' && m.p.pvpTeam[1].moves.length === 4, 'se guarda con los movimientos elegidos (solo los que sabe a Nv.50)');
+  ok(m.p.pvpTeam[0].moves[0] === 'lanzallamas' && !m.p.pvpTeam[0].moves.includes('noExiste') && m.p.pvpTeam[0].moves.length === 4 && m.p.pvpTeam[1].moves.length === 4, 'se guarda con los movimientos elegidos (solo los que sabe a Nv.50)');
   // Tus Pokémon entran en el equipo, legendarios incluidos; los de otro, no
   m = await c.req({ t: 'pvpteam', team: [{ dex: 149 }, { dex: 65 }, { dex: 94 }] });
   const verdeP = store.get(m.p.token), mewtwo = require('../server/story.js').devAddMon(verdeP, 150, 5, false, 'kanto');
@@ -304,7 +312,7 @@ class Client {
   const [st] = await Promise.all([sb, sc]);
   const mine = st.sides[st.you].team, rivalTeam = st.sides[1 - st.you].team;
   ok(rivalTeam[0].dex === 150 && rivalTeam[0].level === 50 && rivalTeam[0].nick === 'Mew2', 'el tuyo combate a Nv.50 siendo Nv.5, con su mote y sus extras');
-  ok(st.mode === 'ranked' && mine.every(x => x.level === 50) && mine.map(x => x.dex).join() === '6,9,3' && mine[0].moves.join() === 'lanzallamas', 'emparejados: el combate empieza ya, a Nv.50, con el equipo y los movimientos de cada uno');
+  ok(st.mode === 'ranked' && mine.every(x => x.level === 50) && mine.map(x => x.dex).join() === '6,9,3' && mine[0].moves[0] === 'lanzallamas', 'emparejados: el combate empieza ya, a Nv.50, con el equipo y los movimientos de cada uno');
   const ob = b.wait('over'), oc = c.wait('over');
   c.send({ t: 'forfeit' });
   const [r1, r2] = await Promise.all([ob, oc]);
@@ -1089,6 +1097,39 @@ class Client {
   g.ws.send('no es json'); g.send({ t: 'in', mx: 'x', a: null }); g.send({ t: 'story', a: 'buy', id: { x: 1 } }); g.send({ foo: 1 });
   const hello = await g.req({ t: 'hello', name: '<script>alert(1)</script>'.repeat(3) });
   ok(hello.p.name.length <= 16, 'nombre recortado a 16 caracteres');
+
+  // Un corte breve de la red en combate no lo pierde: al reconectar con su token sigue donde estaba
+  {
+    const one = new Client(port); await one.open();
+    const prof = (await one.req({ t: 'hello', name: 'Cortes' })).p;
+    const start0 = one.wait('start'); one.send({ t: 'practice', dexes: D.RANKED_POOL.slice(0, 3), skill: 0, passive: true, map: 'pradera' });
+    await start0;
+    const over = one.wait('over', () => true, 1500).catch(() => null);
+    one.ws.terminate();
+    await new Promise(r => setTimeout(r, 400));
+    const two = new Client(port); await two.open();
+    const back = two.wait('start'); two.send({ t: 'hello', token: prof.token, name: 'Cortes' });
+    const m = await back;
+    ok(m.resume === true, 'al reconectar en menos de unos segundos, el combate sigue');
+    await new Promise(r => setTimeout(r, 300));
+    ok(!!two.lastSnap, 'y vuelven a llegar los snapshots');
+    await over;
+    // Otro corte, como al recargar: el perfil llega antes que el combate, para que el menú no se pinte encima
+    two.ws.terminate();
+    await new Promise(r => setTimeout(r, 300));
+    const three = new Client(port); await three.open();
+    const order = []; const seen = three.ws.on('message', raw => { const t = JSON.parse(raw).t; if (t === 'profile' || t === 'start') order.push(t); });
+    const again = three.wait('start'); three.send({ t: 'hello', token: prof.token, name: 'Cortes' });
+    ok((await again).resume === true, 'un segundo corte también se recupera');
+    ok(order.join() === 'profile,start', `y llega primero el perfil (${order})`);
+    const done = three.wait('over'); three.send({ t: 'forfeit' });
+    ok((await done).t === 'over', 'y se puede terminar con normalidad');
+    three.ws.close();
+  }
+
+  // La fluidez con mala red, con su red simulada
+  const smooth = require('child_process').spawnSync(process.execPath, ['--no-warnings', 'tools/smooth-test.js'], { stdio: 'inherit' });
+  ok(smooth.status === 0, 'la fluidez con mala red cumple sus cifras');
 
   console.log(failures ? `\n${failures} fallos` : '\nTodo correcto');
   process.exit(failures ? 1 : 0);

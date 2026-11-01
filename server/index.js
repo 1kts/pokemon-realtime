@@ -118,12 +118,63 @@ const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.p
 const busy = c => c.battle || c.queue;
 
 // ---------- Combates ----------
+// Si se corta la conexión en combate (en el móvil pasa: cobertura, cambiar de wifi a datos) el combate espera un poco
+// con el Pokémon quieto: al volver con el mismo token se sigue en él, y si no vuelve, lo pierde como hasta ahora
+const HOLD_MS = 8000;
+const held = new Map();   // id del perfil -> { c, timer }
+function holdBattle(c) {
+  const b = c.battle, side = b.sides[c.side], id = c.profile.id;
+  side.ws = null; side.inputs = []; side.lastInput = { ...side.lastInput, mx: 0, my: 0 };
+  held.set(id, { c, timer: setTimeout(() => {
+    held.delete(id);
+    if (b.state !== 'over') b.leave(side, true);
+    store.release(c.profile);
+  }, HOLD_MS) });
+}
+// El combate ha acabado solo mientras esperaba
+function endHold(p) {
+  const h = held.get(p.id);
+  if (!h) return;
+  clearTimeout(h.timer);
+  held.delete(p.id);
+  store.release(p);
+}
+// Vuelve a entrar quien tenía un combate a medias: la conexión nueva pasa a ser la de ese cliente. También si la vieja
+// aún parece abierta (un móvil que ha cambiado de red no llega a cerrarla)
+function resumeBattle(c, p) {
+  let old = (held.get(p.id) || {}).c;
+  if (!old) {
+    old = [...clients].find(x => x !== c && x.profile === p && x.battle);
+    if (!old) return false;
+    clients.delete(old);
+    usage.close(old);
+    old.ws.terminate();
+    holdBattle(old);
+  }
+  const h = held.get(p.id);
+  clearTimeout(h.timer);
+  held.delete(p.id);
+  store.release(p);   // (hello lo ha cogido otra vez y el cliente de antes ya lo tenía)
+  clients.delete(c);
+  old.ws = c.ws;
+  old.ip = c.ip;
+  c.adopted = old;
+  clients.add(old);
+  const side = old.battle.sides[old.side];
+  side.ws = c.ws;
+  // (primero el perfil: si la página es nueva, pinta su menú con él, y el combate que llega después lo quita)
+  sendProfile(old);
+  send(old, { ...old.battle.startMsg(side), resume: true });
+  return true;
+}
+
 function startBattle(clientsBySide, opts, onEnd) {
   const sides = opts.sides.map((s, i) => ({ ...s, ws: clientsBySide[i] ? clientsBySide[i].ws : null }));
   const battle = new Battle({
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
+      clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); });
       try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       return onEnd(result, b);
     },
@@ -363,10 +414,11 @@ wss.on('connection', (ws, req) => {
     ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
     return ws.close(1008);
   }
-  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
+  let c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
   clients.add(c);
   send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
+    if (c.adopted) c = c.adopted;   // (ha retomado su combate: sigue en la conexión de antes)
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
@@ -379,10 +431,12 @@ wss.on('connection', (ws, req) => {
   });
   ws.on('close', () => {
     limits.connClose(ip);
+    if (c.adopted) c = c.adopted;
+    if (c.ws !== ws) return;   // (ya ha entrado por otra conexión)
     clients.delete(c);
     leaveQueue(c);
     usage.close(c);
-    if (c.battle) c.battle.leave(c.battle.sides[c.side], true);
+    if (c.battle && c.profile && c.battle.state !== 'over') return holdBattle(c);
     if (c.profile) store.release(c.profile);
   });
 });
@@ -420,6 +474,7 @@ function handle(c, msg) {
     }
     const p = store.get(token, name);
     if (store.banned(p)) { store.release(p); return refuseBanned(c, p); }
+    if (resumeBattle(c, p)) return;
     setProfile(c, p);
     audit.log(known ? 'sesion' : 'perfil.nuevo', { actor: p.id, ip: c.ip });
     return sendProfile(c);
@@ -450,7 +505,7 @@ function handle(c, msg) {
     if (Number.isFinite(msg.elo)) { rewards.migrate(p); p.elo = msg.elo; p.peakElo = Math.max(p.peakElo, p.elo); p.season.peak = Math.max(p.season.peak, p.elo); }
     if (Number.isInteger(msg.badges)) { p.prog = { ...(p.prog || {}), [msg.region || 'kanto']: msg.badges }; story.migrate(p); }
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
-    if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region);
+    if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region, msg.xp);   // (xp: la que ya lleva hacia el siguiente nivel)
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
     if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
     if (msg.tutorial === false) delete p.tutorial;
@@ -522,7 +577,7 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick', 'fav'].includes(msg.a)) {
     if (c.battle) return;
     // (en la cola, nada que cambie tus Pokémon: el equipo con el que entraste tiene que seguir valiendo al emparejar)
     if (c.queue && ['use', 'sell'].includes(msg.a)) return send(c, { t: 'error', msg: 'Sal de la cola antes' });

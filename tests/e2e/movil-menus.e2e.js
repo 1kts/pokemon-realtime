@@ -88,7 +88,7 @@ module.exports = async ({ page, player, ok, log }) => {
   await page.tap(/^Historia/);
   await page.waitFor(`document.querySelector('.story-pathwrap') && document.querySelector('.story-side .node-info button.primary')`);
   ok(await page.eval(`(() => { const m = document.querySelector('.story-pathwrap').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
-    return m.top >= 0 && m.bottom <= innerHeight + 1 && b.left >= m.right && b.bottom <= innerHeight && b.top >= 0 && document.getElementById('screen').scrollTop === 0; })()`), 'en horizontal el Camino se ve entero, con la ficha al lado y su botón de jugar a la vista sin bajar');
+    return m.top >= 0 && m.bottom <= innerHeight + 1 && b.top >= m.bottom - 1 && b.bottom <= innerHeight && document.getElementById('screen').scrollTop === 0; })()`), 'en horizontal el Camino se ve entero, con lo elegido debajo y su botón de jugar a la vista sin bajar');
 
   // La ficha de un Pokémon cabe, con el sprite dentro de su recuadro
   await page.tap('Volver');
