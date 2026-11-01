@@ -307,7 +307,7 @@
    "por": [
     "tests/e2e/movil.e2e.js"
    ],
-   "motivo": "movil.e2e.js: ✗ al soltar el joystick se para, lejos de las vallas (23 → 23; 738 → 937)"
+   "motivo": "movil.e2e.js: ✗ al soltar el joystick se para, lejos de las vallas (23 → 23; 732 → 937)"
   },
   "enfrentamiento-no-sale": {
    "resultado": "cazada",
