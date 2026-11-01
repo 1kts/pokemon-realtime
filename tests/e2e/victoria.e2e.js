@@ -19,8 +19,11 @@ module.exports = async ({ page, player, ok, log }) => {
   await page.waitFor(`document.querySelector('#screen').scrollTop > 0`);
   // («¡Desafiar!» sigue a la vista: se pulsa ahí mismo, con el ratón, sin que nada vuelva a subir la pantalla)
   ok(await page.see('Desafiar'), 'con la pantalla bajada, «Desafiar» se ve');
-  const go = await page.eval(`(() => { const b = [...document.querySelectorAll('button')].find(x => x.getClientRects().length && /Desafiar/.test(x.textContent)), r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; })()`);
-  await page.mouseAt(...go, { click: true });
+  // (el único botón que dice «Desafiar»: si hubiera otro, el test lo dice en vez de pulsar uno cualquiera)
+  const go = await page.eval(`(() => { const bs = [...document.querySelectorAll('button')].filter(x => x.getClientRects().length && /^\\W*Desafiar\\W*$/.test(x.textContent.trim()));
+    if (bs.length !== 1) return null; const r = bs[0].getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; })()`);
+  ok(!!go, 'y es un solo botón');
+  if (go) await page.mouseAt(...go, { click: true });
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 30000);
   // (vencerlo entero tardaría minutos, y con el navegador del CI a 1-2 fotogramas por segundo los clics no aciertan a un
   // rival que se mueve)
@@ -42,6 +45,7 @@ module.exports = async ({ page, player, ok, log }) => {
     const p = await page.eval(foeAt);
     if (!p) { await page.waitFor('window.__app.battle && window.__app.battle.renderPos', 5000).catch(() => {}); continue; }
     if (p.won) break;
+    await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');   // (un fotograma de la página entre vuelta y vuelta)
     // (clic: Pistola Agua; y de vez en cuando Q, Hidrobomba, que también va a donde apunta el ratón)
     if (p.free) { await page.mouseAt(p.x, p.y, { click: true }); if (i % 4 === 3) await page.key('KeyQ'); }
     if (Math.hypot(p.dx, p.dy) < 70) { last = null; continue; }

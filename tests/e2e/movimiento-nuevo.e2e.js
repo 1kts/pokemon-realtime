@@ -27,6 +27,7 @@ module.exports = async ({ page, player, ok }) => {
     const p = await page.eval(foeAt);
     if (!p) { await page.waitFor('window.__app.battle && window.__app.battle.renderPos', 5000).catch(() => {}); continue; }
     if (p.won) break;
+    await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');   // (un fotograma de la página entre vuelta y vuelta)
     if (Math.hypot(p.dx, p.dy) < 60) { if (p.free) await page.mouseAt(p.x, p.y, { click: true, button: 'right' }); last = null; continue; }
     if (p.free) await page.mouseAt(p.x, p.y, { click: true });
     if (last && Math.hypot(p.mx - last.mx, p.my - last.my) < 2) detour = 2;

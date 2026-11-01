@@ -147,8 +147,14 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
   cheat.msgs.length = 0;
   cheat.send({ t: 'dev', coins: 99999, foeIdle: true, foeHp: 0.01 });
   await sleep(400);
-  ok(p0 && !cheat.msgs.some(m => m.t === 'profile'), 'sin ARENA_DEV el gancho de pruebas no responde ni cambia el perfil');
   cheat.ws.close();
+  // (y al volver a entrar, el perfil guardado sigue con el mismo dinero)
+  const again = connect('10.0.4.1');
+  await again.open;
+  again.send({ t: 'hello', token: p0 && p0.p.token });
+  const p1 = await again.wait(x => x.t === 'profile');
+  ok(p0 && p1 && !cheat.msgs.some(m => m.t === 'profile') && p1.p.coins === p0.p.coins, `sin ARENA_DEV el gancho de pruebas no responde ni da dinero (${p0 && p0.p.coins} → ${p1 && p1.p.coins})`);
+  again.ws.close();
 
   // ---------- Contraseñas ----------
   const owner = connect('10.0.1.1');

@@ -666,14 +666,15 @@
   .ae-bar input[type=search] { flex: 1 1 0; min-width: 0; margin: 0; padding: 4px 8px; }
   .ae-preview { grid-row: 2 / 4; padding: 4px; }
   .ae-preview .ava { --s: 88px !important; }
-  /* (la foto se pinta a 104 px: se ajusta al círculo, si no se salía y quedaba descentrada) */
-  .ae-preview .ava .ava-pic > :is(canvas, img) { width: 88px; height: 88px; }
+  /* (la foto se pinta a 104 px: se encoge entera al círculo, con lo que lleve dentro, como las medallas al 80 % o los
+     retratos con emoción; si no, se salía y quedaba descentrada) */
+  .ae-preview .ava .ava-pic { zoom: .846; }   /* (88 / 104) */
   .ae-who b { font-size: 14px; }
   .ae-body, .ae-more { grid-column: 2; }
   /* Tarjeta de perfil: pequeña y los botones de la cuenta a la derecha */
   .pv-flow .trainer-card, .trainer-card { gap: 12px; padding: 8px 12px; }
   .trainer-card .ava { --s: 72px !important; border-width: 3px; }
-  .trainer-card .ava .ava-pic > :is(canvas, img) { width: 72px; height: 72px; }
+  .trainer-card .ava .ava-pic { zoom: .6; }   /* (72 / 120: pintada a 120 px, como la del editor) */
   .trainer-card .tc-info { position: relative; min-width: 0; padding-right: 150px; }
   .tc-acc { position: absolute; top: 50%; right: 0; flex-direction: column; flex-wrap: nowrap; width: 138px; gap: 5px; margin: 0; transform: translateY(-50%); }
   .tc-acc button { width: 100%; padding: 5px 8px; font-size: 12px; }
