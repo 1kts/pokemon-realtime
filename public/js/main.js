@@ -13,9 +13,9 @@ import { UI } from './ui.js';
 import { faceSrc } from './sprites.js';
 import { applyCursor } from './cursor.js';
 import { initTouchDevice } from './touch.js';
-import { friendNotices } from './friends.js';
+import { friendNotices, clearChallenge } from './friends.js';
 import './tips.js';
-import { confirmBox } from './dialog.js';
+import { confirmBox, closeConfirm } from './dialog.js';
 import { Net, storage } from './net.js';
 import { t, tServer, getLang } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
@@ -211,7 +211,7 @@ net.on('replaced', () => {
   box.append(inner);
   document.body.append(box);
 });
-net.on('welcome', m => ui.versionCheck(m.version));
+net.on('welcome', m => { ui.versionCheck(m.version); clearChallenge(ui); });
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 friendNotices(net, ui);
 net.on('bugok', () => { if (ui.onBugSent) { ui.onBugSent(); ui.onBugSent = null; } });
@@ -230,6 +230,7 @@ net.on('start', m => {
   if (m.resume && app.battle) { clearTimeout(resumeTimer); net.hurry = false; app.battle.resume(m); return; }
   if (app.battle) endBattle();
   ui.hide();
+  closeConfirm();   // (sin esto, su Intro seguiría vivo: vendería o quitaría a ciegas en pleno combate)
   document.querySelectorAll('.modal').forEach(m => m.remove());
   document.body.classList.add('in-battle');
   app.battle = new BattleClient(app, m);

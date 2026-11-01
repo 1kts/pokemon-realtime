@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': '하나로 합친 PvP',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '랭크전과 빠른 대전이 PvP로 합쳐졌어요. ELO, 리그, 시즌이 있는 대기열 하나이며, 처음 10판은 져도 절반만 잃어요.',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': '친구 목록에서 ELO 없는 대결을 신청할 수 있어요. 상대가 알림을 받고 수락 여부를 정해요.',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': '래더가 메뉴 오른쪽으로 옮겨 상위 7명, 내 순위, 금은동 색을 보여 주고, 배틀타워는 모험으로 옮겼어요.',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': '아직 없는 항목은 어둡게 자물쇠와 함께 보이고, 모바일 항복 버튼이 iPhone에서 더 잘 작동해요.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': '즐겨찾기와 진화',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '내 포켓몬에서 별로 즐겨찾기를 표시하면 맨 앞에 오고, 필터로 볼 수 있으며, 실수로 팔리지 않아요.',
@@ -815,6 +821,9 @@ export default {
     'El reto ha caducado': '도전이 만료됐어요',
     'Tu amigo ya no está disponible': '친구가 더 이상 응할 수 없어요',
     'Reto cancelado': '도전이 취소됐어요',
+    'El reto ya no está disponible': "이 도전은 더 이상 받을 수 없어요",
+    'Ya estás jugando en otra pestaña': "이미 다른 탭에서 플레이 중이에요",
+    'Recarga la página para jugar a PvP': "PvP를 하려면 페이지를 새로고침하세요",
     'Ya has retado a alguien: espera su respuesta': '이미 도전했어요: 답을 기다려 주세요',
     'Solo puedes retar a tus amigos': '친구에게만 도전할 수 있어요',
     'Espera un poco antes de volver a retarle': '잠시 후 다시 도전하세요',

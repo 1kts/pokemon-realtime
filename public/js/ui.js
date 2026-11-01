@@ -1239,7 +1239,7 @@ export class UI {
     if ((p.ranked || 0) < Data.RANKED_CALIB) me.append(el('p', 'small', t('Calibración: {n} partidas más en las que perder cuesta la mitad de ELO.', { n: Data.RANKED_CALIB - (p.ranked || 0) })));
     const go = el('button', 'primary', t('Buscar partida PvP'));
     go.disabled = !Data.pvpTeam(p.pvpTeam, p.mons);
-    go.onclick = () => this.net.send({ t: 'queue', mode: 'ranked' });
+    go.onclick = () => this.net.send({ t: 'queue' });
     me.append(go);
     if (go.disabled) me.append(el('p', 'warn', t('Prepara tu equipo de 3 para poder buscar partida.')));
     const col = el('div', 'online-col');
@@ -1621,7 +1621,7 @@ export class UI {
     }
     if (lm === 'ranked') {
       const again = el('button', '', t('Buscar otra'));
-      again.onclick = () => this.net.send({ t: 'queue', mode: 'ranked' });
+      again.onclick = () => this.net.send({ t: 'queue' });
       acts.append(again);
     }
     box.append(acts);

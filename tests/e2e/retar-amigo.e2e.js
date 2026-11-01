@@ -24,8 +24,12 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Retar');
   ok((await inv).from.id === me.id, 'al amigo le llega el reto');
   await page.waitSee('Cancelar reto');
+  // Un cuadro abierto cuando empieza el combate se cierra como «no»: Intro ya no lo confirma
+  await page.tap('Quitar');
+  await page.waitSee('¿Quitar amigo?');
   amigo.client.send({ t: 'challenge', a: 'accept' });
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
+  await page.key('Enter');
   await page.key('Escape');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
   await page.waitSee('Derrota');
@@ -33,4 +37,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Continuar');
   await page.waitSee('Tus amigos');
   ok(true, 'al acabar vuelves a Amigos');
+  ok(await page.see('Ver perfil', { ms: 3000 }), 'el amigo sigue en la lista: el Intro en combate no ha confirmado el cuadro');
+  await page.waitSee('Retar');
+  ok(!(await page.see('Cancelar reto', { ms: 0 })), 'y vuelve «Retar», no «Cancelar reto»');
 };

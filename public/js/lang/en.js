@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': 'One PvP',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Ranked and Quick Match merge into PvP: one queue with ELO, leagues and seasons, and in your first 10 games losing costs half.',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'From Friends you can challenge a friend to a battle without ELO: they get a notice and decide whether to accept.',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'The Ladder moves to the right of the menu with the top 7, your rank and gold, silver and bronze colors, and Battle Tower moves to Adventure.',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': 'What you don\'t own yet looks dimmed with a padlock, and the mobile surrender button works better on iPhone.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favorites and evolutions',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In My Pokémon you can star favorites: they come first, you can filter by “Favorites”, and they can\'t be sold by mistake.',
@@ -814,6 +820,9 @@ export default {
     'El reto ha caducado': 'The challenge expired',
     'Tu amigo ya no está disponible': 'Your friend is no longer available',
     'Reto cancelado': 'Challenge cancelled',
+    'El reto ya no está disponible': "That challenge is no longer available",
+    'Ya estás jugando en otra pestaña': "You're already playing in another tab",
+    'Recarga la página para jugar a PvP': "Reload the page to play PvP",
     'Ya has retado a alguien: espera su respuesta': 'You already challenged someone: wait for their answer',
     'Solo puedes retar a tus amigos': 'You can only challenge your friends',
     'Espera un poco antes de volver a retarle': 'Wait a little before challenging them again',

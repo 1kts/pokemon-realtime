@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': '统一的 PvP',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '排位赛和快速对战合并为 PvP:同一队列,保留 ELO、段位和赛季,前 10 场失败只扣一半。',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': '在好友中可以向好友发起不计 ELO 的挑战:对方会收到通知并决定是否接受。',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': '天梯移到菜单右侧,显示前 7 名、你的名次和金银铜配色,对战塔移到冒险。',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': '尚未拥有的内容会变暗并带锁,手机上的投降按钮在 iPhone 上更好用。',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': '收藏与进化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '在我的宝可梦中可用星标收藏:收藏的排在最前,可按“收藏”筛选,也不会被误卖。',
@@ -814,6 +820,9 @@ export default {
     'El reto ha caducado': '挑战已过期',
     'Tu amigo ya no está disponible': '你的好友已无法应战',
     'Reto cancelado': '挑战已取消',
+    'El reto ya no está disponible': "这个挑战已失效",
+    'Ya estás jugando en otra pestaña': "你已在另一个标签页中游戏",
+    'Recarga la página para jugar a PvP': "请刷新页面以进行 PvP",
     'Ya has retado a alguien: espera su respuesta': '你已发起挑战：请等待回复',
     'Solo puedes retar a tus amigos': '你只能挑战好友',
     'Espera un poco antes de volver a retarle': '请稍等再次挑战',

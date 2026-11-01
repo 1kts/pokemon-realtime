@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': 'Ein PvP für alle',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Rangliste und Schnelles Match werden zu PvP: eine Warteschlange mit ELO, Ligen und Saisons, und in deinen ersten 10 Partien kostet Verlieren die Hälfte.',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'Unter Freunde kannst du einen Freund ohne ELO herausfordern: Er bekommt einen Hinweis und entscheidet, ob er annimmt.',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'Die Ladder steht rechts im Menü mit Top 7, deinem Platz und Gold, Silber und Bronze, und der Duellturm wandert zu Abenteuer.',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': 'Was du noch nicht hast, erscheint gedimmt mit Schloss, und der Aufgeben-Knopf funktioniert auf dem iPhone besser.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favoriten und Entwicklungen',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In Meine Pokémon markierst du Favoriten mit einem Stern: Sie stehen vorne, lassen sich filtern und werden nicht aus Versehen verkauft.',
@@ -814,6 +820,9 @@ export default {
     'El reto ha caducado': 'Die Herausforderung ist abgelaufen',
     'Tu amigo ya no está disponible': 'Dein Freund ist nicht mehr verfügbar',
     'Reto cancelado': 'Herausforderung abgebrochen',
+    'El reto ya no está disponible': "Diese Herausforderung ist nicht mehr verfügbar",
+    'Ya estás jugando en otra pestaña': "Du spielst schon in einem anderen Tab",
+    'Recarga la página para jugar a PvP': "Lade die Seite neu, um PvP zu spielen",
     'Ya has retado a alguien: espera su respuesta': 'Du hast schon jemanden herausgefordert: Warte auf die Antwort',
     'Solo puedes retar a tus amigos': 'Du kannst nur Freunde herausfordern',
     'Espera un poco antes de volver a retarle': 'Warte kurz, bevor du erneut herausforderst',

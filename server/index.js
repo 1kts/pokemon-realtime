@@ -115,7 +115,14 @@ function doingOf(id) {
   return null;
 }
 const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.profile.id));
-const busy = c => c.battle || c.queue;
+// Ocupado en cualquiera de sus pestañas, o con un combate esperando a que vuelva: un perfil nunca lleva dos combates
+const busy = c => held.has(c.profile.id) || [...clients].some(x => x.profile === c.profile && (x.battle || x.queue));
+// (si lo que ocupa está en otra pestaña, se dice: en esta no se ve el porqué)
+function refuseBusy(c) {
+  if (!busy(c)) return false;
+  if (!c.battle && !c.queue) send(c, { t: 'error', msg: 'Ya estás jugando en otra pestaña' });
+  return true;
+}
 
 // ---------- Combates ----------
 // Si se corta la conexión en combate (en el móvil pasa: cobertura, cambiar de wifi a datos) el combate espera un poco
@@ -182,12 +189,14 @@ function startBattle(clientsBySide, opts, onEnd) {
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
-      if (b.mode !== 'friendly') try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
+      try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
       try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
     },
   });
   clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); } });
+  // (quien entra en combate deja caer el reto que tuviera a medias)
+  for (const c of clientsBySide) { const ch = c && !c.npc && challengeOf(c); if (ch) endChallenge(ch, 'gone', c.profile); }
   return battle;
 }
 
@@ -216,21 +225,21 @@ setInterval(() => {
   for (const c of clients) if (c.profile && c.popKey !== key) { c.popKey = key; send(c, { t: 'pop', ...pop }); }
 }, 2000).unref();
 
-function joinQueue(c, mode) {
-  if (busy(c)) return;
+function joinQueue(c) {
+  if (refuseBusy(c)) return;
   const ch = challengeOf(c);
-  if (ch) endChallenge(ch, 'gone');
+  if (ch) endChallenge(ch, 'gone', c.profile);
   if (!D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en PvP' });
-  c.queue = mode;
+  c.queue = 'ranked';
   c.queuedAt = Date.now();
-  queues[mode].push(c);
-  send(c, { t: 'queue', mode });
-  matchmake(mode);
+  queues.ranked.push(c);
+  send(c, { t: 'queue', mode: 'ranked' });
+  matchmake();
 }
 
 function leaveQueue(c) {
   if (!c.queue) return;
-  queues[c.queue] = queues[c.queue].filter(x => x !== c);
+  queues.ranked = queues.ranked.filter(x => x !== c);
   c.queue = null;
 }
 
@@ -239,8 +248,8 @@ function leaveQueue(c) {
 const sameOrigin = (a, b) => a.ip === b.ip && (process.env.NODE_ENV === 'production' || !!process.env.SAME_IP_BLOCK);
 
 // Quien ya no tenga un equipo válido sale de la cola con un aviso, en vez de romper el emparejamiento
-function dropBadTeams(mode) {
-  for (const c of [...queues[mode]]) {
+function dropBadTeams() {
+  for (const c of [...queues.ranked]) {
     if (D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) continue;
     leaveQueue(c);
     send(c, { t: 'unqueued' });
@@ -248,9 +257,9 @@ function dropBadTeams(mode) {
   }
 }
 
-function matchmake(mode) {
-  dropBadTeams(mode);
-  const q = queues[mode];
+function matchmake() {
+  dropBadTeams();
+  const q = queues.ranked;
   // El que más lleva esperando contra el de ELO más parecido
   for (let ai = 0; ai < q.length; ai++) {
     const a = q[ai];
@@ -262,9 +271,10 @@ function matchmake(mode) {
     });
     if (bi < 0) continue;
     const b = q[bi];
-    queues[mode] = q.filter(x => x !== a && x !== b);
+    queues.ranked = q.filter(x => x !== a && x !== b);
     a.queue = b.queue = null;
-    return startDuel([a, b], mode) || matchmake(mode);
+    startPvp({ mode: 'ranked', players: [a, b] });
+    return matchmake();
   }
 }
 
@@ -272,7 +282,7 @@ function matchmake(mode) {
 function npcMatch() {
   if (maintenance) return;
   const now = Date.now();
-  dropBadTeams('ranked');
+  dropBadTeams();
   for (const c of [...queues.ranked]) {
     if (now - c.queuedAt < npc.WAIT_MS) continue;
     const o = npc.pick(c.profile.elo);
@@ -287,15 +297,20 @@ function npcMatch() {
 // o rechaza. Caduca solo, y si uno se va al otro no se le queda colgado
 const CHALLENGE_WAIT = 15000;         // ms sin poder volver a retar a quien te ha dicho que no o no ha contestado
 const challenges = new Set();         // { a: el que reta, b: el retado, timer }
-const challengeBlock = new Map();     // 'id:id' -> hasta cuándo no se puede volver a retar
+const challengeBlock = new Set();     // 'id:id' que aún no pueden volver a retarse (cada uno se borra solo)
 const challengeOf = c => [...challenges].find(x => x.a.profile === c.profile || x.b.profile === c.profile);
 const toAll = (p, msg) => { for (const x of clients) if (x.profile === p) send(x, msg); };   // (a todas sus pestañas)
 
-function endChallenge(ch, why) {
+// who: el perfil que lo ha dejado caer al irse a otra cosa; a él se le manda 'busy', que no hay nada que contarle
+function endChallenge(ch, why, who) {
   clearTimeout(ch.timer);
   challenges.delete(ch);
-  if (why === 'declined' || why === 'expired') challengeBlock.set(`${ch.a.profile.id}:${ch.b.profile.id}`, Date.now() + CHALLENGE_WAIT);
-  for (const c of [ch.a, ch.b]) toAll(c.profile, { t: 'challengeend', why });
+  if (why === 'declined' || why === 'expired' || why === 'cancelled') {
+    const key = `${ch.a.profile.id}:${ch.b.profile.id}`;
+    challengeBlock.add(key);
+    setTimeout(() => challengeBlock.delete(key), CHALLENGE_WAIT).unref();
+  }
+  for (const c of [ch.a, ch.b]) toAll(c.profile, { t: 'challengeend', why: c.profile === who ? 'busy' : why });
 }
 
 function challenge(c, msg) {
@@ -303,23 +318,20 @@ function challenge(c, msg) {
   if (msg.a === 'cancel') { if (ch && ch.a.profile === c.profile) endChallenge(ch, 'cancelled'); return; }
   if (msg.a === 'decline') { if (ch && ch.b.profile === c.profile) endChallenge(ch, 'declined'); return; }
   if (msg.a === 'accept') {
-    if (!ch || ch.b.profile !== c.profile) return;
+    if (!ch || ch.b.profile !== c.profile) return send(c, { t: 'error', msg: 'El reto ya no está disponible' });
     const { a } = ch, b = c;   // (combate quien ha aceptado, en la pestaña en que lo ha hecho)
     const ready = !busy(a) && !busy(b) && D.pvpTeam(a.profile.pvpTeam, a.profile.mons) && D.pvpTeam(b.profile.pvpTeam, b.profile.mons);
-    if (!ready) return endChallenge(ch, 'gone');
-    clearTimeout(ch.timer);
-    challenges.delete(ch);
+    if (!ready) { endChallenge(ch, 'gone', b.profile); return send(c, { t: 'error', msg: 'Tu amigo ya no está disponible' }); }
+    endChallenge(ch, 'accepted');
     return startPvp({ mode: 'friendly', players: [a, b] });
   }
   if (msg.a !== 'send') return;
   const p = c.profile, id = String(msg.id || '');
   if (ch) return send(c, { t: 'error', msg: 'Ya has retado a alguien: espera su respuesta' });
   if (!(p.friends || []).includes(id)) return send(c, { t: 'error', msg: 'Solo puedes retar a tus amigos' });
-  if (busy(c)) return;
+  if (refuseBusy(c)) return;
   if (!D.pvpTeam(p.pvpTeam, p.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en PvP' });
-  const until = challengeBlock.get(`${p.id}:${id}`);
-  if (until > Date.now()) return send(c, { t: 'error', msg: 'Espera un poco antes de volver a retarle' });
-  challengeBlock.delete(`${p.id}:${id}`);
+  if (challengeBlock.has(`${p.id}:${id}`)) return send(c, { t: 'error', msg: 'Espera un poco antes de volver a retarle' });
   const o = [...clients].find(x => x.profile && x.profile.id === id);
   if (!o) return send(c, { t: 'error', msg: 'Tu amigo no está conectado' });
   if (busy(o) || challengeOf(o)) return send(c, { t: 'error', msg: 'Tu amigo está ocupado' });
@@ -328,14 +340,10 @@ function challenge(c, msg) {
   made.timer = setTimeout(() => endChallenge(made, 'expired'), ms);
   challenges.add(made);
   toAll(o.profile, { t: 'challenge', from: { id: p.id, name: p.name, tag: p.tag }, ms });
-  send(c, { t: 'challengesent', to: { id: o.profile.id, name: o.profile.name }, ms });
+  toAll(p, { t: 'challengesent', to: { id: o.profile.id, name: o.profile.name }, ms });
 }
 
 // Cada uno combate con el equipo de 3 que se preparó (a Nv.50): los suyos con sus extras, como en la Torre
-function startDuel(players, mode) {
-  startPvp({ mode, players });
-}
-
 const pvpMon = (p, x) => x.uid ? { ...tower.battleMon(p, x), moves: x.moves }
   : { dex: x.dex, level: D.RANKED_LEVEL, moves: x.moves, skin: D.skinOf(p, x.dex), parts: D.particlesOf(p, x.dex) };
 function startPvp(match) {
@@ -384,7 +392,7 @@ function startPvp(match) {
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
     const [win, lose] = sa ? [pa, pb] : [pb, pa];
-    audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: match.mode });
+    audit.log('ranked.resultado', { actor: win.id, target: lose.id, winDelta: sa ? dA : dB, loseDelta: sa ? dB : dA, winElo: win.elo, loseElo: lose.elo, mode: match.mode });
     const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
     const pay = [
       rewards.afterRanked(pa, { won: !!sa, delta: dA, foe: store.fullName(pb), foeElo: eb0, team: match.picks[0], foeTeam: match.picks[1] }),
@@ -522,7 +530,7 @@ function handle(c, msg) {
   }
   if (msg.t === 'hello') {
     // El nombre solo cuenta para perfiles nuevos; luego se cambia con 'name'
-    if (busy(c) || c.authing) return;
+    if (c.battle || c.queue || c.authing) return;
     const token = typeof msg.token === 'string' ? msg.token : null;
     const known = store.has(token);
     const checked = names.trainerName(msg.name);
@@ -659,9 +667,9 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if ((draining || maintenance) && starts(msg)) return send(c, { t: 'error', msg: draining ? DRAIN_MSG : MAINT_MSG });
-  if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!busy(c)) startStory(c, msg); return; }
-  if (msg.t === 'practice') { if (!busy(c)) startPractice(c, msg); return; }
-  if (msg.t === 'tower' && msg.a === 'battle') { if (!busy(c)) startTower(c); return; }
+  if (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) { if (!refuseBusy(c)) startStory(c, msg); return; }
+  if (msg.t === 'practice') { if (!refuseBusy(c)) startPractice(c, msg); return; }
+  if (msg.t === 'tower' && msg.a === 'battle') { if (!refuseBusy(c)) startTower(c); return; }
   if (msg.t === 'tower') {
     if (c.battle) return;
     const err = tower.action(c.profile, msg);
@@ -687,7 +695,8 @@ function handle(c, msg) {
     if (r.request) for (const x of clients) if (x.profile === r.request) send(x, { t: 'friendreq', name: c.profile.name, tag: c.profile.tag });
     return send(c, { t: 'friendok', msg: r.ok });
   }
-  if (msg.t === 'queue') return joinQueue(c, 'ranked');   // (hay una sola cola de PvP)
+  // (hay una sola cola de PvP; una página vieja que pida la Partida rápida no entra en ella, que perdería ELO sin saberlo)
+  if (msg.t === 'queue') return msg.mode === 'casual' ? send(c, { t: 'error', msg: 'Recarga la página para jugar a PvP' }) : joinQueue(c);
   if (msg.t === 'challenge' && c.profile) return challenge(c, msg);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);
@@ -717,7 +726,7 @@ async function auth(c, msg) {
     audit.logNoisy('limite.intentos', c.ip);
     return send(c, { t: 'autherr', msg: 'Demasiados intentos desde tu red: espera unos minutos' });
   }
-  if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
+  if (c.battle || c.queue || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   const user = typeof msg.user === 'string' ? msg.user.trim() : '';
   if (msg.t === 'login' && limits.userLocked(user)) {
     audit.logNoisy('cuenta.bloqueada', c.ip, { user: user.slice(0, 64) });
@@ -772,7 +781,7 @@ async function mailCode(c, msg) {
 // o, sin ella, con un perfil nuevo, para el que antes se le pide el nombre de entrenador ('authname').
 const PENDING_MS = 10 * 60e3;
 async function identityAuth(c, msg) {
-  if (busy(c) || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
+  if (c.battle || c.queue || c.authing) return send(c, { t: 'autherr', msg: 'Termina antes lo que estás haciendo' });
   let ident, via;
   if (msg.t === 'authname') {
     ident = c.pendingIdent && Date.now() - c.pendingIdent.at < PENDING_MS ? c.pendingIdent : null;

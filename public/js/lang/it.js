@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': 'Un solo PvP',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Classificata e Partita rapida si uniscono in PvP: una sola coda con ELO, leghe e stagioni, e nelle prime 10 partite perdere costa la metà.',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'Da Amici puoi sfidare un amico senza ELO: riceve un avviso e decide se accettare.',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'Il Ladder va a destra del menu con la top 7, la tua posizione e i colori oro, argento e bronzo, e la Torre Lotta passa ad Avventura.',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': 'Ciò che non hai ancora appare attenuato con un lucchetto, e il pulsante di resa funziona meglio su iPhone.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Preferiti ed evoluzioni',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In I miei Pokémon puoi segnare i preferiti con una stella: vengono per primi, si filtrano con «Preferiti» e non si vendono per errore.',
@@ -815,6 +821,9 @@ export default {
     'El reto ha caducado': 'La sfida è scaduta',
     'Tu amigo ya no está disponible': 'Il tuo amico non è più disponibile',
     'Reto cancelado': 'Sfida annullata',
+    'El reto ya no está disponible': "Questa sfida non è più disponibile",
+    'Ya estás jugando en otra pestaña': "Stai già giocando in un'altra scheda",
+    'Recarga la página para jugar a PvP': "Ricarica la pagina per giocare in PvP",
     'Ya has retado a alguien: espera su respuesta': 'Hai già sfidato qualcuno: aspetta la risposta',
     'Solo puedes retar a tus amigos': 'Puoi sfidare solo i tuoi amici',
     'Espera un poco antes de volver a retarle': 'Aspetta un po\' prima di sfidarlo di nuovo',

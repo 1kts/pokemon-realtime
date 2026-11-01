@@ -139,7 +139,7 @@ async function loadMetrics() {
   const ses = T.sesiones || 0;
   const keys = prefix => Object.entries(T).filter(([k]) => k.startsWith(prefix)).map(([k, n]) => ({ label: k.slice(prefix.length), n }));
   const DEV = { movil: 'Móvil', tablet: 'Tablet', pc: 'PC' };
-  const VIEWS = { menu: 'Menú', story: 'Historia (mapa)', team: 'Mis Pokémon', online: 'Clasificatoria', tower: 'Torre', practice: 'Práctica', shop: 'Tienda', bag: 'Mochila', dex: 'Pokédex',
+  const VIEWS = { menu: 'Menú', story: 'Historia (mapa)', team: 'Mis Pokémon', online: 'PvP', tower: 'Torre', practice: 'Práctica', shop: 'Tienda', bag: 'Mochila', dex: 'Pokédex',
     profile: 'Perfil', settings: 'Ajustes', missions: 'Misiones', collection: 'Logros', treasure: 'Lucky Spin', ladder: 'Ladder', league: 'Liga', results: 'Resultados', title: 'Portada', queue: 'Cola' };
   $('#met').replaceChildren(
     h('div', { class: 'stats' },
@@ -198,7 +198,7 @@ async function loadProgress() {
   $('#progreso .out').replaceChildren(
     h('div', { class: 'stats' }, stat(`jugadores (${WHO[who]})`, n), stat('llevan 7 días o más sin entrar', `${p.gone} (${n ? Math.round(p.gone / n * 100) : 0} %)`),
       stat('Pokédex (mediana · 10 % mejor)', `${p.dex.median} · ${p.dex.p90} / ${p.dex.total}`), stat('nivel más alto (mediana)', p.level.median),
-      stat('han jugado la Torre · mejor racha (mediana)', `${p.tower.players} · ${p.tower.median}`), stat('online · clasificatoria', `${p.ranked.online} · ${p.ranked.players}`),
+      stat('han jugado la Torre · mejor racha (mediana)', `${p.tower.players} · ${p.tower.median}`), stat('online · PvP', `${p.ranked.online} · ${p.ranked.players}`),
       stat('días jugados (mediana)', p.days.median)),
     funnel('El viaje del jugador', p.funnel, 'Cuántos llegan a cada paso (sobre los que han entrado) y cuántos se pierden respecto al anterior: en rojo si se pierde el 40 % o más.'),
     h('div', { class: 'cols' }, p.byRegion.map(r => dist(`${r.name}: dónde están`, r.dist.map(d => ({ label: d.label, sub: d.next ? `→ ${d.next}` : '', n: d.n })), n,
@@ -206,7 +206,7 @@ async function loadProgress() {
     h('div', { class: 'cols' }, p.byRegion.map(r => dist(`${r.name}: dónde lo dejan`, r.dist.filter(d => d.gone).map(d => ({ label: d.label, sub: d.next ? `→ ${d.next}` : '', n: d.gone })), p.gone,
       'De los que llevan 7 días o más sin entrar: en qué punto se quedaron.'))),
     h('div', { class: 'cols' }, dist('Pokédex', p.dex.dist, n), dist('Nivel más alto de su equipo', p.level.dist, n), dist('Mejor racha en la Torre', p.tower.dist, n)),
-    h('div', { class: 'cols' }, dist('Ligas de Clasificatoria', p.ranked.leagues, p.ranked.players), dist('Días que han jugado (últimos 35)', p.days.dist, n), dist('Racha del premio diario', p.streak, n)),
+    h('div', { class: 'cols' }, dist('Ligas de PvP', p.ranked.leagues, p.ranked.players), dist('Días que han jugado (últimos 35)', p.days.dist, n), dist('Racha del premio diario', p.streak, n)),
     h('div', { class: 'card scroll' }, h('h2', {}, 'Misiones de ahora'), h('p', { class: 'small' }, 'De las misiones que tiene la gente esta vez: cuántos la tienen, cuántos la han completado y cuántos han recogido el premio. Una que casi nadie completa es demasiado difícil.'),
       table(['Misión', 'Tipo', 'Objetivo', 'La tienen', 'Completada', 'Recogida'], p.missions.map(m => h('tr', {}, h('td', {}, m.label), h('td', {}, m.kind), h('td', {}, m.goal), h('td', {}, m.given),
         h('td', {}, `${m.done} (${m.given ? Math.round(m.done / m.given * 100) : 0} %)`), h('td', {}, `${m.claimed} (${m.given ? Math.round(m.claimed / m.given * 100) : 0} %)`))))),
@@ -225,7 +225,7 @@ async function loadCollection() {
     h('div', { class: 'cols' },
       mons('Los que más gente tiene', c.owned, n, '% de jugadores que lo tienen.'),
       mons('Los que más se usan en el equipo', c.inTeam, n, 'Equipos de la historia (todas las regiones).'),
-      mons('Equipo de Clasificatoria', c.pvp, null, 'Cuántos lo llevan en su equipo de 3.')),
+      mons('Equipo de PvP', c.pvp, null, 'Cuántos lo llevan en su equipo de 3.')),
     h('div', { class: 'cols' },
       mons('Inicial elegido', c.starters, null),
       mons('Líneas con más victorias (Logros)', c.mastery, null, 'Victorias sumadas de todos los jugadores con esa línea evolutiva.'),
@@ -369,7 +369,7 @@ async function openPlayer(id) {
     h('h1', {}, p.name, ' ', p.online && h('span', { class: 'tag on' }, 'en línea'), ' ', p.banned && h('span', { class: 'tag ban' }, 'suspendido'), ' ', player.admin && h('span', { class: 'tag admin' }, 'admin')),
     h('dl', { class: 'kv' },
       ...[['Id', p.id], ['Usuario', p.account ? p.account.user : 'invitado (sin cuenta)'], ['Alta', fmtDate(p.created)], ['Cuenta desde', p.account && fmtDate(p.account.since)],
-        ['Clasificatoria', `${p.elo} ELO · ${p.wins || 0} V / ${p.losses || 0} D · ${p.ranked || 0} combates`], ['Dinero', `₽ ${(p.coins || 0).toLocaleString('es-ES')}`],
+        ['PvP', `${p.elo} ELO · ${p.wins || 0} V / ${p.losses || 0} D · ${p.ranked || 0} combates`], ['Dinero', `₽ ${(p.coins || 0).toLocaleString('es-ES')}`],
         ['Pokémon', `${(p.mons || []).length} · Pokédex ${(p.caught || []).length} · shinies ${(p.shinies || []).length}`],
         ['Motes', (p.mons || []).filter(m => m.nick).map(m => `${m.nick} (nº ${m.dex})`).join(' · ')],
         ['Torre', `mejor racha ${tw.best || 0}${tw.team ? ` · en curso ${tw.streak || 0}` : ''} · ${tw.runs || 0} intentos · ${tw.wins || 0} combates ganados`],

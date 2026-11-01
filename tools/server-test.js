@@ -1177,8 +1177,10 @@ class Client {
     const a = new Client(port); await a.open();
     await a.req({ t: 'hello', name: 'Unica1' });
     a.send({ t: 'pvpteam', team: D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })) }); await a.wait('profile');
-    const q = await a.req({ t: 'queue', mode: 'casual' }, 'queue');
-    ok(q.mode === 'ranked', `solo hay una cola de PvP (${q.mode})`);
+    // (una página vieja aún puede pedir la Partida rápida: no se la mete en PvP, que perdería ELO sin saberlo)
+    const q = await a.req({ t: 'queue', mode: 'casual' }, 'error');
+    ok(/recarga/i.test(q.msg), `la petición vieja de Partida rápida se rechaza pidiendo recargar (${q.msg})`);
+    ok((await a.req({ t: 'queue' }, 'queue')).mode === 'ranked', 'y la de PvP entra en la cola única');
     await a.req({ t: 'unqueue' }, 'unqueued');
     a.ws.close();
   }
@@ -1195,6 +1197,8 @@ class Client {
     const [ra, rb] = [await oa, await ob];
     ok(rb.reward.elo === 16 && ra.reward.elo === -8, `el novato pierde la mitad y el otro gana entero (${ra.reward.elo} y +${rb.reward.elo})`);
     ok(D.RANKED_CALIB === 10, 'la calibración son las 10 primeras partidas');
+    const acta = require('../server/audit.js').query({ type: 'ranked.resultado', limit: 1 })[0];
+    ok(acta.data.winDelta === 16 && acta.data.loseDelta === -8, `la auditoría guarda lo que ganó y lo que perdió cada uno (${JSON.stringify(acta.data)})`);
     a.ws.close(); b.ws.close();
   }
 
@@ -1229,7 +1233,8 @@ class Client {
     const d = await amigos('Reta4', 'Reta5');
     const elo = [d.ra.elo, d.rb.elo], ranked = [d.ra.ranked, d.rb.ranked];
     const invd = d.b.wait('challenge'); d.a.send({ t: 'challenge', a: 'send', id: d.rb.id }); await invd;
-    const s1 = d.a.wait('start'), s2 = d.b.wait('start'); d.b.send({ t: 'challenge', a: 'accept' });
+    const s1 = d.a.wait('start'), s2 = d.b.wait('start'), e1 = d.a.wait('challengeend'), e2 = d.b.wait('challengeend'); d.b.send({ t: 'challenge', a: 'accept' });
+    ok((await e1).why === 'accepted' && (await e2).why === 'accepted', 'al aceptar se avisa a los dos, para limpiar el reto en todas sus pestañas');
     ok((await s1).mode === 'friendly' && (await s2).mode === 'friendly', 'al aceptar empieza el combate amistoso');
     const o1 = d.a.wait('over'), o2 = d.b.wait('over'); d.a.send({ t: 'forfeit' });
     await o1; await o2;
@@ -1241,6 +1246,34 @@ class Client {
     const gone = g.b.wait('challengeend'); g.a.ws.close();
     ok((await gone).why === 'gone', 'si el que reta se va, al otro no se le queda el reto colgado');
     g.b.ws.close();
+
+    // Un perfil con otra pestaña en combate está ocupado, y a esa pestaña no le llega el cuadro
+    const m = await amigos('Reta12', 'Reta13');
+    const otra = new Client(port); await otra.open();
+    await otra.req({ t: 'hello', token: m.rb.token, name: 'Reta13' });
+    await otra.req({ t: 'practice', dexes: [D.RANKED_POOL[0]] }, 'start');
+    e = m.a.wait('error'); m.a.send({ t: 'challenge', a: 'send', id: m.rb.id });
+    ok(/ocupado/i.test((await e).msg), 'si tu amigo combate en otra pestaña, está ocupado');
+    e = m.b.wait('error'); m.b.send({ t: 'practice', dexes: [D.RANKED_POOL[0]] });
+    ok(/otra pestaña/i.test((await e).msg), 'y un perfil nunca abre un segundo combate desde otra pestaña');
+    await otra.req({ t: 'forfeit' }, 'over'); otra.ws.close();
+
+    // Si uno entra en otro combate, el reto se cae: el otro se entera y a quien acepta tarde se le dice
+    const invr = m.b.wait('challenge'); m.a.send({ t: 'challenge', a: 'send', id: m.rb.id }); await invr;
+    const fa = m.a.wait('challengeend'), fb = m.b.wait('challengeend');
+    m.a.send({ t: 'practice', dexes: [D.RANKED_POOL[0]] });
+    ok((await fa).why === 'busy' && (await fb).why === 'gone', 'si el que reta entra en otro combate, el reto se cae (y a él no se le dice que su amigo se fue)');
+    e = m.b.wait('error'); m.b.send({ t: 'challenge', a: 'accept' });
+    ok(/ya no/i.test((await e).msg), 'quien acepta un reto caído se entera');
+    await m.a.req({ t: 'forfeit' }, 'over');
+
+    // Cancelar también bloquea un rato: retar y cancelar sin parar no es otra forma de dar la lata
+    const invk = m.b.wait('challenge'); m.a.send({ t: 'challenge', a: 'send', id: m.rb.id }); await invk;
+    const canc = m.b.wait('challengeend'); m.a.send({ t: 'challenge', a: 'cancel' });
+    ok((await canc).why === 'cancelled', 'cancelar se lo dice al retado');
+    e = m.a.wait('error'); m.a.send({ t: 'challenge', a: 'send', id: m.rb.id });
+    ok(/espera/i.test((await e).msg), 'tras cancelar hay que esperar antes de volver a retar');
+    m.a.ws.close(); m.b.ws.close();
 
     process.env.CHALLENGE_MS = '150';
     const h = await amigos('Reta8', 'Reta9');

@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': 'Un seul PvP',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Classée et Partie rapide fusionnent en PvP : une seule file avec ELO, ligues et saisons, et perdre coûte moitié moins sur tes 10 premières parties.',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'Depuis Amis, tu peux défier un ami sans ELO : il reçoit un avis et décide d\'accepter ou non.',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'Le Ladder passe à droite du menu avec le top 7, ta place et les couleurs or, argent et bronze, et la Tour de Combat rejoint Aventure.',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': 'Ce que tu n\'as pas encore apparaît atténué avec un cadenas, et le bouton d\'abandon mobile marche mieux sur iPhone.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favoris et évolutions',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'Dans Mes Pokémon, marque tes favoris d\'une étoile : ils passent en tête, se filtrent avec « Favoris » et ne se vendent pas par erreur.',
@@ -814,6 +820,9 @@ export default {
     'El reto ha caducado': 'Le défi a expiré',
     'Tu amigo ya no está disponible': 'Ton ami n\'est plus disponible',
     'Reto cancelado': 'Défi annulé',
+    'El reto ya no está disponible': "Ce défi n'est plus disponible",
+    'Ya estás jugando en otra pestaña': "Tu joues déjà dans un autre onglet",
+    'Recarga la página para jugar a PvP': "Recharge la page pour jouer en PvP",
     'Ya has retado a alguien: espera su respuesta': 'Tu as déjà défié quelqu\'un : attends sa réponse',
     'Solo puedes retar a tus amigos': 'Tu ne peux défier que tes amis',
     'Espera un poco antes de volver a retarle': 'Attends un peu avant de le défier à nouveau',

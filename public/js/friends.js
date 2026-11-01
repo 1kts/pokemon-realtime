@@ -5,7 +5,7 @@ import { monIcon } from './sprites.js';
 import { escapeHtml, tagName } from './battle.js';
 import { el } from './ui.js';
 import { t, tServer } from './i18n.js';
-import { confirmBox } from './dialog.js';
+import { confirmBox, closeConfirm } from './dialog.js';
 import { icon, item as itemImg } from './pixicons.js';
 
 const DOING = { menu: 'En el menú', combate: 'En combate', cola: 'Buscando partida' };
@@ -147,25 +147,29 @@ export const friendViews = {
 };
 
 // Avisos que llegan del servidor
+// Sin reto a medias: fuera el cuadro y vuelve «Retar» (también al reconectar, que el aviso se ha podido perder)
+export function clearChallenge(ui) {
+  closeConfirm('challenge-box');
+  ui.challengeTo = null;
+  if (ui.friendsData) ui.onFriends(ui.friendsData);
+}
+
 export function friendNotices(net, ui) {
   net.on('friends', m => ui.onFriends(m));
   net.on('friendsearch', m => ui.onFriendSearch(m));
   net.on('friendok', m => ui.toast(tServer(m.msg)));
   // Retar a un amigo (server/index.js): el retado acepta o rechaza; si se cae por el camino, se cierra solo
+  // (cerrado sin contestar, por 'challengeend', el servidor ya no tiene reto y ese «no» no hace nada)
   net.on('challenge', m => {
-    ui.challengeLive = true;
     confirmBox({ title: t('¡Te retan!'), text: t('{name} te reta a un combate amistoso, sin ELO.', { name: `${escapeHtml(m.from.name)}#${m.from.tag}` }), ok: t('Aceptar'), cancel: t('Rechazar'), cls: 'challenge-box' })
-      .then(yes => { if (ui.challengeLive) net.send({ t: 'challenge', a: yes ? 'accept' : 'decline' }); ui.challengeLive = false; });
+      .then(yes => net.send({ t: 'challenge', a: yes ? 'accept' : 'decline' }));
   });
   net.on('challengesent', m => { ui.challengeTo = m.to.id; ui.toast(t('Has retado a {name}', { name: m.to.name })); if (ui.friendsData) ui.onFriends(ui.friendsData); });
   net.on('challengeend', m => {
-    ui.challengeLive = false;
-    const box = document.querySelector('.challenge-box .cancel');
-    if (box) box.click();
     const mine = ui.challengeTo;
-    ui.challengeTo = null;
-    if (ui.friendsData) ui.onFriends(ui.friendsData);
-    if (mine) ui.toast({ declined: t('No ha aceptado tu reto'), expired: t('El reto ha caducado'), gone: t('Tu amigo ya no está disponible') }[m.why] || t('Reto cancelado'));
+    clearChallenge(ui);
+    const say = { declined: t('No ha aceptado tu reto'), expired: t('El reto ha caducado'), gone: t('Tu amigo ya no está disponible'), cancelled: t('Reto cancelado') }[m.why];
+    if (mine && say) ui.toast(say);
   });
   net.on('friendreq', m => ui.toast(t('{name} quiere ser tu amigo', { name: `${m.name}#${m.tag}` })));
 }

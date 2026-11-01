@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.0 ----------
+    'Un solo PvP': 'PvPをひとつに',
+    'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'ランクとクイックマッチがPvPに統合。ELO、リーグ、シーズンのある1つのキューになり、最初の10戦は負けても半分で済みます。',
+    'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'フレンドから、ELOなしの対戦を挑めます。相手に通知が届き、受けるか決められます。',
+    'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'ラダーはメニュー右側に移り、上位7人、自分の順位、金銀銅の色で表示。バトルタワーはアドベンチャーへ移動しました。',
+    'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': '未所持のものは暗くなり鍵が付き、スマホの降参ボタンはiPhoneで動きやすくなりました。',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'お気に入りと進化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'マイポケモンで星を付けるとお気に入りになり、先頭に並び、絞り込めて、誤って売ることもありません。',
@@ -815,6 +821,9 @@ export default {
     'El reto ha caducado': '挑戦の期限が切れた',
     'Tu amigo ya no está disponible': 'フレンドは対応できなくなった',
     'Reto cancelado': '挑戦を取り消した',
+    'El reto ya no está disponible': "この挑戦はもう受けられません",
+    'Ya estás jugando en otra pestaña': "別のタブでプレイ中です",
+    'Recarga la página para jugar a PvP': "PvPをプレイするにはページを再読み込みしてください",
     'Ya has retado a alguien: espera su respuesta': 'もう挑戦中です。返事を待とう',
     'Solo puedes retar a tus amigos': '挑戦できるのはフレンドだけです',
     'Espera un poco antes de volver a retarle': '少し待ってからもう一度挑戦しよう',

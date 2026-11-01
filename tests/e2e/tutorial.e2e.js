@@ -14,8 +14,9 @@ module.exports = async ({ page, player, ok, log }) => {
   ok(true, 'empieza un combate con la tarjeta del paso 1 de 6');
 
   // 1. Moverse con WASD
-  // (el combate tarda un instante en aceptar controles: como un jugador, se vuelve a pulsar hasta que avanza)
-  for (let i = 0; i < 20 && !await page.see('2/6', { in: '.tutorial-card', ms: 0 }); i++) await page.key('KeyD', 400);
+  // (durante la cuenta atrás el servidor no mueve a nadie: se pulsa cuando empieza el combate)
+  await page.waitSee('¡A combatir!', { ms: 15000 });
+  await page.key('KeyD', 400);
   await page.waitSee('2/6', { in: '.tutorial-card', ms: 30000 });
   ok(true, 'moverse con WASD cumple el paso 1');
   // 2. Atacar y acertar: acercarse con WASD y pulsar con el ratón encima del muñeco.

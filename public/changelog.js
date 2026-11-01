@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.38.0', date: '2026-11-01', title: 'Un solo PvP',
+      items: [
+        ['nuevo', 'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.'],
+        ['nuevo', 'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.'],
+        ['cambio', 'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.'],
+        ['cambio', 'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.'],
+      ],
+    },
+    {
       v: '0.37.0', date: '2026-11-01', title: 'Favoritos y evoluciones',
       items: [
         ['nuevo', 'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.'],
