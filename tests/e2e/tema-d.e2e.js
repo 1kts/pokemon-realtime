@@ -103,7 +103,8 @@ module.exports = async ({ page, player, ok }) => {
   await enter('?tema=d');
   const fit = await page.eval(`(() => { ${TD}
     const out = [...document.querySelectorAll('.menu-card, .hub-coll .coll-tile, .menu-card b')].filter(e => { const r = e.getBoundingClientRect(); return r.left < 0 || r.right > innerWidth + .5 || r.top < 0 || r.bottom > innerHeight + .5; });
-    // (los nombres de los modos y el de la Ladder; los jugadores de su top 5 se cortan con «…» a propósito)
+    // (los nombres de los modos y el de la Ladder; los jugadores de su top 5, que llegan un poco después, se cortan con
+    // «…» a propósito y su fila no es un botón)
     const cut = [...document.querySelectorAll('.menu-card > b, .menu-card .lp-title, .hub-coll .coll-txt b')].filter(e => e.scrollWidth > e.clientWidth + 1 || e.getBoundingClientRect().right > e.closest('button').getBoundingClientRect().right);
     const mons = q('.hub-coll .coll-tile.mons .coll-txt b');
     // (el texto de «Mis Pokémon», tal como se dibuja, dentro de su baldosa)
