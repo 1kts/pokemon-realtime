@@ -32,7 +32,11 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`document.querySelector('.loot-pop .acts .primary')`);
     prizes.push(await page.read('.loot-pop'));
     // (cuando ha acabado de entrar: con el CI lento, si la ventana aún crecía, el clic no llegaba al botón)
-    await page.waitFor(`[...document.querySelectorAll('.loot-pop, .loot-pop .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
+    await page.waitFor(`document.querySelector('.loot-pop').getAnimations({ subtree: true }).every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity)`);
+    // (y quieto en dos fotogramas seguidos de la página: con la página casi parada, dos lecturas desde fuera caían en
+    // el mismo fotograma y el botón se daba por quieto a media entrada, cuando la ventana aún era pequeña)
+    await page.eval(`new Promise(r => { const at = () => JSON.stringify(document.querySelector('.loot-pop .acts .primary').getBoundingClientRect()); let last = at();
+      const tick = () => requestAnimationFrame(() => { const now = at(); if (now === last) r(true); else { last = now; tick(); } }); tick(); })`);
     await page.click('.loot-pop .acts .primary');
     await page.waitFor(`!document.querySelector('.loot-pop')`, 30000);   // (con el CI lento el clic tarda en atenderse)
   }

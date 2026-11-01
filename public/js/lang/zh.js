@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.1 ----------
+    'Premios sin saltos': '奖励窗口不再跳动',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': '领取奖励时，「太棒了！」按钮会固定在原位，一按就生效。',
+    // ---------- Novedades v0.37.1 ----------
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': '收藏与进化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '在我的宝可梦中可用星标收藏:收藏的排在最前,可按“收藏”筛选,也不会被误卖。',

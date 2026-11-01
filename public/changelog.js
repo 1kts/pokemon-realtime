@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.37.1', date: '2026-11-01', title: 'Premios sin saltos',
+      items: [
+        ['arreglo', 'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.'],
+      ],
+    },
+    {
       v: '0.37.0', date: '2026-11-01', title: 'Favoritos y evoluciones',
       items: [
         ['nuevo', 'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.'],

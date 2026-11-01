@@ -386,6 +386,8 @@ export const missionViews = {
     ok.onclick = close;
     pop.onclick = e => { if (e.target === pop) close(); };
     document.body.append(pop);
-    setTimeout(() => ok.focus(), 50);
+    // (sin desplazar: la caja recorta los rayos y el confeti, y al enfocar el botón se desplazaba por dentro y «¡Genial!»
+    // saltaba 140 px justo cuando se iba a pulsar)
+    setTimeout(() => ok.focus({ preventScroll: true }), 50);
   },
 };

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.1 ----------
+    'Premios sin saltos': '흔들리지 않는 보상 창',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': '보상을 받을 때 \'좋아요!\' 버튼이 제자리에 그대로 있어 한 번에 누를 수 있습니다.',
+    // ---------- Novedades v0.37.1 ----------
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': '즐겨찾기와 진화',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '내 포켓몬에서 별로 즐겨찾기를 표시하면 맨 앞에 오고, 필터로 볼 수 있으며, 실수로 팔리지 않아요.',

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.1 ----------
+    'Premios sin saltos': 'Steady rewards',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': 'When you collect a reward, the “Awesome!” button stays put and works on the first tap.',
+    // ---------- Novedades v0.37.1 ----------
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favorites and evolutions',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In My Pokémon you can star favorites: they come first, you can filter by “Favorites”, and they can\'t be sold by mistake.',

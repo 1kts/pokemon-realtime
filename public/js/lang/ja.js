@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.1 ----------
+    'Premios sin saltos': 'ごほうび画面が動かなくなりました',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': 'ごほうびを受け取るとき、「やったね！」ボタンが動かずにその場にとどまり、一度で押せます。',
+    // ---------- Novedades v0.37.1 ----------
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'お気に入りと進化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'マイポケモンで星を付けるとお気に入りになり、先頭に並び、絞り込めて、誤って売ることもありません。',

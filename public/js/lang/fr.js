@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.1 ----------
+    'Premios sin saltos': 'Des récompenses stables',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': 'Quand tu récupères une récompense, le bouton « Génial ! » reste à sa place et répond du premier coup.',
+    // ---------- Novedades v0.37.1 ----------
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favoris et évolutions',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'Dans Mes Pokémon, marque tes favoris d\'une étoile : ils passent en tête, se filtrent avec « Favoris » et ne se vendent pas par erreur.',

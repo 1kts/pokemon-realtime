@@ -22,7 +22,11 @@ module.exports = async ({ page, player, ok }) => {
     await page.eval(`document.querySelector('.loot-pop:not(.out)').dataset.e2eVisto = '1'; true`);
     // (y se pulsa cuando ha acabado de entrar: con el CI a 1-2 fotogramas por segundo, la ventana aún crecía, el botón se
     // movía entre poner y levantar el ratón y el clic no llegaba)
-    await page.waitFor(`[...document.querySelectorAll('.loot-pop:not(.out), .loot-pop:not(.out) .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
+    await page.waitFor(`document.querySelector('.loot-pop:not(.out)').getAnimations({ subtree: true }).every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity)`);
+    // (y quieto en dos fotogramas seguidos de la página: con la página casi parada, dos lecturas desde fuera caían en
+    // el mismo fotograma y el botón se daba por quieto a media entrada, cuando la ventana aún era pequeña)
+    await page.eval(`new Promise(r => { const at = () => JSON.stringify(document.querySelector('.loot-pop:not(.out) .acts .primary').getBoundingClientRect()); let last = at();
+      const tick = () => requestAnimationFrame(() => { const now = at(); if (now === last) r(true); else { last = now; tick(); } }); tick(); })`);
     await page.click('.loot-pop:not(.out) .acts .primary'); pops++;
     // (hasta 30 s: con el CI a 1-2 fotogramas por segundo, el clic ha llegado a tardar en atenderse. Si no se cierra, se
     // dice qué había donde se pulsó, para saber por qué)
