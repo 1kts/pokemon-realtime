@@ -1127,6 +1127,51 @@ class Client {
     three.ws.close();
   }
 
+  require('../server/limits.js').LIMITS.newProfiles = 1e6;   // (lo que sigue crea perfiles nuevos)
+  // Dos sitios con la misma cuenta: el nuevo se queda el combate y al viejo se le dice que no vuelva a por él
+  {
+    const one = new Client(port); await one.open();
+    const prof = (await one.req({ t: 'hello', name: 'Pestanas' })).p;
+    const s0 = one.wait('start'); one.send({ t: 'practice', dexes: D.RANKED_POOL.slice(0, 3), skill: 0, passive: true, map: 'pradera' });
+    await s0;
+    const closed = new Promise(r => one.ws.once('close', code => r(code)));
+    const two = new Client(port); await two.open();
+    const back = two.wait('start'); two.send({ t: 'hello', token: prof.token, name: 'Pestanas' });
+    ok((await back).resume === true, 'otra pestaña con la misma cuenta se queda el combate');
+    ok(await closed === 4002, 'y a la de antes se le cierra diciendo que no reconecte');
+    const done = two.wait('over'); two.send({ t: 'forfeit' });
+    await done;
+    two.ws.close();
+  }
+
+  // El combate acaba mientras esperaba al que se cortó: al volver recibe su resultado y lo ganado queda guardado
+  {
+    const a = new Client(port), b = new Client(port); await a.open(); await b.open();
+    const pa = (await a.req({ t: 'hello', name: 'Espera1' })).p, pb = (await b.req({ t: 'hello', name: 'Espera2' })).p;
+    for (const c of [a, b]) { c.send({ t: 'pvpteam', team: D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })) }); await c.wait('profile'); }
+    const sa = a.wait('start'), sb = b.wait('start');
+    a.send({ t: 'queue', mode: 'ranked' }); b.send({ t: 'queue', mode: 'ranked' });
+    await sa; await sb;
+    a.ws.terminate();
+    await new Promise(r => setTimeout(r, 300));
+    const end = b.wait('over'); b.send({ t: 'forfeit' });
+    await end;
+    await new Promise(r => setTimeout(r, 100));
+    const row = JSON.parse(require('../server/store.js').db.prepare('SELECT data FROM profiles WHERE token = ?').get(pa.token).data);
+    ok(row.elo > pa.elo, `lo ganado mientras esperaba queda guardado (ELO ${pa.elo} → ${row.elo})`);
+    const back = new Client(port); await back.open();
+    const over = back.wait('over'); back.send({ t: 'hello', token: pa.token, name: 'Espera1' });
+    ok((await over).winner === (await over).you, 'y al volver le llega su resultado');
+    back.ws.close(); b.ws.close();
+  }
+
+  // Un equipo con menos de 4 movimientos válidos se queda como lo eligió; solo se rellena si alguno dejó de valer
+  {
+    const can = D.pvpMoves(D.RANKED_POOL[0]), two = can.slice(0, 2);
+    ok(D.pvpTeam(D.RANKED_POOL.slice(0, 3).map((dex, i) => ({ dex, moves: i ? undefined : two })))[0].moves.join() === two.join(), 'se respetan los 2 movimientos elegidos');
+    ok(D.pvpTeam(D.RANKED_POOL.slice(0, 3).map((dex, i) => ({ dex, moves: i ? undefined : [...two, 'noExiste'] })))[0].moves.length === 4, 'y si uno ya no vale, se rellena');
+  }
+
   // La fluidez con mala red, con su red simulada
   const smooth = require('child_process').spawnSync(process.execPath, ['--no-warnings', 'tools/smooth-test.js'], { stdio: 'inherit' });
   ok(smooth.status === 0, 'la fluidez con mala red cumple sus cifras');

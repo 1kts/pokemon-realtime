@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Favoriten und Entwicklungen',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In Meine Pokémon markierst du Favoriten mit einem Stern: Sie stehen vorne, lassen sich filtern und werden nicht aus Versehen verkauft.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'Entwickelt sich ein Pokémon, siehst du es groß mit Animation und dem Gelernten, und gelangst direkt zur Attacke.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'Pokémon lernen Attacken wie in den echten Spielen, dazu 94 neue, und Schutzschild gibt etwas mehr Spielraum für die Parade.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'Reißt die Verbindung im Kampf ab, hast du 8 Sekunden zum Zurückkommen, und Kämpfe laufen bei schlechtem Netz flüssiger.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'Die Ladder im Menü zeigt Podium, Saison und Belohnungen, und „Zurück“ bringt dich immer zur vorherigen Seite.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'Am Handy passt die Story auf einen Bildschirm, der Pokémon-Steckbrief ist ganz sichtbar und die Kamera hält dich im Bild.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Feinschliff fürs Handy',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Auf dem Handy sitzt dein Bild in deinem Profil und im Avatar-Editor mittig in seinem Kreis.',
@@ -795,6 +803,8 @@ export default {
     'Quitar de favoritos': 'Aus Favoriten entfernen',
     'Quítale la estrella para venderlo': 'Entferne den Stern, um es zu verkaufen',
     'Música de {who}': 'Musik von {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "Dein Kampf läuft in einem anderen Tab oder auf einem anderen Gerät weiter",
+    'Seguir aquí': 'Hier weiterspielen',
     'Premios de temporada': 'Saisonbelohnungen',
     'Más datos': 'Mehr Details',
     'Más': 'Mehr',

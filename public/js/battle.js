@@ -99,9 +99,21 @@ export class BattleClient {
     if (i !== this.you) this.banner(t('✨ ¡{m} shiny! ✨', { m: this.monName(i) }), 'rare');
   }
 
+  // Quien está en juego en un lado: su actor, los equipos y, si es el tuyo, sus movimientos
+  setActive(s, slot) {
+    this.act[s] = slot;
+    const mon = this.monOf(s), actor = this.actors[s];
+    actor.setDex(this.dexOf(s), !!mon.shiny, mon.skin, mon.parts);
+    actor.play('Idle', false);
+    this.buildTeams();
+    if (s === this.you) this.buildMoves();
+    if (this.touch) this.touch.bindButtons();
+  }
+
   // ---------- Red ----------
   // De vuelta tras un corte: se empieza de cero con lo que mande el servidor, sin repetir lo que ya pasó
-  resume() {
+  resume(m) {
+    (m.terrain || []).forEach((c, i) => this.world.setCell(i, c));   // (lo que cambió mientras no llegaba nada)
     this.latest = null; this.snaps = []; this.pending = []; this.pred = null; this.prevPred = null; this.err = { x: 0, y: 0 };
     this.clock = new SnapClock(); this.foeFollow.reset();
   }
@@ -117,6 +129,8 @@ export class BattleClient {
     this.world.syncObstacles(m.ob || []);
     this.world.setArena(m.ar);
     for (const e of m.ev) this.onEvent(e);
+    // (al volver de un corte, el aviso de un cambio se perdió: quien está en juego lo dice cada snapshot)
+    m.ps.forEach((st, i) => { if (st.act !== undefined && st.act !== this.act[i]) this.setActive(i, st.act); });
     if (m.state === 'countdown') this.countdown(m.cd);
     else if (this.cdShown) { this.cdShown = null; this.banner(t('¡A combatir!'), 'big'); }
     this.timerEl.textContent = m.tl > 0 ? `${Math.floor(m.tl / 60)}:${String(m.tl % 60).padStart(2, '0')}` : '0:00';
@@ -221,13 +235,8 @@ export class BattleClient {
         break;
       case 'swap':
         this.fx.swapFlash(pos);
-        this.act[s] = e.to;
-        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin, this.monOf(s).parts);
-        actor.play('Idle', false);
+        this.setActive(s, e.to);
         if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
-        this.buildTeams();
-        if (s === this.you) this.buildMoves();
-        if (this.touch) this.touch.bindButtons();
         break;
       case 'faint':
         actor.play('Faint');

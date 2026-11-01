@@ -58,7 +58,7 @@ export function playEvolutions(ui, list) {
 
 // Lo que evoluciona fuera de un combate: el perfil trae a un Pokémon con otra especie
 export function noteEvolutions(ui, before, after) {
-  if (ui.app.battle) return;   // (lo enseñan los resultados, con lo que ha aprendido)
+  if (ui.app.battle || before.id !== after.id) return;   // (lo enseñan los resultados; y otra cuenta no «evoluciona»)
   const list = [];
   for (const m of after.mons) {
     const old = before.mons.find(x => x.uid === m.uid);

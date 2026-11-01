@@ -10,7 +10,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
 
   // La ladder: los entrenadores IA, marcados
-  await page.tap(/^Ladder/);
+  await page.tap('Ver la ladder completa');
   await page.waitFor(`document.querySelectorAll('.ladder-rows tbody tr .ia-tag').length >= 10`);
   ok(await page.eval(`[...document.querySelectorAll('.ladder-rows tbody tr')].filter(r => r.querySelector('.ia-tag') && /IA/.test(r.innerText)).length >= 10`), 'la ladder tiene entrenadores de la IA, cada uno con la etiqueta «IA»');
   await page.eval(`[...document.querySelectorAll('.ladder-rows tbody tr')].find(r => r.querySelector('.ia-tag')).id = 'ia-e2e'; true`);
@@ -27,7 +27,7 @@ module.exports = async ({ page, player, ok }) => {
 
   // Buscar partida sin nadie más: a los ~20 s toca un entrenador IA
   await page.tap('Volver');
-  await page.tap(/^Clasificatoria/);
+  await page.click('.menu-card.ranked');
   const elo = async () => +(await page.read('.online-me .big-elo')).replace(/\D/g, '');
   const elo0 = await elo();
   await page.tap('Buscar partida clasificatoria');

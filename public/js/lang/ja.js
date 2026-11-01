@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'お気に入りと進化',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'マイポケモンで星を付けるとお気に入りになり、先頭に並び、絞り込めて、誤って売ることもありません。',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'ポケモンが進化すると大きなアニメーションで表示され、覚えた技もすぐ設定できます。',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'ポケモンは原作に近い技を覚えるようになり、94の新しい技が追加され、まもるのパリィも少し取りやすくなりました。',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'バトル中に接続が切れても8秒以内なら戻れて、回線が悪くても滑らかに動きます。',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'メニューのラダーに表彰台、シーズン、報酬を表示し、「戻る」は常に元の画面へ戻ります。',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'スマホではストーリーが1画面に収まり、ポケモン詳細が全部見え、バトルのカメラも画面から外れません。',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'スマホ向けの調整',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'スマホでは、プロフィールとアバター編集で写真が円の中央に収まるようになりました。',
@@ -796,6 +804,8 @@ export default {
     'Quitar de favoritos': 'お気に入りから外す',
     'Quítale la estrella para venderlo': '売るには星を外してください',
     'Música de {who}': '音楽: {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "バトルは別のタブか端末で続いています",
+    'Seguir aquí': 'ここで続ける',
     'Premios de temporada': 'シーズン報酬',
     'Más datos': '詳細',
     'Más': 'もっと見る',

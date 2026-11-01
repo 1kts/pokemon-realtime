@@ -49,7 +49,7 @@ const assert = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) proce
   assert(d.maxStep < a.maxStep / 2, `y el mayor salto es menos de la mitad (${a.maxStep} → ${d.maxStep} px)`);
   assert(d.delay <= MAX_DELAY, `el margen no pasa de ${MAX_DELAY} ms (${d.delay})`);
   const frames = (hz, fps, ms) => { const go = pacer(); let n = 0; for (let t = 1000; t < 1000 + ms; t += 1000 / hz) if (go(t, fps)) n++; return n / ms * 1000; };
-  for (const [hz, fps, lo, hi] of [[60, 60, 59.5, 60.5], [60.2, 60, 59.9, 60.6], [59.9, 60, 59.5, 60.3], [120, 60, 59.5, 60.5], [160, 60, 52, 66], [144, 60, 55, 73], [60, 30, 29, 31], [160, 30, 28, 32]]) {
+  for (const [hz, fps, lo, hi] of [[60, 60, 59.5, 60.5], [60.2, 60, 59.9, 60.6], [59.9, 60, 59.5, 60.3], [120, 60, 59.5, 60.5], [160, 60, 58.5, 61.5], [144, 60, 58.5, 61.5], [75, 60, 58.5, 61.5], [165, 60, 58.5, 61.5], [60, 30, 29, 31], [144, 30, 29, 31], [165, 30, 29, 31], [75, 30, 29, 31], [160, 30, 29, 31]]) {
     const n = frames(hz, fps, 20000);
     assert(n >= lo && n <= hi, `a ${hz} Hz con tope de ${fps} salen ${n.toFixed(1)} FPS`);
   }

@@ -50,14 +50,16 @@ export class Follow {
   reset() { this.last = null; this.err = { x: 0, y: 0 }; }
 }
 
-// Tope de FPS según la pantalla: true si toca pintar. En una pantalla igual o más lenta que el tope no salta ningún
-// fotograma, aunque vaya un pelo más rápida de lo nominal (60,2 Hz); en una más rápida, sale la media del tope
+// Tope de FPS según la pantalla: true si toca pintar. Se cita el siguiente fotograma en una rejilla fija, que da la media
+// del tope en cualquier pantalla más rápida; y la cita nunca queda a más de un periodo de ahora, para que una pantalla
+// un pelo más rápida de lo nominal (60,2 Hz) no acumule adelanto y acabe saltándose un fotograma
+const EARLY_MS = 1;   // (un fotograma puede llegar un pelo antes de su cita)
 export function pacer() {
-  let last = 0;
+  let next = 0;
   return (now, fps) => {
-    const period = 1000 / fps, elapsed = now - last;
-    if (elapsed < period * 0.8) return false;
-    last = now - (elapsed % period > period * 0.8 ? 0 : elapsed % period);
+    if (now < next - EARLY_MS) return false;
+    const period = 1000 / fps;
+    next = Math.min(Math.max(next, now - period) + period, now + period);
     return true;
   };
 }

@@ -140,6 +140,7 @@ requestAnimationFrame(loop);
 
 // ---------- Red ----------
 const net = app.net;
+const FIGHTING = 'arena.fighting';   // cuándo se cerró la página en mitad de un combate
 const RESUME_MS = 9000;   // algo más de lo que el servidor guarda un combate tras un corte
 let resumeTimer = null;
 const ui = app.ui;
@@ -158,10 +159,11 @@ net.on('disconnected', () => {
   if (!ui.profile) return;
   overlay.hidden = false;
   if (!app.battle) return ui.show('menu');
+  if (app.battle.ended) return;   // (ya ha acabado: los resultados salen enseguida)
   // En combate, el servidor lo guarda unos segundos: se intenta volver enseguida y, si no da tiempo, al menú
   net.hurry = true;
   clearTimeout(resumeTimer);
-  resumeTimer = setTimeout(() => { net.hurry = false; if (app.battle) endBattle(); ui.show('menu'); }, RESUME_MS);
+  resumeTimer = setTimeout(() => { net.hurry = false; if (!app.battle) return; endBattle(); ui.show('menu'); }, RESUME_MS);
 });
 net.on('profile', m => { if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank); });
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
@@ -197,6 +199,18 @@ net.on('banned', m => {
   box.append(inner);
   document.body.append(box);
 });
+// La partida sigue en otra pestaña o dispositivo: aquí no se reconecta, y se puede volver a por ella
+net.on('replaced', () => {
+  if (app.battle) endBattle();
+  const box = document.createElement('div');
+  box.className = 'nojs banned';
+  const inner = document.createElement('div');
+  const go = Object.assign(document.createElement('button'), { className: 'primary', textContent: t('Seguir aquí') });
+  go.onclick = () => location.reload();
+  inner.append(Object.assign(document.createElement('h2'), { textContent: t('Tu combate sigue en otra pestaña o dispositivo') }), go);
+  box.append(inner);
+  document.body.append(box);
+});
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 friendNotices(net, ui);
@@ -211,7 +225,7 @@ net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); 
 net.on('ladder', m => ui.onLadder(m));
 net.on('user', m => ui.onUser(m));
 net.on('start', m => {
-  if (m.resume && app.battle) { clearTimeout(resumeTimer); net.hurry = false; app.battle.resume(); return; }
+  if (m.resume && app.battle) { clearTimeout(resumeTimer); net.hurry = false; app.battle.resume(m); return; }
   if (app.battle) endBattle();
   ui.hide();
   document.querySelectorAll('.modal').forEach(m => m.remove());
@@ -222,6 +236,10 @@ net.on('start', m => {
 net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
+  clearTimeout(resumeTimer);
+  net.hurry = false;
+  if (!b) return;   // (recargó y se lo perdió: lo ganado ya está en su perfil)
+  b.ended = true;
   app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
   if (app.tutorial) app.tutorial.finish(m.winner === m.you);
   // El ganador posa (o salta) mientras se ve el final
@@ -278,6 +296,13 @@ new MutationObserver(ms => {
 }).observe(document.body, { childList: true, subtree: true });
 initTouchDevice();   // en móvil: horizontal y pantalla completa
 ui.show('title');
+// Recargar en combate: el servidor lo guarda unos segundos, que no se vayan en pulsar «Continuar»
+addEventListener('pagehide', () => { if (app.battle && !app.battle.ended) storage.set(FIGHTING, String(Date.now())); });
+{
+  const left = Date.now() - (+storage.get(FIGHTING) || 0);
+  storage.del(FIGHTING);
+  if (Net.hasSession() && left < RESUME_MS) app.connect(Net.savedName());
+}
 // Enlace del correo para entrar (#entrar=correo~código, ver server/mail.js): abre «Entrar con email» con los dos ya
 // escritos y falta un toque en «Entrar» (mailLogin). Se quita de la dirección (que no quede en el historial). También
 // con el juego ya abierto en la pestaña (entonces solo cambia el #)

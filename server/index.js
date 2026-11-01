@@ -121,9 +121,12 @@ const busy = c => c.battle || c.queue;
 // Si se corta la conexión en combate (en el móvil pasa: cobertura, cambiar de wifi a datos) el combate espera un poco
 // con el Pokémon quieto: al volver con el mismo token se sigue en él, y si no vuelve, lo pierde como hasta ahora
 const HOLD_MS = 8000;
+const REPLACED = 4002;   // cierre: ese combate sigue en otra pestaña o dispositivo
+const missed = new Map();   // id de perfil -> el combate que acabó mientras esperaba, para darle el resultado al volver
 const held = new Map();   // id del perfil -> { c, timer }
 function holdBattle(c) {
   const b = c.battle, side = b.sides[c.side], id = c.profile.id;
+  c.battleSide = side;
   side.ws = null; side.inputs = []; side.lastInput = { ...side.lastInput, mx: 0, my: 0 };
   held.set(id, { c, timer: setTimeout(() => {
     held.delete(id);
@@ -138,6 +141,8 @@ function endHold(p) {
   clearTimeout(h.timer);
   held.delete(p.id);
   store.release(p);
+  missed.set(p.id, h.c.battleSide);
+  setTimeout(() => missed.delete(p.id), HOLD_MS).unref();
 }
 // Vuelve a entrar quien tenía un combate a medias: la conexión nueva pasa a ser la de ese cliente. También si la vieja
 // aún parece abierta (un móvil que ha cambiado de red no llega a cerrarla)
@@ -148,7 +153,10 @@ function resumeBattle(c, p) {
     if (!old) return false;
     clients.delete(old);
     usage.close(old);
-    old.ws.terminate();
+    // (con un código propio: la otra pestaña no debe reconectar y quitárselo de vuelta. Si estaba medio muerta, ni contesta)
+    const gone = old.ws;
+    gone.close(REPLACED);
+    setTimeout(() => gone.terminate(), 1000).unref();
     holdBattle(old);
   }
   const h = held.get(p.id);
@@ -174,9 +182,9 @@ function startBattle(clientsBySide, opts, onEnd) {
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
-      clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); });
       try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
-      return onEnd(result, b);
+      // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
+      try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
     },
   });
   clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); } });
@@ -477,7 +485,11 @@ function handle(c, msg) {
     if (resumeBattle(c, p)) return;
     setProfile(c, p);
     audit.log(known ? 'sesion' : 'perfil.nuevo', { actor: p.id, ip: c.ip });
-    return sendProfile(c);
+    sendProfile(c);
+    // Su combate acabó mientras se reconectaba: lo que no pudo llegarle
+    const lost = missed.get(p.id);
+    if (lost && lost.missed) { missed.delete(p.id); send(c, lost.missed); }
+    return;
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
   if (msg.t === 'mailcode') return mailCode(c, msg);
@@ -791,7 +803,7 @@ function shutdown() {
   }
   const until = Date.now() + DRAIN_MS;
   (function wait() {
-    if ([...clients].some(c => c.battle) && Date.now() < until) return setTimeout(wait, 1000);
+    if (([...clients].some(c => c.battle) || held.size) && Date.now() < until) return setTimeout(wait, 1000);
     store.flush();
     process.exit(0);
   })();

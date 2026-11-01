@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Favorites and evolutions',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In My Pokémon you can star favorites: they come first, you can filter by “Favorites”, and they can\'t be sold by mistake.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'When a Pokémon evolves you see it big, with an animation and what it learns, and you can go straight to set the move.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'Pokémon learn moves closer to the real games, with 94 new ones, and Protect gives a bit more room for a parry.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'If your connection drops in battle you have 8 seconds to return, and battles run smoother on bad networks.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'The menu Ladder shows a podium, season and rewards, and “Back” always returns you to the screen you came from.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'On mobile, Story fits one screen, the Pokémon sheet shows in full, and the battle camera keeps you on screen.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Mobile touch-ups',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'On mobile, your picture sits centred inside its circle on your profile and in the avatar editor.',
@@ -795,6 +803,8 @@ export default {
     'Quitar de favoritos': 'Remove from favorites',
     'Quítale la estrella para venderlo': 'Remove its star to sell it',
     'Música de {who}': 'Music by {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "Your battle continues in another tab or device",
+    'Seguir aquí': 'Stay here',
     'Premios de temporada': 'Season rewards',
     'Más datos': 'More details',
     'Más': 'More',

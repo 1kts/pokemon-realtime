@@ -16,9 +16,11 @@ module.exports = async ({ page, player, ok, log }) => {
   // servidor, fuera y sin combate. Nunca a medias
   const t0 = Date.now();
   await page.reload();
-  await page.waitFor(`document.querySelector('.title-panel button.primary')`, 20000);
-  await page.click('.title-panel button.primary');
-  await page.waitFor(`window.__app.ui.profile`, 20000);
+  // (entra solo, sin pulsar «Continuar»; si la recarga tardó más de lo que espera el combate, se queda en la portada)
+  await page.waitFor(`window.__app.ui.profile || (Date.now() - ${t0} > 9000 && document.querySelector('.title-panel button.primary'))`, 30000);
+  const pulso = await page.eval(`!window.__app.ui.profile`);
+  if (pulso) { await page.click('.title-panel button.primary'); await page.waitFor(`window.__app.ui.profile`, 20000); }
+  ok(!pulso || Date.now() - t0 > 9000, 'al recargar a tiempo entra solo, sin pulsar «Continuar»');
   const tarde = Date.now() - t0;
   log(`(de vuelta en ${(tarde / 1000).toFixed(1)} s)`);
   await page.waitFor(`window.__app.battle ? window.__app.battle.latest && window.__app.battle.latest.state === 'fight' : window.__app.ui.view === 'menu' && !document.getElementById('hud').hidden`, 20000);

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': '收藏与进化',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '在我的宝可梦中可用星标收藏:收藏的排在最前,可按“收藏”筛选,也不会被误卖。',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': '宝可梦进化时会大屏显示动画和学会的招式,并可直接前往设置。',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': '宝可梦学会的招式更接近原作,新增 94 个招式,守住也更容易触发完美格挡。',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': '战斗中断线后有 8 秒可以返回,网络差时战斗也更流畅。',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': '菜单天梯显示领奖台、赛季和奖励,“返回”总会回到你来的页面。',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': '在手机上,剧情一屏显示,宝可梦资料完整可见,战斗镜头不会让你跑出画面。',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': '手机版小调整',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': '在手机上，你的头像在个人资料和头像编辑器里都会居中显示在圆框内。',
@@ -795,6 +803,8 @@ export default {
     'Quitar de favoritos': '取消收藏',
     'Quítale la estrella para venderlo': '取消星标后才能出售',
     'Música de {who}': '音乐:{who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "你的战斗正在其他标签页或设备上进行",
+    'Seguir aquí': '留在这里',
     'Premios de temporada': '赛季奖励',
     'Más datos': '更多信息',
     'Más': '更多',

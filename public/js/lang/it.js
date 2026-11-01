@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Preferiti ed evoluzioni',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In I miei Pokémon puoi segnare i preferiti con una stella: vengono per primi, si filtrano con «Preferiti» e non si vendono per errore.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'Quando un Pokémon si evolve lo vedi in grande, con animazione e ciò che impara, e puoi andare subito a impostare la mossa.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'I Pokémon imparano mosse simili ai giochi veri, con 94 nuove, e Protezione dà un po\' più di margine per la parata.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'Se la connessione cade in lotta hai 8 secondi per tornare, e le lotte sono più fluide con una rete scarsa.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'Il Ladder del menu mostra podio, stagione e premi, e «Indietro» ti riporta sempre alla schermata da cui venivi.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'Su telefono la Storia sta in una schermata, la scheda del Pokémon si vede tutta e la telecamera ti tiene in vista.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Ritocchi per il cellulare',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Sul cellulare, la tua foto è centrata nel suo cerchio nel profilo e nell\'editor dell\'avatar.',
@@ -796,6 +804,8 @@ export default {
     'Quitar de favoritos': 'Rimuovi dai preferiti',
     'Quítale la estrella para venderlo': 'Togli la stella per venderlo',
     'Música de {who}': 'Musica di {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "La tua lotta continua in un'altra scheda o dispositivo",
+    'Seguir aquí': 'Resta qui',
     'Premios de temporada': 'Premi di stagione',
     'Más datos': 'Più dettagli',
     'Más': 'Altro',

@@ -1326,10 +1326,12 @@
     const dex = mon ? mon.dex : +x.dex;
     if ((!mon && !RANKED_POOL.includes(dex)) || taken.some(o => o && o.dex === dex)) return null;
     const can = pvpMoves(dex, mon);
-    const moves = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))].filter(m => can.includes(m)).slice(0, 4);
+    const asked = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))];
+    const moves = asked.filter(m => can.includes(m)).slice(0, 4);
     const base = mon && mon.moves && mon.moves.length ? mon.moves.slice(0, 4) : defaultMoves(dex, RANKED_LEVEL);
     // (si alguno ya no vale, los huecos se llenan con los de por defecto)
-    return { ...(mon ? { uid: mon.uid } : {}), dex, moves: [...new Set([...moves, ...base])].slice(0, 4) };
+    const lost = !moves.length || asked.some(m => !can.includes(m));
+    return { ...(mon ? { uid: mon.uid } : {}), dex, moves: lost ? [...new Set([...moves, ...base])].slice(0, 4) : moves };
   }
   // Los 3 huecos del equipo: los que no valgan (lo vendiste, o evolucionó a una especie repetida), a null
   function pvpSlots(team, mons = []) {

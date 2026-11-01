@@ -20,7 +20,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(true, 'y otro Volver, al menú');
 
   // A la ladder por dos caminos: vuelve a cada uno
-  await page.tap(/^Torre Batalla/);
+  await page.click('.menu-card.tower');
   await page.tap('Ver la ladder completa');
   await page.waitFor(`document.querySelector('.ladder')`);
   await page.key('Escape');
