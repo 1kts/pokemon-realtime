@@ -56,13 +56,26 @@ module.exports = async ({ page, ok }) => {
   const x1 = await page.eval(`window.__app.battle.pred.x`);
   await page.fingerUp();
   ok(x1 > x0 + 40, `el joystick a la derecha lo mueve a la derecha (${Math.round(x0)} → ${Math.round(x1)})`);
-  // (al soltarlo se para: un rato después sigue donde estaba. Desde que el joystick vuelve a su sitio, que es cuando
-  // la página ha recibido el dedo levantado, y en fotogramas de la página, no en milisegundos medidos desde fuera:
-  // con el CI cargado, a los 300 ms el dedo levantado a veces ni había llegado y seguía andando (924 → 937))
-  await page.waitFor(`!document.querySelector('.tc-base.on')`);
-  const [x2, x3] = await page.eval(`new Promise(r => { const frames = (n, f) => n ? requestAnimationFrame(() => frames(n - 1, f)) : f();
-    frames(20, () => { const a = window.__app.battle.pred.x; frames(30, () => r([a, window.__app.battle.pred.x])); }); })`);
-  ok(Math.abs(x3 - x2) < 3, `al soltar el joystick se para (${Math.round(x2)} → ${Math.round(x3)})`);
+  // Al soltarlo se para: un rato después sigue donde estaba. Desde que el joystick vuelve a su sitio, que es cuando la
+  // página ha recibido el dedo levantado, y en fotogramas de la página, no en milisegundos medidos desde fuera: con el CI
+  // cargado, a los 300 ms el dedo levantado a veces ni había llegado y seguía andando (924 → 937). Y lejos de las vallas:
+  // pegado a una se pararía igual aunque siguiera andando, y con el CI a 1-2 fotogramas por segundo a veces llegaba a ella
+  // antes de soltar; entonces se prueba otra vez hacia el otro lado
+  const stops = [];
+  for (let k = 0, dir = -1; k < 4; k++, dir = -dir) {
+    const from = await page.eval(`window.__app.battle.pred.x`);
+    await page.fingerAt(120, 280);
+    await page.fingerMove(120 + dir * 35, 280);
+    await page.fingerMove(120 + dir * 70, 280);
+    await page.waitFor(`Math.abs(window.__app.battle.pred.x - ${from}) > 40`, 8000).catch(() => {});
+    await page.fingerUp();
+    await page.waitFor(`!document.querySelector('.tc-base.on')`);
+    const [a, b] = await page.eval(`new Promise(r => { const frames = (n, f) => n ? requestAnimationFrame(() => frames(n - 1, f)) : f();
+      frames(20, () => { const a = window.__app.battle.pred.x; frames(30, () => r([a, window.__app.battle.pred.x])); }); })`);
+    stops.push(`${Math.round(a)} → ${Math.round(b)}`);
+    if (a > 60 && a < 900) { ok(Math.abs(b - a) < 3, `al soltar el joystick se para, lejos de las vallas (${stops.join('; ')})`); break; }
+    if (k === 3) ok(false, `al soltar el joystick se para, lejos de las vallas (siempre acabó en una: ${stops.join('; ')})`);
+  }
 
   // Tocar el ataque básico: sale hacia el rival
   await page.press('.mv');

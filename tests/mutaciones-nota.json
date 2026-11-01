@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-01",
- "cazadas": 49,
- "total": 49,
+ "cazadas": 53,
+ "total": 53,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -286,7 +286,7 @@
    "por": [
     "tests/e2e/victoria.e2e.js"
    ],
-   "motivo": "victoria.e2e.js: ✗ al vencer a Brock salen los resultados con «¡Victoria!»"
+   "motivo": "victoria.e2e.js: ✗ al vencer a Brock salen los resultados con «¡Victoria!» | ✗ dicen que has vencido a Brock y que la Medalla Roca es tuya"
   },
   "lucky-spin-sin-gemas": {
    "resultado": "cazada",
@@ -307,7 +307,7 @@
    "por": [
     "tests/e2e/movil.e2e.js"
    ],
-   "motivo": "movil.e2e.js: ✗ al soltar el joystick se para (348 → 400)"
+   "motivo": "movil.e2e.js: ✗ al soltar el joystick se para, lejos de las vallas (23 → 23; 732 → 937)"
   },
   "enfrentamiento-no-sale": {
    "resultado": "cazada",
@@ -340,9 +340,37 @@
   "premio-sin-equipar": {
    "resultado": "cazada",
    "por": [
-    "tests/e2e/novedades.e2e.js"
+    "tests/e2e/novedades-premio.e2e.js"
    ],
-   "motivo": "novedades.e2e.js: ✗ error: No se puede pulsar «¡Recoger!»: no hay ningún botón que lo diga"
+   "motivo": "novedades-premio.e2e.js: ✗ error: no se ve «Usar este título»: no está en la página"
+  },
+  "movimiento-nuevo-sin-boton": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movimiento-nuevo.e2e.js"
+   ],
+   "motivo": "movimiento-nuevo.e2e.js: ✗ error: No se puede pulsar «Editar movimientos»: no hay ningún botón que lo diga"
+  },
+  "gancho-dev-sin-arena-dev": {
+   "resultado": "cazada",
+   "por": [
+    "tools/security-test.js"
+   ],
+   "motivo": "security-test.js: ✗ sin ARENA_DEV el gancho de pruebas no responde ni cambia el perfil"
+  },
+  "lider-sin-refugio": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/jugadas-lideres.e2e.js"
+   ],
+   "motivo": "jugadas-lideres.e2e.js: ✗ Blaine anuncia su jugada (avisos: 3 | 3 | 2 | 1 | ¡A combatir! | ¡Machoke se ha debilitado!)"
+  },
+  "premio-genial-no-cierra": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/recoger-todo.e2e.js"
+   ],
+   "motivo": "recoger-todo.e2e.js: ✗ error: Tiempo agotado esperando: !document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')"
   },
   "evolucion-sin-ventana": {
    "resultado": "cazada",

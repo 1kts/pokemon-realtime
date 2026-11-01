@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.3 ----------
+    'Retoques para el móvil': 'Feinschliff fürs Handy',
+    'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Auf dem Handy sitzt dein Bild in deinem Profil und im Avatar-Editor mittig in seinem Kreis.',
+    'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.': 'Auf dem Handy liegt die Energieleiste direkt unter dem Bogen der Attacken, mit ihrem ⚡ davor.',
     // ---------- Novedades v0.36.2 ----------
     'Móvil más cómodo y ladder a la vista': 'Bequemer am Handy, Rangliste im Blick',
     'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'Das Menü zeigt im Ladder-Feld die Top 5 der Rangliste und deinen Platz, mit „Alle ansehen“ für die ganze Tabelle.',

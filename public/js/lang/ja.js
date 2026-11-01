@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.3 ----------
+    'Retoques para el móvil': 'スマホ向けの調整',
+    'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'スマホでは、プロフィールとアバター編集で写真が円の中央に収まるようになりました。',
+    'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.': 'スマホでは、エネルギーバーがわざボタンの弧のすぐ下に、⚡付きで表示されます。',
     // ---------- Novedades v0.36.2 ----------
     'Móvil más cómodo y ladder a la vista': 'スマホがより快適に、ラダーも一目で',
     'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'メニューのラダーパネルにランク上位5人と自分の順位を表示し、「すべて見る」で全体の表を開けます。',

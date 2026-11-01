@@ -136,7 +136,9 @@ export class TouchControls {
     // (al soltar el dedo, no al ponerlo: si se abría al ponerlo, el clic de soltarlo caía en el fondo de la ventana
     // recién abierta y la cerraba)
     // (sin preventDefault al poner el dedo: en Safari se perdería el clic)
-    quit.onclick = () => dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' }));
+    // (y con la ventana ya abierta no hace nada: un segundo clic del mismo toque, que WebKit a veces manda, era un Esc
+    // más y la cerraba al momento)
+    quit.onclick = () => { if (!document.querySelector('.ui-confirm')) dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' })); };
     this.root.append(quit);
   }
 

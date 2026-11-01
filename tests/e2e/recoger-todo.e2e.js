@@ -20,6 +20,9 @@ module.exports = async ({ page, player, ok }) => {
   let pops = 0;
   for (let i = 0; i < 5 && await page.eval(`!!document.querySelector('.loot-pop:not(.out):not([data-e2e-visto])')`); i++) {
     await page.eval(`document.querySelector('.loot-pop:not(.out)').dataset.e2eVisto = '1'; true`);
+    // (y se pulsa cuando ha acabado de entrar: con el CI a 1-2 fotogramas por segundo, la ventana aún crecía, el botón se
+    // movía entre poner y levantar el ratón y el clic no llegaba)
+    await page.waitFor(`[...document.querySelectorAll('.loot-pop:not(.out), .loot-pop:not(.out) .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
     await page.click('.loot-pop:not(.out) .acts .primary'); pops++;
     await page.waitFor(`!document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')`);
     await page.waitFor(`document.querySelector('.loot-pop:not(.out):not([data-e2e-visto])')`, 1500).catch(() => {});   // (por si sale otro detrás)

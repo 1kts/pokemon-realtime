@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.36.3', date: '2026-11-01', title: 'Retoques para el móvil',
+      items: [
+        ['arreglo', 'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.'],
+        ['arreglo', 'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.'],
+      ],
+    },
+    {
       v: '0.36.2', date: '2026-10-31', title: 'Móvil más cómodo y ladder a la vista',
       items: [
         ['cambio', 'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.'],

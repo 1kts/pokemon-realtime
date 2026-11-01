@@ -11,6 +11,7 @@ const WebSocket = require('ws');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'arena-sec-'));
 process.env.DB_FILE = path.join(tmp, 'arena.db');
+delete process.env.ARENA_DEV;   // (como en producción: el gancho de pruebas, apagado)
 const { start } = require('../server/index.js');
 const limits = require('../server/limits.js');
 
@@ -136,6 +137,24 @@ const get = url => new Promise(r => http.get(`http://localhost:${port}${url}`, r
   back.send({ t: 'hello', token: someToken });
   ok(!!(await back.wait(x => x.t === 'profile')), 'quien ya tiene perfil puede entrar aunque su IP haya llegado al tope');
   back.ws.close();
+
+  // ---------- Gancho de pruebas ----------
+  // (sin ARENA_DEV, como en producción, { t: 'dev' } no hace nada: ni dinero ni dejar quieto al rival con foeIdle)
+  const cheat = connect('10.0.4.1');
+  await cheat.open;
+  cheat.send({ t: 'hello', name: 'Tramposo' });
+  const p0 = await cheat.wait(x => x.t === 'profile');
+  cheat.msgs.length = 0;
+  cheat.send({ t: 'dev', coins: 99999, foeIdle: true, foeHp: 0.01 });
+  await sleep(400);
+  cheat.ws.close();
+  // (y al volver a entrar, el perfil guardado sigue con el mismo dinero)
+  const again = connect('10.0.4.1');
+  await again.open;
+  again.send({ t: 'hello', token: p0 && p0.p.token });
+  const p1 = await again.wait(x => x.t === 'profile');
+  ok(p0 && p1 && !cheat.msgs.some(m => m.t === 'profile') && p1.p.coins === p0.p.coins, `sin ARENA_DEV el gancho de pruebas no responde ni da dinero (${p0 && p0.p.coins} → ${p1 && p1.p.coins})`);
+  again.ws.close();
 
   // ---------- Contraseñas ----------
   const owner = connect('10.0.1.1');
