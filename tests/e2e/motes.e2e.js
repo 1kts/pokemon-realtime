@@ -9,7 +9,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.type('.title-panel input', 'P.u.t.4');
   await page.click('Jugar');
   await page.waitFor(`[...document.querySelectorAll('.toast')].some(x => x.textContent.includes('no está permitido'))`);
-  ok(await page.see('Jugar', { in: '.title-panel' }) && !(await page.see('Jugar', { ms: 0 })), 'un nombre de entrenador ofensivo no entra: avisa y sigue en la portada');
+  ok(await page.see('Jugar', { in: '.title-panel' }) && !(await page.see('Aventura', { ms: 0 })), 'un nombre de entrenador ofensivo no entra: avisa y sigue en la portada');
   await page.waitFor(`document.querySelector('.title-panel button.primary') && !document.querySelector('.title-panel button.primary').disabled`);
   await page.type('.title-panel input', 'Ash');
   await page.click('Jugar');

@@ -8,10 +8,12 @@ module.exports = async ({ page, player, ok }) => {
     who.client.send({ t: 'pvpteam', team }); await who.client.wait(m => m.t === 'profile');
   }
   await page.loginAs(me.token);
-  rival.client.send({ t: 'queue', mode: 'ranked' });
-  await page.waitSee('1 buscando rival', { in: '.menu-card.ranked' });
+  // (el rival entra en la cola cuando el servidor ya te cuenta buscando: si esperase él, a los 20 s le tocaría un
+  // entrenador de la IA, y con el CI a pocos fotogramas ir del menú a PvP y buscar ya puede tardar eso)
   await page.mode('PvP');
   await page.tap('Buscar partida PvP');
+  await rival.client.wait(m => m.t === 'pop' && m.queue.ranked === 1, 20000);
+  rival.client.send({ t: 'queue', mode: 'ranked' });
   // (de una vez y en cuanto salen: están en pantalla 2,5 s, y con la máquina cargada una lectura aparte llega tarde)
   await page.waitFor(`(window.__vsAva = (document.querySelector('.vs-card.you .ava') || { offsetWidth: 0 }).offsetWidth) && (window.__vs = document.querySelector('.versus').innerText)`, 20000);
   const [izq, der = ''] = (await page.eval(`window.__vs`)).split(/\bVS\b/);

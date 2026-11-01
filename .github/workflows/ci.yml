@@ -128,6 +128,7 @@ jobs:
         env:
           MUT_SHARD: ${{ matrix.shard }}/4
           MUT_JOBS: 2
+          E2E_TIMEOUT: 600   # (como en los e2e: sus tests van igual de lentos en el CI)
 
   # (de momento solo espera a los tests unitarios: los e2e se pasan igual y avisan, pero no frenan el despliegue)
   deploy:

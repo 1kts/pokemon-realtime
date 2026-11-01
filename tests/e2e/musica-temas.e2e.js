@@ -10,19 +10,19 @@ module.exports = async ({ page, ok }) => {
   const tracks = await page.eval(`import('/js/music.js').then(m => { const by = k => Object.values(Data.NODES).find(n => n.kind === k);
     return ['elite', 'champion', 'gym'].map(k => m.trackForBattle({ mode: 'trainer', map: by(k).map }, Data)); })`);
   ok(tracks.join() === 'champion,champion,gym-roca', `el Alto Mando y el Campeón usan el tema del Campeón; el gimnasio de Brock, el suyo (${tracks.join(', ')})`);
-  // Cada tipo de combate pide su tema: Práctica, Clasificatoria y Partida rápida, Torre, salvajes y gimnasios de cada región
+  // Cada tipo de combate pide su tema: Práctica, PvP y el combate amistoso con un amigo, Torre, salvajes y gimnasios de cada región
   const byMode = await page.eval(`import('/js/music.js').then(m => {
     const nodes = Object.values(Data.NODES), first = (r, k) => nodes.find(n => n.region === r && n.kind === k);
     const t = (mode, map) => m.trackForBattle({ mode, map }, Data);
     return {
-      practice: t('practice', Object.keys(Data.MAPS)[0]), practiceGym: t('practice', 'g-fuego'), ranked: t('ranked', Object.keys(Data.MAPS)[0]), casual: t('casual', Object.keys(Data.MAPS)[1]),
+      practice: t('practice', Object.keys(Data.MAPS)[0]), practiceGym: t('practice', 'g-fuego'), ranked: t('ranked', Object.keys(Data.MAPS)[0]), friendly: t('friendly', Object.keys(Data.MAPS)[1]),
       tower: t('tower', Object.keys(Data.MAPS)[0]),
       wildKanto: t('wild', 'r:' + first('kanto', 'route').id), wildJohto: t('wild', 'r:' + first('johto', 'route').id),
       gymKanto: t('trainer', 'g-fuego'), gymJohto: t('trainer', 'g-volador'), gymJohtoPlain: t('trainer', 'g-bicho'),
       gymAll: nodes.filter(n => n.kind === 'gym').map(n => [n.region, n.type, t('trainer', n.map)]),
       eliteJohto: t('trainer', first('johto', 'elite').map), champJohto: t('trainer', first('johto', 'champion').map),
     }; })`);
-  const want = { practice: 'battle', practiceGym: 'battle', ranked: 'ranked', casual: 'ranked', tower: 'tower', wildKanto: 'wild', wildJohto: 'wildJohto',
+  const want = { practice: 'battle', practiceGym: 'battle', ranked: 'ranked', friendly: 'ranked', tower: 'tower', wildKanto: 'wild', wildJohto: 'wildJohto',
     gymKanto: 'gym-fuego', gymJohto: 'gym-volador', gymJohtoPlain: 'leaderJohto', eliteJohto: 'champion', champJohto: 'champion' };
   for (const [k, v] of Object.entries(want)) ok(byMode[k] === v, `${k} usa el tema «${v}» (${byMode[k]})`);
   // Cada gimnasio: el tema de su tipo, o si no tiene, el de los líderes de su región

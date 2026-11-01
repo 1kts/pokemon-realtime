@@ -473,10 +473,17 @@ async function setup(name, extraEnv = {}) {
     let rid = 0;
     const c = {
       send: m => ws.send(JSON.stringify(m)),
-      async wait(pred, ms = 5000) {
-        const t0 = Date.now();
-        while (Date.now() - t0 < ms) { const i = msgs.findIndex(pred); if (i >= 0) return msgs.splice(i, 1)[0]; await sleep(30); }
-        throw new Error('Sin respuesta del servidor');
+      // (como las demás esperas, más larga con E2E_TIMEOUT; y una espera que se deja pendiente mientras se pulsa algo
+      // —const fin = c.wait(…); await page.tap(…); await fin— y caduca antes del await falla esa prueba, no tumba
+      // todo el proceso con un rechazo sin manejar y las pruebas que quedaban del trozo del CI)
+      wait(pred, ms = 5000) {
+        const p = (async () => {
+          const t0 = Date.now(), limit = ms * PATIENCE;
+          while (Date.now() - t0 < limit) { const i = msgs.findIndex(pred); if (i >= 0) return msgs.splice(i, 1)[0]; await sleep(30); }
+          throw new Error('Sin respuesta del servidor');
+        })();
+        p.catch(() => {});
+        return p;
       },
       async ask(t, data = {}) { const r = ++rid; c.send({ t, rid: r, ...data }); return c.wait(m => m.rid === r); },
       close: () => ws.close(),
