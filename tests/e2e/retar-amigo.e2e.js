@@ -13,16 +13,16 @@ module.exports = async ({ page, player, ok }) => {
   amigo.client.send({ t: 'challenge', a: 'send', id: me.id });
   await page.waitSee('¡Te retan!');
   ok(await page.see(/Amigo#\d+ te reta/), 'el aviso dice quién te reta');
-  const no = amigo.client.wait(m => m.t === 'challengeend');
+  // (lo que le llega al otro se mira después de pulsar: el cliente guarda los mensajes, y así la espera no corre
+  // mientras el clic aún tarda en el CI)
   await page.tap('Rechazar');
-  ok((await no).why === 'declined', 'rechazar se lo dice al que retó');
+  ok((await amigo.client.wait(m => m.t === 'challengeend')).why === 'declined', 'rechazar se lo dice al que retó');
 
   // Retas tú, desde Amigos
   await page.click('.friends-btn');
   await page.waitSee('Tus amigos');
-  const inv = amigo.client.wait(m => m.t === 'challenge');
   await page.tap('Retar');
-  ok((await inv).from.id === me.id, 'al amigo le llega el reto');
+  ok((await amigo.client.wait(m => m.t === 'challenge')).from.id === me.id, 'al amigo le llega el reto');
   await page.waitSee('Cancelar reto');
   // Un cuadro abierto cuando empieza el combate se cierra como «no»: Intro ya no lo confirma
   await page.tap('Quitar');
