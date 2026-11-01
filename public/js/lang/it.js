@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Preferiti ed evoluzioni',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In I miei Pokémon puoi segnare i preferiti con una stella: vengono per primi, si filtrano con «Preferiti» e non si vendono per errore.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'Quando un Pokémon si evolve lo vedi in grande, con animazione e ciò che impara, e puoi andare subito a impostare la mossa.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'I Pokémon imparano mosse simili ai giochi veri, con 94 nuove, e Protezione dà un po\' più di margine per la parata.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'Se la connessione cade in lotta hai 8 secondi per tornare, e le lotte sono più fluide con una rete scarsa.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'Il Ladder del menu mostra podio, stagione e premi, e «Indietro» ti riporta sempre alla schermata da cui venivi.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'Su telefono la Storia sta in una schermata, la scheda del Pokémon si vede tutta e la telecamera ti tiene in vista.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Ritocchi per il cellulare',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Sul cellulare, la tua foto è centrata nel suo cerchio nel profilo e nell\'editor dell\'avatar.',
@@ -791,7 +799,17 @@ export default {
     'Aviso legal y privacidad': 'Note legali e privacy',
     'Retirada de contenido': 'Rimozione di contenuti',
     'Hecho por {who}': 'Creato da {who}',
+    'Favoritos': 'Preferiti',
+    'Marcar como favorito': 'Segna come preferito',
+    'Quitar de favoritos': 'Rimuovi dai preferiti',
+    'Quítale la estrella para venderlo': 'Togli la stella per venderlo',
     'Música de {who}': 'Musica di {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "La tua lotta continua in un'altra scheda o dispositivo",
+    'Seguir aquí': 'Resta qui',
+    'Premios de temporada': 'Premi di stagione',
+    'Más datos': 'Più dettagli',
+    'Más': 'Altro',
+    'Menos': 'Meno',
     'Ver todo': 'Vedi tutto',
     'Juega Clasificatoria para entrar': 'Gioca Classificata per entrare',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'È nella tua squadra Classificata: sostituiscilo prima',
@@ -803,6 +821,7 @@ export default {
     'Novedad': 'Novità',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "I tuoi mantengono VI, PA e natura, leggendari inclusi; quelli a noleggio non hanno extra.",
     'Editar movimientos': 'Modifica mosse',
+    "Editar equipo": "Modifica squadra",
     '¡Lanza una Ball para capturarlo!': 'Lancia una Ball per catturarlo!',
     '¡Pulsa F para capturarlo!': 'Premi F per catturarlo!',
     // ---------- Novedades v0.16.1 ----------
@@ -1288,7 +1307,7 @@ export default {
     'Aventura': 'Avventura',
     'Pantalla completa': 'Schermo intero',
     'Tu colección': 'La tua collezione',
-    'Tu viaje por las regiones y los retos de la Torre': 'Il tuo viaggio nelle regioni e le sfide della Torre',
+    'Tu viaje por las regiones y los mejores entrenadores': 'Il tuo viaggio tra le regioni e i migliori allenatori',
     'Online': 'Online',
     'Contra otros entrenadores y sus rankings': 'Contro altri Allenatori, e le loro classifiche',
     'Entrenamiento': 'Allenamento',

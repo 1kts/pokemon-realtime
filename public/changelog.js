@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.37.0', date: '2026-11-01', title: 'Favoritos y evoluciones',
+      items: [
+        ['nuevo', 'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.'],
+        ['nuevo', 'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.'],
+        ['cambio', 'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.'],
+        ['cambio', 'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.'],
+        ['cambio', 'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.'],
+        ['cambio', 'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.'],
+      ],
+    },
+    {
       v: '0.36.3', date: '2026-11-01', title: 'Retoques para el móvil',
       items: [
         ['arreglo', 'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.'],

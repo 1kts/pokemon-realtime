@@ -839,7 +839,10 @@ class Battle {
     // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd)
     const rewards = this.onEnd(this.result, this) || [];
     const sum = this.sides.map(s => this.sideSummary(s));
-    for (const s of this.sides) this.send(s, { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null, sum });
+    for (const s of this.sides) {
+      const msg = { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null, sum };
+      if (s.ws) this.send(s, msg); else s.missed = msg;   // (se había cortado: se lo da al volver)
+    }
   }
 
   // Resumen de un lado para la pantalla de resultados: daño hecho y recibido, KOs, aciertos, su mejor

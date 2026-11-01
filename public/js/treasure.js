@@ -44,7 +44,6 @@ export const treasureViews = {
 
   openTreasure() {
     if (!this.spinOpen()) return this.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad');
-    if (this.view !== 'treasure') this.tzBack = this.view;
     this.show('treasure');
   },
 
@@ -72,7 +71,7 @@ export const treasureViews = {
     const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[n], done = n >= N, enough = (p.gems || 0) >= cost;
     const wrap = el('div', 'treasure');
     wrap.style.setProperty('--tc', TYPE_COLOR[cur.type]);
-    const top = this.topbar(t('Lucky Spin'), this.tzBack || 'menu');
+    const top = this.topbar(t('Lucky Spin'));
     wrap.append(top);
 
     // Pestañas (una ruleta por tipo) y, a la derecha, cuándo cambian (las gemas van en la cabecera)

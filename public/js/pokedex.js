@@ -43,7 +43,7 @@ export const pokedexViews = {
     const all = Object.values(SPECIES).filter(s => s.gen <= Data.DEX_GENS).sort((a, b) => a.dex - b.dex);
     const f = this.dexFilter = this.dexFilter || { q: '', gen: 0, type: '', status: 'all' };
     const wrap = el('div', 'dexview');
-    wrap.append(this.topbar(t('Pokédex'), this.returnTo || 'menu'));
+    wrap.append(this.topbar(t('Pokédex')));
 
     const head = el('div', 'dex-head panel');
     head.append(el('div', 'dex-count', `<b>${caught.size}</b> / ${all.length} <small>${t('capturados')}</small>${shinies.size ? ` · <i class="shiny-star">✦${shinies.size}</i>` : ''}<div class="dexbar"><div style="width:${caught.size / all.length * 100}%"></div></div>`));

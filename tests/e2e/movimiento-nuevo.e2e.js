@@ -1,7 +1,7 @@
 // Si un Pokémon aprende un movimiento en el combate, los resultados lo dicen y llevan a su ficha para ponérselo.
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'aprendiz' });
-  // (a Nv.8 aprende Lanzallamas; a 1 punto de subir: cualquier salvaje de la Ruta 1 da para el nivel, que su nivel es al azar
+  // (a Nv.8 aprende Pantalla de Humo; a 1 punto de subir: cualquier salvaje de la Ruta 1 da para el nivel, que su nivel es al azar
   // y uno de Nv.2 da 36 de los 104 que hacen falta desde cero)
   me.client.send({ t: 'dev', dex: 4, level: 7, xp: 103, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
@@ -35,8 +35,8 @@ module.exports = async ({ page, player, ok }) => {
     last = p;
   }
   await page.waitFor(`window.__app.ui.view === 'results'`, 30000).catch(() => {});
-  await page.waitSee(/Nuevo movimiento: .*Lanzallamas/, { scroll: true });
+  await page.waitSee(/Nuevo movimiento: .*Pantalla de Humo/, { scroll: true });
   await page.tap('Editar movimientos');
-  await page.waitSee('Lanzallamas', { in: '.mon-sheet' });
+  await page.waitSee('Pantalla de Humo', { in: '.mon-sheet' });
   ok(true, 'los resultados dicen qué ha aprendido y llevan a su ficha, en Movimientos');
 };

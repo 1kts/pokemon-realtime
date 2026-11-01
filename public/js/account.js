@@ -580,7 +580,7 @@ export const accountViews = {
   view_settings() {
     const p = this.profile;
     const wrap = el('div', 'settings-view');
-    wrap.append(this.topbar(t('Ajustes'), 'menu'));
+    wrap.append(this.topbar(t('Ajustes')));
     const body = el('div', 'settings-body scroll');
 
     // Idioma: un botón por idioma
@@ -687,7 +687,7 @@ export const accountViews = {
   view_profile() {
     const p = this.profile;
     const wrap = el('div', 'profile-view');
-    wrap.append(this.topbar(t('Perfil'), 'menu'));
+    wrap.append(this.topbar(t('Perfil')));
     // Orden: tarjeta de entrenador arriba (a todo el ancho), una franja con todas las estadísticas, y debajo
     // dos columnas (medallas y últimas partidas | logros); la cuenta, en la tarjeta
     const body = el('div', 'pv-body pv-flow scroll');
@@ -1088,9 +1088,9 @@ export const accountViews = {
   },
 
   // Foto de un entrenador en una fila de ranking: solo la imagen, sin marco ni efectos
-  rowFace(r, size = 34) {
+  rowFace(r, size = 34, framed = false) {
     if (r.npcKey) return `<span class="row-face npc">${trainerImg(r.npcKey)}</span>`;
-    const a = this.avatar(size, false, null, null, null, r);
+    const a = this.avatar(size, false, framed ? undefined : null, null, null, r);
     a.classList.add('row-face');
     return a.outerHTML;
   },

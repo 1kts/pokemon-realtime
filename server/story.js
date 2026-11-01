@@ -134,6 +134,10 @@ function action(p, msg) {
     const r = names.nickname(msg.nick);
     if (r.error) return r.error;
     if (r.nick && r.nick !== D.SPECIES[mon.dex].name) mon.nick = r.nick; else delete mon.nick;
+  } else if (a === 'fav') {
+    const mon = monByUid(p, msg.uid | 0);
+    if (!mon) return 'Ese Pokémon no es tuyo';
+    if (msg.on) mon.fav = true; else delete mon.fav;
   } else if (a === 'team') {
     const uids = Array.isArray(msg.uids) ? [...new Set(msg.uids.map(Number))] : [];
     if (uids.length < 1 || uids.length > 3 || !uids.every(u => { const m = monByUid(p, u); return m && m.region === region; })) return 'Equipo no válido (máximo 3, todos de la misma región)';
@@ -185,6 +189,7 @@ function action(p, msg) {
     mon.moves = list;
   } else if (a === 'sell') {
     const mon = monByUid(p, msg.uid);
+    if (mon && mon.fav) return 'Quítale la estrella para venderlo';
     if (mon && inTower(p, mon.uid)) return 'Está en tu equipo de la Torre Batalla: retírate antes';
     if (mon && (p.pvpTeam || []).some(e => e && e.uid === mon.uid)) return 'Está en tu equipo de Clasificatoria: cámbialo antes';
     if (!mon || p.mons.length <= 1) return 'No puedes vender tu único Pokémon';

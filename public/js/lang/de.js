@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Favoriten und Entwicklungen',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'In Meine Pokémon markierst du Favoriten mit einem Stern: Sie stehen vorne, lassen sich filtern und werden nicht aus Versehen verkauft.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'Entwickelt sich ein Pokémon, siehst du es groß mit Animation und dem Gelernten, und gelangst direkt zur Attacke.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'Pokémon lernen Attacken wie in den echten Spielen, dazu 94 neue, und Schutzschild gibt etwas mehr Spielraum für die Parade.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'Reißt die Verbindung im Kampf ab, hast du 8 Sekunden zum Zurückkommen, und Kämpfe laufen bei schlechtem Netz flüssiger.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'Die Ladder im Menü zeigt Podium, Saison und Belohnungen, und „Zurück“ bringt dich immer zur vorherigen Seite.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'Am Handy passt die Story auf einen Bildschirm, der Pokémon-Steckbrief ist ganz sichtbar und die Kamera hält dich im Bild.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Feinschliff fürs Handy',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Auf dem Handy sitzt dein Bild in deinem Profil und im Avatar-Editor mittig in seinem Kreis.',
@@ -790,7 +798,17 @@ export default {
     'Aviso legal y privacidad': 'Impressum und Datenschutz',
     'Retirada de contenido': 'Entfernung von Inhalten',
     'Hecho por {who}': 'Von {who}',
+    'Favoritos': 'Favoriten',
+    'Marcar como favorito': 'Als Favorit markieren',
+    'Quitar de favoritos': 'Aus Favoriten entfernen',
+    'Quítale la estrella para venderlo': 'Entferne den Stern, um es zu verkaufen',
     'Música de {who}': 'Musik von {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "Dein Kampf läuft in einem anderen Tab oder auf einem anderen Gerät weiter",
+    'Seguir aquí': 'Hier weiterspielen',
+    'Premios de temporada': 'Saisonbelohnungen',
+    'Más datos': 'Mehr Details',
+    'Más': 'Mehr',
+    'Menos': 'Weniger',
     'Ver todo': 'Alle ansehen',
     'Juega Clasificatoria para entrar': 'Spiele Rangliste, um reinzukommen',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'Es ist in deinem Ranglisten-Team: tausche es zuerst aus',
@@ -802,6 +820,7 @@ export default {
     'Novedad': 'Neu',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "Deine eigenen behalten DVs, FP und Wesen, legendäre inklusive; Leih-Pokémon haben keine Extras.",
     'Editar movimientos': 'Attacken bearbeiten',
+    "Editar equipo": "Team bearbeiten",
     '¡Lanza una Ball para capturarlo!': 'Wirf einen Ball, um es zu fangen!',
     '¡Pulsa F para capturarlo!': 'Drücke F, um es zu fangen!',
     // ---------- Novedades v0.16.1 ----------
@@ -1287,7 +1306,7 @@ export default {
     'Aventura': 'Abenteuer',
     'Pantalla completa': 'Vollbild',
     'Tu colección': 'Deine Sammlung',
-    'Tu viaje por las regiones y los retos de la Torre': 'Deine Reise durch die Regionen und die Herausforderungen des Turms',
+    'Tu viaje por las regiones y los mejores entrenadores': 'Deine Reise durch die Regionen und die besten Trainer',
     'Online': 'Online',
     'Contra otros entrenadores y sus rankings': 'Gegen andere Trainer, und ihre Ranglisten',
     'Entrenamiento': 'Training',

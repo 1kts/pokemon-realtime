@@ -20,6 +20,8 @@ import { Net, storage } from './net.js';
 import { t, tServer, getLang } from './i18n.js';
 import { Music, trackForBattle } from './music.js';
 import { showTrack } from './nowplaying.js';
+import { netPanel, netStats } from './netstats.js';
+import { pacer } from './smooth.js';
 import { Sfx } from './sfx.js';
 import { lowerQuality } from './gfx.js';
 
@@ -58,6 +60,7 @@ const app = {
   onLang() { document.getElementById('conn').lastChild.textContent = t('Reconectando con el servidor…'); },
 };
 app.music.onTrack = showTrack;
+netPanel(app.net);
 app.onLang();
 app.ui = new UI(app);
 window.__app = app;   // para depurar y para las pruebas automáticas
@@ -103,21 +106,19 @@ let last = performance.now();
 const basePos = new THREE.Vector3();
 const calm = matchMedia('(prefers-reduced-motion: reduce)');
 const MENU_FPS = 30, BATTLE_FPS = 60;
-let nextFrame = 0;
+const pace = pacer();
 app.bloomFrames = 0;   // pasadas con resplandor (para las pruebas)
 function loop(now) {
   requestAnimationFrame(loop);
-  // Tope de FPS, por la velocidad de la pantalla (hay de 160 Hz y más): en los menús el fondo se mece despacio y casi todo
-  // queda detrás de los paneles, así que 30 bastan; en combate, 60. Se cuenta contra una cita, no desde el último
-  // fotograma, para no acabar por debajo del tope
-  if (now < nextFrame - 1) return;
-  nextFrame = Math.max(nextFrame + 1000 / (app.battle ? BATTLE_FPS : MENU_FPS), now);
+  // Tope de FPS, por la velocidad de la pantalla (hay de 160 Hz y más): en los menús el fondo se mece despacio y casi
+  // todo queda detrás de los paneles, así que 30 bastan; en combate, 60
+  if (!pace(now, app.battle ? BATTLE_FPS : MENU_FPS)) return;
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw);
   last = now;
   if (app.battle) checkFps(raw);   // (la calidad automática solo mira los combates: en el menú el tope no es que vaya lento)
   world.placeCamera(innerWidth / innerHeight);
   if (app.battle) {
-    app.battle.frame(now, dt);
+    app.battle.frame(now, dt, Math.min(0.25, raw));
     const sh = app.battle.camShake;
     if (sh) world.camera.position.add(new THREE.Vector3(sh.x, sh.y * 0.5, sh.y));
   } else {
@@ -139,11 +140,15 @@ requestAnimationFrame(loop);
 
 // ---------- Red ----------
 const net = app.net;
+const FIGHTING = 'arena.fighting';   // cuándo se cerró la página en mitad de un combate
+const RESUME_MS = 9000;   // algo más de lo que el servidor guarda un combate tras un corte
+let resumeTimer = null;
 const ui = app.ui;
 const overlay = document.getElementById('conn');
 
 net.on('connected', () => {
   overlay.hidden = true;
+  if (netStats) netStats.reconnects += net.hurry ? 1 : 0;
   // Para las estadísticas de uso del panel (solo contadores, sin decir quién): aparato, idioma y si va como app
   const touch = matchMedia('(pointer: coarse)').matches, small = Math.min(screen.width, screen.height) < 600;
   net.send({ t: 'ctx', device: touch ? (small ? 'movil' : 'tablet') : 'pc', lang: getLang(), app: matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || !!navigator.standalone });
@@ -153,15 +158,19 @@ net.on('connected', () => {
 net.on('disconnected', () => {
   if (!ui.profile) return;
   overlay.hidden = false;
-  if (app.battle) endBattle();
-  ui.show('menu');
+  if (!app.battle) return ui.show('menu');
+  if (app.battle.ended) return;   // (ya ha acabado: los resultados salen enseguida)
+  // En combate, el servidor lo guarda unos segundos: se intenta volver enseguida y, si no da tiempo, al menú
+  net.hurry = true;
+  clearTimeout(resumeTimer);
+  resumeTimer = setTimeout(() => { net.hurry = false; if (!app.battle) return; endBattle(); ui.show('menu'); }, RESUME_MS);
 });
 net.on('profile', m => { if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank); });
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
 net.on('flags', m => {
   ui.flags = m.flags;
   if (ui.root.hidden) return;   // (en combate no se repinta nada: se verá al volver)
-  if (ui.view === 'treasure' && !ui.spinOpen()) { ui.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad'); ui.tzSpin = null; ui.show(ui.tzBack || 'menu'); }
+  if (ui.view === 'treasure' && !ui.spinOpen()) { ui.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad'); ui.tzSpin = null; ui.show(ui.backView()); }
   else if ((ui.view === 'menu' || ui.view === 'treasure') && !ui.tzSpin) ui.show(ui.view, true);   // (no en mitad de una tirada)
 });
 net.on('pop', m => { ui.pop = m; ui.updatePop(); });
@@ -190,6 +199,18 @@ net.on('banned', m => {
   box.append(inner);
   document.body.append(box);
 });
+// La partida sigue en otra pestaña o dispositivo: aquí no se reconecta, y se puede volver a por ella
+net.on('replaced', () => {
+  if (app.battle) endBattle();
+  const box = document.createElement('div');
+  box.className = 'nojs banned';
+  const inner = document.createElement('div');
+  const go = Object.assign(document.createElement('button'), { className: 'primary', textContent: t('Seguir aquí') });
+  go.onclick = () => location.reload();
+  inner.append(Object.assign(document.createElement('h2'), { textContent: t('Tu combate sigue en otra pestaña o dispositivo') }), go);
+  box.append(inner);
+  document.body.append(box);
+});
 net.on('welcome', m => ui.versionCheck(m.version));
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 friendNotices(net, ui);
@@ -199,11 +220,12 @@ net.on('authok', m => { ui.authError(''); ui.closeLogin(); ui.toast(tServer(m.ms
 net.on('mailsent', () => ui.onMailSentMsg());
 net.on('authname', () => ui.onAuthName());
 net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
-net.on('unqueued', () => ui.show(ui.queueMode === 'ranked' || (ui.queueMode === 'casual' && ui.casualBack === 'online') ? 'online' : 'menu'));
+net.on('unqueued', () => ui.show(ui.backView()));
 net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); });
 net.on('ladder', m => ui.onLadder(m));
 net.on('user', m => ui.onUser(m));
 net.on('start', m => {
+  if (m.resume && app.battle) { clearTimeout(resumeTimer); net.hurry = false; app.battle.resume(m); return; }
   if (app.battle) endBattle();
   ui.hide();
   document.querySelectorAll('.modal').forEach(m => m.remove());
@@ -214,6 +236,10 @@ net.on('start', m => {
 net.on('snap', m => { if (app.battle) app.battle.onSnap(m); });
 net.on('over', m => {
   const b = app.battle;
+  clearTimeout(resumeTimer);
+  net.hurry = false;
+  if (!b) return;   // (recargó y se lo perdió: lo ganado ya está en su perfil)
+  b.ended = true;
   app.music.play('menu');   // al acabar el combate vuelve el tema del menú (sin fanfarria)
   if (app.tutorial) app.tutorial.finish(m.winner === m.you);
   // El ganador posa (o salta) mientras se ve el final
@@ -270,6 +296,13 @@ new MutationObserver(ms => {
 }).observe(document.body, { childList: true, subtree: true });
 initTouchDevice();   // en móvil: horizontal y pantalla completa
 ui.show('title');
+// Recargar en combate: el servidor lo guarda unos segundos, que no se vayan en pulsar «Continuar»
+addEventListener('pagehide', () => { if (app.battle && !app.battle.ended) storage.set(FIGHTING, String(Date.now())); });
+{
+  const left = Date.now() - (+storage.get(FIGHTING) || 0);
+  storage.del(FIGHTING);
+  if (Net.hasSession() && left < RESUME_MS) app.connect(Net.savedName());
+}
 // Enlace del correo para entrar (#entrar=correo~código, ver server/mail.js): abre «Entrar con email» con los dos ya
 // escritos y falta un toque en «Entrar» (mailLogin). Se quita de la dirección (que no quede en el historial). También
 // con el juego ya abierto en la pestaña (entonces solo cambia el #)

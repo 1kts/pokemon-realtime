@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': '收藏与进化',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '在我的宝可梦中可用星标收藏:收藏的排在最前,可按“收藏”筛选,也不会被误卖。',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': '宝可梦进化时会大屏显示动画和学会的招式,并可直接前往设置。',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': '宝可梦学会的招式更接近原作,新增 94 个招式,守住也更容易触发完美格挡。',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': '战斗中断线后有 8 秒可以返回,网络差时战斗也更流畅。',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': '菜单天梯显示领奖台、赛季和奖励,“返回”总会回到你来的页面。',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': '在手机上,剧情一屏显示,宝可梦资料完整可见,战斗镜头不会让你跑出画面。',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': '手机版小调整',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': '在手机上，你的头像在个人资料和头像编辑器里都会居中显示在圆框内。',
@@ -790,7 +798,17 @@ export default {
     'Aviso legal y privacidad': '法律声明与隐私',
     'Retirada de contenido': '内容移除',
     'Hecho por {who}': '作者：{who}',
+    'Favoritos': '收藏',
+    'Marcar como favorito': '加入收藏',
+    'Quitar de favoritos': '取消收藏',
+    'Quítale la estrella para venderlo': '取消星标后才能出售',
     'Música de {who}': '音乐:{who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "你的战斗正在其他标签页或设备上进行",
+    'Seguir aquí': '留在这里',
+    'Premios de temporada': '赛季奖励',
+    'Más datos': '更多信息',
+    'Más': '更多',
+    'Menos': '收起',
     'Ver todo': '查看全部',
     'Juega Clasificatoria para entrar': '玩排位赛即可上榜',
     'Está en tu equipo de Clasificatoria: cámbialo antes': '它在你的排位队伍中:请先替换',
@@ -802,6 +820,7 @@ export default {
     'Novedad': '新内容',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "你自己的宝可梦保留个体值、努力值和性格,包括传说;租借的没有额外加成。",
     'Editar movimientos': '编辑招式',
+    "Editar equipo": "编辑队伍",
     '¡Lanza una Ball para capturarlo!': '扔出精灵球捕捉它!',
     '¡Pulsa F para capturarlo!': '按 F 捕捉它!',
     // ---------- Novedades v0.16.1 ----------
@@ -1359,7 +1378,7 @@ export default {
     'Aventura': '冒险',
     'Pantalla completa': '全屏',
     'Tu colección': '我的收藏',
-    'Tu viaje por las regiones y los retos de la Torre': '你在各地区的旅程和对战塔的挑战',
+    'Tu viaje por las regiones y los mejores entrenadores': '你的地区之旅与最强训练家',
     'Online': '在线',
     'Contra otros entrenadores y sus rankings': '与其他训练家对战，以及排行榜',
     'Entrenamiento': '训练',

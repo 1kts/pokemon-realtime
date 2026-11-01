@@ -86,8 +86,13 @@ export const monSheetViews = {
       <div class="xp"><div style="width:${mon.level >= cap ? 100 : Math.min(100, mon.xp / need * 100)}%"></div></div>`));
     const nat = Data.NATURES[mon.nat] || ['—', null, null];
     const route = mon.met ? Data.NODES[mon.met] : null;
-    side.append(el('div', 'ms-facts', `<span>${t('Naturaleza')}<b>${nat[0]}</b><small>${nat[1] ? `+${Data.STAT6[nat[1]]} −${Data.STAT6[nat[2]]}` : t('neutra')}</small></span>
+    // Naturaleza, origen y aspecto: a la vista con sitio; en el móvil, plegados para que quepa lo demás
+    const more = el('details', 'ms-more');
+    more.open = !matchMedia('(max-height: 500px)').matches;
+    more.append(el('summary', '', t('Más datos')));
+    more.append(el('div', 'ms-facts', `<span>${t('Naturaleza')}<b>${nat[0]}</b><small>${nat[1] ? `+${Data.STAT6[nat[1]]} −${Data.STAT6[nat[2]]}` : t('neutra')}</small></span>
       <span>${t('Origen')}<b>${route ? route.name : '—'}</b><small>${sp.leg ? t('legendario') : `Gen ${sp.gen}`}</small></span>`));
+    side.append(more);
     const acts = el('div', 'ms-acts');
     const tg = el('button', inTeam ? 'on' : '', inTeam ? t('Quitar del equipo') : t('Al equipo'));
     tg.onclick = () => {
@@ -98,7 +103,7 @@ export const monSheetViews = {
     };
     const nick = el('button', '', t('Mote'));
     nick.onclick = () => this.nickModal(mon);
-    acts.append(tg, nick);
+    acts.append(tg, nick, this.favStar(mon));
     side.append(acts);
     // Shiny: interruptor de dos opciones (Normal / Shiny) para elegir cómo se ve; sigue contando como shiny
     if (mon.shiny) {
@@ -109,7 +114,7 @@ export const monSheetViews = {
         b.onclick = () => { if (!!mon.plain !== plain) this.net.send({ t: 'story', a: 'appearance', uid: mon.uid, plain }); };
         seg.append(b);
       }
-      side.append(seg);
+      more.append(seg);
     }
 
     // ---------- Derecha: pestañas ----------
@@ -143,7 +148,7 @@ export const monSheetViews = {
     const price = Data.sellPrice(mon);
     const sell = el('button', 'danger', t('Vender por {price}', { price: price.toLocaleString() + ' ₽' }));
     sell.disabled = mine.length <= 1;
-    sell.onclick = () => { confirmBox({ title: t('Vender'), text: t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: monLabel(mon), lv: lv(mon.level), price }), ok: t('Vender'), danger: true }).then(yes => { if (yes) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); } }); };
+    sell.onclick = () => { if (mon.fav) return this.toast(t('Quítale la estrella para venderlo'), 'bad'); confirmBox({ title: t('Vender'), text: t('¿Vender a {m} ({lv}) por {price} ₽? No se puede deshacer.', { m: monLabel(mon), lv: lv(mon.level), price }), ok: t('Vender'), danger: true }).then(yes => { if (yes) { this.net.send({ t: 'story', a: 'sell', uid: mon.uid }); } }); };
     // (el Caramelo Raro también aquí: en el móvil la tarjeta va solo con lo justo)
     if ((p.items.caramelo || 0) > 0) {
       const candy = el('button', '', `${SHOP.find(i => i.id === 'caramelo').name} (${p.items.caramelo})`);
@@ -188,6 +193,7 @@ export const monSheetViews = {
       const b = el('button', 'ms-vit' + (u.ok && have ? ' ok' : ''), `${itemImg(item.id, 22)}<span>${item.name}<small>${have ? `×${have}` : t('no tienes')}</small></span>`);
       b.disabled = !have || !u.ok;
       b.title = u.ok ? u.why : u.why || t('Cómprala en la tienda');
+      b.setAttribute('aria-label', item.name);
       b.onclick = () => this.net.send({ t: 'story', a: 'use', item: item.id, uid: mon.uid });
       row.append(b);
       rows.append(row);

@@ -118,6 +118,64 @@ const onlineIds = () => new Set([...clients].filter(c => c.profile).map(c => c.p
 const busy = c => c.battle || c.queue;
 
 // ---------- Combates ----------
+// Si se corta la conexión en combate (en el móvil pasa: cobertura, cambiar de wifi a datos) el combate espera un poco
+// con el Pokémon quieto: al volver con el mismo token se sigue en él, y si no vuelve, lo pierde como hasta ahora
+const HOLD_MS = 8000;
+const REPLACED = 4002;   // cierre: ese combate sigue en otra pestaña o dispositivo
+const missed = new Map();   // id de perfil -> el combate que acabó mientras esperaba, para darle el resultado al volver
+const held = new Map();   // id del perfil -> { c, timer }
+function holdBattle(c) {
+  const b = c.battle, side = b.sides[c.side], id = c.profile.id;
+  c.battleSide = side;
+  side.ws = null; side.inputs = []; side.lastInput = { ...side.lastInput, mx: 0, my: 0 };
+  held.set(id, { c, timer: setTimeout(() => {
+    held.delete(id);
+    if (b.state !== 'over') b.leave(side, true);
+    store.release(c.profile);
+  }, HOLD_MS) });
+}
+// El combate ha acabado solo mientras esperaba
+function endHold(p) {
+  const h = held.get(p.id);
+  if (!h) return;
+  clearTimeout(h.timer);
+  held.delete(p.id);
+  store.release(p);
+  missed.set(p.id, h.c.battleSide);
+  setTimeout(() => missed.delete(p.id), HOLD_MS).unref();
+}
+// Vuelve a entrar quien tenía un combate a medias: la conexión nueva pasa a ser la de ese cliente. También si la vieja
+// aún parece abierta (un móvil que ha cambiado de red no llega a cerrarla)
+function resumeBattle(c, p) {
+  let old = (held.get(p.id) || {}).c;
+  if (!old) {
+    old = [...clients].find(x => x !== c && x.profile === p && x.battle);
+    if (!old) return false;
+    clients.delete(old);
+    usage.close(old);
+    // (con un código propio: la otra pestaña no debe reconectar y quitárselo de vuelta. Si estaba medio muerta, ni contesta)
+    const gone = old.ws;
+    gone.close(REPLACED);
+    setTimeout(() => gone.terminate(), 1000).unref();
+    holdBattle(old);
+  }
+  const h = held.get(p.id);
+  clearTimeout(h.timer);
+  held.delete(p.id);
+  store.release(p);   // (hello lo ha cogido otra vez y el cliente de antes ya lo tenía)
+  clients.delete(c);
+  old.ws = c.ws;
+  old.ip = c.ip;
+  c.adopted = old;
+  clients.add(old);
+  const side = old.battle.sides[old.side];
+  side.ws = c.ws;
+  // (primero el perfil: si la página es nueva, pinta su menú con él, y el combate que llega después lo quita)
+  sendProfile(old);
+  send(old, { ...old.battle.startMsg(side), resume: true });
+  return true;
+}
+
 function startBattle(clientsBySide, opts, onEnd) {
   const sides = opts.sides.map((s, i) => ({ ...s, ws: clientsBySide[i] ? clientsBySide[i].ws : null }));
   const battle = new Battle({
@@ -125,7 +183,8 @@ function startBattle(clientsBySide, opts, onEnd) {
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
       try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
-      return onEnd(result, b);
+      // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
+      try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
     },
   });
   clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); } });
@@ -363,10 +422,11 @@ wss.on('connection', (ws, req) => {
     ws.send(JSON.stringify({ t: 'error', msg: 'Demasiadas conexiones desde tu red: espera un poco' }));
     return ws.close(1008);
   }
-  const c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
+  let c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
   clients.add(c);
   send(c, { t: 'welcome', version: VERSION });
   ws.on('message', raw => {
+    if (c.adopted) c = c.adopted;   // (ha retomado su combate: sigue en la conexión de antes)
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
     if (!msg || typeof msg.t !== 'string') return;
@@ -379,10 +439,12 @@ wss.on('connection', (ws, req) => {
   });
   ws.on('close', () => {
     limits.connClose(ip);
+    if (c.adopted) c = c.adopted;
+    if (c.ws !== ws) return;   // (ya ha entrado por otra conexión)
     clients.delete(c);
     leaveQueue(c);
     usage.close(c);
-    if (c.battle) c.battle.leave(c.battle.sides[c.side], true);
+    if (c.battle && c.profile && c.battle.state !== 'over') return holdBattle(c);
     if (c.profile) store.release(c.profile);
   });
 });
@@ -420,9 +482,14 @@ function handle(c, msg) {
     }
     const p = store.get(token, name);
     if (store.banned(p)) { store.release(p); return refuseBanned(c, p); }
+    if (resumeBattle(c, p)) return;
     setProfile(c, p);
     audit.log(known ? 'sesion' : 'perfil.nuevo', { actor: p.id, ip: c.ip });
-    return sendProfile(c);
+    sendProfile(c);
+    // Su combate acabó mientras se reconectaba: lo que no pudo llegarle
+    const lost = missed.get(p.id);
+    if (lost && lost.missed) { missed.delete(p.id); send(c, lost.missed); }
+    return;
   }
   if (msg.t === 'login' || msg.t === 'register') return auth(c, msg);
   if (msg.t === 'mailcode') return mailCode(c, msg);
@@ -525,7 +592,7 @@ function handle(c, msg) {
     return sendProfile(c);
   }
   if (msg.t === 'inboxread') { c.profile.inbox = []; store.save(); return sendProfile(c); }
-  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick'].includes(msg.a)) {
+  if (msg.t === 'story' && ['starter', 'team', 'buy', 'use', 'moves', 'sell', 'appearance', 'nick', 'fav'].includes(msg.a)) {
     if (c.battle) return;
     // (en la cola, nada que cambie tus Pokémon: el equipo con el que entraste tiene que seguir valiendo al emparejar)
     if (c.queue && ['use', 'sell'].includes(msg.a)) return send(c, { t: 'error', msg: 'Sal de la cola antes' });
@@ -736,7 +803,7 @@ function shutdown() {
   }
   const until = Date.now() + DRAIN_MS;
   (function wait() {
-    if ([...clients].some(c => c.battle) && Date.now() < until) return setTimeout(wait, 1000);
+    if (([...clients].some(c => c.battle) || held.size) && Date.now() < until) return setTimeout(wait, 1000);
     store.flush();
     process.exit(0);
   })();

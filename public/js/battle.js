@@ -10,11 +10,12 @@ import { typeIcon } from './pixicons.js';
 import { reticleColor } from './cursor.js';
 import { touchMode, TouchControls } from './touch.js';
 import { versusIntro } from './versus.js';
+import { netStats } from './netstats.js';
+import { SnapClock, Follow, posAt, fade } from './smooth.js';
 
 const { TICK, SPEED, DT, F } = Shared;
 const { MOVES, SPECIES, TYPE_COLOR, PROTECT, SWAP, ENERGY, SHOP } = Data;
 const CATCH_HINT = 0.3;   // vida del salvaje a la que se avisa de que toca lanzar una Ball
-const INTERP_MS = 100;
 const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
 const BALLS = Data.BALL_IDS;
 
@@ -41,7 +42,7 @@ export class BattleClient {
     this.balls = start.balls ? { ...start.balls } : null;
     this.ballType = this.balls ? BALLS.find(b => this.balls[b] > 0) || 'pokeball' : null;
     this.act = [0, 0];
-    this.snaps = []; this.latest = null; this.offset = null;
+    this.snaps = []; this.latest = null; this.clock = new SnapClock(); this.foeFollow = new Follow();
     this.seq = 0; this.pending = []; this.pred = null; this.prevPred = null; this.err = { x: 0, y: 0 };
     this.acc = 0; this.castQueue = -1; this.swapQueue = -1;
     this.keys = {}; this.mouse = { x: 0, y: 0 }; this.aim = { x: 480, y: 300 };
@@ -75,7 +76,7 @@ export class BattleClient {
     // Contra un líder: su presentación al empezar
     const leader = this.mode === 'trainer' && leaderByName(foe.name);
     if (leader) this.leaderIntro(leader);
-    if ((this.mode === 'ranked' || this.mode === 'casual') && foe.card && this.sides[this.you].card) versusIntro(this.app.ui, this.sides[this.you].card, foe.card);
+    if (!start.resume && (this.mode === 'ranked' || this.mode === 'casual') && foe.card && this.sides[this.you].card) versusIntro(this.app.ui, this.sides[this.you].card, foe.card);
     if (foe.rare) setTimeout(() => this.banner(t('¡Un {m} salvaje muy raro!', { m: foe.team[0] && Data.SPECIES[foe.team[0].dex].name }), 'rare'), 300);
     if (foe.perfect) setTimeout(() => this.banner(t('¡Y tiene IV perfectos!'), 'rare'), 1300);
   }
@@ -98,11 +99,29 @@ export class BattleClient {
     if (i !== this.you) this.banner(t('✨ ¡{m} shiny! ✨', { m: this.monName(i) }), 'rare');
   }
 
+  // Quien está en juego en un lado: su actor, los equipos y, si es el tuyo, sus movimientos
+  setActive(s, slot) {
+    this.act[s] = slot;
+    const mon = this.monOf(s), actor = this.actors[s];
+    actor.setDex(this.dexOf(s), !!mon.shiny, mon.skin, mon.parts);
+    actor.play('Idle', false);
+    this.buildTeams();
+    if (s === this.you) this.buildMoves();
+    if (this.touch) this.touch.bindButtons();
+  }
+
   // ---------- Red ----------
+  // De vuelta tras un corte: se empieza de cero con lo que mande el servidor, sin repetir lo que ya pasó
+  resume(m) {
+    (m.terrain || []).forEach((c, i) => this.world.setCell(i, c));   // (lo que cambió mientras no llegaba nada)
+    this.latest = null; this.snaps = []; this.pending = []; this.pred = null; this.prevPred = null; this.err = { x: 0, y: 0 };
+    this.clock = new SnapClock(); this.foeFollow.reset();
+  }
+
   onSnap(m) {
     const now = performance.now();
-    const off = m.st - now;
-    this.offset = this.offset === null ? off : Math.max(off, this.offset - 0.5);
+    if (netStats) netStats.snap(now);
+    this.clock.arrive(m.st, now);
     this.snaps.push(m);
     if (this.snaps.length > 40) this.snaps.shift();
     this.latest = m;
@@ -110,6 +129,8 @@ export class BattleClient {
     this.world.syncObstacles(m.ob || []);
     this.world.setArena(m.ar);
     for (const e of m.ev) this.onEvent(e);
+    // (al volver de un corte, el aviso de un cambio se perdió: quien está en juego lo dice cada snapshot)
+    m.ps.forEach((st, i) => { if (st.act !== undefined && st.act !== this.act[i]) this.setActive(i, st.act); });
     if (m.state === 'countdown') this.countdown(m.cd);
     else if (this.cdShown) { this.cdShown = null; this.banner(t('¡A combatir!'), 'big'); }
     this.timerEl.textContent = m.tl > 0 ? `${Math.floor(m.tl / 60)}:${String(m.tl % 60).padStart(2, '0')}` : '0:00';
@@ -214,13 +235,8 @@ export class BattleClient {
         break;
       case 'swap':
         this.fx.swapFlash(pos);
-        this.act[s] = e.to;
-        actor.setDex(this.dexOf(s), !!this.monOf(s).shiny, this.monOf(s).skin, this.monOf(s).parts);
-        actor.play('Idle', false);
+        this.setActive(s, e.to);
         if (this.monOf(s).shiny) setTimeout(() => this.shinyAppear(s), 350);
-        this.buildTeams();
-        if (s === this.you) this.buildMoves();
-        if (this.touch) this.touch.bindButtons();
         break;
       case 'faint':
         actor.play('Faint');
@@ -387,11 +403,13 @@ export class BattleClient {
   }
 
   // ---------- Bucle ----------
-  frame(now, dt) {
+  // (real: el tiempo de verdad de este fotograma; dt va limitado para las animaciones)
+  frame(now, dt, real = dt) {
     if (!this.latest) return;
+    this.clock.tick(real * 1000);
     if (this.app.tutorial) this.app.tutorial.tick(this);
     if (this.touch) this.touch.updateAim(); else this.updateAim();
-    this.acc += Math.min(250, dt * 1000);
+    this.acc += Math.min(250, real * 1000);
     while (this.acc >= 1000 / TICK) {
       this.acc -= 1000 / TICK;
       if (!this.pred || !this.me) continue;
@@ -407,7 +425,7 @@ export class BattleClient {
       }
       this.moving = (inp.mx || inp.my) && speed > 0;
     }
-    this.err.x *= 0.85; this.err.y *= 0.85;
+    this.err.x = fade(this.err.x, real * 1000); this.err.y = fade(this.err.y, real * 1000);
     this.render(now, dt);
     this.arenaFx(dt);
   }
@@ -422,7 +440,7 @@ export class BattleClient {
   }
 
   render(now, dt) {
-    const ip = this.interpolated(now + this.offset - INTERP_MS);
+    const renderT = this.clock.renderTime(now), ip = this.interpolated(renderT);
     const alpha = this.acc / (1000 / TICK);
     const pos = [];
     for (let i = 0; i < 2; i++) {
@@ -436,9 +454,13 @@ export class BattleClient {
         moving = this.moving;
       } else {
         st = sb;
-        if (sb.x === undefined) { x = this.lastPos[i].x; y = this.lastPos[i].y; }
-        else if (sa.x === undefined) { x = sb.x; y = sb.y; }
-        else { x = lerp(sa.x, sb.x, ip.f); y = lerp(sa.y, sb.y, ip.f); }
+        const at = posAt(this.snaps, i, renderT);
+        if (!at) { x = this.lastPos[i].x; y = this.lastPos[i].y; this.foeFollow.reset(); }
+        else {
+          if (sb.f & (F.DASH | F.SWAP) || sa.act !== sb.act) this.foeFollow.reset();   // (estos saltos son de verdad)
+          const f = this.foeFollow.to(at, dt * 1000, Shared.speedOf(this.dexOf(i), sb.f, this.monOf(i).spdMult));
+          x = f.x; y = f.y;
+        }
         a = lerpAngle(sa.a, sb.a, ip.f);
         moving = Math.hypot(x - this.lastPos[i].x, y - this.lastPos[i].y) > 0.3;
       }
@@ -446,6 +468,7 @@ export class BattleClient {
       this.lastPos[i] = { x, y };
     }
     this.renderPos = pos;
+    if (netStats) { netStats.delay = this.clock.delay; const f = pos[this.foeIdx]; if (f.st.x !== undefined && !(f.st.f & (F.DASH | F.SWAP))) netStats.foeAt(f.x, f.y, dt * 1000, Shared.speedOf(this.dexOf(this.foeIdx), f.st.f, this.monOf(this.foeIdx).spdMult)); netStats.frame(dt * 1000); }
     this.world.setFocus(pos[this.you].x, pos[this.you].y);
     // Retícula bajo el ratón: gira, late y se vuelve amarilla cuando apunta a la hitbox del rival
     const ret = this.reticle;

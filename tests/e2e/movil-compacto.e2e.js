@@ -12,13 +12,16 @@ const prueba = sizes => async ({ page, player, ok }) => {
     await page.loginAs(me.token);
     await page.tap(/^Historia/);
     await page.waitSee('Explorar', { in: '.story-side' });
-    ok(await page.see(/\d+ %/, { in: '.route-list' }), `${en}: la ruta dice la probabilidad de cada Pokémon`);
+    await page.tap('Más', { in: '.story-side' });   // (el detalle de la ruta está en «Más»: Historia en una pantalla)
+    await page.waitSee(/\d+ %/, { in: '.route-list' });
+    ok(true, `${en}: la ruta dice la probabilidad de cada Pokémon`);
     ok(!(await page.see(/Nv\.\d+-\d+$/, { in: '.route-list .mini', ms: 0 })), `${en}: sin repetir el nivel en cada Pokémon`);
     ok(await page.see(/Nv\.\d+-\d+/, { in: '.story-side' }), `${en}: el nivel de la ruta sigue en su ficha`);
     const fits = await page.eval(`(() => { const s = document.querySelector('.story-side .node-info').getBoundingClientRect(); return [...document.querySelectorAll('.route-list .mini')].filter(m => { const r = m.getBoundingClientRect(); return r.bottom <= s.bottom && r.top >= s.top; }).length; })()`);
     const tandas = await page.eval(`document.querySelectorAll('.route-list .mini').length`);
     ok(fits === tandas, `${en}: los ${tandas} Pokémon de la ruta se ven sin bajar (${fits})`);
     // En combate, cinco botones regulares, grandes y sin pisarse con nada
+    await page.tap('Menos', { in: '.story-side' });
     await page.tap('Explorar', { in: '.story-side' });
     await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
     const mandos = await page.eval(`(() => { const rs = q => [...document.querySelectorAll(q)].filter(e => e.offsetParent).map(e => e.getBoundingClientRect()); const pisa = (a, b) => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
@@ -26,6 +29,10 @@ const prueba = sizes => async ({ page, player, ok }) => {
       mv.forEach((a, i) => { mv.slice(i + 1).forEach(b => { if (pisa(a, b)) cruces++; }); otros.forEach(b => { if (pisa(a, b)) cruces++; }); });
       return { n: mv.length, cruces, min: Math.min(...mv.map(r => Math.min(r.width, r.height))), fuera: mv.filter(r => r.right > innerWidth || r.bottom > innerHeight).length }; })()`);
     ok(mandos.n === 5 && mandos.min >= 44 && !mandos.cruces && !mandos.fuera, `${en}: cinco botones de al menos 44 px sin pisarse (${JSON.stringify(mandos)})`);
+    // (se sale del combate rindiéndose: volver a entrar a medias lo retoma, ver reconexion.e2e.js)
+    await page.press('.tc-quit');
+    await page.tap('Rendirse', { in: '.ui-confirm-box' });
+    await page.waitFor(`document.querySelector('.results')`, 20000);
     await page.loginAs(me.token);
     await page.tap('Mis Pokémon');
     await page.waitSee('Charmander', { in: '.mon-card' });

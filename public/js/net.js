@@ -1,5 +1,6 @@
 // Conexión con el servidor: WebSocket con reconexión y el token del perfil en localStorage.
 const TOKEN_KEY = 'arena.token', NAME_KEY = 'arena.name';
+const REPLACED = 4002;   // (server/index.js)
 
 export const storage = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -66,11 +67,13 @@ export class Net {
       if (msg.t === 'banned') this.closedByUs = true;
       this.emit(msg);
     };
-    ws.onclose = () => {
+    ws.onclose = e => {
       clearInterval(this.pingTimer);
       if (this.ws !== ws) return;
+      // Ese combate sigue en otra pestaña o dispositivo: volver a entrar se lo quitaría (y aquella haría lo mismo)
+      if (e.code === REPLACED) { this.closedByUs = true; return this.emit({ t: 'replaced' }); }
       this.emit({ t: 'disconnected' });
-      if (!this.closedByUs) setTimeout(() => this.open(), 1500);
+      if (!this.closedByUs) setTimeout(() => this.open(), this.hurry ? 300 : 1500);   // (en combate cada segundo cuenta)
     };
   }
 

@@ -15,7 +15,7 @@ const columnas = SIZES => async ({ page, player, ok }) => {
     if (touch) { await page.eval("localStorage.setItem('arena.touch', '1'); true"); await page.loginAs(me.token); }
     const en = `${w}×${h}`;
 
-    await page.tap(/^Torre Batalla/);
+    await page.click('.menu-card.tower');
     await page.waitSee('Elige tu equipo');
     ok(await page.see('Ranking de la Torre'), `${en}: el ranking de la Torre se ve sin bajar`);
     const torre = await lado(page, 'Elige tu equipo', 'Ranking de la Torre');

@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'Favoris et évolutions',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'Dans Mes Pokémon, marque tes favoris d\'une étoile : ils passent en tête, se filtrent avec « Favoris » et ne se vendent pas par erreur.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'Quand un Pokémon évolue, tu le vois en grand, avec son animation et ce qu\'il apprend, et tu peux aller directement lui mettre l\'attaque.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'Les Pokémon apprennent des attaques proches des vrais jeux, avec 94 nouvelles, et Abri laisse un peu plus de marge pour le parry.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'Si la connexion coupe en combat, tu as 8 secondes pour revenir, et les combats sont plus fluides sur un mauvais réseau.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'Le Ladder du menu montre podium, saison et récompenses, et « Retour » te ramène toujours à l\'écran d\'où tu viens.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'Sur mobile, l\'Histoire tient sur un écran, la fiche du Pokémon se voit entière et la caméra de combat te garde à l\'écran.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'Retouches sur mobile',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'Sur mobile, ta photo est bien centrée dans son cercle sur ton profil et dans l\'éditeur d\'avatar.',
@@ -790,7 +798,17 @@ export default {
     'Aviso legal y privacidad': 'Mentions légales et confidentialité',
     'Retirada de contenido': 'Retrait de contenu',
     'Hecho por {who}': 'Créé par {who}',
+    'Favoritos': 'Favoris',
+    'Marcar como favorito': 'Marquer comme favori',
+    'Quitar de favoritos': 'Retirer des favoris',
+    'Quítale la estrella para venderlo': 'Retire son étoile pour le vendre',
     'Música de {who}': 'Musique de {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "Ton combat continue dans un autre onglet ou appareil",
+    'Seguir aquí': 'Rester ici',
+    'Premios de temporada': 'Récompenses de saison',
+    'Más datos': 'Plus de détails',
+    'Más': 'Plus',
+    'Menos': 'Moins',
     'Ver todo': 'Tout voir',
     'Juega Clasificatoria para entrar': 'Joue en Classée pour y entrer',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'Il est dans ton équipe Classée : remplace-le d\'abord',
@@ -802,6 +820,7 @@ export default {
     'Novedad': 'Nouveau',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "Les tiens gardent leurs IV, EV et nature, légendaires compris ; ceux de location n'ont aucun extra.",
     'Editar movimientos': 'Modifier les attaques',
+    "Editar equipo": "Modifier l'équipe",
     '¡Lanza una Ball para capturarlo!': 'Lance une Ball pour le capturer !',
     '¡Pulsa F para capturarlo!': 'Appuie sur F pour le capturer !',
     // ---------- Novedades v0.16.1 ----------
@@ -1279,7 +1298,7 @@ export default {
     'Aventura': 'Aventure',
     'Pantalla completa': 'Plein écran',
     'Tu colección': 'Ta collection',
-    'Tu viaje por las regiones y los retos de la Torre': 'Ton voyage à travers les régions et les défis de la Tour',
+    'Tu viaje por las regiones y los mejores entrenadores': 'Ton voyage à travers les régions et les meilleurs dresseurs',
     'Online': 'En ligne',
     'Contra otros entrenadores y sus rankings': 'Contre d\'autres Dresseurs, et leurs classements',
     'Entrenamiento': 'Entraînement',

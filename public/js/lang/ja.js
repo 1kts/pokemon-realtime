@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': 'お気に入りと進化',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'マイポケモンで星を付けるとお気に入りになり、先頭に並び、絞り込めて、誤って売ることもありません。',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': 'ポケモンが進化すると大きなアニメーションで表示され、覚えた技もすぐ設定できます。',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': 'ポケモンは原作に近い技を覚えるようになり、94の新しい技が追加され、まもるのパリィも少し取りやすくなりました。',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': 'バトル中に接続が切れても8秒以内なら戻れて、回線が悪くても滑らかに動きます。',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': 'メニューのラダーに表彰台、シーズン、報酬を表示し、「戻る」は常に元の画面へ戻ります。',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': 'スマホではストーリーが1画面に収まり、ポケモン詳細が全部見え、バトルのカメラも画面から外れません。',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': 'スマホ向けの調整',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'スマホでは、プロフィールとアバター編集で写真が円の中央に収まるようになりました。',
@@ -791,7 +799,17 @@ export default {
     'Aviso legal y privacidad': '法的通知とプライバシー',
     'Retirada de contenido': 'コンテンツの削除',
     'Hecho por {who}': '制作：{who}',
+    'Favoritos': 'お気に入り',
+    'Marcar como favorito': 'お気に入りにする',
+    'Quitar de favoritos': 'お気に入りから外す',
+    'Quítale la estrella para venderlo': '売るには星を外してください',
     'Música de {who}': '音楽: {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "バトルは別のタブか端末で続いています",
+    'Seguir aquí': 'ここで続ける',
+    'Premios de temporada': 'シーズン報酬',
+    'Más datos': '詳細',
+    'Más': 'もっと見る',
+    'Menos': '閉じる',
     'Ver todo': 'すべて見る',
     'Juega Clasificatoria para entrar': 'ランクをプレイして参加',
     'Está en tu equipo de Clasificatoria: cámbialo antes': 'ランクのチームに入っています。先に入れ替えてください',
@@ -803,6 +821,7 @@ export default {
     'Novedad': '新着',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "自分のポケモンは個体値・努力値・性格をそのまま使え、伝説もOK。レンタルは補正なしです。",
     'Editar movimientos': '技を編集',
+    "Editar equipo": "チームを編集",
     '¡Lanza una Ball para capturarlo!': 'ボールを投げて捕まえよう!',
     '¡Pulsa F para capturarlo!': 'Fキーで捕まえよう!',
     // ---------- Novedades v0.16.1 ----------
@@ -1288,7 +1307,7 @@ export default {
     'Aventura': 'ぼうけん',
     'Pantalla completa': '全画面',
     'Tu colección': 'コレクション',
-    'Tu viaje por las regiones y los retos de la Torre': '地方を めぐる 旅と、タワーの 挑戦',
+    'Tu viaje por las regiones y los mejores entrenadores': '地方をめぐる旅と最強のトレーナーたち',
     'Online': 'オンライン',
     'Contra otros entrenadores y sus rankings': 'ほかの トレーナーとの バトルと ランキング',
     'Entrenamiento': 'トレーニング',

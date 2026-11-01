@@ -243,7 +243,7 @@ export const missionViews = {
   view_missions() {
     const wrap = el('div', 'missions-view');
     // «Recoger todo» va en la cabecera, a la derecha (donde otras pantallas llevan el dinero)
-    const bar = this.topbar(t('Misiones'), 'menu');
+    const bar = this.topbar(t('Misiones'));
     if (this.readyCount()) bar.querySelector('.tb-ctx').append(this.claimAllButton());
     wrap.append(bar);
     const body = el('div', 'mv-body scroll');

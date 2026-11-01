@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-01",
- "cazadas": 52,
- "total": 52,
+ "cazadas": 54,
+ "total": 54,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -371,6 +371,20 @@
     "tests/e2e/recoger-todo.e2e.js"
    ],
    "motivo": "recoger-todo.e2e.js: ✗ error: Tiempo agotado esperando: !document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')"
+  },
+  "evolucion-sin-ventana": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/evolucion.e2e.js"
+   ],
+   "motivo": "evolucion.e2e.js: ✗ error: no se ve «¡Ha evolucionado a Charmeleon!»: no está el sitio donde buscar: .evo-scene"
+  },
+  "favorito-se-vende": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ un favorito no se vende sin quitarle la estrella"
   }
  }
 }

@@ -140,9 +140,104 @@
     cantoHelado: { name: 'Canto Helado', type: 'hielo', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 210, dur: 0.14, slow: 0.8 },
     lanzaMugre: { name: 'Lanza Mugre', type: 'veneno', kind: 'proj', cost: 45, cd: 9, wind: 0.45, rec: 0.25, dmg: 26, speed: 440, range: 540, radius: 15, poison: 4 },
     aireAfilado: { name: 'Aire Afilado', type: 'volador', kind: 'proj', cost: 25, cd: 4, wind: 0.25, rec: 0.2, dmg: 16, speed: 640, range: 520, radius: 10 },
+    // Los que salen en las listas reales (tools/learn-map.js), con el mismo reparto de daño por energía
+    aranazo: { name: 'Arañazo', type: 'normal', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 10, range: 68, arc: 1.7 },
+    destructor: { name: 'Destructor', type: 'normal', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 9, range: 66, arc: 1.6, knock: 40 },
+    cuchillada: { name: 'Cuchillada', type: 'normal', kind: 'melee', cost: 25, cd: 4.5, wind: 0.2, rec: 0.2, dmg: 18, range: 74, arc: 1.8 },
+    golpeCabeza: { name: 'Golpe Cabeza', type: 'normal', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 15, range: 70, arc: 1.4, stun: 0.3 },
+    portazo: { name: 'Atizar', type: 'normal', kind: 'melee', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 18, range: 78, arc: 1.6, knock: 90 },
+    pisoton: { name: 'Pisotón', type: 'normal', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 14, range: 66, arc: 1.6, stun: 0.35 },
+    giroRapido: { name: 'Giro Rápido', type: 'normal', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.12, dmg: 9, dist: 200, dur: 0.16, haste: 1.5 },
+    dobleFilo: { name: 'Doble Filo', type: 'normal', kind: 'dash', cost: 40, cd: 8, wind: 0.2, rec: 0.3, dmg: 27, dist: 230, dur: 0.25, knock: 90 },
+    vozarron: { name: 'Vozarrón', type: 'normal', kind: 'cone', cost: 35, cd: 6, wind: 0.3, rec: 0.2, dmg: 19, range: 260, arc: 0.95 },
+    fuerza: { name: 'Fuerza', type: 'normal', kind: 'melee', cost: 30, cd: 5.5, wind: 0.3, rec: 0.25, dmg: 21, range: 72, arc: 1.5, knock: 110 },
+    rapidez: { name: 'Meteoros', type: 'normal', kind: 'proj', cost: 20, cd: 3.5, wind: 0.15, rec: 0.15, dmg: 5, speed: 700, range: 520, radius: 9, count: 3, spread: 0.15 },
+    derribo: { name: 'Derribo', type: 'normal', kind: 'dash', cost: 25, cd: 5.5, wind: 0.15, rec: 0.22, dmg: 17, dist: 220, dur: 0.24 },
+    recuperacion: { name: 'Recuperación', type: 'normal', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.24, selfStun: 0.9 },
+    colmilloIgneo: { name: 'Colmillo Ígneo', type: 'fuego', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 15, range: 68, arc: 1.4, burn: 3 },
+    giroFuego: { name: 'Giro Fuego', type: 'fuego', kind: 'cone', cost: 20, cd: 5, wind: 0.2, rec: 0.2, dmg: 10, range: 170, arc: 0.7, burn: 3, slow: 1 },
+    envite: { name: 'Envite Ígneo', type: 'fuego', kind: 'dash', cost: 45, cd: 9, wind: 0.2, rec: 0.35, dmg: 28, dist: 260, dur: 0.25, burn: 3 },
+    hidropulso: { name: 'Hidropulso', type: 'agua', kind: 'proj', cost: 25, cd: 4, wind: 0.2, rec: 0.2, dmg: 15, speed: 560, range: 520, radius: 11, wet: 2 },
+    acuaCola: { name: 'Acua Cola', type: 'agua', kind: 'melee', cost: 30, cd: 5, wind: 0.3, rec: 0.25, dmg: 21, range: 80, arc: 1.7, wet: 2 },
+    absorber: { name: 'Absorber', type: 'planta', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 560, range: 440, radius: 8, drain: 1 },
+    ondaIgnea: { name: 'Onda Ígnea', type: 'fuego', kind: 'cone', cost: 45, cd: 8, wind: 0.35, rec: 0.3, dmg: 21, range: 270, arc: 1.1, burn: 3 },
+    megaagotar: { name: 'Megaagotar', type: 'planta', kind: 'proj', cost: 20, cd: 4, wind: 0.2, rec: 0.15, dmg: 11, speed: 540, range: 480, radius: 10, drain: 1 },
+    gigadrenado: { name: 'Gigadrenado', type: 'planta', kind: 'proj', cost: 35, cd: 6, wind: 0.25, rec: 0.2, dmg: 17, speed: 520, range: 500, radius: 12, drain: 1.5 },
+    chispazo: { name: 'Chispazo', type: 'electrico', kind: 'area', at: 'self', cost: 35, cd: 7, wind: 0.25, rec: 0.25, dmg: 18, radius: 130, delay: 0.4, stun: 0.3 },
+    recurrente: { name: 'Semilladora', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.15, rec: 0.15, dmg: 5, speed: 640, range: 440, radius: 7, count: 3, spread: 0.18 },
+    lluevehojas: { name: 'Lluevehojas', type: 'planta', kind: 'cone', cost: 50, cd: 10, wind: 0.4, rec: 0.35, dmg: 24, range: 300, arc: 1.2 },
+    colmilloRayo: { name: 'Colmillo Rayo', type: 'electrico', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 14, range: 68, arc: 1.4, stun: 0.3 },
+    punoTrueno: { name: 'Puño Trueno', type: 'electrico', kind: 'melee', cost: 20, cd: 4, wind: 0.25, rec: 0.2, dmg: 17, range: 70, arc: 1.4, stun: 0.25 },
+    bolaVoltio: { name: 'Bola Voltio', type: 'electrico', kind: 'proj', cost: 25, cd: 4.5, wind: 0.25, rec: 0.2, dmg: 15, speed: 620, range: 500, radius: 12, stun: 0.2 },
+    voltioCruel: { name: 'Voltio Cruel', type: 'electrico', kind: 'dash', cost: 45, cd: 9, wind: 0.2, rec: 0.35, dmg: 28, dist: 260, dur: 0.25, stun: 0.4 },
+    colmilloHielo: { name: 'Colmillo Hielo', type: 'hielo', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 14, range: 68, arc: 1.4, slow: 1.5 },
+    vientoHielo: { name: 'Viento Hielo', type: 'hielo', kind: 'cone', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 12, range: 220, arc: 0.9, slow: 2 },
+    punoHielo: { name: 'Puño Hielo', type: 'hielo', kind: 'melee', cost: 20, cd: 4, wind: 0.25, rec: 0.2, dmg: 17, range: 70, arc: 1.4, slow: 1.2 },
+    doblePatada: { name: 'Doble Patada', type: 'lucha', kind: 'melee', cost: 0, cd: 0.5, wind: 0.08, rec: 0.12, dmg: 10, range: 64, arc: 1.5 },
+    esferaAural: { name: 'Esfera Aural', type: 'lucha', kind: 'proj', cost: 30, cd: 4.5, wind: 0.3, rec: 0.2, dmg: 18, speed: 640, range: 540, radius: 13 },
+    machada: { name: 'Machada', type: 'lucha', kind: 'melee', cost: 35, cd: 7, wind: 0.4, rec: 0.3, dmg: 24, range: 72, arc: 1.4, knock: 80 },
+    aBocajarro: { name: 'A Bocajarro', type: 'lucha', kind: 'melee', cost: 45, cd: 9, wind: 0.35, rec: 0.45, dmg: 30, range: 70, arc: 1.5 },
+    demolicion: { name: 'Demolición', type: 'lucha', kind: 'melee', cost: 25, cd: 5, wind: 0.25, rec: 0.2, dmg: 18, range: 68, arc: 1.4 },
+    burbuja: { name: 'Burbuja', type: 'agua', kind: 'proj', cost: 0, cd: 0.55, wind: 0.08, rec: 0.1, dmg: 5, speed: 500, range: 430, radius: 9, slow: 0.5, wet: 1 },
+    tajoCruzado: { name: 'Tajo Cruzado', type: 'lucha', kind: 'melee', cost: 40, cd: 8, wind: 0.4, rec: 0.3, dmg: 26, range: 72, arc: 1.6 },
+    punoDrenaje: { name: 'Puño Drenaje', type: 'lucha', kind: 'melee', cost: 30, cd: 6, wind: 0.3, rec: 0.2, dmg: 17, range: 68, arc: 1.4, drain: 1 },
+    picotazoVeneno: { name: 'Picotazo Veneno', type: 'veneno', kind: 'proj', cost: 0, cd: 0.5, wind: 0.08, rec: 0.1, dmg: 5, speed: 640, range: 430, radius: 6, poison: 1.5 },
+    puyaNociva: { name: 'Puya Nociva', type: 'veneno', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 17, range: 72, arc: 1.3, poison: 3 },
+    ultrapuno: { name: 'Ultrapuño', type: 'lucha', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 200, dur: 0.14 },
+    hojaMagica: { name: 'Hoja Mágica', type: 'planta', kind: 'proj', cost: 20, cd: 3.5, wind: 0.15, rec: 0.15, dmg: 14, speed: 640, range: 480, radius: 10 },
+    ondaCerteza: { name: 'Onda Certera', type: 'lucha', kind: 'proj', cost: 50, cd: 10, wind: 0.5, rec: 0.3, dmg: 30, speed: 440, range: 540, radius: 16 },
+    chispa: { name: 'Chispa', type: 'electrico', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.12, dmg: 10, dist: 210, dur: 0.15, stun: 0.2 },
+    polucion: { name: 'Polución', type: 'veneno', kind: 'cone', cost: 0, cd: 0.6, wind: 0.1, rec: 0.12, dmg: 5, range: 140, arc: 0.8, poison: 1.5 },
+    ondaToxica: { name: 'Onda Tóxica', type: 'veneno', kind: 'area', at: 'self', cost: 40, cd: 8, wind: 0.3, rec: 0.3, dmg: 20, radius: 145, delay: 0.45, poison: 3 },
+    disparoLodo: { name: 'Disparo Lodo', type: 'tierra', kind: 'proj', cost: 20, cd: 4, wind: 0.15, rec: 0.15, dmg: 12, speed: 520, range: 470, radius: 10, slow: 1.2 },
+    ataqueAla: { name: 'Ataque Ala', type: 'volador', kind: 'melee', cost: 20, cd: 4, wind: 0.18, rec: 0.2, dmg: 16, range: 78, arc: 1.7 },
+    picoTaladro: { name: 'Pico Taladro', type: 'volador', kind: 'melee', cost: 35, cd: 6.5, wind: 0.3, rec: 0.25, dmg: 24, range: 76, arc: 1.2 },
+    pajaroOsado: { name: 'Pájaro Osado', type: 'volador', kind: 'dash', cost: 45, cd: 9, wind: 0.2, rec: 0.4, dmg: 29, dist: 290, dur: 0.24 },
+    picotazo: { name: 'Picotazo', type: 'volador', kind: 'melee', cost: 0, cd: 0.45, wind: 0.08, rec: 0.1, dmg: 10, range: 70, arc: 1.2 },
+    acrobata: { name: 'Acróbata', type: 'volador', kind: 'dash', cost: 25, cd: 5, wind: 0.1, rec: 0.15, dmg: 16, dist: 260, dur: 0.2, back: true },
+    terratemblor: { name: 'Terratemblor', type: 'tierra', kind: 'area', at: 'self', cost: 30, cd: 6, wind: 0.25, rec: 0.25, dmg: 15, radius: 130, delay: 0.4, slow: 1.5 },
+    respiro: { name: 'Respiro', type: 'volador', kind: 'heal', cost: 35, cd: 20, wind: 0.3, rec: 0.2, heal: 0.24, selfStun: 0.9 },
+    cabezazoZen: { name: 'Cabezazo Zen', type: 'psiquico', kind: 'melee', cost: 30, cd: 5.5, wind: 0.3, rec: 0.25, dmg: 21, range: 68, arc: 1.4, stun: 0.25 },
+    paranormal: { name: 'Paranormal', type: 'psiquico', kind: 'proj', cost: 25, cd: 4, wind: 0.2, rec: 0.2, dmg: 15, speed: 600, range: 520, radius: 11, slow: 0.6 },
+    psicocorte: { name: 'Psicocorte', type: 'psiquico', kind: 'melee', cost: 20, cd: 4, wind: 0.15, rec: 0.2, dmg: 16, range: 82, arc: 1.6 },
+    pazMental: { name: 'Paz Mental', type: 'psiquico', kind: 'buff', cost: 25, cd: 12, wind: 0.3, rec: 0.1, power: 5 },
+    picadura: { name: 'Picadura', type: 'bicho', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 10, range: 64, arc: 1.4 },
+    chupavidas: { name: 'Chupavidas', type: 'bicho', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 15, range: 66, arc: 1.4, drain: 1 },
+    premonicion: { name: 'Premonición', type: 'psiquico', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.25, rec: 0.3, dmg: 26, radius: 90, delay: 1.1, maxRange: 520 },
+    pinMisil: { name: 'Pin Misil', type: 'bicho', kind: 'proj', cost: 20, cd: 3.5, wind: 0.15, rec: 0.15, dmg: 5, speed: 680, range: 460, radius: 7, count: 3, spread: 0.12 },
+    dobleRayo: { name: 'Rayo Señal', type: 'bicho', kind: 'beam', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 16, len: 460, width: 18, stun: 0.2 },
+    cortefuria: { name: 'Corte Furia', type: 'bicho', kind: 'melee', cost: 15, cd: 2.5, wind: 0.1, rec: 0.15, dmg: 11, range: 70, arc: 1.7 },
+    pedrada: { name: 'Pedrada', type: 'roca', kind: 'proj', cost: 25, cd: 4.5, wind: 0.2, rec: 0.2, dmg: 6, speed: 540, range: 440, radius: 9, count: 3, spread: 0.14 },
+    poderPasado: { name: 'Poder Pasado', type: 'roca', kind: 'proj', cost: 25, cd: 4, wind: 0.25, rec: 0.2, dmg: 15, speed: 500, range: 500, radius: 12 },
+    rocaAfilada: { name: 'Roca Afilada', type: 'roca', kind: 'area', at: 'cursor', cost: 45, cd: 9, wind: 0.3, rec: 0.3, dmg: 27, radius: 62, delay: 0.55, maxRange: 440, stun: 0.3 },
+    joyaLuz: { name: 'Joya de Luz', type: 'roca', kind: 'beam', cost: 30, cd: 5, wind: 0.35, rec: 0.2, dmg: 17, len: 470, width: 20 },
+    punoSombra: { name: 'Puño Sombra', type: 'fantasma', kind: 'melee', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 16, range: 84, arc: 1.4 },
+    rodada: { name: 'Rodar', type: 'roca', kind: 'dash', cost: 15, cd: 4, wind: 0.08, rec: 0.14, dmg: 10, dist: 230, dur: 0.25 },
+    impresionar: { name: 'Impresionar', type: 'fantasma', kind: 'melee', cost: 0, cd: 0.5, wind: 0.1, rec: 0.12, dmg: 9, range: 68, arc: 1.4, stun: 0.1 },
+    garraUmbria: { name: 'Garra Umbría', type: 'fantasma', kind: 'melee', cost: 25, cd: 4.5, wind: 0.2, rec: 0.2, dmg: 18, range: 74, arc: 1.7 },
+    tinieblas: { name: 'Tinieblas', type: 'fantasma', kind: 'proj', cost: 20, cd: 4, wind: 0.2, rec: 0.15, dmg: 13, speed: 520, range: 520, radius: 11 },
+    golpeFantasma: { name: 'Golpe Fantasma', type: 'fantasma', kind: 'dash', cost: 35, cd: 8, wind: 0.2, rec: 0.2, dmg: 21, dist: 260, dur: 0.5, invuln: true },
+    garraDragon: { name: 'Garra Dragón', type: 'dragon', kind: 'melee', cost: 30, cd: 5, wind: 0.25, rec: 0.22, dmg: 22, range: 74, arc: 1.7 },
+    enfado: { name: 'Enfado', type: 'dragon', kind: 'melee', cost: 50, cd: 10, wind: 0.4, rec: 0.5, dmg: 33, range: 78, arc: 1.9, knock: 90 },
+    rayoConfuso: { name: 'Rayo Confuso', type: 'fantasma', kind: 'proj', cost: 30, cd: 10, wind: 0.2, rec: 0.2, dmg: 2, speed: 500, range: 500, radius: 10, stun: 0.9 },
+    dragoaliento: { name: 'Dragoaliento', type: 'dragon', kind: 'cone', cost: 20, cd: 4, wind: 0.2, rec: 0.2, dmg: 12, range: 200, arc: 0.75, stun: 0.3 },
+    alaAcero: { name: 'Ala de Acero', type: 'acero', kind: 'dash', cost: 20, cd: 5, wind: 0.1, rec: 0.15, dmg: 14, dist: 250, dur: 0.2 },
+    colaDragon: { name: 'Cola Dragón', type: 'dragon', kind: 'melee', cost: 25, cd: 5, wind: 0.3, rec: 0.25, dmg: 17, range: 82, arc: 1.8, knock: 130 },
+    cuerpoPesado: { name: 'Cuerpo Pesado', type: 'acero', kind: 'dash', cost: 40, cd: 8, wind: 0.25, rec: 0.3, dmg: 26, dist: 190, dur: 0.28, stun: 0.4 },
+    colaFerrea: { name: 'Cola Férrea', type: 'acero', kind: 'melee', cost: 35, cd: 7, wind: 0.35, rec: 0.25, dmg: 24, range: 80, arc: 1.7, knock: 60 },
+    punoBala: { name: 'Puño Bala', type: 'acero', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 200, dur: 0.14 },
+    fintaTaimada: { name: 'Finta', type: 'siniestro', kind: 'dash', cost: 15, cd: 4, wind: 0.04, rec: 0.1, dmg: 10, dist: 210, dur: 0.14 },
+    giroBola: { name: 'Giro Bola', type: 'acero', kind: 'dash', cost: 30, cd: 6, wind: 0.15, rec: 0.2, dmg: 19, dist: 230, dur: 0.3 },
+    tajoUmbrio: { name: 'Tajo Umbrío', type: 'siniestro', kind: 'melee', cost: 25, cd: 4.5, wind: 0.15, rec: 0.2, dmg: 18, range: 76, arc: 1.7 },
+    persecucion: { name: 'Persecución', type: 'siniestro', kind: 'dash', cost: 15, cd: 4, wind: 0.05, rec: 0.1, dmg: 10, dist: 240, dur: 0.16 },
+    vendetta: { name: 'Vendetta', type: 'siniestro', kind: 'melee', cost: 20, cd: 4, wind: 0.25, rec: 0.2, dmg: 16, range: 68, arc: 1.4 },
+    desarme: { name: 'Desarme', type: 'siniestro', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 17, range: 70, arc: 1.4, knock: 70 },
+    caranto: { name: 'Carantoña', type: 'hada', kind: 'melee', cost: 35, cd: 6.5, wind: 0.3, rec: 0.25, dmg: 24, range: 72, arc: 1.6 },
+    vozCautivadora: { name: 'Voz Cautivadora', type: 'hada', kind: 'cone', cost: 20, cd: 4, wind: 0.15, rec: 0.2, dmg: 12, range: 210, arc: 0.9 },
+    besoDrenaje: { name: 'Beso Drenaje', type: 'hada', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 13, range: 66, arc: 1.3, drain: 1 },
   };
   // Protección (Espacio) la tienen todos: los primeros PERFECT segundos devuelven el golpe.
-  const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.55, perfect: 0.18, block: 0.8 };
+  const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.65, perfect: 0.24, block: 0.8 };
   const ENERGY = { max: 100, regen: 11, onHit: 4 };
   const SWAP = { cd: 4, time: 0.3, perfect: 0.35 };
 
@@ -310,35 +405,54 @@
   }
 
   // ---------- Movimientos por nivel ----------
-  // Cada especie aprende sus movimientos al subir de nivel, como en los juegos: primero los
-  // básicos de sus tipos, luego habilidades y apoyo, y los definitivos a partir del nivel 32.
+  // Cada especie aprende lo que aprende en los juegos (learn.js, generado por tools/fetch-learnsets.js). Si con eso no
+  // llega, se completa con el kit de sus tipos: un básico sin coste desde el principio y 4 movimientos a Nv.50.
   // El jugador elige qué 4 lleva (de los que ya ha aprendido).
-  const LEARN_LEVELS = [1, 1, 8, 14, 20, 26, 32, 40, 48];
+  const LEARN = typeof module !== 'undefined' && module.exports ? require('./learn.js') : root.LEARN;
+  const FIRST_ATTACK = 5;   // antes de este nivel ya tiene que saber un básico
+  // Los niveles de los juegos, comprimidos: el mismo orden, pero antes y como mucho a Nv.50
+  const LEARN_PACE = 0.75, LEARN_MAX = 50;
   const learnCache = new Map();
   function learnset(dex) {
     if (learnCache.has(dex)) return learnCache.get(dex);
     const sp = SPECIES[dex];
     const k1 = KIT[sp.types[0]], k2 = KIT[sp.types[1]] || {};
-    const order = [];
-    const add = m => { if (m && MOVES[m] && !order.includes(m)) order.push(m); };
-    // Los 4 de siempre de la especie van primero (en su orden), intercalados con los del kit
-    const base = sp.moves.filter(m => MOVES[m]);
-    add(base[0]); add(k2.basic || 'placaje'); add(base[1]); add(base[2]);
-    add(k1.dash || k2.dash); add(k2.skill); add(k1.heal || k2.heal || k1.util || k2.util); add(base[3]);
-    add(k1.big); add(k2.big); add(k1.skill);
-    const list = order.slice(0, LEARN_LEVELS.length).map((m, i) => {
-      // Los movimientos caros no se aprenden antes del nivel 32
-      const lvl = MOVES[m].cost >= 45 ? Math.max(32, LEARN_LEVELS[i]) : LEARN_LEVELS[i];
-      return [lvl, m];
-    }).sort((a, b) => a[0] - b[0]);
-    learnCache.set(dex, list);
-    return list;
+    // Los movimientos caros no se aprenden antes del nivel 32
+    const real = ((LEARN && LEARN[dex]) || []).filter(([, m]) => MOVES[m]);
+    const last = real.length ? real[real.length - 1][0] : 1, pace = Math.min(LEARN_PACE, (LEARN_MAX - 1) / Math.max(1, last - 1));
+    const list = real.map(([l, m]) => { const at = 1 + Math.round((l - 1) * pace); return [MOVES[m].cost >= 45 ? Math.max(32, at) : at, m]; });
+    const has = m => list.some(([, x]) => x === m);
+    const karp = dex === 129;   // Magikarp solo sabe salpicar: es su gracia
+    const basic = ([l, m]) => l <= FIRST_ATTACK && MOVES[m].cost === 0 && (MOVES[m].dmg || karp);
+    const first = list.find(basic);
+    if (first) first[0] = 1; else list.push([1, k1.basic]);
+    // Y el básico de su tipo: un Charmander no empieza solo con Arañazo
+    const own = list.find(([, m]) => m === k1.basic);
+    if (own) own[0] = 1; else if (!karp) list.push([1, k1.basic]);
+    const fill = karp ? [] : [[14, k1.skill], [26, k2.skill], [32, k1.big], [38, k2.big], [14, k1.dash || k2.dash]];   // (Magikarp es así)
+    for (const [l, m] of fill) if (m && MOVES[m] && !has(m) && new Set(list.filter(([l2]) => l2 <= 50).map(([, x]) => x)).size < 4) list.push([MOVES[m].cost >= 45 ? Math.max(32, l) : l, m]);
+    // Sin repetidos: de cada movimiento, la primera vez que se aprende
+    const seen = new Set(), out = [];
+    for (const e of list.sort((a, b) => a[0] - b[0])) if (!seen.has(e[1])) { seen.add(e[1]); out.push(e); }
+    learnCache.set(dex, out);
+    return out;
   }
   const learnedAt = (dex, level) => learnset(dex).filter(([l]) => l <= level).map(([, m]) => m);
-  // El básico y los 3 más recientes que ya sabe (lo que llevan los salvajes y los líderes)
+  // Un básico sin coste y los 3 más recientes que ya sabe (lo que llevan los salvajes y los líderes), con uno de apoyo
+  // como mucho: un equipo de solo curas y mejoras no pelea
   function defaultMoves(dex, level) {
     const l = learnedAt(dex, level);
-    return l.length <= 4 ? l : [l[0], ...l.slice(-3)];
+    const first = l.find(m => MOVES[m].cost === 0 && MOVES[m].dmg) || l[0];
+    const out = [first];
+    let support = 0;
+    for (const m of [...l].reverse()) {
+      if (out.length >= 4) break;
+      if (out.includes(m)) continue;
+      if (!MOVES[m].dmg && support++) continue;
+      out.push(m);
+    }
+    for (const m of [...l].reverse()) if (out.length < 4 && !out.includes(m)) out.push(m);
+    return out;
   }
 
   // Nivel -> multiplicador de PS y daño. A nivel 50 vale 1.
@@ -1212,9 +1326,12 @@
     const dex = mon ? mon.dex : +x.dex;
     if ((!mon && !RANKED_POOL.includes(dex)) || taken.some(o => o && o.dex === dex)) return null;
     const can = pvpMoves(dex, mon);
-    const moves = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))].filter(m => can.includes(m)).slice(0, 4);
+    const asked = [...new Set((Array.isArray(x.moves) ? x.moves : []).map(String))];
+    const moves = asked.filter(m => can.includes(m)).slice(0, 4);
     const base = mon && mon.moves && mon.moves.length ? mon.moves.slice(0, 4) : defaultMoves(dex, RANKED_LEVEL);
-    return { ...(mon ? { uid: mon.uid } : {}), dex, moves: moves.length ? moves : base };
+    // (si alguno ya no vale, los huecos se llenan con los de por defecto)
+    const lost = !moves.length || asked.some(m => !can.includes(m));
+    return { ...(mon ? { uid: mon.uid } : {}), dex, moves: lost ? [...new Set([...moves, ...base])].slice(0, 4) : moves };
   }
   // Los 3 huecos del equipo: los que no valgan (lo vendiste, o evolucionó a una especie repetida), a null
   function pvpSlots(team, mons = []) {

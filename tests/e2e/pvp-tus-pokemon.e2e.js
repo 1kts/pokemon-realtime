@@ -4,7 +4,7 @@ module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'coleccionista' });
   me.client.send({ t: 'dev', dex: 150, level: 5, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.tap(/^Clasificatoria/);
+  await page.click('.menu-card.ranked');
   await page.waitSee('Tus Pokémon', { in: '.pvp-team', scroll: true });
   await page.tap(/Mewtwo/, { in: '.pvp-pool' });
   await page.waitSee('Mewtwo', { in: '.pvp-slots', scroll: true });

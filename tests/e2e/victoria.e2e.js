@@ -29,7 +29,7 @@ module.exports = async ({ page, player, ok, log }) => {
   // rival que se mueve)
   // atajo: dejar a los Pokémon de Brock con poca vida, quietos y sin atacar (preparar el combate)
   await page.eval(`window.__app.net.send({ t: 'dev', foeHp: 0.02, foeIdle: true }); true`);
-  // A golpes: el ratón apunta al rival y pulsa (Pistola Agua). atajo: dónde está el rival en la pantalla y respecto al
+  // A golpes: el ratón apunta al rival y pulsa (su básico). atajo: dónde está el rival en la pantalla y respecto al
   // tuyo, en unidades de la arena (la arena es 3D, sin un elemento que buscar)
   const foeAt = `(() => { const b = window.__app.battle; if (!b || !b.renderPos) return null; const f = b.renderPos[b.foeIdx], m = b.renderPos[1 - b.foeIdx], p = b.toScreen(f.x, f.y);
     return { x: Math.round(p.x), y: Math.round(p.y), dx: f.x - m.x, dy: f.y - m.y, mx: m.x, my: m.y,
@@ -46,7 +46,7 @@ module.exports = async ({ page, player, ok, log }) => {
     if (!p) { await page.waitFor('window.__app.battle && window.__app.battle.renderPos', 5000).catch(() => {}); continue; }
     if (p.won) break;
     await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');   // (un fotograma de la página entre vuelta y vuelta)
-    // (clic: Pistola Agua; y de vez en cuando Q, Hidrobomba, que también va a donde apunta el ratón)
+    // (clic: su básico; y de vez en cuando Q, otro de sus ataques, que también va a donde apunta el ratón)
     if (p.free) { await page.mouseAt(p.x, p.y, { click: true }); if (i % 4 === 3) await page.key('KeyQ'); }
     if (Math.hypot(p.dx, p.dy) < 70) { last = null; continue; }
     if (last && Math.hypot(p.mx - last.mx, p.my - last.my) < 2) detour = 2;

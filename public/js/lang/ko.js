@@ -12,6 +12,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.37.0 ----------
+    'Favoritos y evoluciones': '즐겨찾기와 진화',
+    'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '내 포켓몬에서 별로 즐겨찾기를 표시하면 맨 앞에 오고, 필터로 볼 수 있으며, 실수로 팔리지 않아요.',
+    'Cuando un Pokémon evoluciona lo ves en grande, con su animación y lo que aprende, y puedes ir directo a ponerle el movimiento.': '포켓몬이 진화하면 애니메이션과 배운 기술을 크게 보여 주고, 바로 기술 설정으로 갈 수 있어요.',
+    'Los Pokémon aprenden movimientos parecidos a los de los juegos, con 94 nuevos, y Protección da algo más de margen para el parry.': '포켓몬이 실제 게임에 가까운 기술을 배우고 94개의 새 기술이 추가됐으며, 방어의 패리 여유도 조금 늘었어요.',
+    'Si se corta la conexión en combate tienes 8 segundos para volver, y los combates van más fluidos con mala red.': '전투 중 연결이 끊겨도 8초 안에 돌아올 수 있고, 네트워크가 나빠도 전투가 더 부드러워요.',
+    'La Ladder del menú enseña podio, temporada y premios, y «Volver» te lleva siempre a la pantalla de la que venías.': '메뉴 래더에 시상대, 시즌, 보상이 나오고, ‘뒤로’는 항상 이전 화면으로 돌아가요.',
+    'En el móvil, Historia cabe en una sola pantalla, la ficha del Pokémon se ve entera y la cámara del combate no te saca de la pantalla.': '모바일에서 스토리가 한 화면에 들어오고, 포켓몬 정보가 전부 보이며, 전투 카메라가 화면 밖으로 나가지 않아요.',
     // ---------- Novedades v0.36.3 ----------
     'Retoques para el móvil': '모바일 다듬기',
     'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': '모바일에서 프로필과 아바타 편집기의 사진이 원 안 가운데에 맞게 표시됩니다.',
@@ -791,7 +799,17 @@ export default {
     'Aviso legal y privacidad': '법적 고지 및 개인정보',
     'Retirada de contenido': '콘텐츠 삭제',
     'Hecho por {who}': '제작: {who}',
+    'Favoritos': '즐겨찾기',
+    'Marcar como favorito': '즐겨찾기에 추가',
+    'Quitar de favoritos': '즐겨찾기에서 제거',
+    'Quítale la estrella para venderlo': '팔려면 별을 해제하세요',
     'Música de {who}': '음악: {who}',
+    "Tu combate sigue en otra pestaña o dispositivo": "전투가 다른 탭이나 기기에서 계속되고 있어요",
+    'Seguir aquí': '여기서 계속',
+    'Premios de temporada': '시즌 보상',
+    'Más datos': '자세히',
+    'Más': '더 보기',
+    'Menos': '접기',
     'Ver todo': '모두 보기',
     'Juega Clasificatoria para entrar': '랭크전을 하면 들어가요',
     'Está en tu equipo de Clasificatoria: cámbialo antes': '랭크 팀에 있어요: 먼저 교체하세요',
@@ -803,6 +821,7 @@ export default {
     'Novedad': '새 소식',
     'Los tuyos llevan sus IV, EV y naturaleza, legendarios incluidos; los de alquiler van sin extras.': "내 포켓몬은 개체값·노력치·성격을 그대로 쓰고 전설도 가능해요. 대여 포켓몬은 추가 능력이 없어요.",
     'Editar movimientos': '기술 편집',
+    "Editar equipo": "팀 편집",
     '¡Lanza una Ball para capturarlo!': '볼을 던져 잡으세요!',
     '¡Pulsa F para capturarlo!': 'F를 눌러 잡으세요!',
     // ---------- Novedades v0.16.1 ----------
@@ -1288,7 +1307,7 @@ export default {
     'Aventura': '모험',
     'Pantalla completa': '전체 화면',
     'Tu colección': '내 컬렉션',
-    'Tu viaje por las regiones y los retos de la Torre': '여러 지방을 도는 여행과 타워의 도전',
+    'Tu viaje por las regiones y los mejores entrenadores': '지방을 누비는 여정과 최고의 트레이너',
     'Online': '온라인',
     'Contra otros entrenadores y sus rankings': '다른 트레이너와의 배틀과 랭킹',
     'Entrenamiento': '훈련',
