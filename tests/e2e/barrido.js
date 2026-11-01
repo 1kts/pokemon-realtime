@@ -115,11 +115,10 @@ module.exports = (SIZES, only) => async ({ page, player, ok }) => {
     await page.eval(AXE + '; true');
     const look = async label => {
       await settle(); await sleep(150);
-      // (y se mide el aspecto final: con WebKit a pocos fotogramas, una entrada a medias, p. ej. las tarjetas de Práctica
-      // aún 8 px más abajo, se montaba sobre la barra legal en una pantalla que acabada no la pisa)
-      await page.eval(`(() => { const s = document.createElement('style'); s.id = 'e2e-still'; s.textContent = '*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition: none !important; }'; document.head.append(s); return true; })()`);
-      let r;
-      try { r = await page.eval(CHECK(touch, !!geomFile)); } finally { await page.eval(`(document.getElementById('e2e-still') || { remove() {} }).remove(), true`); }
+      // (y se mide en un fotograma, que es lo que sale en pantalla: WebKit no pone el aspecto final de una animación ya
+      // acabada hasta pintar otro, y con el CI a 2-3 fotogramas por segundo las tarjetas de Práctica a 667×375 seguían
+      // 8 px más abajo, encima de la barra legal; si en 3 s no pinta ninguno, se mide igual)
+      const r = await page.eval(`new Promise(r => { let done = false; const go = () => { if (!done) { done = true; r(${CHECK(touch, !!geomFile)}); } }; requestAnimationFrame(go); setTimeout(go, 3000); })`);
       for (const o of r.out) problems.push(`${W}×${H} ${label}: ${o}`);
       if (r.g) geom[`${W}x${H} ${label}`] = r.g;
       // Accesibilidad (WCAG 2 A y AA) de lo que hay a la vista: la ventana de encima o la pantalla
