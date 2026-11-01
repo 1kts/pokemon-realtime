@@ -24,7 +24,13 @@ module.exports = async ({ page, player, ok }) => {
     // movía entre poner y levantar el ratón y el clic no llegaba)
     await page.waitFor(`[...document.querySelectorAll('.loot-pop:not(.out), .loot-pop:not(.out) .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
     await page.click('.loot-pop:not(.out) .acts .primary'); pops++;
-    await page.waitFor(`!document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')`);
+    // (hasta 30 s: con el CI a 1-2 fotogramas por segundo, el clic ha llegado a tardar en atenderse. Si no se cierra, se
+    // dice qué había donde se pulsó, para saber por qué)
+    if (!(await page.waitFor(`!document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')`, 30000).then(() => true, () => false))) {
+      ok(false, '«¡Genial!» cierra el premio: ' + await page.eval(`(() => { const b = document.querySelector('.loot-pop .acts .primary'), r = b && b.getBoundingClientRect(), top = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return JSON.stringify({ premios: [...document.querySelectorAll('.loot-pop')].map(p => p.className + (p.dataset.e2eVisto ? ' (contado)' : '')), boton: r && [r.x, r.y, r.width, r.height].map(Math.round), encima: top && top.outerHTML.slice(0, 100), foco: document.activeElement && document.activeElement.outerHTML.slice(0, 60) }); })()`));
+      break;
+    }
     await page.waitFor(`document.querySelector('.loot-pop:not(.out):not([data-e2e-visto])')`, 1500).catch(() => {});   // (por si sale otro detrás)
   }
   ok(pops === 1, `y es uno solo: al cerrarlo no sale otro detrás (${pops})`);
