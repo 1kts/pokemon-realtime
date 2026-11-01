@@ -1,11 +1,12 @@
 // En el móvil en horizontal: la ficha de ruta dice lo justo con «Explorar» a la vista; Mis Pokémon enseña muchos de un
 // vistazo y lo demás sigue en su ficha; y el editor del avatar lleva pestañas, filtro y buscador en una fila.
-module.exports = async ({ page, player, ok }) => {
+// (cada tamaño, en su archivo: los dos juntos pasaban de los 5 minutos en el CI; 667×375 en movil-compacto-pequeno.e2e.js)
+const prueba = sizes => async ({ page, player, ok }) => {
   const me = await player({ user: 'compacto' });
   for (const dex of [4, 16, 19, 25, 7, 1, 10, 13, 41, 74, 92]) { me.client.send({ t: 'dev', dex, level: 20, region: 'kanto', item: 'caramelo', qty: 2 }); await me.client.wait(m => m.t === 'profile'); }
   await page.goto('/');
   await page.eval(`localStorage.setItem('arena.touch', '1'); localStorage.setItem('arena.storyGuide', '1'); true`);
-  for (const [w, h] of [[844, 390], [667, 375]]) {
+  for (const [w, h] of sizes) {
     const en = `${w}×${h}`;
     await page.resize(w, h);
     await page.loginAs(me.token);
@@ -59,3 +60,5 @@ module.exports = async ({ page, player, ok }) => {
     ok(tc.derecha && tc.libre, `${en}: la cuenta va a la derecha y no pisa los datos (${JSON.stringify(tc)})`);
   }
 };
+module.exports = prueba([[844, 390]]);
+module.exports.prueba = prueba;

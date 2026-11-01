@@ -1,5 +1,5 @@
 // Lo que ganas se puede seguir: una bolita, sin número, lleva hasta donde está lo nuevo y se apaga al verlo; y la ventana
-// de premio deja ponérselo ahí mismo.
+// de premio deja ponérselo ahí mismo (eso, en novedades-premio.e2e.js).
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'novedades' });
   const dev = async m => { me.client.send({ t: 'dev', ...m }); await me.client.wait(x => x.t === 'profile'); };
@@ -48,19 +48,5 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitSee('Llamas', { in: '.ava-edit' });
   ok(!(await dot('.ae-tabs')), 'al abrirla se apaga');
   await page.key('Escape');
-
-  // Un premio de maestría se pone desde su propia ventana
-  await dev({ mastery: { dex: 4, wins: 500 } });
-  await page.loginAs(me.token);
-  await page.waitSee('Aventura');
-  await page.tap('Mis Pokémon');
-  await page.click(await page.within('Charmander', '.mon-card'));
-  await page.tap(/^Retos/, { in: '.mon-sheet' });
-  // (el del título, directamente: recoger antes los otros cuatro, uno a uno, pasaba de los 5 minutos en el CI)
-  await page.tap('¡Recoger!', { in: await page.within('Maestro de Charmander', '.ms-retos .lg-row') });
-  await page.waitSee('Usar este título', { in: '.loot-pop' });
-  await page.tap('Usar este título');
-  await page.waitSee('Maestro de Charmander', { in: '.ms-retos', scroll: true });
-  const puesto = await page.eval(`window.__app.ui.profile.title`);   // atajo: el título solo se ve en otra pantalla
-  ok(puesto === 'Maestro de Charmander', `un título ganado se pone desde la ventana del premio (${puesto})`);
+  // (el premio de maestría que se pone desde su ventana, en novedades-premio.e2e.js: juntos pasaban de los 5 minutos en el CI)
 };

@@ -1,5 +1,5 @@
 // Música (2): qué tema pide cada tipo de combate, que existen todas las grabaciones y que los temas cortos
-// enlazan con el siguiente (aparte de musica.e2e.js, para que ninguna de las dos pase de 3 minutos en el CI)
+// enlazan con el siguiente (eso, en musica-cadenas.e2e.js; aparte de musica.e2e.js, para que ninguna pase de 3 minutos en el CI)
 module.exports = async ({ page, ok }) => {
   await page.goto('/');
   await page.eval(`localStorage.setItem('arena.lang', 'es'); localStorage.setItem('arena.seenVersion', CHANGELOG[0].v); true`);
@@ -10,12 +10,6 @@ module.exports = async ({ page, ok }) => {
   const tracks = await page.eval(`import('/js/music.js').then(m => { const by = k => Object.values(Data.NODES).find(n => n.kind === k);
     return ['elite', 'champion', 'gym'].map(k => m.trackForBattle({ mode: 'trainer', map: by(k).map }, Data)); })`);
   ok(tracks.join() === 'champion,champion,gym-roca', `el Alto Mando y el Campeón usan el tema del Campeón; el gimnasio de Brock, el suyo (${tracks.join(', ')})`);
-  // El de los líderes (menos de un minuto) enlaza con el de combate en vez de volver a empezar
-  await page.realClick('body');
-  await page.eval(`window.__app.music.play('leader'); true`);
-  // atajo: la música no se ve: se mira qué grabaciones encadena el tema
-  ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 20000).then(() => true, () => false), 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
-
   // Cada tipo de combate pide su tema: Práctica, Clasificatoria y Partida rápida, Torre, salvajes y gimnasios de cada región
   const byMode = await page.eval(`import('/js/music.js').then(m => {
     const nodes = Object.values(Data.NODES), first = (r, k) => nodes.find(n => n.region === r && n.kind === k);
@@ -61,12 +55,5 @@ module.exports = async ({ page, ok }) => {
   ok(files.torre === 5, `cinco combates seguidos de la Torre empiezan con 5 temas distintos (${files.torre})`);
   ok(files.rutas === 'route-cueva,route-lagoJohto,route-bosque,wild', `cada estilo de ruta pide su tema y la pradera, el de siempre (${files.rutas})`);
   ok(files.hold.join() === '5,2,1', `en el menú cada tema dura al menos 3 minutos antes de pasar al siguiente, y en combate pasa al acabar (${files.hold})`);
-
-  // Las cadenas nuevas: Torre (Battle Theme IV y The Evil One), salvajes y gimnasios de Johto (enlazan con los de Kanto)
-  // y los gimnasios con tema propio enlazan con los de los líderes de su región
-  for (const [name, next, n] of [['tower', 'maligno', 2], ['wild', 'ruta', 2], ['wildJohto', 'viaje', 2], ['route-cueva', 'caverna, mina y salvajes', 4], ['route-lagoJohto', 'isla y salvajes', 3], ['leaderJohto', 'lider', 2], ['gym-fuego', 'lider y desierto', 3], ['gym-dragon', 'gimnasio y lider', 3]]) {
-    await page.eval(`window.__app.music.play('${name}'); true`);
-    // atajo: la música no se ve (ver arriba). Hasta 60 s: al empezar se están descargando las demás grabaciones
-    ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === '${name}' && window.__app.music.file.list.filter(Boolean).length === ${n}`, 60000).then(() => true, () => false), `el tema «${name}», al acabar, enlaza con ${next}`);
-  }
+  // (qué grabaciones encadena cada tema, en musica-cadenas.e2e.js: juntas pasaban de los 5 minutos en el CI)
 };
