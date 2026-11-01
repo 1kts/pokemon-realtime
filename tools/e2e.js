@@ -260,11 +260,14 @@ async function setup(name, extraEnv = {}) {
       await page.eval('window.__e2eAnimOk = false; true');
       // (con la máquina muy cargada una sola lectura puede tardar segundos: siempre unas cuantas, aunque pasen los 4 s;
       // en una máquina más lenta, con E2E_TIMEOUT de más, también se espera más)
-      let r = await page.eval(where), prev = null, reads = 1;
+      // (cada lectura en un fotograma nuevo de la página: con la página casi parada, dos lecturas seguidas desde fuera
+      // caían en el mismo fotograma y una ventana a media entrada parecía quieta; el clic caía donde ya no estaba el botón)
+      const read = () => page.eval(`new Promise(res => requestAnimationFrame(() => res(${where})))`);
+      let r = await read(), prev = null, reads = 1;
       while ((r.err || !prev || prev.x !== r.x || prev.y !== r.y || prev.w !== r.w || prev.h !== r.h) && (Date.now() - t0 < 4000 * PATIENCE || reads < 5)) {
         prev = r.err ? null : r; await sleep(80); reads++;
         if (Date.now() - t0 > 1200) await page.eval('window.__e2eAnimOk = true; true');
-        r = await page.eval(where);
+        r = await read();
       }
       if (r.err) throw new Error(`No se puede pulsar «${textOrSel}»: ${r.err}`);
       return r;
