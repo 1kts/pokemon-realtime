@@ -5,7 +5,7 @@ module.exports = async ({ page, player, ok }) => {
   // atajo: la pantalla de espera sin entrar en la cola de verdad (a los 20 s saldría un rival de la IA y acabaría la espera)
   await page.eval(`window.__app.ui.queueMode = 'ranked'; window.__app.ui.show('queue'); true`);
   await page.waitFor(`document.querySelector('.q-tip.on')`);
-  ok(await page.eval(`!!document.querySelector('.queue-box .q-radar .q-ball')`) && await page.see('Clasificatoria', { in: '.q-mode' }) && await page.see('entrenador de la IA', { in: '.q-note' }),
+  ok(await page.eval(`!!document.querySelector('.queue-box .q-radar .q-ball')`) && await page.see('PvP', { in: '.q-mode' }) && await page.see('entrenador de la IA', { in: '.q-note' }),
     'sale la Poké Ball con el radar, el modo y el aviso de la IA');
   const first = await page.eval(`document.querySelector('.q-tip').textContent`);
   ok(await page.waitFor(`document.querySelector('.q-tip.on') && document.querySelector('.q-tip').innerText !== ${JSON.stringify(first)}`, 15000).then(() => true, () => false), 'los mensajes van cambiando');

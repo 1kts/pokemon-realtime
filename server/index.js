@@ -182,7 +182,7 @@ function startBattle(clientsBySide, opts, onEnd) {
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
-      try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
+      if (b.mode !== 'friendly') try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
       try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
     },
@@ -194,7 +194,7 @@ function startBattle(clientsBySide, opts, onEnd) {
 // ---------- Colas ----------
 const SAME_FOE_ELO = 3;              // partidas al día contra el mismo rival que cuentan para el ELO
 const pairGames = new Map();         // día -> (par de cuentas -> partidas)
-const queues = { ranked: [], casual: [] };
+const queues = { ranked: [] };
 
 // ---------- Administración (server/admin.js) ----------
 // Mantenimiento: como al apagar, no se empiezan combates ni colas nuevas, pero el servidor sigue
@@ -209,7 +209,7 @@ const adminPanel = createAdmin({ clients, send, sendProfile, queues, version: VE
 function popInfo() {
   let online = 0, battling = 0;
   for (const c of clients) if (c.profile) { online++; if (c.battle) battling++; }
-  return { online, battling, queue: { ranked: queues.ranked.length, casual: queues.casual.length } };
+  return { online, battling, queue: { ranked: queues.ranked.length } };
 }
 setInterval(() => {
   const pop = popInfo(), key = JSON.stringify(pop);
@@ -218,7 +218,9 @@ setInterval(() => {
 
 function joinQueue(c, mode) {
   if (busy(c)) return;
-  if (!D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
+  const ch = challengeOf(c);
+  if (ch) endChallenge(ch, 'gone');
+  if (!D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en PvP' });
   c.queue = mode;
   c.queuedAt = Date.now();
   queues[mode].push(c);
@@ -242,20 +244,20 @@ function dropBadTeams(mode) {
     if (D.pvpTeam(c.profile.pvpTeam, c.profile.mons)) continue;
     leaveQueue(c);
     send(c, { t: 'unqueued' });
-    send(c, { t: 'error', msg: 'Prepara antes tu equipo en Clasificatoria' });
+    send(c, { t: 'error', msg: 'Prepara antes tu equipo en PvP' });
   }
 }
 
 function matchmake(mode) {
   dropBadTeams(mode);
   const q = queues[mode];
-  // Clasificatoria: el que más lleva esperando contra el de ELO más parecido; rápida, el primero que haya
+  // El que más lleva esperando contra el de ELO más parecido
   for (let ai = 0; ai < q.length; ai++) {
     const a = q[ai];
     let bi = -1, best = Infinity;
     q.forEach((x, i) => {
       if (i === ai || sameOrigin(a, x)) return;
-      const d = mode === 'ranked' ? Math.abs(x.profile.elo - a.profile.elo) : i;
+      const d = Math.abs(x.profile.elo - a.profile.elo);
       if (d < best) { best = d; bi = i; }
     });
     if (bi < 0) continue;
@@ -270,13 +272,63 @@ function matchmake(mode) {
 function npcMatch() {
   if (maintenance) return;
   const now = Date.now();
-  for (const mode of ['ranked', 'casual']) { dropBadTeams(mode); for (const c of [...queues[mode]]) {
+  dropBadTeams('ranked');
+  for (const c of [...queues.ranked]) {
     if (now - c.queuedAt < npc.WAIT_MS) continue;
     const o = npc.pick(c.profile.elo);
     if (!o) continue;
     leaveQueue(c);
-    startPvp({ mode, players: [c, { profile: o, npc: true }] });
-  } }
+    startPvp({ mode: 'ranked', players: [c, { profile: o, npc: true }] });
+  }
+}
+
+// ---------- Retar a un amigo ----------
+// Un combate amistoso, sin ELO ni premios, con los equipos guardados: se reta desde la lista de Amigos y el amigo acepta
+// o rechaza. Caduca solo, y si uno se va al otro no se le queda colgado
+const CHALLENGE_WAIT = 15000;         // ms sin poder volver a retar a quien te ha dicho que no o no ha contestado
+const challenges = new Set();         // { a: el que reta, b: el retado, timer }
+const challengeBlock = new Map();     // 'id:id' -> hasta cuándo no se puede volver a retar
+const challengeOf = c => [...challenges].find(x => x.a.profile === c.profile || x.b.profile === c.profile);
+const toAll = (p, msg) => { for (const x of clients) if (x.profile === p) send(x, msg); };   // (a todas sus pestañas)
+
+function endChallenge(ch, why) {
+  clearTimeout(ch.timer);
+  challenges.delete(ch);
+  if (why === 'declined' || why === 'expired') challengeBlock.set(`${ch.a.profile.id}:${ch.b.profile.id}`, Date.now() + CHALLENGE_WAIT);
+  for (const c of [ch.a, ch.b]) toAll(c.profile, { t: 'challengeend', why });
+}
+
+function challenge(c, msg) {
+  const ch = challengeOf(c);
+  if (msg.a === 'cancel') { if (ch && ch.a.profile === c.profile) endChallenge(ch, 'cancelled'); return; }
+  if (msg.a === 'decline') { if (ch && ch.b.profile === c.profile) endChallenge(ch, 'declined'); return; }
+  if (msg.a === 'accept') {
+    if (!ch || ch.b.profile !== c.profile) return;
+    const { a } = ch, b = c;   // (combate quien ha aceptado, en la pestaña en que lo ha hecho)
+    const ready = !busy(a) && !busy(b) && D.pvpTeam(a.profile.pvpTeam, a.profile.mons) && D.pvpTeam(b.profile.pvpTeam, b.profile.mons);
+    if (!ready) return endChallenge(ch, 'gone');
+    clearTimeout(ch.timer);
+    challenges.delete(ch);
+    return startPvp({ mode: 'friendly', players: [a, b] });
+  }
+  if (msg.a !== 'send') return;
+  const p = c.profile, id = String(msg.id || '');
+  if (ch) return send(c, { t: 'error', msg: 'Ya has retado a alguien: espera su respuesta' });
+  if (!(p.friends || []).includes(id)) return send(c, { t: 'error', msg: 'Solo puedes retar a tus amigos' });
+  if (busy(c)) return;
+  if (!D.pvpTeam(p.pvpTeam, p.mons)) return send(c, { t: 'error', msg: 'Prepara antes tu equipo en PvP' });
+  const until = challengeBlock.get(`${p.id}:${id}`);
+  if (until > Date.now()) return send(c, { t: 'error', msg: 'Espera un poco antes de volver a retarle' });
+  challengeBlock.delete(`${p.id}:${id}`);
+  const o = [...clients].find(x => x.profile && x.profile.id === id);
+  if (!o) return send(c, { t: 'error', msg: 'Tu amigo no está conectado' });
+  if (busy(o) || challengeOf(o)) return send(c, { t: 'error', msg: 'Tu amigo está ocupado' });
+  const ms = +process.env.CHALLENGE_MS || 30000;
+  const made = { a: c, b: o };
+  made.timer = setTimeout(() => endChallenge(made, 'expired'), ms);
+  challenges.add(made);
+  toAll(o.profile, { t: 'challenge', from: { id: p.id, name: p.name, tag: p.tag }, ms });
+  send(c, { t: 'challengesent', to: { id: o.profile.id, name: o.profile.name }, ms });
 }
 
 // Cada uno combate con el equipo de 3 que se preparó (a Nv.50): los suyos con sus extras, como en la Torre
@@ -292,13 +344,13 @@ function startPvp(match) {
   const [a, b] = match.players;
   const maps = Object.keys(D.MAPS);
   const lvl = D.RANKED_LEVEL;
-  try { balance.draft(match.mode, match.picks, []); } catch (e) { console.error('Datos de equilibrio:', e); }
+  if (match.mode === 'ranked') try { balance.draft(match.mode, match.picks, []); } catch (e) { console.error('Datos de equilibrio:', e); }
   startBattle(match.players, {
     mode: match.mode, map: maps[Math.floor(Math.random() * maps.length)],
     sides: match.players.map((c, i) => ({ name: store.fullName(c.profile), card: store.versusCard(c.profile), npc: !!c.npc, ai: c.npc ? npc.skillOf(c.profile.elo) : undefined, team: match.teams[i].map(x => pvpMon(c.profile, x)) })),
   }, (result, battle) => {
-    if (result.winner < 0) return [];
-    // Maestría para el ganador, en clasificatoria y en rápida
+    if (result.winner < 0 || match.mode === 'friendly') return [];   // (lo amistoso no da nada: dos cuentas no se farmean)
+    // Maestría para el ganador
     const mastery = rewards.addMastery(match.players[result.winner].profile, match.picks[result.winner]);
     rewards.addLineStat(match.players[result.winner].profile, match.picks[result.winner], 'pvp');
     match.players.forEach((c, i) => rewards.addKOs(c.profile, battle, i));
@@ -312,11 +364,6 @@ function startPvp(match) {
       }
     });
     const progress = match.players.map((c, i) => missions.diff(c.profile, before[i]));
-    if (match.mode !== 'ranked') {
-      store.save();
-      setTimeout(() => match.players.filter(c => !c.npc).forEach(sendProfile), 50);
-      return progress.map((m, i) => ({ missions: m, ...(i === result.winner ? { mastery } : {}) }));
-    }
     // ELO con K=32
     const [pa, pb] = [a.profile, b.profile];
     const [ea0, eb0] = [pa.elo, pb.elo];
@@ -330,21 +377,24 @@ function startPvp(match) {
     pairs.set(pairKey, n);
     const eloOk = n <= SAME_FOE_ELO;
     const da = eloOk ? Math.round(32 * (sa - ea)) : 0;
-    pa.elo += da; pb.elo -= da;
+    // Calibración: en las primeras partidas, perder cuesta la mitad; el que gana suma entero
+    const cost = (sa ? pb : pa).ranked < D.RANKED_CALIB ? Math.ceil(Math.abs(da) / 2) : Math.abs(da);
+    const [dA, dB] = sa ? [da, -cost] : [-cost, -da];
+    pa.elo += dA; pb.elo += dB;
     pa.ranked++; pb.ranked++;
     if (sa) { pa.wins++; pb.losses++; } else { pa.losses++; pb.wins++; }
     const [win, lose] = sa ? [pa, pb] : [pb, pa];
     audit.log('ranked.resultado', { actor: win.id, target: lose.id, elo: Math.abs(da), winElo: win.elo, loseElo: lose.elo, mode: match.mode });
     const leagues = [D.leagueOf(ea0), D.leagueOf(eb0)];
     const pay = [
-      rewards.afterRanked(pa, { won: !!sa, delta: da, foe: store.fullName(pb), foeElo: eb0, team: match.picks[0], foeTeam: match.picks[1] }),
-      rewards.afterRanked(pb, { won: !sa, delta: -da, foe: store.fullName(pa), foeElo: ea0, team: match.picks[1], foeTeam: match.picks[0] }),
+      rewards.afterRanked(pa, { won: !!sa, delta: dA, foe: store.fullName(pb), foeElo: eb0, team: match.picks[0], foeTeam: match.picks[1] }),
+      rewards.afterRanked(pb, { won: !sa, delta: dB, foe: store.fullName(pa), foeElo: ea0, team: match.picks[1], foeTeam: match.picks[0] }),
     ];
     store.save();
     setTimeout(() => match.players.filter(c => !c.npc).forEach(sendProfile), 50);
-    return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? -da : da, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
+    return [pa, pb].map((p, i) => ({ mastery: i === result.winner ? mastery : [], elo: i ? dB : dA, total: p.elo, coins: pay[i].coins, firstWin: pay[i].firstWin, gems: pay[i].gems, missions: progress[i],
       // (tier, no league: en los resultados 'league' es el desafío de la Liga Pokémon, y el cliente lo confundía)
-      eloCapped: !eloOk, tier: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? -da : da) > 0 ? D.leagueOf(p.elo) : null }));
+      eloCapped: !eloOk, tier: D.leagueOf(p.elo), promoted: D.leagueOf(p.elo) !== leagues[i] && (i ? dB : dA) > 0 ? D.leagueOf(p.elo) : null }));
   });
 }
 
@@ -443,6 +493,8 @@ wss.on('connection', (ws, req) => {
     if (c.ws !== ws) return;   // (ya ha entrado por otra conexión)
     clients.delete(c);
     leaveQueue(c);
+    const ch = c.profile && challengeOf(c);
+    if (ch && (ch.a === c || ![...clients].some(x => x.profile === c.profile))) endChallenge(ch, 'gone');
     usage.close(c);
     if (c.battle && c.profile && c.battle.state !== 'over') return holdBattle(c);
     if (c.profile) store.release(c.profile);
@@ -538,7 +590,7 @@ function handle(c, msg) {
     store.save();
     return sendProfile(c);
   }
-  // Equipo para Clasificatoria y Partida rápida: 3 Pokémon del pool, a Nv.50, con sus movimientos
+  // Equipo para PvP: 3 Pokémon del pool, a Nv.50, con sus movimientos
   if (msg.t === 'pvpteam') {
     const team = D.pvpTeam(msg.team, c.profile.mons);
     if (!team) return send(c, { t: 'error', msg: 'Elige 3 Pokémon distintos de la lista' });
@@ -635,7 +687,8 @@ function handle(c, msg) {
     if (r.request) for (const x of clients) if (x.profile === r.request) send(x, { t: 'friendreq', name: c.profile.name, tag: c.profile.tag });
     return send(c, { t: 'friendok', msg: r.ok });
   }
-  if (msg.t === 'queue' && (msg.mode === 'ranked' || msg.mode === 'casual')) return joinQueue(c, msg.mode);
+  if (msg.t === 'queue') return joinQueue(c, 'ranked');   // (hay una sola cola de PvP)
+  if (msg.t === 'challenge' && c.profile) return challenge(c, msg);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);
 }
@@ -790,7 +843,7 @@ const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
 const MAINT_MSG = 'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.';
 const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
-  || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue';
+  || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue' || (msg.t === 'challenge' && msg.a === 'accept');
 let draining = false;
 
 function shutdown() {

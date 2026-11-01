@@ -15,7 +15,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(art.includes('portraits/emo/1/Happy.png'), 'un retrato de Tesoros con emoción usa su cara con esa emoción');
 
   // Combate (el del tutorial: Pokémon de la Gen 1 contra Snorlax): caras en la barra y emociones
-  await page.click('.menu-card.tutorial');
+  await page.mode('Tutorial');
   await page.waitFor(`window.__app.battle && document.querySelectorAll('.tm img.face').length >= 2`);
   ok(await page.eval(`[...document.querySelectorAll('.tm img.face')].every(i => /portraits\\/emo\\/\\d+\\/(s\\/)?Normal\\.png$/.test(i.src))`),
     'en combate la barra de equipos lleva la cara normal de cada Pokémon');

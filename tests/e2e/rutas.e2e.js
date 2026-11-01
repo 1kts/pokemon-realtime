@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', dex: 4, level: 10, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitFor(`[...document.querySelectorAll('.story-path .sp-route')].some(b => /Bosque Verde/.test(b.title + b.getAttribute('aria-label')))`);
   // (en el Camino, la tarjeta del Bosque Verde: se lleva a la vista y se toca)
   await page.eval(`(() => { const b = [...document.querySelectorAll('.story-path .sp-route')].find(b => /Bosque Verde/.test(b.title + b.getAttribute('aria-label'))); b.classList.add('bv-test'); document.querySelector('.story-path').style.scrollBehavior = 'auto'; b.scrollIntoView({ inline: 'center', block: 'nearest' }); return true; })()`);   // atajo: desplazar el camino hasta el Bosque Verde

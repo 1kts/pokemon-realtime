@@ -3,7 +3,7 @@
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'rendido' });
   await page.loginAs(me.token);
-  await page.tap(/^Tutorial/);
+  await page.mode('Tutorial');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest`);
   await page.key('Escape');
   await page.waitFor(`document.querySelector('.ui-confirm-box')`);

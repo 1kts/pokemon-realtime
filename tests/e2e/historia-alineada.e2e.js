@@ -16,7 +16,7 @@ module.exports = async ({ page, player, ok }) => {
   await me.client.wait(m => m.t === 'profile');
   await page.resize(1776, 932);
   await page.loginAs(me.token);
-  await page.tap('Historia');
+  await page.mode('Historia');
   await page.waitSee('Cómo se juega al modo historia');   // (la primera vez se abre sola)
   await page.tap('¡A jugar!');
   await page.waitSee('Tu viaje');
@@ -25,7 +25,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', region: 'kanto', badges: 99 });
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.tap('Historia');
+  await page.mode('Historia');
   await page.waitSee(/Has completado Kanto/);
   await mira('con la región completada');
   await page.resize(1280, 800);

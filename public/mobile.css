@@ -520,7 +520,6 @@
   /* Clasificatoria: el bloque del ELO, solo con el botón de buscar (lo demás va en la cabecera); los 3 huecos
      en fila (el Pokémon y los iconos de sus movimientos) */
   .online-body, .online-col { gap: 10px; }
-  .online.casual .online-me:not(:has(.warn)) { display: none; }
   .online-me { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px; }
   .online-me > p.small { flex: 1 1 240px; margin: 0; font-size: 12px; }
   .online-me > button.primary { order: -1; padding: 8px 20px; }
@@ -770,3 +769,14 @@
 }
 /* (en los móviles más bajos no caben dos puestos y el tuyo) */
 @media (max-height: 380px) { .ladder-panel:has(.lp-me) .lp-rows li:nth-child(2) { display: none; } }
+
+/* Menú en horizontal: dos filas. La tarjeta de PvP, la única de Online, cabe entera con su «N en línea» */
+@media (max-height: 500px) {
+  .menu-card.ranked { grid-column: span 2; }
+  .menu-card .pvp-live { max-width: 100%; }
+}
+@media (max-height: 500px) and (max-width: 760px) {
+  .menu-card.wide, .menu-card.ranked { grid-column: auto; }
+  .menu-card.wide > span:not(.pvp-live) { display: none; }
+  .menu-card.wide b, body.tema-d .menu-card.wide b { font-size: 15px; }
+}

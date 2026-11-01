@@ -2,7 +2,7 @@
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'equipador' });
   await page.loginAs(me.token);
-  await page.click('.menu-card.ranked');
+  await page.mode('PvP');
   await page.click('.pvp-pick');
   await page.waitFor(`document.querySelector('.pvp-slot:not(.empty)')`);
   await page.click('.pvp-slot:not(.empty)');

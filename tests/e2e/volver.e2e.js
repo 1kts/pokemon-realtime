@@ -20,7 +20,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(true, 'y otro Volver, al menú');
 
   // A la ladder por dos caminos: vuelve a cada uno
-  await page.click('.menu-card.tower');
+  await page.mode('Torre Batalla');
   await page.tap('Ver la ladder completa');
   await page.waitFor(`document.querySelector('.ladder')`);
   await page.key('Escape');
@@ -30,7 +30,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitSee('Aventura');
 
   // Tras un combate: a Mis Pokémon desde los resultados, y Volver deja donde se empezó
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.tap('Explorar');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
   await page.key('Escape');

@@ -57,7 +57,7 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     assert(!b.sideSnap(b.sides[1], 0).ai);
   });
   await check('nunca fuera de Práctica (clasificatoria, en línea, Torre, historia, salvajes) ni en el tutorial', () => {
-    for (const mode of ['ranked', 'casual', 'tower', 'trainer', 'wild']) {
+    for (const mode of ['ranked', 'friendly', 'tower', 'trainer', 'wild']) {
       const b = battle({ mode, aiDebug: true });
       run(b, 1);
       assert(!b.sideSnap(b.sides[1], 0).ai, mode);

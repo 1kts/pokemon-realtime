@@ -27,10 +27,10 @@ module.exports = async ({ page, player, ok }) => {
 
   // Buscar partida sin nadie más: a los ~20 s toca un entrenador IA
   await page.tap('Volver');
-  await page.click('.menu-card.ranked');
+  await page.mode('PvP');
   const elo = async () => +(await page.read('.online-me .big-elo')).replace(/\D/g, '');
   const elo0 = await elo();
-  await page.tap('Buscar partida clasificatoria');
+  await page.tap('Buscar partida PvP');
   await page.waitFor(`window.__app.battle && window.__app.battle.sides`, 40000);
   await page.waitSee('IA', { in: '.team.foe' });
   ok(true, 'si nadie aparece, te toca un entrenador de la IA, marcado con «IA»');

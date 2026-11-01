@@ -10,7 +10,7 @@ module.exports = async ({ page, player, ok }) => {
   const a = await pasadas();
   await page.eval(`new Promise(r => setTimeout(() => r(true), 1500))`);
   ok(await pasadas() === a, 'en el menú no se pinta el resplandor');
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.tap('Desafiar');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
   const b = await pasadas();

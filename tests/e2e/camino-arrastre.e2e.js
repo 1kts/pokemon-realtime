@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
   await page.resize(1280, 800);
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitSee('Desafiar');
   const left = `document.querySelector('.story-path').scrollLeft`;
   const ficha = `document.querySelector('.story-side h3').innerText`;

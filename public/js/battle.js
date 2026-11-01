@@ -76,7 +76,7 @@ export class BattleClient {
     // Contra un líder: su presentación al empezar
     const leader = this.mode === 'trainer' && leaderByName(foe.name);
     if (leader) this.leaderIntro(leader);
-    if (!start.resume && (this.mode === 'ranked' || this.mode === 'casual') && foe.card && this.sides[this.you].card) versusIntro(this.app.ui, this.sides[this.you].card, foe.card);
+    if (!start.resume && (this.mode === 'ranked' || this.mode === 'friendly') && foe.card && this.sides[this.you].card) versusIntro(this.app.ui, this.sides[this.you].card, foe.card);
     if (foe.rare) setTimeout(() => this.banner(t('¡Un {m} salvaje muy raro!', { m: foe.team[0] && Data.SPECIES[foe.team[0].dex].name }), 'rare'), 300);
     if (foe.perfect) setTimeout(() => this.banner(t('¡Y tiene IV perfectos!'), 'rare'), 1300);
   }

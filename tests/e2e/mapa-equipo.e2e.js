@@ -8,7 +8,7 @@ module.exports = async ({ page, player, ok }) => {
   }
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitFor(`document.querySelector('.node-info .team-head .link')`);
   ok(await page.eval(`document.querySelectorAll('.node-info .mini.pick:not(.empty)').length`) === 2, 'el panel enseña los 2 Pokémon del equipo');
   ok(await page.eval(`document.querySelectorAll('.node-info .mini.pick.empty').length`) === 1, 'y un hueco libre para el tercero');

@@ -191,7 +191,7 @@ function action(p, msg) {
     const mon = monByUid(p, msg.uid);
     if (mon && mon.fav) return 'Quítale la estrella para venderlo';
     if (mon && inTower(p, mon.uid)) return 'Está en tu equipo de la Torre Batalla: retírate antes';
-    if (mon && (p.pvpTeam || []).some(e => e && e.uid === mon.uid)) return 'Está en tu equipo de Clasificatoria: cámbialo antes';
+    if (mon && (p.pvpTeam || []).some(e => e && e.uid === mon.uid)) return 'Está en tu equipo de PvP: cámbialo antes';
     if (!mon || p.mons.length <= 1) return 'No puedes vender tu único Pokémon';
     if (regionMons(p, mon.region).length <= 1) return `Es tu único Pokémon de ${D.REGIONS[mon.region].name}`;
     p.coins += D.sellPrice(mon);

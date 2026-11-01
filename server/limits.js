@@ -68,7 +68,7 @@ class Bucket {
     return true;
   }
 }
-const EXPENSIVE = new Set(['ladder', 'user', 'friendsearch']);
+const EXPENSIVE = new Set(['ladder', 'user', 'friendsearch', 'challenge']);
 const ipBuckets = new Map();   // ip -> cubo de consultas caras
 setInterval(() => { for (const [ip, b] of ipBuckets) if (b.tokens >= b.burst - 1) ipBuckets.delete(ip); }, 60e3).unref();
 

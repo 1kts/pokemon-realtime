@@ -35,7 +35,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.body.classList.contains('tema-d') && document.querySelector('#tema-css').sheet`, 10000);
 
   // Colores limpios y que se leen. Los modos, como las tarjetas de siempre: azul noche (el blanco se lee) con su color
-  // encendido detrás del sprite, distinto en cada uno: Historia en rojo y Clasificatoria en oro, no en marrón
+  // encendido detrás del sprite, distinto en cada uno: Historia en rojo y PvP en oro, no en marrón
   const modes = await page.eval(`(() => { ${TD}
     return [...document.querySelectorAll('.menu-card')].map(c => { const st = stops(c), a = st[0], z = st[st.length - 1];
       const glow = st.find(x => (x.length < 4 || x[3] >= .5) && hsl(x)[1] > .5 && x.slice(0, 3).some(v => v > 40)) || a;
@@ -44,9 +44,9 @@ module.exports = async ({ page, player, ok }) => {
   const hueGap = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
   const story = modes.find(m => m.m === 'story'), rest = modes, ranked = modes.find(m => m.m === 'ranked');
   ok(story && (story.glow[0] <= 12 || story.glow[0] >= 350) && story.glow[1] > .8, `con la D, Historia brilla en rojo (${JSON.stringify(story && story.glow)})`);
-  ok(rest.length >= 7 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
+  ok(rest.length >= 4 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
   ok(rest.every(m => m.glow[1] > .5) && rest.every((m, i) => rest.every((o, j) => i === j || hueGap(m.glow[0], o.glow[0]) >= 12)), `con la D, cada modo lleva su color encendido y distinto del de los demás (${rest.map(m => m.m + ' ' + m.glow[0] + '°').join(', ')})`);
-  ok(ranked && ranked.gold, `con la D, Clasificatoria brilla en oro y no en marrón (${JSON.stringify(ranked && ranked.glow)})`);
+  ok(ranked && ranked.gold, `con la D, PvP brilla en oro y no en marrón (${JSON.stringify(ranked && ranked.glow)})`);
 
   // El dorado, solo en lo que toca: un único «Jugar» a la vista, el de Historia, y es dorado. La Tienda, ya vista, va
   // en su color; Logros, con premios por recoger, en dorado. La colección con sus colores
@@ -84,7 +84,7 @@ module.exports = async ({ page, player, ok }) => {
 
   // Historia en el escritorio: «¡Desafiar!» dorado, a la vista y sin nada encima
   const desafiar = async () => {
-    await page.click('.menu-card.story');
+    await page.mode('Historia');
     await page.waitFor(`document.querySelector('.story-path .sp-node')`, 20000);
     if (await page.eval(`!!document.querySelector('body > .modal button.primary')`)) await page.click('body > .modal button.primary');   // la guía de la primera vez: «¡A jugar!»
     await page.waitFor(`!document.querySelector('body > .modal')`, 5000);

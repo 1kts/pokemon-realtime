@@ -1,4 +1,4 @@
-// Al encontrar rival en Clasificatoria o Partida rápida: las dos tarjetas de entrenador entran por los lados y chocan.
+// Al encontrar rival en PvP: las dos tarjetas de entrenador entran por los lados y chocan.
 // Va encima de la cuenta atrás de 3 s del combate, sin pararla, y no atrapa toques ni clics
 import { t } from './i18n.js';
 import { trainerImg } from './sprites.js';

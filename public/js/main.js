@@ -219,12 +219,14 @@ net.on('authok', m => { ui.authError(''); ui.closeLogin(); ui.toast(tServer(m.ms
 // Entrar con el correo: el código ya va de camino; y cuenta nueva sin partida de invitado: falta el nombre
 net.on('mailsent', () => ui.onMailSentMsg());
 net.on('authname', () => ui.onAuthName());
-net.on('queue', m => { ui.queueMode = m.mode; ui.lastMode = m.mode; ui.show('queue'); });
+net.on('queue', () => { ui.lastMode = 'ranked'; ui.show('queue'); });
 net.on('unqueued', () => ui.show(ui.backView()));
 net.on('cancelled', m => { ui.toast(tServer(m.reason), 'bad'); ui.show('menu'); });
 net.on('ladder', m => ui.onLadder(m));
 net.on('user', m => ui.onUser(m));
 net.on('start', m => {
+  // (lo que se juega, para el botón Jugar del menú; lo amistoso no cuenta)
+  if (m.mode === 'friendly') ui.lastMode = 'friendly';
   if (m.resume && app.battle) { clearTimeout(resumeTimer); net.hurry = false; app.battle.resume(m); return; }
   if (app.battle) endBattle();
   ui.hide();

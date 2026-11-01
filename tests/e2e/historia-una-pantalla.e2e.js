@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok }) => {
     const en = `${w}×${h}`;
     await page.resize(w, h);
     await page.loginAs(me.token);
-    await page.tap(/^Historia/);
+    await page.mode('Historia');
     await page.waitSee('Explorar', { in: '.node-info' });
     const m = await page.eval(mide);
     ok(m.baja <= 1, `${en}: Historia cabe en una pantalla, sin bajar (sobran ${m.baja} px)`);

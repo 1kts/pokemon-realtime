@@ -1,4 +1,4 @@
-// Al encontrar rival en Partida rápida, las tarjetas de los dos entrenadores chocan antes de empezar: nombre, liga, ELO
+// Al encontrar rival en PvP, las tarjetas de los dos entrenadores chocan antes de empezar: nombre, liga, ELO
 // y medallas de cada uno. Se van solas y el combate empieza como siempre
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'Retadora' });
@@ -8,9 +8,10 @@ module.exports = async ({ page, player, ok }) => {
     who.client.send({ t: 'pvpteam', team }); await who.client.wait(m => m.t === 'profile');
   }
   await page.loginAs(me.token);
-  rival.client.send({ t: 'queue', mode: 'casual' });
-  await page.waitSee('1 buscando rival', { in: '.menu-card.casual' });
-  await page.tap(/^Partida rápida/);   // (con equipo, la tarjeta ya busca rival)
+  rival.client.send({ t: 'queue', mode: 'ranked' });
+  await page.waitSee('1 buscando rival', { in: '.menu-card.ranked' });
+  await page.mode('PvP');
+  await page.tap('Buscar partida PvP');
   // (de una vez y en cuanto salen: están en pantalla 2,5 s, y con la máquina cargada una lectura aparte llega tarde)
   await page.waitFor(`(window.__vsAva = (document.querySelector('.vs-card.you .ava') || { offsetWidth: 0 }).offsetWidth) && (window.__vs = document.querySelector('.versus').innerText)`, 20000);
   const [izq, der = ''] = (await page.eval(`window.__vs`)).split(/\bVS\b/);

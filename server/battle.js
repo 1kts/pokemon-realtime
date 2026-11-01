@@ -40,7 +40,7 @@ function makeMon(dex, level, extra = {}) {
 
 class Battle {
   // opts: { sides: [{ name, team: [{dex, level, uid?}], ws?, ai?: skill 0-1, wild?, balls? }],
-  //         map, mode: 'wild'|'trainer'|'ranked'|'casual'|'practice', onEnd(result) }
+  //         map, mode: 'wild'|'trainer'|'ranked'|'friendly'|'practice', onEnd(result) }
   constructor(opts) {
     this.mode = opts.mode;
     this.tutorial = !!opts.tutorial;

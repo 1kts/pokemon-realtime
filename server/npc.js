@@ -1,5 +1,5 @@
 // Entrenadores IA de Clasificatoria: 20 rivales con nombre, equipo con tema y ELO, que salen en la ladder con la
-// etiqueta «IA» (nunca se hacen pasar por personas). Si en Clasificatoria o Partida rápida nadie aparece en unos
+// etiqueta «IA» (nunca se hacen pasar por personas). Si en PvP nadie aparece en unos
 // segundos, te toca uno de ELO parecido; su IA es más lista cuanto más ELO tiene, y su ELO sube y baja de verdad.
 // Son perfiles normales marcados con npc: true (sin cuenta, sin conexión, fuera de métricas y de los amigos).
 const D = require('../public/data.js');

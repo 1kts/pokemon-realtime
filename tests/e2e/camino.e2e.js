@@ -33,7 +33,7 @@ const camino = (SIZES, more) => async ({ page, player, ok }) => {
     await page.resize(W, H);
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
-    await page.click('.menu-card.story');
+    await page.mode('Historia');
     // La primera vez sale la guía: se cierra como un jugador
     await page.waitFor(`[...document.querySelectorAll('body > .modal button')].some(b => b.textContent.includes('¡A jugar!'))`);
     await page.click('¡A jugar!');

@@ -10,7 +10,7 @@ const prueba = sizes => async ({ page, player, ok }) => {
     const en = `${w}×${h}`;
     await page.resize(w, h);
     await page.loginAs(me.token);
-    await page.tap(/^Historia/);
+    await page.mode('Historia');
     await page.waitSee('Explorar', { in: '.story-side' });
     await page.tap('Más', { in: '.story-side' });   // (el detalle de la ruta está en «Más»: Historia en una pantalla)
     await page.waitSee(/\d+ %/, { in: '.route-list' });

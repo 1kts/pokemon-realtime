@@ -33,7 +33,7 @@ const FADE_OUT = 1.5, GAP = 0.8, FADE_IN = 2.5;
 const FILES = {
   menu: 'pueblo', town: 'aldea', city: 'ciudad', forest: 'bosque',   // fuera de combate (encadenados)
   battle: 'desierto',                                                 // Práctica
-  ranked: 'duelo',                                                    // Clasificatoria y Partida rápida
+  ranked: 'duelo',                                                    // PvP
   tower: 'torre', towerBoss: 'maligno',                               // Torre Batalla
   wild: 'viaje', wildJohto: 'ruta',                                   // salvajes de Kanto y de Johto
   leader: 'lider', leaderJohto: 'gimnasio',                           // gimnasios de Kanto y de Johto
@@ -566,7 +566,7 @@ export async function renderTrack(name, seconds = 20, sampleRate = 44100) {
 export function trackForView() {
   return 'menu';
 }
-// Combates: start.mode ('wild', 'trainer', 'ranked', 'casual', 'tower' o 'practice') y start.map (en los
+// Combates: start.mode ('wild', 'trainer', 'ranked', 'friendly', 'tower' o 'practice') y start.map (en los
 // salvajes, 'r:' + la ruta; contra líderes, la sala o la arena del nodo, que es única de cada uno)
 export function trackForBattle(start, Data) {
   const nodes = Data.NODES || {};
@@ -578,7 +578,7 @@ export function trackForBattle(start, Data) {
     if (route && ROUTE_THEMES[route.map]) return `route-${route.map}${johto ? 'Johto' : ''}`;
     return johto ? 'wildJohto' : 'wild';
   }
-  if (start.mode === 'ranked' || start.mode === 'casual') return 'ranked';
+  if (start.mode === 'ranked' || start.mode === 'friendly') return 'ranked';
   if (start.mode === 'tower') return TOWER_THEMES[towerTurn++ % TOWER_THEMES.length];
   // Práctica (y lo demás que no es de la Historia): el tema de combate, aunque le toque la arena de un gimnasio
   if (start.mode !== 'trainer') return 'battle';

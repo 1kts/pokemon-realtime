@@ -3,7 +3,7 @@
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'practicante' });
   await page.loginAs(me.token);
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.waitFor(`document.querySelector('.arena-card')`);
   ok(await page.eval(`document.querySelector('.arena-card.sel').dataset.map === '' && document.querySelectorAll('.arena-card img.arena-prev').length === Object.keys(Data.MAPS).length + Object.keys(Data.ARENAS).length`),
     'las arenas salen en tarjetas, cada una con su foto, y por defecto está «Al azar»');
@@ -15,7 +15,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('.practice-mods button[data-mod="fog"]');
   // (se recuerda: al volver a entrar siguen elegidas)
   await page.loginAs(me.token);
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.waitFor(`document.querySelector('.arena-card')`);
   ok(await page.eval(`!!document.querySelector('.arena-card.sel[data-map="g-fuego"]')`), 'elegir la del gimnasio de fuego la recuerda al volver a entrar');
   ok(await page.eval(`!!document.querySelector('.practice-mods button.sel[data-mod="fog"]')`), 'y también la mecánica extra (niebla)');

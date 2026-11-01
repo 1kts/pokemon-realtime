@@ -12,7 +12,7 @@ module.exports = async ({ page, player, ok }) => {
 
   // En combate su Pokémon lleva el mote (explorando la Ruta 1)
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.click('.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]');
   await page.tap('Explorar', { in: '.story-side' });
   await page.waitFor(`window.__app.battle && document.querySelector('.tinfo')`, 20000);

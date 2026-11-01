@@ -3,7 +3,7 @@
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'rankera' });
   await page.loginAs(me.token);
-  await page.click('.menu-card.ranked');
+  await page.mode('PvP');
   await page.waitFor(`document.querySelector('.pvp-team')`);
   ok(await page.eval(`[...document.querySelectorAll('.online button.primary')].find(b => /Buscar partida/.test(b.textContent)).disabled && document.querySelectorAll('.pvp-slot.empty').length === 3`), 'sin equipo, el botón de buscar está desactivado y los 3 huecos vacíos');
   for (const dex of [6, 9, 3]) {
@@ -13,7 +13,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`(window.__app.ui.profile.pvpTeam || []).length === 3`);
   // (se guarda solo: al volver a entrar siguen los 3)
   await page.reload(); await page.waitFor(`document.querySelector('.title-panel button.primary')`, 20000); await page.click('.title-panel button.primary');
-  await page.click('.menu-card.ranked');
+  await page.mode('PvP');
   await page.waitFor(`document.querySelector('.pvp-team')`);
   ok(await page.eval(`[...document.querySelectorAll('.pvp-slot:not(.empty)')].map(s => s.innerText).join(' ')`).then(t => /Charizard/.test(t) && /Blastoise/.test(t) && /Venusaur/.test(t)) && !(await page.eval(`!!document.querySelector('.pvp-slot.empty')`)),
     'elegir 3 del pool llena los huecos y se guarda solo (al volver a entrar siguen Charizard, Blastoise y Venusaur)');

@@ -317,7 +317,7 @@ class Client {
   c.send({ t: 'forfeit' });
   const [r1, r2] = await Promise.all([ob, oc]);
   const bWon = r1.winner === r1.you;
-  ok(bWon && r1.reward.elo > 0 && r2.reward.elo === -r1.reward.elo, `ELO: ganador +${r1.reward.elo}, perdedor ${r2.reward.elo}`);
+  ok(bWon && r1.reward.elo > 0 && r2.reward.elo === -Math.ceil(r1.reward.elo / 2), `ELO: ganador +${r1.reward.elo}, perdedor ${r2.reward.elo} (en calibración, la mitad)`);
   ok(r1.reward.coins === D.RANKED_PAY.win + D.RANKED_PAY.firstWin && r1.reward.firstWin && r2.reward.coins === D.RANKED_PAY.loss, 'clasificatoria: dinero por combate y extra por la primera victoria del día');
   m = await b.wait('profile');
   ok(m.p.history.length === 1 && m.p.history[0].won && /^Verde#\d{4}$/.test(m.p.history[0].foe) && m.p.history[0].team.length === 3 && m.rank === 1, 'historial de clasificatorias y puesto en el ranking');
@@ -646,16 +646,16 @@ class Client {
     await h2.req({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
     let eq = h1.wait('error');
     h1.send({ t: 'story', a: 'sell', uid: propio.uid });
-    ok(/equipo de Clasificatoria/.test((await eq).msg), 'un Pokémon de tu equipo de Clasificatoria no se vende: hay que cambiarlo antes');
+    ok(/equipo de PvP/.test((await eq).msg), 'un Pokémon de tu equipo de Clasificatoria no se vende: hay que cambiarlo antes');
     ok(pr.mons.some(x => x.uid === propio.uid), 'y sigue siendo tuyo');
-    const q = h1.wait('queue'); h1.send({ t: 'queue', mode: 'casual' }); await q;
+    const q = h1.wait('queue'); h1.send({ t: 'queue', mode: 'ranked' }); await q;
     const otro = pr.mons.find(x => x.uid !== propio.uid);
     eq = h1.wait('error');
     h1.send({ t: 'story', a: 'use', uid: otro.uid, item: 'caramelo' });
     ok(/cola/.test((await eq).msg), 'mientras buscas partida no se usan objetos en tus Pokémon (un Pokémon no puede evolucionar y estropear el equipo)');
     pr.mons = pr.mons.filter(x => x.uid !== propio.uid);   // (el equipo ya no vale, sea por lo que sea)
     const fuera = h1.wait('unqueued'), aviso = h1.wait('error'), sigue = h2.wait('queue');
-    h2.send({ t: 'queue', mode: 'casual' });
+    h2.send({ t: 'queue', mode: 'ranked' });
     await sigue;
     ok(/Prepara antes tu equipo/.test((await aviso).msg) && !!(await fuera), 'con el equipo roto, al emparejar sales de la cola con un aviso, sin que caiga el servidor');
     ok((await h2.req({ t: 'unqueue' }, 'unqueued')).t === 'unqueued', 'y el otro jugador sigue en la cola, sin quedarse colgado');
@@ -670,7 +670,7 @@ class Client {
     await e1.req({ t: 'hello', name: 'X' }); await e2.req({ t: 'hello', name: 'Y' });
     for (const e of [e1, e2]) await e.req({ t: 'pvpteam', team: [{ dex: 6 }, { dex: 9 }, { dex: 3 }] });
     const q1 = e1.wait('queue'), q2 = e2.wait('queue');
-    e1.send({ t: 'queue', mode: 'casual' }); e2.send({ t: 'queue', mode: 'casual' });
+    e1.send({ t: 'queue', mode: 'ranked' }); e2.send({ t: 'queue', mode: 'ranked' });
     await Promise.all([q1, q2]);
     const started = await Promise.race([e1.wait('start', () => true, 1500).then(() => true), new Promise(r => setTimeout(() => r(false), 1200))]);
     ok(!started, 'dos conexiones desde la misma IP no se emparejan (nadie se sube el ELO contra sí mismo)');
@@ -1170,6 +1170,84 @@ class Client {
     const can = D.pvpMoves(D.RANKED_POOL[0]), two = can.slice(0, 2);
     ok(D.pvpTeam(D.RANKED_POOL.slice(0, 3).map((dex, i) => ({ dex, moves: i ? undefined : two })))[0].moves.join() === two.join(), 'se respetan los 2 movimientos elegidos');
     ok(D.pvpTeam(D.RANKED_POOL.slice(0, 3).map((dex, i) => ({ dex, moves: i ? undefined : [...two, 'noExiste'] })))[0].moves.length === 4, 'y si uno ya no vale, se rellena');
+  }
+
+  // Una sola cola: el modo de antes (de un cliente con la página vieja abierta) entra en ella
+  {
+    const a = new Client(port); await a.open();
+    await a.req({ t: 'hello', name: 'Unica1' });
+    a.send({ t: 'pvpteam', team: D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })) }); await a.wait('profile');
+    const q = await a.req({ t: 'queue', mode: 'casual' }, 'queue');
+    ok(q.mode === 'ranked', `solo hay una cola de PvP (${q.mode})`);
+    await a.req({ t: 'unqueue' }, 'unqueued');
+    a.ws.close();
+  }
+
+  // Calibración: en tus primeras 10 partidas, perder cuesta la mitad de ELO; el que gana suma entero
+  {
+    const a = new Client(port), b = new Client(port); await a.open(); await b.open();
+    await a.req({ t: 'hello', name: 'Calib1' }); await b.req({ t: 'hello', name: 'Calib2' });
+    for (const c of [a, b]) { c.send({ t: 'pvpteam', team: D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })) }); await c.wait('profile'); }
+    const sa = a.wait('start'), sb = b.wait('start');
+    a.send({ t: 'queue', mode: 'ranked' }); b.send({ t: 'queue', mode: 'ranked' });
+    await sa; await sb;
+    const oa = a.wait('over'), ob = b.wait('over'); a.send({ t: 'forfeit' });
+    const [ra, rb] = [await oa, await ob];
+    ok(rb.reward.elo === 16 && ra.reward.elo === -8, `el novato pierde la mitad y el otro gana entero (${ra.reward.elo} y +${rb.reward.elo})`);
+    ok(D.RANKED_CALIB === 10, 'la calibración son las 10 primeras partidas');
+    a.ws.close(); b.ws.close();
+  }
+
+  // Retar a un amigo: solo entre amigos, se acepta o se rechaza, sin ELO y sin dejar a nadie colgado
+  {
+    const amigos = async (n1, n2) => {
+      const a = new Client(port), b = new Client(port); await a.open(); await b.open();
+      const pa = (await a.req({ t: 'hello', name: n1 })).p, pb = (await b.req({ t: 'hello', name: n2 })).p;
+      const store = require('../server/store.js');
+      const P = q => [...store.all()].find(x => x.id === q.id);
+      const [ra, rb] = [P(pa), P(pb)];
+      ra.friends = [rb.id]; rb.friends = [ra.id];
+      for (const c of [a, b]) { c.send({ t: 'pvpteam', team: D.RANKED_POOL.slice(0, 3).map(dex => ({ dex })) }); await c.wait('profile'); }
+      return { a, b, ra, rb };
+    };
+    const { a, b, rb } = await amigos('Reta1', 'Reta2');
+    const x = new Client(port); await x.open();
+    const px = (await x.req({ t: 'hello', name: 'Reta3' })).p;
+    let e = a.wait('error'); a.send({ t: 'challenge', a: 'send', id: px.id });
+    ok(/amig/i.test((await e).msg), 'solo se reta a un amigo');
+    const inv = b.wait('challenge'); a.send({ t: 'challenge', a: 'send', id: rb.id });
+    const got = await inv;
+    ok(got.from.name === 'Reta1' && got.ms > 0, 'al amigo le llega el reto, con su caducidad');
+    e = a.wait('error'); a.send({ t: 'challenge', a: 'send', id: rb.id });
+    ok(/ya has retado/i.test((await e).msg), 'mientras espera respuesta no se puede insistir');
+    const no = a.wait('challengeend'); b.send({ t: 'challenge', a: 'decline' });
+    ok((await no).why === 'declined', 'rechazar se lo dice al que retó');
+    e = a.wait('error'); a.send({ t: 'challenge', a: 'send', id: rb.id });
+    ok(/espera/i.test((await e).msg), 'tras un rechazo hay que esperar antes de volver a retar');
+    a.ws.close(); b.ws.close(); x.ws.close();
+
+    const d = await amigos('Reta4', 'Reta5');
+    const elo = [d.ra.elo, d.rb.elo], ranked = [d.ra.ranked, d.rb.ranked];
+    const invd = d.b.wait('challenge'); d.a.send({ t: 'challenge', a: 'send', id: d.rb.id }); await invd;
+    const s1 = d.a.wait('start'), s2 = d.b.wait('start'); d.b.send({ t: 'challenge', a: 'accept' });
+    ok((await s1).mode === 'friendly' && (await s2).mode === 'friendly', 'al aceptar empieza el combate amistoso');
+    const o1 = d.a.wait('over'), o2 = d.b.wait('over'); d.a.send({ t: 'forfeit' });
+    await o1; await o2;
+    ok(d.ra.elo === elo[0] && d.rb.elo === elo[1] && d.ra.ranked === ranked[0] && d.rb.ranked === ranked[1], 'y no cuenta para el ELO ni para las partidas de PvP');
+    d.a.ws.close(); d.b.ws.close();
+
+    const g = await amigos('Reta6', 'Reta7');
+    const invg = g.b.wait('challenge'); g.a.send({ t: 'challenge', a: 'send', id: g.rb.id }); await invg;
+    const gone = g.b.wait('challengeend'); g.a.ws.close();
+    ok((await gone).why === 'gone', 'si el que reta se va, al otro no se le queda el reto colgado');
+    g.b.ws.close();
+
+    process.env.CHALLENGE_MS = '150';
+    const h = await amigos('Reta8', 'Reta9');
+    const fin = h.a.wait('challengeend'), fin2 = h.b.wait('challengeend'); h.a.send({ t: 'challenge', a: 'send', id: h.rb.id });
+    ok((await fin).why === 'expired' && (await fin2).why === 'expired', 'y si nadie contesta, caduca solo para los dos');
+    delete process.env.CHALLENGE_MS;
+    h.a.ws.close(); h.b.ws.close();
   }
 
   // La fluidez con mala red, con su red simulada

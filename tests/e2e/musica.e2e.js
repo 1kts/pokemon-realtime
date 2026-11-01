@@ -23,7 +23,7 @@ module.exports = async ({ page, ok }) => {
   // Fuera de combate suena siempre el mismo tema: moverse por los menús no la corta
   const starts0 = await page.eval(`window.__app.music.starts`);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de Historia, ya vista)
-  for (const b of [/^Historia/, 'Mis Pokémon', /^Tienda/, /^Pokédex/, 'Ajustes']) { await page.tap(b); await page.waitFor(`document.querySelector('.inner-bar')`); await page.tap('Volver'); await page.waitSee('Aventura'); }
+  for (const b of [/^Historia/, 'Mis Pokémon', /^Tienda/, /^Pokédex\s*\d/, 'Ajustes']) { await page.tap(b); await page.waitFor(`document.querySelector('.inner-bar')`); await page.tap('Volver'); await page.waitSee('Jugar'); }
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'menu', 'mapa, equipo, tienda, Pokédex y ajustes usan el mismo tema que el menú');
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena

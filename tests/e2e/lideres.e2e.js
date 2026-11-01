@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', badges: 3, region: 'kanto' });
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   // (la guía de la primera vez: se cierra como un jugador)
   await page.waitFor(`[...document.querySelectorAll('body > .modal button')].some(b => b.textContent.includes('¡A jugar!'))`);
   await page.tap('¡A jugar!');

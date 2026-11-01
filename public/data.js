@@ -1315,9 +1315,10 @@
   // incluidos, o de alquiler (RANKED_POOL, sin extras)
   const RANKED_POOL = [3, 6, 9, 18, 26, 34, 38, 59, 65, 68, 76, 94, 112, 121, 123, 130, 131, 135, 143, 149];
   const RANKED_LEVEL = 50;
+  const RANKED_CALIB = 10;   // primeras partidas de PvP, en las que perder cuesta la mitad de ELO
   // Movimientos que puede llevar un Pokémon en PvP: los que sabe a Nv.50 y los que ya conoce
   const pvpMoves = (dex, mon) => [...new Set([...learnedAt(dex, RANKED_LEVEL), ...((mon && mon.moves) || [])])];
-  // Equipo de PvP (Clasificatoria y Partida rápida): 3 especies distintas, cada una uno de tus Pokémon (uid, de mons) o
+  // Equipo de PvP (PvP): 3 especies distintas, cada una uno de tus Pokémon (uid, de mons) o
   // uno de alquiler (dex del pool), con hasta 4 movimientos que sepa (sin ninguno válido, los de por defecto).
   // null si no vale, también si ya no tienes uno de ellos
   function pvpEntry(x, mons, taken) {
@@ -1412,8 +1413,8 @@
     { id: 'torre7', cat: 'torre', name: 'Escalador', desc: 'Gana 7 combates seguidos en la Torre Batalla.', icon: 'exp-share', tier: 1, goal: 7, progress: towerBest, reward: { coins: 1000 } },
     { id: 'torre21', cat: 'torre', name: 'Cerebro vencido', desc: 'Llega a 21 victorias seguidas en la Torre Batalla.', icon: 'amulet-coin', tier: 2, goal: 21, progress: towerBest, reward: { coins: 4000, frame: 'torre', title: 'Desafiante de la Torre' } },
     { id: 'torre49', cat: 'torre', name: 'Leyenda de la Torre', desc: 'Llega a 49 victorias seguidas en la Torre Batalla.', icon: 'nugget', tier: 3, goal: 49, progress: towerBest, reward: { coins: 10000, title: 'Leyenda de la Torre' } },
-    { id: 'ranked1', cat: 'pvp', name: 'Primera victoria online', desc: 'Gana una clasificatoria.', icon: 'vs-seeker', tier: 1, goal: 1, progress: p => p.wins || 0, reward: { coins: 500 } },
-    { id: 'ranked25', cat: 'pvp', name: 'Competidor', desc: 'Gana 25 clasificatorias.', icon: 'tm-normal', tier: 2, goal: 25, progress: p => p.wins || 0, reward: { coins: 3000, title: 'Competidor' } },
+    { id: 'ranked1', cat: 'pvp', name: 'Primera victoria online', desc: 'Gana un combate PvP.', icon: 'vs-seeker', tier: 1, goal: 1, progress: p => p.wins || 0, reward: { coins: 500 } },
+    { id: 'ranked25', cat: 'pvp', name: 'Competidor', desc: 'Gana 25 combates PvP.', icon: 'tm-normal', tier: 2, goal: 25, progress: p => p.wins || 0, reward: { coins: 3000, title: 'Competidor' } },
     { id: 'equipo10', cat: 'coleccion', name: 'Equipo creciente', desc: 'Ten 10 Pokémon.', icon: 'lucky-egg', tier: 1, goal: 10, progress: p => (p.mons || []).length, reward: { coins: 800 } },
     // Combate: debilitar con movimientos de cada tipo da su marco
     ...TYPE_NAMES.map(type => ({ id: 'ko-' + type, cat: 'combate', type, name: 'Especialista en {type}', desc: 'Debilita {n} Pokémon con movimientos de tipo {type}.',
@@ -1464,7 +1465,7 @@
       { id: 'w-win-type', ev: 'win', type: true, goal: 10, name: 'Gana {n} combates con un Pokémon de tipo {type} en tu equipo', reward: { coins: 1000, items: { proteina: 1 } } },
       { id: 'w-gym', ev: 'gym', goal: 6, name: 'Gana {n} combates contra líderes de gimnasio', reward: { coins: 1500, items: { caramelo: 1, hierro: 1 } } },
       { id: 'w-tower', ev: 'towerStreak', max: true, goal: 7, name: 'Consigue una racha de {n} en la Torre Batalla', reward: { coins: 2000, items: { caramelo: 1, maspsps: 1 } } },
-      { id: 'w-ranked', ev: 'rankedWin', goal: 5, name: 'Gana {n} clasificatorias', reward: { coins: 2000, items: { caramelo: 1, proteina: 1 } } },
+      { id: 'w-ranked', ev: 'rankedWin', goal: 5, name: 'Gana {n} combates PvP', reward: { coins: 2000, items: { caramelo: 1, proteina: 1 } } },
       { id: 'w-evolve', ev: 'evolve', goal: 2, name: 'Haz evolucionar {n} Pokémon', reward: { coins: 1500, items: { caramelo: 1, carburante: 1 } } },
       { id: 'w-level', ev: 'level', goal: 30, name: 'Sube {n} niveles a tus Pokémon', reward: { coins: 1800, items: { caramelo: 2 } } },
     ],
@@ -1652,7 +1653,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

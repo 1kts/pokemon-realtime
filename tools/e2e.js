@@ -410,6 +410,10 @@ async function setup(name, extraEnv = {}) {
       await call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x1, y: y1, button: 'left', clickCount: 1 });
       await sleep(150);
     },
+    // Entra en un modo del menú como un jugador: tocando su tarjeta
+    async mode(name) {
+      await page.tap(new RegExp('^' + name), { in: '.menu-main' });
+    },
     async mouseAt(x, y, { click = false, button = 'left' } = {}) {
       await call('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       if (click) for (const type of ['mousePressed', 'mouseReleased']) await call('Input.dispatchMouseEvent', { type, x, y, button, clickCount: 1 });

@@ -41,7 +41,7 @@ module.exports = async ({ page, player, ok }) => {
   const g = await geo();
   ok(g.shown && g.bottom === 0 && !g.covers, 'también está en el menú del juego, al final y sin tapar nada');
   // En un combate de verdad (Práctica) se esconde, y al acabar vuelve
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.click('.pool-card');
   await page.click('.draft button.primary');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest`, 20000);

@@ -9,7 +9,7 @@ module.exports = async ({ page, player, ok }) => {
   // Dónde está el personaje respecto a una tarjeta del Camino, por lo que se ve (en px, el centro de cada uno)
   const lejos = name => page.eval(`(() => { const y = [...document.querySelectorAll('.story-path *')].find(e => !e.children.length && e.textContent === 'Estás aquí').getBoundingClientRect();
     const c = document.querySelector(${JSON.stringify(`.sp-route[title^="${name}"] .sp-card`)}).getBoundingClientRect(); return Math.round((y.left + y.width / 2) - (c.left + c.width / 2)); })()`);
-  const entra = async () => { await page.tap(/^Historia/); await page.waitSee('Estás aquí'); };
+  const entra = async () => { await page.mode('Historia'); await page.waitSee('Estás aquí'); };
   const sale = async () => { await page.tap('Volver'); await page.waitSee('Aventura'); };
 
   await entra();
@@ -32,7 +32,7 @@ module.exports = async ({ page, player, ok }) => {
   // (si anda, se apunta en cuanto empieza: con la máquina lenta, una lectura aparte llega tarde)
   const vigila = `(() => { window.__anda = false; new MutationObserver(() => { if (document.querySelector('.sp-you.walking')) window.__anda = true; }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] }); return true; })()`;
   await page.eval(vigila);
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitSee('Estás aquí');
   await page.eval(`new Promise(r => setTimeout(() => r(true), 3200))`);
   ok(await page.eval(`window.__anda`), 'al ganar la medalla, el personaje va andando');
@@ -40,7 +40,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await lejos('Ruta 3 ·') < -40, 'al principio del tramo nuevo, antes de sus rutas');
   await sale();
   await page.eval(`window.__anda = false; true`);
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitSee('Estás aquí');
   await page.eval(`new Promise(r => setTimeout(() => r(true), 800))`);
   ok(!(await page.eval(`window.__anda`)), 'al volver a entrar ya no repite el paseo');

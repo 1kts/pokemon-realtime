@@ -45,7 +45,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.waitFor(`document.querySelector('.menu-card.story .art.skinfx-oro[data-fx], .menu-card.story .art.skin-oro')`).then(() => true, () => false), 'la skin Oro, puesta en su Vestuario, se ve en la tarjeta de Historia con tu Charmander');
 
   // En combate: el sprite lleva la skin (práctica con Charizard, de la misma línea)
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.click(await page.within('Charizard', '.pool-card'));
   await page.click('.draft button.primary');
   await page.waitFor(`window.__app.battle && window.__app.battle.actors && window.__app.battle.actors[0]`, 20000);

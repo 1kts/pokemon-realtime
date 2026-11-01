@@ -74,7 +74,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .menu-card:hover:not(:disabled) { transform: translateY(-3px); border-color: rgba(255,255,255,.35); box-shadow: 0 22px 60px rgba(0,0,0,.45); background: var(--panel); }
 .menu-card:hover::before { opacity: .8; }
 .menu-card:hover .art { transform: translateY(-54%) scale(1.06); }
-.menu-card.story { --c: #ff5a3a; } .menu-card.ranked { --c: #ffcb05; } .menu-card.casual { --c: #3b78d8; } .menu-card.practice { --c: #4fd06a; }
+.menu-card.story { --c: #ff5a3a; } .menu-card.ranked { --c: #ffcb05; } .menu-card.practice { --c: #4fd06a; }
 .profile { display: flex; flex-direction: column; gap: 10px; }
 .profile .who { display: flex; align-items: center; gap: 12px; }
 .profile .who b { font: 20px var(--display); display: block; }

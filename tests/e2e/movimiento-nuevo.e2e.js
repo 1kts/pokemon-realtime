@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', dex: 4, level: 7, xp: 103, region: 'kanto' }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.tap('Explorar');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
   // (con el navegador del CI a 1-2 fotogramas por segundo los clics no aciertan a un rival que se mueve)

@@ -417,7 +417,7 @@ export const accountViews = {
     modal('bug-report', (box, close) => {
       box.append(el('h3', '', t('Reportar un bug')), el('p', 'small', t('¿Qué ha pasado y qué estabas haciendo? Cuanto más detalle, antes lo arreglamos.')));
       const text = el('textarea', 'bug-text');
-      text.maxLength = 1000; text.rows = 5; text.placeholder = t('Ej.: al elegir un movimiento en Clasificatoria la página se queda en blanco');
+      text.maxLength = 1000; text.rows = 5; text.placeholder = t('Ej.: al elegir un movimiento en PvP la página se queda en blanco');
       box.append(text, el('p', 'small bug-meta', t('Se envía también la pantalla en la que estabas, la versión del juego y tu navegador.')));
       const acts = el('div', 'acts');
       const cancel = el('button', '', t('Cancelar'));
@@ -794,7 +794,7 @@ export const accountViews = {
     const badges = Data.REGION_IDS.map(r => Math.min(8, Data.progOf(p, r))).reduce((a, b) => a + b, 0);
     const stat = (label, value) => `<div class="stat"><small>${t(label)}</small><b>${value}</b></div>`;
     const champ = Data.REGION_IDS.filter(r => Data.progOf(p, r) >= Data.leadersOf(r).length).map(r => Data.REGIONS[r].name).join(', ') || '—';
-    body.append(el('div', 'panel pv-stats', `<div class="pv-srow"><h3>${t('Clasificatoria')}</h3><div class="stat-grid">
+    body.append(el('div', 'panel pv-stats', `<div class="pv-srow"><h3>${t('PvP')}</h3><div class="stat-grid">
       ${stat('Partidas', games)}${stat('Mejor ELO', p.peakElo || p.elo)}${stat('Victorias', p.wins)}${stat('Derrotas', p.losses)}${stat('% victorias', games ? Math.round(p.wins / games * 100) + ' %' : '—')}${stat('Puesto', this.rank ? '#' + this.rank : '—')}</div></div>
       <div class="pv-srow"><h3>${t('Historia')}</h3><div class="stat-grid">
       ${stat('Medallas', `${badges}/${8 * Data.REGION_IDS.length}`)}${stat('Pokédex', `${Data.dexCount(p)}/${Data.DEX_TOTAL}`)}${stat('Pokémon', p.mons.length)}${stat('Shinies', p.mons.filter(m => m.shiny).length)}${stat('Dinero', coins(p.coins))}${stat('Campeón', champ)}</div></div>`));
@@ -802,8 +802,8 @@ export const accountViews = {
 
     // Historial
     const hist = el('div', 'panel history');
-    hist.append(el('h3', '', t('Últimas clasificatorias')));
-    if (!(p.history || []).length) hist.append(el('p', 'small', t('Aún no has jugado ninguna. ¡Prueba en Clasificatoria!')));
+    hist.append(el('h3', '', t('Últimos combates PvP')));
+    if (!(p.history || []).length) hist.append(el('p', 'small', t('Aún no has jugado ninguna. ¡Prueba en PvP!')));
     for (const h of p.history || []) {
       const row = el('div', 'h-row ' + (h.won ? 'won' : 'lost'));
       row.append(el('b', 'res', h.won ? t('V') : t('D')));
@@ -1099,7 +1099,7 @@ export const accountViews = {
     const p = this.profile;
     const board = el('div', 'panel board');
     board.append(el('h3', '', t('Mejores entrenadores')));
-    if (!this.board.length) { board.append(el('p', 'small', t('Todavía nadie ha jugado una clasificatoria. ¡Sé el primero!'))); return board; }
+    if (!this.board.length) { board.append(el('p', 'small', t('Todavía nadie ha jugado un combate PvP. ¡Sé el primero!'))); return board; }
     board.append(this.podium(this.board, b => [b.elo, `${t(Data.leagueOf(b.elo))} · ${t('{w}V {l}D', { w: b.wins, l: b.losses })}`]));
     const ol = el('ol');
     ol.start = 4;
@@ -1115,7 +1115,7 @@ export const accountViews = {
     all.onclick = () => { this.ladderBoard = 'ranked'; this.openLadder(); };
     board.append(all);
     if (this.rank && this.rank > this.board.length) board.append(el('p', 'my-rank', t('Tú: <b>#{n}</b> · {elo} ELO', { n: this.rank, elo: p.elo })));
-    else if (!this.rank) board.append(el('p', 'small', t('Juega una clasificatoria para entrar en el ranking.')));
+    else if (!this.rank) board.append(el('p', 'small', t('Juega un combate PvP para entrar en el ranking.')));
     return board;
   },
 };

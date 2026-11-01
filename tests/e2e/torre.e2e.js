@@ -5,7 +5,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', dex: 6, level: 36, region: 'kanto' });
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
-  await page.click('.menu-card.tower');
+  await page.mode('Torre Batalla');
   await page.waitFor(`document.querySelector('.tower-tools')`);
 
   // Símbolos: su tooltip explica dónde se ganan

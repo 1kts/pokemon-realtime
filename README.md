@@ -39,9 +39,9 @@ partida a la vez. Para probarlo solo, abre dos pestañas.
   tienda (Balls, Caramelos Raros, piedras evolutivas y Pokémon raros), vence a los 8 gimnasios, al Alto
   Mando y al Campeón. La IA de cada líder es más hábil que la anterior. Experiencia, niveles y
   evoluciones (por nivel o con piedra).
-- **Clasificatoria**: cola por ELO, equipo de 3 de tus Pokémon (con IV y EV, legendarios incluidos) o de alquiler, todos a nivel 50, ligas de
+- **PvP**: una sola cola por ELO, las 10 primeras partidas de calibración (perder cuesta la mitad), equipo de 3 de tus Pokémon (con IV y EV, legendarios incluidos) o de alquiler, todos a nivel 50, ligas de
   Bronce a Maestro y ranking.
-- **Partida rápida**: online sin veto ni ELO. **Práctica**: contra la IA con 4 dificultades.
+- **Retar a un amigo**: desde Amigos, sin ELO ni premios. **Práctica**: contra la IA con 4 dificultades.
 - **Torre Batalla**: combates seguidos contra la IA con 3 Pokémon tuyos (de cualquier región, legendarios incluidos, siempre a Nv.50)
   o de alquiler, todos a nivel 50. Cada 7 victorias sube el bloque (IA más lista, rivales más fuertes) y cada 21
   combates espera el Cerebro de la Frontera. Se ve el siguiente rival en silueta y entre combates se puede reordenar

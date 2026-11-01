@@ -28,8 +28,8 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.see(/Temporada 1/, { in: '.ladder-panel' }) && await page.see(/Termina en|Último día/, { in: '.ladder-panel' }), 'la cabecera dice la temporada y cuánto le queda');
   ok(await page.see('Premios de temporada', { in: '.ladder-panel', scroll: true }), 'y sus premios');
   const col = await page.eval(`(() => { const r = q => document.querySelector(q).getBoundingClientRect(), p = r('.ladder-panel'), m = r('.menu-main'), s = r('.menu-side'), top = [...document.querySelectorAll('.lp-top > *')], a = document.querySelector('.lp-top .ava, .lp-top .lp-face').getBoundingClientRect(), caja = top[0].getBoundingClientRect();
-    return { columna: p.left >= m.right && p.right <= s.left, alto: p.height, podio: top.length, ancho: caja.width / p.width, cara: a.width, fuera: a.top < caja.top }; })()`);
-  ok(col.columna, `el panel es una columna entre los modos y tu colección (${JSON.stringify(col)})`);
+    return { columna: s.left >= m.right && p.left >= s.right, alto: p.height, podio: top.length, ancho: caja.width / p.width, cara: a.width, fuera: a.top < caja.top }; })()`);
+  ok(col.columna, `el panel es la columna de la derecha del todo, tras los modos y tu colección (${JSON.stringify(col)})`);
   ok(col.podio >= 2 && col.ancho > 0.8 && col.cara >= 52 && col.fuera, `el top 3 va en tarjetas anchas con la foto grande, que sobresale (${JSON.stringify(col)})`);
   ok(col.alto <= 800, `cabe sin estirar la pantalla (${col.alto} px)`);
   // (ninguna cara en blanco: un retrato copiado por HTML saldría vacío)
@@ -38,7 +38,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Pokédex', { in: '.lp-tabs' });
   await page.waitSee('Especies', { in: '.ladder-panel' });
   ok(await page.see('Pokédex', { in: '.lp-tabs' }), 'la pestaña elegida dice su nombre');
-  await page.tap('Clasificatoria', { in: '.lp-tabs' });
+  await page.tap('PvP', { in: '.lp-tabs' });
   await page.waitSee('2200', { in: '.ladder-panel' });
   await page.tap('Ver la ladder completa', { in: '.ladder-panel' });
   await page.waitSee('Buscar entrenador', { ms: 0 }).catch(() => {});

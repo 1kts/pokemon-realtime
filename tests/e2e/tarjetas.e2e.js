@@ -33,7 +33,7 @@ module.exports = async ({ page, player, ok }) => {
 
   // Práctica: el elegido se marca con ✓; los demás no
   await page.tap('Volver');
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.waitFor(`document.querySelectorAll('.pool-card').length > 3`);
   const before = await page.eval(`getComputedStyle(document.querySelector('.pool-card'), '::before').content`);
   await page.click('.pool-card');

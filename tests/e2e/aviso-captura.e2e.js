@@ -4,7 +4,7 @@ module.exports = async ({ page, player, ok }) => {
   me.client.send({ t: 'dev', dex: 4, level: 30, region: 'kanto', item: 'pokeball', qty: 5 }); await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.tap('Explorar');
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
   ok(!(await page.see('¡Pulsa F para capturarlo!', { ms: 0 })), 'con la vida entera no sale el aviso');

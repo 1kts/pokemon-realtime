@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-01",
- "cazadas": 54,
- "total": 54,
+ "cazadas": 56,
+ "total": 56,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -385,6 +385,20 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ un favorito no se vende sin quitarle la estrella"
+  },
+  "reto-no-empieza": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: Error: timeout esperando start"
+  },
+  "calibracion-entera": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ ELO: ganador +16, perdedor -16 (en calibración, la mitad) | ✗ el novato pierde la mitad y el otro gana entero (-16 y +16)"
   }
  }
 }

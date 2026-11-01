@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   await me.client.wait(m => m.t === 'profile');
   await page.loginAs(me.token);
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.click('.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]');
   await page.tap('Explorar', { in: '.story-side' });
   await page.waitFor(`!!window.__app.battle && !!document.querySelector('.moves .mv')`);

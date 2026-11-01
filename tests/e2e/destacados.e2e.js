@@ -49,7 +49,7 @@ module.exports = async ({ page, player, ok }) => {
   fs.unlinkSync(file);
 
   // Las esquinas: justo fuera de la curva no hay color de la tarjeta
-  for (const [nombre, sel] of [['Historia', '.menu-card.story'], ['Torre Batalla', '.menu-card.tower'], ['Clasificatoria', '.menu-card.ranked']]) {
+  for (const [nombre, sel] of [['Historia', '.menu-card.story'], ['Torre Batalla', '.menu-card.tower'], ['PvP', '.menu-card.ranked']]) {
     const c = await box(sel);
     const [r, g, b] = at(c.x + 4, c.y + 3);
     ok(Math.max(r, g, b) < 50, `la franja de ${nombre} no se sale por la esquina (hay rgb ${r},${g},${b})`);

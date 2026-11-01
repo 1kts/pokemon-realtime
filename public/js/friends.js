@@ -90,7 +90,10 @@ export const friendViews = {
     const sec = el('section', 'panel fr-sec');
     sec.append(el('h3', '', `${t('Tus amigos')} <small>${m.friends.filter(f => f.doing).length} ${t('en línea')} · ${m.friends.length}</small>`));
     if (!m.friends.length) sec.append(el('p', 'small', t('Todavía no tienes amigos. Búscalos por su nombre aquí arriba, o añádelos desde su ficha en los rankings.')));
-    for (const f of m.friends) sec.append(person(f, [[t('Ver perfil'), '', () => this.userModal(f.id)],
+    for (const f of m.friends) sec.append(person(f, [
+      ...(this.challengeTo === f.id ? [[t('Cancelar reto'), '', () => this.net.send({ t: 'challenge', a: 'cancel' })]]
+        : f.doing === 'menu' ? [[t('Retar'), 'primary', () => this.net.send({ t: 'challenge', a: 'send', id: f.id })]] : []),
+      [t('Ver perfil'), '', () => this.userModal(f.id)],
       [t('Quitar'), 'danger', () => confirmBox({ title: t('¿Quitar amigo?'), text: t('¿Quitar a {name} de tus amigos?', { name: f.name }), ok: t('Quitar'), cancel: t('Cancelar'), danger: true }).then(y => { if (y) act('remove', f.id); })]]));
     box.append(sec);
     if (m.out.length) {
@@ -148,5 +151,21 @@ export function friendNotices(net, ui) {
   net.on('friends', m => ui.onFriends(m));
   net.on('friendsearch', m => ui.onFriendSearch(m));
   net.on('friendok', m => ui.toast(tServer(m.msg)));
+  // Retar a un amigo (server/index.js): el retado acepta o rechaza; si se cae por el camino, se cierra solo
+  net.on('challenge', m => {
+    ui.challengeLive = true;
+    confirmBox({ title: t('¡Te retan!'), text: t('{name} te reta a un combate amistoso, sin ELO.', { name: `${escapeHtml(m.from.name)}#${m.from.tag}` }), ok: t('Aceptar'), cancel: t('Rechazar'), cls: 'challenge-box' })
+      .then(yes => { if (ui.challengeLive) net.send({ t: 'challenge', a: yes ? 'accept' : 'decline' }); ui.challengeLive = false; });
+  });
+  net.on('challengesent', m => { ui.challengeTo = m.to.id; ui.toast(t('Has retado a {name}', { name: m.to.name })); if (ui.friendsData) ui.onFriends(ui.friendsData); });
+  net.on('challengeend', m => {
+    ui.challengeLive = false;
+    const box = document.querySelector('.challenge-box .cancel');
+    if (box) box.click();
+    const mine = ui.challengeTo;
+    ui.challengeTo = null;
+    if (ui.friendsData) ui.onFriends(ui.friendsData);
+    if (mine) ui.toast({ declined: t('No ha aceptado tu reto'), expired: t('El reto ha caducado'), gone: t('Tu amigo ya no está disponible') }[m.why] || t('Reto cancelado'));
+  });
   net.on('friendreq', m => ui.toast(t('{name} quiere ser tu amigo', { name: `${m.name}#${m.tag}` })));
 }

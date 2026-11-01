@@ -21,10 +21,10 @@ module.exports = async ({ page, player, ok, log }) => {
     await page.loginAs(me.token);
     await page.waitFor(`window.__app.ui.view === 'menu'`);
     await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);
-    // El menú cabe en una pantalla: los 7 modos, tu colección y las misiones a la vista sin bajar (tras su animación de entrada)
+    // El menú cabe en una pantalla: los modos, tu colección y las misiones a la vista sin bajar (tras su animación de entrada)
     await page.waitFor(`[...document.getElementById('screen').children].every(c => c.getAnimations().every(a => a.playState === 'finished'))`);
     ok(await page.eval(`(() => { const all = [...document.querySelectorAll('.menu-card, .hub-coll .coll-tile, .missions-widget .mw-head')];
-      return all.length >= 13 && all.every(e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1; }); })()`), `${W}×${H}: el menú cabe en una pantalla (modos, colección y misiones)`);
+      return all.length >= 11 && all.every(e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1; }); })()`), `${W}×${H}: el menú cabe en una pantalla (modos, colección y misiones)`);
     const over = [];
     for (const v of views) {
       // atajo: el barrido mira el diseño de cada pantalla, no cómo se llega a ella
@@ -85,7 +85,7 @@ module.exports = async ({ page, player, ok, log }) => {
   await page.press('.legal-text');
 
   // La Historia cabe entera en la pantalla en horizontal: el Camino
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitFor(`document.querySelector('.story-pathwrap') && document.querySelector('.story-side .node-info button.primary')`);
   ok(await page.eval(`(() => { const m = document.querySelector('.story-pathwrap').getBoundingClientRect(), b = document.querySelector('.story-side .node-info button.primary').getBoundingClientRect();
     return m.top >= 0 && m.bottom <= innerHeight + 1 && b.top >= m.bottom - 1 && b.bottom <= innerHeight && document.getElementById('screen').scrollTop === 0; })()`), 'en horizontal el Camino se ve entero, con lo elegido debajo y su botón de jugar a la vista sin bajar');

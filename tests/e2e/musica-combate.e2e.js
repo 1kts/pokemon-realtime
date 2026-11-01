@@ -13,13 +13,14 @@ module.exports = async ({ page, ok }) => {
 
   // Sin archivo (no está o no carga) suena el mismo tema sintetizado: se simula con el del combate
   await page.eval(`window.__app.music.bytes.set('desierto', Promise.resolve(null)); true`);
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.click('.pool-card');
   await page.click('.draft button.primary');
   await page.waitFor(`window.__app.battle`, 20000);
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'battle', 'un combate pone el tema de combate');
-  await page.waitFor(`window.__app.music.sounding`);
+  // (lento, puede seguir apagándose el tema del menú: se espera a que entre el del combate)
+  await page.waitFor(`window.__app.music.source === 'sintetizado'`, 20000).catch(() => {});
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.source`) === 'sintetizado', 'si el archivo del tema falta, suena la versión sintetizada');
   await page.waitFor(`window.__app.battle.latest`, 15000);

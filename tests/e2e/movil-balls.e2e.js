@@ -9,7 +9,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.reload(); await page.waitFor(`document.querySelector('.title-panel button.primary')`, 20000); await page.click('.title-panel button.primary');
   // (lo que se manda al servidor al lanzar: se apunta, sin cambiarlo)
   await page.eval(`(() => { const net = window.__app.net, send = net.send.bind(net); net.send = m => { if (m.t === 'in' && m.c === 5) window.__throw = m; return send(m); }; return true; })()`);
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.click('.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]');
   await page.tap('Explorar', { in: '.story-side' });
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 20000);

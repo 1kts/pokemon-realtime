@@ -41,7 +41,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.eval(sheet) === '/themes/tema-b.css' && await page.eval(storyBg) === themed, 'al volver a entrar, el tema elegido sigue');
 
   // Se usa igual: Historia se abre con el ratón y el botón de desafiar se ve y se puede pulsar
-  await page.click('.menu-card.story');
+  await page.mode('Historia');
   await page.waitFor(`document.querySelector('.story-path .sp-node')`, 20000);
   // (la guía de la primera vez: se cierra como un jugador)
   await page.waitFor(`[...document.querySelectorAll('body > .modal button')].some(b => b.textContent.includes('¡A jugar!'))`);

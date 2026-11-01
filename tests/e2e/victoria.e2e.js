@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok, log }) => {
   const money = async () => +(await page.read('.hub-me .pill.coins')).replace(/\D/g, '');
   const before = await money();
 
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.waitFor(`document.querySelector('.story-path .sp-node.sel')`);   // (el Camino ya se ha colocado en lo que toca)
   // (como quien baja a mirar su equipo antes de desafiar: la pantalla queda bajada, y los resultados tienen que salir
   // igualmente desde arriba, con «¡Victoria!» a la vista)
@@ -62,6 +62,7 @@ module.exports = async ({ page, player, ok, log }) => {
 
   // El dinero de arriba sube lo que decían los resultados
   await page.tap('Continuar');
+  await page.waitSee('Tu viaje');   // (ya de vuelta en Historia, con el CI lento: «Volver» es el de esa pantalla)
   await page.tap('Volver');
   await page.waitSee('Aventura');
   ok(await money() === before + won, `en el menú el dinero sube lo que decían: ${before} + ${won} = ${await money()}`);

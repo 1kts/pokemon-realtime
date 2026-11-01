@@ -1838,6 +1838,13 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 .lp-big { display: block; width: 54px; height: 54px; }
 .lp-big .trainer-img { width: 100%; height: 100%; object-fit: contain; }
 .lp-face { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: rgba(0,0,0,.3); box-shadow: inset 0 0 0 2px rgba(255,255,255,.3); }
+/* Las tres primeras, en oro, plata y bronce de verdad */
+.lp-card.m1 { background: linear-gradient(100deg, #b98a12, #6e4e08 70%, #4a3506); border-color: #ffd23f; box-shadow: inset 0 1px 0 rgba(255,240,180,.5), 0 0 14px rgba(255,203,5,.35); }
+.lp-card.m2 { background: linear-gradient(100deg, #8f9bb0, #566074 70%, #3c4456); border-color: #e4eaf4; box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 0 12px rgba(205,214,228,.25); }
+.lp-card.m3 { background: linear-gradient(100deg, #a9642c, #6c3d17 70%, #4b2a10); border-color: #e39a5c; box-shadow: inset 0 1px 0 rgba(255,214,170,.45), 0 0 12px rgba(217,138,74,.3); }
+.lp-card.m1 > span, .lp-card.m1 > span * { color: #fff1a8; }
+.lp-card.m2 > span, .lp-card.m2 > span * { color: #f2f5fa; }
+.lp-card.m3 > span, .lp-card.m3 > span * { color: #ffd9b0; }
 .lp-rest { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
 .lp-rest li { display: grid; grid-template-columns: 26px 26px auto minmax(0, 1fr) auto; align-items: center; gap: 6px; min-height: 34px; padding: 2px 8px 2px 4px; border-radius: 9px; color: #fff; background: rgba(255,255,255,.06); cursor: pointer; }
 .lp-rest li:hover { background: rgba(255,255,255,.12); }
@@ -1882,3 +1889,23 @@ button.sp-go { position: absolute; bottom: 0; left: 0; right: 0; width: max-cont
 /* Bajo Continuar: atajos para preparar lo siguiente, sin competir con él */
 .res-links { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
 .res-links .res-go { padding: 6px 12px; font-size: 13px; }
+
+/* Menú en escritorio, en tres columnas para que quepa sin bajar: Historia y Torre arriba, y debajo Online y Entrenamiento */
+@media (min-width: 961px) and (min-height: 501px) {
+  .menu-main { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 14px; }
+  .menu-main > .menu-sec:nth-child(1) { grid-column: 1 / -1; }
+  .menu-main > .menu-sec:nth-child(3) { grid-column: span 2; }
+  .menu-main .menu-sec:nth-child(1) .menu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .menu-main .menu-sec:nth-child(2) .menu-grid { grid-template-columns: minmax(0, 1fr); }
+  .menu-main .menu-sec:nth-child(2) .sec-head small { display: none; }
+  /* (las tarjetas son más estrechas: título y texto a todo el ancho, y el sprite abajo a la derecha) */
+  :is(.menu-main, body.tema-d .menu-main) .menu-card { min-height: 156px; padding: 12px 14px; justify-content: flex-start; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card:not(.wide) > b { gap: 6px; font-size: 19px; line-height: 1.1; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card:not(.wide) > b .card-ico { width: 26px; height: 26px; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card:not(.wide) > span:not(.pvp-live) { max-width: 100%; font-size: 13px; line-height: 1.25; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card:not(.wide) .art { width: 66px; height: 66px; top: auto; right: 4px; bottom: 4px; transform: none; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card.wide { min-height: 190px; padding: 16px 20px; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card.wide > b { font-size: 38px; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card.wide > span { max-width: calc(100% - 150px); font-size: 14px; }
+  :is(.menu-main, body.tema-d .menu-main) .menu-card.wide .art { width: 150px; height: 150px; top: auto; right: 6px; bottom: 6px; transform: none; }
+}

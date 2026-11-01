@@ -1,5 +1,5 @@
-// Torre, Partida rápida y Práctica sin bajar por la pantalla: en la Torre, a la izquierda eliges equipo y a la derecha
-// ves el ranking; en Partida rápida buscas desde la cabecera; en Práctica, Pokémon a la izquierda y mapas a la derecha.
+// Torre y Práctica sin bajar por la pantalla: en la Torre, a la izquierda eliges equipo y a la derecha
+// ves el ranking; en Práctica, Pokémon a la izquierda y mapas a la derecha.
 const lado = (page, a, b) => page.eval(`(() => {
   const rect = q => { const e = [...document.querySelectorAll('h3, h4, button, b, span')].find(x => x.children.length < 3 && x.innerText.trim().toLowerCase().startsWith(q.toLowerCase()) && x.getClientRects().length); return e && e.getBoundingClientRect(); };
   const x = rect(${JSON.stringify(a)}), y = rect(${JSON.stringify(b)});
@@ -15,7 +15,7 @@ const columnas = SIZES => async ({ page, player, ok }) => {
     if (touch) { await page.eval("localStorage.setItem('arena.touch', '1'); true"); await page.loginAs(me.token); }
     const en = `${w}×${h}`;
 
-    await page.click('.menu-card.tower');
+    await page.mode('Torre Batalla');
     await page.waitSee('Elige tu equipo');
     ok(await page.see('Ranking de la Torre'), `${en}: el ranking de la Torre se ve sin bajar`);
     const torre = await lado(page, 'Elige tu equipo', 'Ranking de la Torre');
@@ -30,12 +30,7 @@ const columnas = SIZES => async ({ page, player, ok }) => {
     }
     await page.tap('Volver');
 
-    await page.tap(/^Partida rápida/);
-    await page.waitSee('Partida rápida');
-    ok(await page.see(/Buscar partida rápida/, { in: '.inner-bar' }), `${en}: buscar partida se ve en la cabecera`);
-    await page.tap('Volver');
-
-    await page.tap(/^Práctica/);
+    await page.mode('Práctica');
     await page.waitSee('Dificultad');
     ok(await page.see('Empezar', { in: '.inner-bar' }), `${en}: «Empezar» se ve en la cabecera`);
     ok(await page.see('Arena'), `${en}: los mapas se ven sin bajar`);

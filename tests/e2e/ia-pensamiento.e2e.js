@@ -5,7 +5,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.loginAs(me.token);
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   const toPractice = async () => {
-    await page.click('.menu-card.practice');
+    await page.mode('Práctica');
     await page.waitFor(`window.__app.ui.view === 'practice' && document.querySelector('.pool-card')`);
   };
   const fight = async () => {

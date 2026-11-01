@@ -11,7 +11,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.ui.view === 'menu'`);
   // (en el Camino, a Blaine, lo que toca; la guía de la primera vez, ya vista)
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);
-  await page.click('.menu-card.story');
+  await page.mode('Historia');
   await page.waitFor(`document.querySelector('.story-path .sp-node.now')`);
   await page.eval(`(() => { const w = document.querySelector('.story-path'), n = document.querySelector('.sp-node.now'); w.style.scrollBehavior = 'auto'; w.scrollLeft += n.getBoundingClientRect().left - w.getBoundingClientRect().left - w.clientWidth / 2 + n.offsetWidth / 2; return true; })()`);   // atajo: desplazar el camino hasta lo que toca
   // (los avisos duran poco: se apunta cada uno que sale en pantalla)

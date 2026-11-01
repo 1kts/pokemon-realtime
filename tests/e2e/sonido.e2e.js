@@ -15,7 +15,7 @@ module.exports = async ({ page, ok }) => {
   // atajo: el sonido no se ve: se apunta qué pide la música (el combate se empieza con los botones)
   await page.eval(`(() => { const mu = window.__app.music, play = mu.play.bind(mu);
     mu.play = n => { play(n); if (n === 'battle') setTimeout(() => { window.__mid = { cur: mu.current, sounding: mu.sounding }; }, 500); }; return true; })()`);
-  await page.tap(/^Práctica/);
+  await page.mode('Práctica');
   await page.click('.pool-card');
   await page.click('.draft button.primary');
   await page.waitFor(`window.__mid`, 20000);

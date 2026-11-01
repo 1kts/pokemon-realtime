@@ -14,7 +14,7 @@ const { SPECIES, RANKED_POOL, REGIONS, LEAGUES } = Data;
 const { level: LEVEL, block: BLOCK, brainEvery: BRAIN_EVERY } = Data.TOWER;
 const LADDER_EVERY = 60000;   // ms entre peticiones de la ladder del menú
 const BOARDS = [
-  ['ranked', 'Clasificatoria', 'ELO'],
+  ['ranked', 'PvP', 'ELO'],
   ['tower', 'Torre Batalla', 'Mejor racha'],
   ['dex', 'Pokédex', 'Especies'],
 ];
@@ -384,7 +384,7 @@ export const towerViews = {
     }
     body.append(ol);
     const me = msg.me;
-    if (!(me && me.rank <= 2)) body.append(el('p', 'lp-me', me ? t('Tú: puesto {n} de {total}', { n: me.rank, total: msg.total }) : t('Juega Clasificatoria para entrar')));
+    if (!(me && me.rank <= 2)) body.append(el('p', 'lp-me', me ? t('Tú: puesto {n} de {total}', { n: me.rank, total: msg.total }) : t('Juega PvP para entrar')));
   },
 
   drawLadderColumn(msg, box, body) {
@@ -409,10 +409,11 @@ export const towerViews = {
       return li;
     };
     const ol = el('ol', 'lp-rest');
-    for (const r of msg.rows.slice(3)) ol.append(row(r));
-    if (msg.me && msg.me.rank > msg.rows.length) ol.append(row(msg.me));
+    // (el top 7 y tu puesto, si estás más abajo: la lista entera se ve en «Ver la ladder completa»)
+    for (const r of msg.rows.slice(3, 7)) ol.append(row(r));
+    if (msg.me && msg.me.rank > 7) ol.append(row(msg.me));
     body.append(top, ol);
-    if (!msg.me && board === 'ranked') body.append(el('p', 'lp-me', t('Juega Clasificatoria para entrar')));
+    if (!msg.me && board === 'ranked') body.append(el('p', 'lp-me', t('Juega PvP para entrar')));
     if (board === 'ranked') {
       const league = this.profile.league || leagueOf(this.profile.elo);
       body.append(el('p', 'lp-prize', `<b>${t('Premios de temporada')}</b><span>${t(league)}: ${coins(Data.SEASON_REWARDS[league])}</span>`));
@@ -509,7 +510,7 @@ export const towerViews = {
     head.append(u.npc ? el('div', 'npc-face', trainerImg(u.npcKey)) : this.avatar(104, true, undefined, undefined, undefined, u));
     const since = u.created ? new Date(u.created).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' }) : null;
     head.append(el('div', '', `<h3>${tagName(u.name, u.tag, u.npc)}${u.id === this.profile.id ? ` <span class="you">${t('tú')}</span>` : ''}</h3>
-      <p class="small">${u.npc ? t('Entrenador de la IA: te toca en Clasificatoria si nadie aparece en unos segundos') : `<i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}`}</p>
+      <p class="small">${u.npc ? t('Entrenador de la IA: te toca en PvP si nadie aparece en unos segundos') : `<i class="dot${u.online ? ' on' : ''}"></i> ${u.online ? t('En línea') : t('Desconectado')}${since ? ` · ${t('entrenador desde el {date}', { date: since })}` : ''}`}</p>
       ${u.title ? `<span class="title-chip">${escapeHtml(t(u.title))}</span> ` : ''}<span class="elo">${t(leagueOf(u.elo))} · ${u.elo}</span>${u.peakElo > u.elo ? ` <span class="small">${t('máx. {n}', { n: u.peakElo })}</span>` : ''}${showcaseHtml(u.showcase, 40)}`));
     box.append(head);
     // Sus medallas, región a región (en color las conseguidas)
@@ -527,17 +528,17 @@ export const towerViews = {
     const games = u.wins + u.losses, wr = games ? Math.round(u.wins / games * 100) : null;
     // De la IA solo cuenta la Clasificatoria (no juegan la Torre ni la Historia)
     if (u.npc) box.append(el('div', 'rows user-stats', `
-      <div class="stat"><small>${t('Clasificatoria')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
+      <div class="stat"><small>${t('PvP')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
       <div class="stat"><small>ELO</small><b>${u.elo}${u.peakElo > u.elo ? ` <small class="small">${t('máx. {n}', { n: u.peakElo })}</small>` : ''}</b></div>`));
     else box.append(el('div', 'rows user-stats', `
-      <div class="stat"><small>${t('Clasificatoria')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
+      <div class="stat"><small>${t('PvP')} ${rank(u.ranks.ranked)}</small><b>${t('{w}V {l}D', { w: u.wins, l: u.losses })}${wr !== null ? ` <small class="small">${wr}%</small>` : ''}</b></div>
       <div class="stat"><small>${t('Torre: mejor racha')} ${rank(u.ranks.tower)}</small><b>${u.tower.best}${u.tower.streak ? ` <small class="small">(${t('en racha: {n}', { n: u.tower.streak })})</small>` : ''}</b></div>
       <div class="stat"><small>Pokédex ${rank(u.ranks.dex)}</small><b>${u.caught}${u.shinies ? ` <i class="shiny-star">✦${u.shinies}</i>` : ''}</b></div>
       <div class="stat"><small>${t('Medallas')}</small><b>${u.badges}</b></div>
       <div class="stat"><small>${t('Logros')}</small><b>${u.achievements || 0}</b></div><div class="stat"><small>${t('Pokémon')}</small><b>${u.mons || 0}</b></div>`));
 
     if (u.team.length) {
-      box.append(el('h4', '', u.npc ? t('Su equipo de Clasificatoria') : t('Sus Pokémon de equipo')));
+      box.append(el('h4', '', u.npc ? t('Su equipo de PvP') : t('Sus Pokémon de equipo')));
       const row = el('div', 'mini-team');
       for (const m of u.team) { const c = el('div', 'mini'); c.append(portrait(m.dex, 52, { shiny: m.shiny })); c.append(el('small', '', `${monLabel(m)}${m.shiny ? ' ✦' : ''}<br>${lv(m.level)}`)); row.append(c); }
       box.append(row);

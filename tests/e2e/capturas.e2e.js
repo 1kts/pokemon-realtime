@@ -10,7 +10,7 @@ module.exports = async ({ page, player, ok, log }) => {
   // La Ruta 1, tocándola en el Camino de Historia (su nombre está en su tooltip, en title o, tras pasar el ratón, en data-tip)
   const ruta1 = '.sp-route[title^="Ruta 1 ·"], .sp-route[data-tip^="Ruta 1 ·"]';
   const openRoute = async () => {
-    await page.tap(/^Historia/);
+    await page.mode('Historia');
     await page.waitFor(`document.querySelector('${ruta1}')`);
     await page.click(ruta1);
     await page.waitFor(`document.querySelector('.route-list .mini .catch-pips')`);

@@ -12,7 +12,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.goto('/');
     await page.eval(`localStorage.${touch ? "setItem('arena.touch', '1')" : "removeItem('arena.touch')"}; true`);
     await page.loginAs(me.token);
-    await page.tap('Historia');
+    await page.mode('Historia');
   };
 
   await entra(1280, 800, false);

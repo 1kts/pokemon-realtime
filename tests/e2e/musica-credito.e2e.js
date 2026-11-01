@@ -7,7 +7,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval(`localStorage.setItem('arena.storyGuide', '1'); true`);   // (la guía de la primera vez, ya vista)
   await page.waitSee('Aventura');
   ok(await page.see(/Música de .*jannetty.*rckbtm.*Spring Spring.*HydroGene/, { in: '.legal-bar', scroll: true }), 'la barra de abajo nombra a los cuatro autores');
-  await page.tap(/^Historia/);
+  await page.mode('Historia');
   await page.tap('Desafiar');   // (el gimnasio de Brock tiene su tema)
   await page.waitSee('Hidden Cavern', { in: '.now-playing' });
   ok(await page.see('HydroGene', { in: '.now-playing' }), 'al sonar el tema del combate sale su título y su autor');
