@@ -32,6 +32,9 @@ module.exports = async ({ page, ok, log }) => {
     await page.press('.tc-quit');
     await page.waitSee('¿Rendirte?', { in: '.ui-confirm-box' });
     const s1 = await page.eval(state);
+    const seen0 = await page.see('¿Rendirte?', { in: '.ui-confirm-box', ms: 0 });
+    if (!seen0) bad++;
+    log(`#${i} nada más verla: ${seen0 ? 'OK' : 'MAL ' + page.lastSee}`);
     await new Promise(r => setTimeout(r, 400));
     const s2 = await page.eval(state);
     const seen = await page.see('¿Rendirte?', { in: '.ui-confirm-box', ms: 0 });
