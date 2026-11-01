@@ -278,13 +278,10 @@ export class Music {
     // En el móvil o con ahorro de datos, solo el de los salvajes (lo siguiente más probable): todos eran 15 MB
     // nada más abrir el juego; los demás se piden al sonar
     // (al salir o recargar, lo que se esté bajando se corta a mano: si no, Safari se queja de cada descarga cortada con
-    // «cannot load … due to access control checks». En beforeunload, que es antes de que Safari corte las descargas al
-    // empezar a cargar la página nueva: en pagehide ya las ha cortado él. Y se arma otro enseguida, por si la página se
-    // queda, que lo cortado se vuelve a pedir al sonar)
+    // «cannot load … due to access control checks»)
     this.leaving = new AbortController();
-    const leave = () => { this.leaving.abort(); this.leaving = new AbortController(); };
-    addEventListener('beforeunload', leave);
-    addEventListener('pagehide', leave);
+    addEventListener('pagehide', () => this.leaving.abort());
+    addEventListener('pageshow', e => { if (e.persisted) this.leaving = new AbortController(); });
     this.preload('menu');
     const light = touchMode() || !!(navigator.connection && navigator.connection.saveData);
     setTimeout(() => (light ? ['wild'] : Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-') && !n.startsWith('route-') && n !== 'wildRare')).forEach(n => this.preload(n)), 4000);
