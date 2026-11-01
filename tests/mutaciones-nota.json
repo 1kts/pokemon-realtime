@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-01",
- "cazadas": 50,
- "total": 50,
+ "cazadas": 52,
+ "total": 52,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -357,6 +357,20 @@
     "tools/security-test.js"
    ],
    "motivo": "security-test.js: ✗ sin ARENA_DEV el gancho de pruebas no responde ni cambia el perfil"
+  },
+  "lider-sin-refugio": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/jugadas-lideres.e2e.js"
+   ],
+   "motivo": "jugadas-lideres.e2e.js: ✗ Blaine anuncia su jugada (avisos: 3 | 3 | 2 | 1 | ¡A combatir! | ¡Machoke se ha debilitado!)"
+  },
+  "premio-genial-no-cierra": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/recoger-todo.e2e.js"
+   ],
+   "motivo": "recoger-todo.e2e.js: ✗ error: Tiempo agotado esperando: !document.querySelector('.loot-pop[data-e2e-visto]:not(.out)')"
   }
  }
 }
