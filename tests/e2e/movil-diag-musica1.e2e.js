@@ -7,11 +7,11 @@ module.exports = async ({ page, ok, log }) => {
     if (c === 1) fetch('/music/campeon.mp3?d=' + Math.random()).then(r => r.arrayBuffer()).catch(() => {});
     if (c === 2) { const a = new AbortController(); addEventListener('pagehide', () => a.abort()); fetch('/music/campeon.mp3?d=' + Math.random(), { signal: a.signal }).then(r => r.arrayBuffer()).catch(() => {}); }
     if (c === 3) { window.__app.music.bytes.clear(); window.__app.music.preload('champion'); window.__app.music.preload('tower'); }
-    setTimeout(() => location.reload(), 0);
+    window.__viejo = 1; setTimeout(() => location.reload(), 50);
     return c === 1 ? 'fetch sin cortar' : c === 2 ? 'fetch cortado en pagehide' : 'preload del juego';
   })()`);
   log(what);
-  await page.waitFor('document.readyState === "complete" && window.__app', 30000);
+  await page.waitFor('!window.__viejo && document.readyState === "complete" && window.__app', 30000);
   await page.eval(`new Promise(r => setTimeout(() => r(true), 1500))`);
   ok(true, 'diagnóstico de música, caso 1 (lo que cuenta es el error de la página)');
 };
