@@ -65,7 +65,7 @@ jobs:
   e2e:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -82,13 +82,14 @@ jobs:
           E2E_SHARD: ${{ matrix.shard }}/6
           E2E_JOBS: 2
           E2E_TIMES: 1
+          E2E_TIMEOUT: 600   # (el CI va a pocos fotogramas: 10 min por prueba, no un fallo por tardar)
 
   # Los e2e del móvil en WebKit (el motor del Safari del iPhone), con Playwright: E2E_BROWSER=webkit (ver
   # tests/e2e/README.md). Nuevo: hasta ver que es estable avisa (sale en rojo en su job) pero no tumba el CI ni el despliegue
   webkit:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     continue-on-error: true
     steps:
       - uses: actions/checkout@v5
@@ -103,6 +104,7 @@ jobs:
           E2E_BROWSER: webkit
           E2E_JOBS: 2
           E2E_TIMES: 1
+          E2E_TIMEOUT: 600   # (el CI va a pocos fotogramas: 10 min por prueba, no un fallo por tardar)
 
   # Pruebas de mutación (cada noche y a mano): cada mutación de tests/mutaciones.js con sus tests, en 4 máquinas; falla
   # si alguna que la nota daba por cazada se escapa. Tarda (cada mutación pasa sus e2e): por eso no va en cada push;
