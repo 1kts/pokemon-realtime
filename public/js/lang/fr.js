@@ -17,6 +17,7 @@ export default {
     'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'Depuis Amis, tu peux défier un ami sans ELO : il reçoit un avis et décide d\'accepter ou non.',
     'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'Le Ladder passe à droite du menu avec le top 7, ta place et les couleurs or, argent et bronze, et la Tour de Combat rejoint Aventure.',
     'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': 'Ce que tu n\'as pas encore apparaît atténué avec un cadenas, et le bouton d\'abandon mobile marche mieux sur iPhone.',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': 'Quand tu récupères une récompense, le bouton « Génial ! » reste à sa place et répond du premier coup.',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'Favoris et évolutions',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'Dans Mes Pokémon, marque tes favoris d\'une étoile : ils passent en tête, se filtrent avec « Favoris » et ne se vendent pas par erreur.',

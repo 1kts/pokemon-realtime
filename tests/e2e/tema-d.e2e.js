@@ -44,7 +44,8 @@ module.exports = async ({ page, player, ok }) => {
   const hueGap = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
   const story = modes.find(m => m.m === 'story'), rest = modes, ranked = modes.find(m => m.m === 'ranked');
   ok(story && (story.glow[0] <= 12 || story.glow[0] >= 350) && story.glow[1] > .8, `con la D, Historia brilla en rojo (${JSON.stringify(story && story.glow)})`);
-  ok(rest.length >= 4 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
+  // (los 5 modos: desde la 0.37.0 la Ladder del escritorio es una columna con su podio, y desde la 0.38.0 PvP es uno solo)
+  ok(rest.length >= 5 && rest.every(m => m.whiteZ >= 4.5 && m.hZ >= 215 && m.hZ <= 245 && m.lZ < .3), `con la D, los modos son azul noche y el blanco se lee (${rest.map(m => `${m.m} ${m.hZ}° ${m.whiteZ}`).join(', ')})`);
   ok(rest.every(m => m.glow[1] > .5) && rest.every((m, i) => rest.every((o, j) => i === j || hueGap(m.glow[0], o.glow[0]) >= 12)), `con la D, cada modo lleva su color encendido y distinto del de los demás (${rest.map(m => m.m + ' ' + m.glow[0] + '°').join(', ')})`);
   ok(ranked && ranked.gold, `con la D, PvP brilla en oro y no en marrón (${JSON.stringify(ranked && ranked.glow)})`);
 

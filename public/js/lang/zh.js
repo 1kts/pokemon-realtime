@@ -17,6 +17,7 @@ export default {
     'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': '在好友中可以向好友发起不计 ELO 的挑战:对方会收到通知并决定是否接受。',
     'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': '天梯移到菜单右侧,显示前 7 名、你的名次和金银铜配色,对战塔移到冒险。',
     'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': '尚未拥有的内容会变暗并带锁,手机上的投降按钮在 iPhone 上更好用。',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': '领取奖励时，「太棒了！」按钮会固定在原位，一按就生效。',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': '收藏与进化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': '在我的宝可梦中可用星标收藏:收藏的排在最前,可按“收藏”筛选,也不会被误卖。',

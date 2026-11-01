@@ -18,6 +18,7 @@ export default {
     'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.': 'フレンドから、ELOなしの対戦を挑めます。相手に通知が届き、受けるか決められます。',
     'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.': 'ラダーはメニュー右側に移り、上位7人、自分の順位、金銀銅の色で表示。バトルタワーはアドベンチャーへ移動しました。',
     'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.': '未所持のものは暗くなり鍵が付き、スマホの降参ボタンはiPhoneで動きやすくなりました。',
+    'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.': 'ごほうびを受け取るとき、「やったね！」ボタンが動かずにその場にとどまり、一度で押せます。',
     // ---------- Novedades v0.37.0 ----------
     'Favoritos y evoluciones': 'お気に入りと進化',
     'En Mis Pokémon puedes marcar favoritos con una estrella: salen los primeros, se filtran con «Favoritos» y no se venden por error.': 'マイポケモンで星を付けるとお気に入りになり、先頭に並び、絞り込めて、誤って売ることもありません。',

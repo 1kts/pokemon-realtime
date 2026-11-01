@@ -10,6 +10,7 @@
         ['nuevo', 'Desde Amigos puedes retar a un amigo a un combate sin ELO: le llega el aviso y decide si acepta.'],
         ['cambio', 'La Ladder va a la derecha del menú con el top 7, tu puesto y los colores oro, plata y bronce, y Torre Batalla pasa a Aventura.'],
         ['cambio', 'Lo que aún no tienes se ve atenuado y con candado, y el botón de rendirse del móvil va mejor en iPhone.'],
+        ['arreglo', 'Al recoger un premio, el botón «¡Genial!» se queda quieto donde sale y se pulsa a la primera.'],
       ],
     },
     {
