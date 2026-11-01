@@ -34,7 +34,7 @@ module.exports = async ({ page, player, ok }) => {
     // (cuando ha acabado de entrar: con el CI lento, si la ventana aún crecía, el clic no llegaba al botón)
     await page.waitFor(`[...document.querySelectorAll('.loot-pop, .loot-pop .loot-box')].every(e => e.getAnimations().every(a => a.playState !== 'running'))`);
     await page.click('.loot-pop .acts .primary');
-    await page.waitFor(`!document.querySelector('.loot-pop')`);
+    await page.waitFor(`!document.querySelector('.loot-pop')`, 30000);   // (con el CI lento el clic tarda en atenderse)
   }
   const all = prizes.join(' | ');
   ok(/Caramelo Raro/.test(all) && /Maestro de Charmander/.test(all) && /Retrato/i.test(all) && (await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`)) === 0,
