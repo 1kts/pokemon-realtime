@@ -31,6 +31,8 @@ const prueba = sizes => async ({ page, player, ok }) => {
     ok(mandos.n === 5 && mandos.min >= 44 && !mandos.cruces && !mandos.fuera, `${en}: cinco botones de al menos 44 px sin pisarse (${JSON.stringify(mandos)})`);
     // (se sale del combate rindiéndose: volver a entrar a medias lo retoma, ver reconexion.e2e.js)
     await page.press('.tc-quit');
+    // (como en movil.e2e.js: se pulsa con la ventana ya a la vista, que en WebKit a pocos fotogramas aún podía estar entrando)
+    await page.waitSee('¿Rendirte?', { in: '.ui-confirm-box' });
     await page.tap('Rendirse', { in: '.ui-confirm-box' });
     await page.waitFor(`document.querySelector('.results')`, 20000);
     await page.loginAs(me.token);
