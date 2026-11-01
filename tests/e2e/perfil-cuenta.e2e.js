@@ -55,11 +55,11 @@ module.exports = async ({ page, player, ok }) => {
     return { dx: Math.abs((c.left + c.right) / 2 - (i.left + i.right) / 2), dy: Math.abs((c.top + c.bottom) / 2 - (i.top + i.bottom) / 2), cw: c.width, iw: i.width }; })()`);
   ok(foto.dx <= 2 && foto.dy <= 2 && foto.iw <= foto.cw, `la foto va centrada y dentro de su círculo (círculo ${foto.cw}, foto ${foto.iw}, desvío ${foto.dx},${foto.dy})`);
   ok(await page.see('Charmander', { in: '.ae-body' }), 'en Imagen se ven los Pokémon a la primera, sin bajar');
-  ok(await page.eval(`document.querySelectorAll('.ae-body input[type=search]').length === 1`), 'hay un solo buscador');
+  ok(await page.eval(`document.querySelectorAll('.ava-edit input[type=search]').length === 1`), 'hay un solo buscador');
 
   const busca = async q => {
-    await page.eval(`(() => { const i = document.querySelector('.ae-body input[type=search]'); i.value = ''; return true; })()`);
-    await page.type('.ae-body input[type=search]', q);
+    await page.eval(`(() => { const i = document.querySelector('.ava-edit input[type=search]'); i.value = ''; return true; })()`);
+    await page.type('.ava-edit input[type=search]', q);
   };
   await busca('pokeball');
   await page.waitSee('Poké Ball', { in: '.ae-body' });

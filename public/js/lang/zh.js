@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.3 ----------
+    'Retoques para el móvil': '手机版小调整',
+    'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': '在手机上，你的头像在个人资料和头像编辑器里都会居中显示在圆框内。',
+    'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.': '在手机上，能量条位于招式弧形按钮的正下方，前面带有 ⚡。',
     // ---------- Novedades v0.36.2 ----------
     'Móvil más cómodo y ladder a la vista': '手机更顺手,天梯一目了然',
     'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': '菜单的天梯面板显示排位赛前 5 名和你的名次,点“查看全部”可打开完整榜单。',

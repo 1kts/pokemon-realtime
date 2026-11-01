@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.3 ----------
+    'Retoques para el móvil': '모바일 다듬기',
+    'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': '모바일에서 프로필과 아바타 편집기의 사진이 원 안 가운데에 맞게 표시됩니다.',
+    'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.': '모바일에서 에너지 바가 기술 버튼 호 바로 아래에 ⚡와 함께 표시됩니다.',
     // ---------- Novedades v0.36.2 ----------
     'Móvil más cómodo y ladder a la vista': '더 편해진 모바일, 한눈에 보는 래더',
     'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': '메뉴의 래더 패널에 랭크 상위 5명과 내 순위가 나오고, ‘모두 보기’로 전체 표를 열 수 있어요.',

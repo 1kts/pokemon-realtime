@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.36.3 ----------
+    'Retoques para el móvil': 'Mobile touch-ups',
+    'En el móvil, tu foto queda centrada dentro de su círculo en el perfil y en el editor del avatar.': 'On mobile, your picture sits centred inside its circle on your profile and in the avatar editor.',
+    'En el móvil, la barra de energía va justo debajo del arco de ataques, con su ⚡ delante.': 'On mobile, the energy bar sits right under the arc of attacks, with its ⚡ in front.',
     // ---------- Novedades v0.36.2 ----------
     'Móvil más cómodo y ladder a la vista': 'Comfier mobile, ladder in view',
     'El menú enseña el top 5 de Clasificatoria y tu puesto en el panel de Ladder, con «Ver todo» para abrir la tabla entera.': 'The menu shows the Ranked top 5 and your position in the Ladder panel, with “See all” to open the full table.',

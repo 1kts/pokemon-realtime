@@ -666,11 +666,14 @@
   .ae-bar input[type=search] { flex: 1 1 0; min-width: 0; margin: 0; padding: 4px 8px; }
   .ae-preview { grid-row: 2 / 4; padding: 4px; }
   .ae-preview .ava { --s: 88px !important; }
+  /* (la foto se pinta a 104 px: se ajusta al círculo, si no se salía y quedaba descentrada) */
+  .ae-preview .ava .ava-pic > :is(canvas, img) { width: 88px; height: 88px; }
   .ae-who b { font-size: 14px; }
   .ae-body, .ae-more { grid-column: 2; }
   /* Tarjeta de perfil: pequeña y los botones de la cuenta a la derecha */
   .pv-flow .trainer-card, .trainer-card { gap: 12px; padding: 8px 12px; }
   .trainer-card .ava { --s: 72px !important; border-width: 3px; }
+  .trainer-card .ava .ava-pic > :is(canvas, img) { width: 72px; height: 72px; }
   .trainer-card .tc-info { position: relative; min-width: 0; padding-right: 150px; }
   .tc-acc { position: absolute; top: 50%; right: 0; flex-direction: column; flex-wrap: nowrap; width: 138px; gap: 5px; margin: 0; transform: translateY(-50%); }
   .tc-acc button { width: 100%; padding: 5px 8px; font-size: 12px; }
@@ -680,5 +683,8 @@
   #hud.touch .mv:nth-child(3) { right: 76px; bottom: 116px; width: 56px; height: 56px; }
   #hud.touch .mv:nth-child(4) { right: 16px; bottom: 124px; width: 56px; height: 56px; }
   #hud.touch .mv.protect { right: 134px; bottom: 2px; width: 54px; height: 54px; }
+  /* (la energía, a lo largo del arco: desde Protección hasta la esquina, con su ⚡ delante) */
+  #hud.touch .energy { left: auto; right: 0; width: 188px; }
+  #hud.touch .bottom::before { left: calc(100% - 204px); }
   #hud.touch .balls { bottom: 208px; max-height: 118px; flex-wrap: wrap-reverse; }
 }
