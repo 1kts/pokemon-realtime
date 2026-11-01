@@ -37,7 +37,14 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('.lg-row.k-perfect.ready button');
   await page.waitSee('IV perfectos', { in: '.loot-pop' });
   ok(true, 'al recogerlo sale el premio «IV perfectos» de su línea');
+  // (se pulsa «¡Genial!» con la ventana ya entrada y el botón quieto en dos fotogramas seguidos, como en maestria.e2e.js:
+  // con el CI a 1-2 fotogramas por segundo el clic caía a media entrada y no llegaba)
+  await page.waitFor(`document.querySelector('.loot-pop').getAnimations({ subtree: true }).every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity)`);
+  await page.eval(`new Promise(r => { const at = () => JSON.stringify(document.querySelector('.loot-pop .acts .primary').getBoundingClientRect()); let last = at();
+    const tick = () => requestAnimationFrame(() => { const now = at(); if (now === last) r(true); else { last = now; tick(); } }); tick(); })`);
   await page.click('.loot-pop .acts .primary');
+  // (como un jugador, se sigue cuando el premio se ha ido: con el CI lento aún se estaba cerrando y tapaba «Volver»)
+  await page.waitFor(`!document.querySelector('.loot-pop')`, 30000);
   await page.key('Escape');
   await page.tap('Volver');
   await openRoute();
