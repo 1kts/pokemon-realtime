@@ -1039,7 +1039,7 @@ body.in-battle .ui-confirm { cursor: auto; }
 :is(.ms-wear, .frame-opt).locked { position: relative; border-style: solid; border-color: rgba(190,205,240,.16); box-shadow: none; }
 /* (en lo que envuelve a la imagen, no en ella: las skins llevan su propio filter y se perdería el efecto) */
 :is(.ms-wear, .frame-opt).locked > :first-child { filter: saturate(.55) brightness(.72); opacity: .85; }
-:is(.ms-wear, .frame-opt).locked::after { content: '🔒'; position: absolute; top: 6px; right: 6px; font-size: 13px; line-height: 1; opacity: .9; }
+.wear-lock { position: absolute; top: 6px; right: 6px; width: 13px; height: 13px; color: #d2ddf5; filter: drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 .ms-wear.locked > b, .ms-wear.locked > small { opacity: .6; }
 .ms-wear:not(.locked):not(.sel):hover { background: #2a346a; }
 /* Ficha › Retos */

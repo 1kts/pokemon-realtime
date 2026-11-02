@@ -67,6 +67,9 @@ function ownFilter(repaint) {
   return box;
 }
 
+// Candado dibujado (un emoji puede salir como un cuadro vacío si el móvil no tiene esa fuente)
+const LOCK = '<svg class="wear-lock" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.2 7V5.2a2.8 2.8 0 0 1 5.6 0V7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+
 // Una opción, en el formato de su pantalla (sheet: las tarjetas del Vestuario)
 function option(ui, it, kind, sheet) {
   const b = el('button', (sheet ? `ms-wear ${kind}` : 'frame-opt') + (it.sel ? ' sel' : '') + (it.hint ? ' locked' : ''));
@@ -74,6 +77,7 @@ function option(ui, it, kind, sheet) {
   if (sheet) b.append(el('b', '', it.label), el('small', '', it.hint || it.sub));
   else b.append(el('small', '', it.label));
   if (it.hint) {
+    b.insertAdjacentHTML('beforeend', LOCK);
     if (!sheet) b.append(el('em', '', it.hint));
     b.disabled = true;
     b.title = `${it.label} · ${it.hint}`;

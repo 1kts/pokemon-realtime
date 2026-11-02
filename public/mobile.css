@@ -343,8 +343,21 @@
 @media (max-height: 500px) {
   /* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
    sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
-  .mon-sheet-back.modal { padding: 6px; }
-  .mon-sheet { grid-template-columns: 200px minmax(0, 1fr); height: calc(100vh - 12px); height: calc(100dvh - 12px); overflow: hidden; }
+  .mon-sheet-back.modal { padding: 6px 16px; }
+  /* (el Vestuario, en tarjetas pequeñas para verlo casi todo sin bajar; de dónde sale cada cosa, al tocarla o en su título) */
+  .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 4px; margin-bottom: 4px; }
+  .ms-wear { gap: 0; padding: 3px 2px 3px; border-radius: 10px; }
+  .ms-wear canvas, .ms-wear img { width: 38px; height: 38px; }
+  .ms-wear b { max-width: 100%; overflow: hidden; font-size: 10.5px; white-space: nowrap; text-overflow: ellipsis; }
+  .ms-wear small { display: none; }
+  .ms-wear .wear-lock { top: 4px; right: 4px; width: 11px; height: 11px; }
+  .ms-body h4 { margin: 1px 0 2px; font-size: 10.5px; }
+  .ms-body > .own-filter { margin-bottom: 3px; }
+  .ms-body > .own-filter button { min-height: 24px; padding: 3px 11px; }
+  .ae-body .frame-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 5px; }
+  .ae-body .frame-opt { gap: 3px; padding: 6px 2px 4px; }
+  .ae-body .frame-opt em { display: none; }
+  .mon-sheet { width: 100%; max-width: none; grid-template-columns: 172px minmax(0, 1fr); height: calc(100vh - 12px); height: calc(100dvh - 12px); overflow: hidden; }
   /* (el lado, compacto: foto, nombre, tipo, nivel y botones; lo demás, plegado en «Más datos») */
   .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 8px; gap: 5px; }
   .ms-stage { flex: none; height: 76px; }
@@ -394,7 +407,8 @@
   .mon-filters > *, .dex-head > *, .dex-head .dex-filters > *, .dex-head .chips > * { flex: none; }
   .mon-filters .dd, .dex-head .dd { flex: none; }
    /* (.dex-filters .dd los dejaba encoger: en la fila se quedaban en 0 y su contenido pisaba lo de al lado) */
-  .mon-filters input, .dex-head .dex-filters input { flex: 0 0 160px; padding: 6px 10px; }
+  .mon-filters input, .dex-head .dex-filters input { flex: 0 0 196px; padding: 6px 10px; }
+  body .teamview .mon-filters input, body .dexview .dex-head .dex-filters input { font-size: 12px; }
   .mon-filters .seg button, .dex-head .seg button { padding: 6px 9px; }
   /* Pokédex: lo capturado, el buscador, los filtros y las generaciones, todo en una fila */
   .dex-head { flex-direction: row; align-items: center; gap: 8px; padding: 6px 8px; }
