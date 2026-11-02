@@ -148,8 +148,10 @@ async function setup(name, extraEnv = {}) {
   // E2E_SLOW=4: el navegador va 4 veces más lento, para reproducir aquí lo que solo falla en el CI (máquinas lentas)
   if (+process.env.E2E_SLOW > 1) await call('Emulation.setCPUThrottlingRate', { rate: +process.env.E2E_SLOW });
   // El premio diario se abre solo una vez al día: en las pruebas cuenta como ya visto (si no, taparía la
-  // pantalla en todas); la del premio diario lo quita poniendo 'arena.dailySeen' a 'nunca'
-  await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (!localStorage.getItem('arena.dailySeen')) localStorage.setItem('arena.dailySeen', new Date().toISOString().slice(0, 10)); } catch {}` });
+  // pantalla en todas); la del premio diario lo quita poniendo 'arena.dailySeen' a 'nunca'. (La fecha se pone al día en
+  // cada página: una prueba que cruzaba la medianoche UTC tenía el «visto» de ayer y, al recargar, el premio de hoy salía
+  // solo y tapaba lo que fuera a pulsar)
+  await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { const v = localStorage.getItem('arena.dailySeen'); if (!v || /^\\d{4}-\\d{2}-\\d{2}$/.test(v)) localStorage.setItem('arena.dailySeen', new Date().toISOString().slice(0, 10)); } catch {}` });
 
   // En la página: lo que ve el jugador. visto(e) dice por qué no se ve un elemento (o null si se ve): sin tamaño,
   // oculto o transparente, fuera de la ventana (o recortado por un contenedor con scroll) o tapado por otra cosa
