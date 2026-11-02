@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-01",
- "cazadas": 56,
- "total": 56,
+ "fecha": "2026-11-02",
+ "cazadas": 58,
+ "total": 58,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -399,6 +399,20 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ ELO: ganador +16, perdedor -16 (en calibración, la mitad) | ✗ el novato pierde la mitad y el otro gana entero (-16 y +16)"
+  },
+  "vestuario-sin-candado": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: todo lo que no tienes en el Vestuario lleva un candado dibujado que se ve (0 de 28) | ✗ 844×390: en Marco, todo lo que no tienes lleva un candado dibujado que se ve (0 de 29) | ✗ 844×390: en Glow, todo lo que no tienes lleva un candado dibujado que se ve (0 de 25)"
+  },
+  "ficha-movil-a-todo-el-ancho": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.95}) | ✗ 667×375: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.94})"
   }
  }
 }

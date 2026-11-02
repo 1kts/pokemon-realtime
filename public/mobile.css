@@ -343,21 +343,27 @@
 @media (max-height: 500px) {
   /* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
    sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
-  .mon-sheet-back.modal { padding: 6px 16px; }
-  /* (el Vestuario, en tarjetas pequeñas para verlo casi todo sin bajar; de dónde sale cada cosa, al tocarla o en su título) */
-  .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 4px; margin-bottom: 4px; }
-  .ms-wear { gap: 0; padding: 3px 2px 3px; border-radius: 10px; }
-  .ms-wear canvas, .ms-wear img { width: 38px; height: 38px; }
-  .ms-wear b { max-width: 100%; overflow: hidden; font-size: 10.5px; white-space: nowrap; text-overflow: ellipsis; }
-  .ms-wear small { display: none; }
-  .ms-wear .wear-lock { top: 4px; right: 4px; width: 11px; height: 11px; }
-  .ms-body h4 { margin: 1px 0 2px; font-size: 10.5px; }
-  .ms-body > .own-filter { margin-bottom: 3px; }
+  /* (contenida: con margen alrededor y la columna del Pokémon estrecha, para dejar sitio a las pestañas) */
+  .mon-sheet-back.modal { padding: 8px 24px; }
+  .mon-sheet { width: min(100%, 740px); grid-template-columns: 138px minmax(0, 1fr); height: calc(100vh - 16px); height: calc(100dvh - 16px); overflow: hidden; border-radius: 16px; }
+  /* El Vestuario, en tarjetas pequeñas para ver casi todo sin bajar: el nombre en dos líneas y de dónde sale cada
+     cosa, al tocarla o en su título; el filtro «Solo los míos / Todos» va a la altura del primer título */
+  .ms-body { position: relative; }
+  .ms-body > .own-filter { position: absolute; top: 3px; right: 8px; margin: 0; }
   .ms-body > .own-filter button { min-height: 24px; padding: 3px 11px; }
-  .ae-body .frame-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 5px; }
-  .ae-body .frame-opt { gap: 3px; padding: 6px 2px 4px; }
+  .ms-body > .own-filter + h4 { min-height: 28px; margin: 0; padding-right: 160px; display: flex; align-items: center; }
+  .ms-body h4 { margin: 1px 0 0; font-size: 10.5px; line-height: 1.2; }
+  .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 3px; margin-bottom: 0; }
+  .ms-wear { justify-content: flex-start; gap: 1px; padding: 2px 3px 3px; border-radius: 10px; }
+  .ms-wear canvas, .ms-wear img { width: 32px; height: 32px; }
+  .ms-wear b { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-width: 100%; overflow: hidden; font-size: 10px; line-height: 11.5px; min-height: 23px; overflow-wrap: break-word; }
+  .ms-wear small { display: none; }
+  .ms-wear .wear-lock { top: 3px; right: 3px; width: 11px; height: 11px; }
+  /* (el brillo de algún marco y glow asoma 2 px por la última columna: sin esto salía una barra para deslizar de lado) */
+  .ae-body .frame-grid { overflow-x: clip; }
+  .ae-body .frame-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 5px; }
+  .ae-body .frame-opt { gap: 3px; padding: 6px 2px 4px; min-width: 0; }
   .ae-body .frame-opt em { display: none; }
-  .mon-sheet { width: 100%; max-width: none; grid-template-columns: 172px minmax(0, 1fr); height: calc(100vh - 12px); height: calc(100dvh - 12px); overflow: hidden; }
   /* (el lado, compacto: foto, nombre, tipo, nivel y botones; lo demás, plegado en «Más datos») */
   .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 8px; gap: 5px; }
   .ms-stage { flex: none; height: 76px; }
@@ -372,7 +378,7 @@
   .ms-acts > button { min-height: 34px; padding: 4px 8px; font-size: 12px; }
   /* Cada estadística en una fila: nombre, valor, barra con IV y EV, y su vitamina en un botón con su icono */
   .ms-head { padding: 6px 8px 0; }
-  .ms-body { padding: 6px 8px; gap: 5px; }
+  .ms-body { padding: 5px 8px; gap: 4px; }
   .ms-foot { padding: 4px 8px; }
   .ms-foot > button { min-height: 36px; padding: 4px 12px; font-size: 13px; }
   .ms-evtotal { font-size: 12px; gap: 6px; }
@@ -399,17 +405,27 @@
   /* Mis Pokémon: las regiones van en la cabecera, la explicación en una línea (tocarla la despliega) y los
      filtros en una sola fila que se desliza */
   .teamview > .subbar { display: none; }
-  .teamview > .intro { margin: 0 0 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-  .teamview > .intro.open { white-space: normal; }
-  .mon-filters, .dex-head { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .mon-filters::-webkit-scrollbar, .dex-head::-webkit-scrollbar { display: none; }
-  .mon-filters { gap: 6px; margin: 0 0 8px; padding-bottom: 2px; }
+  .teamview > .intro { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; font-size: 12px; cursor: pointer; }
+  .teamview > .intro:not(.open) .intro-txt { display: none; }
+  .teamview > .intro.open { display: block; }
+  .teamview > .intro .intro-i { display: block; flex: none; width: 15px; height: 15px; color: #d2ddf5; }
+  .teamview > .intro.open .intro-i { display: none; }
+  /* (los filtros de Mis Pokémon bajan a otra fila si no caben: deslizándose, el buscador y lo último quedaban cortados) */
+  .dex-head { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .dex-head::-webkit-scrollbar { display: none; }
+  .mon-filters { flex-wrap: wrap; gap: 5px 6px; margin: 0 0 6px; }
   .mon-filters > *, .dex-head > *, .dex-head .dex-filters > *, .dex-head .chips > * { flex: none; }
   .mon-filters .dd, .dex-head .dd { flex: none; }
    /* (.dex-filters .dd los dejaba encoger: en la fila se quedaban en 0 y su contenido pisaba lo de al lado) */
-  .mon-filters input, .dex-head .dex-filters input { flex: 0 0 196px; padding: 6px 10px; }
-  body .teamview .mon-filters input, body .dexview .dex-head .dex-filters input { font-size: 12px; }
-  .mon-filters .seg button, .dex-head .seg button { padding: 6px 9px; }
+  .dex-head .dex-filters input { flex: 0 0 160px; padding: 6px 10px; }
+  .mon-filters input { flex: 1 0 196px; max-width: 280px; padding: 5px 10px; }
+  /* (sobre la arena 3D, con fondo oscuro: si no, «Buscar por nombre o número» y los filtros apenas se leían) */
+  body .teamview .mon-filters input { font-size: 12px; background: rgba(8,14,36,.78); }
+  .mon-filters input::placeholder { color: #9fb0cc; opacity: 1; }
+  .mon-filters .seg, .mon-filters .dd-btn { background: rgba(8,14,36,.66); }
+  .mon-filters .dd-btn { min-height: 32px; padding: 4px 10px 4px 8px; font-size: 12px; }
+  .dex-head .seg button { padding: 6px 9px; }
+  .mon-filters .seg button { padding: 5px 8px; font-size: 12px; }
   /* Pokédex: lo capturado, el buscador, los filtros y las generaciones, todo en una fila */
   .dex-head { flex-direction: row; align-items: center; gap: 8px; padding: 6px 8px; }
   .dex-head .dex-filters, .dex-head .chips { flex-wrap: nowrap; gap: 6px; }
@@ -423,7 +439,9 @@
   /* (si no caben, se deslizan: antes las últimas quedaban debajo de ‹ › ✕) */
   .ms-tabs { flex-wrap: nowrap; gap: 4px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .ms-tabs::-webkit-scrollbar { display: none; }
-  .ms-tab { padding: 7px 11px; font-size: 13px; white-space: nowrap; }
+  .ms-tab { padding: 6px 9px; font-size: 12px; white-space: nowrap; }
+  .ms-head { gap: 6px; }
+  .ms-nav { gap: 4px; }
 }
 @media (max-height: 500px) and (max-width: 760px) {
   .teamview .tb-ctx .pill.coins { display: none; }

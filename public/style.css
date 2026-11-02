@@ -62,6 +62,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .badge.big { width: 72px; height: 72px; animation: pop .5s; }
 .elo { padding: 4px 11px; border-radius: 99px; background: linear-gradient(180deg, rgba(59,120,216,.45), rgba(59,120,216,.2)); border: 1px solid rgba(110,160,255,.5); font-size: 13px; }
 .intro { color: var(--muted); margin: 0 0 12px; }
+.intro-i { display: none; }
 
 .menu { display: flex; flex-direction: column; gap: 14px; }
 .menu-top { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
