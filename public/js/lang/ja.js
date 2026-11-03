@@ -17,9 +17,10 @@ export default {
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'ストーリーでは、上のミッションボタンからそのまま報酬を受け取れます。受け取れるものがあると点が付きます。',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'ストーリーのタイトル横の大きな2つのボタンでカントーとジョウトを切り替えられ、その横にこれから来る地方も表示されます。',
     'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'お金をタップするとショップへ。バトルの後は、手持ちポケモンとショップにワンタップで行けて、それぞれアイコンと色付きです。',
-    'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.': 'Lucky Spinがずっと安くなりました：ルーレット全部で80ジェム（以前は270）なので、毎日遊べば1日3〜4回まわせます。',
+    'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spinがずっと安くなりました：ルーレット全部で120ジェム（以前は270）なので、毎日遊べば1日2〜3回まわせます。',
     'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'パソコンではメニューのPvPが大きくなり、ラダーが下まで伸びます。ルートの後は「探索を続ける」が大きなボタンです。',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'ジョウトの野生ポケモンはバッジの数に合わせたレベルになり、序盤にレベル20が出ることはありません。ライコウ、エンテイ、スイクンはどのルートでも不意に現れます。',
+    // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'パソコンでは、衣装とアバター編集の選択肢がコンパクトなカードになり、ほぼすべてがひと目でわかります。',
     // ---------- Novedades v0.39.0 ----------

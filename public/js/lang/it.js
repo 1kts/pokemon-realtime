@@ -17,9 +17,10 @@ export default {
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'In Storia, il pulsante Missioni in alto ti porta a riscuotere i premi senza uscire, con un pallino quando ce n’è uno pronto.',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Passa da Kanto a Johto con due grandi pulsanti accanto al titolo di Storia, e accanto vedi le regioni in arrivo.',
     'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'Tocca i tuoi soldi per andare al Negozio, e dopo ogni lotta I miei Pokémon e il Negozio sono a un tocco, ognuno con la sua icona e il suo colore.',
-    'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.': 'Lucky Spin costa molto meno: la ruota intera costa 80 gemme (prima 270), quindi giocando ogni giorno giri 3 o 4 volte al giorno.',
+    'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin costa molto meno: la ruota intera costa 120 gemme (prima 270), quindi giocando ogni giorno giri 2 o 3 volte al giorno.',
     'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'Al computer, PvP è grande nel menu e la Ladder arriva fino in fondo; dopo un percorso, «Continua a esplorare» è il pulsante grande.',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'I Pokémon selvatici di Johto seguono le tue medaglie, senza livelli 20 all’inizio, e Raikou, Entei e Suicune appaiono a sorpresa in qualsiasi percorso.',
+    // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'Sul computer, il Guardaroba e l\'editor dell\'avatar mostrano le opzioni in schede compatte, per vedere quasi tutto a colpo d\'occhio.',
     // ---------- Novedades v0.39.0 ----------

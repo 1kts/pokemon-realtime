@@ -237,6 +237,6 @@ module.exports = [
     archivo: 'public/data.js', buscar: 'w[2] = Math.min(w[2], cap + 3);', poner: 'w[2] = Math.min(w[2], cap + 30);',
     tests: ['tools/server-test.js'] },
   { id: 'ruleta-cara', que: 'Lucky Spin vuelve a costar 270 gemas la ruleta: una tirada al día',
-    archivo: 'public/data.js', buscar: 'const SPIN_COST = [3, 4, 5, 6, 7, 8, 9, 10, 12, 16];', poner: 'const SPIN_COST = [9, 13, 16, 20, 23, 27, 31, 35, 43, 53];',
+    archivo: 'public/data.js', buscar: 'const SPIN_COST = [5, 6, 8, 9, 10, 12, 14, 16, 18, 22];', poner: 'const SPIN_COST = [9, 13, 16, 20, 23, 27, 31, 35, 43, 53];',
     tests: ['tools/server-test.js'] },
 ];

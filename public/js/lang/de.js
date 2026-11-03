@@ -16,9 +16,10 @@ export default {
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'In der Story bringt dich der Missionen-Knopf oben direkt zu ihren Belohnungen, mit einem Punkt, wenn eine bereitliegt.',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Wechsle zwischen Kanto und Johto mit zwei großen Knöpfen neben dem Story-Titel und sieh daneben die kommenden Regionen.',
     'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'Tippe auf dein Geld, um zum Shop zu gehen, und nach jedem Kampf sind Meine Pokémon und der Shop nur einen Tipp entfernt, mit Symbol und Farbe.',
-    'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.': 'Lucky Spin kostet viel weniger: Das ganze Rad kostet 80 Edelsteine (vorher 270), also drehst du bei täglichem Spielen 3- oder 4-mal am Tag.',
+    'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin kostet viel weniger: Das ganze Rad kostet 120 Edelsteine (vorher 270), also drehst du bei täglichem Spielen 2- oder 3-mal am Tag.',
     'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'Am Computer ist PvP im Menü groß und die Ladder reicht bis unten; nach einer Route ist „Weiter erkunden“ der große Knopf.',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'Wilde Pokémon in Johto passen zu deinen Orden, ohne Level 20 am Anfang, und Raikou, Entei und Suicune tauchen überraschend auf jeder Route auf.',
+    // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'Am Computer zeigen Kleiderschrank und Avatar-Editor die Optionen als kompakte Karten, damit du fast alles auf einen Blick siehst.',
     // ---------- Novedades v0.39.0 ----------
