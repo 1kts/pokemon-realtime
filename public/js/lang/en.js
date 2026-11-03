@@ -12,11 +12,17 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.39.0 ----------
+    'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'On computer, the Wardrobe and the avatar editor show options as compact cards, so you can see almost everything at a glance.',
+    // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'Faster and better on mobile',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'On mobile, the buttons at the top of Story take you to My Pokémon, the Bag and the Shop in one tap.',
     'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'The game opens sooner, especially on mobile: music and scenery arrive after the title screen, and when you come back it no longer downloads everything again.',
-    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': 'The Wardrobe and the avatar editor show options as compact cards so you can see almost everything at a glance, and what you don\'t own has a padlock that shows on any phone.',
-    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': 'On mobile, the Pokémon sheet leaves a margin around it with all four tabs in full, and in My Pokémon the search box and the help text are fully readable.',
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': 'A comfier Wardrobe on mobile',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'On mobile, the Wardrobe and the avatar editor show at least 12 options at a glance, each with its full name.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': 'On mobile, the Pokémon sheet leaves some room around it and its four tabs always fit, with nothing cut off.',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': 'On mobile, the My Pokémon filters fit on screen and the top line shows your level cap: tap it to read the explanation.',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': 'Things you don\'t have yet show a lock that looks right on every phone instead of an empty box, and tapping them tells you where they come from.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'One PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Ranked and Quick Match merge into PvP: one queue with ELO, leagues and seasons, and in your first 10 games losing costs half.',

@@ -79,11 +79,8 @@ function option(ui, it, kind, sheet) {
   if (it.hint) {
     b.insertAdjacentHTML('beforeend', LOCK);
     if (!sheet) b.append(el('em', '', it.hint));
-    // (no se puede poner; al tocarlo dice de dónde sale: en el móvil la procedencia no cabe en la tarjeta ni hay
-    // ratón para su título)
-    b.setAttribute('aria-disabled', 'true');
+    b.disabled = true;
     b.title = `${it.label} · ${it.hint}`;
-    b.onclick = () => ui.toast(`${it.label} · ${it.hint}`);
   } else b.onclick = () => ui.net.send({ t: 'look', ...it.look });
   return b;
 }
@@ -94,6 +91,9 @@ export function wearPanel(body, ui, sections, repaint, mon) {
   for (const { kind, title } of sections) {
     if (title) body.append(el('h4', '', title));
     const grid = el('div', mon ? 'ms-wardrobe' : 'frame-grid');
+    // De dónde sale lo que no tienes, al tocarlo: en el móvil no cabe escrito y el título no sale con el dedo (el botón
+    // está desactivado y no recibe el clic, pero sí el dedo o el ratón al levantarse)
+    grid.addEventListener('pointerup', e => { const b = e.target.closest('button.locked'); if (b) ui.toast(b.title); });
     for (const it of CATALOG[kind](ui, mon)) if (!(onlyMine() && it.hint)) grid.append(option(ui, it, kind, !!mon));
     body.append(grid);
   }

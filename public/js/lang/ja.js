@@ -13,11 +13,17 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.39.0 ----------
+    'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'パソコンでは、衣装とアバター編集の選択肢がコンパクトなカードになり、ほぼすべてがひと目でわかります。',
+    // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'より速く、スマホでもっと快適に',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'スマホでは、ストーリー上部のボタンからワンタップでじぶんの ポケモン、バッグ、ショップに行けます。',
     'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'ゲームの起動が速くなりました。特にスマホで効果大：音楽や背景はタイトル画面の後に読み込まれ、再訪時にすべてを再ダウンロードしなくなりました。',
-    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': '衣装とアバター編集は選択肢をコンパクトなカードで表示：ほぼすべてがひと目でわかり、持っていないものにはどのスマホでも見える鍵が付きます。',
-    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': 'スマホでは、ポケモンの詳細画面に余白ができ4つのタブがすべて見えるようになり、じぶんの ポケモンの検索欄と説明も全文読めます。',
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': 'スマホで使いやすい衣装',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'スマホでは、衣装とアバター編集で一度に12個以上の選択肢が見え、どれも名前が最後まで表示されます。',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': 'スマホでは、ポケモンの詳細画面のまわりに余白ができ、4つのタブがいつも欠けずに収まります。',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': 'スマホでは、じぶんの ポケモンの絞り込みが画面に収まり、上の行にレベル上限が出ます。タップすると説明が読めます。',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': 'まだ持っていないものには、空の四角ではなく、どのスマホでも見えるカギのマークがつき、タップすると入手方法がわかります。',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'PvPをひとつに',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'ランクとクイックマッチがPvPに統合。ELO、リーグ、シーズンのある1つのキューになり、最初の10戦は負けても半分で済みます。',

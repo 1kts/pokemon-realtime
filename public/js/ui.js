@@ -885,9 +885,11 @@ export class UI {
     const next = Data.leadersOf(region)[Data.progOf(p, region)];
     const team = (p.teams && p.teams[region]) || [];
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
-    // La ayuda, el buscador y los filtros, juntos en un panel (encima del campo 3D se leían mal)
-    const head = wrap.appendChild(el('div', 'mon-head panel'));
-    const intro = head.appendChild(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
+    const help = t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name });
+    const intro = wrap.appendChild(el('p', 'intro', `<span class="intro-txt">${help}</span> <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
+    // En el móvil va en una línea (solo el tope, que es lo que cambia) con una «i»: tocarla despliega la explicación
+    intro.insertAdjacentHTML('beforeend', '<svg class="intro-i" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7v4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="4.6" r="1.1" fill="currentColor"/></svg>');
+    intro.onclick = () => intro.classList.toggle('open');
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
     // Buscador y filtros de la caja (se recuerdan al volver). Filtran al momento ocultando tarjetas, sin
     // volver a pintar la pantalla (así no se pierde lo que se escribe); el orden sí la vuelve a pintar.
@@ -911,7 +913,7 @@ export class UI {
       options: [['level', t('Orden: nivel')], ['dex', t('Orden: nº de Pokédex')], ['name', t('Orden: nombre')], ['new', t('Orden: más recientes')]].map(([value, label]) => ({ value, label, icon: SORT_ICON })) });
     filters.append(search, seg('fav', [['all', t('Todos')], ['fav', '★ ' + t('Favoritos')]]), type, seg('shiny', [['all', t('Todos')], ['shiny', '✦ ' + t('Shiny')], ['plain', t('Sin shiny')]]),
       seg('leg', [['all', t('Todos')], ['leg', t('Legendarios')], ['noleg', t('Sin legendarios')]]), sort);
-    if (mine.length > 1) head.append(filters);
+    if (mine.length > 1) wrap.append(filters);
     // Dos secciones: el equipo (máximo 3) y la caja con el resto
     const scroll = el('div', 'team-sections scroll');
     const inTeamList = team.map(u => mine.find(m => m.uid === u)).filter(Boolean);

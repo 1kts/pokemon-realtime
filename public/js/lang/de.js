@@ -12,11 +12,17 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.39.0 ----------
+    'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'Am Computer zeigen Kleiderschrank und Avatar-Editor die Optionen als kompakte Karten, damit du fast alles auf einen Blick siehst.',
+    // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'Schneller und besser am Handy',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'Am Handy bringen dich die Knöpfe oben in der Story mit einem Tipp zu Meine Pokémon, zum Beutel und zum Shop.',
     'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'Das Spiel startet schneller, vor allem am Handy: Musik und Kulisse kommen nach dem Titelbild, und wenn du zurückkommst, wird nicht mehr alles neu geladen.',
-    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': 'Kleiderschrank und Avatar-Editor zeigen die Optionen als kompakte Karten: Du siehst fast alles auf einen Blick, und was du nicht hast, trägt ein Schloss, das auf jedem Handy zu sehen ist.',
-    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': 'Am Handy lässt das Pokémon-Datenblatt Rand mit allen vier Tabs vollständig, und in Meine Pokémon sind Suche und Hilfe ganz lesbar.',
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': 'Bequemer Kleiderschrank auf dem Handy',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'Auf dem Handy zeigen der Kleiderschrank und der Avatar-Editor mindestens 12 Optionen auf einen Blick, jede mit vollem Namen.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': 'Auf dem Handy lässt das Pokémon-Datenblatt Rand frei und seine vier Tabs passen immer, ohne dass etwas abgeschnitten wird.',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': 'Auf dem Handy passen die Filter von Meine Pokémon auf den Bildschirm und die obere Zeile zeigt deine Levelgrenze: Tippe darauf für die Erklärung.',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': 'Was du noch nicht hast, trägt ein Schloss, das auf jedem Handy richtig erscheint statt eines leeren Kästchens, und beim Antippen erfährst du, woher es kommt.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'Ein PvP für alle',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Rangliste und Schnelles Match werden zu PvP: eine Warteschlange mit ELO, Ligen und Saisons, und in deinen ersten 10 Partien kostet Verlieren die Hälfte.',

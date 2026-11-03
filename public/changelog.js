@@ -8,8 +8,16 @@
       items: [
         ['nuevo', 'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.'],
         ['cambio', 'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.'],
-        ['cambio', 'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.'],
-        ['cambio', 'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.'],
+        ['cambio', 'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.'],
+      ],
+    },
+    {
+      v: '0.38.1', date: '2026-11-03', title: 'Vestuario cómodo en el móvil',
+      items: [
+        ['cambio', 'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.'],
+        ['cambio', 'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.'],
+        ['arreglo', 'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.'],
+        ['arreglo', 'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.'],
       ],
     },
     {

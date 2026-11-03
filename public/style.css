@@ -62,6 +62,7 @@ kbd { display: inline-block; min-width: 1.7em; padding: 1px 5px; border-radius: 
 .badge.big { width: 72px; height: 72px; animation: pop .5s; }
 .elo { padding: 4px 11px; border-radius: 99px; background: linear-gradient(180deg, rgba(59,120,216,.45), rgba(59,120,216,.2)); border: 1px solid rgba(110,160,255,.5); font-size: 13px; }
 .intro { color: var(--muted); margin: 0 0 12px; }
+.intro-i { display: none; }
 
 .menu { display: flex; flex-direction: column; gap: 14px; }
 .menu-top { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
@@ -1138,10 +1139,7 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .sw.frame-shiny { border: 0; background: radial-gradient(circle closest-side, #1a1d2a 66%, transparent 70%), conic-gradient(#fff3a0, #a0e6ff, #ffb0e8, #fff3a0); }
 
 /* Mis Pokémon: buscador y filtros de la caja */
-.mon-filters { margin: 0; }
-.mon-head { margin: 0 0 12px; padding: 10px 14px; }
-.mon-head > .intro { margin: 0 0 8px; }
-.mon-head > .intro:last-child { margin: 0; }
+.mon-filters { margin: -4px 0 12px; }
 .mon-card[hidden] { display: none; }
 .mon-card .acts button.look.on { border-color: rgba(255,203,5,.7); color: var(--yellow); }
 .type-ico { flex: none; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }

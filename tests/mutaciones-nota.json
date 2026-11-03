@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 61,
- "total": 61,
+ "cazadas": 62,
+ "total": 62,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -400,6 +400,27 @@
    ],
    "motivo": "server-test.js: ✗ ELO: ganador +16, perdedor -16 (en calibración, la mitad) | ✗ el novato pierde la mitad y el otro gana entero (-16 y +16)"
   },
+  "vestuario-sin-candado": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: todo lo que no tienes en el Vestuario lleva un candado dibujado que se ve (0 de 28) | ✗ 844×390: en Marco, todo lo que no tienes lleva un candado dibujado que se ve (0 de 29) | ✗ 844×390: en Glow, todo lo que no tienes lleva un candado dibujado que se ve (0 de 25)"
+  },
+  "ficha-movil-a-todo-el-ancho": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.95}) | ✗ 667×375: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.94})"
+  },
+  "vestuario-procedencia-sin-toque": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ error: no se ve «500 victorias con su línea»: no está en la página"
+  },
   "arranque-musica-al-abrir": {
    "resultado": "cazada",
    "por": [
@@ -412,7 +433,7 @@
    "por": [
     "tools/server-test.js"
    ],
-   "motivo": "server-test.js: ✗ la segunda vez, sin cambios, es un 304 sin cuerpo (200, 117544 bytes) | ✗ también con la etiqueta como la devuelve el proxy (sin «W/», con «-gzip», en una lista): 200"
+   "motivo": "server-test.js: ✗ la segunda vez, sin cambios, es un 304 sin cuerpo (200, 117948 bytes) | ✗ también con la etiqueta como la devuelve el proxy (sin «W/», con «-gzip», en una lista): 200"
   },
   "historia-mochila-a-tienda": {
    "resultado": "cazada",
@@ -420,20 +441,6 @@
     "tests/e2e/historia-accesos.e2e.js"
    ],
    "motivo": "historia-accesos.e2e.js: ✗ 844×390: el botón Mochila de Historia lleva a Mochila (Tienda) | ✗ 667×375: el botón Mochila de Historia lleva a Mochila (Tienda)"
-  },
-  "vestuario-movil-tarjetas-grandes": {
-   "resultado": "cazada",
-   "por": [
-    "tests/e2e/vestuario-movil.e2e.js"
-   ],
-   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: el Vestuario enseña al menos 12 opciones sin bajar (11 de 30) | ✗ 667×375: el Vestuario enseña al menos 12 opciones sin bajar (8 de 30)"
-  },
-  "vestuario-sin-candado": {
-   "resultado": "cazada",
-   "por": [
-    "tests/e2e/vestuario-movil.e2e.js"
-   ],
-   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: lo que no tienes lleva un candado dibujado que se ve | ✗ 667×375: lo que no tienes lleva un candado dibujado que se ve"
   }
  }
 }

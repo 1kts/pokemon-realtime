@@ -12,11 +12,17 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.39.0 ----------
+    'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': '在电脑上，衣柜和头像编辑器改用紧凑卡片显示选项，几乎一眼就能看全。',
+    // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': '更快，手机上更好用',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': '在手机上，故事模式顶部的按钮一点就能前往我的宝可梦、背包和商店。',
     'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '游戏打开得更快，手机上尤其明显：音乐和场景在标题画面之后才加载，再次进入时也不会重新下载全部内容。',
-    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': '衣柜和头像编辑器改用紧凑卡片显示选项：几乎一眼就能看全，尚未拥有的会显示一个在任何手机上都能看清的锁。',
-    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': '在手机上，宝可梦详情页四周留出边距，四个标签页完整显示；在我的宝可梦中，搜索框和说明文字也能完整阅读。',
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': '手机上更好用的衣柜',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': '在手机上，衣柜和头像编辑一眼就能看到至少 12 个选项，每个都显示完整名称。',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': '在手机上，宝可梦详情四周留出边距，四个标签页总能放下，不会被截断。',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': '在手机上，我的宝可梦的筛选能完整放进屏幕，顶部一行显示你的等级上限：点一下即可阅读说明。',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': '尚未拥有的东西会显示一把在所有手机上都能看清的锁，而不是空白方框，点一下就会告诉你从哪里获得。',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': '统一的 PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '排位赛和快速对战合并为 PvP:同一队列,保留 ELO、段位和赛季,前 10 场失败只扣一半。',
