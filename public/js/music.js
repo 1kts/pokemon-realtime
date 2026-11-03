@@ -403,7 +403,10 @@ export class Music {
     const f = this.file = { name, bus, buf, list: [buf], pass: 0, again: 0, loop: true, next: this.ctx.currentTime + 0.05, srcs: [] };
     // Los que se enlazan: se cargan mientras suena el primero y entran en su turno (cada uno en su sitio de la
     // cadena, aunque se carguen desordenados)
-    (CHAIN[name] || []).slice(1).forEach((other, i) => this.decode(other).then(b => { if (b && this.file === f) f.list[i + 1] = b; }));
+    // (un rato después, no a la vez: suenan cuando acaba el primero, y así no compiten con lo que se carga al entrar; si
+    // se cambia de tema antes, ni se piden)
+    const wait = Math.min(15, buf.duration / 3) * 1000;
+    setTimeout(() => { if (this.file === f) (CHAIN[name] || []).slice(1).forEach((other, i) => this.decode(other).then(b => { if (b && this.file === f) f.list[i + 1] = b; })); }, wait);
     this.fileTick();
   }
   // Programa la siguiente pasada de la grabación cuando se acerca su momento

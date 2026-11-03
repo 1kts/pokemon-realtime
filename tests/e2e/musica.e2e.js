@@ -15,7 +15,7 @@ module.exports = async ({ page, ok }) => {
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.source`) === 'archivo', 'al tocar la página suena la grabación del menú (public/music/pueblo.mp3, de jannetty)');
   // Fuera de combate, al de jannetty le siguen tres de HydroGene, en su orden (por la duración de cada uno)
-  await page.waitFor(`window.__app.music.file && window.__app.music.file.list.filter(Boolean).length === 4`, 20000);
+  await page.waitFor(`window.__app.music.file && window.__app.music.file.list.filter(Boolean).length === 4`, 45000);   // (los enlazados se piden un rato después de empezar)
   const menuDurs = await page.eval(`window.__app.music.file.list.map(b => Math.round(b.duration))`);
   ok(menuDurs.length === 4 && Math.abs(menuDurs[0] - 41) < 3 && Math.abs(menuDurs[1] - 86) < 3 && Math.abs(menuDurs[2] - 65) < 3 && Math.abs(menuDurs[3] - 119) < 3,
     `el tema del menú enlaza con «Peaceful Village», «Lively City» y «Wood Forest Town» (${menuDurs.join(', ')} s)`);

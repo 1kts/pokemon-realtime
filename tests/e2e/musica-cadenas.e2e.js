@@ -10,7 +10,7 @@ module.exports = async ({ page, ok }) => {
   await page.realClick('body');
   await page.eval(`window.__app.music.play('leader'); true`);
   // atajo: la música no se ve: se mira qué grabaciones encadena el tema
-  ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 20000).then(() => true, () => false), 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
+  ok(await page.waitFor(`window.__app.music.file && window.__app.music.file.name === 'leader' && window.__app.music.file.list.length === 2`, 45000).then(() => true, () => false), 'el tema de los líderes, al acabar, enlaza con el de combate (no vuelve a empezar a medias)');
 
   // Las cadenas nuevas: Torre (Battle Theme IV y The Evil One), salvajes y gimnasios de Johto (enlazan con los de Kanto)
   // y los gimnasios con tema propio enlazan con los de los líderes de su región
