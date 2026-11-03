@@ -33,7 +33,7 @@ module.exports = async ({ page, player, ok, log }) => {
   // tuyo, en unidades de la arena (la arena es 3D, sin un elemento que buscar)
   const foeAt = `(() => { const b = window.__app.battle; if (!b || !b.renderPos) return null; const f = b.renderPos[b.foeIdx], m = b.renderPos[1 - b.foeIdx], p = b.toScreen(f.x, f.y);
     return { x: Math.round(p.x), y: Math.round(p.y), dx: f.x - m.x, dy: f.y - m.y, mx: m.x, my: m.y,
-      free: (document.elementFromPoint(p.x, p.y) || {}).tagName === 'CANVAS', won: !b.latest.ps[b.foeIdx].hp.some(h => h > 0) }; })()`;
+      free: (document.elementFromPoint(p.x, p.y) || {}).tagName === 'CANVAS', won: !b.latest.ps[b.foeIdx].hp.some(h => h > 0), ended: !!b.ended }; })()`;
   // (en la cueva de Brock caen rocas del techo cerca de cada Pokémon: quedarse quieto es recibirlas todas, y las caídas
   // paran el agua. Como un jugador: andando hacia él, que esquiva las marcas, y rodeando la roca si no avanza)
   // (solo se pulsa si ahí está el combate, y hasta ganarlo: un aviso encima, p. ej. «¡Logro desbloqueado!» al acabar, no
@@ -42,10 +42,12 @@ module.exports = async ({ page, player, ok, log }) => {
   const t0 = Date.now();
   let last = null, detour = 0;
   for (let i = 0; Date.now() - t0 < 180000 && !['¡Victoria!', 'Derrota'].includes(await page.title({ ms: 0 })); i++) {
+    // (un fotograma de la página entre vuelta y vuelta; antes de mirar, no después: en el CI un fotograma tarda casi un
+    // segundo, y al acabar sale encima «¡Logro desbloqueado!», que si se pulsa lleva a Misiones y «Volver» ya no va a Historia)
+    await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');
     const p = await page.eval(foeAt);
     if (!p) { await page.waitFor('window.__app.battle && window.__app.battle.renderPos', 5000).catch(() => {}); continue; }
-    if (p.won) break;
-    await page.eval('new Promise(r => requestAnimationFrame(() => r(true)))');   // (un fotograma de la página entre vuelta y vuelta)
+    if (p.won || p.ended) break;
     // (clic: su básico; y de vez en cuando Q, otro de sus ataques, que también va a donde apunta el ratón)
     if (p.free) { await page.mouseAt(p.x, p.y, { click: true }); if (i % 4 === 3) await page.key('KeyQ'); }
     if (Math.hypot(p.dx, p.dy) < 70) { last = null; continue; }
