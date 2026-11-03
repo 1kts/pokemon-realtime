@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.1 ----------
+    'Evoluciones en tu colección': '进化也计入收藏',
+    'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '宝可梦进化后，新的种类也算作已获得：会出现在图鉴中，也能设为头像，以前进化的也一样。',
     // ---------- Novedades v0.40.0 ----------
     'MT y Lucky Spin más barato': '招式学习器与更便宜的 Lucky Spin',
     'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': '你的宝可梦可以使用通过招式学习器学会的招式，比如喷火龙的大字爆炎：在它的资料“招式”里会标为招式学习器。',

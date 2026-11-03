@@ -54,6 +54,7 @@ function migrate(p) {
   if (!p.prog) p.prog = { kanto: p.badges || 0 };
   for (const r of D.REGION_IDS) if (p.prog[r] === undefined) p.prog[r] = 0;
   syncBadges(p);
+  registerMons(p, false);   // (los que ya habían evolucionado)
 }
 // p.badges = medallas de la región más avanzada (para los requisitos de la tienda)
 function syncBadges(p) { p.badges = Math.max(0, ...D.REGION_IDS.map(r => Math.min(8, p.prog[r] || 0))); }
@@ -70,6 +71,15 @@ function removeMon(p, mon) {
 }
 
 // Evoluciona si toca por nivel (o con la piedra indicada). Devuelve el dex nuevo o null.
+// Lo que tienes cuenta como conseguido: al evolucionar, la nueva especie entra en la Pokédex y sale para ponerla de avatar
+// (antes solo contaba lo capturado: un Gengar evolucionado no salía). track: que cuente para las misiones de la Pokédex
+function registerMons(p, track = true) {
+  for (const m of p.mons) {
+    if (!p.caught.includes(m.dex)) { p.caught.push(m.dex); if (track) missions.track(p, 'dex'); }
+    if (m.shiny && !(p.shinies || []).includes(m.dex)) p.shinies = [...(p.shinies || []), m.dex];
+  }
+}
+
 function tryEvolve(mon, stone) {
   const evo = D.SPECIES[mon.dex].evo;
   if (!evo) return null;
@@ -168,11 +178,12 @@ function action(p, msg) {
       const cap = Math.min(MAX_LEVEL, D.levelCap(p, mon.region));
       if (mon.level >= cap) return `Tope de nivel ${cap} en ${D.REGIONS[mon.region].name}: vence al siguiente líder para subir más`;
       mon.xp = 0;
-      if (levelUp(mon, cap).evolved) missions.track(p, 'evolve');
+      if (levelUp(mon, cap).evolved) { missions.track(p, 'evolve'); registerMons(p); }
       missions.track(p, 'level');
     } else if (item.stone) {
       if (!tryEvolve(mon, item.id)) return 'No tiene efecto';
       missions.track(p, 'evolve');
+      registerMons(p);
     } else if (item.vit) {
       if (!mon.ev) mon.ev = newEv();
       if (mon.ev[item.vit] >= D.EV_MAX) return `Ya tiene el máximo de EV de ${D.VIT_STATS[item.vit]} (${D.EV_MAX})`;
@@ -334,6 +345,7 @@ function applyResult(p, setup, result, battle) {
     reward.league = { failed: true, step: setup.league.step, total: setup.league.total, first: D.leadersOf(setup.region)[D.LEAGUE_FROM].leader };
   }
   reward.won = won;
+  registerMons(p);   // (quien evoluciona en el combate, ganado o no)
   store.save();
   return reward;
 }

@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.40.1', date: '2026-11-03', title: 'Evoluciones en tu colección',
+      items: [
+        ['arreglo', 'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.'],
+      ],
+    },
+    {
       v: '0.40.0', date: '2026-11-03', title: 'MT y Lucky Spin más barato',
       items: [
         ['nuevo', 'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.'],

@@ -248,4 +248,7 @@ module.exports = [
   { id: 'nivel-pesa-poco', que: 'El nivel apenas cuenta: un Nv.20 gana fácil a un Nv.43',
     archivo: 'public/data.js', buscar: 'const levelMult = lvl => 0.4 + lvl * 0.012;', poner: 'const levelMult = lvl => 0.55 + lvl * 0.009;',
     tests: ['tools/server-test.js'] },
+  { id: 'evolucion-no-cuenta', que: 'Al evolucionar (Haunter a Gengar), la nueva especie no sale en la Pokédex ni de avatar',
+    archivo: 'server/story.js', buscar: "    if (!p.caught.includes(m.dex)) { p.caught.push(m.dex); if (track) missions.track(p, 'dex'); }", poner: '',
+    tests: ['tools/server-test.js'] },
 ];

@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.1 ----------
+    'Evoluciones en tu colección': 'Le evoluzioni nella tua collezione',
+    'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': 'Quando un Pokémon si evolve, la nuova specie conta come ottenuta: compare nel Pokédex e puoi usarla come avatar, anche per le evoluzioni passate.',
     // ---------- Novedades v0.40.0 ----------
     'MT y Lucky Spin más barato': 'MT e Lucky Spin più economico',
     'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': 'I tuoi Pokémon possono usare ciò che imparano con le MT, come Fuocobomba per Charizard: nella sua scheda, in Mosse, sono segnate come MT.',

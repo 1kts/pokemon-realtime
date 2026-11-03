@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.1 ----------
+    'Evoluciones en tu colección': '진화도 컬렉션에',
+    'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '진화하면 새 포켓몬도 획득한 것으로 쳐서 도감에 나오고 아바타로도 쓸 수 있습니다. 예전에 진화한 포켓몬도 마찬가지입니다.',
     // ---------- Novedades v0.40.0 ----------
     'MT y Lucky Spin más barato': '기술머신과 더 저렴한 Lucky Spin',
     'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': '포켓몬이 기술머신으로 배우는 기술도 쓸 수 있습니다. 리자몽의 불대문자처럼요. 포켓몬 정보의 기술에서 기술머신으로 표시됩니다.',

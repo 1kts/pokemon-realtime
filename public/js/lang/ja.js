@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.1 ----------
+    'Evoluciones en tu colección': '進化もコレクションに',
+    'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '進化すると新しいポケモンも入手済みになり、図鑑に載ってアバターにも設定できます。以前に進化したポケモンも同じです。',
     // ---------- Novedades v0.40.0 ----------
     'MT y Lucky Spin más barato': 'わざマシンとお得なLucky Spin',
     'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': 'わざマシンで覚える技も使えるようになりました。リザードンのだいもんじなど。ポケモンの「わざ」でわざマシンと表示されます。',

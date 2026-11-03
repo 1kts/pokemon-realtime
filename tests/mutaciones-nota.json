@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 75,
- "total": 75,
+ "cazadas": 76,
+ "total": 76,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -533,6 +533,13 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ el nivel pesa: un Nv.43 tiene al menos un 40 % más"
+  },
+  "evolucion-no-cuenta": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ y Gengar cuenta como conseguido"
   }
  }
 }

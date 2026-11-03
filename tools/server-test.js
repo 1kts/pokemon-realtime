@@ -235,6 +235,7 @@ class Client {
   const [hau, onx, kad] = [93, 95, 64].map(d => prof.mons.find(x => x.dex === d));
   m = await a2.req({ t: 'story', a: 'use', item: 'cordon', uid: hau.uid });
   ok(m.p.mons.find(x => x.uid === hau.uid).dex === 94 && !m.p.items.cordon, 'Cordón Unión: Haunter -> Gengar (evoluciones por intercambio)');
+  ok(m.p.caught.includes(94), 'y Gengar cuenta como conseguido: sale en la Pokédex y para ponerlo de avatar');
   m = await a2.req({ t: 'story', a: 'use', item: 'revestimiento', uid: onx.uid });
   ok(m.p.mons.find(x => x.uid === onx.uid).dex === 208, 'Revestimiento Metálico: Onix -> Steelix');
   ok(!D.SHOP.find(i => i.id === 'cordon').desc.includes('Gengar') && D.SPECIES[64].evo.join() === '65,cordon', 'su descripción no dice para qué sirven y Kadabra ya no evoluciona por nivel');
