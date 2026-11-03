@@ -343,21 +343,23 @@
 @media (max-height: 500px) {
   /* Ficha del Pokémon y resultados en pantallas bajas (móvil en horizontal): la ficha vuelve a dos columnas con el
    sprite más pequeño, y los resultados más compactos para ver el botón de seguir sin bajar tanto */
-  .mon-sheet-back.modal { padding: 6px 16px; }
+  /* (la ficha, contenida: deja ver un margen del juego alrededor sin cortar nada de dentro) */
+  .mon-sheet-back.modal { padding: 12px 24px; }
   /* (el Vestuario, en tarjetas pequeñas para verlo casi todo sin bajar; de dónde sale cada cosa, al tocarla o en su título) */
-  .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 4px; margin-bottom: 4px; }
-  .ms-wear { gap: 0; padding: 3px 2px 3px; border-radius: 10px; }
-  .ms-wear canvas, .ms-wear img { width: 38px; height: 38px; }
-  .ms-wear b { max-width: 100%; overflow: hidden; font-size: 10.5px; white-space: nowrap; text-overflow: ellipsis; }
+  .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 4px; margin-bottom: 4px; }
+  .ms-wear { justify-content: flex-start; gap: 0; padding: 2px; border-radius: 10px; }
+  .ms-wear canvas, .ms-wear img { width: 30px; height: 30px; }
+  /* (el nombre entero, en dos líneas si hace falta: cortado con «…» no se sabía cuál era) */
+  .ms-wear b { display: -webkit-box; max-width: 100%; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 9.5px; line-height: 1.1; overflow-wrap: anywhere; hyphens: auto; }
   .ms-wear small { display: none; }
   .ms-wear .wear-lock { top: 4px; right: 4px; width: 11px; height: 11px; }
-  .ms-body h4 { margin: 1px 0 2px; font-size: 10.5px; }
+  .ms-body h4 { margin: 0 0 2px; font-size: 10.5px; }
   .ms-body > .own-filter { margin-bottom: 3px; }
   .ms-body > .own-filter button { min-height: 24px; padding: 3px 11px; }
   .ae-body .frame-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 5px; }
   .ae-body .frame-opt { gap: 3px; padding: 6px 2px 4px; }
   .ae-body .frame-opt em { display: none; }
-  .mon-sheet { width: 100%; max-width: none; grid-template-columns: 172px minmax(0, 1fr); height: calc(100vh - 12px); height: calc(100dvh - 12px); overflow: hidden; }
+  .mon-sheet { width: min(100%, 780px); max-width: none; grid-template-columns: 156px minmax(0, 1fr); height: calc(100vh - 24px); height: calc(100dvh - 24px); overflow: hidden; }
   /* (el lado, compacto: foto, nombre, tipo, nivel y botones; lo demás, plegado en «Más datos») */
   .ms-side { border-right: 1px solid rgba(170,190,255,.14); overflow: auto; padding: 8px; gap: 5px; }
   .ms-stage { flex: none; height: 76px; }
@@ -399,11 +401,12 @@
   /* Mis Pokémon: las regiones van en la cabecera, la explicación en una línea (tocarla la despliega) y los
      filtros en una sola fila que se desliza */
   .teamview > .subbar { display: none; }
-  .teamview > .intro { margin: 0 0 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-  .teamview > .intro.open { white-space: normal; }
+  .teamview .mon-head { margin: 0 0 6px; padding: 5px 8px 6px; }
+  /* (la ayuda, entera en letra pequeña: cortada con «…» parecía un fallo) */
+  .teamview .mon-head > .intro { margin: 0 0 5px; font-size: 11px; line-height: 1.3; }
   .mon-filters, .dex-head { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .mon-filters::-webkit-scrollbar, .dex-head::-webkit-scrollbar { display: none; }
-  .mon-filters { gap: 6px; margin: 0 0 8px; padding-bottom: 2px; }
+  .mon-filters { gap: 6px; margin: 0; padding-bottom: 0; }
   .mon-filters > *, .dex-head > *, .dex-head .dex-filters > *, .dex-head .chips > * { flex: none; }
   .mon-filters .dd, .dex-head .dd { flex: none; }
    /* (.dex-filters .dd los dejaba encoger: en la fila se quedaban en 0 y su contenido pisaba lo de al lado) */
@@ -427,6 +430,12 @@
 }
 @media (max-height: 500px) and (max-width: 760px) {
   .teamview .tb-ctx .pill.coins { display: none; }
+  /* (en los más estrechos, las cuatro pestañas de la ficha caben enteras junto a ‹ › ✕) */
+  .mon-sheet { grid-template-columns: 150px minmax(0, 1fr); }
+  .ms-head { gap: 6px; }
+  .ms-tabs { gap: 3px; }
+  .ms-tab { padding: 6px 7px; font-size: 12px; }
+  .ms-nav { gap: 3px; }
 }
 
 /* ========== Lucky Spin ========== */
@@ -768,9 +777,20 @@
   .story-side .node-info:not(.open) > .league-box > :not(button.primary) { display: none; }
   .story-side .node-info.open { position: fixed; inset: 6px; z-index: 40; overflow: auto; }
   .story-side .node-info.open > .ni-caught { display: block; }
+  .story-quick { display: flex; flex: none; gap: 4px; margin-right: 6px; }
+  .story-quick .sq-btn { display: grid; place-items: center; width: 38px; height: 38px; min-width: 0; min-height: 0; padding: 0; border-radius: 12px;
+    background: linear-gradient(180deg, #2a3a86, #1a2766); border: 1px solid rgba(170,190,255,.35); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
+  .story-quick .sq-btn img { width: 26px; height: 26px; image-rendering: pixelated; pointer-events: none; }
   .story-side .node-info.open > .ni-more { display: block; position: sticky; top: 0; z-index: 4; float: right; min-height: 40px; padding: 0 14px; font: 800 13px var(--text); color: #fff; background: #1a2766; border: 1px solid #3d53b0; border-radius: 10px; }
 }
+/* (en los más estrechos no caben también las medallas: ya salen en el Camino y en el «2/8» de cada región) */
+@media (max-height: 500px) and (max-width: 760px) {
+  .story .story-regions .badges-mini { display: none; }
+}
 @media (max-height: 380px) {
+  /* (la ficha, en los móviles más bajos: algo menos de margen y el Vestuario un poco más apretado) */
+  .mon-sheet-back.modal { padding: 8px 24px; }
+  .mon-sheet { height: calc(100vh - 16px); height: calc(100dvh - 16px); }
   .story-path { --gh: 92px; --nh: 112px; --rh: 60px; --goh: 24px; }
 }
 /* Quien aprende un movimiento: su fila a todo el ancho, el texto en horizontal y el botón a la derecha, para el dedo */

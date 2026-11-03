@@ -926,7 +926,8 @@ body.in-battle .ui-confirm { cursor: auto; }
 .trainer-card .ava.editable { cursor: pointer; transition: transform .18s, filter .18s; }
 .trainer-card .ava.editable:hover { transform: scale(1.04); filter: brightness(1.08); }
 .trainer-card .tc-edit { margin-top: -12px; position: relative; z-index: 2; padding: 4px 16px; font-size: 13px; border-radius: 99px; }
-.modal-box.ava-edit { width: min(640px, 96vw); max-height: 92vh; display: flex; flex-direction: column; gap: 10px; }
+/* (más ancho y con las opciones compactas: se ve casi todo de un vistazo, como en el Vestuario) */
+.modal-box.ava-edit { width: min(900px, 96vw); max-height: 92vh; display: flex; flex-direction: column; gap: 10px; }
 .ava-edit h3 { margin: 0; }
 .ae-preview { display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.08); }
 .ae-who { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
@@ -942,8 +943,9 @@ body.in-battle .ui-confirm { cursor: auto; }
 .ae-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .ae-bar .own-filter { margin: 0; }
 .ae-bar input[type=search] { flex: 1 1 160px; min-width: 0; margin: 0; }
-.ae-body { min-height: 180px; max-height: 46vh; overflow: auto; padding-right: 4px; }
-.ae-body .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.ae-body { min-height: 180px; max-height: 54vh; overflow: auto; padding-right: 4px; }
+.ae-body .frame-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; }
+.ae-body .frame-opt { gap: 4px; padding: 8px 3px 6px; }
 .ae-more { align-self: center; font-size: 13px; }
 /* Imagen: una sola lista, con el buscador siempre a la vista y el nombre debajo de cada una */
 .ae-body input[type=search] { position: sticky; top: 0; z-index: 2; width: 100%; margin-bottom: 8px; }
@@ -1027,11 +1029,12 @@ body.in-battle .ui-confirm { cursor: auto; }
 
 
 /* Ficha › Vestuario: cada skin y las partículas, vistas sobre el Pokémon */
-.ms-wardrobe { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin-bottom: 8px; }
-.ms-wear { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px 8px; border-radius: 14px; background: #222b58; border: 1px solid rgba(255,255,255,.1); color: #e6edf7; }
-.ms-wear canvas, .ms-wear img { width: 84px; height: 84px; image-rendering: pixelated; }
-.ms-wear b { font: 800 13px var(--display); text-align: center; }
-.ms-wear small { font-size: 11px; color: #9fb0cc; text-align: center; }
+/* (tarjetas compactas: con 30 opciones, de 118 px solo se veían 8 sin bajar y parecía que faltaban) */
+.ms-wardrobe { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 6px; margin-bottom: 8px; }
+.ms-wear { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px 6px; border-radius: 12px; background: #222b58; border: 1px solid rgba(255,255,255,.1); color: #e6edf7; }
+.ms-wear canvas, .ms-wear img { width: 56px; height: 56px; image-rendering: pixelated; }
+.ms-wear b { font: 800 12px/1.15 var(--display); text-align: center; }
+.ms-wear small { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 10.5px; line-height: 1.2; color: #9fb0cc; text-align: center; }
 .ms-wear.sel { border: 2px solid var(--gold, #ffcb05); box-shadow: 0 0 14px rgba(255,203,5,.3); }
 .ms-wear.sel small { color: var(--gold-hi, #ffe27a); font-weight: 800; }
 .ms-wear.locked { cursor: default; background: rgba(34,43,88,.55); }
@@ -1194,6 +1197,9 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .tb-mobile { display: none !important; }
 .region-chips { align-items: center; gap: 6px; }
 .story-regions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+/* Accesos a Mis Pokémon, Mochila y Tienda en la cabecera de Historia: solo en el móvil (mobile.css); en escritorio
+   ya están en el panel de la ruta */
+.story-quick { display: none; }
 .region-chips .rgc { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 4px 11px; border-radius: 10px; line-height: 1.1;
   border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--rc) 28%, #141b33), #10162b); }
 .region-chips .rgc.sel { border: 2px solid var(--gold); box-shadow: 0 0 12px rgba(255,190,40,.25); }

@@ -433,7 +433,17 @@ export class UI {
     // Las regiones y las medallas, en la cabecera junto al título, en todos los tamaños
     const chips = this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true);
     chips.classList.replace('tb-mobile', 'story-regions');
-    bar.querySelector('.tb-ctx').append(chips);
+    // En el móvil, el panel de la ruta (con Tienda y Mochila) no cabe: accesos compactos a lo tuyo, siempre a mano
+    const quick = el('nav', 'story-quick');
+    quick.setAttribute('aria-label', t('Tu colección'));
+    for (const [ico, label, view] of [['pokeball', t('Mis Pokémon'), 'team'], ['seal-bag', t('Mochila'), 'bag'], ['forage-bag', t('Tienda'), 'shop']]) {
+      const b = el('button', 'sq-btn sq-' + view, itemImg(ico, 26));
+      b.setAttribute('aria-label', label);
+      b.title = label;
+      b.onclick = () => this.show(view);
+      quick.append(b);
+    }
+    bar.querySelector('.tb-ctx').append(quick, chips);
     // Lo que acompaña al Camino, en su panel: «Cómo se juega» arriba a la izquierda y la cuenta atrás a la derecha
     const tools = el('div', 'sp-bar');
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
@@ -875,8 +885,9 @@ export class UI {
     const next = Data.leadersOf(region)[Data.progOf(p, region)];
     const team = (p.teams && p.teams[region]) || [];
     const mine = p.mons.filter(m => (m.region || 'kanto') === region);
-    const intro = wrap.appendChild(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
-    intro.onclick = () => intro.classList.toggle('open');   // en el móvil va en una línea: tocarla la despliega
+    // La ayuda, el buscador y los filtros, juntos en un panel (encima del campo 3D se leían mal)
+    const head = wrap.appendChild(el('div', 'mon-head panel'));
+    const intro = head.appendChild(el('p', 'intro', `${t('Pokémon de {r}: solo combaten en su región. Mete o saca del equipo (máximo 3) y gestiona su ficha.', { r: Data.REGIONS[region].name })} <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
     // Buscador y filtros de la caja (se recuerdan al volver). Filtran al momento ocultando tarjetas, sin
     // volver a pintar la pantalla (así no se pierde lo que se escribe); el orden sí la vuelve a pintar.
@@ -900,7 +911,7 @@ export class UI {
       options: [['level', t('Orden: nivel')], ['dex', t('Orden: nº de Pokédex')], ['name', t('Orden: nombre')], ['new', t('Orden: más recientes')]].map(([value, label]) => ({ value, label, icon: SORT_ICON })) });
     filters.append(search, seg('fav', [['all', t('Todos')], ['fav', '★ ' + t('Favoritos')]]), type, seg('shiny', [['all', t('Todos')], ['shiny', '✦ ' + t('Shiny')], ['plain', t('Sin shiny')]]),
       seg('leg', [['all', t('Todos')], ['leg', t('Legendarios')], ['noleg', t('Sin legendarios')]]), sort);
-    if (mine.length > 1) wrap.append(filters);
+    if (mine.length > 1) head.append(filters);
     // Dos secciones: el equipo (máximo 3) y la caja con el resto
     const scroll = el('div', 'team-sections scroll');
     const inTeamList = team.map(u => mine.find(m => m.uid === u)).filter(Boolean);

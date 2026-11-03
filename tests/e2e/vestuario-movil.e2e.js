@@ -1,6 +1,6 @@
 // En el móvil, el Vestuario de un Pokémon enseña casi todo de un vistazo (tarjetas compactas: al menos 12 sin bajar),
 // lo que no tienes lleva un candado que se ve (dibujado, no un emoji que puede salir como un cuadro vacío), el buscador
-// de Mis Pokémon se lee entero y la ficha deja margen alrededor
+// de Mis Pokémon y su ayuda se leen enteros, y la ficha deja margen alrededor con sus pestañas enteras
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'vestuariomovil' });
   for (const dex of [4, 25, 7]) { me.client.send({ t: 'dev', dex, level: 20, region: 'kanto' }); await me.client.wait(m => m.t === 'profile'); }
@@ -18,13 +18,22 @@ module.exports = async ({ page, player, ok }) => {
       const sitio = i.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight), r = i.getBoundingClientRect();
       return { texto: Math.ceil(c.measureText(i.placeholder).width), sitio: Math.floor(sitio), dentro: r.left >= 0 && r.right <= innerWidth }; })()`);
     ok(busca.texto <= busca.sitio && busca.dentro, `${W}×${H}: «${'Buscar por nombre'}» se lee entero en el buscador (${busca.texto} px de texto, ${busca.sitio} de sitio)`);
+    // La ayuda de arriba se lee entera (cortada con «…» parecía un fallo)
+    // (page.see no ve el «…»: se mira si el texto cabe en su caja o se corta)
+    const ayuda = await page.eval(`(() => { const p = [...document.querySelectorAll('#screen p')].find(x => /vence a Brock/.test(x.textContent)); return p ? { corta: p.scrollWidth > p.clientWidth + 1 || p.scrollHeight > p.clientHeight + 1 } : null; })()`);
+    ok(await page.see(/Tope de nivel en Kanto/) && ayuda && !ayuda.corta, `${W}×${H}: la ayuda de Mis Pokémon se lee entera, hasta «vence a Brock para subir más»`);
     await page.click('.mon-card');
     await page.waitSee('Vestuario', { in: '.mon-sheet' });
     await page.tap(/^Vestuario/, { in: '.mon-sheet' });
     await page.waitSee('Todos', { in: '.mon-sheet' });
     // La ficha (ya abierta del todo) deja margen, pero sin quedarse estrecha: no llega a los bordes ni se encoge
-    const ficha = await page.eval(`(() => { const r = document.querySelector('.mon-sheet').getBoundingClientRect(); return { izq: Math.round(r.left), der: Math.round(innerWidth - r.right) }; })()`);
-    ok(ficha.izq >= 10 && ficha.der >= 10 && ficha.izq <= 40 && ficha.der <= 40, `${W}×${H}: la ficha deja margen a los lados sin encogerse (${ficha.izq} y ${ficha.der} px)`);
+    const ficha = await page.eval(`(() => { const r = document.querySelector('.mon-sheet').getBoundingClientRect(); return { izq: Math.round(r.left), der: Math.round(innerWidth - r.right), arr: Math.round(r.top), aba: Math.round(innerHeight - r.bottom) }; })()`);
+    ok(ficha.izq >= 10 && ficha.der >= 10 && ficha.izq <= 40 && ficha.der <= 40 && ficha.arr >= 6 && ficha.aba >= 6, `${W}×${H}: la ficha deja margen alrededor sin encogerse (${ficha.izq} y ${ficha.der} px a los lados, ${ficha.arr} y ${ficha.aba} arriba y abajo)`);
+    // Sus cuatro pestañas se ven enteras junto a ‹ › ✕
+    // (entera: dentro de la fila de pestañas, que recorta lo que no cabe, y sin ‹ › ✕ encima)
+    const tabs = await page.eval(`(() => { const row = document.querySelector('.mon-sheet .ms-tabs').getBoundingClientRect(), nav = document.querySelector('.mon-sheet .ms-nav').getBoundingClientRect();
+      return [...document.querySelectorAll('.mon-sheet .ms-tab')].filter(b => { const r = b.getBoundingClientRect(); return r.left < row.left - 1 || r.right > row.right + 1 || r.right > nav.left + 1; }).map(b => b.textContent.trim()); })()`);
+    ok(await page.see('Retos', { in: '.mon-sheet' }) && !tabs.length, `${W}×${H}: las cuatro pestañas de la ficha se ven enteras junto a ‹ › ✕${tabs.length ? ' (cortadas: ' + tabs.join(', ') + ')' : ''}`);
     // Cuántas opciones se ven enteras dentro de la ficha, sin bajar
     const vista = await page.eval(`(() => { const sc = document.querySelector('.mon-sheet .ms-body'), b = sc.getBoundingClientRect();
       const all = [...document.querySelectorAll('.mon-sheet .ms-wear')];

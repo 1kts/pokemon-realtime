@@ -1138,7 +1138,10 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .sw.frame-shiny { border: 0; background: radial-gradient(circle closest-side, #1a1d2a 66%, transparent 70%), conic-gradient(#fff3a0, #a0e6ff, #ffb0e8, #fff3a0); }
 
 /* Mis Pokémon: buscador y filtros de la caja */
-.mon-filters { margin: -4px 0 12px; }
+.mon-filters { margin: 0; }
+.mon-head { margin: 0 0 12px; padding: 10px 14px; }
+.mon-head > .intro { margin: 0 0 8px; }
+.mon-head > .intro:last-child { margin: 0; }
 .mon-card[hidden] { display: none; }
 .mon-card .acts button.look.on { border-color: rgba(255,203,5,.7); color: var(--yellow); }
 .type-ico { flex: none; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
