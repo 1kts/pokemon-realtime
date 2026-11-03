@@ -253,7 +253,7 @@ body.tema-d .rg-soon { background: rgba(0,0,0,.18); border: 1px dashed rgba(140,
 body.tema-d .rg-soon > small { font: 800 12px var(--text); color: var(--td-mute); }
 body.tema-d .region-chips .rgc { background: linear-gradient(180deg, #2a3c92, #1a2766); border: 1px solid #3d53b0; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 0 #0b1238; }
 body.tema-d .region-chips .rgc.sel { background: linear-gradient(180deg, #1f5f9a, #133a6e); border: 2px solid var(--td-done); }
-body.tema-d .region-chips .badges-mini { background: linear-gradient(180deg, #1d2c78, #14205a); border: 1px solid #3d53b0; border-radius: 10px; }
+body.tema-d .region-chips .badges-mini, body.tema-d .story .tb-ctx > .badges-mini { background: linear-gradient(180deg, #1d2c78, #14205a); border: 1px solid #3d53b0; border-radius: 10px; }
 /* (las medallas ganadas, con su brillo dorado detrás; las que no tienes, en gris, como sin tema) */
 body.tema-d .badge-slot.got { background: radial-gradient(circle, rgba(255,214,90,.45), rgba(255,214,90,.06) 70%); }
 /* El objetivo: lo que toca, como una tarjeta del menú: azul noche con el color del tipo del líder encendido detrás

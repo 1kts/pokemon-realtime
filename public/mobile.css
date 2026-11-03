@@ -797,7 +797,7 @@
 }
 /* (en los más estrechos no caben también las medallas: ya salen en el Camino y en el «2/8» de cada región) */
 @media (max-height: 500px) and (max-width: 760px) {
-  .story .story-regions .badges-mini { display: none; }
+  .story .tb-ctx > .badges-mini, .story-regions .rgc.soon { display: none; }
 }
 @media (max-height: 380px) {
   .story-path { --gh: 92px; --nh: 112px; --rh: 60px; --goh: 24px; }

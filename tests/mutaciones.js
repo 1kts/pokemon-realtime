@@ -227,4 +227,10 @@ module.exports = [
   { id: 'ruleta-efecto-sobre-tu-avatar', que: 'En Lucky Spin, el premio de efecto sale sobre tu avatar y parece de otra ruleta',
     archivo: 'public/js/treasure.js', buscar: '    this.tzLine = cur.line;\n', poner: '',
     tests: ['tests/e2e/ruleta-efecto.e2e.js'] },
+  { id: 'historia-regiones-a-la-derecha', que: 'En Historia, Kanto y Johto vuelven a ser botoncitos a la derecha, lejos del título',
+    archivo: 'public/js/ui.js', buscar: "    bar.querySelector('.tb-ctx').before(chips);", poner: "    bar.querySelector('.tb-ctx').append(chips);",
+    tests: ['tests/e2e/historia-regiones.e2e.js'] },
+  { id: 'johto-errantes-anunciados', que: 'En Johto, cada ruta anuncia a Raikou, Entei y Suicune con tres «???» más',
+    archivo: 'public/js/ui.js', buscar: 'const specials = w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length }));', poner: 'const specials = [...w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length })), ...w.roam.map(dex => ({ dex, chance: w.roamChance / w.roam.length }))];',
+    tests: ['tests/e2e/johto-errantes.e2e.js'] },
 ];

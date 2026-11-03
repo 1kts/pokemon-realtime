@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 68,
- "total": 68,
+ "cazadas": 70,
+ "total": 70,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -483,6 +483,20 @@
     "tests/e2e/ruleta-efecto.e2e.js"
    ],
    "motivo": "ruleta-efecto.e2e.js: ✗ Ruleta de Cyndaquil: el efecto se ve sobre su Pokémon y no sobre tu Charmander"
+  },
+  "historia-regiones-a-la-derecha": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/historia-regiones.e2e.js"
+   ],
+   "motivo": "historia-regiones.e2e.js: ✗ Kanto y Johto, justo a la derecha del título"
+  },
+  "johto-errantes-anunciados": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/johto-errantes.e2e.js"
+   ],
+   "motivo": "johto-errantes.e2e.js: ✗ Ruta 29: sus 4 de la tanda y su especial, sin los errantes"
   }
  }
 }

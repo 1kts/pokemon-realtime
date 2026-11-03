@@ -436,8 +436,10 @@ export class UI {
     const wrap = el('div', 'story');
     const bar = this.topbar(t('Historia'));
     // Las regiones y las medallas, en la cabecera junto al título, en todos los tamaños
-    const chips = this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true);
+    // (las regiones, grandes y junto al título para cambiar de una a otra; las medallas de la actual, a la derecha)
+    const chips = this.regionChips(region, rid => { this.region = rid; this.show('story'); }, false, true);
     chips.classList.replace('tb-mobile', 'story-regions');
+    const badges = el('span', 'badges-mini', Data.leadersOf(region).slice(0, 8).map((g, i) => badgeImg(region, i, i < prog, 18)).join(''));
     // Accesos compactos a lo tuyo, siempre a mano (en el móvil, el panel de la ruta con Tienda y Mochila no cabe)
     const quick = el('nav', 'story-quick');
     quick.setAttribute('aria-label', t('Tu colección'));
@@ -453,7 +455,8 @@ export class UI {
       if (view === 'missions' && ready) b.append(newsDot());
       quick.append(b);
     }
-    bar.querySelector('.tb-ctx').append(quick, chips);
+    bar.querySelector('.tb-ctx').before(chips);
+    bar.querySelector('.tb-ctx').append(quick, badges);
     // Lo que acompaña al Camino, en su panel: «Cómo se juega» arriba a la izquierda y la cuenta atrás a la derecha
     const tools = el('div', 'sp-bar');
     const help = el('button', 'tb-btn help', `${ICON.help}<span>${t('Cómo se juega')}</span>`);
@@ -615,7 +618,7 @@ export class UI {
       const w = Data.routeWild(n);
       // (y qué es una ruta: opcional)
       box.append(el('h3', '', n.name), el('p', 'small ni-what', t('Opcional: aquí salen Pokémon salvajes para capturarlos y hacer más fuerte tu equipo.')), el('p', 'small', t('{r} · Nv.{a}-{b} · encuentros reales del juego', { r: R.name, a: n.lvl[0], b: n.lvl[1] })));
-      // Las 4 de esta tanda (cambian cada 6 horas) y, en la misma lista y en dorado, su especial y los errantes
+      // Las 4 de esta tanda (cambian cada 6 horas) y, en la misma lista y en dorado, su especial
       const list = el('div', 'mini-team route-list');
       const normal = 1 - w.chance - w.roamChance;
       for (const { dex, weight, min, max } of w.list) {
@@ -627,14 +630,16 @@ export class UI {
         c.append(this.catchPips(dex));
         list.append(c);
       }
-      // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos
-      const specials = [...w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length })), ...w.roam.map(dex => ({ dex, roam: true, chance: w.roamChance / w.roam.length }))];
+      // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos.
+      // Los que vagan por Johto (Raikou, Entei, Suicune) no se anuncian: salen por sorpresa en cualquier ruta, y solo
+      // se ven en la lista de la ruta de la que son el especial
+      const specials = w.specials.map(x => ({ ...x, chance: w.chance / w.specials.length }));
       for (const x of specials) {
         const known = p.caught.includes(x.dex);
         const c = el('div', 'mini rare' + (known ? ' caught' : ''));
         c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
         c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} %<span class="mini-lv"> · ${lv(w.level)}</span>`));
-        c.title = x.roam ? t('Vaga por todas las rutas de Johto') : x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
+        c.title = x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
         list.append(c);
       }
       box.append(list);
@@ -821,7 +826,7 @@ export class UI {
 
   // Las regiones en pequeño para la cabecera en el móvil (tb-mobile: solo en pantallas bajas): nombre y medallas
   // de cada una y, con withBadges, las medallas de la elegida
-  regionChips(current, onPick, withBadges) {
+  regionChips(current, onPick, withBadges, upcoming = false) {
     const p = this.profile;
     const box = el('div', 'tb-mobile region-chips');
     for (const rid of Data.REGION_IDS) {
@@ -830,6 +835,24 @@ export class UI {
       b.style.setProperty('--rc', REGION_COLOR[rid] || '#6f7dff');
       b.onclick = () => onPick(rid);
       box.append(b);
+    }
+    // (en Historia, también las que llegarán: apagadas, con su candado y «Próximamente»)
+    if (upcoming) for (const name of UPCOMING_REGIONS) {
+      const rname = t(name);
+      const b = el('button', 'rgc soon', `<b>${LOCK_SVG}${rname}</b><small>${t('Próximamente')}</small>`);
+      b.setAttribute('aria-disabled', 'true');
+      b.title = t('{r} llegará en una próxima actualización', { r: rname });
+      b.onclick = () => this.toast(t('{r} todavía no está disponible: ¡llegará pronto!', { r: rname }));
+      box.append(b);
+    }
+    // (si no caben una a una, todas juntas en un botón)
+    if (upcoming) {
+      const names = UPCOMING_REGIONS.map(n => t(n)).join(', ');
+      const all = el('button', 'rgc soon-all', `<b>${LOCK_SVG}+${UPCOMING_REGIONS.length}</b><small>${t('Próximamente')}</small>`);
+      all.setAttribute('aria-disabled', 'true');
+      all.title = names;
+      all.onclick = () => this.toast(t('{r} todavía no está disponible: ¡llegará pronto!', { r: names }));
+      box.append(all);
     }
     if (withBadges) {
       const prog = Data.progOf(p, current);
