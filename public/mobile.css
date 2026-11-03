@@ -413,7 +413,8 @@
   .mon-filters input, .dex-head .dex-filters input { flex: 0 0 196px; padding: 6px 10px; }
   body:not(.touch) .teamview .mon-filters input, body:not(.touch) .dexview .dex-head .dex-filters input { font-size: 12px; }
   /* (con el dedo, la letra de 16 px que evita que Safari amplíe la página al escribir: la caja, a su medida) */
-  body.touch .mon-filters input, body.touch .dex-head .dex-filters input { flex-basis: 244px; }
+  body.touch .mon-filters input { flex-basis: 244px; }
+  body.touch .dex-head .dex-filters input { flex-basis: 268px; }
   .mon-filters .seg button, .dex-head .seg button { padding: 6px 9px; }
   /* Pokédex: lo capturado, el buscador, los filtros y las generaciones, todo en una fila */
   .dex-head { flex-direction: row; align-items: center; gap: 8px; padding: 6px 8px; }
