@@ -33,7 +33,8 @@ module.exports = async ({ page, ok }) => {
   // atajo: la música no se ve: se mira qué tema pide el juego y de dónde suena
   ok(await page.eval(`window.__app.music.current`) === 'menu' && await page.eval(`window.__app.music.source`) === 'archivo', 'y en los resultados sigue sonando la grabación del menú');
 
-  await page.tap('Continuar');
+  await page.tap('Volver');
+  await page.waitFor(`window.__app.ui.view !== 'results'`);   // (el «Volver» de los resultados; el siguiente es el de la pantalla de antes)
   await page.tap('Volver');
   await page.tap('Ajustes');
   await page.waitFor(`document.querySelector('.music-panel input[type=range]')`);

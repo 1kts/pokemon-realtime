@@ -19,7 +19,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.eval(`window.__app.ui.results({ winner: 0, you: 0, captured: { dex: 25, level: 4, shiny: false }, reward: ${JSON.stringify(reward)} }); true`);
     await page.waitSee('¡Capturado!');
     ok(await page.see('Pikachu', { ms: 1000 }), `${at}: dice a quién has atrapado, sin bajar`);
-    ok(await page.see('Continuar', { ms: 1000 }), `${at}: «Continuar» se ve sin bajar`);
+    ok(await page.see('Volver', { ms: 1000 }), `${at}: «Volver» se ve sin bajar`);
     ok(await page.see('Seguir explorando', { ms: 1000 }), `${at}: «Seguir explorando» se ve sin bajar`);
     ok(await page.see('Guardar mote', { ms: 1000 }), `${at}: el mote se puede guardar sin bajar`);
     const form = await page.eval(`(() => { const f = document.querySelector('.nick-form'); return f.getBoundingClientRect().height; })()`);

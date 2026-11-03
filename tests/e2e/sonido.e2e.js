@@ -37,7 +37,8 @@ module.exports = async ({ page, ok }) => {
   ok(await played('hit'), 'un golpe que acierta suena');
   await page.key('Escape');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
-  await page.tap('Continuar');
+  await page.tap('Volver');
+  await page.waitFor(`window.__app.ui.view !== 'results'`);   // (el «Volver» de los resultados; el siguiente es el de la pantalla de antes)
 
   // Ajustes: volumen de los efectos aparte del de la música, y se recuerda
   await page.tap('Volver');

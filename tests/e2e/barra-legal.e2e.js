@@ -48,7 +48,7 @@ module.exports = async ({ page, player, ok }) => {
   ok(!(await page.see('fan-game no oficial', { ms: 0 })), 'en combate se esconde');
   await page.key('Escape');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
-  await page.tap('Continuar');
+  await page.tap('Volver');
   await page.waitSee('Créditos', { in: '.legal-bar', scroll: true });
   ok(true, 'al acabar el combate vuelve');
   await page.tap('Créditos', { in: '.legal-bar' });

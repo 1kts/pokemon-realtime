@@ -41,7 +41,7 @@ module.exports = async ({ page, player, ok, log }) => {
     }
     await page.key('Escape');
     await page.tap('Rendirse', { in: '.ui-confirm-box' });
-    await page.tap('Continuar');
+    await page.tap('Volver');
   }
   if (!seen) log('(no salió ninguno de esas líneas en 5 encuentros; se comprueba en el resto)');
 };

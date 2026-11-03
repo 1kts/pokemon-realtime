@@ -226,7 +226,11 @@ export class UI {
     const sign = el('div', 'feature-sign sign-' + this.view, `<div><h2>${title}</h2>${sub ? `<small>${sub()}</small>` : ''}</div>`);
     sign.style.setProperty('--fc', color);
     const right = el('div', 'tb-ctx');
-    if (['shop', 'bag', 'team'].includes(this.view)) right.append(el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(this.profile.coins)));
+    if (['shop', 'bag', 'team'].includes(this.view)) {
+      const pill = el(this.view === 'shop' ? 'span' : 'button', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(this.profile.coins));
+      if (this.view !== 'shop') pill.onclick = () => this.show('shop');   // (el dinero lleva a la Tienda)
+      right.append(pill);
+    }
     // (en Lucky Spin, las gemas que tienes para tirar)
     if (this.view === 'treasure') right.append(el('span', 'pill gems', `${icon('gem', 16)}${(this.profile.gems || 0).toLocaleString(locale())}`));
     this.coinBump = false;
@@ -331,7 +335,8 @@ export class UI {
     if (avatarNews(p)) ava.append(newsDot());   // (solo lo que hay de nuevo en tu perfil: al abrirlo se ve y se apaga)
     ava.onclick = () => this.show('profile');
     const info = el('div', 'hub-who', `<b>${escapeHtml(p.name)}</b><small>${t(p.league)} · ${p.elo}</small>`);
-    const coinPill = el('span', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
+    const coinPill = el('button', 'pill coins' + (this.coinBump ? ' bump' : ''), coins(p.coins));
+    coinPill.onclick = () => this.show('shop');   // (el dinero lleva a donde se gasta)
     this.coinBump = false;
     const gemPill = el('button', 'pill gems', `${icon('gem', 16)}${(p.gems || 0).toLocaleString()}`);
     gemPill.onclick = () => this.openTreasure();
@@ -433,14 +438,19 @@ export class UI {
     // Las regiones y las medallas, en la cabecera junto al título, en todos los tamaños
     const chips = this.regionChips(region, rid => { this.region = rid; this.show('story'); }, true);
     chips.classList.replace('tb-mobile', 'story-regions');
-    // En el móvil, el panel de la ruta (con Tienda y Mochila) no cabe: accesos compactos a lo tuyo, siempre a mano
+    // Accesos compactos a lo tuyo, siempre a mano (en el móvil, el panel de la ruta con Tienda y Mochila no cabe)
     const quick = el('nav', 'story-quick');
     quick.setAttribute('aria-label', t('Tu colección'));
-    for (const [ico, label, view] of [['pokeball', t('Mis Pokémon'), 'team'], ['seal-bag', t('Mochila'), 'bag'], ['forage-bag', t('Tienda'), 'shop']]) {
+    // (y las Misiones, para recoger sus premios sin salir: con bolita si hay alguno listo)
+    const ready = p.missions ? this.readyCount() : 0;
+    for (const [ico, label, view] of [['pokeball', t('Mis Pokémon'), 'team'], ['seal-bag', t('Mochila'), 'bag'], ['forage-bag', t('Tienda'), 'shop'], ['star-piece', t('Misiones'), 'missions']]) {
+      if (view === 'missions' && !p.missions) continue;
       const b = el('button', 'sq-btn sq-' + view, itemImg(ico, 26));
-      b.setAttribute('aria-label', label);
-      b.title = label;
+      const name = view === 'missions' && ready ? `${label} · ${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}` : label;
+      b.setAttribute('aria-label', name);
+      b.title = name;
       b.onclick = () => this.show(view);
+      if (view === 'missions' && ready) b.append(newsDot());
       quick.append(b);
     }
     bar.querySelector('.tb-ctx').append(quick, chips);
@@ -1564,8 +1574,10 @@ export class UI {
         const pm = this.profile && this.profile.mons.find(m => m.uid === x.uid);
         // Quien evoluciona posa y quien sube de nivel salta; los demás, cara de victoria o de derrota
         const shiny = !!(pm && pm.shiny), dex = x.evolved || x.dex;
-        row.append(x.evolved ? animatedPortrait(dex, 40, 'Pose', shiny) : x.level > x.fromLevel ? animatedPortrait(dex, 40, 'Hop', shiny)
-          : moodFace(dex, 40, draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny) || portrait(dex, 40, { shiny }));
+        // (la cara siempre al mismo tamaño: el sprite entero con su salto se veía diminuto al lado de las caras)
+        const face = !x.evolved && moodFace(dex, 40, x.level > x.fromLevel ? 'Joyous' : draw ? 'Normal' : won ? 'Joyous' : 'Sad', shiny);
+        if (face && x.level > x.fromLevel) face.classList.add('hop');
+        row.append(x.evolved ? animatedPortrait(dex, 40, 'Pose', shiny) : face || (x.level > x.fromLevel ? animatedPortrait(dex, 40, 'Hop', shiny) : portrait(dex, 40, { shiny })));
         // (en corto: nombre, EXP y nivel; lo que pasa de especial, debajo; los EV, al pasar el ratón)
         const lvl = x.level > x.fromLevel ? `<span class="lvup">${lv(x.fromLevel)} → ${lv(x.level)}</span>` : lv(x.level);
         const learned = (x.learned || []).map(k => MOVES[k].name);
@@ -1614,19 +1626,22 @@ export class UI {
       team.onclick = () => this.show('team');
       acts.append(retry, team);
     }
-    const back = el('button', acts.children.length ? '' : 'primary', t('Continuar'));
+    // Seguir explorando la ruta u otra vez la práctica: lo que más se pulsa, el botón grande; «Volver», al lado
+    const repeat = lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'));
+    if (repeat) {
+      const again = el('button', acts.children.length ? '' : 'primary', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
+      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod, aiDebug: lm.aiDebug }) : this.startStory(lm.a, lm.id);
+      acts.append(again);
+    }
+    const back = el('button', acts.children.length ? '' : 'primary', t('Volver'));
     back.onclick = () => this.show(this.afterBattleView());
     acts.append(back);
-    // Para preparar lo siguiente: el equipo de PvP y Mis Pokémon (el de Mejorar equipo ya lleva allí)
+    // Para preparar lo siguiente: el equipo de PvP, Mis Pokémon y la Tienda (el de Mejorar equipo ya lleva allí)
     const shortcut = (label, view, before) => { const b = el('button', 'res-go', label); b.onclick = () => { if (before) before(); this.show(view); }; return b; };
     const go = el('div', 'res-links');
     if (lm === 'ranked' || lm === 'friendly') go.append(shortcut(t('Editar equipo'), 'online'));
     if (!(lost && lm && lm.kind === 'story' && lm.a !== 'route')) go.append(shortcut(t('Mis Pokémon'), 'team'));
-    if (lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'))) {
-      const again = el('button', '', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
-      again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod, aiDebug: lm.aiDebug }) : this.startStory(lm.a, lm.id);
-      acts.append(again);
-    }
+    go.append(shortcut(t('Tienda'), 'shop'));
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
       const next = el('button', '', t('Combate {n}', { n: r.tower.streak + 1 }));
       next.onclick = () => this.towerBattle();

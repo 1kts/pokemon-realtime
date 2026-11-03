@@ -34,7 +34,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
   await page.waitSee('Derrota');
   ok(!(await page.see(/\d+ ELO|ELO/, { in: '.results', ms: 0 })), 'un combate amistoso no mueve el ELO');
-  await page.tap('Continuar');
+  await page.tap('Volver');
   await page.waitSee('Tus amigos');
   ok(true, 'al acabar vuelves a Amigos');
   ok(await page.see('Ver perfil', { ms: 3000 }), 'el amigo sigue en la lista: el Intro en combate no ha confirmado el cuadro');

@@ -54,7 +54,8 @@ export const treasureViews = {
     else if (x.kind === 'frame') box.append(this.avatar(size, false, x.frame, null, null));
     else if (x.kind === 'particles') box.append(applySkin(portrait(x.dex, size), null, x.dex, true));
     else if (x.kind === 'portrait') box.innerHTML = portraitArt(x.dex, Math.round(size * 0.9), x.emo);
-    else if (x.kind === 'effect') box.append(this.avatar(Math.round(size * 0.9), false, null, null, x.effect));
+    // (el efecto, sobre el Pokémon de la ruleta: sobre tu avatar parecía de otra ruleta)
+    else if (x.kind === 'effect') box.append(this.avatar(Math.round(size * 0.9), false, null, null, x.effect, this.tzLine ? { avatar: this.tzLine, effect: x.effect } : undefined));
     else if (x.kind === 'coins') box.innerHTML = icon('coin', Math.round(size * 0.6));
     else if (x.kind === 'item') box.innerHTML = itemImg(x.item, Math.round(size * 0.7));
     return box;
@@ -66,6 +67,7 @@ export const treasureViews = {
     const list = Data.treasures(p.treasure ? p.treasure.period : undefined);
     const cur = list.find(r => r.id === this.tzSel) || list[0];
     this.tzSel = cur.id;
+    this.tzLine = cur.line;
     const mine = got[cur.id] || [];
     const odds = Data.treasureOdds(cur, mine);
     const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[n], done = n >= N, enough = (p.gems || 0) >= cost;

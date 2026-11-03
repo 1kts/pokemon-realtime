@@ -61,7 +61,7 @@ module.exports = async ({ page, player, ok, log }) => {
   ok(won > 0, `y cuánto dinero has ganado (+${won})`);
 
   // El dinero de arriba sube lo que decían los resultados
-  await page.tap('Continuar');
+  await page.tap('Volver');
   await page.waitSee('Tu viaje');   // (ya de vuelta en Historia, con el CI lento: «Volver» es el de esa pantalla)
   await page.tap('Volver');
   await page.waitSee('Aventura');

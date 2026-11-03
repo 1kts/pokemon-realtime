@@ -28,7 +28,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.ui-confirm-box .ok')`);
   await page.click('.ui-confirm-box .ok');
   await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
-  await page.click('Continuar');
+  await page.click('Volver');
   await page.waitFor(`window.__app.ui.view === 'practice' && document.querySelector('.pool-card')`);
 
   await page.click('Ver qué piensa la IA');
@@ -54,7 +54,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.waitFor(`document.querySelector('.ui-confirm-box .ok')`);
     await page.click('.ui-confirm-box .ok');
     await page.waitFor(`window.__app.ui.view === 'results'`, 15000);
-    await page.click('Continuar');
+    await page.click('Volver');
     await page.waitFor(`window.__app.ui.view === 'practice' && document.querySelector('.pool-card')`);
     await fight();
     await page.waitFor(plate, 8000);

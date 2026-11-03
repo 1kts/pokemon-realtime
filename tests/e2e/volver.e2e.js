@@ -35,7 +35,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`window.__app.battle && window.__app.battle.latest && window.__app.battle.latest.state === 'fight'`, 40000);
   await page.key('Escape');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
-  await page.waitSee('Continuar');
+  await page.waitSee('Volver');
   await page.tap('Mis Pokémon', { in: '.results' });
   await page.waitFor(`document.querySelector('.mon-card')`);
   ok(await page.title() === 'Mis Pokémon', `desde los resultados se llega a Mis Pokémon (${await page.title()})`);

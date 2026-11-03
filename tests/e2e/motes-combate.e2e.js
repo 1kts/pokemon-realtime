@@ -19,7 +19,8 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.see('<b>Rayo</b>', { in: '.hud, #hud' }), `en combate se ve con su mote`);
   await page.key('Escape');
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
-  await page.tap('Continuar');
+  await page.tap('Volver');
+  await page.waitFor(`window.__app.ui.view !== 'results'`);   // (el «Volver» de los resultados; el siguiente es el de la pantalla de antes)
 
   // Quitarlo: vuelve a llamarse como su especie
   await page.tap('Volver');

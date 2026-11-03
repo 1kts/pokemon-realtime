@@ -39,7 +39,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.tap('Rendirse', { in: '.ui-confirm-box' });
   await page.waitSee('Derrota', { ms: 15000 });
   ok(await page.eval(`!/undefined|NaN/.test(document.querySelector('.results').innerText) && !document.querySelector('.results .league-res, .results .league-box')`), 'los resultados no muestran la Liga Pokémon ni «undefined»');
-  await page.tap('Continuar');
+  await page.tap('Volver');
   await page.waitFor(`document.querySelector('.online-me .big-elo')`);
   ok(await elo() < elo0, `el resultado cuenta para el ELO (${elo0} → ${await elo()})`);
 };

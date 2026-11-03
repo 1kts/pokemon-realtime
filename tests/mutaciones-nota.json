@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 62,
- "total": 62,
+ "cazadas": 68,
+ "total": 68,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -441,6 +441,48 @@
     "tests/e2e/historia-accesos.e2e.js"
    ],
    "motivo": "historia-accesos.e2e.js: ✗ 844×390: el botón Mochila de Historia lleva a Mochila (Tienda) | ✗ 667×375: el botón Mochila de Historia lleva a Mochila (Tienda)"
+  },
+  "menu-pvp-pequeno": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/menu-columnas.e2e.js"
+   ],
+   "motivo": "menu-columnas.e2e.js: ✗ PvP se ve en grande, como Historia | ✗ la Ladder llega tan abajo como las otras columnas"
+  },
+  "resultados-sigue-continuar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/resultados-ruta.e2e.js"
+   ],
+   "motivo": "resultados-ruta.e2e.js: ✗ ya no hay «Continuar»"
+  },
+  "monedas-sin-tienda": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/monedas-tienda.e2e.js"
+   ],
+   "motivo": "monedas-tienda.e2e.js: ✗ tocar el dinero del menú abre la Tienda"
+  },
+  "historia-sin-misiones": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/historia-misiones.e2e.js"
+   ],
+   "motivo": "historia-misiones.e2e.js: ✗ el botón de Misiones de Historia lleva su bolita a la vista"
+  },
+  "resultados-exp-en-columnas": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movil-combate.e2e.js"
+   ],
+   "motivo": "movil-combate.e2e.js: ✗ 1280×800: cada Pokémon, en una fila a todo el ancho"
+  },
+  "ruleta-efecto-sobre-tu-avatar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/ruleta-efecto.e2e.js"
+   ],
+   "motivo": "ruleta-efecto.e2e.js: ✗ Ruleta de Cyndaquil: el efecto se ve sobre su Pokémon y no sobre tu Charmander"
   }
  }
 }
