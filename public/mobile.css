@@ -789,10 +789,9 @@
   .story-side .node-info:not(.open) > .league-box > :not(button.primary) { display: none; }
   .story-side .node-info.open { position: fixed; inset: 6px; z-index: 40; overflow: auto; }
   .story-side .node-info.open > .ni-caught { display: block; }
-  .story-quick { display: flex; flex: none; gap: 4px; margin-right: 6px; }
-  .story-quick .sq-btn { display: grid; place-items: center; width: 40px; height: 40px; min-width: 0; min-height: 0; padding: 0; border-radius: 12px;
-    background: linear-gradient(180deg, #2a3a86, #1a2766); border: 1px solid rgba(170,190,255,.35); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
-  .story-quick .sq-btn img { width: 26px; height: 26px; image-rendering: pixelated; pointer-events: none; }
+  .story-quick { gap: 4px; margin-right: 6px; }
+  .story-quick .sq-btn { width: 40px; height: 40px; }
+  .story-quick .sq-btn img { width: 26px; height: 26px; }
   .story-side .node-info.open > .ni-more { display: block; position: sticky; top: 0; z-index: 4; float: right; min-height: 40px; padding: 0 14px; font: 800 13px var(--text); color: #fff; background: #1a2766; border: 1px solid #3d53b0; border-radius: 10px; }
 }
 /* (en los más estrechos no caben también las medallas: ya salen en el Camino y en el «2/8» de cada región) */

@@ -26,7 +26,6 @@ function whereOf(dex) {
       const w = Data.routeWild(n);
       for (const [d] of n.wild) add(d, n);
       for (const x of w.specials) add(x.dex, n);
-      for (const d of w.roam) add(d, n);
     }
   }
   return whereCache.get(dex) || [];

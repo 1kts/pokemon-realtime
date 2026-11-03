@@ -1154,7 +1154,7 @@
     const sp = st.sp >= 0 ? ROUTE_SPECIALS[route.id][st.sp] : null;
     const specials = sp ? [typeof sp === 'number' ? { dex: sp } : sp] : [];
     const roam = (ROAMERS[route.region] || []).filter(d => !specials.some(x => x.dex === d));
-    return { list, specials, chance: specials.length ? route.rare : 0, roam, roamChance: roam.length ? ROAM_CHANCE : 0, level: route.lvl[1] + 3, ends: rotEnds(t) };
+    return { list, specials, chance: specials.length ? route.rare : 0, roam, roamChance: roam.length ? ROAM_CHANCE : 0, level: route.spLevel || route.lvl[1] + 3, ends: rotEnds(t) };
   }
   // Un encuentro: a veces un especial (o un perro errante en Johto); si no, una especie según su probabilidad
   function rollWild(route, rand = Math.random, t = Date.now()) {
@@ -1666,6 +1666,7 @@
     if (off) for (const w of n.wild) { w[1] = Math.max(2, w[1] - off); w[2] = Math.max(w[1], w[2] - off); }
     for (const w of n.wild) { w[2] = Math.min(w[2], cap + 3); w[1] = Math.min(w[1], w[2]); }   // (y ninguno más de 3 por encima)
     n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
+    n.spLevel = Math.min(n.lvl[1] + 3, cap + 3);   // (los especiales y los errantes, tampoco por encima)
   }
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,

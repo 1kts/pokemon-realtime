@@ -291,6 +291,8 @@ class Client {
     const malas = Object.values(D.NODES).filter(n => n.kind === 'route').filter(n => n.lvl[1] > D.levelCap(n.req || 0, n.region) + 3 || n.wild.some(w => w[2] - w[1] > 8) || n.lvl[1] - n.lvl[0] > 12)
       .map(n => `${n.id} Nv.${n.lvl[0]}-${n.lvl[1]} (tope ${D.levelCap(n.req || 0, n.region)})`);
     ok(!malas.length, `los salvajes de cada ruta, como mucho 3 niveles por encima del tope de sus medallas y sin niveles muy dispares (${malas.join(', ') || 'todas bien'})`);
+    const altos = Object.values(D.NODES).filter(n => n.kind === 'route' && D.routeWild(n).level > D.levelCap(n.req || 0, n.region) + 3).map(n => `${n.id} Nv.${D.routeWild(n).level}`);
+    ok(!altos.length, `los especiales y los que vagan por Johto, tampoco más de 3 niveles por encima del tope (${altos.join(', ') || 'todos bien'})`);
     const cueva = D.NODES['j-oscura'];
     ok(cueva.lvl[1] <= D.levelCap(0, 'johto') + 3, `la Cueva Oscura, sin medallas, no saca salvajes de Nv.20 (Nv.${cueva.lvl[0]}-${cueva.lvl[1]})`);
   }
