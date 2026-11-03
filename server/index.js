@@ -81,12 +81,23 @@ const server = http.createServer((req, res) => {
   if (url.startsWith('/admin/')) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   const file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
-  fs.readFile(file, (err, data) => {
-    if (err) { res.writeHead(404); return res.end('No encontrado'); }
+  // Cada archivo lleva su ETag (tamaño y fecha): lo que es «no-cache» (el código del juego y sus datos) el navegador lo
+  // vuelve a pedir en cada visita, pero si no ha cambiado le basta un «304 sin cambios» en vez de bajarlo entero (antes
+  // eran 1,2 MB comprimidos en cada visita)
+  fs.stat(file, (err, st) => {
+    if (err || !st.isFile()) { res.writeHead(404); return res.end('No encontrado'); }
     const ext = path.extname(file);
-    if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': ext === '.png' || ext === '.jpg' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' });
-    res.end(data);
+    const tag = `W/"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;
+    const head = { 'Content-Type': MIME[ext] || 'application/octet-stream', ETag: tag,
+      'Cache-Control': ext === '.png' || ext === '.jpg' || ext === '.glb' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' };
+    // (la página no: su CSP va con ella)
+    if (ext !== '.html' && req.headers['if-none-match'] === tag) { res.writeHead(304, head); return res.end(); }
+    fs.readFile(file, (err2, data) => {
+      if (err2) { res.writeHead(404); return res.end('No encontrado'); }
+      if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));
+      res.writeHead(200, head);
+      res.end(data);
+    });
   });
 });
 

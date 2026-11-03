@@ -11,7 +11,6 @@
 // Notación de las melodías: "nota:duración" en semicorcheas (un compás = 16), p. ej. 'E5:4 r:2'
 // (r = silencio). El bajo, los arpegios y la batería salen de los acordes de cada compás.
 import { storage } from './net.js';
-import { touchMode } from './touch.js';
 
 const KEY = 'arena.music';
 const DEFAULT_VOLUME = 0.45;
@@ -272,19 +271,21 @@ export class Music {
     this.starts = 0;        // veces que se ha empezado un tema (para las pruebas)
     this.bytes = new Map(); // archivo -> promesa con sus bytes (o null si no está)
     this.buffers = new Map();
-    // El del menú se pide ya (suena primero); el resto, cuando la página está tranquila. Los que solo suenan
-    // enlazados se piden al empezar el primero de su cadena (da tiempo de sobra) y los de cada gimnasio, al
-    // entrar en su combate (son muchos y cada jugador oye pocos; si tarda, suena antes el sintetizado).
-    // En el móvil o con ahorro de datos, solo el de los salvajes (lo siguiente más probable): todos eran 15 MB
-    // nada más abrir el juego; los demás se piden al sonar
+    // El del menú se pide cuando la página ya ha cargado (o al tocarla, que es cuando puede sonar): pedido al abrir,
+    // sus 650 KB competían con el código del juego y la portada tardaba en salir, sobre todo en el móvil. Después,
+    // con la página tranquila, solo el de los salvajes (lo siguiente más probable); los demás se piden al sonar (todos
+    // juntos eran 20 MB nada más abrir el juego). Los que solo suenan enlazados se piden al empezar el primero de su
+    // cadena (da tiempo de sobra); si alguno tarda, suena antes el sintetizado y entra la grabación al llegar.
     // (al salir o recargar, lo que se esté bajando se corta a mano: si no, Safari se queja de cada descarga cortada con
     // «cannot load … due to access control checks»)
     this.leaving = new AbortController();
     addEventListener('pagehide', () => this.leaving.abort());
     addEventListener('pageshow', e => { if (e.persisted) this.leaving = new AbortController(); });
-    this.preload('menu');
-    const light = touchMode() || !!(navigator.connection && navigator.connection.saveData);
-    setTimeout(() => (light ? ['wild'] : Object.keys(FILES).filter(n => (TRACKS[n] || VARIANTS[n]) && !n.startsWith('gym-') && !n.startsWith('route-') && n !== 'wildRare')).forEach(n => this.preload(n)), 4000);
+    const later = () => setTimeout(() => {
+      this.preload('menu');
+      if (!(navigator.connection && navigator.connection.saveData)) setTimeout(() => this.preload('wild'), 6000);
+    }, 1500);
+    if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
     // Los navegadores no dejan sonar nada hasta que el jugador toca la página
     const unlock = () => { this.start(); };
     addEventListener('pointerdown', unlock, { capture: true });

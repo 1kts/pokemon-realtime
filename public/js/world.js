@@ -414,8 +414,10 @@ export class World {
     this.focusLight.position.y = 2.2;
     this.scene.add(this.focusLight);
     this.placeCamera(16 / 9);
-    // Modelos del decorado: al acabar de cargar se vuelve a montar el de la arena que haya
-    preloadScenery().then(ok => { if (ok && this.mapName) this.buildDecor(this.mapName, this.theme); });
+    // Modelos del decorado: al acabar de cargar se vuelve a montar el de la arena que haya. Se piden cuando la página ya
+    // ha cargado: son 49 archivos (600 KB) y, pedidos antes, la portada tardaba más en salir en el móvil
+    const decor = () => preloadScenery().then(ok => { if (ok && this.mapName) this.buildDecor(this.mapName, this.theme); });
+    if (document.readyState === 'complete') decor(); else addEventListener('load', () => setTimeout(decor, 200), { once: true });
   }
 
   placeCamera(aspect) {

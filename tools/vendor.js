@@ -32,6 +32,8 @@ function write(rel, data) {
   fs.rmSync(OUT, { recursive: true, force: true });
   // ---------- Three.js ----------
   write('three/build/three.module.js', await get(CDN + 'build/three.module.js'));
+  // (la página carga la minificada: 85 KB menos comprimida y menos que leer al abrir; la otra, para leerla)
+  write('three/build/three.module.min.js', await get(CDN + 'build/three.module.min.js'));
   write('three/LICENSE', await get(CDN + 'LICENSE'));
   const seen = new Set(), queue = ADDONS.map(a => 'examples/jsm/' + a);
   while (queue.length) {
@@ -54,7 +56,14 @@ function write(rel, data) {
     write('fonts/' + name, await get(url, true));
     css = css.split(url).join(name);
   }
-  write('fonts/fonts.css', `/* Nunito y M PLUS Rounded 1c (SIL Open Font License 1.1), descargadas de Google Fonts con tools/vendor.js */\n${css}`);
+  // Dos hojas: la de las letras latinas y cirílicas (fonts.css, va en la página y bloquea el primer pintado: que sea
+  // pequeña) y la de los trozos de chino, japonés y coreano (fonts-cjk.css, más de 200 reglas: la pone i18n.js sin
+  // bloquear nada)
+  const faces = css.match(/@font-face\s*{[^}]*}/g) || [];
+  const cjk = f => !/unicode-range:[^;]*U\+(0000|0100|0102|0301|0460|1F00|0370)/.test(f);
+  const head = '/* Nunito y M PLUS Rounded 1c (SIL Open Font License 1.1), descargadas de Google Fonts con tools/vendor.js */\n';
+  write('fonts/fonts.css', head + faces.filter(f => !cjk(f)).join('\n') + '\n');
+  write('fonts/fonts-cjk.css', head + faces.filter(cjk).join('\n') + '\n');
   for (const [fam, url] of Object.entries(FONT_LICENSES)) write(`fonts/OFL-${fam.replace(/\s+/g, '')}.txt`, await get(url));
   const size = urls.reduce((n, _, k) => n + fs.statSync(path.join(OUT, 'fonts', `f${String(k).padStart(3, '0')}.woff2`)).size, 0);
   console.log(`Fuentes: ${urls.length} archivos (${(size / 1e6).toFixed(1)} MB en total; el navegador solo baja los trozos que usa)`);

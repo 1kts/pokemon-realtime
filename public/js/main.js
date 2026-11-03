@@ -25,6 +25,11 @@ import { pacer } from './smooth.js';
 import { Sfx } from './sfx.js';
 import { lowerQuality } from './gfx.js';
 
+// Los trozos de chino, japonés y coreano de la letra (más de 200 reglas, 60 KB): aparte, sin bloquear el primer pintado,
+// y en los demás idiomas cuando la página ya ha cargado (solo hacen falta para los nombres de esos idiomas en Ajustes)
+const cjkFont = () => document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: '/vendor/fonts/fonts-cjk.css' }));
+if (['zh', 'ja', 'ko'].includes(getLang()) || document.readyState === 'complete') cjkFont(); else addEventListener('load', () => setTimeout(cjkFont, 300), { once: true });
+
 const canvas = document.getElementById('view');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) {

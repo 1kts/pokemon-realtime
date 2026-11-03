@@ -631,6 +631,16 @@ class Client {
   }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
+  // Volver a entrar no baja otra vez el código del juego: con lo que ya tiene el navegador (su ETag) basta un 304 sin
+  // cuerpo; si el archivo cambia, se baja entero
+  {
+    const get = (url, headers = {}) => new Promise(r => require('http').get(`http://localhost:${port}${url}`, { headers }, res => { let n = 0; res.on('data', x => { n += x.length; }); res.on('end', () => r({ code: res.statusCode, tag: res.headers.etag, n })); }));
+    const a = await get('/js/ui.js'), b = await get('/js/ui.js', { 'if-none-match': a.tag });
+    ok(a.code === 200 && a.n > 10000 && !!a.tag, `el código del juego se sirve entero la primera vez (${a.n} bytes)`);
+    ok(b.code === 304 && b.n === 0, `la segunda vez, sin cambios, es un 304 sin cuerpo (${b.code}, ${b.n} bytes)`);
+    const c = await get('/js/ui.js', { 'if-none-match': 'W/"otro"' });
+    ok(c.code === 200 && c.n === a.n, 'con otra versión guardada se baja entero');
+  }
 
   // Misma IP: no se emparejan (en producción; aquí se activa a mano). Y contra el mismo rival, el ELO solo
   // Con tus Pokémon en el equipo: mientras buscas partida no se venden, y si aun así el equipo deja de valer (lo
