@@ -347,12 +347,13 @@
   .mon-sheet-back.modal { padding: 8px 24px; }
   .mon-sheet { width: min(100%, 740px); grid-template-columns: 138px minmax(0, 1fr); height: calc(100vh - 16px); height: calc(100dvh - 16px); overflow: hidden; border-radius: 16px; }
   /* El Vestuario, en tarjetas pequeñas para ver casi todo sin bajar: el nombre en dos líneas y de dónde sale cada
-     cosa, al tocarla o en su título; el filtro «Solo los míos / Todos» va a la altura del primer título */
-  .ms-body { position: relative; }
-  .ms-body > .own-filter { position: absolute; top: 3px; right: 8px; margin: 0; }
+     cosa, al tocarla (wardrobe.js); el filtro «Solo los míos / Todos» va en la fila del primer título */
+  .ms-body:has(> .ms-wardrobe) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; }
+  .ms-body:has(> .ms-wardrobe) > * { grid-column: 1 / -1; }
+  .ms-body > .own-filter { grid-column: 2 !important; grid-row: 1; align-self: center; margin: 0; }
   .ms-body > .own-filter button { min-height: 24px; padding: 3px 11px; }
-  .ms-body > .own-filter + h4 { min-height: 28px; margin: 0; padding-right: 160px; display: flex; align-items: center; }
-  .ms-body h4 { margin: 1px 0 0; font-size: 10.5px; line-height: 1.2; }
+  .ms-body > .own-filter + h4 { grid-column: 1 !important; grid-row: 1; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ms-body:has(> .ms-wardrobe) h4 { margin: 1px 0 0; font-size: 10.5px; line-height: 1.2; }
   .ms-wardrobe { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 3px; margin-bottom: 0; }
   .ms-wear { justify-content: flex-start; gap: 1px; padding: 2px 3px 3px; border-radius: 10px; }
   .ms-wear canvas, .ms-wear img { width: 32px; height: 32px; }
@@ -360,8 +361,7 @@
   .ms-wear small { display: none; }
   .ms-wear .wear-lock { top: 3px; right: 3px; width: 11px; height: 11px; }
   /* (el brillo de algún marco y glow asoma 2 px por la última columna: sin esto salía una barra para deslizar de lado) */
-  .ae-body .frame-grid { overflow-x: clip; }
-  .ae-body .frame-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 5px; }
+  .ae-body .frame-grid { overflow-x: clip; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 5px; }
   .ae-body .frame-opt { gap: 3px; padding: 6px 2px 4px; min-width: 0; }
   .ae-body .frame-opt em { display: none; }
   /* (el lado, compacto: foto, nombre, tipo, nivel y botones; lo demás, plegado en «Más datos») */
@@ -418,9 +418,10 @@
   .mon-filters .dd, .dex-head .dd { flex: none; }
    /* (.dex-filters .dd los dejaba encoger: en la fila se quedaban en 0 y su contenido pisaba lo de al lado) */
   .dex-head .dex-filters input { flex: 0 0 160px; padding: 6px 10px; }
-  .mon-filters input { flex: 1 0 196px; max-width: 280px; padding: 5px 10px; }
+  /* (a 16 px: con menos, el iPhone acerca la página al tocar el buscador y se queda así) */
+  .mon-filters input { flex: 1 0 236px; max-width: 300px; padding: 4px 10px; }
   /* (sobre la arena 3D, con fondo oscuro: si no, «Buscar por nombre o número» y los filtros apenas se leían) */
-  body .teamview .mon-filters input { font-size: 12px; background: rgba(8,14,36,.78); }
+  body .teamview .mon-filters input { font-size: 16px; background: rgba(8,14,36,.78); }
   .mon-filters input::placeholder { color: #9fb0cc; opacity: 1; }
   .mon-filters .seg, .mon-filters .dd-btn { background: rgba(8,14,36,.66); }
   .mon-filters .dd-btn { min-height: 32px; padding: 4px 10px 4px 8px; font-size: 12px; }

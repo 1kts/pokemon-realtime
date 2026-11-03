@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-02",
- "cazadas": 58,
- "total": 58,
+ "fecha": "2026-11-03",
+ "cazadas": 59,
+ "total": 59,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -413,6 +413,13 @@
     "tests/e2e/vestuario-movil.e2e.js"
    ],
    "motivo": "vestuario-movil.e2e.js: ✗ 844×390: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.95}) | ✗ 667×375: la ficha deja margen alrededor y no ocupa casi toda la pantalla ({\"izq\":6,\"der\":6,\"arr\":8,\"aba\":8,\"lado\":138,\"area\":0.94})"
+  },
+  "vestuario-procedencia-sin-toque": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ error: no se ve «500 victorias con su línea»: no está en la página"
   }
  }
 }

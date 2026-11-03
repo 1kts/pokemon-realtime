@@ -72,6 +72,13 @@ module.exports = async ({ page, player, ok }) => {
     const vista = await opciones('.mon-sheet .ms-body', '.ms-wear');
     ok(vista.legibles >= 12, `${en}: el Vestuario enseña al menos 12 opciones sin bajar y con su nombre entero (${JSON.stringify(vista)})`);
     ok(vista.bloq > 0 && !vista.sinCandado, `${en}: todo lo que no tienes en el Vestuario lleva un candado dibujado que se ve (${vista.bloq - vista.sinCandado} de ${vista.bloq})`);
+    // De dónde sale lo que no tienes: no cabe escrito en la tarjeta, así que se dice al tocarla con el dedo
+    // (con el dedo en su sitio: está desactivado, y press no pulsa lo desactivado, pero el dedo del jugador sí llega)
+    const oro = await page.eval(`(() => { const r = [...document.querySelectorAll('.mon-sheet .ms-wear.locked')].find(b => /Oro/.test(b.textContent)).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+    await page.fingerAt(oro.x, oro.y);
+    await page.fingerUp();
+    await page.waitSee('500 victorias con su línea');
+    ok(true, `${en}: tocar una skin que no tienes dice de dónde sale`);
     // El editor del avatar: lo mismo en Marco, Glow y Efecto
     await page.tap('Cerrar');
     await page.loginAs(me.token);

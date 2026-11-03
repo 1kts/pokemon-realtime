@@ -99,7 +99,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm i --no-save playwright@1.63.0 && npx playwright install --with-deps webkit
-      - run: node tools/e2e.js tests/e2e/movil*.e2e.js tests/e2e/pantallas-movil*.e2e.js
+      - run: node tools/e2e.js tests/e2e/movil*.e2e.js tests/e2e/pantallas-movil*.e2e.js tests/e2e/vestuario-movil.e2e.js
         env:
           E2E_BROWSER: webkit
           E2E_JOBS: 2

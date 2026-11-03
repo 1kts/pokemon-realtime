@@ -879,7 +879,6 @@ export class UI {
     const intro = wrap.appendChild(el('p', 'intro', `<span class="intro-txt">${help}</span> <span class="cap">${t('Tope de nivel en {r}: <b>{n}</b>', { r: Data.REGIONS[region].name, n: cap })}${next && cap < 100 ? ` · ${t('vence a {who} para subir más', { who: next.leader })}` : ''}</span>`));
     // En el móvil va en una línea (solo el tope, que es lo que cambia) con una «i»: tocarla despliega la explicación
     intro.insertAdjacentHTML('beforeend', '<svg class="intro-i" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7v4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="4.6" r="1.1" fill="currentColor"/></svg>');
-    intro.title = help;
     intro.onclick = () => intro.classList.toggle('open');
     if (!mine.length) wrap.append(el('p', 'warn', t('Aún no tienes Pokémon en {r}: elige tu inicial en Historia.', { r: Data.REGIONS[region].name })));
     // Buscador y filtros de la caja (se recuerdan al volver). Filtran al momento ocultando tarjetas, sin

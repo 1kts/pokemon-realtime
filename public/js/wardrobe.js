@@ -91,6 +91,9 @@ export function wearPanel(body, ui, sections, repaint, mon) {
   for (const { kind, title } of sections) {
     if (title) body.append(el('h4', '', title));
     const grid = el('div', mon ? 'ms-wardrobe' : 'frame-grid');
+    // De dónde sale lo que no tienes, al tocarlo: en el móvil no cabe escrito y el título no sale con el dedo (el botón
+    // está desactivado y no recibe el clic, pero sí el dedo o el ratón al levantarse)
+    grid.addEventListener('pointerup', e => { const b = e.target.closest('button.locked'); if (b) ui.toast(b.title); });
     for (const it of CATALOG[kind](ui, mon)) if (!(onlyMine() && it.hint)) grid.append(option(ui, it, kind, !!mon));
     body.append(grid);
   }
