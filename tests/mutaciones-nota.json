@@ -426,7 +426,7 @@
    "por": [
     "tests/e2e/arranque-ligero.e2e.js"
    ],
-   "motivo": "arranque-ligero.e2e.js: ✗ 1280×800: hasta que carga la portada no se pide música, decorado ni letras de otros idiomas (/music/pueblo.mp3) | ✗ 844×390: hasta que carga la portada no se pide música, decorado ni letras de otros idiomas (/music/pueblo.mp3)"
+   "motivo": "arranque-ligero.e2e.js: ✗ 1280×800: sin bajar de golpe la música del resto del juego (23 temas más) | ✗ 844×390: sin bajar de golpe la música del resto del juego (23 temas más)"
   },
   "arranque-sin-304": {
    "resultado": "cazada",

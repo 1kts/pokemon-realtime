@@ -199,8 +199,8 @@ module.exports = [
     archivo: 'server/limits.js', buscar: 'const clock = () => performance.now();', poner: 'const clock = () => Date.now();',
     tests: ['tools/security-test.js'] },
   // ---------- Arranque y móvil (0.39.0) ----------
-  { id: 'arranque-musica-al-abrir', que: 'Al abrir el juego se baja la música del menú a la vez que el código y la portada tarda más',
-    archivo: 'public/js/music.js', buscar: '    const later = () => setTimeout(() => {', poner: "    this.preload('menu');\n    const later = () => setTimeout(() => {",
+  { id: 'arranque-musica-al-abrir', que: 'Al abrir el juego se baja de golpe la música de todo el juego (20 MB)',
+    archivo: 'public/js/music.js', buscar: "    this.preload('menu', true);\n", poner: "    this.preload('menu', true);\n    Object.keys(FILES).forEach(n => this.preload(n));\n",
     tests: ['tests/e2e/arranque-ligero.e2e.js'] },
   { id: 'arranque-sin-304', que: 'Cada visita vuelve a bajar entero todo el código del juego',
     archivo: 'server/index.js', buscar: "(seen.includes(bare(tag)) || seen.includes('*'))", poner: 'false',

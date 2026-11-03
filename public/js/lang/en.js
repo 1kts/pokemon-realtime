@@ -16,7 +16,7 @@ export default {
     // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'Faster and better on mobile',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'On mobile, the buttons at the top of Story take you to My Pokémon, the Bag and the Shop in one tap.',
-    'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'The game opens sooner, especially on mobile: music arrives after the title screen, and when you come back it no longer downloads everything again.',
+    'El juego abre antes, sobre todo en el móvil: ya no descarga de golpe la música de todo el juego y, al volver a entrar, no se descarga todo otra vez.': "The game opens sooner, especially on mobile: it no longer downloads the music for the whole game at once, and when you come back it doesn't download everything again.",
     // ---------- Novedades v0.38.1 ----------
     'Vestuario cómodo en el móvil': 'A comfier Wardrobe on mobile',
     'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'On mobile, the Wardrobe and the avatar editor show at least 12 options at a glance, each with its full name.',

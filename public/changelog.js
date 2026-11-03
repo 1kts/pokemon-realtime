@@ -7,7 +7,7 @@
       v: '0.39.0', date: '2026-11-03', title: 'Más rápido y mejor en el móvil',
       items: [
         ['nuevo', 'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.'],
-        ['cambio', 'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.'],
+        ['cambio', 'El juego abre antes, sobre todo en el móvil: ya no descarga de golpe la música de todo el juego y, al volver a entrar, no se descarga todo otra vez.'],
         ['cambio', 'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.'],
       ],
     },

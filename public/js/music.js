@@ -271,21 +271,18 @@ export class Music {
     this.starts = 0;        // veces que se ha empezado un tema (para las pruebas)
     this.bytes = new Map(); // archivo -> promesa con sus bytes (o null si no está)
     this.buffers = new Map();
-    // El del menú se pide cuando la página ya ha cargado (o al tocarla, que es cuando puede sonar): pedido al abrir,
-    // sus 650 KB competían con el código del juego y la portada tardaba en salir, sobre todo en el móvil. Después,
-    // con la página tranquila, solo el de los salvajes (lo siguiente más probable); los demás se piden al sonar (todos
-    // juntos eran 20 MB nada más abrir el juego). Los que solo suenan enlazados se piden al empezar el primero de su
-    // cadena (da tiempo de sobra); si alguno tarda, suena antes el sintetizado y entra la grabación al llegar.
+    // El del menú se pide ya (suena primero), pero con prioridad baja: sus 650 KB no compiten con el código del juego y
+    // la portada no tarda más por él, sobre todo en el móvil. A los 4 s, solo el de los salvajes (lo siguiente más
+    // probable, también con prioridad baja); los demás se piden al sonar (todos juntos eran 20 MB nada más abrir el
+    // juego). Los que solo suenan enlazados se piden un rato después de empezar el primero de su cadena (startFile); si
+    // alguno tarda, suena antes el sintetizado y entra la grabación al llegar.
     // (al salir o recargar, lo que se esté bajando se corta a mano: si no, Safari se queja de cada descarga cortada con
     // «cannot load … due to access control checks»)
     this.leaving = new AbortController();
     addEventListener('pagehide', () => this.leaving.abort());
     addEventListener('pageshow', e => { if (e.persisted) this.leaving = new AbortController(); });
-    const later = () => setTimeout(() => {
-      this.preload('menu');
-      if (!(navigator.connection && navigator.connection.saveData)) setTimeout(() => this.preload('wild'), 6000);
-    }, 1500);
-    if (document.readyState === 'complete') later(); else addEventListener('load', later, { once: true });
+    this.preload('menu', true);
+    if (!(navigator.connection && navigator.connection.saveData)) setTimeout(() => this.preload('wild', true), 4000);
     // Los navegadores no dejan sonar nada hasta que el jugador toca la página
     const unlock = () => { this.start(); };
     addEventListener('pointerdown', unlock, { capture: true });
@@ -342,12 +339,13 @@ export class Music {
   stop() { this.play(null); }
 
   // ---------- Grabaciones ----------
-  preload(name) {
+  // (low: sin prisa, detrás de lo que necesita la página)
+  preload(name, low) {
     const file = FILES[name];
     if (!file) return Promise.resolve(null);
     if (!this.bytes.has(file)) {
       // (si falla, p. ej. un corte de red en el móvil, se olvida para volver a intentarlo la próxima vez)
-      const got = fetch(`/music/${file}.mp3`, { signal: this.leaving.signal }).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+      const got = fetch(`/music/${file}.mp3`, { signal: this.leaving.signal, ...(low ? { priority: 'low' } : {}) }).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
       this.bytes.set(file, got);
       got.then(b => { if (!b && this.bytes.get(file) === got) this.bytes.delete(file); });
     }

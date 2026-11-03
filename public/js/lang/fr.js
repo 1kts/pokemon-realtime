@@ -16,7 +16,7 @@ export default {
     // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'Plus rapide et mieux sur mobile',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'Sur mobile, les boutons en haut de l\'Histoire t\'emmènent en un geste à Mes Pokémon, au Sac et à la Boutique.',
-    'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'Le jeu s\'ouvre plus vite, surtout sur mobile : la musique arrive après l\'écran titre et, quand tu reviens, tout n\'est plus retéléchargé.',
+    'El juego abre antes, sobre todo en el móvil: ya no descarga de golpe la música de todo el juego y, al volver a entrar, no se descarga todo otra vez.': "Le jeu s'ouvre plus vite, surtout sur mobile : il ne télécharge plus d'un coup la musique de tout le jeu et, quand tu reviens, tout n'est plus retéléchargé.",
     // ---------- Novedades v0.38.1 ----------
     'Vestuario cómodo en el móvil': 'Une Garde-robe plus pratique sur mobile',
     'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'Sur mobile, la Garde-robe et l\'éditeur d\'avatar affichent au moins 12 options d\'un coup d\'œil, chacune avec son nom en entier.',
