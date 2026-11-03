@@ -638,6 +638,8 @@ class Client {
     const a = await get('/js/ui.js'), b = await get('/js/ui.js', { 'if-none-match': a.tag });
     ok(a.code === 200 && a.n > 10000 && !!a.tag, `el código del juego se sirve entero la primera vez (${a.n} bytes)`);
     ok(b.code === 304 && b.n === 0, `la segunda vez, sin cambios, es un 304 sin cuerpo (${b.code}, ${b.n} bytes)`);
+    const viaProxy = await get('/js/ui.js', { 'if-none-match': `"otro", ${a.tag.replace(/^W\//, '').replace(/"$/, '-gzip"')}` });
+    ok(viaProxy.code === 304, `también con la etiqueta como la devuelve el proxy (sin «W/», con «-gzip», en una lista): ${viaProxy.code}`);
     const c = await get('/js/ui.js', { 'if-none-match': 'W/"otro"' });
     ok(c.code === 200 && c.n === a.n, 'con otra versión guardada se baja entero');
   }

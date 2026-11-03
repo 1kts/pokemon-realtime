@@ -89,9 +89,12 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(file);
     const tag = `W/"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;
     const head = { 'Content-Type': MIME[ext] || 'application/octet-stream', ETag: tag,
-      'Cache-Control': ext === '.png' || ext === '.jpg' || ext === '.glb' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' };
+      'Cache-Control': ext === '.png' || ext === '.jpg' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' };
     // (la página no: su CSP va con ella)
-    if (ext !== '.html' && req.headers['if-none-match'] === tag) { res.writeHead(304, head); return res.end(); }
+    // (comparando solo el valor: Caddy o un proxy pueden devolverlo sin «W/» o con «-gzip» detrás, y puede venir una lista)
+    const bare = v => v.trim().replace(/^W\//, '').replace(/^"|"$/g, '').replace(/-(gzip|zstd|br)$/, '');
+    const seen = String(req.headers['if-none-match'] || '').split(',').map(bare);
+    if (ext !== '.html' && (seen.includes(bare(tag)) || seen.includes('*'))) { res.writeHead(304, head); return res.end(); }
     fs.readFile(file, (err2, data) => {
       if (err2) { res.writeHead(404); return res.end('No encontrado'); }
       if (ext === '.html') res.setHeader('Content-Security-Policy', csp(data, req.headers.host));

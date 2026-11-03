@@ -1067,7 +1067,8 @@ body.in-battle .ui-confirm { cursor: auto; }
 .league-res b { font: 900 16px var(--display); color: var(--gold-hi, #ffe27a); }
 .league-res.failed { background: rgba(255,90,80,.12); border-color: rgba(255,110,110,.45); }
 .league-res.failed b { color: #ff8a80; }
-.ms-wear.locked:disabled { opacity: 1; }
+.ms-wear.locked { opacity: 1; }
+:is(.ms-wear, .frame-opt).locked { cursor: help; }
 
 /* Ficha › Estadísticas: IV y EV debajo de la barra; la naturaleza marca la que sube (▲) y la que baja (▼) */
 .ms-stat { grid-template-columns: 110px 70px minmax(0, 1fr) 190px !important; }

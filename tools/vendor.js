@@ -57,7 +57,7 @@ function write(rel, data) {
     css = css.split(url).join(name);
   }
   // Dos hojas: la de las letras latinas y cirílicas (fonts.css, va en la página y bloquea el primer pintado: que sea
-  // pequeña) y la de los trozos de chino, japonés y coreano (fonts-cjk.css, más de 200 reglas: la pone i18n.js sin
+  // pequeña) y la de los trozos de chino, japonés y coreano (fonts-cjk.css, más de 200 reglas: la pone main.js sin
   // bloquear nada)
   const faces = css.match(/@font-face\s*{[^}]*}/g) || [];
   const cjk = f => !/unicode-range:[^;]*U\+(0000|0100|0102|0301|0460|1F00|0370)/.test(f);

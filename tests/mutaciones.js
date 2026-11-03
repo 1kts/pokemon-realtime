@@ -194,7 +194,7 @@ module.exports = [
     archivo: 'public/js/music.js', buscar: '    const later = () => setTimeout(() => {', poner: "    this.preload('menu');\n    const later = () => setTimeout(() => {",
     tests: ['tests/e2e/arranque-ligero.e2e.js'] },
   { id: 'arranque-sin-304', que: 'Cada visita vuelve a bajar entero todo el código del juego',
-    archivo: 'server/index.js', buscar: "req.headers['if-none-match'] === tag", poner: 'false',
+    archivo: 'server/index.js', buscar: "(seen.includes(bare(tag)) || seen.includes('*'))", poner: 'false',
     tests: ['tools/server-test.js'] },
   { id: 'historia-mochila-a-tienda', que: 'En el móvil, el acceso a la Mochila de Historia lleva a la Tienda',
     archivo: 'public/js/ui.js', buscar: "['seal-bag', t('Mochila'), 'bag'], ['forage-bag'", poner: "['seal-bag', t('Mochila'), 'shop'], ['forage-bag'",

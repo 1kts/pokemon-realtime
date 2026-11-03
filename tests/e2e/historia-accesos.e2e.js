@@ -12,7 +12,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.mode('Historia');
     await page.waitSee('Explorar');
     for (const [btn, screen] of [['Mochila', 'Mochila'], ['Tienda', 'Tienda'], ['Mis Pokémon', 'Mis Pokémon']]) {
-      ok(await page.see('Explorar') && await page.see('Kanto'), `${W}×${H}: en Historia se ven a la vez «Explorar», las regiones y el acceso a ${btn}`);
+      ok(await page.see('Explorar') && await page.see('Kanto'), `${W}×${H}: con los accesos en la cabecera, «Explorar» y las regiones se siguen viendo`);
       await page.tap(btn, { in: '.story' });
       await page.waitFor(`document.querySelector('.inner-bar h2') && document.querySelector('.inner-bar h2').textContent === ${JSON.stringify(screen)}`, 10000).catch(() => {});
       ok(await page.title() === screen, `${W}×${H}: el botón ${btn} de Historia lleva a ${screen} (${await page.title()})`);

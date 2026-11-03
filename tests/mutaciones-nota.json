@@ -412,7 +412,7 @@
    "por": [
     "tools/server-test.js"
    ],
-   "motivo": "server-test.js: ✗ la segunda vez, sin cambios, es un 304 sin cuerpo (200, 117544 bytes)"
+   "motivo": "server-test.js: ✗ la segunda vez, sin cambios, es un 304 sin cuerpo (200, 117544 bytes) | ✗ también con la etiqueta como la devuelve el proxy (sin «W/», con «-gzip», en una lista): 200"
   },
   "historia-mochila-a-tienda": {
    "resultado": "cazada",

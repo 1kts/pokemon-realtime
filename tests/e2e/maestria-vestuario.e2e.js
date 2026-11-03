@@ -36,7 +36,7 @@ module.exports = async ({ page, player, ok }) => {
   // (con WebGL la skin la pinta el shader en el canvas, skinfx-* es su brillo; sin WebGL, el filtro CSS skin-*)
   ok(await page.eval(`!!document.querySelector('.ms-wear.skin canvas.skinfx-oro[data-fx], .ms-wear.skin canvas.skin-oro') && document.querySelectorAll('.ms-wear.skin.locked').length >= 2`), 'en Vestuario cada skin se ve sobre el Pokémon; las que no tienes, apagadas');
   ok(await page.eval(`(() => { const lk = [...document.querySelectorAll('.ms-wear.parts.locked')].filter(b => /Próximamente/.test(b.textContent));
-    return lk.length === Data.TYPE_NAMES.length - 1 && lk.every(b => b.disabled && b.querySelector('canvas')) && !lk.some(b => /de Fuego/.test(b.textContent)); })()`), 'y salen las partículas de todos los tipos sobre el Pokémon: las de otros tipos, bloqueadas para más adelante');
+    return lk.length === Data.TYPE_NAMES.length - 1 && lk.every(b => b.getAttribute('aria-disabled') === 'true' && b.querySelector('canvas')) && !lk.some(b => /de Fuego/.test(b.textContent)); })()`), 'y salen las partículas de todos los tipos sobre el Pokémon: las de otros tipos, bloqueadas para más adelante');
   await page.click(await page.within('Oro', '.ms-wear.skin'));
   await page.waitFor(`window.__app.ui.profile.skins[4] === 'oro'`);
   await page.key('Escape');

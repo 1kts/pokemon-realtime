@@ -79,8 +79,11 @@ function option(ui, it, kind, sheet) {
   if (it.hint) {
     b.insertAdjacentHTML('beforeend', LOCK);
     if (!sheet) b.append(el('em', '', it.hint));
-    b.disabled = true;
+    // (no se puede poner; al tocarlo dice de dónde sale: en el móvil la procedencia no cabe en la tarjeta ni hay
+    // ratón para su título)
+    b.setAttribute('aria-disabled', 'true');
     b.title = `${it.label} · ${it.hint}`;
+    b.onclick = () => ui.toast(`${it.label} · ${it.hint}`);
   } else b.onclick = () => ui.net.send({ t: 'look', ...it.look });
   return b;
 }

@@ -418,6 +418,7 @@ export class World {
     // ha cargado: son 49 archivos (600 KB) y, pedidos antes, la portada tardaba más en salir en el móvil
     const decor = () => preloadScenery().then(ok => { if (ok && this.mapName) this.buildDecor(this.mapName, this.theme); });
     if (document.readyState === 'complete') decor(); else addEventListener('load', () => setTimeout(decor, 200), { once: true });
+    addEventListener('pageshow', e => { if (e.persisted) decor(); });   // (vuelta atrás con la descarga cortada al salir)
   }
 
   placeCamera(aspect) {

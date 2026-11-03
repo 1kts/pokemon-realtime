@@ -19,14 +19,14 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('Vestuario');
   await page.waitFor(`document.querySelector('.ms-wear.parts canvas')`);
   // (cada opción: si se puede tocar, si enseña al Pokémon, su nombre, lo que dice debajo y lo que dice al pasar el ratón)
-  const wear = await page.eval(`[...document.querySelectorAll('.ms-wear.skin, .ms-wear.parts')].map(b => ({ kind: b.classList.contains('skin') ? 'skin' : 'parts', off: b.disabled,
+  const wear = await page.eval(`[...document.querySelectorAll('.ms-wear.skin, .ms-wear.parts')].map(b => ({ kind: b.classList.contains('skin') ? 'skin' : 'parts', off: b.getAttribute('aria-disabled') === 'true',
     mon: !!b.querySelector('canvas'), name: b.querySelector('b').textContent.trim(), hint: b.querySelector('small').textContent.trim(), tip: b.title }))`);
   const n = await page.eval(`({ skins: Data.SKINS.length, types: Data.TYPE_NAMES.length, effects: Data.EFFECTS.length })`);
   const skins = wear.filter(x => x.kind === 'skin' && x.off), parts = wear.filter(x => x.kind === 'parts' && x.off);
   const told = x => x.mon && x.hint && !/undefined|null/.test(x.hint) && x.tip.includes(x.hint);
   ok(skins.length === n.skins && skins.every(told), `Vestuario enseña las ${n.skins} skins sobre el Pokémon, apagadas y diciendo de dónde salen (${skins.map(x => x.name + ': ' + x.hint).join(' · ')})`);
   ok(parts.length === n.types && parts.every(told), `y las partículas de los ${n.types} tipos, igual (${parts.filter(x => !told(x)).map(x => x.name).join(', ') || 'todas con su pista'})`);
-  ok(await page.eval(`[...document.querySelectorAll('.ms-wear.locked')].every(b => b.disabled)`), 'lo que no tienes no se puede poner');
+  ok(await page.eval(`[...document.querySelectorAll('.ms-wear.locked')].every(b => b.getAttribute('aria-disabled') === 'true')`), 'lo que no tienes no se puede poner');
   ok(!(await page.see('Efecto Llamas', { in: '.mon-sheet', ms: 0, scroll: true })), 'el Vestuario es del Pokémon: los efectos del avatar no salen aquí');
   // El interruptor, pulsándolo: con «Solo los míos» se van las skins que no tienes, y con «Todos» vuelven
   ok(await page.see('Skin Holo', { in: '.mon-sheet' }), 'de entrada están todas (Skin Holo, que no tienes, se ve)');
@@ -46,7 +46,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.click('Efecto');
   await page.waitSee('Ninguno', { in: '.ava-edit' });
   const opts = sel => page.eval(`[...document.querySelectorAll('.ava-edit .frame-opt${sel}')].map(b => { const l = b.querySelector('.ava-fx-layer'), k = l && l.querySelector('.pt-fx b'), c = k && getComputedStyle(k);
-    return { off: b.disabled, name: b.querySelector('small').textContent.trim(), hint: (b.querySelector('em') || {}).textContent, tip: b.title || b.dataset.tip, svg: !!b.querySelector('.ava-fx'), aura: !!b.querySelector('.ava-aura'), pixel: !!c && c.backgroundImage.startsWith('url("data:image/svg+xml') && c.imageRendering === 'pixelated', img: c ? c.backgroundImage.slice(0, 400) : '', anim: c ? c.animationName : '' }; })`);
+    return { off: b.getAttribute('aria-disabled') === 'true', name: b.querySelector('small').textContent.trim(), hint: (b.querySelector('em') || {}).textContent, tip: b.title || b.dataset.tip, svg: !!b.querySelector('.ava-fx'), aura: !!b.querySelector('.ava-aura'), pixel: !!c && c.backgroundImage.startsWith('url("data:image/svg+xml') && c.imageRendering === 'pixelated', img: c ? c.backgroundImage.slice(0, 400) : '', anim: c ? c.animationName : '' }; })`);
   ok((await opts('')).length === 1, 'sigue en «Solo los míos»: sin efectos, solo «Ninguno»');
   await page.tap('Todos', { in: '.ava-edit' });
   await page.waitSee('Efecto Burbujas', { in: '.ava-edit', scroll: true });

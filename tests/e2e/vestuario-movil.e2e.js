@@ -42,5 +42,9 @@ module.exports = async ({ page, player, ok }) => {
       return { total: all.length, enteras: enteras.length, candado: !!lr && lr.width >= 10 && lr.height >= 10 && getComputedStyle(lock).visibility !== 'hidden' && lock.tagName.toLowerCase() === 'svg' }; })()`);
     ok(vista.enteras >= 12, `${W}×${H}: el Vestuario enseña al menos 12 opciones sin bajar (${vista.enteras} de ${vista.total})`);
     ok(vista.candado, `${W}×${H}: lo que no tienes lleva un candado dibujado que se ve`);
+    // Y al tocar lo que no tienes dice de dónde sale (en la tarjeta compacta no cabe, y con el dedo no hay título)
+    await page.tap(/^Skin Holo/, { in: '.mon-sheet' });
+    await page.waitSee(/Skin Holo · \d+ victorias/);
+    ok(true, `${W}×${H}: tocar «Skin Holo», que no tienes, dice de dónde sale`);
   }
 };
