@@ -8,9 +8,9 @@
       items: [
         ['nuevo', 'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.'],
         ['nuevo', 'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.'],
-        ['nuevo', 'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.'],
+        ['nuevo', 'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.'],
         ['cambio', 'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.'],
-        ['cambio', 'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.'],
+        ['cambio', 'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.'],
         ['cambio', 'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.'],
       ],
     },

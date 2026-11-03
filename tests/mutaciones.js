@@ -239,4 +239,7 @@ module.exports = [
   { id: 'ruleta-cara', que: 'Lucky Spin vuelve a costar 270 gemas la ruleta: una tirada al día',
     archivo: 'public/data.js', buscar: 'const SPIN_COST = [5, 6, 8, 9, 10, 12, 14, 16, 18, 22];', poner: 'const SPIN_COST = [9, 13, 16, 20, 23, 27, 31, 35, 43, 53];',
     tests: ['tools/server-test.js'] },
+  { id: 'cuerpo-a-cuerpo-corto', que: 'Los golpes cuerpo a cuerpo vuelven a llegar poco y con el arco estrecho: cuesta mucho darlos',
+    archivo: 'public/data.js', buscar: 'const MELEE_REACH = 1.3, MELEE_ARC = 0.4;', poner: 'const MELEE_REACH = 1, MELEE_ARC = 0;',
+    tests: ['tools/arena-test.js'] },
 ];

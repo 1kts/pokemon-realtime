@@ -188,6 +188,18 @@ function cast(key, place, secs = 1.5, aimAt = null) {
   return { bt, me, foe, lost: hp - bt.mon(foe).hp };
 }
 
+check('los golpes cuerpo a cuerpo llegan un 30 % más lejos y con el arco más abierto (antes costaba mucho darlos)', () => {
+  const m = D.MOVES.placaje;   // (en la tabla, 70 de alcance y 1.9 de arco)
+  assert(m.range === 91 && m.arc === 2.3, `Placaje: alcance ${m.range} y arco ${m.arc}`);
+  // Un poco más lejos de lo que llegaba antes (70 + el radio del rival) y le da
+  const lejos = cast('placaje', f => { const b = battle('pradera', [{ dex: 6, level: 50 }], [{ dex: 143, level: 50 }]); f.x = 200 + 70 + b.rad(b.sides[1]) + 12; f.y = 300; });
+  assert(lejos.lost > 0, 'a 12 px más de lo que llegaba antes, le da');
+  // Apuntando de lado: el rival a 55° de la mira, a poca distancia
+  const lado = cast('placaje', f => { f.x = 200 + 60 * Math.cos(0.96); f.y = 300 + 60 * Math.sin(0.96); }, 1.5, { x: 400, y: 300 });
+  assert(lado.lost > 0, 'a 55° de la mira, le da');
+  assert.strictEqual(cast('placaje', f => { f.x = 200 + 190; f.y = 300; }).lost, 0, 'muy lejos, no');
+});
+
 check('el cono pega delante y no a los lados', () => {
   assert(cast('lanzallamas', f => { f.x = 380; f.y = 300; }).lost > 0, 'delante');
   assert.strictEqual(cast('lanzallamas', f => { f.x = 200; f.y = 480; }, 1.5, { x: 400, y: 300 }).lost, 0, 'al lado');

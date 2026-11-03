@@ -236,6 +236,10 @@
     vozCautivadora: { name: 'Voz Cautivadora', type: 'hada', kind: 'cone', cost: 20, cd: 4, wind: 0.15, rec: 0.2, dmg: 12, range: 210, arc: 0.9 },
     besoDrenaje: { name: 'Beso Drenaje', type: 'hada', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 13, range: 66, arc: 1.3, drain: 1 },
   };
+  // Los golpes cuerpo a cuerpo llegan más lejos y abren más el arco de lo que pone arriba (costaba mucho darlos): el
+  // mismo alcance para el golpe, la IA y la mira
+  const MELEE_REACH = 1.3, MELEE_ARC = 0.4;
+  for (const m of Object.values(MOVES)) if (m.kind === 'melee') { m.range = Math.round(m.range * MELEE_REACH); m.arc = +(m.arc + MELEE_ARC).toFixed(2); }
   // Protección (Espacio) la tienen todos: los primeros PERFECT segundos devuelven el golpe.
   const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.65, perfect: 0.24, block: 0.8 };
   const ENERGY = { max: 100, regen: 11, onHit: 4 };

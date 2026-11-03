@@ -29,7 +29,9 @@ module.exports = async ({ page, player, ok }) => {
     const bar = await box('.inner-bar'), kanto = await box('.region-chips button');
     ok(kanto.t >= bar.t && kanto.b <= bar.b, `${at}: las regiones van dentro de la cabecera (Kanto ${kanto.t}-${kanto.b}, cabecera ${bar.t}-${bar.b})`);
     ok(await page.see('Kanto', { in: '.inner-bar' }) && await page.see('Johto', { in: '.inner-bar' }), `${at}: Kanto y Johto se leen en la cabecera`);
-    ok(!await page.see('Próximamente', { ms: 0 }), `${at}: no hay una fila aparte con las regiones que llegarán`);
+    // (las que llegarán van en la misma cabecera, junto a Kanto y Johto: historia-regiones.e2e.js)
+    const soon = await page.eval(`(() => { const b = [...document.querySelectorAll('.inner-bar button')].filter(x => /Próximamente|Hoenn/.test(x.textContent) && x.getBoundingClientRect().width); return b.length ? b.every(x => x.closest('.region-chips')) : true; })()`);
+    ok(soon, `${at}: no hay una fila aparte con las regiones que llegarán: van con Kanto y Johto en la cabecera`);
     const texto = await page.eval(`document.querySelector('.story-path').innerText`);
     ok(!/Ruta · captura|Gimnasio · combate/.test(texto), `${at}: las tarjetas no repiten qué es cada sitio`);
     ok(/Ruta 11/.test(texto) && !/Ruta 9/.test(texto), `${at}: de cada ruta sale solo su primer nombre`);

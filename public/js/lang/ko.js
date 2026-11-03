@@ -13,12 +13,13 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': '돈을 누르면 상점으로 가고, 배틀 후에는 내 포켓몬과 상점에 한 번에 갈 수 있으며, 도로 탐험 후에는 「계속 탐험」이 큰 버튼입니다.',
+    'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': '몸통박치기, 태권당수 같은 근접 공격이 30% 더 멀리 닿고 범위도 넓어져 훨씬 맞히기 쉽습니다.',
+    // ---------- Novedades v0.40.0 ----------
     'Lucky Spin más barato': '더 저렴해진 Lucky Spin',
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': '스토리에서 위쪽 미션 버튼으로 나가지 않고 보상을 받을 수 있고, 받을 보상이 있으면 점이 표시됩니다.',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': '스토리 제목 옆의 큰 버튼 두 개로 관동과 성도를 바꾸고, 그 옆에서 앞으로 나올 지방도 볼 수 있습니다.',
-    'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': '돈을 누르면 상점으로 가고, 배틀이 끝나면 내 포켓몬과 상점에 한 번에 갈 수 있으며 각각 아이콘과 색이 있습니다.',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin이 훨씬 저렴해졌습니다: 룰렛 전체가 보석 120개(이전 270개)라서 매일 접속하면 하루 2~3번 돌릴 수 있습니다.',
-    'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': '컴퓨터에서는 메뉴의 PvP가 크게 나오고 래더가 아래까지 이어지며, 도로 탐험 후에는 「계속 탐험」이 큰 버튼입니다.',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': '성도의 야생 포켓몬은 배지에 맞는 레벨로 나오고 처음부터 레벨 20이 나오지 않으며, 라이코, 앤테이, 스이쿤은 어느 도로에서나 깜짝 등장합니다.',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------

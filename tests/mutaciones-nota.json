@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 72,
- "total": 72,
+ "cazadas": 73,
+ "total": 73,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -511,6 +511,13 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ una ruleta entera son 120 gemas"
+  },
+  "cuerpo-a-cuerpo-corto": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError: Placaje: alcance 70 y arco 1.9"
   }
  }
 }

@@ -12,12 +12,13 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': 'Touche ton argent pour aller à la Boutique ; après chaque combat, Mes Pokémon et la Boutique sont à un toucher, et après une route « Continuer d’explorer » est le grand bouton.',
+    'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': 'Les attaques au corps à corps comme Charge ou Poing-Karaté portent 30 % plus loin avec un arc plus large : elles touchent bien plus facilement.',
+    // ---------- Novedades v0.40.0 ----------
     'Lucky Spin más barato': 'Lucky Spin moins cher',
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'Dans Histoire, le bouton Missions en haut te permet de récupérer leurs récompenses sans sortir, avec une pastille quand l’une est prête.',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Passe de Kanto à Johto avec deux grands boutons à côté du titre d’Histoire, et vois à côté les régions à venir.',
-    'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'Touche ton argent pour aller à la Boutique, et après chaque combat, Mes Pokémon et la Boutique sont à un toucher, avec leur icône et leur couleur.',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin coûte bien moins cher : la roue entière coûte 120 gemmes (avant 270), donc en jouant chaque jour tu tournes 2 ou 3 fois par jour.',
-    'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'Sur ordinateur, PvP s’affiche en grand dans le menu et la Ladder descend jusqu’en bas ; après une route, « Continuer d’explorer » est le grand bouton.',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'Les Pokémon sauvages de Johto suivent tes badges, sans niveaux 20 au début, et Raikou, Entei et Suicune apparaissent par surprise sur n’importe quelle route.',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------

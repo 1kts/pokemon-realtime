@@ -13,12 +13,13 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': 'お金をタップするとショップへ。バトル後は手持ちポケモンとショップにワンタップで行け、ルートの後は「探索を続ける」が大きなボタンです。',
+    'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': 'たいあたりやからてチョップなどの近接技は届く距離が30％伸び、範囲も広がりました。ずっと当てやすくなります。',
+    // ---------- Novedades v0.40.0 ----------
     'Lucky Spin más barato': 'Lucky Spinがお得に',
     'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'ストーリーでは、上のミッションボタンからそのまま報酬を受け取れます。受け取れるものがあると点が付きます。',
     'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'ストーリーのタイトル横の大きな2つのボタンでカントーとジョウトを切り替えられ、その横にこれから来る地方も表示されます。',
-    'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'お金をタップするとショップへ。バトルの後は、手持ちポケモンとショップにワンタップで行けて、それぞれアイコンと色付きです。',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spinがずっと安くなりました：ルーレット全部で120ジェム（以前は270）なので、毎日遊べば1日2〜3回まわせます。',
-    'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'パソコンではメニューのPvPが大きくなり、ラダーが下まで伸びます。ルートの後は「探索を続ける」が大きなボタンです。',
     'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'ジョウトの野生ポケモンはバッジの数に合わせたレベルになり、序盤にレベル20が出ることはありません。ライコウ、エンテイ、スイクンはどのルートでも不意に現れます。',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
