@@ -36,14 +36,7 @@ export function preloadScenery() {
   if (loading) return loading;
   const loader = new GLTFLoader();
   const list = [...NATURE.map(n => [n, 'nature/' + n]), ...GRAVEYARD.map(n => [n, 'graveyard/' + n])];
-  // (descargas propias que se cortan a mano al salir o recargar, como la música: si no, Safari se queja de cada una
-  // con «cannot load … due to access control checks»; se piden después de cargar la página y pueden quedar a medias)
-  const stop = new AbortController();
-  addEventListener('pagehide', () => stop.abort(), { once: true });
-  const get = path => fetch('/models/kenney/' + path + '.glb', { signal: stop.signal })
-    .then(r => { if (!r.ok) throw new Error(r.status + ' ' + path); return r.arrayBuffer(); })
-    .then(buf => loader.parseAsync(buf, '/models/kenney/'));
-  loading = Promise.all(list.map(([n, path]) => get(path).then(g => {
+  loading = Promise.all(list.map(([n, path]) => loader.loadAsync('/models/kenney/' + path + '.glb').then(g => {
     g.scene.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(g.scene), c = box.getCenter(new THREE.Vector3());
     const parts = [];
@@ -57,7 +50,7 @@ export function preloadScenery() {
       parts.push({ geo, role: GRAVEYARD.includes(n) ? 'stone' : roleOf(o.material.name || '') });
     });
     return [n, { parts, size: box.getSize(new THREE.Vector3()) }];
-  }))).then(l => (models = Object.fromEntries(l))).catch(e => { if (!stop.signal.aborted) console.warn('Modelos del decorado', e); loading = null; return null; });
+  }))).then(l => (models = Object.fromEntries(l))).catch(e => { console.warn('Modelos del decorado', e); loading = null; return null; });
   return loading;
 }
 

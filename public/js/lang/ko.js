@@ -17,7 +17,7 @@ export default {
     // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': '더 빠르고 모바일에서 더 좋게',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': '모바일에서는 스토리 위쪽 버튼으로 내 포켓몬, 가방, 상점에 한 번에 갈 수 있어요.',
-    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '게임이 더 빨리 열려요. 특히 모바일에서요: 음악과 배경은 타이틀 화면 뒤에 불러오고, 다시 들어올 때 모든 걸 다시 내려받지 않아요.',
+    'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '게임이 더 빨리 열려요. 특히 모바일에서요: 음악은 타이틀 화면 뒤에 불러오고, 다시 들어올 때 모든 걸 다시 내려받지 않아요.',
     // ---------- Novedades v0.38.1 ----------
     'Vestuario cómodo en el móvil': '모바일에서 더 편한 옷장',
     'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': '모바일에서 옷장과 아바타 편집이 한눈에 12개 이상의 선택지를 보여 주고, 이름도 모두 끝까지 보여요.',

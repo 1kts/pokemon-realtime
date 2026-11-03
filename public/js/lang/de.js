@@ -16,7 +16,7 @@ export default {
     // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': 'Schneller und besser am Handy',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'Am Handy bringen dich die Knöpfe oben in der Story mit einem Tipp zu Meine Pokémon, zum Beutel und zum Shop.',
-    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'Das Spiel startet schneller, vor allem am Handy: Musik und Kulisse kommen nach dem Titelbild, und wenn du zurückkommst, wird nicht mehr alles neu geladen.',
+    'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'Das Spiel startet schneller, vor allem am Handy: die Musik kommt nach dem Titelbild, und wenn du zurückkommst, wird nicht mehr alles neu geladen.',
     // ---------- Novedades v0.38.1 ----------
     'Vestuario cómodo en el móvil': 'Bequemer Kleiderschrank auf dem Handy',
     'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'Auf dem Handy zeigen der Kleiderschrank und der Avatar-Editor mindestens 12 Optionen auf einen Blick, jede mit vollem Namen.',

@@ -16,7 +16,7 @@ export default {
     // ---------- Novedades v0.39.0 ----------
     'Más rápido y mejor en el móvil': '更快，手机上更好用',
     'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': '在手机上，故事模式顶部的按钮一点就能前往我的宝可梦、背包和商店。',
-    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '游戏打开得更快，手机上尤其明显：音乐和场景在标题画面之后才加载，再次进入时也不会重新下载全部内容。',
+    'El juego abre antes, sobre todo en el móvil: la música llega después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '游戏打开得更快，手机上尤其明显：音乐在标题画面之后才加载，再次进入时也不会重新下载全部内容。',
     // ---------- Novedades v0.38.1 ----------
     'Vestuario cómodo en el móvil': '手机上更好用的衣柜',
     'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': '在手机上，衣柜和头像编辑一眼就能看到至少 12 个选项，每个都显示完整名称。',
