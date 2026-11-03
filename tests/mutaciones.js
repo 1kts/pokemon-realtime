@@ -242,4 +242,10 @@ module.exports = [
   { id: 'cuerpo-a-cuerpo-corto', que: 'Los golpes cuerpo a cuerpo vuelven a llegar poco y con el arco estrecho: cuesta mucho darlos',
     archivo: 'public/data.js', buscar: 'const MELEE_REACH = 1.3, MELEE_ARC = 0.4;', poner: 'const MELEE_REACH = 1, MELEE_ARC = 0;',
     tests: ['tools/arena-test.js'] },
+  { id: 'mt-no-se-eligen', que: 'Lo que se aprende por MT (Llamarada en Charizard) no se puede elegir',
+    archivo: 'public/data.js', buscar: ', ...tmMoves(dex).filter(([l]) => l <= level).map(([, m]) => m)])];', poner: '])];',
+    tests: ['tests/e2e/movimientos-mt.e2e.js', 'tools/server-test.js'] },
+  { id: 'nivel-pesa-poco', que: 'El nivel apenas cuenta: un Nv.20 gana fácil a un Nv.43',
+    archivo: 'public/data.js', buscar: 'const levelMult = lvl => 0.4 + lvl * 0.012;', poner: 'const levelMult = lvl => 0.55 + lvl * 0.009;',
+    tests: ['tools/server-test.js'] },
 ];

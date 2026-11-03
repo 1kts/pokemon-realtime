@@ -13,14 +13,15 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'MT y Lucky Spin más barato': '기술머신과 더 저렴한 Lucky Spin',
+    'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': '포켓몬이 기술머신으로 배우는 기술도 쓸 수 있습니다. 리자몽의 불대문자처럼요. 포켓몬 정보의 기술에서 기술머신으로 표시됩니다.',
+    'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.': '스토리에서 제목 옆의 큰 버튼 두 개로 관동과 성도를 바꾸고, 미션 버튼으로 나가지 않고 보상을 받을 수 있습니다.',
+    'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.': '스토리에서 레벨이 더 중요해지고 야생 포켓몬은 배지에 맞춰 나옵니다: 성도 초반에 레벨 20은 나오지 않고, 라이코, 앤테이, 스이쿤은 깜짝 등장합니다.',
+    // ---------- Novedades v0.40.0 ----------
     'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': '돈을 누르면 상점으로 가고, 배틀 후에는 내 포켓몬과 상점에 한 번에 갈 수 있으며, 도로 탐험 후에는 「계속 탐험」이 큰 버튼입니다.',
     'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': '몸통박치기, 태권당수 같은 근접 공격이 30% 더 멀리 닿고 범위도 넓어져 훨씬 맞히기 쉽습니다.',
     // ---------- Novedades v0.40.0 ----------
-    'Lucky Spin más barato': '더 저렴해진 Lucky Spin',
-    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': '스토리에서 위쪽 미션 버튼으로 나가지 않고 보상을 받을 수 있고, 받을 보상이 있으면 점이 표시됩니다.',
-    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': '스토리 제목 옆의 큰 버튼 두 개로 관동과 성도를 바꾸고, 그 옆에서 앞으로 나올 지방도 볼 수 있습니다.',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin이 훨씬 저렴해졌습니다: 룰렛 전체가 보석 120개(이전 270개)라서 매일 접속하면 하루 2~3번 돌릴 수 있습니다.',
-    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': '성도의 야생 포켓몬은 배지에 맞는 레벨로 나오고 처음부터 레벨 20이 나오지 않으며, 라이코, 앤테이, 스이쿤은 어느 도로에서나 깜짝 등장합니다.',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': '컴퓨터에서는 옷장과 아바타 편집기가 선택지를 작은 카드로 보여 줘서 거의 전부를 한눈에 볼 수 있어요.',
@@ -1583,6 +1584,7 @@ export default {
     'Movimientos de {m}': '{m}의 기술',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '최대 4개까지. 순서는 키와 같아요: 좌클릭, 우클릭, Q, E.',
     'aprendido': '배움',
+    'MT': '기술머신',
     'Ya lleva 4: quita uno antes': '이미 4개예요: 먼저 1개를 빼세요',
     'Próximamente: {list}': '앞으로 배울 기술: {list}',
 

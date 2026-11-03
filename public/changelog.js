@@ -4,14 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.40.0', date: '2026-11-03', title: 'Lucky Spin más barato',
+      v: '0.40.0', date: '2026-11-03', title: 'MT y Lucky Spin más barato',
       items: [
-        ['nuevo', 'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.'],
-        ['nuevo', 'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.'],
+        ['nuevo', 'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.'],
+        ['nuevo', 'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.'],
         ['nuevo', 'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.'],
         ['cambio', 'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.'],
+        ['cambio', 'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.'],
         ['cambio', 'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.'],
-        ['cambio', 'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.'],
       ],
     },
     {

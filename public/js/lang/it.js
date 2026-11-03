@@ -13,14 +13,15 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'MT y Lucky Spin más barato': 'MT e Lucky Spin più economico',
+    'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': 'I tuoi Pokémon possono usare ciò che imparano con le MT, come Fuocobomba per Charizard: nella sua scheda, in Mosse, sono segnate come MT.',
+    'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.': 'In Storia, passa da Kanto a Johto con due grandi pulsanti accanto al titolo, e il pulsante Missioni ti fa riscuotere i premi senza uscire.',
+    'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.': 'Il livello conta di più in Storia e i selvatici seguono le tue medaglie: a Johto niente livelli 20 all’inizio, e Raikou, Entei e Suicune appaiono a sorpresa.',
+    // ---------- Novedades v0.40.0 ----------
     'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': 'Tocca i tuoi soldi per andare al Negozio; dopo ogni lotta I miei Pokémon e il Negozio sono a un tocco, e dopo un percorso «Continua a esplorare» è il pulsante grande.',
     'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': 'Gli attacchi corpo a corpo come Azione o Colpokarate arrivano il 30% più lontano con un arco più ampio: è molto più facile andare a segno.',
     // ---------- Novedades v0.40.0 ----------
-    'Lucky Spin más barato': 'Lucky Spin più economico',
-    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'In Storia, il pulsante Missioni in alto ti porta a riscuotere i premi senza uscire, con un pallino quando ce n’è uno pronto.',
-    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Passa da Kanto a Johto con due grandi pulsanti accanto al titolo di Storia, e accanto vedi le regioni in arrivo.',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin costa molto meno: la ruota intera costa 120 gemme (prima 270), quindi giocando ogni giorno giri 2 o 3 volte al giorno.',
-    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'I Pokémon selvatici di Johto seguono le tue medaglie, senza livelli 20 all’inizio, e Raikou, Entei e Suicune appaiono a sorpresa in qualsiasi percorso.',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'Sul computer, il Guardaroba e l\'editor dell\'avatar mostrano le opzioni in schede compatte, per vedere quasi tutto a colpo d\'occhio.',
@@ -1583,6 +1584,7 @@ export default {
     'Movimientos de {m}': 'Mosse di {m}',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': 'Scegline fino a 4. L\'ordine è quello dei tasti: Clic, Clic destro, Q ed E.',
     'aprendido': 'imparata',
+    'MT': 'MT',
     'Ya lleva 4: quita uno antes': 'Ne ha già 4: togline una prima',
     'Próximamente: {list}': 'Prossimamente: {list}',
 

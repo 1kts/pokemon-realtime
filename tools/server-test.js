@@ -80,6 +80,13 @@ class Client {
   ok((await err).msg.includes('no sabe'), 'no puede llevar un movimiento que no ha aprendido');
   m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['ascuas', 'aranazo'] });
   ok(m.p.mons[0].moves[0] === 'ascuas', 'reordenar sus movimientos');
+  // Por MT: las baratas se pueden llevar ya (Charmander, Ataque Aéreo), las caras desde Nv.32 (Llamarada)
+  m = await a.req({ t: 'story', a: 'moves', uid: m.p.mons[0].uid, moves: ['ascuas', 'golpeAereo'] });
+  ok(m.p.mons[0].moves.includes('golpeAereo'), 'un movimiento que aprende por MT se puede llevar');
+  ok(D.learnable(6, 36).includes('llamarada') && !D.learnable(4, 10).includes('llamarada') && !D.learnedAt(6, 50).includes('llamarada'), 'Llamarada, por MT: Charizard a Nv.36 sí, Charmander a Nv.10 no, y no es de los que aprende subiendo');
+  ok(D.levelMult(50) === 1 && D.levelMult(43) / D.levelMult(20) >= 1.4, `el nivel pesa: un Nv.43 tiene al menos un 40 % más de Ataque y PS que un Nv.20 (${(D.levelMult(43) / D.levelMult(20)).toFixed(2)}×), y a Nv.50 (PvP y Torre) todo queda igual`);
+  ok(D.pvpMoves(6).includes('llamarada') && D.pvpMoves(6).includes('terremoto'), 'en PvP, Charizard puede llevar Llamarada y Terremoto (MT)');
+  ok(!D.defaultMoves(6, 50).some(k => D.tmMoves(6).some(([, x]) => x === k)), 'los salvajes y los líderes siguen llevando solo lo que aprenden subiendo');
   // Motes: se guardan limpios y con 12 caracteres como mucho, pasan el filtro y vacíos se quitan
   const uid0 = m.p.mons[0].uid;
   m = await a.req({ t: 'story', a: 'nick', uid: uid0, nick: '  Chispas\u200b el grande  ' });

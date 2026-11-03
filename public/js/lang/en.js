@@ -12,14 +12,15 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'MT y Lucky Spin más barato': 'TMs and a cheaper Lucky Spin',
+    'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': 'Your Pokémon can use what they learn by TM, like Fire Blast on Charizard: in their sheet, under Moves, they are marked TM.',
+    'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.': 'In Story, switch between Kanto and Johto with two big buttons next to the title, and the Missions button lets you collect their rewards without leaving.',
+    'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.': 'Level matters more in Story and wild Pokémon match your badges: in Johto, no level 20s at the start, and Raikou, Entei and Suicune show up by surprise.',
+    // ---------- Novedades v0.40.0 ----------
     'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': 'Tap your money to go to the Shop; after every battle My Pokémon and the Shop are one tap away, and after a route "Keep exploring" is the big button.',
     'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': 'Melee attacks like Tackle or Karate Chop reach 30% farther with a wider arc: they are much easier to land.',
     // ---------- Novedades v0.40.0 ----------
-    'Lucky Spin más barato': 'Cheaper Lucky Spin',
-    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'In Story, the Missions button at the top takes you to collect their rewards without leaving, with a dot when one is ready.',
-    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Switch between Kanto and Johto with two big buttons next to the Story title, and see the regions coming next beside them.',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin costs much less: a whole wheel is 120 gems (was 270), so playing daily you can spin 2 or 3 times a day.',
-    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'Wild Pokémon in Johto now match your badges, with no level 20s at the start, and Raikou, Entei and Suicune show up by surprise on any route.',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'On computer, the Wardrobe and the avatar editor show options as compact cards, so you can see almost everything at a glance.',
@@ -1614,6 +1615,7 @@ export default {
     'Movimientos de {m}': '{m}\'s moves',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': 'Choose up to 4. The order matches the keys: Click, Right-click, Q and E.',
     'aprendido': 'learned',
+    'MT': 'TM',
     'Ya lleva 4: quita uno antes': 'It already has 4: remove one first',
     'Próximamente: {list}': 'Coming up: {list}',
 

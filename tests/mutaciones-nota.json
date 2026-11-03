@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 73,
- "total": 73,
+ "cazadas": 75,
+ "total": 75,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -518,6 +518,21 @@
     "tools/arena-test.js"
    ],
    "motivo": "arena-test.js: AssertionError: Placaje: alcance 70 y arco 1.9"
+  },
+  "mt-no-se-eligen": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movimientos-mt.e2e.js",
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ un movimiento que aprende por MT se puede llevar"
+  },
+  "nivel-pesa-poco": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ el nivel pesa: un Nv.43 tiene al menos un 40 % más"
   }
  }
 }

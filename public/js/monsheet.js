@@ -23,13 +23,14 @@ const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
 // Movimientos que aprenderá más adelante: como los de la lista, pero apagados (aún no se pueden elegir) y
 // con el nivel al que los aprende bien a la vista. También en el gestor de movimientos (ui.js)
 export function upcomingMoves(dex, level) {
-  const list = Data.learnset(dex).filter(([l, k]) => l > level && MOVES[k]);
+  // (y las MT caras, que se pueden elegir desde Nv.32)
+  const list = [...Data.learnset(dex).filter(([l, k]) => l > level && MOVES[k]), ...Data.tmMoves(dex).filter(([l]) => l > level).map(([l, k]) => [l, k, true])].sort((a, b) => a[0] - b[0]);
   if (!list.length) return null;
   const box = el('div', 'move-soon');
   box.append(el('h4', '', t('Próximamente')));
-  for (const [l, k] of list) {
+  for (const [l, k, tm] of list) {
     const m = MOVES[k];
-    const row = el('div', 'move-row locked', `<span class="slot">${typeIcon(m.type, 28)}<i>🔒</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em class="soon-lv">${lv(l)}</em>${moveStatsHtml(m)}`);
+    const row = el('div', 'move-row locked', `<span class="slot">${typeIcon(m.type, 28)}<i>🔒</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em class="soon-lv">${tm ? `${t('MT')} · ` : ''}${lv(l)}</em>${moveStatsHtml(m)}`);
     row.style.setProperty('--tc', TYPE_COLOR[m.type]);
     row.title = describeMove(m).split('\n').join(' · ');
     box.append(row);
@@ -214,8 +215,8 @@ export const monSheetViews = {
     const current = (mon.moves && mon.moves.length ? mon.moves : SPECIES[mon.dex].moves).filter(k => MOVES[k]);
     if (!s.moves) s.moves = [...current];
     const chosen = s.moves;
-    const levels = new Map(Data.learnset(mon.dex).map(([l, k]) => [k, l]));
-    const options = [...new Set([...Data.learnedAt(mon.dex, mon.level), ...current])];
+    const levels = new Map(Data.learnset(mon.dex).map(([l, k]) => [k, l])), tms = new Set(Data.tmMoves(mon.dex).map(([, k]) => k));
+    const options = [...new Set([...Data.learnable(mon.dex, mon.level), ...current])];   // (también las MT)
     const slots = el('div', 'ms-slots');
     for (let k = 0; k < 4; k++) {
       const m = MOVES[chosen[k]];
@@ -240,7 +241,7 @@ export const monSheetViews = {
       const m = MOVES[k], idx = chosen.indexOf(k);
       const row = el('button', 'move-row' + (idx >= 0 ? ' sel' : ''));
       row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-      row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${idx >= 0 ? t(KEYS[idx]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : t('aprendido')}</em>${moveStatsHtml(m)}`;
+      row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${idx >= 0 ? t(KEYS[idx]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : tms.has(k) ? t('MT') : t('aprendido')}</em>${moveStatsHtml(m)}`;
       row.title = describeMove(m).split('\n').join(' · ');
       row.onclick = () => {
         if (idx >= 0) { if (chosen.length > 1) chosen.splice(idx, 1); }

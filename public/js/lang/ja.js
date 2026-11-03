@@ -13,14 +13,15 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'MT y Lucky Spin más barato': 'わざマシンとお得なLucky Spin',
+    'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': 'わざマシンで覚える技も使えるようになりました。リザードンのだいもんじなど。ポケモンの「わざ」でわざマシンと表示されます。',
+    'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.': 'ストーリーではタイトル横の大きな2つのボタンでカントーとジョウトを切り替えられ、ミッションボタンからそのまま報酬を受け取れます。',
+    'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.': 'ストーリーではレベルがより重要になり、野生ポケモンはバッジ数に合わせたレベルに。ジョウトの序盤にレベル20は出ず、ライコウ、エンテイ、スイクンは不意に現れます。',
+    // ---------- Novedades v0.40.0 ----------
     'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': 'お金をタップするとショップへ。バトル後は手持ちポケモンとショップにワンタップで行け、ルートの後は「探索を続ける」が大きなボタンです。',
     'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': 'たいあたりやからてチョップなどの近接技は届く距離が30％伸び、範囲も広がりました。ずっと当てやすくなります。',
     // ---------- Novedades v0.40.0 ----------
-    'Lucky Spin más barato': 'Lucky Spinがお得に',
-    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'ストーリーでは、上のミッションボタンからそのまま報酬を受け取れます。受け取れるものがあると点が付きます。',
-    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'ストーリーのタイトル横の大きな2つのボタンでカントーとジョウトを切り替えられ、その横にこれから来る地方も表示されます。',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spinがずっと安くなりました：ルーレット全部で120ジェム（以前は270）なので、毎日遊べば1日2〜3回まわせます。',
-    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'ジョウトの野生ポケモンはバッジの数に合わせたレベルになり、序盤にレベル20が出ることはありません。ライコウ、エンテイ、スイクンはどのルートでも不意に現れます。',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'パソコンでは、衣装とアバター編集の選択肢がコンパクトなカードになり、ほぼすべてがひと目でわかります。',
@@ -1583,6 +1584,7 @@ export default {
     'Movimientos de {m}': '{m}の わざ',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '4つまで えらぼう。順番は キーと 同じ：左クリック、右クリック、Q、E。',
     'aprendido': 'おぼえた',
+    'MT': 'わざマシン',
     'Ya lleva 4: quita uno antes': 'もう 4つ：先に 1つ はずそう',
     'Próximamente: {list}': 'これから おぼえる：{list}',
 

@@ -442,6 +442,13 @@
     return out;
   }
   const learnedAt = (dex, level) => learnset(dex).filter(([l]) => l <= level).map(([, m]) => m);
+  // Por MT (como en los juegos): se pueden elegir aparte de los que aprende subiendo, los caros desde Nv.32. Los salvajes y
+  // los líderes siguen llevando solo los de nivel (learnedAt)
+  const TM_BIG_LEVEL = 32;
+  const tmLevel = m => MOVES[m].cost >= 45 ? TM_BIG_LEVEL : 1;
+  const tmMoves = dex => ((LEARN && LEARN.TM && LEARN.TM[dex]) || []).filter(m => MOVES[m] && !learnset(dex).some(([, x]) => x === m)).map(m => [tmLevel(m), m]);
+  // Todo lo que puede llevar a ese nivel: lo aprendido subiendo y las MT
+  const learnable = (dex, level) => [...new Set([...learnedAt(dex, level), ...tmMoves(dex).filter(([l]) => l <= level).map(([, m]) => m)])];
   // Un básico sin coste y los 3 más recientes que ya sabe (lo que llevan los salvajes y los líderes), con uno de apoyo
   // como mucho: un equipo de solo curas y mejoras no pelea
   function defaultMoves(dex, level) {
@@ -460,7 +467,8 @@
   }
 
   // Nivel -> multiplicador de PS y daño. A nivel 50 vale 1.
-  const levelMult = lvl => 0.55 + lvl * 0.009;
+  // Lo que el nivel multiplica el Ataque y los PS: a Nv.50 vale 1 (PvP y la Torre); un Nv.43 tiene un 43 % más que un Nv.20
+  const levelMult = lvl => 0.4 + lvl * 0.012;
   const xpToNext = lvl => 20 + lvl * 12;
 
   // ---------- Mapas de combate ----------
@@ -1327,7 +1335,7 @@
   const RANKED_LEVEL = 50;
   const RANKED_CALIB = 10;   // primeras partidas de PvP, en las que perder cuesta la mitad de ELO
   // Movimientos que puede llevar un Pokémon en PvP: los que sabe a Nv.50 y los que ya conoce
-  const pvpMoves = (dex, mon) => [...new Set([...learnedAt(dex, RANKED_LEVEL), ...((mon && mon.moves) || [])])];
+  const pvpMoves = (dex, mon) => [...new Set([...learnable(dex, RANKED_LEVEL), ...((mon && mon.moves) || [])])];
   // Equipo de PvP (PvP): 3 especies distintas, cada una uno de tus Pokémon (uid, de mons) o
   // uno de alquiler (dex del pool), con hasta 4 movimientos que sepa (sin ninguno válido, los de por defecto).
   // null si no vale, también si ya no tienes uno de ellos
@@ -1675,7 +1683,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, tmMoves, learnable, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

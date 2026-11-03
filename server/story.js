@@ -57,8 +57,8 @@ function migrate(p) {
 }
 // p.badges = medallas de la región más avanzada (para los requisitos de la tienda)
 function syncBadges(p) { p.badges = Math.max(0, ...D.REGION_IDS.map(r => Math.min(8, p.prog[r] || 0))); }
-// Lo que puede llevar: lo aprendido por nivel en su especie actual más lo que ya llevaba
-const learnable = mon => [...new Set([...D.learnedAt(mon.dex, mon.level), ...mon.moves])];
+// Lo que puede llevar: lo aprendido por nivel y por MT en su especie actual más lo que ya llevaba
+const learnable = mon => [...new Set([...D.learnable(mon.dex, mon.level), ...mon.moves])];
 const teamMons = (p, region = 'kanto') => ((p.teams && p.teams[region]) || []).map(uid => monByUid(p, uid)).filter(Boolean);
 const regionMons = (p, region) => p.mons.filter(m => m.region === region);
 // Quita un Pokémon del perfil y de su equipo

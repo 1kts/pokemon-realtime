@@ -12,14 +12,15 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.40.0 ----------
+    'MT y Lucky Spin más barato': '招式学习器与更便宜的 Lucky Spin',
+    'Tus Pokémon pueden llevar lo que aprenden por MT, como Llamarada en Charizard: en su ficha, Movimientos, salen marcados como MT.': '你的宝可梦可以使用通过招式学习器学会的招式，比如喷火龙的大字爆炎：在它的资料“招式”里会标为招式学习器。',
+    'En Historia, Kanto y Johto se cambian con dos botones grandes junto al título, y el botón de Misiones te deja recoger sus premios sin salir.': '在故事模式中，标题旁的两个大按钮可切换关都和城都，任务按钮可让你直接领取奖励。',
+    'El nivel pesa más en Historia y los salvajes van con tus medallas: en Johto, sin niveles 20 al empezar, y Raikou, Entei y Suicune salen por sorpresa.': '故事模式中等级更重要，野生宝可梦与你的徽章相符：城都开局不会再遇到 20 级的，雷公、炎帝和水君会意外出现。',
+    // ---------- Novedades v0.40.0 ----------
     'Toca tu dinero para ir a la Tienda; tras cada combate tienes Mis Pokémon y la Tienda a un toque, y tras una ruta «Seguir explorando» es el botón grande.': '点击你的金钱即可前往商店；每场对战后，我的宝可梦和商店只需一点，探索道路后“继续探索”是大按钮。',
     'Los golpes cuerpo a cuerpo, como Placaje o Golpe Kárate, llegan un 30 % más lejos y con el arco más abierto: cuesta mucho menos darlos.': '撞击、空手劈等近身攻击的距离远了 30%，弧度也更宽：命中容易多了。',
     // ---------- Novedades v0.40.0 ----------
-    'Lucky Spin más barato': 'Lucky Spin 更便宜了',
-    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': '在故事模式中，上方的任务按钮可以直接去领取奖励，无需离开，有奖励可领时会显示小圆点。',
-    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': '在故事模式标题旁用两个大按钮切换关都和城都，旁边还能看到即将推出的地区。',
     'Lucky Spin cuesta mucho menos: la ruleta entera son 120 gemas (antes 270), así que entrando a diario tiras 2 o 3 veces al día.': 'Lucky Spin 便宜多了：整个转盘只需 120 颗宝石（原来 270），每天上线就能转 2 到 3 次。',
-    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': '城都的野生宝可梦等级与你的徽章相符，开局不会再遇到 20 级的，雷公、炎帝和水君会在任意道路上意外出现。',
     // ---------- Novedades v0.40.0 ----------
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': '在电脑上，衣柜和头像编辑器改用紧凑卡片显示选项，几乎一眼就能看全。',
@@ -1613,6 +1614,7 @@ export default {
     'Movimientos de {m}': '{m}的招式',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '最多选 4 个。顺序对应按键：左键、右键、Q 和 E。',
     'aprendido': '已学会',
+    'MT': '招式学习器',
     'Ya lleva 4: quita uno antes': '已经有 4 个了：请先去掉一个',
     'Próximamente: {list}': '即将学会：{list}',
 
