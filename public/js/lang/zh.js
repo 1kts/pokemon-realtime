@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.39.0 ----------
+    'Más rápido y mejor en el móvil': '更快，手机上更好用',
+    'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': '在手机上，故事模式顶部的按钮一点就能前往我的宝可梦、背包和商店。',
+    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': '游戏打开得更快，手机上尤其明显：音乐和场景在标题画面之后才加载，再次进入时也不会重新下载全部内容。',
+    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': '衣柜和头像编辑器改用紧凑卡片显示选项：几乎一眼就能看全，尚未拥有的会显示一个在任何手机上都能看清的锁。',
+    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': '在手机上，宝可梦详情页四周留出边距，四个标签页完整显示；在我的宝可梦中，搜索框和说明文字也能完整阅读。',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': '统一的 PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '排位赛和快速对战合并为 PvP:同一队列,保留 ELO、段位和赛季,前 10 场失败只扣一半。',

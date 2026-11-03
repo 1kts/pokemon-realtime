@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.39.0', date: '2026-11-03', title: 'Más rápido y mejor en el móvil',
+      items: [
+        ['nuevo', 'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.'],
+        ['cambio', 'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.'],
+        ['cambio', 'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.'],
+        ['cambio', 'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.'],
+      ],
+    },
+    {
       v: '0.38.0', date: '2026-11-01', title: 'Un solo PvP',
       items: [
         ['nuevo', 'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.'],

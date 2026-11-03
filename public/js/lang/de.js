@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.39.0 ----------
+    'Más rápido y mejor en el móvil': 'Schneller und besser am Handy',
+    'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'Am Handy bringen dich die Knöpfe oben in der Story mit einem Tipp zu Meine Pokémon, zum Beutel und zum Shop.',
+    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'Das Spiel startet schneller, vor allem am Handy: Musik und Kulisse kommen nach dem Titelbild, und wenn du zurückkommst, wird nicht mehr alles neu geladen.',
+    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': 'Kleiderschrank und Avatar-Editor zeigen die Optionen als kompakte Karten: Du siehst fast alles auf einen Blick, und was du nicht hast, trägt ein Schloss, das auf jedem Handy zu sehen ist.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': 'Am Handy lässt das Pokémon-Datenblatt Rand mit allen vier Tabs vollständig, und in Meine Pokémon sind Suche und Hilfe ganz lesbar.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'Ein PvP für alle',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Rangliste und Schnelles Match werden zu PvP: eine Warteschlange mit ELO, Ligen und Saisons, und in deinen ersten 10 Partien kostet Verlieren die Hälfte.',

@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.39.0 ----------
+    'Más rápido y mejor en el móvil': 'より速く、スマホでもっと快適に',
+    'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.': 'スマホでは、ストーリー上部のボタンからワンタップでじぶんの ポケモン、バッグ、ショップに行けます。',
+    'El juego abre antes, sobre todo en el móvil: la música y el decorado llegan después de la portada y, al volver a entrar, ya no se descarga todo otra vez.': 'ゲームの起動が速くなりました。特にスマホで効果大：音楽や背景はタイトル画面の後に読み込まれ、再訪時にすべてを再ダウンロードしなくなりました。',
+    'El Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas: ves casi todo de un vistazo, y lo que no tienes lleva un candado que se ve en cualquier móvil.': '衣装とアバター編集は選択肢をコンパクトなカードで表示：ほぼすべてがひと目でわかり、持っていないものにはどのスマホでも見える鍵が付きます。',
+    'En el móvil, la ficha del Pokémon deja margen alrededor con sus cuatro pestañas enteras, y en Mis Pokémon el buscador y la ayuda se leen enteros.': 'スマホでは、ポケモンの詳細画面に余白ができ4つのタブがすべて見えるようになり、じぶんの ポケモンの検索欄と説明も全文読めます。',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'PvPをひとつに',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'ランクとクイックマッチがPvPに統合。ELO、リーグ、シーズンのある1つのキューになり、最初の10戦は負けても半分で済みます。',
