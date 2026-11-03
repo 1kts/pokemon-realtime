@@ -4,6 +4,17 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.40.0', date: '2026-11-03', title: 'Lucky Spin más barato',
+      items: [
+        ['nuevo', 'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.'],
+        ['nuevo', 'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.'],
+        ['nuevo', 'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.'],
+        ['cambio', 'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.'],
+        ['cambio', 'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.'],
+        ['cambio', 'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.'],
+      ],
+    },
+    {
       v: '0.39.0', date: '2026-11-03', title: 'Más rápido y mejor en el móvil',
       items: [
         ['nuevo', 'En el móvil, desde Historia llegas de un toque a Mis Pokémon, la Mochila y la Tienda con los botones de arriba.'],

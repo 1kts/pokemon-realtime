@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.0 ----------
+    'Lucky Spin más barato': 'Cheaper Lucky Spin',
+    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': 'In Story, the Missions button at the top takes you to collect their rewards without leaving, with a dot when one is ready.',
+    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': 'Switch between Kanto and Johto with two big buttons next to the Story title, and see the regions coming next beside them.',
+    'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': 'Tap your money to go to the Shop, and after every battle My Pokémon and the Shop are one tap away, each with its icon and color.',
+    'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.': 'Lucky Spin costs much less: a whole wheel is 80 gems (was 270), so playing daily you can spin 3 or 4 times a day.',
+    'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': 'On computer, PvP is big on the menu and the Ladder reaches the bottom; after a route, "Keep exploring" is the big button.',
+    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': 'Wild Pokémon in Johto now match your badges, with no level 20s at the start, and Raikou, Entei and Suicune show up by surprise on any route.',
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': 'On computer, the Wardrobe and the avatar editor show options as compact cards, so you can see almost everything at a glance.',
     // ---------- Novedades v0.39.0 ----------

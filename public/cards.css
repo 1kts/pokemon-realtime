@@ -1925,7 +1925,15 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 .lp-me { margin: 2px 0 0; padding: 0 6px; font: 800 12px var(--text); color: #ffe08a; }
 /* Bajo Continuar: atajos para preparar lo siguiente, sin competir con él */
 .res-links { display: flex; justify-content: center; gap: 8px; margin-top: 6px; }
-.res-links .res-go { padding: 6px 12px; font-size: 13px; }
+.res-links .res-go { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px 5px 8px; font-size: 13.5px; font-weight: 800; color: #fff;
+  border: 1px solid color-mix(in srgb, var(--cc, #6f7dff) 70%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--cc, #6f7dff) 55%, #1b2254), color-mix(in srgb, var(--cc, #6f7dff) 20%, #141a3c)); }
+.res-links .res-go:hover { filter: brightness(1.15); }
+.res-links .res-go img { width: 22px; height: 22px; image-rendering: pixelated; }
+.res-links .res-team { --cc: #ff4a3d; } .res-links .res-shop { --cc: #2fae6a; } .res-links .res-online { --cc: #8a5cff; }
+/* Seguir explorando / Otra vez y Volver: con su icono delante */
+.results .acts .res-act { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.results .acts .res-act img { width: 24px; height: 24px; image-rendering: pixelated; }
+.results .acts .res-act svg { width: 18px; height: 18px; flex: none; }
 
 /* Menú en escritorio, sin bajar: Historia y Torre arriba, PvP en grande debajo y, abajo del todo, Práctica y Tutorial.
    Las tres columnas (modos, tu colección y la Ladder) llegan igual de abajo */

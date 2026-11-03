@@ -285,6 +285,15 @@ class Client {
   ok(prof.prog.johto === 1 && jr.badge && jr.badge.region === 'johto' && (prof.items.caramelo || 0) === items0 + 1, 'vencer a Pegaso da la Medalla Céfiro y premios');
   const jroute = story.battleSetup(prof, { a: 'route', id: 'j-ruta32' });
   ok(!jroute.error && D.NODES['j-ruta32'].wild.some(w => w[0] === jroute.opts.sides[1].team[0].dex || D.routeWild(D.NODES['j-ruta32']).specials.concat(D.routeWild(D.NODES['j-ruta32']).roam.map(dex => ({ dex }))).some(x => x.dex === jroute.opts.sides[1].team[0].dex)), 'la Ruta 32 saca un Pokémon de sus encuentros reales');
+  // Niveles de los salvajes: ninguna ruta saca nada muy por encima del tope de nivel de las medallas que pide, ni mezcla
+  // niveles muy dispares (antes, en la Cueva Oscura sin medallas: Zubat de Nv.3 y Geodude de Nv.23 con el tope en 11)
+  {
+    const malas = Object.values(D.NODES).filter(n => n.kind === 'route').filter(n => n.lvl[1] > D.levelCap(n.req || 0, n.region) + 3 || n.wild.some(w => w[2] - w[1] > 8) || n.lvl[1] - n.lvl[0] > 12)
+      .map(n => `${n.id} Nv.${n.lvl[0]}-${n.lvl[1]} (tope ${D.levelCap(n.req || 0, n.region)})`);
+    ok(!malas.length, `los salvajes de cada ruta, como mucho 3 niveles por encima del tope de sus medallas y sin niveles muy dispares (${malas.join(', ') || 'todas bien'})`);
+    const cueva = D.NODES['j-oscura'];
+    ok(cueva.lvl[1] <= D.levelCap(0, 'johto') + 3, `la Cueva Oscura, sin medallas, no saca salvajes de Nv.20 (Nv.${cueva.lvl[0]}-${cueva.lvl[1]})`);
+  }
 
   // ---------- Clasificatoria ----------
   const b = new Client(port), c = new Client(port);
@@ -817,7 +826,7 @@ class Client {
     const fortnight = 2 * week + D.TREASURE_DAYS * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
     const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
     const perDay = fortnight / D.TREASURE_DAYS / (allWheels / 3 / D.SPIN_COST.length);
-    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 270 && perDay >= 0.8 && perDay <= 1.5, `una ruleta entera son 270 gemas: entrando a diario (premio diario y misiones diarias) sale una tirada al día (${perDay.toFixed(2)})`);
+    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 80 && perDay >= 3 && perDay <= 4, `una ruleta entera son 80 gemas: entrando a diario (premio diario y misiones diarias) salen 3 o 4 tiradas al día (${perDay.toFixed(2)})`);
   }
 
   // ---------- Premio del tutorial: una sola vez ----------
@@ -969,7 +978,7 @@ class Client {
     // ---------- Tesoros ----------
     const treasure = require('../server/treasure.js');
     const rid = D.treasures()[0].id;
-    prof.gems = 3;
+    prof.gems = D.SPIN_COST[0] - 1;   // (una menos de lo que cuesta la primera)
     e = mc.wait('error'); mc.send({ t: 'treasure', id: rid });
     ok(/gemas/.test((await e).msg), 'sin gemas no se tira');
     prof.gems = 1000;

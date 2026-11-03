@@ -1652,19 +1652,20 @@ export class UI {
     // Seguir explorando la ruta u otra vez la práctica: lo que más se pulsa, el botón grande; «Volver», al lado
     const repeat = lm && (lm.kind === 'practice' || (lm.kind === 'story' && lm.a === 'route'));
     if (repeat) {
-      const again = el('button', acts.children.length ? '' : 'primary', lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando'));
+      const again = el('button', 'res-act ' + (acts.children.length ? '' : 'primary'), `${itemImg(lm.kind === 'practice' ? 'tm-normal' : 'town-map', 24)}<span>${lm.kind === 'practice' ? t('Otra vez') : t('Seguir explorando')}</span>`);
       again.onclick = () => lm.kind === 'practice' ? this.net.send({ t: 'practice', dexes: lm.dexes, skill: lm.skill, map: lm.map, mod: lm.mod, aiDebug: lm.aiDebug }) : this.startStory(lm.a, lm.id);
       acts.append(again);
     }
-    const back = el('button', acts.children.length ? '' : 'primary', t('Volver'));
+    const back = el('button', 'res-act ' + (acts.children.length ? '' : 'primary'), `${ICON.back}<span>${t('Volver')}</span>`);
     back.onclick = () => this.show(this.afterBattleView());
     acts.append(back);
     // Para preparar lo siguiente: el equipo de PvP, Mis Pokémon y la Tienda (el de Mejorar equipo ya lleva allí)
-    const shortcut = (label, view, before) => { const b = el('button', 'res-go', label); b.onclick = () => { if (before) before(); this.show(view); }; return b; };
+    // (cada uno con su icono y su color, los mismos que en Tu colección del menú)
+    const shortcut = (label, view, ico, before) => { const b = el('button', 'res-go res-' + view, `${itemImg(ico, 22)}<span>${label}</span>`); b.onclick = () => { if (before) before(); this.show(view); }; return b; };
     const go = el('div', 'res-links');
-    if (lm === 'ranked' || lm === 'friendly') go.append(shortcut(t('Editar equipo'), 'online'));
-    if (!(lost && lm && lm.kind === 'story' && lm.a !== 'route')) go.append(shortcut(t('Mis Pokémon'), 'team'));
-    go.append(shortcut(t('Tienda'), 'shop'));
+    if (lm === 'ranked' || lm === 'friendly') go.append(shortcut(t('Editar equipo'), 'online', 'master-ball'));
+    if (!(lost && lm && lm.kind === 'story' && lm.a !== 'route')) go.append(shortcut(t('Mis Pokémon'), 'team', 'pokeball'));
+    go.append(shortcut(t('Tienda'), 'shop', 'forage-bag'));
     if (lm && lm.kind === 'tower' && r.tower && !r.tower.ended) {
       const next = el('button', '', t('Combate {n}', { n: r.tower.streak + 1 }));
       next.onclick = () => this.towerBattle();

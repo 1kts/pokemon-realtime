@@ -1068,6 +1068,12 @@
         // Algunas zonas juntan niveles de hierba, surf y caña de dos juegos (Tentacool de Nv.5 a 40): cada
         // especie se queda con los 8 niveles más altos de su tramo para que no salgan niveles tan dispares
         for (const w of n.wild) w[1] = Math.max(w[1], w[2] - 8);
+        // …y toda la zona, alrededor de su nivel típico (la mediana por peso): sin Geodude de Nv.23 junto a Zubat de
+        // Nv.3 en la Cueva Oscura, ni salvajes muy por encima del tope de nivel nada más llegar
+        const byMax = [...n.wild].sort((a, b) => a[2] - b[2]), half = n.wild.reduce((a, w) => a + w[3], 0) / 2;
+        let acc = 0;
+        const mid = (byMax.find(w => (acc += w[3]) >= half) || byMax[byMax.length - 1])[2];
+        for (const w of n.wild) { w[2] = Math.min(Math.max(w[2], mid - 3), mid + 3); w[1] = Math.min(Math.max(w[1], mid - 6), w[2]); }
         n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
         n.ai = Math.min(0.25, 0.02 + n.req * 0.025);
         n.rare = 0.015 + n.req * 0.003;
@@ -1578,8 +1584,8 @@
     epico: { w: 13, name: 'Épico', color: '#a35cff' }, legendario: { w: 6, name: 'Legendario', color: '#ffb21a' },
     mitico: { w: 3, name: 'Mítico', color: '#ff3d6e' },
   };
-  // Cada tirada, más cara (270 gemas la ruleta entera): entrando a diario sale 1 tirada al día; jugando más, 2
-  const SPIN_COST = [9, 13, 16, 20, 23, 27, 31, 35, 43, 53];
+  // Cada tirada, más cara (80 gemas la ruleta entera): entrando a diario salen unas 3 tiradas al día; jugando más, 4 o más
+  const SPIN_COST = [3, 4, 5, 6, 7, 8, 9, 10, 12, 16];
   // Efecto dentro de la burbuja de los retratos, según el tipo; 'aurora' es el especial (prismático)
   const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
     fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };
@@ -1649,6 +1655,17 @@
     const left = roulette.prizes.filter(x => !got.includes(x.id));
     const total = left.reduce((a, x) => a + RARITY[x.rarity].w, 0);
     return left.map(x => ({ prize: x, p: RARITY[x.rarity].w / total }));
+  }
+
+  // Ninguna ruta por encima de lo que dejan subir sus medallas: si su nivel típico pasa del tope de nivel con las medallas
+  // que pide, la zona entera baja hasta él (la Ruta 46 o la Cueva Oscura, sin medallas, no sacan salvajes de Nv.20)
+  for (const n of Object.values(NODES)) {
+    if (n.kind !== 'route') continue;
+    const cap = levelCap(n.req || 0, n.region), sorted = n.wild.map(w => w[2]).sort((a, b) => a - b), mid = sorted[Math.floor(sorted.length / 2)];
+    const off = Math.max(0, mid - cap);
+    if (off) for (const w of n.wild) { w[1] = Math.max(2, w[1] - off); w[2] = Math.max(w[1], w[2] - off); }
+    for (const w of n.wild) { w[2] = Math.min(w[2], cap + 3); w[1] = Math.min(w[1], w[2]); }   // (y ninguno más de 3 por encima)
+    n.lvl = [Math.min(...n.wild.map(w => w[1])), Math.max(...n.wild.map(w => w[2]))];
   }
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,

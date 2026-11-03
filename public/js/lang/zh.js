@@ -11,6 +11,14 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.0 ----------
+    'Lucky Spin más barato': 'Lucky Spin 更便宜了',
+    'En Historia, el botón de Misiones de arriba te lleva a recoger sus premios sin salir, con una bolita cuando hay alguno listo.': '在故事模式中，上方的任务按钮可以直接去领取奖励，无需离开，有奖励可领时会显示小圆点。',
+    'Kanto y Johto se cambian con dos botones grandes junto al título de Historia, y a su lado ves las regiones que llegarán.': '在故事模式标题旁用两个大按钮切换关都和城都，旁边还能看到即将推出的地区。',
+    'Toca tu dinero para ir a la Tienda, y tras cada combate tienes Mis Pokémon y la Tienda a un toque, con su icono y su color.': '点击你的金钱即可前往商店；每场对战结束后，我的宝可梦和商店都只需一点，各有图标和颜色。',
+    'Lucky Spin cuesta mucho menos: la ruleta entera son 80 gemas (antes 270), así que entrando a diario tiras 3 o 4 veces al día.': 'Lucky Spin 便宜多了：整个转盘只需 80 颗宝石（原来 270），每天上线就能转 3 到 4 次。',
+    'En el ordenador, PvP sale en grande en el menú y la Ladder llega hasta abajo; tras una ruta, «Seguir explorando» es el botón grande.': '在电脑上，PvP 在菜单中变大了，天梯一直延伸到底部；探索道路后，“继续探索”是大按钮。',
+    'Los salvajes de Johto van con tus medallas, sin niveles 20 al empezar, y Raikou, Entei y Suicune aparecen por sorpresa en cualquier ruta.': '城都的野生宝可梦等级与你的徽章相符，开局不会再遇到 20 级的，雷公、炎帝和水君会在任意道路上意外出现。',
     // ---------- Novedades v0.39.0 ----------
     'En el ordenador, el Vestuario y el editor del avatar enseñan las opciones en tarjetas compactas, para ver casi todo de un vistazo.': '在电脑上，衣柜和头像编辑器改用紧凑卡片显示选项，几乎一眼就能看全。',
     // ---------- Novedades v0.39.0 ----------

@@ -1,5 +1,5 @@
 // Lucky Spin en el móvil, en horizontal: de un vistazo se entiende qué es y qué se gana (qué da una tirada, el gran
-// premio, la rareza de cada premio, lo conseguido, las probabilidades) y la tirada cuesta lo que pone: 9 gemas la primera.
+// premio, la rareza de cada premio, lo conseguido, las probabilidades) y la tirada cuesta lo que pone: 3 gemas la primera.
 module.exports = async ({ page, player, ok }) => {
   for (const [w, h] of [[844, 390], [667, 375]]) {
     const me = await player({ user: `ruleta${w}` });
@@ -24,14 +24,14 @@ module.exports = async ({ page, player, ok }) => {
     if (w !== 844) continue;   // (la tirada, una vez basta: tarda)
     const num = async sel => +(await page.read(sel)).replace(/\D/g, '');
     const gems = await num('.inner-bar .pill.gems'), cost = await num('.tz-price b');
-    ok(gems === 150 && cost === 9, `${zona}: tienes 150 gemas y la primera tirada cuesta 9 (${gems} y ${cost})`);
+    ok(gems === 150 && cost === 3, `${zona}: tienes 150 gemas y la primera tirada cuesta 3 (${gems} y ${cost})`);
     await page.tap('¡Tirar!');
     await page.waitSee(/Premio/, { in: '.loot-pop' });
     await page.click('.loot-pop .acts .primary');
     await page.waitFor(`!document.querySelector('.loot-pop:not(.out)')`);
     await page.waitSee('¡Tirar!');
     const left = await num('.inner-bar .pill.gems'), next = await num('.tz-price b');
-    ok(left === 141, `${zona}: la tirada cobra lo que ponía: quedan ${left} gemas`);
-    ok(next === 13, `${zona}: la siguiente cuesta algo más: ${next}`);
+    ok(left === 147, `${zona}: la tirada cobra lo que ponía: quedan ${left} gemas`);
+    ok(next === 4, `${zona}: la siguiente cuesta algo más: ${next}`);
   }
 };
