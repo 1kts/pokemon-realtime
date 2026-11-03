@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-01",
- "cazadas": 56,
- "total": 56,
+ "fecha": "2026-11-03",
+ "cazadas": 61,
+ "total": 61,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -399,6 +399,41 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ ELO: ganador +16, perdedor -16 (en calibración, la mitad) | ✗ el novato pierde la mitad y el otro gana entero (-16 y +16)"
+  },
+  "arranque-musica-al-abrir": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/arranque-ligero.e2e.js"
+   ],
+   "motivo": "arranque-ligero.e2e.js: ✗ 1280×800: hasta que carga la portada no se pide música, decorado ni letras de otros idiomas (/music/pueblo.mp3) | ✗ 844×390: hasta que carga la portada no se pide música, decorado ni letras de otros idiomas (/music/pueblo.mp3)"
+  },
+  "arranque-sin-304": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ la segunda vez, sin cambios, es un 304 sin cuerpo (200, 117544 bytes)"
+  },
+  "historia-mochila-a-tienda": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/historia-accesos.e2e.js"
+   ],
+   "motivo": "historia-accesos.e2e.js: ✗ 844×390: el botón Mochila de Historia lleva a Mochila (Tienda) | ✗ 667×375: el botón Mochila de Historia lleva a Mochila (Tienda)"
+  },
+  "vestuario-movil-tarjetas-grandes": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: el Vestuario enseña al menos 12 opciones sin bajar (11 de 30) | ✗ 667×375: el Vestuario enseña al menos 12 opciones sin bajar (8 de 30)"
+  },
+  "vestuario-sin-candado": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/vestuario-movil.e2e.js"
+   ],
+   "motivo": "vestuario-movil.e2e.js: ✗ 844×390: lo que no tienes lleva un candado dibujado que se ve | ✗ 667×375: lo que no tienes lleva un candado dibujado que se ve"
   }
  }
 }
