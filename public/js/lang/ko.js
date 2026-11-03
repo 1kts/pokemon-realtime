@@ -12,6 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': '모바일에서 더 편한 옷장',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': '모바일에서 옷장과 아바타 편집이 한눈에 12개 이상의 선택지를 보여 주고, 이름도 모두 끝까지 보여요.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': '모바일에서 포켓몬 상세 화면 주위에 여백이 생기고, 네 개의 탭이 잘리지 않고 항상 들어가요.',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': '모바일에서 내 포켓몬의 필터가 화면 안에 들어가고, 맨 위 줄에 레벨 상한이 나와요. 누르면 설명을 읽을 수 있어요.',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': '아직 없는 것에는 빈 네모 대신 모든 휴대폰에서 보이는 자물쇠가 붙고, 누르면 어디서 얻는지 알려 줘요.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': '하나로 합친 PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '랭크전과 빠른 대전이 PvP로 합쳐졌어요. ELO, 리그, 시즌이 있는 대기열 하나이며, 처음 10판은 져도 절반만 잃어요.',

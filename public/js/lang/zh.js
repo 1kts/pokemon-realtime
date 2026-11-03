@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': '手机上更好用的衣柜',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': '在手机上，衣柜和头像编辑一眼就能看到至少 12 个选项，每个都显示完整名称。',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': '在手机上，宝可梦详情四周留出边距，四个标签页总能放下，不会被截断。',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': '在手机上，我的宝可梦的筛选能完整放进屏幕，顶部一行显示你的等级上限：点一下即可阅读说明。',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': '尚未拥有的东西会显示一把在所有手机上都能看清的锁，而不是空白方框，点一下就会告诉你从哪里获得。',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': '统一的 PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': '排位赛和快速对战合并为 PvP:同一队列,保留 ELO、段位和赛季,前 10 场失败只扣一半。',

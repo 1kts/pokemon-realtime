@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': 'Une Garde-robe plus pratique sur mobile',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'Sur mobile, la Garde-robe et l\'éditeur d\'avatar affichent au moins 12 options d\'un coup d\'œil, chacune avec son nom en entier.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': 'Sur mobile, la fiche du Pokémon laisse une marge autour et ses quatre onglets tiennent toujours, sans rien couper.',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': 'Sur mobile, les filtres de Mes Pokémon tiennent à l\'écran et la ligne du haut indique ton niveau maximum : touche-la pour lire l\'explication.',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': 'Ce que tu n\'as pas encore porte un cadenas visible sur tous les mobiles au lieu d\'un carré vide, et en le touchant tu sais d\'où il vient.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'Un seul PvP',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Classée et Partie rapide fusionnent en PvP : une seule file avec ELO, ligues et saisons, et perdre coûte moitié moins sur tes 10 premières parties.',

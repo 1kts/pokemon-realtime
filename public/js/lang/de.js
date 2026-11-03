@@ -11,6 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.38.1 ----------
+    'Vestuario cómodo en el móvil': 'Bequemer Kleiderschrank auf dem Handy',
+    'En el móvil, el Vestuario y el editor del avatar enseñan al menos 12 opciones de un vistazo, cada una con su nombre entero.': 'Auf dem Handy zeigen der Kleiderschrank und der Avatar-Editor mindestens 12 Optionen auf einen Blick, jede mit vollem Namen.',
+    'En el móvil, la ficha del Pokémon deja margen alrededor y sus cuatro pestañas caben siempre, sin cortar nada.': 'Auf dem Handy lässt das Pokémon-Datenblatt Rand frei und seine vier Tabs passen immer, ohne dass etwas abgeschnitten wird.',
+    'En el móvil, los filtros de Mis Pokémon caben en la pantalla y la línea de arriba dice tu tope de nivel: tócala para leer la explicación.': 'Auf dem Handy passen die Filter von Meine Pokémon auf den Bildschirm und die obere Zeile zeigt deine Levelgrenze: Tippe darauf für die Erklärung.',
+    'Lo que aún no tienes lleva un candado que se ve en todos los móviles, en vez de un cuadro vacío, y al tocarlo te dice de dónde sale.': 'Was du noch nicht hast, trägt ein Schloss, das auf jedem Handy richtig erscheint statt eines leeren Kästchens, und beim Antippen erfährst du, woher es kommt.',
     // ---------- Novedades v0.38.0 ----------
     'Un solo PvP': 'Ein PvP für alle',
     'Clasificatoria y Partida rápida se unen en PvP: una sola cola con ELO, ligas y temporadas, y en tus 10 primeras partidas perder cuesta la mitad.': 'Rangliste und Schnelles Match werden zu PvP: eine Warteschlange mit ELO, Ligen und Saisons, und in deinen ersten 10 Partien kostet Verlieren die Hälfte.',
