@@ -257,4 +257,7 @@ module.exports = [
   { id: 'historia-accesos-sin-nombre', que: 'En Historia, los accesos de arriba son iconos sin nombre y no se entiende a dónde llevan',
     archivo: 'public/js/ui.js', buscar: "`${itemImg(ico, 26)}<small>${label}</small>`", poner: 'itemImg(ico, 26)',
     tests: ['tests/e2e/historia-accesos.e2e.js'] },
+  { id: 'estrella-diminuta', que: 'La estrella de favorito se queda en un puntito que casi no se ve ni se puede tocar',
+    archivo: 'public/cards.css', buscar: '.fav-star { width: 28px; height: 28px; min-width: 28px; min-height: 28px;', poner: '.fav-star { width: 14px; height: 14px; min-width: 14px; min-height: 14px;',
+    tests: ['tests/e2e/ficha-cabe.e2e.js'] },
 ];

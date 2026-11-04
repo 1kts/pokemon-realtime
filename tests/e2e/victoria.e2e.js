@@ -64,7 +64,7 @@ module.exports = async ({ page, player, ok, log }) => {
 
   // El dinero de arriba sube lo que decían los resultados
   await page.tap('Volver');
-  await page.waitSee('Tu viaje');   // (ya de vuelta en Historia, con el CI lento: «Volver» es el de esa pantalla)
+  await page.waitSee('Kanto', { in: '.inner-bar' });   // (ya de vuelta en Historia, con el CI lento: «Volver» es el de esa pantalla; a 1280 el subtítulo «Tu viaje» ya no sale)
   await page.tap('Volver');
   await page.waitSee('Aventura');
   ok(await money() === before + won, `en el menú el dinero sube lo que decían: ${before} + ${won} = ${await money()}`);

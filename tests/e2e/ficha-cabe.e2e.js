@@ -19,6 +19,7 @@ module.exports = async ({ page, player, ok }) => {
       ok(caja.sobra <= 1, `${en} ${mon}: el lado del Pokémon cabe sin deslizar (sobran ${caja.sobra} px)`);
       for (const texto of [mon, 'Mote', /Quitar del equipo|Al equipo/, /Vender por/, /Caramelo Raro/])
         ok(await page.see(texto, { in: '.mon-sheet', ms: 2000 }), `${en} ${mon}: «${texto}» se ve sin desplazar nada`);
+      await page.waitFor(`!document.querySelector('.mon-sheet').getAnimations().length`);   // (la ficha entra con un zoom desde el 60 %: se mide ya quieta)
       const estrella = await page.eval(`(() => { const s = document.querySelector('.ms-acts .fav-star').getBoundingClientRect(), f = document.querySelector('.ms-stage').getBoundingClientRect(); return { alto: s.height, encima: !(s.top >= f.bottom || s.bottom <= f.top || s.left >= f.right || s.right <= f.left) }; })()`);
       ok(estrella.alto >= 24 && !estrella.encima, `${en} ${mon}: la estrella de favorito se ve y no tapa el sprite (${JSON.stringify(estrella)})`);
       for (const stat of ['PS', 'Ataque', 'Defensa', 'Velocidad'])

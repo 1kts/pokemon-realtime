@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-03",
- "cazadas": 78,
- "total": 78,
+ "fecha": "2026-11-04",
+ "cazadas": 79,
+ "total": 79,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -554,6 +554,13 @@
     "tests/e2e/historia-accesos.e2e.js"
    ],
    "motivo": "historia-accesos.e2e.js: ✗ el acceso «Mis Pokémon» lleva su nombre escrito"
+  },
+  "estrella-diminuta": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/ficha-cabe.e2e.js"
+   ],
+   "motivo": "ficha-cabe.e2e.js: ✗ 1280×800 Charmander: la estrella de favorito se ve y no tapa el sprite ({\"alto\":14,\"encima\":false}) | ✗ 1280×800 Eevee: la estrella de favorito se ve y no tapa el sprite ({\"alto\":14,\"encima\":false})"
   }
  }
 }

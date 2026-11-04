@@ -1,6 +1,6 @@
 // En Historia, Kanto y Johto se cambian desde dos botones grandes pegados al título (casi de su alto), y al lado salen
 // las regiones que llegarán, apagadas y con «Próximamente»: una a una si caben y, si no, juntas en un botón. Nada de la
-// cabecera se monta sobre otra cosa, y en el móvil siguen Kanto y Johto a mano.
+// cabecera se monta sobre otra cosa, y en el móvil siguen Kanto y Johto a mano. (Se mira a 1920: desde 0.40.2 los accesos con nombre ocupan más y las regiones salen una a una desde 1700 px.)
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'regiones' });
   for (const [dex, region] of [[4, 'kanto'], [155, 'johto']]) { me.client.send({ t: 'dev', dex, level: 20, region }); await me.client.wait(m => m.t === 'profile'); }
