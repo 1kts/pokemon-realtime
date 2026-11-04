@@ -447,7 +447,7 @@ export class UI {
     const ready = p.missions ? this.readyCount() : 0;
     for (const [ico, label, view] of [['pokeball', t('Mis Pokémon'), 'team'], ['seal-bag', t('Mochila'), 'bag'], ['forage-bag', t('Tienda'), 'shop'], ['star-piece', t('Misiones'), 'missions']]) {
       if (view === 'missions' && !p.missions) continue;
-      const b = el('button', 'sq-btn sq-' + view, itemImg(ico, 26));
+      const b = el('button', 'sq-btn sq-' + view, `${itemImg(ico, 26)}<small>${label}</small>`);   // (con su nombre debajo: solo el icono no se entendía)
       const name = view === 'missions' && ready ? `${label} · ${ready > 1 ? t('¡{n} premios por reclamar!', { n: ready }) : t('¡1 premio por reclamar!')}` : label;
       b.setAttribute('aria-label', name);
       b.title = name;
@@ -627,7 +627,7 @@ export class UI {
         const pct = weight * normal * 100;
         c.append(el('small', '', `${SPECIES[dex].name}<br>${pct < 1 ? '<1' : Math.round(pct)} %<span class="mini-lv"> · ${lv(min === max ? min : min + '-' + max)}</span>`));
         c.title = `${SPECIES[dex].name} · ${SPECIES[dex].types.map(t => TYPE_LABEL[t]).join('/')} · Gen ${SPECIES[dex].gen} · ${this.catchText(dex)}`;
-        c.append(this.catchPips(dex));
+        c.append(this.catchPips(dex), el('i', 'mini-pct', `${pct < 1 ? '<1' : Math.round(pct)}%`));   // (el %, en la barra corta del móvil)
         list.append(c);
       }
       // Especiales: silueta hasta que lo atrapas; muy de vez en cuando, cuestan de atrapar y 1 de cada 3 tiene IV perfectos.
@@ -639,6 +639,7 @@ export class UI {
         const c = el('div', 'mini rare' + (known ? ' caught' : ''));
         c.append(portrait(x.dex, 48, { silhouette: !known, shiny: !!x.shiny }));
         c.append(el('small', '', `${known ? SPECIES[x.dex].name : '???'}${x.shiny ? ' ✦' : ''}<br>${+(x.chance * 100).toFixed(2)} %<span class="mini-lv"> · ${lv(w.level)}</span>`));
+        c.append(el('i', 'mini-pct', `${+(x.chance * 100).toFixed(1)}%`));
         c.title = x.shiny ? t('Siempre shiny') : t('Especial de la zona: aparece muy de vez en cuando, cuesta mucho atraparlo y 1 de cada 3 tiene IV perfectos');
         list.append(c);
       }

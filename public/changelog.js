@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.40.2', date: '2026-11-04', title: 'Historia más clara',
+      items: [
+        ['cambio', 'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.'],
+        ['cambio', 'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.'],
+      ],
+    },
+    {
       v: '0.40.1', date: '2026-11-03', title: 'Evoluciones en tu colección',
       items: [
         ['arreglo', 'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.'],

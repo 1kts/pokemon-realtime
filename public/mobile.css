@@ -770,6 +770,16 @@
   .story-pathwrap .sp-box { min-height: 0; }
   .story-side { grid-column: 1; grid-row: 2; height: auto; min-height: 0; }
   .story-path { --gw: 84px; --gh: 104px; --nw: 104px; --nh: 126px; --rw: 92px; --rh: 70px; --road: 10px; --nm: 10px; --goh: 26px; --stopm: 4px; padding: 4px 14px 2px; }
+  /* (con algo más de alto, el Camino más grande: que llene su panel en vez de dejar una franja vacía abajo) */
+  @media (min-height: 385px) { .story-path { --gw: 92px; --gh: 113px; --nw: 113px; --nh: 137px; --rw: 100px; --rh: 76px; --road: 11px; } }
+  .story-body { gap: 6px; }   /* (un poco de aire entre el Camino y la franja de abajo) */
+  /* Los Pokémon de la ruta en la barra de abajo: más grandes y con su probabilidad debajo */
+  .story-side .node-info:not(.open) > .mini-team:not(.team-head ~ *) { gap: 4px; }
+  .story-side .node-info:not(.open) .mini { position: relative; display: grid; justify-items: center; padding-bottom: 11px; }
+  .story-side .node-info:not(.open) .mini canvas, .story-side .node-info:not(.open) .mini img.portrait { width: 44px !important; height: 44px !important; }
+  .story-side .node-info:not(.open) .mini .mini-pct { display: block; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); padding: 0 4px; border-radius: 6px;
+    font: 800 9.5px/1.25 var(--text); font-style: normal; color: #fff; background: rgba(0,0,0,.55); white-space: nowrap; }
+  .story-side .node-info:not(.open) .mini.rare .mini-pct { color: #ffd76a; }
   .story-side .node-info:not(.open) { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: 't m more go' 'c m more go'; align-items: center; gap: 0 10px; overflow: hidden; flex: none; max-height: 72px; padding: 6px 12px; }
   .story-side .node-info:not(.open) > * { display: none; }
   .story-side .node-info:not(.open) > :is(h3, .leader-head, .ni-caught, .ni-more, .warn, .mini-team:not(.team-head ~ *), button.primary, .league-box) { display: block; }
@@ -782,7 +792,6 @@
   .story-side .node-info:not(.open) > .mini-team:not(.team-head ~ *) { grid-area: m; display: flex !important; flex-wrap: nowrap; gap: 3px; margin: 0; }
   .story-side .node-info:not(.open) .mini { min-width: 0; padding: 0; border: 0; background: none; box-shadow: none; }
   .story-side .node-info:not(.open) .mini :is(small, .catch-pips) { display: none; }
-  .story-side .node-info:not(.open) .mini canvas, .story-side .node-info:not(.open) .mini img.portrait { width: 40px !important; height: 40px !important; }
   .story-side .node-info:not(.open) > .ni-more { grid-area: more; min-height: 44px; padding: 0 12px; font: 800 13px var(--text); color: #fff; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.2); border-radius: 10px; }
   .story-side .node-info:not(.open) > button.primary, .story-side .node-info:not(.open) > .warn { grid-area: go; position: static; margin: 0; min-height: 48px; padding: 0 22px; font-size: 17px; box-shadow: 0 3px 0 #a86a00; }
   .story-side .node-info:not(.open) > .league-box { grid-area: go; margin: 0; padding: 0; background: none; border: 0; }
@@ -790,8 +799,9 @@
   .story-side .node-info.open { position: fixed; inset: 6px; z-index: 40; overflow: auto; }
   .story-side .node-info.open > .ni-caught { display: block; }
   .story-quick { gap: 4px; margin-right: 6px; }
-  .story-quick .sq-btn { width: 40px; height: 40px; }
-  .story-quick .sq-btn img { width: 26px; height: 26px; }
+  .story-quick .sq-btn { min-width: 50px; height: 44px; padding: 2px 4px; border-radius: 10px; }
+  .story-quick .sq-btn img { width: 22px; height: 22px; }
+  .story-quick .sq-btn small { font-size: 9.5px; }
   .story-side .node-info.open > .ni-more { display: block; position: sticky; top: 0; z-index: 4; float: right; min-height: 40px; padding: 0 14px; font: 800 13px var(--text); color: #fff; background: #1a2766; border: 1px solid #3d53b0; border-radius: 10px; }
 }
 /* (en los más estrechos no caben también las medallas: ya salen en el Camino y en el «2/8» de cada región) */

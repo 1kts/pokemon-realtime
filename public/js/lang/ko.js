@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.2 ----------
+    'Historia más clara': '더 알기 쉬운 스토리',
+    'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': '스토리에서 위쪽 바로가기에 이름이 붙고, 모바일에서 길이 더 크게 보이며, 도로의 포켓몬마다 출현 확률이 나옵니다.',
+    'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.': '기술머신으로 배우는 기술은 레벨 50부터 고를 수 있습니다. PvP와 타워에서도 마찬가지라 처음부터 모든 기술을 알지는 않습니다.',
     // ---------- Novedades v0.40.1 ----------
     'Evoluciones en tu colección': '진화도 컬렉션에',
     'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '진화하면 새 포켓몬도 획득한 것으로 쳐서 도감에 나오고 아바타로도 쓸 수 있습니다. 예전에 진화한 포켓몬도 마찬가지입니다.',
@@ -1588,6 +1592,7 @@ export default {
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '최대 4개까지. 순서는 키와 같아요: 좌클릭, 우클릭, Q, E.',
     'aprendido': '배움',
     'MT': '기술머신',
+    'Por MT, a {lv}': '기술머신, {lv}',
     'Ya lleva 4: quita uno antes': '이미 4개예요: 먼저 1개를 빼세요',
     'Próximamente: {list}': '앞으로 배울 기술: {list}',
 

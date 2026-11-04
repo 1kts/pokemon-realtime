@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.2 ----------
+    'Historia más clara': 'A clearer Story',
+    'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': 'In Story, the shortcuts at the top show their names, the Path looks bigger on mobile and each route Pokémon shows its chance.',
+    'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.': 'Moves learned by TM can be chosen once a Pokémon reaches Lv.50, also in PvP and the Tower: no Pokémon knows everything from the start.',
     // ---------- Novedades v0.40.1 ----------
     'Evoluciones en tu colección': 'Evolutions in your collection',
     'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': 'When a Pokémon evolves, the new species counts as obtained: it shows in the Pokédex and you can use it as your avatar, including past evolutions.',
@@ -1619,6 +1623,7 @@ export default {
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': 'Choose up to 4. The order matches the keys: Click, Right-click, Q and E.',
     'aprendido': 'learned',
     'MT': 'TM',
+    'Por MT, a {lv}': 'By TM, at {lv}',
     'Ya lleva 4: quita uno antes': 'It already has 4: remove one first',
     'Próximamente: {list}': 'Coming up: {list}',
 

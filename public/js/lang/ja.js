@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.2 ----------
+    'Historia más clara': 'わかりやすいストーリー',
+    'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': 'ストーリーでは上のショートカットに名前が付き、スマホでは道のりが大きく表示され、ルートのポケモンには出現率が出ます。',
+    'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.': 'わざマシンで覚える技はレベル50から選べます。PvPとタワーでも同じ。最初から全部の技を覚えていることはありません。',
     // ---------- Novedades v0.40.1 ----------
     'Evoluciones en tu colección': '進化もコレクションに',
     'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '進化すると新しいポケモンも入手済みになり、図鑑に載ってアバターにも設定できます。以前に進化したポケモンも同じです。',
@@ -1588,6 +1592,7 @@ export default {
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '4つまで えらぼう。順番は キーと 同じ：左クリック、右クリック、Q、E。',
     'aprendido': 'おぼえた',
     'MT': 'わざマシン',
+    'Por MT, a {lv}': 'わざマシン（{lv}）',
     'Ya lleva 4: quita uno antes': 'もう 4つ：先に 1つ はずそう',
     'Próximamente: {list}': 'これから おぼえる：{list}',
 

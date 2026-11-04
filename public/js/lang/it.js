@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.2 ----------
+    'Historia más clara': 'Storia più chiara',
+    'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': 'In Storia, le scorciatoie in alto mostrano il nome, il Percorso è più grande su mobile e ogni Pokémon del percorso mostra la sua probabilità.',
+    'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.': 'Le mosse imparate con le MT si scelgono al livello 50, anche in PvP e nella Torre: nessun Pokémon sa tutto fin dall’inizio.',
     // ---------- Novedades v0.40.1 ----------
     'Evoluciones en tu colección': 'Le evoluzioni nella tua collezione',
     'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': 'Quando un Pokémon si evolve, la nuova specie conta come ottenuta: compare nel Pokédex e puoi usarla come avatar, anche per le evoluzioni passate.',
@@ -1588,6 +1592,7 @@ export default {
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': 'Scegline fino a 4. L\'ordine è quello dei tasti: Clic, Clic destro, Q ed E.',
     'aprendido': 'imparata',
     'MT': 'MT',
+    'Por MT, a {lv}': 'Con MT, al {lv}',
     'Ya lleva 4: quita uno antes': 'Ne ha già 4: togline una prima',
     'Próximamente: {list}': 'Prossimamente: {list}',
 

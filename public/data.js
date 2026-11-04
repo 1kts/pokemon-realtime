@@ -442,10 +442,11 @@
     return out;
   }
   const learnedAt = (dex, level) => learnset(dex).filter(([l]) => l <= level).map(([, m]) => m);
-  // Por MT (como en los juegos): se pueden elegir aparte de los que aprende subiendo, los caros desde Nv.32. Los salvajes y
-  // los líderes siguen llevando solo los de nivel (learnedAt)
-  const TM_BIG_LEVEL = 32;
-  const tmLevel = m => MOVES[m].cost >= 45 ? TM_BIG_LEVEL : 1;
+  // Por MT (como en los juegos): se pueden elegir aparte de los que aprende subiendo, todas al llegar a Nv.50 (antes no:
+  // que un Pokémon no lo sepa todo desde el principio; en PvP y la Torre, a Nv.50, sí). Los salvajes y los líderes siguen
+  // llevando solo los de nivel (learnedAt)
+  const TM_LEVEL = 50;
+  const tmLevel = () => TM_LEVEL;
   const tmMoves = dex => ((LEARN && LEARN.TM && LEARN.TM[dex]) || []).filter(m => MOVES[m] && !learnset(dex).some(([, x]) => x === m)).map(m => [tmLevel(m), m]);
   // Todo lo que puede llevar a ese nivel: lo aprendido subiendo y las MT
   const learnable = (dex, level) => [...new Set([...learnedAt(dex, level), ...tmMoves(dex).filter(([l]) => l <= level).map(([, m]) => m)])];

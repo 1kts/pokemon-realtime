@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-03",
- "cazadas": 76,
- "total": 76,
+ "cazadas": 78,
+ "total": 78,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -540,6 +540,20 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ y Gengar cuenta como conseguido"
+  },
+  "mt-desde-el-principio": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ un movimiento de MT no se puede llevar antes de Nv.50"
+  },
+  "historia-accesos-sin-nombre": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/historia-accesos.e2e.js"
+   ],
+   "motivo": "historia-accesos.e2e.js: ✗ el acceso «Mis Pokémon» lleva su nombre escrito"
   }
  }
 }

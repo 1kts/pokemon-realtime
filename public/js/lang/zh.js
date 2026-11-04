@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.40.2 ----------
+    'Historia más clara': '更清晰的故事模式',
+    'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': '在故事模式中，上方的快捷按钮显示名称，手机上的路线图更大，每只道路宝可梦都显示出现几率。',
+    'Lo que se aprende por MT se puede elegir al llegar a Nv.50, también en PvP y la Torre: así un Pokémon no lo sabe todo desde el principio.': '通过招式学习器学会的招式在宝可梦达到 50 级后才能选择，PvP 和对战塔也一样：不会一开始就什么都会。',
     // ---------- Novedades v0.40.1 ----------
     'Evoluciones en tu colección': '进化也计入收藏',
     'Al evolucionar, la nueva especie cuenta como conseguida: sale en la Pokédex y la puedes poner de avatar, también las que ya evolucionaste.': '宝可梦进化后，新的种类也算作已获得：会出现在图鉴中，也能设为头像，以前进化的也一样。',
@@ -1618,6 +1622,7 @@ export default {
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '最多选 4 个。顺序对应按键：左键、右键、Q 和 E。',
     'aprendido': '已学会',
     'MT': '招式学习器',
+    'Por MT, a {lv}': '招式学习器，{lv}',
     'Ya lleva 4: quita uno antes': '已经有 4 个了：请先去掉一个',
     'Próximamente: {list}': '即将学会：{list}',
 

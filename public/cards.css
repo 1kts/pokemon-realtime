@@ -1203,6 +1203,11 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
   background: linear-gradient(180deg, #2a3a86, #1a2766); border: 1px solid rgba(170,190,255,.35); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
 .story-quick .sq-btn:hover { border-color: rgba(255,210,63,.7); }
 .story-quick .sq-btn img { width: 30px; height: 30px; image-rendering: pixelated; pointer-events: none; }
+/* (cada acceso con su nombre debajo del icono) */
+.story-quick .sq-btn { grid-template-rows: auto auto; gap: 1px; width: auto; min-width: 62px; height: 52px; padding: 2px 6px; }
+.story-quick .sq-btn img { width: 26px; height: 26px; }
+.story-quick .sq-btn small { font: 800 10.5px/1 var(--text); color: #fff; white-space: nowrap; pointer-events: none; }
+.route-list .mini-pct { display: none; }
 .region-chips .rgc { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 4px 11px; border-radius: 10px; line-height: 1.1;
   border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--rc) 28%, #141b33), #10162b); }
 .region-chips .rgc.sel { border: 2px solid var(--gold); box-shadow: 0 0 12px rgba(255,190,40,.25); }
@@ -1228,8 +1233,10 @@ body.touch input, body.touch select, body.touch textarea { font-size: max(16px, 
 .story-regions .rgc.soon-all b { display: inline-flex; align-items: center; gap: 5px; font-size: 17px; color: #aeb9d6; }
 .story-regions .rgc.soon-all b svg { width: 13px; height: 13px; }
 .story-regions .rgc.soon-all small { color: #93a0c2; }
-@media (min-width: 1500px) { .story-regions .rgc.soon-all { display: none; } }
-@media (max-width: 1499px) { .story-regions .rgc.soon, .story .tb-ctx > .badges-mini { display: none; } }   /* (las medallas: en la región, 2/8) */
+.story .tb-ctx > .badges-mini { display: none; }   /* (las medallas: en la región, 2/8) */
+@media (min-width: 1700px) { .story-regions .rgc.soon-all { display: none; } }
+@media (max-width: 1699px) { .story-regions .rgc.soon { display: none; } }
+@media (min-width: 761px) and (max-width: 1599px) { .story .feature-sign small { display: none; } }   /* (sin sitio: el subtítulo del cartel deja paso a las regiones y los accesos) */
 @media (max-width: 760px), (max-height: 500px) { .story-regions .rgc:is(.soon, .soon-all) { display: none; } }
 .tz-strip { display: none; position: relative; overflow: hidden; margin-bottom: 10px; padding: 14px 0; border-radius: 16px; border: 2px solid color-mix(in srgb, var(--tc) 55%, rgba(255,255,255,.12));
   background: radial-gradient(60% 120% at 50% 50%, color-mix(in srgb, var(--tc) 22%, transparent), transparent 70%), linear-gradient(180deg, #1c2350, #121733); }
@@ -1958,3 +1965,7 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
   :is(.menu-main, body.tema-d .menu-main) .menu-card:is(.wide, .ranked) > span { max-width: calc(100% - 150px); font-size: 14px; }
   :is(.menu-main, body.tema-d .menu-main) .menu-card:is(.wide, .ranked) .art { width: 150px; height: 150px; top: auto; right: 6px; bottom: 6px; transform: none; }
 }
+
+/* Lo que podrá aprender por MT al llegar a Nv.50, en una línea bajo «Próximamente» */
+.move-tm-soon { margin: 6px 2px 0; font-size: 12.5px; line-height: 1.4; color: #c4d0e4; }
+.move-tm-soon b { color: #ffd76a; }

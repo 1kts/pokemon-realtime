@@ -23,18 +23,20 @@ const KEYS = ['Clic', 'Dcho', 'Q', 'E'];
 // Movimientos que aprenderá más adelante: como los de la lista, pero apagados (aún no se pueden elegir) y
 // con el nivel al que los aprende bien a la vista. También en el gestor de movimientos (ui.js)
 export function upcomingMoves(dex, level) {
-  // (y las MT caras, que se pueden elegir desde Nv.32)
-  const list = [...Data.learnset(dex).filter(([l, k]) => l > level && MOVES[k]), ...Data.tmMoves(dex).filter(([l]) => l > level).map(([l, k]) => [l, k, true])].sort((a, b) => a[0] - b[0]);
-  if (!list.length) return null;
+  const list = Data.learnset(dex).filter(([l, k]) => l > level && MOVES[k]);
+  // (y las MT, que se pueden elegir al llegar a Nv.50: todas juntas en una línea, que son muchas)
+  const tms = Data.tmMoves(dex).filter(([l]) => l > level);
+  if (!list.length && !tms.length) return null;
   const box = el('div', 'move-soon');
   box.append(el('h4', '', t('Próximamente')));
-  for (const [l, k, tm] of list) {
+  for (const [l, k] of list) {
     const m = MOVES[k];
-    const row = el('div', 'move-row locked', `<span class="slot">${typeIcon(m.type, 28)}<i>🔒</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em class="soon-lv">${tm ? `${t('MT')} · ` : ''}${lv(l)}</em>${moveStatsHtml(m)}`);
+    const row = el('div', 'move-row locked', `<span class="slot">${typeIcon(m.type, 28)}<i>🔒</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em class="soon-lv">${lv(l)}</em>${moveStatsHtml(m)}`);
     row.style.setProperty('--tc', TYPE_COLOR[m.type]);
     row.title = describeMove(m).split('\n').join(' · ');
     box.append(row);
   }
+  if (tms.length) box.append(el('p', 'move-tm-soon', `<b>${t('Por MT, a {lv}', { lv: lv(tms[0][0]) })}:</b> ${tms.map(([, k]) => MOVES[k].name).join(', ')}`));
   return box;
 }
 
