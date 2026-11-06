@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.41.0', date: '2026-11-06', title: 'Carga más rápida',
+      items: [
+        ['nuevo', 'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.'],
+        ['cambio', 'Los Pokémon cargan antes, sobre todo con conexión lenta: sus animaciones pesan casi la mitad y se ven exactamente igual.'],
+      ],
+    },
+    {
       v: '0.40.2', date: '2026-11-04', title: 'Historia más clara',
       items: [
         ['cambio', 'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.'],

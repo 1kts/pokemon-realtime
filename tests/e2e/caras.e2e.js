@@ -7,7 +7,7 @@ module.exports = async ({ page, player, ok }) => {
 
   // Las imágenes existen y cargan (normal y shiny)
   const loads = src => page.eval(`new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0); i.onerror = () => r(false); i.src = ${JSON.stringify(src)}; })`);
-  ok(await loads('portraits/emo/25/Happy.png') && await loads('portraits/emo/25/s/Happy.png') && await loads('sprites/1/Sleep.png'),
+  ok(await loads('portraits/emo/25/Happy.png') && await loads('portraits/emo/25/s/Happy.png') && await loads('sprites/1/Sleep.webp'),
     'hay retratos con emoción (normal y shiny) y animaciones nuevas de la Gen 1 y 2');
 
   // Retrato de Tesoros con emoción

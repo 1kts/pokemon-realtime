@@ -1,5 +1,5 @@
 // Hojas de sprites de SpriteCollab: carga, elección de fotograma y retratos para la interfaz.
-// Hojas en sprites/{dex}/{Anim}.png (shiny en sprites/{dex}/s/); columnas = fotogramas, filas = 8 direcciones.
+// Hojas en sprites/{dex}/{Anim}.webp (WebP sin pérdida: tools/sprites-webp.py; shiny en sprites/{dex}/s/); columnas = fotogramas, filas = 8 direcciones.
 const META = window.SPRITE_META;
 const images = new Map();   // "dex/Anim" | "dex/s/Anim" -> HTMLImageElement
 
@@ -12,7 +12,7 @@ export function sheet(dex, anim, shiny = false) {
   let img = images.get(key);
   if (!img) {
     img = new Image();
-    img.src = `sprites/${dex}/${s ? 's/' : ''}${anim}.png`;
+    img.src = `sprites/${dex}/${s ? 's/' : ''}${anim}.webp`;
     images.set(key, img);
   }
   return img;

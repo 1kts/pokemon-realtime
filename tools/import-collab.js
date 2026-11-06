@@ -2,7 +2,7 @@
 // traen: animaciones extra (EXTRA, normal y shiny) y los retratos con emoción (EMOTIONS, normal y shiny).
 //   node tools/import-collab.js 1 251            Gen 1 y 2 (descarga lo que falte)
 //   node tools/import-collab.js 1 251 --force    lo vuelve a descargar todo
-// Animaciones: public/sprites/{dex}/{Anim}.png (y s/ las shiny); su geometría se añade a
+// Animaciones: public/sprites/{dex}/{Anim}.webp (y s/ las shiny); su geometría se añade a
 // public/sprites/meta.js: fotograma y duraciones de AnimData.xml, ancla (los pies) = centro de la sombra
 // del primer fotograma en {Anim}-Shadow.png, r: 1 si la hoja tiene una sola dirección.
 // Emociones: public/portraits/emo/{dex}/{Emoción}.png (y s/), con su índice en public/portraits/emo.js.
@@ -20,6 +20,8 @@ const EMOTIONS = ['Normal', 'Happy', 'Joyous', 'Inspired', 'Determined', 'Angry'
 const START = '<!-- collab:inicio (lo rellena tools/import-collab.js) -->', END = '<!-- collab:fin -->';
 const [from, to] = process.argv.slice(2, 4).map(Number);
 const force = process.argv.includes('--force');
+// (las hojas de sprites se guardan como PNG y al final pasan a WebP: tools/sprites-webp.py)
+const have = p => fs.existsSync(p) || fs.existsSync(p.replace(/\.png$/, '.webp'));
 if (!from || !to) { console.log('Uso: node tools/import-collab.js <desde> <hasta> [--force]'); process.exit(2); }
 
 async function get(url, type = 'buffer') {
@@ -117,7 +119,7 @@ const save = (file, buf) => { fs.mkdirSync(path.dirname(file), { recursive: true
       if (!a) continue;
       const fileName = a.copyOf || anim;
       const out = path.join(ROOT, 'public/sprites', String(dex), anim + '.png');
-      if (force || !fs.existsSync(out) || !m.a[anim]) {
+      if (force || !have(out) || !m.a[anim]) {
         const png = await get(`${RAW}sprite/${key}/${fileName}-Anim.png`);
         const shadow = await get(`${RAW}sprite/${key}/${fileName}-Shadow.png`);
         if (!png || !shadow) continue;
@@ -130,11 +132,11 @@ const save = (file, buf) => { fs.mkdirSync(path.dirname(file), { recursive: true
       const sa = sdata[anim];
       if (sa && sa.w === a.w && sa.h === a.h) {
         const sout = path.join(ROOT, 'public/sprites', String(dex), 's', anim + '.png');
-        if (force || !fs.existsSync(sout)) {
+        if (force || !have(sout)) {
           const spng = await get(`${RAW}sprite/${key}/0000/0001/${sa.copyOf || anim}-Anim.png`);
           if (spng) save(sout, spng);
         }
-        if (fs.existsSync(sout)) m.sh = [...new Set([...(m.sh || []), anim])];
+        if (have(sout)) m.sh = [...new Set([...(m.sh || []), anim])];
       }
     }
     for (const id of [t.sprite_credit && t.sprite_credit.primary, ...((t.sprite_credit && t.sprite_credit.secondary) || [])]) credit(id, dex);
@@ -186,5 +188,7 @@ ${END}`;
   if (i >= 0 && j > i) src = src.slice(0, i) + section + src.slice(j + END.length);
   else src = src.replace('\n## Marca', `\n${section}\n\n## Marca`);
   fs.writeFileSync(credits, src);
+  // Las hojas nuevas, a WebP como las demás (sprites.js las pide así)
+  require('child_process').spawnSync('python3', [path.join(__dirname, 'sprites-webp.py')], { stdio: 'inherit' });
   console.log(`\n${anims} animaciones nuevas · ${faces} retratos · ${byArtist.size} artistas`);
 })().catch(e => { console.error(e); process.exit(1); });

@@ -260,4 +260,10 @@ module.exports = [
   { id: 'estrella-diminuta', que: 'La estrella de favorito se queda en un puntito que casi no se ve ni se puede tocar',
     archivo: 'public/cards.css', buscar: '.fav-star { width: 28px; height: 28px; min-width: 28px; min-height: 28px;', poner: '.fav-star { width: 14px; height: 14px; min-width: 14px; min-height: 14px;',
     tests: ['tests/e2e/ficha-cabe.e2e.js'] },
+  { id: 'sprites-en-png', que: 'El juego pide los sprites en PNG (que ya no están): los Pokémon salen vacíos',
+    archivo: 'public/js/sprites.js', buscar: "${anim}.webp`;", poner: "${anim}.png`;",
+    tests: ['tests/e2e/sprites-webp.e2e.js'] },
+  { id: 'portada-sin-aviso-oficial', que: 'La portada no avisa de cuál es la web oficial ni de que el juego no pide pagar ni descargar nada',
+    archivo: 'public/js/account.js', buscar: "    box.append(el('p', 'official',", poner: "    void (el('p', 'official',",
+    tests: ['tests/e2e/portada-oficial.e2e.js'] },
 ];

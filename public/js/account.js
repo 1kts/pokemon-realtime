@@ -94,6 +94,8 @@ export const accountViews = {
     box.append(mons);
     const form = el('div', 'auth');
     box.append(form);
+    // Solo esta web: por si salen copias que piden pagar o descargar algo (pasa con otros fan games)
+    box.append(el('p', 'official', `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 2.5 3.6v4c0 3.3 2.3 5.9 5.5 6.9 3.2-1 5.5-3.6 5.5-6.9v-4L8 1.5Z" fill="currentColor"/><path d="m5.6 8.1 1.7 1.7 3.2-3.4" fill="none" stroke="#10162b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${t('Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.')}</span>`));
     const saved = Net.hasSession() && Net.savedName();
     this.authTab = this.authTab || (saved ? 'continue' : 'guest');
     const render = () => {

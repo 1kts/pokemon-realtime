@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.0 ----------
+    'Carga más rápida': '더 빠른 로딩',
+    'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': '타이틀 화면에서 공식 사이트를 알려 줍니다: pokearenas.com, 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
+    'Los Pokémon cargan antes, sobre todo con conexión lenta: sus animaciones pesan casi la mitad y se ven exactamente igual.': '포켓몬이 더 빨리 로드됩니다. 특히 느린 연결에서요. 애니메이션 용량이 거의 절반으로 줄었고 모습은 똑같습니다.',
     // ---------- Novedades v0.40.2 ----------
     'Historia más clara': '더 알기 쉬운 스토리',
     'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': '스토리에서 위쪽 바로가기에 이름이 붙고, 모바일에서 길이 더 크게 보이며, 도로의 포켓몬마다 출현 확률이 나옵니다.',
@@ -1591,6 +1595,7 @@ export default {
     'Movimientos de {m}': '{m}의 기술',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '최대 4개까지. 순서는 키와 같아요: 좌클릭, 우클릭, Q, E.',
     'aprendido': '배움',
+    'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '공식 사이트: <b>pokearenas.com</b>. 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
     'MT': '기술머신',
     'Por MT, a {lv}': '기술머신, {lv}',
     'Ya lleva 4: quita uno antes': '이미 4개예요: 먼저 1개를 빼세요',

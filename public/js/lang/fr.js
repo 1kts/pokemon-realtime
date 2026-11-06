@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.0 ----------
+    'Carga más rápida': 'Chargement plus rapide',
+    'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'L’écran titre te rappelle quel est le site officiel : pokearenas.com, gratuit et dans le navigateur. Si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
+    'Los Pokémon cargan antes, sobre todo con conexión lenta: sus animaciones pesan casi la mitad y se ven exactamente igual.': 'Les Pokémon chargent plus vite, surtout avec une connexion lente : leurs animations pèsent presque moitié moins et sont exactement pareilles.',
     // ---------- Novedades v0.40.2 ----------
     'Historia más clara': 'Une Histoire plus claire',
     'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': 'Dans Histoire, les raccourcis du haut affichent leur nom, le Chemin est plus grand sur mobile et chaque Pokémon de la route montre sa probabilité.',
@@ -1543,6 +1547,7 @@ export default {
     'Movimientos de {m}': 'Capacités de {m}',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': 'Choisis-en jusqu\'à 4. L\'ordre est celui des touches : Clic, Clic droit, Q et E.',
     'aprendido': 'apprise',
+    'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Site officiel : <b>pokearenas.com</b>. C’est gratuit et ça se joue dans le navigateur : si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
     'MT': 'CT',
     'Por MT, a {lv}': 'Par CT, au {lv}',
     'Ya lleva 4: quita uno antes': 'Il en a déjà 4 : retires-en une d\'abord',

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.0 ----------
+    'Carga más rápida': '加载更快',
+    'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': '标题画面会提醒你官方网站是 pokearenas.com，免费且在浏览器中游玩。如果有人要你付费或下载东西，那不是我们。',
+    'Los Pokémon cargan antes, sobre todo con conexión lenta: sus animaciones pesan casi la mitad y se ven exactamente igual.': '宝可梦加载更快，尤其是在网速慢时：动画体积几乎减半，画面完全一样。',
     // ---------- Novedades v0.40.2 ----------
     'Historia más clara': '更清晰的故事模式',
     'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': '在故事模式中，上方的快捷按钮显示名称，手机上的路线图更大，每只道路宝可梦都显示出现几率。',
@@ -1621,6 +1625,7 @@ export default {
     'Movimientos de {m}': '{m}的招式',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '最多选 4 个。顺序对应按键：左键、右键、Q 和 E。',
     'aprendido': '已学会',
+    'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '官方网站：<b>pokearenas.com</b>。游戏免费，在浏览器中游玩：如果有人要你付费或下载东西，那不是我们。',
     'MT': '招式学习器',
     'Por MT, a {lv}': '招式学习器，{lv}',
     'Ya lleva 4: quita uno antes': '已经有 4 个了：请先去掉一个',

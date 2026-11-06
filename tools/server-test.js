@@ -650,6 +650,12 @@ class Client {
   }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
+  // Los sprites, en WebP (un 42 % menos que los PNG, sin perder un píxel), con su tipo y guardados un día en el navegador
+  {
+    const head = url => new Promise(r => require('http').get(`http://localhost:${port}${url}`, res => { res.resume(); res.on('end', () => r({ code: res.statusCode, type: res.headers['content-type'], cache: res.headers['cache-control'] })); }));
+    const w = await head('/sprites/6/Idle.webp'), p = await head('/sprites/6/Idle.png');
+    ok(w.code === 200 && /image\/webp/.test(w.type) && /max-age=86400/.test(w.cache) && p.code === 404, `los sprites se sirven en WebP, con caché (${w.code} ${w.type} ${w.cache}; el PNG ya no está: ${p.code})`);
+  }
   // Volver a entrar no baja otra vez el código del juego: con lo que ya tiene el navegador (su ETag) basta un 304 sin
   // cuerpo; si el archivo cambia, se baja entero
   {

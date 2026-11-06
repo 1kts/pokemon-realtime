@@ -37,7 +37,7 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || undefined;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+  '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
   '.woff2': 'font/woff2', '.woff': 'font/woff', '.txt': 'text/plain; charset=utf-8', '.mp3': 'audio/mpeg' };
 
 // Cabeceras de seguridad de todas las respuestas; las páginas HTML llevan además la CSP: todo
@@ -89,7 +89,7 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(file);
     const tag = `W/"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;
     const head = { 'Content-Type': MIME[ext] || 'application/octet-stream', ETag: tag,
-      'Cache-Control': ext === '.png' || ext === '.jpg' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' };
+      'Cache-Control': ext === '.png' || ext === '.webp' || ext === '.jpg' ? 'max-age=86400' : url.startsWith('/vendor/') ? 'max-age=604800' : url.startsWith('/music/') ? 'max-age=86400' : 'no-cache' };
     // (la página no: su CSP va con ella)
     // (comparando solo el valor: Caddy o un proxy pueden devolverlo sin «W/» o con «-gzip» detrás, y puede venir una lista)
     const bare = v => v.trim().replace(/^W\//, '').replace(/^"|"$/g, '').replace(/-(gzip|zstd|br)$/, '');

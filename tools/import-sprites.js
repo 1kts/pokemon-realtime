@@ -80,4 +80,5 @@ const text = fs.readFileSync(credits, 'utf8');
 const start = text.indexOf('| Artista |');
 const end = text.indexOf('\n\n', start);
 fs.writeFileSync(credits, text.slice(0, start) + '| Artista | Contacto | Sprites (nº de Pokédex) |\n|---|---|---|\n' + rows.join('\n') + text.slice(end));
+require('child_process').spawnSync('python3', [path.join(__dirname, 'sprites-webp.py')], { stdio: 'inherit' });   // (a WebP, como las pide sprites.js)
 console.log(`${dexes.length} especies (${shinies} con shiny), ${rows.length} artistas`);

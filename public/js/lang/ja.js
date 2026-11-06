@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.0 ----------
+    'Carga más rápida': '読み込みが速く',
+    'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'タイトル画面で公式サイトがわかるようになりました：pokearenas.com、無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
+    'Los Pokémon cargan antes, sobre todo con conexión lenta: sus animaciones pesan casi la mitad y se ven exactamente igual.': 'ポケモンの読み込みが速くなりました。特に回線が遅いときに。アニメーションのサイズがほぼ半分になり、見た目はまったく同じです。',
     // ---------- Novedades v0.40.2 ----------
     'Historia más clara': 'わかりやすいストーリー',
     'En Historia, los accesos de arriba llevan su nombre, el Camino se ve más grande en el móvil y cada Pokémon de la ruta enseña su probabilidad.': 'ストーリーでは上のショートカットに名前が付き、スマホでは道のりが大きく表示され、ルートのポケモンには出現率が出ます。',
@@ -1591,6 +1595,7 @@ export default {
     'Movimientos de {m}': '{m}の わざ',
     'Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.': '4つまで えらぼう。順番は キーと 同じ：左クリック、右クリック、Q、E。',
     'aprendido': 'おぼえた',
+    'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '公式サイト：<b>pokearenas.com</b>。無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
     'MT': 'わざマシン',
     'Por MT, a {lv}': 'わざマシン（{lv}）',
     'Ya lleva 4: quita uno antes': 'もう 4つ：先に 1つ はずそう',
