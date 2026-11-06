@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 81,
- "total": 81,
+ "cazadas": 82,
+ "total": 82,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -575,6 +575,13 @@
     "tests/e2e/portada-oficial.e2e.js"
    ],
    "motivo": "portada-oficial.e2e.js: ✗ la portada dice que la web oficial es pokearenas.com"
+  },
+  "sprites-png-viejos-sin-respuesta": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ quien aún tiene abierta una versión de antes y los pide en PNG recibe el WebP"
   }
  }
 }

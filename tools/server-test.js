@@ -654,7 +654,9 @@ class Client {
   {
     const head = url => new Promise(r => require('http').get(`http://localhost:${port}${url}`, res => { res.resume(); res.on('end', () => r({ code: res.statusCode, type: res.headers['content-type'], cache: res.headers['cache-control'] })); }));
     const w = await head('/sprites/6/Idle.webp'), p = await head('/sprites/6/Idle.png');
-    ok(w.code === 200 && /image\/webp/.test(w.type) && /max-age=86400/.test(w.cache) && p.code === 404, `los sprites se sirven en WebP, con caché (${w.code} ${w.type} ${w.cache}; el PNG ya no está: ${p.code})`);
+    ok(w.code === 200 && /image\/webp/.test(w.type) && /max-age=86400/.test(w.cache), `los sprites se sirven en WebP, con caché (${w.code} ${w.type} ${w.cache})`);
+    ok(p.code === 200 && /image\/webp/.test(p.type), `quien aún tiene abierta una versión de antes y los pide en PNG recibe el WebP, no un hueco (${p.code} ${p.type})`);
+    ok((await head('/sprites/6/NoExiste.png')).code === 404 && (await head('/js/../../package.json')).code !== 200, 'lo que no existe sigue sin existir');
   }
   // Volver a entrar no baja otra vez el código del juego: con lo que ya tiene el navegador (su ETag) basta un 304 sin
   // cuerpo; si el archivo cambia, se baja entero

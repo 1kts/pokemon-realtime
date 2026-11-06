@@ -266,4 +266,7 @@ module.exports = [
   { id: 'portada-sin-aviso-oficial', que: 'La portada no avisa de cuál es la web oficial ni de que el juego no pide pagar ni descargar nada',
     archivo: 'public/js/account.js', buscar: "    box.append(el('p', 'official',", poner: "    void (el('p', 'official',",
     tests: ['tests/e2e/portada-oficial.e2e.js'] },
+  { id: 'sprites-png-viejos-sin-respuesta', que: 'Al actualizar, quien tenía el juego abierto ve los Pokémon en blanco (pide los sprites en PNG y ya no están)',
+    archivo: 'server/index.js', buscar: "if (/^\\/sprites\\/.+\\.png$/.test(url) && !fs.existsSync(file))", poner: 'if (false)',
+    tests: ['tools/server-test.js'] },
 ];
