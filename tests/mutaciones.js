@@ -276,7 +276,7 @@ module.exports = [
     archivo: 'server/battle.js', buscar: 'r: m.vr || m.range, arc: m.va || m.arc,', poner: 'r: m.range, arc: m.arc,',
     tests: ['tools/arena-test.js'] },
   { id: 'hilos-resultado-perdido', que: 'Con los combates en otro núcleo, al acabar no llega el resultado: el jugador se queda en el combate',
-    archivo: 'server/battle-worker.js', buscar: "    setImmediate(() => parentPort.postMessage({ id: m.id, t: 'gone' }));", poner: "    parentPort.postMessage({ id: m.id, t: 'gone' });",
+    archivo: 'server/battle-worker.js', buscar: "    setImmediate(() => { if (outbox.length) flush(); parentPort.postMessage({ id: m.id, t: 'gone' }); });", poner: "    parentPort.postMessage({ id: m.id, t: 'gone' });",
     tests: ['tools/server-test.js'] },
   { id: 'movimientos-sin-guardar', que: 'Al cambiar los movimientos en la ficha no se guardan: al volver, están los de antes',
     archivo: 'public/js/monsheet.js', buscar: "        this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: [...chosen] });\n", poner: '',
