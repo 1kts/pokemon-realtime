@@ -267,7 +267,7 @@ module.exports = [
     archivo: 'public/js/account.js', buscar: "    box.append(el('p', 'official',", poner: "    void (el('p', 'official',",
     tests: ['tests/e2e/portada-oficial.e2e.js'] },
   { id: 'sprites-png-viejos-sin-respuesta', que: 'Al actualizar, quien tenía el juego abierto ve los Pokémon en blanco (pide los sprites en PNG y ya no están)',
-    archivo: 'server/index.js', buscar: "if (/^\\/sprites\\/.+\\.png$/.test(url) && !fs.existsSync(file))", poner: 'if (false)',
+    archivo: 'server/index.js', buscar: "if (/^\\/(sprites|portraits|icons)\\/.+\\.png$/.test(url) && !fs.existsSync(file))", poner: 'if (false)',
     tests: ['tools/server-test.js'] },
   { id: 'mt-todas', que: 'A Nv.50 se abren todas las MT de golpe: la lista de movimientos se hace enorme (Charizard, 32)',
     archivo: 'public/data.js', buscar: 'const TM_OWN = 3, TM_MAX = 4;', poner: 'const TM_OWN = 99, TM_MAX = 99;',

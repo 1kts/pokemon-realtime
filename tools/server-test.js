@@ -660,6 +660,8 @@ class Client {
     const w = await head('/sprites/6/Idle.webp'), p = await head('/sprites/6/Idle.png');
     ok(w.code === 200 && /image\/webp/.test(w.type) && /max-age=86400/.test(w.cache), `los sprites se sirven en WebP, con caché (${w.code} ${w.type} ${w.cache})`);
     ok(p.code === 200 && /image\/webp/.test(p.type), `quien aún tiene abierta una versión de antes y los pide en PNG recibe el WebP, no un hueco (${p.code} ${p.type})`);
+    const pr = await head('/portraits/emo/25/Happy.png'), ic = await head('/icons/25.png');
+    ok(pr.code === 200 && /image\/webp/.test(pr.type) && ic.code === 200 && /image\/webp/.test(ic.type), `los retratos y los iconos también van en WebP, y los PNG de antes reciben el WebP (${pr.type}, ${ic.type})`);
     ok((await head('/sprites/6/NoExiste.png')).code === 404 && (await head('/js/../../package.json')).code !== 200, 'lo que no existe sigue sin existir');
   }
   // Volver a entrar no baja otra vez el código del juego: con lo que ya tiene el navegador (su ETag) basta un 304 sin

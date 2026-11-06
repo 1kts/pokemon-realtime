@@ -2,8 +2,9 @@
 # Pasa las hojas de sprites de public/sprites (PNG de SpriteCollab, tools/import-sprites.js) a WebP sin pérdida: los mismos
 # píxeles en un 37 % del peso (Charizard: 197 KB -> 73 KB). Cada animación sigue en su archivo, para que el menú solo baje
 # la que enseña (Idle) y el combate las suyas. Borra el PNG de cada una que convierte; las que ya son WebP las deja.
-#   python3 tools/sprites-webp.py            todas
-#   python3 tools/sprites-webp.py 6 25       solo esas especies
+#   python3 tools/sprites-webp.py                        todas las hojas de sprites
+#   python3 tools/sprites-webp.py 6 25                   solo esas especies
+#   python3 tools/sprites-webp.py --carpeta portraits    otra carpeta de public/ entera (retratos, iconos…)
 import os, sys, glob
 from concurrent.futures import ProcessPoolExecutor
 from PIL import Image
@@ -25,8 +26,13 @@ def one(png):
     return (png, before, after, None)
 
 def main():
-    dexes = sys.argv[1:]
-    pngs = sorted(glob.glob(os.path.join(ROOT, '*', '*.png')) + glob.glob(os.path.join(ROOT, '*', 's', '*.png')))
+    args = sys.argv[1:]
+    if args[:1] == ['--carpeta']:
+        base = os.path.join(os.path.dirname(__file__), '..', 'public', args[1])
+        pngs, dexes = sorted(glob.glob(os.path.join(base, '**', '*.png'), recursive=True)), []
+    else:
+        dexes = args
+        pngs = sorted(glob.glob(os.path.join(ROOT, '*', '*.png')) + glob.glob(os.path.join(ROOT, '*', 's', '*.png')))
     if dexes:
         pngs = [p for p in pngs if p.split(os.sep)[-2] in dexes or (p.split(os.sep)[-2] == 's' and p.split(os.sep)[-3] in dexes)]
     total_b = total_a = 0

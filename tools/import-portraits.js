@@ -1,5 +1,5 @@
 // Descarga de SpriteCollab el retrato "Normal" (40×40, la cara de cerca) de cada especie de
-// public/data.js a public/portraits/{nº de Pokédex}.png, y escribe en CREDITS.md la tabla de sus
+// public/data.js a public/portraits/{nº de Pokédex}.png (después, a WebP: tools/sprites-webp.py --carpeta portraits), y escribe en CREDITS.md la tabla de sus
 // artistas (sección "Retratos", que tools/legal.js lleva a las páginas legales). Misma licencia que
 // los sprites: CC BY-NC 4.0, con atribución.
 //   node tools/import-portraits.js            descarga lo que falte y regenera los créditos
@@ -42,7 +42,7 @@ async function get(url, type = 'buffer') {
     // portrait_files: { Normal: <bloqueado>, ... }; basta con que exista la clave
     if (!t || !('Normal' in (t.portrait_files || {}))) { missing.push(dex); continue; }
     const file = path.join(OUT, dex + '.png');
-    if (force || !fs.existsSync(file)) {
+    if (force || !(fs.existsSync(file) || fs.existsSync(file.replace(/\.png$/, '.webp')))) {
       const png = await get(`${RAW}portrait/${key}/Normal.png`);
       if (!png) { missing.push(dex); continue; }
       fs.writeFileSync(file, png);
@@ -76,5 +76,6 @@ ${END}`;
   if (i >= 0 && j > i) src = src.slice(0, i) + section + src.slice(j + END.length);
   else src = src.replace('\n## Marca', `\n${section}\n\n## Marca`);
   fs.writeFileSync(credits, src);
+  require('child_process').spawnSync('python3', [path.join(__dirname, 'sprites-webp.py'), '--carpeta', 'portraits'], { stdio: 'inherit' });   // (a WebP)
   console.log(`${got} retratos · ${byArtist.size} artistas${missing.length ? ` · sin retrato: ${missing.join(', ')}` : ''}`);
 })().catch(e => { console.error(e); process.exit(1); });

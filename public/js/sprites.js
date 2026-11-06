@@ -91,7 +91,7 @@ export function monIcon(dex, size = 40, opts = {}) {
   if (opts.shiny || dex > MENU_ICON_MAX) return portrait(dex, size, opts);
   const img = document.createElement('img');
   img.className = 'mon-icon' + (opts.silhouette ? ' silhouette' : '');
-  img.src = `icons/${dex}.png`;
+  img.src = `icons/${dex}.webp`;
   img.width = size; img.height = Math.round(size * 0.75);
   img.alt = ''; img.draggable = false;
   img.onerror = () => img.replaceWith(portrait(dex, size, opts));
@@ -131,7 +131,7 @@ export const faceSrc = (dex, emo = 'Normal', shiny = false) => {
   const f = EMO[dex];
   if (!f) return null;
   const e = f.e.includes(emo) ? emo : 'Normal';
-  return `portraits/emo/${dex}/${shiny && f.s && f.s.includes(e) ? 's/' : ''}${e}.png`;
+  return `portraits/emo/${dex}/${shiny && f.s && f.s.includes(e) ? 's/' : ''}${e}.webp`;
 };
 export function face(dex, size = 40, emo = 'Normal', shiny = false) {
   const src = faceSrc(dex, emo, shiny);

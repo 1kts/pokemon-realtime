@@ -43,7 +43,7 @@ export const EMOTION_NAME = { Normal: 'Normal', Happy: 'Contento', Joyous: 'Euf�
   Worried: 'Preocupado', Sigh: 'Resignado', Sad: 'Triste', 'Teary-Eyed': 'Lloroso', Crying: 'Llorando' };
 // Retrato: la cara del Pokémon de cerca (retrato de SpriteCollab, con emoción si la tiene)
 export function portraitArt(dex, size, emo) {
-  return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.png` : `portraits/${dex}.png`}" alt="" draggable="false" data-fallback="sprites/${dex}/Idle.webp" data-miss-class="pt-miss"></span>`;
+  return `<span class="pt-face" style="--s:${size}px"><img class="pt-img" src="${emo && Data.hasEmotion(dex, emo) ? `portraits/emo/${dex}/${emo}.webp` : `portraits/${dex}.webp`}" alt="" draggable="false" data-fallback="sprites/${dex}/Idle.webp" data-miss-class="pt-miss"></span>`;
 }
 // Efecto: capa animada por encima de cualquier avatar, en pixel art como los Pokémon: cada efecto con sus formas (las
 // de las partículas de combate, pixshapes.js), sus colores y su movimiento (style.css): llamas que suben

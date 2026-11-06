@@ -5,7 +5,7 @@
 // Animaciones: public/sprites/{dex}/{Anim}.webp (y s/ las shiny); su geometría se añade a
 // public/sprites/meta.js: fotograma y duraciones de AnimData.xml, ancla (los pies) = centro de la sombra
 // del primer fotograma en {Anim}-Shadow.png, r: 1 si la hoja tiene una sola dirección.
-// Emociones: public/portraits/emo/{dex}/{Emoción}.png (y s/), con su índice en public/portraits/emo.js.
+// Emociones: public/portraits/emo/{dex}/{Emoción}.webp (y s/), con su índice en public/portraits/emo.js.
 // Créditos: tabla por artista en CREDITS.md entre las marcas de START/END. Licencia CC BY-NC 4.0.
 const fs = require('fs');
 const path = require('path');
@@ -145,11 +145,11 @@ const save = (file, buf) => { fs.mkdirSync(path.dirname(file), { recursive: true
     const shave = EMOTIONS.filter(e => shinyGroup && e in (shinyGroup.portrait_files || {}));
     for (const e of have) {
       const out = path.join(ROOT, 'public/portraits/emo', String(dex), e + '.png');
-      if (force || !fs.existsSync(out)) { const png = await get(`${RAW}portrait/${key}/${e}.png`); if (png) { save(out, png); faces++; } }
+      if (force || !have(out)) { const png = await get(`${RAW}portrait/${key}/${e}.png`); if (png) { save(out, png); faces++; } }
     }
     for (const e of shave) {
       const out = path.join(ROOT, 'public/portraits/emo', String(dex), 's', e + '.png');
-      if (force || !fs.existsSync(out)) { const png = await get(`${RAW}portrait/${key}/0000/0001/${e}.png`); if (png) { save(out, png); faces++; } }
+      if (force || !have(out)) { const png = await get(`${RAW}portrait/${key}/0000/0001/${e}.png`); if (png) { save(out, png); faces++; } }
     }
     if (have.length) EMO[dex] = { e: have, ...(shave.length ? { s: shave } : {}) };
     for (const id of [t.portrait_credit && t.portrait_credit.primary, ...((t.portrait_credit && t.portrait_credit.secondary) || [])]) credit(id, dex);
@@ -190,5 +190,6 @@ ${END}`;
   fs.writeFileSync(credits, src);
   // Las hojas nuevas, a WebP como las demás (sprites.js las pide así)
   require('child_process').spawnSync('python3', [path.join(__dirname, 'sprites-webp.py')], { stdio: 'inherit' });
+  require('child_process').spawnSync('python3', [path.join(__dirname, 'sprites-webp.py'), '--carpeta', 'portraits'], { stdio: 'inherit' });
   console.log(`\n${anims} animaciones nuevas · ${faces} retratos · ${byArtist.size} artistas`);
 })().catch(e => { console.error(e); process.exit(1); });

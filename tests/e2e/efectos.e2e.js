@@ -35,5 +35,5 @@ module.exports = async ({ page, player, ok }) => {
   ok(await page.waitFor(`document.querySelector('.ava-edit .frame-opt.sel') && /Llamas/.test(document.querySelector('.ava-edit .frame-opt.sel').textContent) && !!document.querySelector('.ava-edit .ae-preview .ava-fx-layer.fx-llamas')`).then(() => true, () => false),
     'el editor se queda abierto, con Llamas elegido, y su vista previa ya lleva el efecto');
   const art = await page.eval(`import('/js/missions.js').then(m => m.avatarArt('pt:6:Determined', 64))`);
-  ok(art.includes('portraits/emo/6/Determined.png') && !art.includes('fx-'), 'un retrato es solo la cara, sin efecto incluido');
+  ok(art.includes('portraits/emo/6/Determined.webp') && !art.includes('fx-'), 'un retrato es solo la cara, sin efecto incluido');
 };

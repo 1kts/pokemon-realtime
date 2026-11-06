@@ -80,9 +80,9 @@ const server = http.createServer((req, res) => {
   if (url === '/legal/en') url = '/legal/en.html';
   if (url.startsWith('/admin/')) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
   let file = path.join(PUBLIC, url === '/' ? 'index.html' : url);
-  // Los sprites ya son WebP: quien tenga abierta una versión de antes los pide en PNG y se le da el WebP (la imagen se
-  // ve igual), para que no salgan Pokémon en blanco hasta que recargue
-  if (/^\/sprites\/.+\.png$/.test(url) && !fs.existsSync(file)) file = file.replace(/\.png$/, '.webp');
+  // Los sprites, retratos e iconos ya son WebP: quien tenga abierta una versión de antes los pide en PNG y se le da el
+  // WebP (la imagen se ve igual), para que no salgan Pokémon en blanco hasta que recargue
+  if (/^\/(sprites|portraits|icons)\/.+\.png$/.test(url) && !fs.existsSync(file)) file = file.replace(/\.png$/, '.webp');
   if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   // Cada archivo lleva su ETag (tamaño y fecha): lo que es «no-cache» (el código del juego y sus datos) el navegador lo
   // vuelve a pedir en cada visita, pero si no ha cambiado le basta un «304 sin cambios» en vez de bajarlo entero (antes
