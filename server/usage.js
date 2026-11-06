@@ -1,5 +1,6 @@
 // Uso del juego por día para el panel de admin (pestaña Actividad): sesiones, minutos jugados, desde qué aparato
-// (móvil, tablet o PC), en qué idioma, si lo abren como app y qué pantallas se visitan. Solo contadores del día,
+// (móvil, tablet o PC), en qué idioma, si lo abren como app, qué pantallas se visitan, en cuál cierran el juego y los
+// errores de JavaScript que les salen (mensaje y archivo, sin datos de nadie). Solo contadores del día,
 // sin decir de quién: nada que identifique a nadie. Se guarda 120 días.
 const D = require('../public/data.js');
 const store = require('./store.js');
@@ -25,7 +26,9 @@ function session(c, msg) {
 // Una pantalla vista (cada una cuenta una vez por sesión: cuánta gente llega, no cuántas veces entra)
 function view(c, msg) {
   const v = String(msg.v || '');
-  if (!c.usage || !VIEW_RE.test(v) || c.usage.views.has(v) || c.usage.views.size > 40) return;
+  if (!c.usage || !VIEW_RE.test(v)) return;
+  c.usage.cur = v;   // (la última, para saber en cuál se van)
+  if (c.usage.views.has(v) || c.usage.views.size > 40) return;
   c.usage.views.add(v);
   add('pantalla:' + v);
 }
@@ -33,7 +36,20 @@ function view(c, msg) {
 function close(c) {
   if (!c.usage) return;
   add('minutos', Math.min(MAX_MIN, (Date.now() - c.usage.at) / 60e3));
+  add('salida:' + (c.usage.cur || 'title'));   // dónde estaba al irse
   c.usage = null;
+}
+
+// Un error de JavaScript en el navegador de un jugador: el mensaje (corto) y dónde (archivo y línea). Como mucho 5 por
+// conexión, para que uno que se repite en bucle no llene la tabla
+const ERR_MAX = 5;
+function clientError(c, msg) {
+  if (!c.usage) return;
+  c.usage.errs = (c.usage.errs || 0) + 1;
+  if (c.usage.errs > ERR_MAX) return;
+  const text = String(msg.m || '').replace(/\s+/g, ' ').replace(/https?:\/\/\S+/g, '').slice(0, 100).trim() || '?';
+  const where = `${String(msg.s || '').split(/[/?#]/).filter(Boolean).pop()?.replace(/[^\w.-]/g, '').slice(0, 40) || '?'}:${Math.max(0, msg.l | 0)}`;
+  add(`error:${text} @ ${where}`);
 }
 
 // Resumen de los últimos `days` días: total por clave y por día
@@ -50,4 +66,4 @@ function summary(days = 14) {
 
 setInterval(() => db.prepare('DELETE FROM usage WHERE day < ?').run(D.dayKey(Date.now() - KEEP_DAYS * DAY)), 6 * 3600e3).unref();
 
-module.exports = { session, view, close, summary };
+module.exports = { session, view, close, clientError, summary };

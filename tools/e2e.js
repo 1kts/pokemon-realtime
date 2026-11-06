@@ -151,6 +151,8 @@ async function setup(name, extraEnv = {}) {
   // pantalla en todas); la del premio diario lo quita poniendo 'arena.dailySeen' a 'nunca'. (La fecha se pone al día en
   // cada página: una prueba que cruzaba la medianoche UTC tenía el «visto» de ayer y, al recargar, el premio de hoy salía
   // solo y tapaba lo que fuera a pulsar)
+  // (y la bienvenida de los jugadores nuevos, igual: vista, salvo que la prueba quite 'arena.welcome' con 'nunca')
+  await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { if (localStorage.getItem('arena.welcome') !== 'nunca') localStorage.setItem('arena.welcome', '1'); } catch {}` });
   await call('Page.addScriptToEvaluateOnNewDocument', { source: `try { const v = localStorage.getItem('arena.dailySeen'); if (!v || /^\\d{4}-\\d{2}-\\d{2}$/.test(v)) localStorage.setItem('arena.dailySeen', new Date().toISOString().slice(0, 10)); } catch {}` });
 
   // En la página: lo que ve el jugador. visto(e) dice por qué no se ve un elemento (o null si se ve): sin tamaño,

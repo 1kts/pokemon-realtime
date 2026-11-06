@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.43.0', date: '2026-11-07', title: 'Reta con un enlace',
+      items: [
+        ['nuevo', 'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.'],
+        ['nuevo', 'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.'],
+      ],
+    },
+    {
       v: '0.42.0', date: '2026-11-07', title: 'Ruletas cada semana',
       items: [
         ['nuevo', 'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.'],

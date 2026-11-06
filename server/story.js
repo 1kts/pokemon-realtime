@@ -225,14 +225,17 @@ function battleSetup(p, msg) {
     const route = node && node.kind === 'route' ? node : null;
     if (!route) return { error: 'Ruta desconocida' };
     if (route.req > D.progOf(p, route.region)) return { error: `Necesitas ${route.req} medallas de ${D.REGIONS[route.region].name}` };
+    // El primer salvaje de todos, fácil: de Nv.2 y que casi no se defiende (la primera victoria, asegurada)
     const wild = D.rollWild(route);
+    const first = !p.firstWild;
+    if (first) { wild.level = 2; wild.rare = false; wild.shiny = false; }
     const shiny = wild.shiny || Math.random() < D.SHINY_RATE * (wild.rare ? 3 : 1);   // el Gyarados rojo del Lago de la Furia siempre
     // IV perfectos: algunos especiales y, siempre, los de las líneas con el reto de capturas recogido
     const perfect = (!!wild.rare && Math.random() < D.RARE_PERFECT) || D.perfectLine(p, wild.dex);
     const balls = Object.fromEntries(D.BALL_IDS.map(k => [k, p.items[k] || 0]));
     return {
       kind: 'route', route,
-      opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny, iv: perfect ? { ...D.PERFECT_IVS } : undefined }], ai: wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare, perfect }] },
+      opts: { mode: 'wild', map: 'r:' + route.id, sides: [{ ...mine, balls }, { name: D.SPECIES[wild.dex].name + ' salvaje', team: [{ dex: wild.dex, level: wild.level, moves: D.defaultMoves(wild.dex, wild.level), shiny, iv: perfect ? { ...D.PERFECT_IVS } : undefined }], ai: first ? 0.02 : wild.rare ? Math.min(0.5, route.ai + 0.25) : route.ai, wild: true, rare: !!wild.rare, perfect }] },
     };
   }
   if (msg.a === 'gym') {
@@ -265,6 +268,7 @@ function applyResult(p, setup, result, battle) {
     reward.balls = { ...side.balls };
   }
   const won = result.winner === 0;
+  if (won && setup.kind === 'route') p.firstWild = true;   // (ya no: el siguiente salvaje es de los de verdad)
   if (won) {
     const foes = battle.sides[1].team;
     const foeLevels = foes.reduce((s, m) => s + m.level, 0);

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.0 ----------
+    'Reta con un enlace': 'Défie avec un lien',
+    'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'Défie un ami avec un lien : dans PvP, « Défier avec un lien » t’en donne un à copier ou partager, et celui qui l’ouvre entre directement dans un combat amical avec toi, même s’il est nouveau.',
+    'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.': 'Si c’est ta première fois, un accueil te guide : le tutoriel avec récompense et le choix de ton premier Pokémon, et ton premier Pokémon sauvage est facile à battre.',
     // ---------- Novedades v0.42.0 ----------
     'Ruletas cada semana': 'Des roues chaque semaine',
     'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'Si le jeu rame sur ton mobile, la qualité baisse toute seule et c’est maintenant mémorisé : la prochaine fois il démarre déjà fluide. Dans Paramètres, Graphismes, tu vois laquelle il utilise et tu peux revenir à la haute.',
@@ -1569,6 +1573,26 @@ export default {
     'aprendido': 'apprise',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Site officiel : <b>pokearenas.com</b>. C’est gratuit et ça se joue dans le navigateur : si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
     'MT': 'CT',
+    'Retar con un enlace': 'Défier avec un lien',
+    'Reta a un amigo con un enlace': 'Défie un ami avec un lien',
+    'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'Envoie-lui ce lien : en l’ouvrant, il entre directement dans un combat amical avec toi (sans ELO ni récompenses). S’il n’a pas d’équipe, il en prend une de location.',
+    'Creando el enlace…': 'Création du lien…',
+    'El enlace ha caducado: crea otro.': 'Le lien a expiré : crées-en un autre.',
+    'Copiar enlace': 'Copier le lien',
+    'Enlace copiado': 'Lien copié',
+    '¡Te reto a un combate en PokéArenas!': 'Je te défie en combat dans PokéArenas !',
+    'Esperando a tu amigo…': 'En attente de ton ami…',
+    'El enlace caduca en {n} min.': 'Le lien expire dans {n} min.',
+    'Ese reto ya no está: pide a tu amigo un enlace nuevo': 'Ce défi n’existe plus : demande un nouveau lien à ton ami',
+    'Es tu propio reto: pásale el enlace a un amigo': 'C’est ton propre défi : envoie le lien à un ami',
+    'Tu amigo está en otro combate: prueba en un momento': 'Ton ami est dans un autre combat : réessaie dans un instant',
+    '¡Bienvenido a PokéArenas!': 'Bienvenue dans PokéArenas !',
+    'Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.': 'Des combats Pokémon en temps réel : tu te déplaces, tu vises et tu esquives.',
+    'Elige tu primer Pokémon y empieza la Historia': 'Choisis ton premier Pokémon et commence l’Histoire',
+    'Empezar el tutorial': 'Commencer le tutoriel',
+    'Elegir mi primer Pokémon': 'Choisir mon premier Pokémon',
+    'Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.': 'Tu sais maintenant te déplacer, attaquer, te protéger et changer de Pokémon. Prochaine étape : choisis ton premier Pokémon.',
+    'Recoger y elegir mi Pokémon': 'Récupérer et choisir mon Pokémon',
     '{n} victorias con su línea': '{n} victoires avec sa lignée',
     'Alta': 'Haute',
     'Media': 'Moyenne',

@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.0 ----------
+    'Reta con un enlace': '用链接挑战',
+    'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': '用链接挑战好友：在 PvP 中点“用链接发起挑战”即可获得可复制或分享的链接，对方打开后会直接与你进行友谊对战，新玩家也可以。',
+    'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.': '第一次来？欢迎引导会带你完成：领取奖励的教程、选择第一只宝可梦，而且你的第一只野生宝可梦很容易打败。',
     // ---------- Novedades v0.42.0 ----------
     'Ruletas cada semana': '每周转盘',
     'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': '如果游戏在手机上卡顿，画质会自动降低，现在还会记住：下次直接流畅开始。在设置的“画面”中可以看到当前画质，也可以恢复高画质。',
@@ -1647,6 +1651,26 @@ export default {
     'aprendido': '已学会',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '官方网站：<b>pokearenas.com</b>。游戏免费，在浏览器中游玩：如果有人要你付费或下载东西，那不是我们。',
     'MT': '招式学习器',
+    'Retar con un enlace': '用链接发起挑战',
+    'Reta a un amigo con un enlace': '用链接挑战好友',
+    'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': '把这个链接发给对方：打开后会直接与你进行友谊对战（不计 ELO，也没有奖励）。如果对方没有队伍，会使用租借队伍。',
+    'Creando el enlace…': '正在生成链接…',
+    'El enlace ha caducado: crea otro.': '链接已过期：请重新生成。',
+    'Copiar enlace': '复制链接',
+    'Enlace copiado': '链接已复制',
+    '¡Te reto a un combate en PokéArenas!': '我在 PokéArenas 向你发起对战！',
+    'Esperando a tu amigo…': '正在等待你的好友…',
+    'El enlace caduca en {n} min.': '链接将在 {n} 分钟后过期。',
+    'Ese reto ya no está: pide a tu amigo un enlace nuevo': '该挑战已失效：请好友发一个新链接',
+    'Es tu propio reto: pásale el enlace a un amigo': '这是你自己的挑战：把链接发给好友吧',
+    'Tu amigo está en otro combate: prueba en un momento': '你的好友正在另一场对战中：请稍后再试',
+    '¡Bienvenido a PokéArenas!': '欢迎来到 PokéArenas！',
+    'Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.': '实时宝可梦对战：你可以移动、瞄准和闪避。',
+    'Elige tu primer Pokémon y empieza la Historia': '选择你的第一只宝可梦，开始故事模式',
+    'Empezar el tutorial': '开始教程',
+    'Elegir mi primer Pokémon': '选择我的第一只宝可梦',
+    'Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.': '你已经学会移动、攻击、防守和替换宝可梦。下一步：选择你的第一只宝可梦。',
+    'Recoger y elegir mi Pokémon': '领取并选择我的宝可梦',
     '{n} victorias con su línea': '用该进化链获胜 {n} 次',
     'Alta': '高',
     'Media': '中',

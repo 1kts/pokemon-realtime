@@ -85,17 +85,20 @@ export const tutorialViews = {
     const back = el('div', 'modal');
     const box = el('div', 'panel modal-box tutorial-done');
     const close = () => back.remove();
+    // (sin Pokémon aún: el siguiente paso es elegir el primero, y el botón lleva allí)
+    const first = !p.mons.length;
     box.append(el('h3', '', t('¡Tutorial completado!')),
-      el('p', '', t('Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Ahora prueba la Historia o una partida online.')));
+      el('p', '', first ? t('Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.') : t('Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Ahora prueba la Historia o una partida online.')));
     const acts = el('div', 'acts');
+    const go = () => { close(); if (first) this.show('story'); };
     if (!p.tutorial) {
       box.append(el('div', 'm-prize', prizeHtml(Data.TUTORIAL_REWARD)));
-      const b = el('button', 'primary claim-btn', t('¡Recoger premio!'));
-      b.onclick = () => { b.disabled = true; this.net.send({ t: 'tutorial' }); close(); };
+      const b = el('button', 'primary claim-btn', first ? t('Recoger y elegir mi Pokémon') : t('¡Recoger premio!'));
+      b.onclick = () => { b.disabled = true; this.net.send({ t: 'tutorial' }); go(); };
       acts.append(b);
     } else {
-      const ok = el('button', 'primary', t('¡A jugar!'));
-      ok.onclick = close;
+      const ok = el('button', 'primary', first ? t('Elegir mi primer Pokémon') : t('¡A jugar!'));
+      ok.onclick = go;
       acts.append(ok);
     }
     box.append(acts);

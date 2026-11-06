@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 96,
- "total": 96,
+ "cazadas": 100,
+ "total": 100,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -680,6 +680,34 @@
     "tests/e2e/maestria.e2e.js"
    ],
    "motivo": "maestria.e2e.js: ✗ la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 300 victorias)"
+  },
+  "sin-bienvenida": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/primeros-pasos.e2e.js"
+   ],
+   "motivo": "primeros-pasos.e2e.js: ✗ la bienvenida ofrece el tutorial o elegir su primer Pokémon"
+  },
+  "primer-salvaje-normal": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/primeros-pasos.e2e.js"
+   ],
+   "motivo": "primeros-pasos.e2e.js: ✗ su primer salvaje es de Nv.2"
+  },
+  "enlace-sin-alquiler": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/reto-enlace.e2e.js"
+   ],
+   "motivo": "reto-enlace.e2e.js: ✗ quien abre el enlace entra directo al combate"
+  },
+  "panel-sin-salidas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ el panel dice en qué pantalla cierran el juego"
   }
  }
 }

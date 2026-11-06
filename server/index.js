@@ -359,11 +359,43 @@ function challenge(c, msg) {
   toAll(p, { t: 'challengesent', to: { id: o.profile.id, name: o.profile.name }, ms });
 }
 
+// ---------- Retos por enlace ----------
+// Quien crea el reto recibe un código para su enlace (pokearenas.com/?reto=…); quien lo abre entra directo a un
+// combate amistoso con él (sin ELO ni premios), aunque sea nuevo: sin equipo de PvP, uno de alquiler. Caduca a los 10 min
+const INVITE_MS = +process.env.INVITE_MS || 10 * 60e3;
+const invites = new Map();   // código -> { c, timer }
+const inviteOf = c => [...invites.entries()].find(([, v]) => v.c.profile === c.profile);
+function invite(c, msg) {
+  if (msg.a === 'create') {
+    if (refuseBusy(c)) return;
+    const old = inviteOf(c);
+    if (old) { clearTimeout(old[1].timer); invites.delete(old[0]); }
+    let code;
+    do code = require('crypto').randomBytes(4).toString('base64url').replace(/[^A-Za-z0-9]/g, '').slice(0, 6); while (!code || code.length < 6 || invites.has(code));
+    const inv = { c, timer: setTimeout(() => { invites.delete(code); send(c, { t: 'invite', a: 'expired' }); }, INVITE_MS) };
+    invites.set(code, inv);
+    return send(c, { t: 'invite', a: 'created', code, ms: INVITE_MS });
+  }
+  if (msg.a === 'cancel') { const old = inviteOf(c); if (old) { clearTimeout(old[1].timer); invites.delete(old[0]); } return; }
+  if (msg.a === 'join') {
+    const code = String(msg.code || '').slice(0, 12), inv = invites.get(code);
+    if (!inv || !clients.has(inv.c)) return send(c, { t: 'error', msg: 'Ese reto ya no está: pide a tu amigo un enlace nuevo' });
+    if (inv.c.profile === c.profile) return send(c, { t: 'error', msg: 'Es tu propio reto: pásale el enlace a un amigo' });
+    if (refuseBusy(c)) return;
+    if (busy(inv.c)) return send(c, { t: 'error', msg: 'Tu amigo está en otro combate: prueba en un momento' });
+    clearTimeout(inv.timer);
+    invites.delete(code);
+    return startPvp({ mode: 'friendly', players: [inv.c, c], rental: true });
+  }
+}
+
 // Cada uno combate con el equipo de 3 que se preparó (a Nv.50): los suyos con sus extras, como en la Torre
 const pvpMon = (p, x) => x.uid ? { ...tower.battleMon(p, x), moves: x.moves }
   : { dex: x.dex, level: D.RANKED_LEVEL, moves: x.moves, skin: D.skinOf(p, x.dex), parts: D.particlesOf(p, x.dex) };
+// (en un reto por enlace, quien aún no se ha preparado equipo de PvP lleva uno de alquiler)
+const RENTAL = [{ dex: 6 }, { dex: 9 }, { dex: 3 }];
 function startPvp(match) {
-  match.teams = match.players.map(c => D.pvpTeam(c.profile.pvpTeam, c.profile.mons));
+  match.teams = match.players.map(c => D.pvpTeam(c.profile.pvpTeam, c.profile.mons) || (match.mode === 'friendly' && match.rental ? D.pvpTeam(RENTAL, []) : null));
   match.picks = match.teams.map(tm => tm.map(x => x.dex));
   const [a, b] = match.players;
   const maps = Object.keys(D.MAPS);
@@ -538,6 +570,7 @@ function handle(c, msg) {
   // Uso del juego para el panel (solo contadores del día): aparato, idioma y pantallas que se visitan
   if (msg.t === 'ctx') return usage.session(c, msg);
   if (msg.t === 'view') return usage.view(c, msg);
+  if (msg.t === 'clienterr') return usage.clientError(c, msg);
   // Reportar un bug desde el juego (se guarda y avisa al admin)
   if (msg.t === 'bug') {
     const err = bugs.report(c, msg);
@@ -712,6 +745,7 @@ function handle(c, msg) {
   // (hay una sola cola de PvP; una página vieja que pida la Partida rápida no entra en ella, que perdería ELO sin saberlo)
   if (msg.t === 'queue') return msg.mode === 'casual' ? send(c, { t: 'error', msg: 'Recarga la página para jugar a PvP' }) : joinQueue(c);
   if (msg.t === 'challenge' && c.profile) return challenge(c, msg);
+  if (msg.t === 'invite' && c.profile) return invite(c, msg);
   if (msg.t === 'unqueue') { leaveQueue(c); return send(c, { t: 'unqueued' }); }
   if (msg.t === 'forfeit' && c.battle) return c.battle.leave(c.battle.sides[c.side]);
 }
@@ -866,7 +900,7 @@ const DRAIN_MS = 5 * 60 * 1000;
 const DRAIN_MSG = 'El servidor se va a actualizar: termina tu combate. En unos minutos podrás empezar otro.';
 const MAINT_MSG = 'El servidor está en mantenimiento: ahora no se pueden empezar combates nuevos.';
 const starts = msg => (msg.t === 'story' && (msg.a === 'route' || msg.a === 'gym')) || msg.t === 'practice'
-  || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue' || (msg.t === 'challenge' && msg.a === 'accept');
+  || (msg.t === 'tower' && msg.a === 'battle') || msg.t === 'queue' || (msg.t === 'challenge' && msg.a === 'accept') || (msg.t === 'invite' && msg.a === 'join');
 let draining = false;
 
 function shutdown() {

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.0 ----------
+    'Reta con un enlace': 'リンクで対戦',
+    'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'リンクで友だちに対戦をいどめます。PvPの「リンクで対戦をいどむ」でコピーや共有ができるリンクが出て、開いた人はすぐにあなたとの親善バトルに入れます。初めての人でも大丈夫です。',
+    'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.': '初めての人にはウェルカム画面が案内します。報酬つきのチュートリアルと最初のポケモン選び、そして最初の野生ポケモンはかんたんに倒せます。',
     // ---------- Novedades v0.42.0 ----------
     'Ruletas cada semana': '毎週のルーレット',
     'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'スマホで重いときは画質が自動で下がり、それが記憶されるようになりました。次からは最初からなめらかに動きます。設定のグラフィックで今の画質を確認でき、高画質に戻せます。',
@@ -1617,6 +1621,26 @@ export default {
     'aprendido': 'おぼえた',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '公式サイト：<b>pokearenas.com</b>。無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
     'MT': 'わざマシン',
+    'Retar con un enlace': 'リンクで対戦をいどむ',
+    'Reta a un amigo con un enlace': 'リンクで友だちに対戦をいどむ',
+    'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'このリンクを送ってください。開くとすぐにあなたとの親善バトルが始まります（ELOや報酬はありません）。チームがなければレンタルチームを使います。',
+    'Creando el enlace…': 'リンクを作成中…',
+    'El enlace ha caducado: crea otro.': 'リンクの期限が切れました。新しく作ってください。',
+    'Copiar enlace': 'リンクをコピー',
+    'Enlace copiado': 'リンクをコピーしました',
+    '¡Te reto a un combate en PokéArenas!': 'PokéArenasでバトルしよう！',
+    'Esperando a tu amigo…': '友だちを待っています…',
+    'El enlace caduca en {n} min.': 'リンクは{n}分で期限切れになります。',
+    'Ese reto ya no está: pide a tu amigo un enlace nuevo': 'その対戦はもうありません。友だちに新しいリンクを頼んでください',
+    'Es tu propio reto: pásale el enlace a un amigo': 'それは自分の対戦です。リンクを友だちに送ってください',
+    'Tu amigo está en otro combate: prueba en un momento': '友だちは別のバトル中です。少ししてから試してください',
+    '¡Bienvenido a PokéArenas!': 'PokéArenasへようこそ！',
+    'Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.': 'リアルタイムのポケモンバトル：動いて、狙って、よける。',
+    'Elige tu primer Pokémon y empieza la Historia': '最初のポケモンを選んでストーリーを始めよう',
+    'Empezar el tutorial': 'チュートリアルを始める',
+    'Elegir mi primer Pokémon': '最初のポケモンを選ぶ',
+    'Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.': '移動、攻撃、まもる、ポケモンの交代ができるようになりました。次は最初のポケモンを選びましょう。',
+    'Recoger y elegir mi Pokémon': '受け取ってポケモンを選ぶ',
     '{n} victorias con su línea': 'その系統で{n}勝',
     'Alta': '高',
     'Media': '中',

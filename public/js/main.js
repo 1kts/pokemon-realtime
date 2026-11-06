@@ -159,6 +159,19 @@ let resumeTimer = null;
 const ui = app.ui;
 const overlay = document.getElementById('conn');
 
+// Errores de JavaScript del navegador: al panel de admin (Actividad), sin datos de nadie, para ver qué falla de verdad
+const reportError = (m, src, line) => { if (net.joined) net.send({ t: 'clienterr', m: String(m || '').slice(0, 200), s: String(src || '').split('/').pop(), l: line | 0 }); };
+addEventListener('error', e => reportError(e.message, e.filename, e.lineno));
+addEventListener('unhandledrejection', e => reportError(e.reason && (e.reason.message || e.reason), (e.reason && e.reason.stack || '').match(/\/js\/[\w.-]+/)?.[0], 0));
+
+// El código de un enlace de reto (pokearenas.com/?reto=…): se guarda para la sesión y se quita de la barra de direcciones
+const RETO = 'arena.reto';
+{
+  const code = new URLSearchParams(location.search).get('reto');
+  if (code && /^[A-Za-z0-9]{4,12}$/.test(code)) { try { sessionStorage.setItem(RETO, code); } catch {} history.replaceState(null, '', location.pathname); }
+}
+const pendingReto = () => { try { return sessionStorage.getItem(RETO); } catch { return null; } };
+const clearReto = () => { try { sessionStorage.removeItem(RETO); } catch {} };
 net.on('connected', () => {
   overlay.hidden = true;
   if (netStats) netStats.reconnects += net.hurry ? 1 : 0;
@@ -178,7 +191,13 @@ net.on('disconnected', () => {
   clearTimeout(resumeTimer);
   resumeTimer = setTimeout(() => { net.hurry = false; if (!app.battle) return; endBattle(); ui.show('menu'); }, RESUME_MS);
 });
-net.on('profile', m => { if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank); });
+net.on('profile', m => {
+  if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank);
+  // Un enlace de reto (?reto=…): en cuanto entra, al combate amistoso con quien lo mandó
+  const code = pendingReto();
+  if (code && !app.battle) { clearReto(); net.send({ t: 'invite', a: 'join', code }); }
+});
+net.on('invite', m => ui.onInvite(m));
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
 net.on('flags', m => {
   ui.flags = m.flags;

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.0 ----------
+    'Reta con un enlace': '링크로 도전',
+    'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': '링크로 친구에게 도전하세요. PvP에서 「링크로 도전하기」를 누르면 복사하거나 공유할 링크가 나오고, 링크를 연 사람은 처음이라도 바로 당신과 친선 배틀을 합니다.',
+    'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.': '처음이라면 환영 화면이 안내합니다. 보상이 있는 튜토리얼과 첫 포켓몬 고르기, 그리고 첫 야생 포켓몬은 쉽게 이길 수 있습니다.',
     // ---------- Novedades v0.42.0 ----------
     'Ruletas cada semana': '매주 바뀌는 룰렛',
     'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': '휴대폰에서 게임이 느리면 화질이 자동으로 낮아지고 이제 기억됩니다. 다음에는 처음부터 부드럽게 시작합니다. 설정의 그래픽에서 현재 화질을 보고 높은 화질로 되돌릴 수 있습니다.',
@@ -1617,6 +1621,26 @@ export default {
     'aprendido': '배움',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '공식 사이트: <b>pokearenas.com</b>. 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
     'MT': '기술머신',
+    'Retar con un enlace': '링크로 도전하기',
+    'Reta a un amigo con un enlace': '링크로 친구에게 도전하기',
+    'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': '이 링크를 보내세요. 열면 바로 당신과 친선 배틀을 합니다(ELO·보상 없음). 팀이 없으면 대여 팀을 씁니다.',
+    'Creando el enlace…': '링크를 만드는 중…',
+    'El enlace ha caducado: crea otro.': '링크가 만료되었습니다. 새로 만드세요.',
+    'Copiar enlace': '링크 복사',
+    'Enlace copiado': '링크를 복사했습니다',
+    '¡Te reto a un combate en PokéArenas!': 'PokéArenas에서 배틀하자!',
+    'Esperando a tu amigo…': '친구를 기다리는 중…',
+    'El enlace caduca en {n} min.': '링크는 {n}분 후 만료됩니다.',
+    'Ese reto ya no está: pide a tu amigo un enlace nuevo': '그 도전은 더 이상 없습니다. 친구에게 새 링크를 부탁하세요',
+    'Es tu propio reto: pásale el enlace a un amigo': '본인의 도전입니다. 링크를 친구에게 보내세요',
+    'Tu amigo está en otro combate: prueba en un momento': '친구가 다른 배틀 중입니다. 잠시 후 다시 시도하세요',
+    '¡Bienvenido a PokéArenas!': 'PokéArenas에 오신 것을 환영합니다!',
+    'Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.': '실시간 포켓몬 배틀: 움직이고, 조준하고, 피하세요.',
+    'Elige tu primer Pokémon y empieza la Historia': '첫 포켓몬을 고르고 스토리를 시작하세요',
+    'Empezar el tutorial': '튜토리얼 시작',
+    'Elegir mi primer Pokémon': '첫 포켓몬 고르기',
+    'Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.': '이제 이동, 공격, 방어, 포켓몬 교체를 할 수 있습니다. 다음 단계: 첫 포켓몬을 고르세요.',
+    'Recoger y elegir mi Pokémon': '받고 포켓몬 고르기',
     '{n} victorias con su línea': '그 계열로 {n}승',
     'Alta': '높음',
     'Media': '중간',

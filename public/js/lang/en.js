@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.0 ----------
+    'Reta con un enlace': 'Challenge with a link',
+    'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'Challenge a friend with a link: in PvP, "Challenge with a link" gives you one to copy or share, and whoever opens it goes straight into a friendly battle with you, even if they are new.',
+    'Si es tu primera vez, una bienvenida te guía: el tutorial con premio y elegir tu primer Pokémon, y tu primer Pokémon salvaje es fácil de vencer.': 'If it’s your first time, a welcome guides you: the tutorial with a reward and choosing your first Pokémon, and your first wild Pokémon is easy to beat.',
     // ---------- Novedades v0.42.0 ----------
     'Ruletas cada semana': 'Weekly wheels',
     'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'If the game runs slowly on your phone, the quality drops by itself and is now remembered: next time it starts smooth. In Settings, Graphics, you can see which one it uses and go back to high.',
@@ -1648,6 +1652,26 @@ export default {
     'aprendido': 'learned',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Official site: <b>pokearenas.com</b>. It is free and plays in your browser: if anyone asks you to pay or download something, it isn’t us.',
     'MT': 'TM',
+    'Retar con un enlace': 'Challenge with a link',
+    'Reta a un amigo con un enlace': 'Challenge a friend with a link',
+    'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'Send them this link: when they open it, they go straight into a friendly battle with you (no ELO or rewards). If they have no team, they get a rental one.',
+    'Creando el enlace…': 'Creating the link…',
+    'El enlace ha caducado: crea otro.': 'The link has expired: create another one.',
+    'Copiar enlace': 'Copy link',
+    'Enlace copiado': 'Link copied',
+    '¡Te reto a un combate en PokéArenas!': 'I challenge you to a battle in PokéArenas!',
+    'Esperando a tu amigo…': 'Waiting for your friend…',
+    'El enlace caduca en {n} min.': 'The link expires in {n} min.',
+    'Ese reto ya no está: pide a tu amigo un enlace nuevo': 'That challenge is gone: ask your friend for a new link',
+    'Es tu propio reto: pásale el enlace a un amigo': 'That’s your own challenge: send the link to a friend',
+    'Tu amigo está en otro combate: prueba en un momento': 'Your friend is in another battle: try again in a moment',
+    '¡Bienvenido a PokéArenas!': 'Welcome to PokéArenas!',
+    'Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.': 'Real-time Pokémon battles: you move, aim and dodge.',
+    'Elige tu primer Pokémon y empieza la Historia': 'Choose your first Pokémon and start the Story',
+    'Empezar el tutorial': 'Start the tutorial',
+    'Elegir mi primer Pokémon': 'Choose my first Pokémon',
+    'Ya sabes moverte, atacar, protegerte y cambiar de Pokémon. Siguiente paso: elige tu primer Pokémon.': 'You now know how to move, attack, protect and switch Pokémon. Next step: choose your first Pokémon.',
+    'Recoger y elegir mi Pokémon': 'Claim and choose my Pokémon',
     '{n} victorias con su línea': '{n} wins with its line',
     'Alta': 'High',
     'Media': 'Medium',

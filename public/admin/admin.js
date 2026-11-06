@@ -152,7 +152,13 @@ async function loadMetrics() {
     h('div', { class: 'cols' },
       dist('Desde qué aparato', keys('aparato:').map(r => ({ ...r, label: DEV[r.label] || r.label })), ses),
       dist('Idioma del juego', keys('idioma:').map(r => ({ ...r, label: r.label.toUpperCase() })), ses),
-      dist('Pantallas que visitan (en cuántas sesiones)', keys('pantalla:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses)),
+      dist('Pantallas que visitan (en cuántas sesiones)', keys('pantalla:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses),
+      dist('Dónde cierran el juego (la última pantalla de cada sesión)', keys('salida:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses)),
+    h('div', { class: 'card scroll errs' }, h('h2', {}, `Errores en el navegador de los jugadores (${days} días)`),
+      keys('error:').length ? table(['Error', 'Dónde', 'Veces'], keys('error:').sort((a, b) => b.n - a.n).slice(0, 30).map(r => {
+        const [msg, where] = r.label.split(' @ ');
+        return h('tr', {}, h('td', {}, msg), h('td', {}, where || ''), h('td', {}, r.n));
+      })) : h('p', { class: 'small' }, 'Ninguno: el juego no ha fallado en el navegador de nadie.')),
     h('div', { class: 'card scroll' }, h('h2', {}, `Últimos ${days} días`),
       table(['Día', 'Jugadores', 'Nuevos', 'Combates', 'Sesiones', 'Min./sesión', 'Vuelven al día siguiente', 'Vuelven a los 7 días'], m.days.map(d => {
         const ud = u.byDay[d.day] || {};

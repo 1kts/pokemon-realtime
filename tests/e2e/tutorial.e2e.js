@@ -60,10 +60,13 @@ module.exports = async ({ page, player, ok, log }) => {
   log(`(muñeco vencido en ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   await page.waitSee('Tutorial completado', { ms: 30000 });
   ok(!(await page.see(/\d\/6/, { in: '.tutorial-card', ms: 0 })), 'al ganar se quita la tarjeta y sale «¡Tutorial completado!» con su premio');
-  await page.click('.tutorial-done .claim-btn');
+  // (sin Pokémon aún, el siguiente paso es elegir el primero: el botón lo dice y lleva allí)
+  ok(await page.see('Recoger y elegir mi Pokémon', { in: '.tutorial-done' }) && await page.see(/Siguiente paso: elige tu primer Pokémon/, { in: '.tutorial-done' }), 'sin Pokémon aún, dice que el siguiente paso es elegir el primero');
+  await page.tap('Recoger y elegir mi Pokémon', { in: '.tutorial-done' });
   await page.waitFor(`document.querySelector('.loot-pop .acts .primary')`);
   await page.click('.loot-pop .acts .primary');
   await page.waitFor(`!document.querySelector('.loot-pop')`);
+  ok(await page.title() === 'Tu inicial de Kanto', `y al recoger el premio, lleva a elegirlo (${await page.title()})`);
   await page.loginAs(me.token);
   ok(await money() === coins0 + Data.TUTORIAL_REWARD.coins, `el premio se recoge a mano y da su dinero (${coins0} → ${await money()})`);
   ok(await page.eval(`!document.querySelector('.menu-card.tutorial.ready')`), 'después ya no sale resaltado (se puede repetir, sin premio)');

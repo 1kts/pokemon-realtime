@@ -290,6 +290,65 @@ export class UI {
     wrap.append(top, this.howTo());
     this.root.append(wrap);
     this.updatePop();
+    // Jugador nuevo (sin Pokémon ni tutorial): la bienvenida, una vez en este navegador ('nunca': las pruebas la piden)
+    const seen = storage.get('arena.welcome');
+    let reto = null; try { reto = sessionStorage.getItem('arena.reto'); } catch {}
+    if (!p.tutorial && !p.mons.length && seen !== '1' && !reto) { storage.set('arena.welcome', '1'); setTimeout(() => this.view === 'menu' && this.welcome(), 300); }
+  }
+
+  // Reto por enlace: la ventana con el enlace (copiar o compartir) mientras se espera al amigo
+  inviteLink() {
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box invite-box');
+    back.append(box);
+    const close = () => { back.remove(); this.inviteBox = null; };
+    this.inviteBox = { box, close };
+    box.append(el('h3', '', t('Reta a un amigo con un enlace')), el('p', 'small', t('Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.')),
+      el('p', 'invite-wait', t('Creando el enlace…')));
+    const cancel = el('button', '', t('Cancelar'));
+    cancel.onclick = () => { this.net.send({ t: 'invite', a: 'cancel' }); close(); };
+    const acts = el('div', 'acts');
+    acts.append(cancel);
+    box.append(acts);
+    document.body.append(back);
+    this.net.send({ t: 'invite', a: 'create' });
+  }
+  onInvite(m) {
+    const ib = this.inviteBox;
+    if (!ib) return;
+    const wait = ib.box.querySelector('.invite-wait');
+    if (m.a === 'expired') { wait.textContent = t('El enlace ha caducado: crea otro.'); ib.box.querySelector('.invite-link')?.remove(); return; }
+    if (m.a !== 'created') return;
+    const url = `${location.origin}/?reto=${m.code}`;
+    const row = el('div', 'invite-link');
+    const input = el('input');
+    input.readOnly = true; input.value = url;
+    input.onclick = () => input.select();
+    const copy = el('button', 'primary', t('Copiar enlace'));
+    copy.onclick = async () => { try { await navigator.clipboard.writeText(url); } catch { input.select(); document.execCommand && document.execCommand('copy'); } this.toast(t('Enlace copiado'), 'good'); };
+    row.append(input, copy);
+    if (navigator.share) { const sh = el('button', '', t('Compartir')); sh.onclick = () => navigator.share({ title: 'PokéArenas', text: t('¡Te reto a un combate en PokéArenas!'), url }).catch(() => {}); row.append(sh); }
+    wait.before(row);
+    wait.textContent = `${t('Esperando a tu amigo…')} ${t('El enlace caduca en {n} min.', { n: Math.round(m.ms / 60000) })}`;
+  }
+
+  // Bienvenida: qué es el juego y los dos primeros pasos (el tutorial con premio y elegir el primer Pokémon)
+  welcome() {
+    const back = el('div', 'modal');
+    const box = el('div', 'panel modal-box welcome-box');
+    const close = () => back.remove();
+    box.append(el('h3', '', t('¡Bienvenido a PokéArenas!')),
+      el('p', '', t('Combates Pokémon en tiempo real: te mueves, apuntas y esquivas.')),
+      el('ol', 'welcome-steps', `<li><b>${t('Aprende a jugar en 1 minuto y llévate un premio')}</b></li><li><b>${t('Elige tu primer Pokémon y empieza la Historia')}</b></li>`));
+    const acts = el('div', 'acts');
+    const tut = el('button', 'primary', t('Empezar el tutorial'));
+    tut.onclick = () => { close(); this.startTutorial(); };
+    const story = el('button', '', t('Elegir mi primer Pokémon'));
+    story.onclick = () => { close(); this.show('story'); };
+    acts.append(tut, story);
+    box.append(acts);
+    back.append(box);
+    document.body.append(back);
   }
 
   // Gente en línea en las tarjetas de PvP: cuántos hay conectados y, si alguien busca rival en ese modo,
@@ -1245,7 +1304,10 @@ export class UI {
     const go = el('button', 'primary', t('Buscar partida PvP'));
     go.disabled = !Data.pvpTeam(p.pvpTeam, p.mons);
     go.onclick = () => this.net.send({ t: 'queue' });
-    me.append(go);
+    // Retar a un amigo con un enlace: lo abre y entra directo a un combate amistoso contigo
+    const inv = el('button', 'invite-go', t('Retar con un enlace'));
+    inv.onclick = () => this.inviteLink();
+    me.append(go, inv);
     if (go.disabled) me.append(el('p', 'warn', t('Prepara tu equipo de 3 para poder buscar partida.')));
     const col = el('div', 'online-col');
     col.append(me, this.pvpTeamPanel());

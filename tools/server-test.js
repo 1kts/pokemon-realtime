@@ -271,6 +271,15 @@ class Client {
 
   // Resultado de victoria en gimnasio (aplicado directamente para no depender de jugar)
   const story = require('../server/story.js');
+  // El primer salvaje de todos, fácil: Nv.2 y casi sin defenderse; tras ganarle, los de siempre
+  {
+    const q = { ...prof, firstWild: undefined };
+    const s1 = story.battleSetup(q, { a: 'route', id: 'k-ruta1' }), w1 = s1.opts.sides[1];
+    ok(w1.team[0].level === 2 && w1.ai <= 0.05 && !w1.rare, `el primer salvaje es de Nv.2 y casi no se defiende (Nv.${w1.team[0].level}, IA ${w1.ai})`);
+    q.firstWild = true;
+    const s2 = story.battleSetup(q, { a: 'route', id: 'k-ruta1' });
+    ok(s2.opts.sides[1].ai === D.NODES['k-ruta1'].ai || s2.opts.sides[1].rare, 'y después de ganarle, los salvajes vuelven a ser los de la ruta');
+  }
   const setup = story.battleSetup(prof, { a: 'gym', id: 'erika' });
   ok(!setup.error && setup.index === 3, 'con 4 medallas se puede desafiar a Erika (4º gimnasio)');
   const fakeBattle = { sides: [{ team: setup.opts.sides[0].team.map(t => ({ ...t, fainted: false })), balls: null }, { team: setup.opts.sides[1].team.map(t => ({ level: t.level })) }] };
@@ -651,6 +660,21 @@ class Client {
     await mail.smtpSend({ host: 'localhost.invalid', port: 1, from: 'a@b.cd' }, 'x@y.zz', 's', 't').catch(e => { refused = e; });
     ok(!!refused, 'SMTP: un servidor al que no se llega da error (y no cuelga)');
     smtp.close();
+  }
+  // Panel de admin (Actividad): en qué pantalla cierran el juego y los errores de JavaScript de los jugadores, como
+  // contadores sin datos de nadie (y como mucho 5 errores por conexión)
+  {
+    const u = new Client(port); await u.open();
+    await u.req({ t: 'hello', token });   // (con un perfil que ya existe: los nuevos por IP tienen tope)
+    u.send({ t: 'ctx', device: 'movil', lang: 'es' });
+    u.send({ t: 'view', v: 'shop' });
+    for (let i = 0; i < 8; i++) u.send({ t: 'clienterr', m: 'TypeError: x is undefined https://pokearenas.com/js/ui.js', s: 'https://pokearenas.com/js/ui.js', l: 42 });
+    await new Promise(r => setTimeout(r, 300));
+    u.ws.close();
+    await new Promise(r => setTimeout(r, 300));
+    const us = require('../server/usage.js').summary(7).total;
+    ok(us['salida:shop'] >= 1, `el panel dice en qué pantalla cierran el juego (en la Tienda: ${us['salida:shop'] || 0})`);
+    ok(us['error:TypeError: x is undefined @ ui.js:42'] === 5, `y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión (${JSON.stringify(Object.keys(us).filter(k => k.startsWith('error:')))})`);
   }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');

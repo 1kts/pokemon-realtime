@@ -2008,3 +2008,15 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 /* Ajustes: la calidad gráfica que está usando */
 .gfx-panel .gfx-now { margin: 6px 0 8px; font-size: 14px; }
 .gfx-panel .gfx-now b { color: #ffd76a; }
+
+/* Bienvenida de los jugadores nuevos */
+.welcome-box { max-width: 460px; text-align: center; }
+.welcome-box .welcome-steps { margin: 12px auto 16px; padding-left: 22px; text-align: left; line-height: 1.6; }
+.welcome-box .acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+/* Reto por enlace */
+.online-me .invite-go { margin-top: 8px; }
+.invite-box { max-width: 520px; }
+.invite-box .invite-link { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 8px; }
+.invite-box .invite-link input { flex: 1 1 220px; min-width: 0; padding: 10px 12px; border-radius: 10px; font: 700 14px var(--text); color: #fff; background: rgba(0,0,0,.3); border: 1px solid rgba(170,190,255,.35); }
+.invite-box .invite-wait { color: #c4d0e4; font-size: 13px; }

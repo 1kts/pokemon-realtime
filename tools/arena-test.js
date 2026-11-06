@@ -269,7 +269,7 @@ check('Ida y Vuelta vuelve a su sitio', () => {
 
 check('el Pokémon misterioso sale con IV perfectos más o menos 1 de cada 3 veces', () => {
   const story = require('../server/story.js');
-  const prof = { name: 'T', coins: 0, items: {}, mons: [], team: [], badges: 0, prog: { kanto: 13, johto: 0 }, nextUid: 1, caught: [] };
+  const prof = { name: 'T', coins: 0, items: {}, mons: [], team: [], badges: 0, prog: { kanto: 13, johto: 0 }, nextUid: 1, caught: [], firstWild: true };   // (ya pasó su primer salvaje, el fácil)
   story.migrate(prof);
   story.devAddMon(prof, 25, 50, false, 'kanto');
   const orig = D.rollWild;
