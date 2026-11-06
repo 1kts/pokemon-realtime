@@ -1,3 +1,4 @@
+// (comprueba que los movimientos se guardan solos: lo caza la mutación movimientos-sin-guardar)
 // Mis Pokémon: tocar un Pokémon abre su ficha completa; desde ella se usan vitaminas, se cambian los
 // movimientos y se pasa al siguiente sin cerrarla
 module.exports = async ({ page, player, ok }) => {

@@ -1,3 +1,4 @@
+// (Pikachu, el especial de la Ruta 2, no sale también entre los de siempre: lo caza especial-tambien-normal)
 // Rutas de la Historia: la ficha de cada ruta enseña las 4 especies de esta tanda de 6 horas (con su
 // probabilidad), su especial en silueta hasta que lo atrapas (en el Bosque Verde, Pikachu), cuándo cambian
 // y, plegado, todo lo que puede salir allí. Se abre tocando su tarjeta en el Camino

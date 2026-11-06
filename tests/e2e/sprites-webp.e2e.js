@@ -1,3 +1,4 @@
+// (si el juego pidiera los sprites en PNG, saldrían en blanco: lo caza sprites-en-png)
 // Los sprites (y retratos e iconos) llegan en WebP (sin pérdida: los mismos píxeles en mucho menos peso) y se dibujan: en el menú y en un
 // combate, ninguna hoja se pide en PNG y todos los Pokémon de la pantalla se ven, no huecos.
 module.exports = async ({ page, player, ok }) => {
