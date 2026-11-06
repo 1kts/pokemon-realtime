@@ -845,9 +845,9 @@ class Client {
     ok(l.loot.gems === D.DAILY_LOGIN[0].gems && dp.gems === D.DAILY_LOGIN[0].gems && !('gems' in dp.items), 'el premio diario da gemas');
     // Quien entra cada día y hace sus diarias junta en 2 semanas lo que cuestan las 3 ruletas enteras
     const week = D.DAILY_LOGIN.reduce((n, d) => n + (d.gems || 0), 0);
-    const fortnight = 2 * week + D.TREASURE_DAYS * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
+    const fortnight = 2 * week + 14 * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
     const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
-    const perDay = fortnight / D.TREASURE_DAYS / (allWheels / 3 / D.SPIN_COST.length);
+    const perDay = fortnight / 14 / (allWheels / 3 / D.SPIN_COST.length);
     ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 120 && perDay >= 2 && perDay <= 3, `una ruleta entera son 120 gemas: entrando a diario (premio diario y misiones diarias) salen 2 o 3 tiradas al día (${perDay.toFixed(2)})`);
   }
 
@@ -1013,6 +1013,18 @@ class Client {
       spent += l.r.treasure.cost;
     }
     ok(new Set(ids).size === 10 && spent === D.SPIN_COST.reduce((a, b) => a + b, 0) && prof.gems === 1000 - spent, 'una ruleta: 10 premios distintos en 10 tiradas, cada una a su precio');
+    // Cada semana, otra tanda; lo que ya tenías de antes (el efecto, el retrato…) sale conseguido en cualquier ruleta y ya no toca
+    ok(D.TREASURE_DAYS === 7 && D.treasures(D.treasurePeriod(Date.UTC(2026, 10, 8)))[0].line === 155 && D.treasures(D.treasurePeriod(Date.UTC(2026, 10, 10)))[0].line !== 155, 'las ruletas cambian cada semana (la de Cyndaquil, hasta el lunes 9 de noviembre)');
+    {
+      const r2 = D.treasures()[1], fx = r2.prizes.find(x => x.kind === 'effect');
+      const q = { gems: 1000, coins: 0, items: {}, mons: [], cosmetics: { skins: [], frames: [], avatars: [], effects: [fx.effect], auras: [], particles: [] } };
+      require('../server/rewards.js').migrate(q); q.cosmetics.effects = [fx.effect];
+      ok(D.treasureGot(q, r2).includes(fx.id), 'un efecto que ya tenías sale conseguido en la ruleta');
+      const toc = new Set(); let pagado = 0;
+      for (let i = 0; i < 9; i++) { const g0 = q.gems; const rr = treasure.spin(q, r2.id, () => 0); if (rr.error) break; toc.add(rr.loot.treasure.prize); pagado += g0 - q.gems; }
+      ok(!toc.has(fx.id) && toc.size === r2.prizes.length - 1 && pagado === D.SPIN_COST.slice(0, 9).reduce((a, b) => a + b, 0), `y no vuelve a tocar: la ruleta se completa en ${toc.size} tiradas, al precio de las primeras`);
+      ok(treasure.spin(q, r2.id).error, 'después, completa');
+    }
     const rr = D.treasures()[0];
     const skinP = rr.prizes.find(x => x.kind === 'skin'), ptP = rr.prizes.find(x => x.kind === 'portrait'), glP = rr.prizes.find(x => x.kind === 'particles');
     ok(D.hasSkin(prof, skinP.dex, 'elemental') && prof.cosmetics.avatars.includes(ptP.id) && prof.cosmetics.particles.includes(D.lineOf(glP.dex)) && D.particlesOf(prof, glP.dex) === D.SPECIES[D.lineOf(glP.dex)].types[0], 'los premios quedan: skin Elemental de la línea, retrato de avatar y partículas de la línea (puestas)');
@@ -1032,7 +1044,7 @@ class Client {
     // Cambio de periodo: las ruletas viejas se van, lo conseguido se queda
     prof.treasure.period = D.treasurePeriod() - 1;
     r = await mc.req({ t: 'mission', a: 'refresh' });
-    ok(!Object.keys(r.p.treasure.got).length && r.p.cosmetics.avatars.includes(ptP.id), 'cada 2 semanas, ruletas nuevas; lo ganado se queda');
+    ok(!Object.keys(r.p.treasure.got).length && r.p.cosmetics.avatars.includes(ptP.id), 'cada semana, ruletas nuevas; lo ganado se queda');
     // La Elemental que se tenía por maestría (nivel 600, ya quitado) pasa a ser de la línea
     const oldE = { mastery: { 4: 600 }, masteryClaimed: { 4: [0, 1, 2, 3, 4, 5, 6, 7] }, cosmetics: { titles: [], frames: [] }, achievements: {} };
     seasonMod.migrate(oldE);

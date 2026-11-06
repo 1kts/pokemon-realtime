@@ -13,6 +13,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.41.2 ----------
+    'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Le ruote di Lucky Spin cambiano ogni settimana, il lunedì, e quello che hai già (un effetto, un ritratto, una skin) risulta ottenuto in qualsiasi ruota e non ti esce più.',
+    'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': 'Negli Obiettivi i titoli sono targhe con un nastro: dorato se ce l’hai e con un lucchetto se no, per non confonderli con i filtri in alto.',
+    // ---------- Novedades v0.41.2 ----------
     'Podio con corona': 'Un podio con la corona',
     'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'La Ladder del menu mostra il suo podio: una corona per il primo, raggi che girano dietro ogni volto e scintille d’oro, d’argento e di bronzo.',
     'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Bagnarsi spegne la scottatura: entra nell’acqua o subisci un attacco Acqua e smetti di bruciare, e finché resti bagnato il fuoco non ti scotta.',

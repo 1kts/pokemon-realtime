@@ -293,4 +293,13 @@ module.exports = [
   { id: 'menu-ladder-sosa', que: 'La Ladder del menú vuelve a ser sosa: sin corona, rayos ni destellos en el podio',
     archivo: 'public/js/tower.js', buscar: "      if (r.rank === 1) stage.insertAdjacentHTML('beforeend', '<span class=\"pod-crown\">♛</span>');\n", poner: '',
     tests: ['tests/e2e/ladder-menu.e2e.js'] },
+  { id: 'ruletas-cada-2-semanas', que: 'Las ruletas de Lucky Spin vuelven a cambiar cada 2 semanas',
+    archivo: 'public/data.js', buscar: 'TREASURE_DAYS = 7,', poner: 'TREASURE_DAYS = 14,',
+    tests: ['tools/server-test.js'] },
+  { id: 'ruleta-repite-lo-que-tienes', que: 'En Lucky Spin te puede tocar otra vez un efecto o retrato que ya tenías de otra ruleta',
+    archivo: 'public/data.js', buscar: "    if (x.kind === 'effect') return (c.effects || []).includes(x.effect);", poner: "    if (x.kind === 'effect') return false;",
+    tests: ['tools/server-test.js'] },
+  { id: 'titulos-como-pastillas', que: 'En Logros, los títulos vuelven a ser pastillas redondas y se confunden con los filtros',
+    archivo: 'public/cards.css', buscar: 'min-height: 78px; padding: 14px 10px 10px; border-radius: 8px;', poner: 'min-height: 78px; padding: 14px 10px 10px; border-radius: 999px;',
+    tests: ['tests/e2e/titulos-placas.e2e.js'] },
 ];

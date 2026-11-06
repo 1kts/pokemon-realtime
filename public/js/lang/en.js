@@ -12,6 +12,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.41.2 ----------
+    'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin wheels change every week, on Mondays, and anything you already have (an effect, a portrait, a skin) shows as obtained on any wheel and won’t come up again.',
+    'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': 'In Achievements, titles are plaques with a ribbon: gold if you have it and with a lock if not, so they don’t look like the filters above.',
+    // ---------- Novedades v0.41.2 ----------
     'Podio con corona': 'A podium with a crown',
     'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'The menu Ladder shows off its podium: a crown for first place, spinning rays behind each face and gold, silver and bronze sparkles.',
     'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Getting wet puts out burns: step into water or take a Water attack and you stop burning, and while you stay wet fire can’t burn you.',

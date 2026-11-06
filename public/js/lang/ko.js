@@ -13,6 +13,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.41.2 ----------
+    'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin 룰렛은 매주 월요일에 바뀌고, 이미 가진 것(이펙트, 초상화, 스킨)은 어느 룰렛에서든 획득으로 표시되어 다시 나오지 않습니다.',
+    'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': '업적의 칭호가 리본 달린 명패가 되었습니다. 가지고 있으면 금색, 없으면 자물쇠가 있어 위쪽 필터와 헷갈리지 않습니다.',
+    // ---------- Novedades v0.41.2 ----------
     'Podio con corona': '왕관이 있는 시상대',
     'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': '메뉴의 래더에 시상대가 생겼습니다: 1위에게 왕관, 각 얼굴 뒤로 도는 빛, 금·은·동 반짝임.',
     'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': '젖으면 화상이 꺼집니다. 물에 들어가거나 물 타입 공격을 받으면 화상이 사라지고, 젖어 있는 동안은 불에 화상을 입지 않습니다.',

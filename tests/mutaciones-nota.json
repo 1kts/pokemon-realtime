@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 90,
- "total": 90,
+ "cazadas": 93,
+ "total": 93,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -638,6 +638,27 @@
     "tests/e2e/ladder-menu.e2e.js"
    ],
    "motivo": "ladder-menu.e2e.js: ✗ el primero de la ladder del menú lleva su corona"
+  },
+  "ruletas-cada-2-semanas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ las ruletas cambian cada semana"
+  },
+  "ruleta-repite-lo-que-tienes": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ un efecto que ya tenías sale conseguido en la ruleta"
+  },
+  "titulos-como-pastillas": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/titulos-placas.e2e.js"
+   ],
+   "motivo": "titulos-placas.e2e.js: ✗ los títulos son placas de esquinas casi rectas"
   }
  }
 }

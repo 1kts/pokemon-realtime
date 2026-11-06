@@ -12,6 +12,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.41.2 ----------
+    'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin 转盘每周一更换，你已拥有的东西（特效、头像、皮肤）在任何转盘中都会显示为已获得，不会再抽到。',
+    'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': '在成就中，称号变成带缎带的牌子：已拥有的为金色，未拥有的带锁，不会再和上方的筛选混淆。',
+    // ---------- Novedades v0.41.2 ----------
     'Podio con corona': '带皇冠的领奖台',
     'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': '菜单里的天梯展示领奖台：第一名戴皇冠，每张头像后有旋转光芒，还有金、银、铜色闪光。',
     'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': '湿身会扑灭灼伤：踩进水里或被水属性招式击中就不再灼烧，保持湿身时火也烧不到你。',

@@ -1,5 +1,5 @@
 // Tesoros: las ruletas de premios que se pagan con gemas (ver Data.treasures y server/treasure.js).
-// Pestaña por ruleta (una por tipo, cambian cada 2 semanas), la rueda con sus 10 premios y el botón de
+// Pestaña por ruleta (una por línea, cambian cada semana), la rueda con sus 10 premios y el botón de
 // tirar en el centro, y al lado el premio elegido y las probabilidades de la próxima tirada. Al tirar,
 // la rueda recorre los premios que faltan y se para en el que ha salido; después, la animación de premio.
 import { t } from './i18n.js';
@@ -34,7 +34,7 @@ export const treasureViews = {
   // Gemas de las ruletas que se pueden gastar ya (para avisos en el menú)
   treasureReady() {
     const p = this.profile, got = (p.treasure && p.treasure.got) || {};
-    return Data.treasures().some(r => (got[r.id] || []).length < r.prizes.length && (p.gems || 0) >= SPIN_COST[(got[r.id] || []).length]);
+    return Data.treasures().some(r => Data.treasureGot(p, r).length < r.prizes.length && (p.gems || 0) >= SPIN_COST[Math.min((got[r.id] || []).length, SPIN_COST.length - 1)]);
   },
 
   // Lucky Spin abierto para este jugador (el servidor lo puede cerrar desde el panel de admin: server/flags.js; a un
@@ -68,9 +68,10 @@ export const treasureViews = {
     const cur = list.find(r => r.id === this.tzSel) || list[0];
     this.tzSel = cur.id;
     this.tzLine = cur.line;
-    const mine = got[cur.id] || [];
+    // (conseguido: lo que te ha tocado aquí y lo que ya tenías de antes; el precio, por las tiradas hechas en esta)
+    const mine = Data.treasureGot(p, cur), spun = (got[cur.id] || []).length;
     const odds = Data.treasureOdds(cur, mine);
-    const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[n], done = n >= N, enough = (p.gems || 0) >= cost;
+    const N = cur.prizes.length, n = mine.length, cost = SPIN_COST[Math.min(spun, SPIN_COST.length - 1)], done = n >= N, enough = (p.gems || 0) >= cost;
     const wrap = el('div', 'treasure');
     wrap.style.setProperty('--tc', TYPE_COLOR[cur.type]);
     const top = this.topbar(t('Lucky Spin'));
@@ -80,7 +81,7 @@ export const treasureViews = {
     const days = Math.max(1, Math.ceil((Data.treasureEnds() - Date.now()) / 86400e3));
     const tabs = el('div', 'tz-tabs');
     for (const r of list) {
-      const k = (got[r.id] || []).length;
+      const k = Data.treasureGot(p, r).length;
       const b = el('button', 'tz-tab' + (r === cur ? ' sel' : '') + (k >= r.prizes.length ? ' done' : ''), `<span class="tz-tab-ico">${faceHtml(r.line)}</span><span><b>${rouletteName(r)}</b><small>${t('Conseguido {a}/{b}', { a: k, b: r.prizes.length })}</small></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[r.type]);
       b.style.setProperty('--tp', (k / r.prizes.length * 100) + '%');
@@ -95,7 +96,7 @@ export const treasureViews = {
     // En el móvil, las ruletas van en pequeño en la cabecera: la cara, el Pokémon de la línea y lo conseguido
     const chips = el('div', 'tb-mobile tz-chips');
     for (const r of list) {
-      const k = (got[r.id] || []).length;
+      const k = Data.treasureGot(p, r).length;
       const b = el('button', 'tz-chip' + (r === cur ? ' sel' : ''), `${faceHtml(r.line)}<span><b>${r.line ? SPECIES[r.line].name : TYPE_LABEL[r.type]}</b><small>${k}/${r.prizes.length}</small></span>`);
       b.style.setProperty('--tc', TYPE_COLOR[r.type]);
       b.title = rouletteName(r);
@@ -160,7 +161,7 @@ export const treasureViews = {
     const buy = el('div', 'tz-buy');
     if (done) buy.append(el('div', 'tz-done', `<b>${t('¡Ruleta completa!')}</b><small>${t('Tienes todos sus premios.')}</small>`));
     else {
-      const rest = SPIN_COST.slice(n).reduce((a, b) => a + b, 0);
+      const rest = SPIN_COST.slice(spun, spun + N - n).reduce((a, b) => a + b, 0);
       const price = el('div', 'tz-price' + (enough ? '' : ' short'), `<b>${gemsHtml(cost)}</b><small>${!enough ? t('Te faltan {n} gemas.', { n: cost - (p.gems || 0) }) : t('Tirada {n} de {max}', { n: n + 1, max: N })}</small>`);
       price.title = n === N - 1 ? t('La última tirada: el último premio es seguro.') : t('Completar la ruleta: {n} gemas más.', { n: rest });
       const go = el('button', 'tz-go', this.tzSpin ? t('Girando…') : t('¡Tirar!'));
@@ -193,7 +194,7 @@ export const treasureViews = {
     const cur = Data.treasures(this.profile.treasure ? this.profile.treasure.period : undefined).find(x => x.id === r.treasure.roulette) || null;
     const prize = cur && cur.prizes.find(x => x.id === r.treasure.prize);
     if (!prize) return done();
-    const got = ((this.profile.treasure && this.profile.treasure.got) || {})[cur.id] || [];
+    const got = Data.treasureGot(this.profile, cur);
     const pool = cur.prizes.filter(x => !got.includes(x.id) || x === prize);
     const weight = { comun: 6, raro: 4, epico: 2, legendario: 1, mitico: 1 };
     const bag = pool.flatMap(x => Array(weight[x.rarity] || 1).fill(x));

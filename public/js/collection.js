@@ -3,6 +3,8 @@
 // Los datos están en Data.MASTERY_TIERS; el servidor entrega los premios (server/rewards.js, claimMastery)
 // y los equipa (setLook).
 import { newsDot } from './news-dots.js';
+import { LOCK } from './wardrobe.js';
+import { escapeHtml } from './battle.js';
 import { t } from './i18n.js';
 import { portrait } from './sprites.js';
 import { masteryPrize, SKIN_LABEL, applySkin, auraName, frameBadge } from './frames.js';
@@ -179,14 +181,16 @@ export const collectionViews = {
     body.append(el('p', 'small coll-intro', t('El título sale bajo tu nombre. Se consiguen con retos, con la liga y con los retos de línea.')));
     const fromAch = Data.ACHIEVEMENTS.filter(a => a.reward && a.reward.title).map(a => [a.reward.title, achName(a)]);
     const all = [...new Set([...own, ...fromAch.map(x => x[0])])];
-    const chips = el('div', 'ms-chips titles-chips');
+    // (en placas cuadradas con su cinta: en pastillas se confundían con los filtros de arriba)
+    const grid = el('div', 'title-plates');
     for (const ti of all) {
-      const has = own.includes(ti), src = fromAch.find(x => x[0] === ti);
-      const b = el('span', 'ms-chip' + (p.title === ti ? ' sel' : '') + (has ? ' own' : ' locked'), `${has ? '' : '🔒 '}${t(ti)}`);
+      const has = own.includes(ti), src = fromAch.find(x => x[0] === ti), sel = p.title === ti;
+      const b = el('div', 'title-plate' + (sel ? ' sel' : '') + (has ? ' own' : ' locked'),
+        `<i class="tp-ribbon"></i>${has ? '' : LOCK}<b>${escapeHtml(t(ti))}</b><small>${sel ? t('Equipado') : has ? t('Lo tienes') : src ? t('Reto: {name}', { name: src[1] }) : ''}</small>`);
       b.title = has ? '' : src ? t('Reto: {name}', { name: src[1] }) : '';
-      chips.append(b);
+      grid.append(b);
     }
-    body.append(chips);
+    body.append(grid);
   },
 
   // Ilustraciones oficiales: las de las líneas con su premio recogido (se ponen de avatar en el Perfil)

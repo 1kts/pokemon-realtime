@@ -1989,3 +1989,18 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 .title-panel .official { display: flex; align-items: flex-start; justify-content: center; gap: 6px; max-width: 360px; margin: 10px auto 0; font-size: 11.5px; line-height: 1.35; color: #c4d0e4; text-align: left; }
 .title-panel .official svg { flex: none; width: 15px; height: 15px; margin-top: 1px; color: #5fd08a; }
 .title-panel .official b { color: #fff; }
+
+/* Logros → Títulos: placas cuadradas con su cinta (no pastillas: se confundían con los filtros de arriba) */
+.title-plates { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.title-plate { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 78px; padding: 14px 10px 10px; border-radius: 8px; text-align: center;
+  background: linear-gradient(180deg, #2b3a7e, #1a2459); border: 2px solid #4b5fb8; box-shadow: inset 0 0 0 2px rgba(255,255,255,.06), 0 3px 0 rgba(0,0,0,.35); }
+.title-plate b { font: 800 14px/1.2 var(--display); color: #fff; }
+.title-plate small { font-size: 11px; font-weight: 700; color: #b9c6e8; }
+.title-plate .tp-ribbon { position: absolute; top: -2px; left: 50%; width: 34px; height: 12px; transform: translateX(-50%); background: linear-gradient(90deg, #ffcb05, #ffe680, #ffcb05); clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%); }
+.title-plate.own { border-color: #ffcb05; background: linear-gradient(180deg, #4a3a10, #2a2050); }
+.title-plate.own b { color: #ffe27a; text-shadow: 0 0 10px rgba(255,203,5,.35); }
+.title-plate.sel { box-shadow: 0 0 0 3px #7ad0ff, 0 0 18px rgba(122,208,255,.45); }
+.title-plate.locked { filter: saturate(.55) brightness(.8); }
+.title-plate.locked .tp-ribbon { background: #6b7696; }
+.title-plate .wear-lock { position: absolute; top: 6px; right: 6px; width: 14px; height: 14px; color: #dfe6f7; }
+@media (max-height: 500px) { .title-plates { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; } .title-plate { min-height: 58px; padding: 10px 6px 6px; } .title-plate b { font-size: 12.5px; } }

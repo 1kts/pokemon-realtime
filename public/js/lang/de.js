@@ -12,6 +12,9 @@ const CLASSES = {
 export default {
   text: {
     // ---------- Novedades v0.41.2 ----------
+    'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Die Lucky-Spin-Räder wechseln jede Woche montags, und was du schon hast (ein Effekt, ein Porträt, ein Skin) gilt auf jedem Rad als erhalten und kommt nicht noch einmal.',
+    'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': 'Bei den Erfolgen sind Titel jetzt Plaketten mit Band: golden, wenn du ihn hast, mit Schloss, wenn nicht, damit sie nicht wie die Filter oben aussehen.',
+    // ---------- Novedades v0.41.2 ----------
     'Podio con corona': 'Siegerpodest mit Krone',
     'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'Die Ladder im Menü zeigt ihr Podest: eine Krone für Platz eins, drehende Strahlen hinter jedem Gesicht und gold-, silber- und bronzefarbenes Funkeln.',
     'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Nass sein löscht Verbrennungen: Tritt ins Wasser oder nimm eine Wasser-Attacke ein und du brennst nicht mehr, und solange du nass bist, verbrennt dich Feuer nicht.',

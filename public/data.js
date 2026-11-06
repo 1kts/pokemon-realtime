@@ -1593,7 +1593,7 @@
   // ---------- Tesoros ----------
   // Una moneda propia, las gemas, que dan las misiones y sus cofres, la primera victoria online del día,
   // los líderes (y el Alto Mando y el Campeón), cada bloque de 7 de la Torre, subir de liga y los
-  // salvajes raros o shiny. Se gastan en ruletas que cambian cada 2 semanas: 3 a la vez, cada una de un
+  // salvajes raros o shiny. Se gastan en ruletas que cambian cada semana: 3 a la vez, cada una de un
   // tipo, con 10 premios (skins Elementales de líneas de ese tipo, glows, retratos con efecto y algo de
   // dinero y caramelos). Cada tirada da uno de los que faltan: lo más común sale más; lo conseguido sale
   // de la bolsa y el resto gana probabilidad; la décima tirada da el último, seguro. Cada tirada cuesta
@@ -1603,7 +1603,9 @@
   // 3 × 130 = 390 (SPIN_COST): todo desbloqueable jugando a diario. Las semanales, la Torre, el online, los
   // líderes y los salvajes raros dan más y antes: cuanto más juegas, antes lo tienes.
   const GEMS = { missionDaily: 4, missionWeekly: 10, chestDaily: 10, chestWeekly: 40, firstWin: 10, leader: 15, leaderAgain: 4, towerBlock: 20, league: 30, rareWild: 5, shiny: 25 };
-  const TREASURE_EPOCH = Date.UTC(2026, 9, 19), TREASURE_DAYS = 14, TREASURE_COUNT = 3;
+  // Cambian cada semana, los lunes (antes cada 2): la época, para que la tanda que había (Cyndaquil, Chikorita y Totodile)
+  // siga hasta el lunes 9 de noviembre y nadie pierda lo que llevaba
+  const TREASURE_EPOCH = Date.UTC(2026, 9, 26), TREASURE_DAYS = 7, TREASURE_COUNT = 3;
   const treasurePeriod = (t = Date.now()) => Math.floor((t - TREASURE_EPOCH) / (TREASURE_DAYS * 86400e3));
   const treasureEnds = (t = Date.now()) => TREASURE_EPOCH + (treasurePeriod(t) + 1) * TREASURE_DAYS * 86400e3;
   const RARITY = {
@@ -1677,6 +1679,21 @@
     treasureCache.set(period, out);
     return out;
   }
+  // Lo que ya tienes de una ruleta: lo que te ha tocado en ella y lo que ya tenías de antes (de otra ruleta o de la misma
+  // otra semana: el mismo efecto, retrato, skin, partículas o marco), que sale conseguido y ya no puede tocar
+  function treasureOwned(p, x) {
+    const c = (p && p.cosmetics) || {};
+    if (x.kind === 'skin') return hasSkin(p, x.dex, x.skin);
+    if (x.kind === 'particles') return (c.particles || []).includes(lineOf(x.dex));
+    if (x.kind === 'portrait') return (c.avatars || []).includes(x.id);
+    if (x.kind === 'effect') return (c.effects || []).includes(x.effect);
+    if (x.kind === 'frame') return (c.frames || []).includes(x.frame);
+    return false;   // (dinero y objetos: se gastan, y en cada ruleta cuentan aparte)
+  }
+  const treasureGot = (p, roulette) => {
+    const mine = ((p && p.treasure && p.treasure.got) || {})[roulette.id] || [];
+    return roulette.prizes.filter(x => mine.includes(x.id) || treasureOwned(p, x)).map(x => x.id);
+  };
   // Probabilidad de cada premio que falta en la próxima tirada (por su rareza)
   function treasureOdds(roulette, got) {
     const left = roulette.prizes.filter(x => !got.includes(x.id));
@@ -1702,7 +1719,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, tmMoves, learnable, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, tmMoves, learnable, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds, treasureGot, treasureOwned,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;
