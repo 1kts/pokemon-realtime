@@ -302,4 +302,7 @@ module.exports = [
   { id: 'titulos-como-pastillas', que: 'En Logros, los títulos vuelven a ser pastillas redondas y se confunden con los filtros',
     archivo: 'public/cards.css', buscar: 'min-height: 78px; padding: 14px 10px 10px; border-radius: 8px;', poner: 'min-height: 78px; padding: 14px 10px 10px; border-radius: 999px;',
     tests: ['tests/e2e/titulos-placas.e2e.js'] },
+  { id: 'carga-siempre-30', que: 'Con cientos de combates, cada uno sigue mandando 30 instantáneas por segundo y el servidor se ahoga',
+    archivo: 'server/battle.js', buscar: "if (live > BUSY && this.ticks % 3 === 0 && this.state !== 'over') return;", poner: '',
+    tests: ['tools/arena-test.js'] },
 ];

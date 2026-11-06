@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 93,
- "total": 93,
+ "cazadas": 94,
+ "total": 94,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -659,6 +659,13 @@
     "tests/e2e/titulos-placas.e2e.js"
    ],
    "motivo": "titulos-placas.e2e.js: ✗ los títulos son placas de esquinas casi rectas"
+  },
+  "carga-siempre-30": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: 30 por segundo con pocos y 20 con muchos"
   }
  }
 }

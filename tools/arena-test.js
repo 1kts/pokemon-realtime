@@ -208,6 +208,16 @@ check('los golpes cuerpo a cuerpo llegan un 30 % más lejos y con el arco más a
   assert(sw && sw.r === 70 && sw.arc === 1.9 && m.vr === 70 && m.va === 1.9, `el tajo se dibuja de 70 y 1.9 (${JSON.stringify(sw)})`);
 });
 
+check('con muchos combates a la vez, cada uno manda 20 instantáneas por segundo en vez de 30 (y con pocos, 30)', () => {
+  const cuenta = busy => Number(require('child_process').execFileSync(process.execPath, ['-e', `
+    const { Battle } = require('./server/battle.js'); let n = 0;
+    const ws = { readyState: 1, send: s => { if (s.includes('"t":"snap"')) n++; } };
+    const b = new Battle({ mode: 'practice', map: 'pradera', sides: [{ name: 'A', ws, team: [{ dex: 25, level: 30 }] }, { name: 'B', ai: 0.5, team: [{ dex: 74, level: 30 }] }] });
+    setTimeout(() => { b.stop(); console.log(n); process.exit(0); }, 1000);`], { cwd: require('path').join(__dirname, '..'), env: { ...process.env, BATTLE_BUSY: String(busy) } }));
+  const pocos = cuenta(120), muchos = cuenta(-1);
+  assert(pocos >= 26 && muchos <= 22 && muchos >= 16, `30 por segundo con pocos (${pocos}) y 20 con muchos (${muchos})`);
+});
+
 check('mojarse apaga la quemadura, y mojado no se vuelve a quemar', () => {
   const bt = battle('pradera', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]);
   const [me] = bt.sides;

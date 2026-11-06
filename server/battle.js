@@ -13,6 +13,8 @@ const { Arena } = require('./arena.js');
 
 const { T, F, CELL, COLS, ROWS } = S;
 let nextId = 1;
+let live = 0;             // combates en marcha en este hilo
+const BUSY = +process.env.BATTLE_BUSY || 120;   // a partir de aquí, 20 instantáneas por segundo en vez de 30
 
 const STAB = 1.15;
 const BURN_DPS = 0.025, POISON_DPS = 0.022, SEED_DPS = 0.03, FIRE_DPS = 0.05;  // % de PS máx. por segundo
@@ -72,6 +74,7 @@ class Battle {
     this.events = [];
     this.result = null;
     this.timer = setInterval(() => this.tick(), 1000 / S.TICK);
+    live++;
     for (const s of this.sides) this.send(s, this.startMsg(s));
   }
 
@@ -150,6 +153,10 @@ class Battle {
     } else if (this.state === 'capture') {
       this.updateCapture(real);
     }
+    // Con muchos combates en este hilo, 2 de cada 3 instantáneas (20 por segundo): el cliente interpola igual de suave y
+    // el servidor manda un tercio menos. Lo que pasa entre medias (eventos, terreno) va en la siguiente
+    this.ticks = (this.ticks || 0) + 1;
+    if (live > BUSY && this.ticks % 3 === 0 && this.state !== 'over') return;
     this.broadcast();
   }
 
@@ -838,6 +845,7 @@ class Battle {
     this.result = { winner, ...extra };
     this.broadcast();
     clearInterval(this.timer);
+    live--;
     // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd). En un hilo de combates
     // (server/battle-pool.js) la respuesta llega después, como promesa
     const done = (rewards = []) => {
@@ -886,7 +894,7 @@ class Battle {
     if (this.state !== 'over') this.finish(1 - side.idx, { forfeit: side.idx });
   }
 
-  stop() { clearInterval(this.timer); this.state = 'over'; }
+  stop() { if (this.state !== 'over') live--; clearInterval(this.timer); this.state = 'over'; }
 
   // ---------- Red ----------
   sideSnap(s, viewer) {

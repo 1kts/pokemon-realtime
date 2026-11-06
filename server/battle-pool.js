@@ -31,7 +31,14 @@ function spawn(i) {
   const w = new Worker(path.join(__dirname, 'battle-worker.js'), { env: process.env });
   const slot = { w, n: 0 };
   workers[i] = slot;
-  w.on('message', m => { const b = remote.get(m.id); if (b) b.onMessage(m); });
+  w.on('message', m => {
+    if (m.t === 'batch') {   // (las instantáneas de una vuelta del hilo, todas juntas: [id, lado, texto, id, lado, texto…])
+      const o = m.out;
+      for (let k = 0; k < o.length; k += 3) { const b = remote.get(o[k]); if (b) b.out(o[k + 1], o[k + 2]); }
+      return;
+    }
+    const b = remote.get(m.id); if (b) b.onMessage(m);
+  });
   w.on('error', e => console.error('Hilo de combates', i, e));
   // Si un hilo se cae, sus combates acaban (cada jugador vuelve al menú) y se arranca otro en su sitio
   w.on('exit', code => {
@@ -63,8 +70,9 @@ class RemoteBattle {
     this.post({ t: 'new', opts: { ...rest, sides } });
   }
   post(m) { this.slot.w.postMessage({ id: this.id, ...m }); }
+  out(side, str) { const ws = this.sides[side].ws; if (ws && ws.readyState === 1) ws.send(str); }
   onMessage(m) {
-    if (m.t === 'out') { const ws = this.sides[m.side].ws; if (ws && ws.readyState === 1) ws.send(m.str); }
+    if (m.t === 'out') this.out(m.side, m.str);
     else if (m.t === 'state') this.state = m.state;
     else if (m.t === 'end') {
       this.state = 'over';
