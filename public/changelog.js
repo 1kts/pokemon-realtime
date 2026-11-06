@@ -4,6 +4,23 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.41.2', date: '2026-11-06', title: 'Podio con corona',
+      items: [
+        ['cambio', 'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.'],
+        ['cambio', 'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.'],
+      ],
+    },
+    {
+      v: '0.41.1', date: '2026-11-06', title: 'Movimientos más ordenados',
+      items: [
+        ['cambio', 'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.'],
+        ['cambio', 'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.'],
+        ['cambio', 'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).'],
+        ['cambio', 'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.'],
+        ['arreglo', 'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.'],
+      ],
+    },
+    {
       v: '0.41.0', date: '2026-11-06', title: 'Carga más rápida',
       items: [
         ['nuevo', 'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.'],

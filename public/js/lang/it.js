@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': 'Un podio con la corona',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'La Ladder del menu mostra il suo podio: una corona per il primo, raggi che girano dietro ogni volto e scintille d’oro, d’argento e di bronzo.',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Bagnarsi spegne la scottatura: entra nell’acqua o subisci un attacco Acqua e smetti di bruciare, e finché resti bagnato il fuoco non ti scotta.',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': 'Perché i selvatici di una linea abbiano sempre IV perfetti ora bastano 10 catture di quella linea (prima 25).',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': 'Nella scheda di ogni Pokémon, le mosse che aggiungi o togli si salvano da sole, senza pulsante Salva.',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': 'Lo speciale di ogni percorso compare solo come speciale: Pikachu sul Percorso 2, Clefairy sul Percorso 3 o Haunter nella Torre Pokémon non escono più anche tra quelli normali.',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': 'Mosse più in ordine',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': 'Al livello 50 ogni Pokémon aggiunge solo le sue MT migliori, al massimo 4 (Charizard: Fuocobomba, Aeroassalto, Nitrocarica e Iper Raggio): la lista non è più infinita.',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': 'Gli attacchi corpo a corpo tornano a essere disegnati piccoli ma arrivano lontano come prima: si vede meglio l’arena e si colpisce uguale.',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': 'Caricamento più veloce',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'La schermata iniziale ti ricorda qual è il sito ufficiale: pokearenas.com, gratis e nel browser. Se qualcuno ti chiede di pagare o scaricare qualcosa, non siamo noi.',
@@ -1597,6 +1610,7 @@ export default {
     'aprendido': 'imparata',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Sito ufficiale: <b>pokearenas.com</b>. È gratis e si gioca nel browser: se qualcuno ti chiede di pagare o scaricare qualcosa, non siamo noi.',
     'MT': 'MT',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Tocca una mossa per aggiungerla o toglierla. L’ordine è quello dei tasti. Si salva da solo.',
     'Por MT, a {lv}': 'Con MT, al {lv}',
     'Ya lleva 4: quita uno antes': 'Ne ha già 4: togline una prima',
     'Próximamente: {list}': 'Prossimamente: {list}',

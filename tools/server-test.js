@@ -85,7 +85,9 @@ class Client {
   ok((await err).msg.includes('no sabe'), 'un movimiento de MT no se puede llevar antes de Nv.50');
   ok(D.learnable(6, 50).includes('llamarada') && !D.learnable(6, 49).includes('llamarada') && !D.learnable(4, 10).includes('golpeAereo') && !D.learnedAt(6, 50).includes('llamarada'), 'Llamarada, por MT: Charizard a Nv.50 sí, a Nv.49 no, y no es de los que aprende subiendo');
   ok(D.levelMult(50) === 1 && D.levelMult(43) / D.levelMult(20) >= 1.4, `el nivel pesa: un Nv.43 tiene al menos un 40 % más de Ataque y PS que un Nv.20 (${(D.levelMult(43) / D.levelMult(20)).toFixed(2)}×), y a Nv.50 (PvP y Torre) todo queda igual`);
-  ok(D.pvpMoves(6).includes('llamarada') && D.pvpMoves(6).includes('terremoto'), 'en PvP, Charizard puede llevar Llamarada y Terremoto (MT)');
+  ok(D.pvpMoves(6).includes('llamarada') && D.pvpMoves(6).includes('hiperrayo'), 'en PvP, Charizard puede llevar Llamarada e Hiperrayo (MT)');
+  { const n = Object.keys(D.SPECIES).map(Number).filter(d => d <= 251).map(d => D.tmMoves(d).length);
+    ok(Math.max(...n) <= 4 && D.tmMoves(6).length === 4 && !D.tmMoves(6).some(([, k]) => k === 'terremoto'), `de sus MT, cada especie solo las mejores: como mucho 4 (Charizard: ${D.tmMoves(6).map(([, k]) => k).join(', ')})`); }
   ok(!D.defaultMoves(6, 50).some(k => D.tmMoves(6).some(([, x]) => x === k)), 'los salvajes y los líderes siguen llevando solo lo que aprenden subiendo');
   // Motes: se guardan limpios y con 12 caracteres como mucho, pasan el filtro y vacíos se quitan
   const uid0 = m.p.mons[0].uid;
@@ -301,6 +303,8 @@ class Client {
     ok(!malas.length, `los salvajes de cada ruta, como mucho 3 niveles por encima del tope de sus medallas y sin niveles muy dispares (${malas.join(', ') || 'todas bien'})`);
     const altos = Object.values(D.NODES).filter(n => n.kind === 'route' && D.routeWild(n).level > D.levelCap(n.req || 0, n.region) + 3).map(n => `${n.id} Nv.${D.routeWild(n).level}`);
     ok(!altos.length, `los especiales y los que vagan por Johto, tampoco más de 3 niveles por encima del tope (${altos.join(', ') || 'todos bien'})`);
+    const dobles = Object.values(D.NODES).filter(n => n.kind === 'route').flatMap(n => (D.ROUTE_SPECIALS[n.id] || []).filter(x => !x.shiny).map(x => x.dex || x).filter(d => n.wild.some(w => w[0] === d)).map(d => `${n.id}: ${D.SPECIES[d].name}`));
+    ok(!dobles.length, `el especial de cada ruta sale solo como especial, no también entre los de siempre (${dobles.join(', ') || 'Pikachu en la Ruta 2, solo especial'})`);
     const cueva = D.NODES['j-oscura'];
     ok(cueva.lvl[1] <= D.levelCap(0, 'johto') + 3, `la Cueva Oscura, sin medallas, no saca salvajes de Nv.20 (Nv.${cueva.lvl[0]}-${cueva.lvl[1]})`);
   }

@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': 'Siegerpodest mit Krone',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'Die Ladder im Menü zeigt ihr Podest: eine Krone für Platz eins, drehende Strahlen hinter jedem Gesicht und gold-, silber- und bronzefarbenes Funkeln.',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Nass sein löscht Verbrennungen: Tritt ins Wasser oder nimm eine Wasser-Attacke ein und du brennst nicht mehr, und solange du nass bist, verbrennt dich Feuer nicht.',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': 'Damit wilde Pokémon einer Linie immer perfekte DVs haben, reichen jetzt 10 Fänge dieser Linie (vorher 25).',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': 'Im Profil jedes Pokémon werden die Attacken, die du hinzufügst oder entfernst, automatisch gespeichert, ohne Speichern-Knopf.',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': 'Das Besondere jeder Route erscheint nur noch als Besonderes: Pikachu auf Route 2, Piepi auf Route 3 oder Alpollo im Pokémon-Turm tauchen nicht mehr zusätzlich bei den normalen auf.',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': 'Aufgeräumte Attacken',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': 'Ab Lv. 50 bekommt jedes Pokémon nur seine besten TMs dazu, höchstens 4 (Glurak: Feuersturm, Aero-Ass, Nitroladung und Hyperstrahl): Die Liste ist nicht mehr endlos.',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': 'Nahkampfattacken werden wieder klein gezeichnet, reichen aber genauso weit: Du siehst mehr von der Arena und triffst genauso.',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': 'Schnelleres Laden',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'Der Startbildschirm erinnert dich an die offizielle Seite: pokearenas.com, kostenlos und im Browser. Wenn dich jemand bittet, etwas zu bezahlen oder herunterzuladen, sind das nicht wir.',
@@ -1596,6 +1609,7 @@ export default {
     'aprendido': 'erlernt',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Offizielle Seite: <b>pokearenas.com</b>. Es ist kostenlos und läuft im Browser: Wenn dich jemand bittet, etwas zu bezahlen oder herunterzuladen, sind das nicht wir.',
     'MT': 'TM',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Tippe auf eine Attacke, um sie hinzuzufügen oder zu entfernen. Die Reihenfolge entspricht den Tasten. Wird automatisch gespeichert.',
     'Por MT, a {lv}': 'Per TM, ab {lv}',
     'Ya lleva 4: quita uno antes': 'Es hat schon 4: Entferne zuerst eine',
     'Próximamente: {list}': 'Demnächst: {list}',

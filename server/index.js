@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { WebSocketServer } = require('ws');
 const D = require('../public/data.js');
-const { Battle } = require('./battle.js');
+const battlePool = require('./battle-pool.js');   // (los combates, repartidos entre los núcleos)
 const store = require('./store.js');
 const story = require('./story.js');
 const rewards = require('./rewards.js');
@@ -151,7 +151,7 @@ const held = new Map();   // id del perfil -> { c, timer }
 function holdBattle(c) {
   const b = c.battle, side = b.sides[c.side], id = c.profile.id;
   c.battleSide = side;
-  side.ws = null; side.inputs = []; side.lastInput = { ...side.lastInput, mx: 0, my: 0 };
+  b.hold(c.side);
   held.set(id, { c, timer: setTimeout(() => {
     held.delete(id);
     if (b.state !== 'over') b.leave(side, true);
@@ -192,20 +192,19 @@ function resumeBattle(c, p) {
   old.ip = c.ip;
   c.adopted = old;
   clients.add(old);
-  const side = old.battle.sides[old.side];
-  side.ws = c.ws;
   // (primero el perfil: si la página es nueva, pinta su menú con él, y el combate que llega después lo quita)
   sendProfile(old);
-  send(old, { ...old.battle.startMsg(side), resume: true });
+  old.battle.resume(old.side, c.ws);
   return true;
 }
 
 function startBattle(clientsBySide, opts, onEnd) {
   const sides = opts.sides.map((s, i) => ({ ...s, ws: clientsBySide[i] ? clientsBySide[i].ws : null }));
-  const battle = new Battle({
+  // (b: el combate o, si corre en otro hilo, sus datos al acabar; quién estaba en él se mira con battle)
+  const battle = battlePool.create({
     ...opts, sides,
     onEnd: (result, b) => {
-      clientsBySide.forEach(c => { if (c && c.battle === b) c.battle = null; });
+      clientsBySide.forEach(c => { if (c && c.battle === battle) c.battle = null; });
       try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
       try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
@@ -576,9 +575,8 @@ function handle(c, msg) {
   if (!c.profile) return;
   if (msg.t === 'in') {
     if (!c.battle) return;
-    const side = c.battle.sides[c.side];
     const num = (v, lo, hi) => Math.max(lo, Math.min(hi, Number(v) || 0));
-    side.inputs.push({
+    c.battle.input(c.side, {
       s: msg.s | 0, mx: num(msg.mx, -1, 1), my: num(msg.my, -1, 1), a: num(msg.a, -10, 10),
       tx: num(msg.tx, -200, 1200), ty: num(msg.ty, -200, 900),
       c: Number.isInteger(msg.c) ? msg.c : -1, sw: Number.isInteger(msg.sw) ? msg.sw : -1,
@@ -608,10 +606,9 @@ function handle(c, msg) {
     if (msg.particles) { rewards.migrate(p); for (const m of p.mons) rewards.unlock(p, 'particles', D.lineOf(m.dex)); }
     if (Number.isFinite(msg.gems)) { treasure.migrate(p); p.gems += msg.gems; }
     // Rival del combate en curso con esa fracción de vida (las pruebas no esperan a debilitarlo a golpes)
-    if (Number.isFinite(msg.foeHp) && c.battle) for (const m of c.battle.sides[1 - c.side].team) if (!m.fainted) m.hp = Math.max(1, Math.round(m.maxHp * msg.foeHp));
+    if (c.battle && (Number.isFinite(msg.foeHp) || msg.foeIdle === true)) c.battle.devFoe(c.side, { hp: Number.isFinite(msg.foeHp) ? msg.foeHp : undefined, idle: msg.foeIdle === true });
     // Rival del combate en curso quieto y sin atacar, como el muñeco del tutorial (con el navegador del CI a 1-2
     // fotogramas por segundo los clics no aciertan a un rival que se mueve, y llegaba a ganar él)
-    if (msg.foeIdle === true && c.battle) c.battle.sides[1 - c.side].passive = true;
     store.save();
     return sendProfile(c);
   }

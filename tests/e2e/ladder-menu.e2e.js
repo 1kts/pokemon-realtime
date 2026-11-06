@@ -25,6 +25,11 @@ module.exports = async ({ page, player, ok }) => {
   await page.eval("localStorage.removeItem('arena.touch'); true");
   await page.loginAs(me.token);
   await page.waitSee('Campeona', { in: '.ladder-panel' });
+  // El podio, como el de la ladder completa: corona al primero y, en cada tarjeta, rayos tras la cara y destellos que se mueven
+  ok(await page.see('♛', { in: '.ladder-panel' }), 'el primero de la ladder del menú lleva su corona');
+  const brillo = await page.eval(`[...document.querySelectorAll('.ladder-panel .lp-card')].slice(0, 3).map(c => { const rays = c.querySelector('.pod-rays'), sp = c.querySelectorAll('.pod-sparks i');
+    return !!rays && rays.getBoundingClientRect().width > 40 && sp.length >= 4 && getComputedStyle(sp[0]).animationName !== 'none'; })`);
+  ok(brillo.length === 3 && brillo.every(Boolean), `y los tres del podio, rayos y destellos (${JSON.stringify(brillo)})`);
   ok(await page.see(/Temporada 1/, { in: '.ladder-panel' }) && await page.see(/Termina en|Último día/, { in: '.ladder-panel' }), 'la cabecera dice la temporada y cuánto le queda');
   ok(await page.see('Premios de temporada', { in: '.ladder-panel', scroll: true }), 'y sus premios');
   const col = await page.eval(`(() => { const r = q => document.querySelector(q).getBoundingClientRect(), p = r('.ladder-panel'), m = r('.menu-main'), s = r('.menu-side'), top = [...document.querySelectorAll('.lp-top > *')], a = document.querySelector('.lp-top .ava, .lp-top .lp-face').getBoundingClientRect(), caja = top[0].getBoundingClientRect();

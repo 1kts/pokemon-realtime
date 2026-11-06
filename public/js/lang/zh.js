@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': '带皇冠的领奖台',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': '菜单里的天梯展示领奖台：第一名戴皇冠，每张头像后有旋转光芒，还有金、银、铜色闪光。',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': '湿身会扑灭灼伤：踩进水里或被水属性招式击中就不再灼烧，保持湿身时火也烧不到你。',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': '只需捕捉同一进化链 10 只（原来 25 只），该链的野生宝可梦就会一直拥有完美个体值。',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': '在每只宝可梦的资料中，加入或移除的招式会自动保存，不再需要保存按钮。',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': '每条道路的特别宝可梦只作为特别出现：2号道路的皮卡丘、3号道路的皮皮或宝可梦塔的鬼斯通不会再同时出现在普通宝可梦中。',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': '更整齐的招式',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': '达到 50 级时，每只宝可梦只增加最好的招式学习器招式，最多 4 个（喷火龙：大字爆炎、燕返、蓄能焰袭和破坏光线）：列表不再没完没了。',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': '近身攻击的画面重新变小，但攻击距离不变：竞技场看得更清楚，命中也一样。',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': '加载更快',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': '标题画面会提醒你官方网站是 pokearenas.com，免费且在浏览器中游玩。如果有人要你付费或下载东西，那不是我们。',
@@ -1627,6 +1640,7 @@ export default {
     'aprendido': '已学会',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '官方网站：<b>pokearenas.com</b>。游戏免费，在浏览器中游玩：如果有人要你付费或下载东西，那不是我们。',
     'MT': '招式学习器',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '点击招式即可加入或移除。顺序对应按键。会自动保存。',
     'Por MT, a {lv}': '招式学习器，{lv}',
     'Ya lleva 4: quita uno antes': '已经有 4 个了：请先去掉一个',
     'Próximamente: {list}': '即将学会：{list}',

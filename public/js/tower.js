@@ -396,8 +396,17 @@ export const towerViews = {
     const sub = r => board === 'ranked' ? (r.title ? t(r.title) : t(leagueOf(r.elo))) : r.title ? t(r.title) : t(unit);
     const top = el('div', 'lp-top');
     for (const r of msg.rows.slice(0, 3)) {
-      const c = el('button', `lp-card m${r.rank}${r.id === this.profile.id ? ' me' : ''}`, `<u></u><i>${r.rank}</i><b>${escapeHtml(r.name)}<small>${escapeHtml(sub(r))}</small></b><span>${this.lpValue(r, board)}<small>${t(unit)}</small></span>`);
-      c.querySelector('u').replaceWith(this.lpFace(r, 54, true));
+      const c = el('button', `lp-card m${r.rank} p${r.rank}${r.id === this.profile.id ? ' me' : ''}`, `<u></u><i>${r.rank}</i><b>${escapeHtml(r.name)}<small>${escapeHtml(sub(r))}</small></b><span>${this.lpValue(r, board)}<small>${t(unit)}</small></span>`);
+      // Como el podio de la ladder completa: rayos que giran tras la cara, un halo debajo, destellos y corona al primero
+      const stage = el('span', 'pod-stage lp-stage');
+      const face = this.lpFace(r, 54, true);
+      stage.append(el('span', 'pod-rays'), el('span', 'pod-halo'), face);
+      if (r.rank === 1) stage.insertAdjacentHTML('beforeend', '<span class="pod-crown">♛</span>');
+      c.querySelector('u').replaceWith(stage);
+      // (los destellos y el brillo que pasa, en su capa recortada a la tarjeta: la cara sí se sale por arriba)
+      const fx = el('span', 'lp-fx');
+      fx.append(el('span', 'pod-sparks', Array.from({ length: 6 }, (_, k) => `<i style="--x:${(k * 37 + 21) % 96}%;--y:${(k * 53 + 9) % 90}%;--d:${(k * 0.47).toFixed(2)}s"></i>`).join('')));
+      c.append(fx);
       c.onclick = () => this.userModal(r.id);
       top.append(c);
     }

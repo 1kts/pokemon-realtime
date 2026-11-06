@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': 'Un podium couronné',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'La Ladder du menu affiche son podium : une couronne pour le premier, des rayons qui tournent derrière chaque visage et des éclats or, argent et bronze.',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Être mouillé éteint la brûlure : marche dans l’eau ou prends une attaque Eau et tu ne brûles plus, et tant que tu restes mouillé le feu ne te brûle pas.',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': 'Pour que les sauvages d’une lignée aient toujours des IV parfaits, 10 captures de cette lignée suffisent (avant 25).',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': 'Dans la fiche de chaque Pokémon, les capacités que tu ajoutes ou retires s’enregistrent toutes seules, sans bouton Enregistrer.',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': 'Le spécial de chaque route n’apparaît plus que comme spécial : Pikachu sur la Route 2, Mélofée sur la Route 3 ou Spectrum dans la Tour Pokémon ne sortent plus aussi parmi les habituels.',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': 'Des capacités mieux rangées',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': 'Au niveau 50, chaque Pokémon n’ajoute que ses meilleures CT, 4 au maximum (Dracaufeu : Déflagration, Aéropique, Nitrocharge et Ultralaser) : la liste n’est plus interminable.',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': 'Les attaques au corps à corps sont de nouveau dessinées petites mais portent toujours aussi loin : on voit mieux l’arène et on touche pareil.',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': 'Chargement plus rapide',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'L’écran titre te rappelle quel est le site officiel : pokearenas.com, gratuit et dans le navigateur. Si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
@@ -1549,6 +1562,7 @@ export default {
     'aprendido': 'apprise',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Site officiel : <b>pokearenas.com</b>. C’est gratuit et ça se joue dans le navigateur : si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
     'MT': 'CT',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Touche une capacité pour l’ajouter ou la retirer. L’ordre est celui des touches. C’est enregistré tout seul.',
     'Por MT, a {lv}': 'Par CT, au {lv}',
     'Ya lleva 4: quita uno antes': 'Il en a déjà 4 : retires-en une d\'abord',
     'Próximamente: {list}': 'Bientôt : {list}',

@@ -743,7 +743,7 @@ export class BattleClient {
     plate.innerHTML = `<div class="pn">${monLabel(mon)}${mon.shiny ? ' <i class="shiny-star">✦</i>' : ''} <small>${t('Nv.{n}', { n: mon.level })}</small></div><div class="hp"><div class="${fr > 0.5 ? '' : fr > 0.2 ? 'mid' : 'low'}" style="width:${fr * 100}%"></div></div><div class="sts">${icons.join('')}</div>`;
     // Práctica con «Ver qué piensa la IA»: estado, agresividad y personalidad del bot (solo llega en Práctica)
     if (st.ai && AI_MODES[st.ai.m]) plate.insertAdjacentHTML('afterbegin', `<div class="ai-dbg ${st.ai.m}"><b>${AI_MODES[st.ai.m]()}</b> · ${t('Agresividad {n} %', { n: st.ai.g })} · ${(AI_STYLES[st.ai.p] || (() => ''))()}</div>`);
-    // Salvaje: cuántas veces has atrapado su línea (las Poké Balls del reto de las 25 capturas)
+    // Salvaje: cuántas veces has atrapado su línea (las Poké Balls del reto de las 10 capturas)
     if (this.balls && i !== this.you && this.app.ui.profile) { const pips = this.app.ui.catchPips(mon.dex); pips.title = this.app.ui.catchText(mon.dex); plate.append(pips); }
   }
 

@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': '왕관이 있는 시상대',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': '메뉴의 래더에 시상대가 생겼습니다: 1위에게 왕관, 각 얼굴 뒤로 도는 빛, 금·은·동 반짝임.',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': '젖으면 화상이 꺼집니다. 물에 들어가거나 물 타입 공격을 받으면 화상이 사라지고, 젖어 있는 동안은 불에 화상을 입지 않습니다.',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': '같은 진화 계열을 10마리(이전 25마리) 잡으면 그 계열의 야생 포켓몬이 항상 완벽한 개체값으로 나옵니다.',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': '각 포켓몬 정보에서 넣거나 뺀 기술은 저장 버튼 없이 자동으로 저장됩니다.',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': '각 도로의 특별한 포켓몬은 특별한 포켓몬으로만 나옵니다. 2번도로의 피카츄, 3번도로의 삐삐, 포켓몬타워의 고우스트가 더 이상 일반 포켓몬에도 나오지 않습니다.',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': '정리된 기술 목록',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': '레벨 50에서 각 포켓몬은 가장 좋은 기술머신만, 최대 4개 추가됩니다(리자몽: 불대문자, 제비반환, 니트로차지, 파괴광선). 목록이 끝없이 길어지지 않습니다.',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': '근접 공격이 다시 작게 그려지지만 닿는 거리는 그대로입니다. 경기장이 잘 보이고 맞히기도 똑같습니다.',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': '더 빠른 로딩',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': '타이틀 화면에서 공식 사이트를 알려 줍니다: pokearenas.com, 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
@@ -1597,6 +1610,7 @@ export default {
     'aprendido': '배움',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '공식 사이트: <b>pokearenas.com</b>. 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
     'MT': '기술머신',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '기술을 누르면 넣거나 뺄 수 있습니다. 순서는 키 순서입니다. 자동으로 저장됩니다.',
     'Por MT, a {lv}': '기술머신, {lv}',
     'Ya lleva 4: quita uno antes': '이미 4개예요: 먼저 1개를 빼세요',
     'Próximamente: {list}': '앞으로 배울 기술: {list}',

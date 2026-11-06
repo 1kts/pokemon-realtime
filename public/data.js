@@ -237,9 +237,10 @@
     besoDrenaje: { name: 'Beso Drenaje', type: 'hada', kind: 'melee', cost: 25, cd: 5, wind: 0.2, rec: 0.2, dmg: 13, range: 66, arc: 1.3, drain: 1 },
   };
   // Los golpes cuerpo a cuerpo llegan más lejos y abren más el arco de lo que pone arriba (costaba mucho darlos): el
-  // mismo alcance para el golpe, la IA y la mira
+  // mismo alcance para el golpe y la IA. Se dibujan (el tajo y la mira) del tamaño de la tabla, vr y va: más grandes
+  // tapaban demasiado
   const MELEE_REACH = 1.3, MELEE_ARC = 0.4;
-  for (const m of Object.values(MOVES)) if (m.kind === 'melee') { m.range = Math.round(m.range * MELEE_REACH); m.arc = +(m.arc + MELEE_ARC).toFixed(2); }
+  for (const m of Object.values(MOVES)) if (m.kind === 'melee') { m.vr = m.range; m.va = m.arc; m.range = Math.round(m.range * MELEE_REACH); m.arc = +(m.arc + MELEE_ARC).toFixed(2); }
   // Protección (Espacio) la tienen todos: los primeros PERFECT segundos devuelven el golpe.
   const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.65, perfect: 0.24, block: 0.8 };
   const ENERGY = { max: 100, regen: 11, onHit: 4 };
@@ -447,7 +448,20 @@
   // llevando solo los de nivel (learnedAt)
   const TM_LEVEL = 50;
   const tmLevel = () => TM_LEVEL;
-  const tmMoves = dex => ((LEARN && LEARN.TM && LEARN.TM[dex]) || []).filter(m => MOVES[m] && !learnset(dex).some(([, x]) => x === m)).map(m => [tmLevel(m), m]);
+  // De todas sus MT, solo las mejores (si no, a Nv.50 un Charizard pasaba de 14 movimientos a 32): hasta 3 de su tipo,
+  // las que más pegan, y la que más pega de otro tipo para cubrir sus debilidades
+  const TM_OWN = 3, TM_MAX = 4;
+  const tmCache = new Map();
+  const tmMoves = dex => {
+    if (tmCache.has(dex)) return tmCache.get(dex);
+    const types = SPECIES[dex] ? SPECIES[dex].types : [];
+    const all = ((LEARN && LEARN.TM && LEARN.TM[dex]) || []).filter(m => MOVES[m] && MOVES[m].dmg > 0 && !learnset(dex).some(([, x]) => x === m))
+      .sort((a, b) => MOVES[b].dmg - MOVES[a].dmg || a.localeCompare(b));
+    const own = all.filter(m => types.includes(MOVES[m].type)).slice(0, TM_OWN), others = all.filter(m => !types.includes(MOVES[m].type));
+    const out = [...own, ...others.slice(0, Math.max(1, TM_MAX - own.length))].slice(0, TM_MAX).map(m => [tmLevel(m), m]);
+    tmCache.set(dex, out);
+    return out;
+  };
   // Todo lo que puede llevar a ese nivel: lo aprendido subiendo y las MT
   const learnable = (dex, level) => [...new Set([...learnedAt(dex, level), ...tmMoves(dex).filter(([l]) => l <= level).map(([, m]) => m)])];
   // Un básico sin coste y los 3 más recientes que ya sabe (lo que llevan los salvajes y los líderes), con uno de apoyo
@@ -1545,11 +1559,11 @@
     { wins: 500, kind: 'skin', skin: 'oro' },
     { stat: 'pvp', goal: 25, kind: 'skin', skin: 'holo' },
     { stat: 'tower', goal: 50, kind: 'skin', skin: 'galaxia', aura: 'prisma' },
-    // Capturar 25 de la línea: desde que se recoge, los de esa línea salen salvajes siempre con IV perfectos
+    // Capturar 10 de la línea (antes 25: demasiadas): desde que se recoge, los de esa línea salen salvajes siempre con IV perfectos
     // (al final de la lista: los retos se guardan por su posición)
-    { stat: 'catch', goal: 25, kind: 'perfect' },
+    { stat: 'catch', goal: 10, kind: 'perfect' },
   ];
-  const CATCH_STEP = 5;   // en la ficha de la ruta, una Poké Ball llena cada 5 capturas de la línea
+  const CATCH_STEP = 2;   // en la ficha de la ruta, una Poké Ball llena cada 2 capturas de la línea (5 hasta las 10)
   const tierGoal = x => x.goal || x.wins;
   const MASTERY = MASTERY_TIERS.filter(x => !x.stat).map(x => x.wins);   // victorias de cada estrella
   const MASTERY_ART = MASTERY_TIERS.find(x => x.kind === 'art').wins;
@@ -1674,6 +1688,10 @@
   // que pide, la zona entera baja hasta él (la Ruta 46 o la Cueva Oscura, sin medallas, no sacan salvajes de Nv.20)
   for (const n of Object.values(NODES)) {
     if (n.kind !== 'route') continue;
+    // El especial de la zona sale solo como especial (Pikachu en la Ruta 2 no también entre los de siempre); el shiny
+    // de la Ruta 43 es otra cosa: el Gyarados normal sigue saliendo
+    const special = (ROUTE_SPECIALS[n.id] || []).filter(x => !x.shiny).map(x => x.dex || x);
+    n.wild = n.wild.filter(w => !special.includes(w[0]));
     const cap = levelCap(n.req || 0, n.region), sorted = n.wild.map(w => w[2]).sort((a, b) => a - b), mid = sorted[Math.floor(sorted.length / 2)];
     const off = Math.max(0, mid - cap);
     if (off) for (const w of n.wild) { w[1] = Math.max(2, w[1] - off); w[2] = Math.max(w[1], w[2] - off); }

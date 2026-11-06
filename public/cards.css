@@ -1871,7 +1871,22 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 .lp-card.m2 { border-color: #cdd6e4; background: linear-gradient(100deg, rgba(205,214,228,.34), rgba(80,90,110,.32)); }
 .lp-card.m3 { border-color: #d98a4a; background: linear-gradient(100deg, rgba(217,138,74,.4), rgba(110,60,20,.35)); }
 .lp-card.me { box-shadow: 0 0 0 2px #7ad0ff; }
-.lp-card > .ava, .lp-card > .lp-face, .lp-card > .lp-big { margin-top: -14px; }
+.lp-card > .ava, .lp-card > .lp-face, .lp-card > .lp-big, .lp-card > .lp-stage { margin-top: -14px; }
+/* Podio de la Ladder del menú, con los efectos del de la ladder completa: brillo que pasa, rayos, halo, destellos y corona.
+   Destellos y brillo en .lp-fx, recortados a la tarjeta; la cara (con sus rayos) se sale por arriba como antes */
+.lp-card { isolation: isolate; }
+.lp-card.p1 { animation: podGlow 3s ease-in-out infinite; }
+.lp-fx { position: absolute; inset: 0; z-index: 1; overflow: hidden; border-radius: 10px; pointer-events: none; }
+.lp-fx::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent); animation: podShine 4.5s ease-in-out infinite; }
+.lp-card.p2 .lp-fx::after { animation-delay: 1.5s; } .lp-card.p3 .lp-fx::after { animation-delay: 3s; }
+.lp-card > b, .lp-card > span:not(.lp-fx) { position: relative; z-index: 2; }
+.lp-card > i { z-index: 3; }
+.lp-stage { width: 54px; height: 54px; }
+.lp-stage > :is(.ava, .lp-face, .lp-big) { position: relative; z-index: 2; }
+.lp-card .pod-rays { width: 130%; }
+.lp-card.p1 .pod-crown { top: -12px; font-size: 17px; }
+.lp-card.m1 > span:not(.lp-fx) { color: #ffe27a; text-shadow: 0 0 10px rgba(255,203,5,.45); }
+@media (prefers-reduced-motion: reduce) { .lp-card, .lp-fx::after, .lp-card .pod-rays, .lp-card .pod-sparks i, .lp-stage { animation: none !important; } }
 .lp-card > i { position: absolute; left: 44px; bottom: 2px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font: 900 12px var(--display); font-style: normal; color: #2a1c00; background: #fff; }
 .lp-card.m1 > i { background: linear-gradient(180deg, #ffe680, #ffcb05); }
 .lp-card.m3 > i { background: linear-gradient(180deg, #f0b07a, #d98a4a); }

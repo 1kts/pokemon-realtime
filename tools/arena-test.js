@@ -188,7 +188,7 @@ function cast(key, place, secs = 1.5, aimAt = null) {
   return { bt, me, foe, lost: hp - bt.mon(foe).hp };
 }
 
-check('los golpes cuerpo a cuerpo llegan un 30 % más lejos y con el arco más abierto (antes costaba mucho darlos)', () => {
+check('los golpes cuerpo a cuerpo llegan un 30 % más lejos y con el arco más abierto (antes costaba mucho darlos), pero se dibujan como antes', () => {
   const m = D.MOVES.placaje;   // (en la tabla, 70 de alcance y 1.9 de arco)
   assert(m.range === 91 && m.arc === 2.3, `Placaje: alcance ${m.range} y arco ${m.arc}`);
   // Un poco más lejos de lo que llegaba antes (70 + el radio del rival) y le da
@@ -198,6 +198,27 @@ check('los golpes cuerpo a cuerpo llegan un 30 % más lejos y con el arco más a
   const lado = cast('placaje', f => { f.x = 200 + 60 * Math.cos(0.96); f.y = 300 + 60 * Math.sin(0.96); }, 1.5, { x: 400, y: 300 });
   assert(lado.lost > 0, 'a 55° de la mira, le da');
   assert.strictEqual(cast('placaje', f => { f.x = 200 + 190; f.y = 300; }).lost, 0, 'muy lejos, no');
+  // Pero se dibuja del tamaño de antes (más grande tapaba demasiado): el golpe que ve el jugador, 70 y 1.9
+  const bt = battle('pradera', [{ dex: 6, level: 50, moves: ['placaje'] }], [{ dex: 143, level: 50 }]);
+  const evs = []; const ev = bt.ev.bind(bt); bt.ev = e => { evs.push(e); ev(e); };
+  const [me, foe] = bt.sides; me.x = 200; me.y = 300; foe.x = 260; foe.y = 300;
+  me.inputs.push({ mx: 0, my: 0, a: 0, tx: 260, ty: 300, c: 0, s: 1 });
+  run(bt, 1.5);
+  const sw = evs.find(e => e.k === 'melee');
+  assert(sw && sw.r === 70 && sw.arc === 1.9 && m.vr === 70 && m.va === 1.9, `el tajo se dibuja de 70 y 1.9 (${JSON.stringify(sw)})`);
+});
+
+check('mojarse apaga la quemadura, y mojado no se vuelve a quemar', () => {
+  const bt = battle('pradera', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]);
+  const [me] = bt.sides;
+  bt.state = 'fight';
+  me.burn = 3;
+  const i = S.cellIndex(me.x, me.y);
+  bt.terrain[i] = T.WATER;
+  run(bt, 0.2);
+  assert(me.burn === 0 && me.wet > 0, `al pisar el agua se apaga (quemado ${me.burn}, mojado ${me.wet.toFixed(2)})`);
+  bt.hazard(me, 1, 'fuego', { burn: 3 });
+  assert.strictEqual(me.burn, 0, 'y mientras sigue mojado, el fuego no lo quema');
 });
 
 check('el cono pega delante y no a los lados', () => {

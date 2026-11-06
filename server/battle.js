@@ -276,12 +276,14 @@ class Battle {
       const types = D.SPECIES[mon.dex].types;
       const grounded = side.invuln <= 0 && !(side.dash && side.dash.m.invuln);
       let rate = 0;
+      // Mojado (agua del suelo o un ataque de agua) se apaga la quemadura, y mientras siga mojado no prende
+      if (cell === T.WATER) side.wet = Math.max(side.wet, 1.5);
+      if (side.wet > 0 && side.burn > 0) { side.burn = 0; this.ev({ k: 'douse', s: side.idx }); }
       if (side.burn > 0) rate += BURN_DPS;
       if (side.poison > 0) rate += POISON_DPS;
       if (side.seed > 0) rate += SEED_DPS;
       // Cada tipo aguanta el peligro de su propia arena (fuego la lava, veneno los charcos...)
-      if ((cell === T.FIRE || (cell === T.LAVA && !types.includes('fuego'))) && grounded) { rate += FIRE_DPS; side.burn = Math.max(side.burn, 1.5); }
-      if (cell === T.WATER) side.wet = Math.max(side.wet, 1.5);
+      if ((cell === T.FIRE || (cell === T.LAVA && !types.includes('fuego'))) && grounded) { rate += FIRE_DPS; if (side.wet <= 0) side.burn = Math.max(side.burn, 1.5); }
       if (cell === T.POISON && grounded && !types.includes('veneno') && !types.includes('acero')) side.poison = Math.max(side.poison, 2);
       if (cell === T.WEB && grounded && !types.includes('bicho')) side.slow = Math.max(side.slow, 0.3);
       side.dot += rate * mon.maxHp * dt;
@@ -368,7 +370,7 @@ class Battle {
       let diff = Math.atan2(dy, dx) - a;
       while (diff > Math.PI) diff -= 2 * Math.PI;
       while (diff < -Math.PI) diff += 2 * Math.PI;
-      this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.range, arc: m.arc, ty: m.type });
+      this.ev({ k: 'melee', s: side.idx, a: +a.toFixed(2), r: m.vr || m.range, arc: m.va || m.arc, ty: m.type });   // (el dibujo, del tamaño de la tabla)
       // El arco cuenta el tamaño del rival: si su borde entra en el arco, le da (no solo si entra su centro)
       const dist = Math.hypot(dx, dy);
       if (dist < m.range + this.rad(f) && Math.abs(diff) < m.arc / 2 + Math.atan2(this.rad(f), Math.max(1, dist))) this.hit(side, f, m, f.x, f.y, { a });
@@ -490,7 +492,7 @@ class Battle {
     if (blocked) return;
     if (extra.stun) { side.stun = Math.max(side.stun, extra.stun); side.wind = null; }
     if (extra.slow) side.slow = Math.max(side.slow, extra.slow);
-    if (extra.burn) side.burn = Math.max(side.burn, extra.burn);
+    if (extra.burn && side.wet <= 0) side.burn = Math.max(side.burn, extra.burn);   // (mojado no prende)
   }
 
   // ---------- Golpes ----------
@@ -548,7 +550,7 @@ class Battle {
     }
     if (cast && !cast.landed) { cast.landed = true; this.statMove(src, cast.key).landed++; }   // los de estado, sin daño
     // Estados
-    if (m.burn) dst.burn = Math.max(dst.burn, m.burn);
+    if (m.burn && dst.wet <= 0) dst.burn = Math.max(dst.burn, m.burn);   // (mojado no prende)
     if (m.poison) dst.poison = Math.max(dst.poison, m.poison);
     if (m.wet) dst.wet = Math.max(dst.wet, m.wet);
     if (m.slow) dst.slow = Math.max(dst.slow, m.slow);
@@ -836,13 +838,36 @@ class Battle {
     this.result = { winner, ...extra };
     this.broadcast();
     clearInterval(this.timer);
-    // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd)
-    const rewards = this.onEnd(this.result, this) || [];
-    const sum = this.sides.map(s => this.sideSummary(s));
-    for (const s of this.sides) {
-      const msg = { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: rewards[s.idx] || null, sum };
-      if (s.ws) this.send(s, msg); else s.missed = msg;   // (se había cortado: se lo da al volver)
-    }
+    // Lo que sobrevive y gana experiencia lo decide quien creó el combate (onEnd). En un hilo de combates
+    // (server/battle-pool.js) la respuesta llega después, como promesa
+    const done = (rewards = []) => {
+      const sum = this.sides.map(s => this.sideSummary(s));
+      for (const s of this.sides) {
+        const msg = { t: 'over', winner, you: s.idx, captured: extra.captured || null, reward: (rewards || [])[s.idx] || null, sum };
+        if (s.ws) this.send(s, msg); else { s.missed = msg; if (this.onMissed) this.onMissed(s.idx, msg); }   // (se había cortado: se lo da al volver)
+      }
+    };
+    const r = this.onEnd(this.result, this);
+    if (r && typeof r.then === 'function') r.then(done, () => done([])); else done(r);
+  }
+
+  // ---------- Lo que pide el servidor (igual si el combate corre aquí o en un hilo de combates) ----------
+  // Una entrada del jugador (ya limpia)
+  input(i, inp) { this.sides[i].inputs.push(inp); }
+  // Se ha cortado: el lado espera a que vuelva, quieto
+  hold(i) { const side = this.sides[i]; side.ws = null; side.inputs = []; side.lastInput = { ...side.lastInput, mx: 0, my: 0 }; }
+  // Ha vuelto (en otra conexión): se le manda el combate como está
+  resume(i, ws) { const side = this.sides[i]; side.ws = ws; this.send(side, { ...this.startMsg(side), resume: true }); }
+  // Ganchos de pruebas (ARENA_DEV): el rival de ese lado con esa fracción de vida, o quieto y sin atacar
+  devFoe(i, { hp, idle }) {
+    const foe = this.sides[1 - i];
+    if (Number.isFinite(hp)) for (const m of foe.team) if (!m.fainted) m.hp = Math.max(1, Math.round(m.maxHp * hp));
+    if (idle) foe.passive = true;
+  }
+  // Lo que necesita quien lo creó al acabar (premios, equilibrio): datos, sin conexiones ni la IA
+  summary() {
+    return { mode: this.mode, tutorial: this.tutorial, stats: this.stats, state: this.state, kos: this.kos || [],
+      sides: this.sides.map(s => ({ idx: s.idx, name: s.name, balls: s.balls, team: s.team.map(m => ({ ...m })) })) };
   }
 
   // Resumen de un lado para la pantalla de resultados: daño hecho y recibido, KOs, aciertos, su mejor

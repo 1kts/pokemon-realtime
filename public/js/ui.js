@@ -1166,48 +1166,6 @@ export class UI {
     document.body.append(back);
   }
 
-  // Gestor de movimientos: elegir hasta 4 de los aprendidos
-  moveManager(mon) {
-    const current = (mon.moves && mon.moves.length ? mon.moves : SPECIES[mon.dex].moves).filter(k => MOVES[k]);
-    const levels = new Map(Data.learnset(mon.dex).map(([l, k]) => [k, l])), tms = new Set(Data.tmMoves(mon.dex).map(([, k]) => k));
-    const options = [...new Set([...Data.learnable(mon.dex, mon.level), ...current])];   // (también las MT)
-    const chosen = [...current];
-    const back = el('div', 'modal');
-    const box = el('div', 'panel modal-box');
-    box.append(el('h3', '', `${t('Movimientos de {m}', { m: monLabel(mon) })} <small>${lv(mon.level)}</small>`), el('p', 'small', t('Elige hasta 4. El orden es el de las teclas: Clic, Clic dcho, Q y E.')));
-    const list = el('div', 'move-list');
-    const render = () => {
-      list.innerHTML = '';
-      for (const k of options) {
-        const m = MOVES[k];
-        const i = chosen.indexOf(k);
-        const row = el('button', 'move-row' + (i >= 0 ? ' sel' : ''));
-        row.style.setProperty('--tc', TYPE_COLOR[m.type]);
-        row.innerHTML = `<span class="slot">${typeIcon(m.type, 28)}<i>${i >= 0 ? t(['Clic', 'Dcho', 'Q', 'E'][i]) : ''}</i></span><b>${m.name}</b><span class="type" style="--tc:${TYPE_COLOR[m.type]}">${TYPE_LABEL[m.type]}</span><em>${levels.has(k) ? lv(levels.get(k)) : tms.has(k) ? t('MT') : t('aprendido')}</em><small>${describeMove(m).split('\n').join(' · ')}</small>`;
-        row.onclick = () => {
-          if (i >= 0) { if (chosen.length > 1) chosen.splice(i, 1); }
-          else if (chosen.length < 4) chosen.push(k);
-          else this.toast(t('Ya lleva 4: quita uno antes'), 'bad');
-          render();
-        };
-        list.append(row);
-      }
-      const soon = upcomingMoves(mon.dex, mon.level);
-      if (soon) list.append(soon);
-    };
-    render();
-    const acts = el('div', 'acts');
-    const cancel = el('button', '', t('Cancelar'));
-    const save = el('button', 'primary', t('Guardar'));
-    cancel.onclick = () => back.remove();
-    save.onclick = () => { this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: chosen }); back.remove(); };
-    acts.append(cancel, save);
-    box.append(list, acts);
-    back.append(box);
-    back.onclick = e => { if (e.target === back) back.remove(); };
-    document.body.append(back);
-  }
-
   // ---------- Tienda ----------
   view_shop() {
     const p = this.profile;

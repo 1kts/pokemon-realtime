@@ -272,7 +272,7 @@ function applyResult(p, setup, result, battle) {
       const region = setup.route ? setup.route.region : 'kanto';
       const mon = addMon(p, result.captured.dex, result.captured.level, { region, shiny: !!result.captured.shiny, iv: result.captured.iv, met: setup.route ? setup.route.id : null });
       reward.captured = { uid: mon.uid, dex: mon.dex, level: mon.level, shiny: mon.shiny, perfect: D.STAT_KEYS.every(k => mon.iv[k] === D.IV_MAX), inTeam: p.teams[region].includes(mon.uid) };
-      // Reto de capturas de su línea: cuántas lleva (25 = «IV perfectos» para recoger en Logros)
+      // Reto de capturas de su línea: cuántas lleva (10 = «IV perfectos» para recoger en Logros)
       addLineStat(p, [mon.dex], 'catch');
       reward.captured.catches = D.lineStat(p, mon.dex, 'catch');
       reward.coins = 10;

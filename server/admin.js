@@ -333,7 +333,7 @@ function unlockAll(p) {
     p.mastery[root] = Math.max(p.mastery[root] || 0, 500);
     p.lineStats.pvp[root] = Math.max(p.lineStats.pvp[root] || 0, 25);
     p.lineStats.tower[root] = Math.max(p.lineStats.tower[root] || 0, 50);
-    p.lineStats.catch[root] = Math.max(p.lineStats.catch[root] || 0, 25);
+    p.lineStats.catch[root] = Math.max(p.lineStats.catch[root] || 0, 10);
     p.masteryClaimed[root] = D.MASTERY_TIERS.map((_, i) => i);
     for (const s of D.SKINS) if (!D.hasSkin(p, root, s)) rewards.unlock(p, 'skins', s + ':' + root);
     rewards.unlock(p, 'particles', root);

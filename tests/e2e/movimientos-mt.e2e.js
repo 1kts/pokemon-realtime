@@ -14,10 +14,19 @@ module.exports = async ({ page, player, ok }) => {
   // Quita el primero de los que lleva y pone Llamarada
   const primero = await page.read('.ms-slot b');
   await page.tap(primero, { in: '.ms-movelist' });
-  await page.tap('Llamarada', { in: '.ms-movelist' });
-  await page.tap('Guardar', { in: '.mon-sheet' });
-  await page.waitSee('Llamarada', { in: '.ms-slots' });
-  ok(true, 'y al guardar, Llamarada queda entre sus 4 movimientos');
+  await page.waitFor(`![...document.querySelectorAll('.ms-slot b')].some(b => b.textContent === ${JSON.stringify(primero)})`);   // (ya fuera, y la ficha pintada otra vez con lo guardado)
+  await new Promise(r => setTimeout(r, 400));
+  await page.tap('Llamarada', { in: '.ms-movelist', scroll: true });
+  await page.waitSee('Llamarada', { in: '.ms-slots', scroll: true });
+  ok(!await page.see('Guardar', { in: '.mon-sheet', ms: 300 }), 'no hay botón de guardar: se guarda solo');
+  // Recargando la página, Llamarada sigue entre sus 4 movimientos
+  await new Promise(r => setTimeout(r, 500));
+  await page.loginAs(me.token);
+  await page.tap('Mis Pokémon');
+  await page.click(await page.within('Charizard', '.mon-card'));
+  await page.tap(/^Movimientos/, { in: '.mon-sheet' });
+  await page.waitSee('Llamarada', { in: '.ms-slots', scroll: true });
+  ok(true, 'y al volver a entrar, Llamarada sigue entre sus 4 movimientos');
   await page.key('Escape');
   await page.click(await page.within('Charmander', '.mon-card'));
   await page.tap(/^Movimientos/, { in: '.mon-sheet' });

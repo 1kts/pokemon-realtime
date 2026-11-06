@@ -1,4 +1,4 @@
-// Reto de capturas (2): con «IV perfectos» recogido (las 25 capturas de una línea), los salvajes de esa línea salen
+// Reto de capturas (2): con «IV perfectos» recogido (las 10 capturas de una línea), los salvajes de esa línea salen
 // siempre con IV perfectos, y en el combate salvaje se ven encima del rival las Poké Balls de su reto. Contarlas y
 // recogerlo en Logros, en capturas-reto.e2e.js
 module.exports = async ({ page, player, ok, log }) => {
@@ -16,11 +16,11 @@ module.exports = async ({ page, player, ok, log }) => {
     await page.waitFor(`document.querySelector('.route-list .mini .catch-pips')`);
   };
 
-  // (25 capturas e «IV perfectos» ya recogido, de cada línea que sale ahora en la ruta: así el primer salvaje ya es
+  // (10 capturas e «IV perfectos» ya recogido, de cada línea que sale ahora en la ruta: así el primer salvaje ya es
   // de una de ellas, sin depender de la suerte. Recogerlo por la interfaz es lo que prueba capturas-reto.e2e.js)
   const lines = await page.eval(`[...new Set(Data.routeWild(Data.NODES['${ROUTE}']).list.map(w => Data.lineOf(w.dex)))]`);
   for (const line of lines) {
-    me.client.send({ t: 'dev', catches: { dex: line, n: 25 } }); await me.client.wait(m => m.t === 'profile');
+    me.client.send({ t: 'dev', catches: { dex: line, n: 10 } }); await me.client.wait(m => m.t === 'profile');
     me.client.send({ t: 'masteryclaim', dex: line, i: 7 }); await me.client.wait(m => m.t === 'loot');
   }
   await page.loginAs(me.token);

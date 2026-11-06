@@ -12,6 +12,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': '王冠つきの表彰台',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'メニューのラダーに表彰台が登場：1位に王冠、それぞれの顔の後ろに回る光、金・銀・銅のきらめき。',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'ぬれるとやけどが消えます。水に入るか、みずタイプの技を受けるとやけどが治り、ぬれている間は炎でやけどしません。',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': '同じ進化系統を10匹（以前は25匹）捕まえれば、その系統の野生ポケモンが必ず個体値最高で出るようになります。',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': '各ポケモンのページで入れたり外したりした技は、保存ボタンなしで自動的に保存されます。',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': '各ルートのとくべつなポケモンは、とくべつとしてだけ出ます。2ばんどうろのピカチュウ、3ばんどうろのピッピ、ポケモンタワーのゴーストが、ふつうのポケモンの中に出ることはもうありません。',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': 'すっきりした技リスト',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': 'レベル50では各ポケモンにいちばん良いわざマシンだけが加わります。最大4つ（リザードン：だいもんじ、つばめがえし、ニトロチャージ、はかいこうせん）。リストが長くなりすぎません。',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': '近接技の見た目が小さく戻りましたが、届く距離は同じです。アリーナが見やすく、当たりやすさも変わりません。',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': '読み込みが速く',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'タイトル画面で公式サイトがわかるようになりました：pokearenas.com、無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
@@ -1597,6 +1610,7 @@ export default {
     'aprendido': 'おぼえた',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '公式サイト：<b>pokearenas.com</b>。無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
     'MT': 'わざマシン',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '技をタップすると入れたり外したりできます。順番はキーの順です。自動で保存されます。',
     'Por MT, a {lv}': 'わざマシン（{lv}）',
     'Ya lleva 4: quita uno antes': 'もう 4つ：先に 1つ はずそう',
     'Próximamente: {list}': 'これから おぼえる：{list}',

@@ -191,11 +191,13 @@ export class Effects {
       if (m.at === 'self') g.userData.atCaster = true;
       else g.position.copy(toWorld(w.tx, w.ty, 0.04));
     } else if (m.kind === 'melee' || m.kind === 'cone') {
-      const r = (m.range + (m.kind === 'melee' ? 22 : 0)) * U;
-      const sector = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 24, -m.arc / 2, m.arc), base));
+      // (el cuerpo a cuerpo, del tamaño de la tabla: pega algo más allá de lo que se dibuja, data.js MELEE_REACH)
+      const range = m.vr || m.range, arc = m.va || m.arc;
+      const r = (range + (m.kind === 'melee' ? 22 : 0)) * U;
+      const sector = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 24, -arc / 2, arc), base));
       sector.rotation.z = -w.a;
       g.add(sector);
-      const fill = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 24, -m.arc / 2, m.arc), strong));
+      const fill = flat(new THREE.Mesh(new THREE.CircleGeometry(r, 24, -arc / 2, arc), strong));
       fill.rotation.z = -w.a;
       g.add(fill); g.userData.fill = fill;
       g.userData.atCaster = true;

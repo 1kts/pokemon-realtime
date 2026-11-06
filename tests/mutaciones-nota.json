@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 82,
- "total": 82,
+ "cazadas": 90,
+ "total": 90,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -582,6 +582,62 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ quien aún tiene abierta una versión de antes y los pide en PNG recibe el WebP"
+  },
+  "mt-todas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ de sus MT, cada especie solo las mejores"
+  },
+  "cuerpo-a-cuerpo-dibujo-grande": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: el tajo se dibuja de 70 y 1.9"
+  },
+  "hilos-resultado-perdido": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: Error: timeout esperando over"
+  },
+  "movimientos-sin-guardar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/movimientos-mt.e2e.js"
+   ],
+   "motivo": "movimientos-mt.e2e.js: ✗ Llamarada sigue entre sus 4 movimientos"
+  },
+  "especial-tambien-normal": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ el especial de cada ruta sale solo como especial"
+  },
+  "perfecto-25-capturas": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/capturas-reto.e2e.js"
+   ],
+   "motivo": "capturas-reto.e2e.js: ✗ con 5 capturas, 2 de 5 Poké Balls y «5/10»"
+  },
+  "mojado-sigue-quemado": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: al pisar el agua se apaga"
+  },
+  "menu-ladder-sosa": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/ladder-menu.e2e.js"
+   ],
+   "motivo": "ladder-menu.e2e.js: ✗ el primero de la ladder del menú lleva su corona"
   }
  }
 }

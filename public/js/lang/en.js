@@ -11,6 +11,19 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.41.2 ----------
+    'Podio con corona': 'A podium with a crown',
+    'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.': 'The menu Ladder shows off its podium: a crown for first place, spinning rays behind each face and gold, silver and bronze sparkles.',
+    'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.': 'Getting wet puts out burns: step into water or take a Water attack and you stop burning, and while you stay wet fire can’t burn you.',
+    // ---------- Novedades v0.41.1 ----------
+    'Para que los salvajes de una línea salgan siempre con IV perfectos bastan 10 capturas de esa línea (antes 25).': 'For a line’s wild Pokémon to always have perfect IVs, 10 catches of that line are now enough (it was 25).',
+    // ---------- Novedades v0.41.1 ----------
+    'En la ficha de cada Pokémon, los movimientos que pones o quitas se guardan solos, sin botón de Guardar.': 'In each Pokémon’s sheet, the moves you add or remove save by themselves, with no Save button.',
+    'El especial de cada ruta sale solo como especial: Pikachu en la Ruta 2, Clefairy en la Ruta 3 o Haunter en la Torre Pokémon ya no aparecen también entre los de siempre.': 'Each route’s special only appears as the special: Pikachu on Route 2, Clefairy on Route 3 or Haunter in the Pokémon Tower no longer also show up among the regular ones.',
+    // ---------- Novedades v0.41.1 ----------
+    'Movimientos más ordenados': 'Tidier moves',
+    'A Nv.50 cada Pokémon suma solo sus mejores MT, como mucho 4 (Charizard: Llamarada, Golpe Aéreo, Nitrocarga e Hiperrayo): la lista ya no se hace eterna.': 'At Lv.50 each Pokémon only adds its best TMs, 4 at most (Charizard: Fire Blast, Aerial Ace, Flame Charge and Hyper Beam): the list no longer goes on forever.',
+    'Los golpes cuerpo a cuerpo vuelven a dibujarse pequeños, pero siguen llegando igual de lejos: se ve mejor la arena y se acierta igual.': 'Melee attacks are drawn small again but still reach just as far: you see more of the arena and hit just the same.',
     // ---------- Novedades v0.41.0 ----------
     'Carga más rápida': 'Faster loading',
     'La portada te recuerda cuál es la web oficial: pokearenas.com, gratis y en el navegador. Si alguien te pide pagar o descargar algo, no somos nosotros.': 'The title screen reminds you which site is official: pokearenas.com, free and in your browser. If anyone asks you to pay or download something, it isn’t us.',
@@ -1628,6 +1641,7 @@ export default {
     'aprendido': 'learned',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Official site: <b>pokearenas.com</b>. It is free and plays in your browser: if anyone asks you to pay or download something, it isn’t us.',
     'MT': 'TM',
+    'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Tap a move to add or remove it. The order is the keys’ order. It saves by itself.',
     'Por MT, a {lv}': 'By TM, at {lv}',
     'Ya lleva 4: quita uno antes': 'It already has 4: remove one first',
     'Próximamente: {list}': 'Coming up: {list}',

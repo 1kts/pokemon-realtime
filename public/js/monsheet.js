@@ -227,16 +227,9 @@ export const monSheetViews = {
       slots.append(c);
     }
     body.append(slots);
-    const changed = chosen.join() !== current.join();
+    // (sin botón de guardar: cada cambio se guarda al momento)
     const bar = el('div', 'ms-movebar');
-    bar.append(el('small', '', t('Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas.')));
-    const reset = el('button', '', t('Deshacer'));
-    reset.disabled = !changed;
-    reset.onclick = () => { s.moves = null; this.renderSheet(); };
-    const save = el('button', 'primary', t('Guardar'));
-    save.disabled = !changed;
-    save.onclick = () => this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: chosen });
-    bar.append(reset, save);
+    bar.append(el('small', '', t('Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.')));
     body.append(bar);
     const list = el('div', 'move-list ms-movelist');
     for (const k of options) {
@@ -249,6 +242,7 @@ export const monSheetViews = {
         if (idx >= 0) { if (chosen.length > 1) chosen.splice(idx, 1); }
         else if (chosen.length < 4) chosen.push(k);
         else return this.toast(t('Ya lleva 4: quita uno antes'), 'bad');
+        this.net.send({ t: 'story', a: 'moves', uid: mon.uid, moves: [...chosen] });
         this.renderSheet();
       };
       list.append(row);
