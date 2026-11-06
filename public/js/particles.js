@@ -1,5 +1,6 @@
 // Partículas en GPU: dos capas (aditiva para fuego/energía/chispas, normal para humo/agua/polvo/hojas).
 // Todo se actualiza en CPU sobre buffers fijos; el shader solo dibuja puntos redondos suaves.
+import { density } from './gfx.js';
 import * as THREE from 'three';
 
 const MAX = 5000;
@@ -135,7 +136,8 @@ export class Particles {
   //      life, size, grav, drag, jitter, grow, floor, alpha }
   emit(x, y, z, o) {
     const layer = this[o.layer || 'glow'];
-    const n = o.n ?? 1;
+    // (con gráficos muy bajos, la parte que toque: de 1 en 1, al azar, para que no desaparezcan los sueltos)
+    const want = (o.n ?? 1) * density.k, n = Math.floor(want) + (Math.random() < want % 1 ? 1 : 0);
     for (let i = 0; i < n; i++) {
       let vx, vy, vz;
       if (o.dir) {

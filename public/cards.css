@@ -2004,3 +2004,7 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 .title-plate.locked .tp-ribbon { background: #6b7696; }
 .title-plate .wear-lock { position: absolute; top: 6px; right: 6px; width: 14px; height: 14px; color: #dfe6f7; }
 @media (max-height: 500px) { .title-plates { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; } .title-plate { min-height: 58px; padding: 10px 6px 6px; } .title-plate b { font-size: 12.5px; } }
+
+/* Ajustes: la calidad gráfica que está usando */
+.gfx-panel .gfx-now { margin: 6px 0 8px; font-size: 14px; }
+.gfx-panel .gfx-now b { color: #ffd76a; }

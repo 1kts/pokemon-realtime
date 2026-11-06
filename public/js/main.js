@@ -23,7 +23,7 @@ import { showTrack } from './nowplaying.js';
 import { netPanel, netStats } from './netstats.js';
 import { pacer } from './smooth.js';
 import { Sfx } from './sfx.js';
-import { lowerQuality } from './gfx.js';
+import { lowerQuality, density } from './gfx.js';
 
 // Los trozos de chino, japonés y coreano de la letra (más de 200 reglas, 60 KB): aparte, sin bloquear el primer pintado,
 // y en los demás idiomas cuando la página ya ha cargado (solo hacen falta para los nombres de esos idiomas en Ajustes)
@@ -92,16 +92,24 @@ const DOWNGRADES = [
   () => renderer.getPixelRatio() > 1 && (setPR(1), true),
   () => { gfx.bloom = false; return true; },
   () => { setPR(0.75); return true; },
+  () => { setPR(0.6); density.k = 0.5; return true; },   // (solo por debajo de 30 FPS: móviles muy flojos)
 ];
+// El escalón al que llegó este dispositivo la otra vez: se empieza ya en él (arena.gfx; Ajustes lo puede quitar)
+{
+  const saved = Math.min(DOWNGRADES.length, Math.max(0, +storage.get('arena.gfx') || 0));
+  while (gfx.step < saved) DOWNGRADES[gfx.step++]();
+  if (saved) lowerQuality(gfx.step);
+}
 function checkFps(raw) {
   if (gfx.step >= DOWNGRADES.length || raw > 0.5) return;   // saltos largos: pestaña oculta o carga, no cuentan
   gfx.frames++; gfx.time += raw;
   if (gfx.time < 3) return;
   const fps = gfx.frames / gfx.time;
   gfx.frames = 0; gfx.time = 0;
-  if (fps >= 40) return;
+  if (fps >= 40 || (gfx.step >= 3 && fps >= 30)) return;   // (el último escalón, solo si va a menos de 30)
   while (gfx.step < DOWNGRADES.length && !DOWNGRADES[gfx.step++]());
   lowerQuality(gfx.step);
+  storage.set('arena.gfx', String(gfx.step));
   console.info(`[gfx] ${fps.toFixed(0)} FPS: calidad ${gfx.step}/${DOWNGRADES.length} (resolución ${renderer.getPixelRatio()}×, resplandor ${gfx.bloom ? 'sí' : 'no'})`);
   resize();
 }

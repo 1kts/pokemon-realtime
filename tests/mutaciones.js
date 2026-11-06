@@ -305,4 +305,10 @@ module.exports = [
   { id: 'carga-siempre-30', que: 'Con cientos de combates, cada uno sigue mandando 30 instantáneas por segundo y el servidor se ahoga',
     archivo: 'server/battle.js', buscar: "if (live > BUSY && this.ticks % 3 === 0 && this.state !== 'over') return;", poner: '',
     tests: ['tools/arena-test.js'] },
+  { id: 'graficos-sin-recordar', que: 'En un móvil flojo, cada partida vuelve a empezar con la calidad alta y a tirones',
+    archivo: 'public/js/main.js', buscar: "  while (gfx.step < saved) DOWNGRADES[gfx.step++]();", poner: '',
+    tests: ['tests/e2e/graficos-auto.e2e.js'] },
+  { id: 'oro-500-victorias', que: 'La skin de Oro vuelve a pedir 500 victorias con la línea',
+    archivo: 'public/data.js', buscar: "{ wins: 300, kind: 'skin', skin: 'oro' },", poner: "{ wins: 500, kind: 'skin', skin: 'oro' },",
+    tests: ['tests/e2e/maestria.e2e.js'] },
 ];

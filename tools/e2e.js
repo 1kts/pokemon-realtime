@@ -454,6 +454,8 @@ async function setup(name, extraEnv = {}) {
     },
     // Preferencias del sistema que ve la página, p. ej. media([{ name: 'prefers-reduced-motion', value: 'reduce' }]); media() las quita
     async media(features = []) { await call('Emulation.setEmulatedMedia', { features }); await sleep(100); },
+    // El procesador del navegador, rate veces más lento (1: normal): para ver qué hace el juego en un móvil flojo
+    async cpu(rate) { await call('Emulation.setCPUThrottlingRate', { rate: Math.max(1, rate) }); },
     async shot(file) { const r = await call('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(file, Buffer.from(r.data, 'base64')); },
     // Entra al menú con una sesión ya hecha (el perfil se crea por WebSocket y aquí se usa su token),
     // pulsando «Continuar como…» en la portada como haría el jugador

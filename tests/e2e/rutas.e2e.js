@@ -19,6 +19,6 @@ module.exports = async ({ page, player, ok }) => {
     const [R, G, B] = getComputedStyle(last).borderTopColor.match(/[\\d.]+/g).map(Number);
     return { n: r.length, last: r[0] === last, hidden: /\\?\\?\\?/.test(last.textContent), gold: R > 200 && G > 160 && B < 120 }; })()`);
   ok(sp.n === 1 && sp.last && sp.hidden && sp.gold, `y su especial en la misma lista, al final, en silueta y en dorado (${JSON.stringify(sp)})`);
-  ok(await page.eval(`document.querySelectorAll('.route-all .ra').length === Data.NODES['k-ruta2'].wild.length + 1 && /Pueden salir aquí \\(8\\)/.test(document.querySelector('.route-all summary').textContent)`), 'plegado, todo lo que puede salir allí: sus 7 especies y Pikachu');
+  ok(await page.eval(`document.querySelectorAll('.route-all .ra').length === Data.NODES['k-ruta2'].wild.length + 1 && /Pueden salir aquí \\(7\\)/.test(document.querySelector('.route-all summary').textContent)`), 'plegado, todo lo que puede salir allí: sus 6 especies y Pikachu (que sale solo como especial)');
 
 };

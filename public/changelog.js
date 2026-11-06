@@ -4,12 +4,14 @@
 (function (root) {
   const CHANGELOG = [
     {
-      v: '0.41.2', date: '2026-11-06', title: 'Podio con corona',
+      v: '0.42.0', date: '2026-11-07', title: 'Ruletas cada semana',
       items: [
+        ['nuevo', 'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.'],
         ['cambio', 'La Ladder del menú luce su podio: corona para el primero, rayos que giran tras cada cara y destellos de oro, plata y bronce.'],
         ['cambio', 'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.'],
         ['cambio', 'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.'],
         ['cambio', 'Mojarse apaga la quemadura: pisa el agua o recibe un ataque de agua y dejas de arder, y mientras sigas mojado el fuego no te quema.'],
+        ['cambio', 'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).'],
       ],
     },
     {

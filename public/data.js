@@ -1556,7 +1556,7 @@
     { wins: 50, kind: 'art' },
     { wins: 100, kind: 'portrait' },
     { wins: 200, kind: 'title' },
-    { wins: 500, kind: 'skin', skin: 'oro' },
+    { wins: 300, kind: 'skin', skin: 'oro' },   // (antes 500: demasiados)
     { stat: 'pvp', goal: 25, kind: 'skin', skin: 'holo' },
     { stat: 'tower', goal: 50, kind: 'skin', skin: 'galaxia', aura: 'prisma' },
     // Capturar 10 de la línea (antes 25: demasiadas): desde que se recoge, los de esa línea salen salvajes siempre con IV perfectos

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.42.0 ----------
+    'Ruletas cada semana': '毎週のルーレット',
+    'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'スマホで重いときは画質が自動で下がり、それが記憶されるようになりました。次からは最初からなめらかに動きます。設定のグラフィックで今の画質を確認でき、高画質に戻せます。',
+    'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).': '各系統のゴールドスキンは300勝で手に入ります（以前は500）。',
     // ---------- Novedades v0.41.2 ----------
     'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spinのルーレットは毎週月曜に変わり、すでに持っているもの（エフェクト、アイコン、スキン）はどのルーレットでも入手済みになり、もう当たりません。',
     'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': '実績の称号がリボン付きのプレートになりました。持っていれば金色、持っていなければ鍵付きで、上のフィルターと見分けがつきます。',
@@ -1613,6 +1617,16 @@ export default {
     'aprendido': 'おぼえた',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '公式サイト：<b>pokearenas.com</b>。無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
     'MT': 'わざマシン',
+    '{n} victorias con su línea': 'その系統で{n}勝',
+    'Alta': '高',
+    'Media': '中',
+    'Baja': '低',
+    'Muy baja': 'とても低い',
+    'Gráficos': 'グラフィック',
+    'Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.': 'ゲームが重いときは、なめらかに動くように画質が自動で下がります。この端末に記憶されます。',
+    'Calidad ahora:': '現在の画質：',
+    'automática': '自動',
+    'Volver a la calidad alta': '高画質に戻す',
     'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '技をタップすると入れたり外したりできます。順番はキーの順です。自動で保存されます。',
     'Por MT, a {lv}': 'わざマシン（{lv}）',
     'Ya lleva 4: quita uno antes': 'もう 4つ：先に 1つ はずそう',

@@ -875,7 +875,7 @@ class Battle {
   // Lo que necesita quien lo creó al acabar (premios, equilibrio): datos, sin conexiones ni la IA
   summary() {
     return { mode: this.mode, tutorial: this.tutorial, stats: this.stats, state: this.state, kos: this.kos || [],
-      sides: this.sides.map(s => ({ idx: s.idx, name: s.name, balls: s.balls, team: s.team.map(m => ({ ...m })) })) };
+      sides: this.sides.map(s => ({ idx: s.idx, name: s.name, ai: s.ai, wild: s.wild, npc: s.npc, balls: s.balls, team: s.team.map(m => ({ ...m })) })) };
   }
 
   // Resumen de un lado para la pantalla de resultados: daño hecho y recibido, KOs, aciertos, su mejor

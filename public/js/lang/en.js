@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.42.0 ----------
+    'Ruletas cada semana': 'Weekly wheels',
+    'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'If the game runs slowly on your phone, the quality drops by itself and is now remembered: next time it starts smooth. In Settings, Graphics, you can see which one it uses and go back to high.',
+    'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).': 'Each line’s Gold skin now takes 300 wins (it was 500).',
     // ---------- Novedades v0.41.2 ----------
     'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin wheels change every week, on Mondays, and anything you already have (an effect, a portrait, a skin) shows as obtained on any wheel and won’t come up again.',
     'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': 'In Achievements, titles are plaques with a ribbon: gold if you have it and with a lock if not, so they don’t look like the filters above.',
@@ -1644,6 +1648,16 @@ export default {
     'aprendido': 'learned',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Official site: <b>pokearenas.com</b>. It is free and plays in your browser: if anyone asks you to pay or download something, it isn’t us.',
     'MT': 'TM',
+    '{n} victorias con su línea': '{n} wins with its line',
+    'Alta': 'High',
+    'Media': 'Medium',
+    'Baja': 'Low',
+    'Muy baja': 'Very low',
+    'Gráficos': 'Graphics',
+    'Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.': 'If the game runs slowly, the quality drops by itself so it stays smooth. It is remembered on this device.',
+    'Calidad ahora:': 'Quality now:',
+    'automática': 'automatic',
+    'Volver a la calidad alta': 'Back to high quality',
     'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Tap a move to add or remove it. The order is the keys’ order. It saves by itself.',
     'Por MT, a {lv}': 'By TM, at {lv}',
     'Ya lleva 4: quita uno antes': 'It already has 4: remove one first',

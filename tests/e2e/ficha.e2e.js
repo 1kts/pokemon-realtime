@@ -26,7 +26,8 @@ module.exports = async ({ page, player, ok }) => {
   const moves = () => page.eval(`[...document.querySelectorAll('.ms-movelist .move-row.sel')].length`);
   const before = await moves();
   await page.click('.ms-movelist .move-row.sel');
-  await page.tap(/Guardar/, { in: '.ms-movebar' });
+  await page.waitFor(`document.querySelectorAll('.ms-movelist .move-row.sel').length === ${before - 1}`);
+  await new Promise(r => setTimeout(r, 400));   // (se guarda solo, sin botón: lo que tarda en llegar al servidor)
   // (se guarda de verdad: al volver a abrir la ficha, sigue con uno menos)
   await page.key('Escape');
   await page.waitFor(`!document.querySelector('.mon-sheet')`);

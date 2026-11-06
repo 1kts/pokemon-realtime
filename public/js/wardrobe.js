@@ -20,7 +20,7 @@ const fromAch = (key, id) => { const a = Data.ACHIEVEMENTS.find(x => x.reward &&
 const frameSource = f => fromAch('frame', f) || (LEAGUE_LABEL[f] ? t('Liga {name}', { name: t(LEAGUE_LABEL[f]) }) : t('Próximamente'));
 const auraSource = g => g.startsWith('tipo-') ? t('En Lucky Spin') : fromAch('aura', g) || (g === 'prisma' ? t('Racha de 50 en la Torre con su línea') : t('Próximamente'));
 const effectSource = fx => Data.EFFECTS_SOON.includes(fx) ? t('Próximamente') : t('En Lucky Spin');
-const skinSource = id => ({ oro: t('500 victorias con su línea'), holo: t('25 victorias online con su línea'), galaxia: t('Racha de 50 en la Torre con su línea'), elemental: t('En Lucky Spin') })[id] || t('Próximamente');
+const skinSource = id => ({ oro: t('{n} victorias con su línea', { n: Data.MASTERY_TIERS.find(x => x.skin === 'oro').wins }), holo: t('25 victorias online con su línea'), galaxia: t('Racha de 50 en la Torre con su línea'), elemental: t('En Lucky Spin') })[id] || t('Próximamente');
 
 // Las opciones de cada clase: { label, sel, hint (si no la tienes, de dónde sale), sub, paint, look (lo que se manda) }
 const CATALOG = {

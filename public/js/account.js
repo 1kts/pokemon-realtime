@@ -5,6 +5,7 @@ import { confirmBox } from './dialog.js';
 import { portrait, animatedPortrait, monIcon, face, trainerImg } from './sprites.js';
 import { escapeHtml, tagName } from './battle.js';
 import { Net, storage } from './net.js';
+import { quality } from './gfx.js';
 import { t, locale, LANGS, LANG_CODES, getLang, setLang } from './i18n.js';
 import { flag } from './flags.js';
 import { icon, badgeImg } from './pixicons.js';
@@ -680,7 +681,17 @@ export const accountViews = {
     bugBtn.onclick = () => this.bugReport();
     bug.append(bugBtn);
 
-    body.append(lang, mus, cursorBox, me, news, bug, about);
+    // Gráficos: la calidad automática (main.js) y volver a la alta si se quiere
+    const gfxBox = el('div', 'panel gfx-panel');
+    const lvl = quality.level, names = [t('Alta'), t('Alta'), t('Media'), t('Baja'), t('Muy baja')];
+    gfxBox.append(el('h3', '', t('Gráficos')), el('p', 'small', t('Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.')),
+      el('p', 'gfx-now', `${t('Calidad ahora:')} <b>${names[lvl] || names[0]}</b>${lvl >= 2 ? ` <small>(${t('automática')})</small>` : ''}`));
+    if (lvl >= 2) {
+      const up = el('button', '', t('Volver a la calidad alta'));
+      up.onclick = () => { storage.set('arena.gfx', '0'); location.reload(); };
+      gfxBox.append(up);
+    }
+    body.append(lang, mus, gfxBox, cursorBox, me, news, bug, about);
     wrap.append(body);
     this.root.append(wrap);
   },

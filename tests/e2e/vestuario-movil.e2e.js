@@ -77,7 +77,7 @@ module.exports = async ({ page, player, ok }) => {
     const oro = await page.eval(`(() => { const r = [...document.querySelectorAll('.mon-sheet .ms-wear.locked')].find(b => /Oro/.test(b.textContent)).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
     await page.fingerAt(oro.x, oro.y);
     await page.fingerUp();
-    await page.waitSee('500 victorias con su línea');
+    await page.waitSee('300 victorias con su línea');
     ok(true, `${en}: tocar una skin que no tienes dice de dónde sale`);
     // El editor del avatar: lo mismo en Marco, Glow y Efecto
     await page.tap('Cerrar');

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.42.0 ----------
+    'Ruletas cada semana': '매주 바뀌는 룰렛',
+    'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': '휴대폰에서 게임이 느리면 화질이 자동으로 낮아지고 이제 기억됩니다. 다음에는 처음부터 부드럽게 시작합니다. 설정의 그래픽에서 현재 화질을 보고 높은 화질로 되돌릴 수 있습니다.',
+    'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).': '각 계열의 골드 스킨은 이제 300승이면 얻습니다(이전 500승).',
     // ---------- Novedades v0.41.2 ----------
     'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin 룰렛은 매주 월요일에 바뀌고, 이미 가진 것(이펙트, 초상화, 스킨)은 어느 룰렛에서든 획득으로 표시되어 다시 나오지 않습니다.',
     'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': '업적의 칭호가 리본 달린 명패가 되었습니다. 가지고 있으면 금색, 없으면 자물쇠가 있어 위쪽 필터와 헷갈리지 않습니다.',
@@ -1613,6 +1617,16 @@ export default {
     'aprendido': '배움',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '공식 사이트: <b>pokearenas.com</b>. 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
     'MT': '기술머신',
+    '{n} victorias con su línea': '그 계열로 {n}승',
+    'Alta': '높음',
+    'Media': '중간',
+    'Baja': '낮음',
+    'Muy baja': '매우 낮음',
+    'Gráficos': '그래픽',
+    'Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.': '게임이 느리면 부드럽게 돌아가도록 화질이 자동으로 낮아집니다. 이 기기에 기억됩니다.',
+    'Calidad ahora:': '현재 화질:',
+    'automática': '자동',
+    'Volver a la calidad alta': '높은 화질로 되돌리기',
     'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '기술을 누르면 넣거나 뺄 수 있습니다. 순서는 키 순서입니다. 자동으로 저장됩니다.',
     'Por MT, a {lv}': '기술머신, {lv}',
     'Ya lleva 4: quita uno antes': '이미 4개예요: 먼저 1개를 빼세요',

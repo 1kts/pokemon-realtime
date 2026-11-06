@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.42.0 ----------
+    'Ruletas cada semana': 'Ruote ogni settimana',
+    'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': 'Se il gioco va lento sul tuo telefono, la qualità si abbassa da sola e ora viene ricordata: la prossima volta parte già fluido. In Impostazioni, Grafica, vedi quale usa e puoi tornare a quella alta.',
+    'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).': 'La skin Oro di ogni linea si ottiene con 300 vittorie (prima 500).',
     // ---------- Novedades v0.41.2 ----------
     'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Le ruote di Lucky Spin cambiano ogni settimana, il lunedì, e quello che hai già (un effetto, un ritratto, una skin) risulta ottenuto in qualsiasi ruota e non ti esce più.',
     'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': 'Negli Obiettivi i titoli sono targhe con un nastro: dorato se ce l’hai e con un lucchetto se no, per non confonderli con i filtri in alto.',
@@ -1613,6 +1617,16 @@ export default {
     'aprendido': 'imparata',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Sito ufficiale: <b>pokearenas.com</b>. È gratis e si gioca nel browser: se qualcuno ti chiede di pagare o scaricare qualcosa, non siamo noi.',
     'MT': 'MT',
+    '{n} victorias con su línea': '{n} vittorie con la sua linea',
+    'Alta': 'Alta',
+    'Media': 'Media',
+    'Baja': 'Bassa',
+    'Muy baja': 'Molto bassa',
+    'Gráficos': 'Grafica',
+    'Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.': 'Se il gioco va lento, la qualità si abbassa da sola per restare fluido. Viene ricordato su questo dispositivo.',
+    'Calidad ahora:': 'Qualità ora:',
+    'automática': 'automatica',
+    'Volver a la calidad alta': 'Torna alla qualità alta',
     'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': 'Tocca una mossa per aggiungerla o toglierla. L’ordine è quello dei tasti. Si salva da solo.',
     'Por MT, a {lv}': 'Con MT, al {lv}',
     'Ya lleva 4: quita uno antes': 'Ne ha già 4: togline una prima',

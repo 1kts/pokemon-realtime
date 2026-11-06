@@ -6,7 +6,7 @@ module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'maestria' });
   me.client.send({ t: 'dev', dex: 4, level: 20, region: 'kanto' });
   await me.client.wait(m => m.t === 'profile');
-  me.client.send({ t: 'dev', mastery: { dex: 6, wins: 500 } });
+  me.client.send({ t: 'dev', mastery: { dex: 6, wins: 300 } });
   await me.client.wait(m => m.t === 'profile');
   // (el glow de fuego, como si saliera del cofre semanal: se ve más abajo, en Glows y en el Perfil)
   me.client.send({ t: 'dev', aura: 'tipo-fuego' }); await me.client.wait(m => m.t === 'profile');
@@ -23,7 +23,7 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitFor(`document.querySelector('.mon-sheet')`);
   await page.tap(/^Retos/, { in: '.mon-sheet' });
   await page.waitFor(`document.querySelector('.ms-retos .lg-row')`);
-  ok(await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`) === 5, 'en su ficha, la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 500 victorias)');
+  ok(await page.eval(`[...document.querySelectorAll('.ms-retos button')].filter(b => /Recoger/.test(b.innerText)).length`) === 5, 'en su ficha, la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 300 victorias)');
   ok(await page.eval(`(() => { const asks = [...document.querySelectorAll('.ms-retos .lg-row.k-skin small')].map(s => s.textContent); return document.querySelectorAll('.ms-retos .lg-row').length >= 7 && asks.some(x => /online/.test(x)) && asks.some(x => /Torre/.test(x)); })()`), 'Holo pide victorias online y Galaxia la Torre, con su progreso');
   // Se recogen uno a uno, cada uno con su animación (y se apunta qué dice cada premio)
   const prizes = [];

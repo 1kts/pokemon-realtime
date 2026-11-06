@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.42.0 ----------
+    'Ruletas cada semana': '每周转盘',
+    'Si el juego va lento en tu móvil, la calidad baja sola y ahora se recuerda: la próxima vez empieza ya fluido. En Ajustes, Gráficos, ves cuál usa y puedes volver a la alta.': '如果游戏在手机上卡顿，画质会自动降低，现在还会记住：下次直接流畅开始。在设置的“画面”中可以看到当前画质，也可以恢复高画质。',
+    'La skin de Oro de cada línea se consigue con 300 victorias (antes 500).': '每条进化链的金色皮肤现在只需 300 场胜利（原来 500）。',
     // ---------- Novedades v0.41.2 ----------
     'Las ruletas de Lucky Spin cambian cada semana, los lunes, y lo que ya tienes (un efecto, un retrato, una skin) sale conseguido en cualquier ruleta y no te vuelve a tocar.': 'Lucky Spin 转盘每周一更换，你已拥有的东西（特效、头像、皮肤）在任何转盘中都会显示为已获得，不会再抽到。',
     'En Logros, los títulos son placas con su cinta: dorada si lo tienes y con candado si no, para no confundirlos con los filtros de arriba.': '在成就中，称号变成带缎带的牌子：已拥有的为金色，未拥有的带锁，不会再和上方的筛选混淆。',
@@ -1643,6 +1647,16 @@ export default {
     'aprendido': '已学会',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '官方网站：<b>pokearenas.com</b>。游戏免费，在浏览器中游玩：如果有人要你付费或下载东西，那不是我们。',
     'MT': '招式学习器',
+    '{n} victorias con su línea': '用该进化链获胜 {n} 次',
+    'Alta': '高',
+    'Media': '中',
+    'Baja': '低',
+    'Muy baja': '很低',
+    'Gráficos': '画面',
+    'Si el juego va lento, la calidad baja sola para que vaya fluido. Se recuerda en este dispositivo.': '如果游戏卡顿，画质会自动降低以保持流畅。此设置会保存在此设备上。',
+    'Calidad ahora:': '当前画质：',
+    'automática': '自动',
+    'Volver a la calidad alta': '恢复高画质',
     'Toca un movimiento para ponerlo o quitarlo. El orden es el de las teclas. Se guarda solo.': '点击招式即可加入或移除。顺序对应按键。会自动保存。',
     'Por MT, a {lv}': '招式学习器，{lv}',
     'Ya lleva 4: quita uno antes': '已经有 4 个了：请先去掉一个',

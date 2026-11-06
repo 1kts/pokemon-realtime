@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 94,
- "total": 94,
+ "cazadas": 96,
+ "total": 96,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -666,6 +666,20 @@
     "tools/arena-test.js"
    ],
    "motivo": "arena-test.js: 30 por segundo con pocos y 20 con muchos"
+  },
+  "graficos-sin-recordar": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/graficos-auto.e2e.js"
+   ],
+   "motivo": "graficos-auto.e2e.js: ✗ al volver a entrar empieza ya en la que le iba bien"
+  },
+  "oro-500-victorias": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/maestria.e2e.js"
+   ],
+   "motivo": "maestria.e2e.js: ✗ la línea de Charmander tiene 5 retos listos (10, 50, 100, 200 y 300 victorias)"
   }
  }
 }
