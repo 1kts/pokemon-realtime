@@ -39,7 +39,7 @@ module.exports = async ({ page, player, ok }) => {
   // 2. Misiones: cada panel justo debajo del anterior de su columna (sin el hueco bajo el premio diario)
   await page.loginAs(me.token);
   await page.click('button.mw-title');
-  await page.waitSee('Misiones semanales', { in: '.mv-body' });
+  await page.waitSee('Misiones semanales', { in: '.mv-body', scroll: true });
   const gap = await page.eval(`(() => { const ps = [...document.querySelectorAll('.mv-body > *')].map(e => e.getBoundingClientRect());
     let worst = 0; ps.forEach((r, i) => { const above = ps.filter((q, j) => j !== i && Math.abs(q.left - r.left) < 20 && q.bottom <= r.top + 1).sort((a, b) => b.bottom - a.bottom)[0];
       if (above) worst = Math.max(worst, r.top - above.bottom); }); return Math.round(worst); })()`);
