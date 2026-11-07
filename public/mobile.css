@@ -285,8 +285,8 @@
   .sp-bar .help { height: 28px; padding: 0 9px; font-size: 11.5px; }
   .sp-bar .rotation { font-size: 10px; gap: 5px; }
   .sp-bar .rotation b { font-size: 15px; }
-  .sp-name { font-size: 10px; -webkit-line-clamp: 1; }
-  .sp-name b { font-size: 11px; }
+  .sp-name { font-size: 10px; -webkit-line-clamp: 1; flex: none; min-height: 1.35em; line-height: 1.3; }   /* (su alto entero: en los gimnasios bloqueados se cortaba) */
+  .sp-name b { font-size: 11px; line-height: 1.2; }
   .sp-league .sp-name small { display: none; }
   .sp-route .sp-name { font-size: 9.5px; }
   .sp-leg { gap: 8px; padding: 0 8px; }

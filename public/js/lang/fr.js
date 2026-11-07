@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': 'Noms en entier',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Histoire sur mobile : le nom des arènes verrouillées (comme Major Bob) n\'est plus coupé.',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': 'Tour et mobile plus clairs',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Tour de Combat : « Abandonner » est en haut, à côté de la série, et chaque Pokémon de l\'équipe montre ses capacités (les tiennes se changent dans Mes Pokémon, même en pleine série).',

@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': 'Ganze Namen',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Story auf dem Handy: Die Namen gesperrter Arenen (wie Major Bob) werden nicht mehr abgeschnitten.',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': 'Turm und Handy übersichtlicher',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Kampfturm: „Aufgeben“ steht jetzt oben neben der Serie, und jedes Pokémon im Team zeigt seine Attacken (deine änderst du unter Meine Pokémon, auch mitten in der Serie).',

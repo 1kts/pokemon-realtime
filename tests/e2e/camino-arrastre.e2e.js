@@ -19,5 +19,8 @@ module.exports = async ({ page, player, ok }) => {
   await page.mouseDrag(zona.x, zona.y, zona.x + 300, zona.y);
   ok(await page.eval(left) < luego - 200, 'arrastrar al otro lado lo devuelve');
   await page.tap('Desafiar');
-  ok(await page.title() === '', 'un clic normal en «Desafiar» sigue llevando al combate');
+  // (el combate tarda un poco en cargar, más en el CI: se espera a que se quite la pantalla del Camino)
+  let title = await page.title();
+  for (let t0 = Date.now(); title !== '' && Date.now() - t0 < 15000; title = await page.title()) await new Promise(r => setTimeout(r, 200));
+  ok(title === '', 'un clic normal en «Desafiar» sigue llevando al combate');
 };

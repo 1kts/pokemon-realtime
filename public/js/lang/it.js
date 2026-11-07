@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': 'Nomi interi',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Storia su mobile: il nome delle palestre bloccate (come Lt. Surge) non è più tagliato.',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': 'Torre e mobile più chiari',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Torre Lotta: «Ritirati» è in alto, accanto alla serie, e ogni Pokémon della squadra mostra le sue mosse (le tue si cambiano in I miei Pokémon, anche a metà serie).',

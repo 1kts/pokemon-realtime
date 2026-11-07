@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': '名称完整显示',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': '手机上的故事模式：未解锁道馆的名称（如马志士）不再被截断。',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': '对战塔与手机界面更清晰',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': '对战塔：“撤退”移到上方连胜旁，队伍中每只宝可梦都会显示招式（你自己的可在“我的宝可梦”中更改，连胜中也可以）。',

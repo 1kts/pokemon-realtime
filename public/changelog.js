@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.44.2', date: '2026-11-07', title: 'Nombres enteros',
+      items: [
+        ['arreglo', 'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.'],
+      ],
+    },
+    {
       v: '0.44.1', date: '2026-11-07', title: 'Torre y móvil, más claros',
       items: [
         ['cambio', 'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).'],

@@ -201,6 +201,9 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
   await check('la IA reacciona a un disparo como una persona: no lo esquiva hasta pasado su tiempo de reacción (menos cuanto más difícil)', () => {
     const { aiInput, reactionOf } = require('../server/ai.js');
     assert(reactionOf(0) > 0.28 && reactionOf(1) >= 0.15 && reactionOf(1) < reactionOf(0.5), `Fácil ${reactionOf(0)} s, Maestro ${reactionOf(1)} s`);
+    // (de la misma curva que lo que tarda en ver al rival: reaccionar es ver y algo más, y van juntas)
+    const { seeDelay } = require('../server/ai.js');
+    for (const k of [0, 0.5, 1]) assert(reactionOf(k) > seeDelay(1) && Math.abs(reactionOf(k) - (0.18 + 0.5 * (seeDelay(k) - seeDelay(1)))) < 1e-9, `reacción ${reactionOf(k)} y vista ${seeDelay(k)} con habilidad ${k}`);
     for (const skill of [0.2, 1]) {
       const b = battle({ sides: [{ name: 'A', team: [{ dex: 4, level: 50 }] }, { name: 'Bot', team: [{ dex: 68, level: 50 }], ai: skill }] });
       run(b, 0.5);

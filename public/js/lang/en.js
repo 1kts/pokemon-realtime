@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': 'Full names',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Story on mobile: the names of locked gyms (like Lt. Surge) are no longer cut off.',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': 'Clearer Tower and mobile',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Battle Tower: “Retire” is now at the top, next to your streak, and each team Pokémon shows its moves (yours are changed in My Pokémon, even mid-streak).',

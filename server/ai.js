@@ -102,8 +102,11 @@ function styleOf(dex) {
   return p;
 }
 
-// Tiempo de reacción a un disparo, en segundos de verdad, según la habilidad (0-1)
-const reactionOf = skill => 0.32 - 0.14 * Math.max(0, Math.min(1, skill));
+// Reflejos según la habilidad (0-1), de una sola curva: cuánto tarda en ver lo que hace el rival (0,42 s la más torpe,
+// 0,12 s la mejor) y, a partir de eso, en reaccionar a un disparo o a un ataque que se carga (0,33 s → 0,18 s: ver
+// y además decidir apartarse). Antes eran dos curvas sueltas que había que ajustar por separado
+const seeDelay = skill => 0.42 - 0.3 * Math.max(0, Math.min(1, skill));
+const reactionOf = skill => 0.18 + 0.5 * (seeDelay(skill) - 0.12);
 // Tiempo hasta el impacto de un proyectil contra un punto (o null si no viene hacia él)
 function threatOf(p, me, r) {
   const v2 = p.vx * p.vx + p.vy * p.vy;
@@ -178,7 +181,7 @@ function utilityInput(b, side, dt) {
   st.hist = st.hist || [];
   if (!f.hidden) { st.hist.push({ x: f.x, y: f.y, flags: b.flags(f) }); st.lastSeen = { x: f.x, y: f.y }; }
   if (st.hist.length > 30) st.hist.shift();
-  const delay = Math.round((0.42 - 0.3 * skill) * S.TICK);
+  const delay = Math.round(seeDelay(skill) * S.TICK);
   const seen = st.hist.length ? st.hist[Math.max(0, st.hist.length - 1 - delay)] : null;
   const target = f.hidden || !seen ? (st.lastSeen || { x: S.ARENA.w / 2, y: S.ARENA.h / 2 }) : seen;
   const prev = st.hist[Math.max(0, st.hist.length - 5 - delay)] || target;
@@ -451,4 +454,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { reactionOf, aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, angleDiff, BASE_PARAMS, TUNED_PARAMS, PARAMS };
+module.exports = { seeDelay, reactionOf, aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, angleDiff, BASE_PARAMS, TUNED_PARAMS, PARAMS };

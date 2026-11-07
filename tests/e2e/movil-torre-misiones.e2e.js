@@ -52,4 +52,9 @@ module.exports = async ({ page, player, ok }) => {
   await page.waitSee('Explorar');
   const band = await page.eval(`(() => { const a = document.querySelector('.story-pathwrap').getBoundingClientRect(), b = document.querySelector('.story-side').getBoundingClientRect(); return Math.round(b.top - a.bottom); })()`);
   ok(band <= 16, `Historia: sin franja vacía entre el Camino y la barra de abajo (${band} px)`);
+  // (y el nombre de cada parada, entero: el del gimnasio bloqueado, «Lt. Surge», se cortaba por arriba y por abajo)
+  const cut = await page.eval(`[...document.querySelectorAll('.sp-name')].filter(e => e.getBoundingClientRect().width).filter(e => {
+    const box = e.getBoundingClientRect(), line = (e.querySelector('b') || e).getBoundingClientRect();
+    return line.top < box.top - 1 || line.height > box.height + 1; }).map(e => e.textContent.trim())`);
+  ok(!cut.length && await page.see('Lt. Surge', { in: '.story-path', scroll: true }), `Historia: el nombre de cada parada se lee entero (cortados: ${cut.join(', ') || 'ninguno'})`);
 };

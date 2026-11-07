@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.2 ----------
+    'Nombres enteros': '이름 전체 표시',
+    'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': '모바일 스토리: 잠긴 체육관(마티스 등)의 이름이 더 이상 잘리지 않아요.',
     // ---------- Novedades v0.44.1 ----------
     'Torre y móvil, más claros': '더 깔끔해진 타워와 모바일',
     'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': '배틀타워: “기권”이 위쪽 연승 옆으로 이동했고, 팀의 각 포켓몬이 기술을 보여 줘요(내 포켓몬은 연승 중에도 내 포켓몬에서 변경 가능).',
