@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-04",
- "cazadas": 102,
- "total": 102,
+ "fecha": "2026-11-07",
+ "cazadas": 106,
+ "total": 106,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -722,6 +722,34 @@
     "tests/e2e/ladder-llena.e2e.js"
    ],
    "motivo": "ladder-llena.e2e.js: ✗ la Ladder del menú enseña a más de 7 entrenadores"
+  },
+  "disparos-lentos": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: un disparo que antes pasaba rozando ahora le da"
+  },
+  "ia-reflejos-instantaneos": {
+   "resultado": "cazada",
+   "por": [
+    "tools/ai-test.js"
+   ],
+   "motivo": "ai-test.js: ✗ la IA reacciona a un disparo como una persona: no lo esquiva hasta pasado su tiempo de reacción (menos cuanto más difícil) | ✗ ai-test: 1 fallo(s)"
+  },
+  "ia-ve-devueltos": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: y cuenta como lanzado en ese momento"
+  },
+  "ia-carga-instantanea": {
+   "resultado": "cazada",
+   "por": [
+    "tools/ai-test.js"
+   ],
+   "motivo": "ai-test.js: ✗ la IA reacciona a un disparo como una persona: no lo esquiva hasta pasado su tiempo de reacción (menos cuanto más difícil) | ✗ ai-test: 1 fallo(s)"
   }
  }
 }

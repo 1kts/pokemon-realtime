@@ -12,9 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'AI は撃った瞬間に避けなくなりました。人のように反応に時間がかかり、難しいほど速く反応します。',
+    'Disparos más certeros': '当たりやすい射撃',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': '遠距離攻撃が25％速く、少し大きくなり、よけにくくなりました。その代わり基本技の再使用が少し長くなり、飛び交う攻撃が減ります。',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'メニューのラダーに入るだけのトレーナーが表示され、下にあなたの順位と全体の人数が出ます（まだ順位がないときは参加方法）。',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': 'ゲンガーは遠くから攻撃',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'ゴース、ゴースト、ゲンガーの基本技が、遠くから撃てる「ようかいえき」になりました。「したでなめる」はポケモンのページで選べます。',
     // ---------- Novedades v0.43.0 ----------

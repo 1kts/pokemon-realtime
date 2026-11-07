@@ -11,9 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'The AI no longer dodges your shots the instant they leave: it takes time to react like a person, less the harder it is.',
+    'Disparos más certeros': 'Sharper shots',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': 'Ranged attacks fly 25% faster and are a bit bigger, so they are harder to dodge; in exchange, basic moves recharge a little slower and there is less flying around.',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'The menu Ladder shows every trainer that fits and, at the bottom, your position out of the total (or how to join if you are not ranked yet).',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': 'Gengar attacks from afar',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Gastly, Haunter and Gengar now use Acid as their basic move, thrown from a distance, instead of Lick, which is still available in their sheet.',
     // ---------- Novedades v0.43.0 ----------

@@ -198,6 +198,35 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     run(b, 0.1);
     return { b, side, st: side.aiState };
   };
+  await check('la IA reacciona a un disparo como una persona: no lo esquiva hasta pasado su tiempo de reacción (menos cuanto más difícil)', () => {
+    const { aiInput, reactionOf } = require('../server/ai.js');
+    assert(reactionOf(0) > 0.28 && reactionOf(1) >= 0.15 && reactionOf(1) < reactionOf(0.5), `Fácil ${reactionOf(0)} s, Maestro ${reactionOf(1)} s`);
+    for (const skill of [0.2, 1]) {
+      const b = battle({ sides: [{ name: 'A', team: [{ dex: 4, level: 50 }] }, { name: 'Bot', team: [{ dex: 68, level: 50 }], ai: skill }] });
+      run(b, 0.5);
+      const [me, bot] = b.sides;
+      me.x = 200; me.y = 360; bot.x = 600; bot.y = 360;
+      for (const s of b.sides) b.mon(s).hp = b.mon(s).maxHp;
+      bot.aiState.adapt = 0;   // (igualados: su habilidad es la de su nivel, sin la adaptativa)
+      const m = D.MOVES.ascuas;
+      const p = { id: 999999, born: b.t, owner: me, m, mk: 'ascuas', x: 240, y: 360, vx: m.speed, vy: 0, left: m.range, r: m.radius };
+      b.projectiles.push(p);
+      bot.aiState.decided.set('d' + p.id, true);   // (que esta vez sí quiere esquivarlo)
+      const esquiva = () => { aiInput(b, bot, S.DT); return bot.aiState.evade; };
+      b.t = p.born + reactionOf(skill) * S.SPEED * 0.9;
+      assert(!esquiva(), `habilidad ${skill}: a los ${(reactionOf(skill) * 0.9).toFixed(2)} s aún no lo ha visto`);
+      b.t = p.born + reactionOf(skill) * S.SPEED * 1.1;
+      assert(esquiva(), `habilidad ${skill}: pasado su tiempo de reacción, sí se aparta`);
+      // Lo mismo con un ataque que se está cargando contra ella: no se aparta en cuanto empieza
+      b.projectiles.length = 0;
+      me.wind = { c: 0, m, t: 0, a: 0, tx: bot.x, ty: bot.y };
+      bot.aiState.decided.set('w' + Math.floor(b.t * 2) + ':0', true);
+      assert(!esquiva(), `habilidad ${skill}: al empezar a cargarlo, aún no se aparta`);
+      me.wind.t = reactionOf(skill) * S.SPEED * 1.1;
+      assert(esquiva(), `habilidad ${skill}: cargándolo, pasado su tiempo de reacción, sí`);
+      me.wind = null;
+    }
+  });
   await check('una jugada no pisa a la IA cuando esquiva o escapa: su movimiento manda', () => {
     const { b, side, st } = whitney();
     const inp = { mx: 0.3, my: -0.7, c: -1, sw: -1, a: 0, tx: 0, ty: 0 };

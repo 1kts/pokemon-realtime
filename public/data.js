@@ -241,6 +241,15 @@
   // tapaban demasiado
   const MELEE_REACH = 1.3, MELEE_ARC = 0.4;
   for (const m of Object.values(MOVES)) if (m.kind === 'melee') { m.vr = m.range; m.va = m.arc; m.range = Math.round(m.range * MELEE_REACH); m.arc = +(m.arc + MELEE_ARC).toFixed(2); }
+  // Disparos: más rápidos y algo más gordos (antes, desde media distancia se esquivaban solo con reflejos: 0,35 s de
+  // margen); y los básicos a distancia, con más recarga, para que no se dispare sin parar: menos disparos, que aciertan
+  // más, y combates que duran lo mismo
+  const PROJ_SPEED = 1.25, PROJ_R = 1.3, BASIC_CD = 1.4;
+  for (const m of Object.values(MOVES)) if (m.kind === 'proj') {
+    m.speed = Math.round(m.speed * PROJ_SPEED);
+    m.radius = Math.round(m.radius * PROJ_R);
+    if (m.cost === 0) m.cd = +(m.cd * BASIC_CD).toFixed(2);
+  }
   // Protección (Espacio) la tienen todos: los primeros PERFECT segundos devuelven el golpe.
   const PROTECT = { name: 'Protección', cd: 4.5, dur: 0.65, perfect: 0.24, block: 0.8 };
   const ENERGY = { max: 100, regen: 11, onHit: 4 };

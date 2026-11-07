@@ -11,9 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'Die KI weicht deinen Schüssen nicht mehr im selben Moment aus: Sie braucht wie ein Mensch Zeit zum Reagieren, umso weniger, je schwieriger sie ist.',
+    'Disparos más certeros': 'Treffsicherere Schüsse',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': 'Fernangriffe fliegen 25 % schneller und sind etwas größer, also schwerer auszuweichen; dafür laden Grundattacken etwas länger nach und es fliegt weniger herum.',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'Die Ladder im Menü zeigt alle Trainer, die hineinpassen, und unten deine Position von allen (oder wie du hineinkommst, wenn du noch keinen Platz hast).',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': 'Gengar greift aus der Ferne an',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Nebulak, Alpollo und Gengar nutzen jetzt Säure als Grundattacke, aus der Ferne, statt Schlecker, das in ihrem Profil weiter verfügbar ist.',
     // ---------- Novedades v0.43.0 ----------

@@ -11,9 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'L\'IA n\'esquive plus tes tirs à l\'instant où ils partent : elle met du temps à réagir, comme une personne, et moins c\'est difficile, plus elle est lente.',
+    'Disparos más certeros': 'Des tirs plus précis',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': 'Les attaques à distance volent 25 % plus vite et sont un peu plus grosses, donc plus dures à esquiver ; en échange, les attaques de base se rechargent un peu plus lentement et il y a moins de projectiles.',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'La Ladder du menu affiche tous les dresseurs qui tiennent et, en bas, ta position sur le total (ou comment y entrer si tu n’es pas encore classé).',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': 'Ectoplasma attaque de loin',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Fantominus, Spectrum et Ectoplasma ont Acide comme attaque de base, lancée à distance, au lieu de Léchouille, toujours disponible dans leur fiche.',
     // ---------- Novedades v0.43.0 ----------

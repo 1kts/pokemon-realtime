@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.43.2', date: '2026-11-07', title: 'Disparos más certeros',
+      items: [
+        ['cambio', 'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.'],
+        ['cambio', 'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.'],
+      ],
+    },
+    {
       v: '0.43.1', date: '2026-11-07', title: 'Gengar ataca de lejos',
       items: [
         ['cambio', 'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).'],

@@ -103,7 +103,7 @@ async function mutate(m, broken) {
     const resultado = caught.length ? 'cazada' : usable.length ? 'escapada' : 'test roto';
     return { id: m.id, resultado, por: caught.map(r => r.test), motivo: caught.map(r => `${path.basename(r.test.split(' ')[0])}: ${r.why}`).join(' · ').slice(0, 400) };
   } catch (e) {
-    return { id: m.id, resultado: 'rota', motivo: e.message };
+    return { id: m.id, resultado: 'rota', por: [], motivo: e.message };
   } finally { rm(dir); }
 }
 

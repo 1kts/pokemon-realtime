@@ -12,9 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'AI가 더 이상 발사한 순간에 바로 피하지 않습니다. 사람처럼 반응하는 데 시간이 걸리며, 난이도가 높을수록 빨라집니다.',
+    'Disparos más certeros': '더 정확한 사격',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': '원거리 공격이 25% 더 빠르고 조금 더 커져 피하기 어려워졌습니다. 대신 기본기의 재사용이 조금 길어져 날아다니는 공격이 줄었습니다.',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': '메뉴의 래더에 들어가는 만큼 트레이너가 모두 나오고, 아래에 전체 중 내 순위가 나옵니다(아직 순위가 없으면 참가 방법).',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': '팬텀은 멀리서 공격',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': '고오스, 고우스트, 팬텀의 기본기가 멀리서 쏘는 용해액으로 바뀌었습니다. 핥기는 정보 화면에서 계속 고를 수 있습니다.',
     // ---------- Novedades v0.43.0 ----------

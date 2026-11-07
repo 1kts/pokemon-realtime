@@ -12,9 +12,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'L\'IA non schiva più i tuoi colpi nell\'istante in cui partono: ci mette un po\' a reagire come una persona, meno quanto più è difficile.',
+    'Disparos más certeros': 'Colpi più precisi',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': 'Gli attacchi a distanza volano il 25% più veloci e sono un po’ più grandi, quindi è più difficile schivarli; in cambio, le mosse base si ricaricano un po’ più lentamente e c’è meno roba in volo.',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'La Ladder del menu mostra tutti gli allenatori che ci stanno e, in basso, la tua posizione sul totale (o come entrare se non sei ancora in classifica).',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': 'Gengar attacca da lontano',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Gastly, Haunter e Gengar usano come mossa base Acido, lanciato da lontano, invece di Leccata, che resta disponibile nella loro scheda.',
     // ---------- Novedades v0.43.0 ----------

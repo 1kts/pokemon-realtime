@@ -11,9 +11,12 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.2 ----------
+    'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'AI 不再在你出手的瞬间就躲开攻击：它像人一样需要反应时间，难度越高反应越快。',
+    'Disparos más certeros': '射击更准',
+    'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.': '远程攻击飞行速度快 25%，体积也稍大，更难躲开；相应地，基础招式的冷却稍长，场上飞的东西更少。',
     // ---------- Novedades v0.43.1 ----------
     'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': '菜单里的天梯会显示能放下的所有训练家，底部显示你的排名和总人数（还没有排名时会告诉你如何加入）。',
-    // ---------- Novedades v0.43.1 ----------
     'Gengar ataca de lejos': '耿鬼远程出招',
     'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': '鬼斯、鬼斯通和耿鬼的基础招式改为可远程发射的溶解液，舌舔仍可在资料中选择。',
     // ---------- Novedades v0.43.0 ----------

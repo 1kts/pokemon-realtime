@@ -102,6 +102,8 @@ function styleOf(dex) {
   return p;
 }
 
+// Tiempo de reacción a un disparo, en segundos de verdad, según la habilidad (0-1)
+const reactionOf = skill => 0.32 - 0.14 * Math.max(0, Math.min(1, skill));
 // Tiempo hasta el impacto de un proyectil contra un punto (o null si no viene hacia él)
 function threatOf(p, me, r) {
   const v2 = p.vx * p.vx + p.vy * p.vy;
@@ -261,11 +263,15 @@ function utilityInput(b, side, dt) {
   // Una roca tapa la línea de tiro: las hábiles se desplazan de lado para volver a verlo
   if (!f.hidden && skill > 0.4 && mode !== 'defender' && lineBlocked(b, side, target)) { mx += (-dy / dist) * st.strafe * 1.2; my += (dx / dist) * st.strafe * 1.2; }
 
-  // Esquivar proyectiles que vienen hacia mí
+  // Esquivar proyectiles que vienen hacia mí. Con reflejos de persona: un disparo no se ve hasta que pasa el tiempo de
+  // reacción (0,32 s la más torpe, 0,18 s la mejor; antes, en el acto, y esquivaba casi todo lo que se le tiraba). Lo
+  // que aún no ha visto tampoco lo para con Protección ni lo esquiva con Teletransporte
   let threat = null;
   const dodgeP = (0.08 + 0.72 * skill) * (side.wild ? 0.4 : 1);
+  const react = reactionOf(skill) * S.SPEED;   // (en tiempo de juego)
   for (const p of b.projectiles) {
     if (p.owner === side) continue;
+    if (b.t - (p.born ?? b.t) < react) continue;   // (sin born: como recién lanzado)
     const th = threatOf(p, side, r);
     if (!th) continue;
     if (!threat || th.t < threat.t) threat = th;
@@ -283,8 +289,8 @@ function utilityInput(b, side, dt) {
       mx += (side.x - ar.x) / (d || 1) * 2.5; my += (side.y - ar.y) / (d || 1) * 2.5; st.evade = true;
     }
   }
-  // Ataque cargándose contra mí: apartarse de la línea o del círculo
-  if (f.wind && !f.hidden) {
+  // Ataque cargándose contra mí: apartarse de la línea o del círculo (también tras su tiempo de reacción)
+  if (f.wind && !f.hidden && f.wind.t >= react) {
     const m = f.wind.m;
     const key = 'w' + Math.floor(b.t * 2) + ':' + f.wind.c;
     if (m.kind === 'area' && m.at === 'cursor' && Math.hypot(side.x - f.wind.tx, side.y - f.wind.ty) < m.radius + r) {
@@ -445,4 +451,4 @@ function aim(inp, toFoe, skill) {
   return inp;
 }
 
-module.exports = { aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, angleDiff, BASE_PARAMS, TUNED_PARAMS, PARAMS };
+module.exports = { reactionOf, aiInput, personality, adaptiveSkill, paramsFor, lineBlocked, aimMove, angleDiff, BASE_PARAMS, TUNED_PARAMS, PARAMS };

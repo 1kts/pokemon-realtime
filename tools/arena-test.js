@@ -231,6 +231,18 @@ check('mojarse apaga la quemadura, y mojado no se vuelve a quemar', () => {
   assert.strictEqual(me.burn, 0, 'y mientras sigue mojado, el fuego no lo quema');
 });
 
+check('los disparos van más rápidos y son algo más gordos, y los básicos a distancia recargan más (menos cosas volando)', () => {
+  const a = D.MOVES.ascuas, b = D.MOVES.bolaSombra;
+  assert(a.speed === 800 && a.cd === 0.63, `Ascuas: ${a.speed} px/s, recarga ${a.cd} s`);
+  assert(b.speed === 600 && b.cd === 4, `Bola Sombra más rápida (${b.speed}) y con su recarga de siempre (${b.cd})`);
+  // Más gordo de verdad: un Ascuas que antes pasaba rozando (radio 7) ahora le da; y uno bien desviado sigue sin dar
+  const roce = 1 + 7 + 9;   // (el radio de antes y el margen del choque, más allá del cuerpo del rival)
+  const rozando = cast('ascuas', f => { const bb = battle('pradera', [{ dex: 6, level: 50 }], [{ dex: 143, level: 50 }]); f.x = 500; f.y = 300 + Math.max(bb.rad(bb.sides[1]), 18) + roce; }, 1.5, { x: 600, y: 300 });
+  assert(rozando.lost > 0, 'un disparo que antes pasaba rozando ahora le da');
+  const lejos = cast('ascuas', f => { const bb = battle('pradera', [{ dex: 6, level: 50 }], [{ dex: 143, level: 50 }]); f.x = 500; f.y = 300 + Math.max(bb.rad(bb.sides[1]), 18) + roce + 12; }, 1.5, { x: 600, y: 300 });
+  assert.strictEqual(lejos.lost, 0, 'bien desviado, no');
+});
+
 check('el cono pega delante y no a los lados', () => {
   assert(cast('lanzallamas', f => { f.x = 380; f.y = 300; }).lost > 0, 'delante');
   assert.strictEqual(cast('lanzallamas', f => { f.x = 200; f.y = 480; }, 1.5, { x: 400, y: 300 }).lost, 0, 'al lado');
@@ -349,6 +361,19 @@ check('un proyectil que pasa rozando a un Pokémon pequeño también le da (marg
   bt.projectiles.push({ id: 999, owner: a, m: { ...D.MOVES.impactrueno }, mk: 'impactrueno', x: 230, y: 300, vx: 780, vy: 0, left: 400, r: D.MOVES.impactrueno.radius });
   for (let i = 0; i < 20; i++) bt.updateProjectiles(S.DT);
   assert(bt.mon(b).hp < hp0, 'le ha dado');
+});
+
+check('un disparo devuelto con Protección perfecta pilla a la IA como uno recién lanzado (tiene que reaccionar otra vez)', () => {
+  const bt = battle('pradera', [{ dex: 25, level: 30 }], [{ dex: 129, level: 30 }]);
+  bt.obstacles = [];
+  const [a, b] = bt.sides;
+  a.x = 200; a.y = 300; b.x = 400; b.y = 300; b.prot = 0;
+  const p = { id: 998, born: 0, owner: a, m: { ...D.MOVES.impactrueno }, mk: 'impactrueno', x: 330, y: 300, vx: 780, vy: 0, left: 400, r: D.MOVES.impactrueno.radius };
+  bt.projectiles.push(p);
+  bt.t = 5;
+  for (let i = 0; i < 6 && p.owner === a; i++) bt.updateProjectiles(S.DT);
+  assert(p.owner === b && p.reflected, 'Protección perfecta lo devuelve');
+  assert.strictEqual(p.born, bt.t, 'y cuenta como lanzado en ese momento');
 });
 
 check('IA adaptativa: afloja si va arrasando y aprieta si va perdiendo, sin salirse de su margen', () => {

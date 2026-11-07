@@ -360,12 +360,12 @@ class Battle {
       const reach = m.explode && m.maxRange ? Math.max(60, Math.min(m.maxRange, Math.hypot(w.tx - side.x, w.ty - side.y))) : m.range;
       for (let j = 0; j < n; j++) {
         const ang = a + (j - (n - 1) / 2) * (m.spread || 0);
-        this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast,
+        this.projectiles.push({ id: nextId++, born: this.t, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast,
           x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: Math.cos(ang) * m.speed, vy: Math.sin(ang) * m.speed, left: reach, r: m.radius });
       }
     } else if (m.kind === 'wave') {
       // Ola (Surf): un frente ancho que avanza, atraviesa las rocas y moja el suelo a su paso
-      this.projectiles.push({ id: nextId++, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast, wide: m.width / 2,
+      this.projectiles.push({ id: nextId++, born: this.t, owner: side, m, mk: this.mon(side).moves[w.c], cast: this.curCast, wide: m.width / 2,
         x: side.x + ax * this.rad(side), y: side.y + ay * this.rad(side), vx: ax * m.speed, vy: ay * m.speed, left: m.range, r: m.thick || 20 });
     } else if (m.kind === 'cone') {
       this.cone(side, m, a);
@@ -480,7 +480,7 @@ class Battle {
     side.balls[kind]--;
     side.rec = 0.3;
     const a = side.a;
-    this.projectiles.push({ id: nextId++, owner: side, ball: kind, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 0 }, mk: 'ball',
+    this.projectiles.push({ id: nextId++, born: this.t, owner: side, ball: kind, m: { type: 'normal', speed: 520, range: 460, radius: 10, dmg: 0 }, mk: 'ball',
       x: side.x + Math.cos(a) * this.rad(side), y: side.y + Math.sin(a) * this.rad(side), vx: Math.cos(a) * 520, vy: Math.sin(a) * 520, left: 460, r: 10 });
     this.ev({ k: 'throw', s: side.idx, ball: kind, left: side.balls[kind] });
   }
@@ -521,6 +521,7 @@ class Battle {
           const ang = Math.atan2(src.y - p.y, src.x - p.x);
           const sp = Math.hypot(p.vx, p.vy);
           p.vx = Math.cos(ang) * sp; p.vy = Math.sin(ang) * sp; p.left = m.range || 500; p.reflected = true;
+          p.born = this.t;   // (para los reflejos de la IA, devuelto es como recién lanzado)
         } else {           // cuerpo a cuerpo o rayo: el atacante queda aturdido
           src.stun = Math.max(src.stun, 0.9);
           src.dash = null;
