@@ -2020,3 +2020,12 @@ body.touch .results .xp-row .learn-go { min-height: 44px; white-space: nowrap; }
 .invite-box .invite-link { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 8px; }
 .invite-box .invite-link input { flex: 1 1 220px; min-width: 0; padding: 10px 12px; border-radius: 10px; font: 700 14px var(--text); color: #fff; background: rgba(0,0,0,.3); border: 1px solid rgba(170,190,255,.35); }
 .invite-box .invite-wait { color: #c4d0e4; font-size: 13px; }
+
+/* Ladder del menú: tu posición, fija abajo */
+.lp-you { display: grid; grid-template-columns: 26px 26px minmax(0, 1fr) auto; align-items: center; gap: 8px; margin: 8px 0 0; padding: 6px 10px; border-radius: 10px;
+  background: linear-gradient(90deg, rgba(122,208,255,.22), rgba(122,208,255,.06)); border: 1px solid rgba(122,208,255,.55); }
+.lp-you > i { display: grid; place-items: center; height: 22px; border-radius: 6px; font: 900 12px var(--display); font-style: normal; color: #0b1430; background: #7ad0ff; }
+.lp-you > b { min-width: 0; overflow: hidden; font: 800 13px/1.15 var(--text); color: #fff; white-space: nowrap; text-overflow: ellipsis; }
+.lp-you > b small { display: block; font: 700 11px var(--text); color: #cfe6ff; }
+.lp-you > span { font: 900 16px var(--display); color: #ffe08a; }
+.lp-you.none { grid-template-columns: 26px minmax(0, 1fr); }

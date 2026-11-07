@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': '메뉴의 래더에 들어가는 만큼 트레이너가 모두 나오고, 아래에 전체 중 내 순위가 나옵니다(아직 순위가 없으면 참가 방법).',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': '팬텀은 멀리서 공격',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': '고오스, 고우스트, 팬텀의 기본기가 멀리서 쏘는 용해액으로 바뀌었습니다. 핥기는 정보 화면에서 계속 고를 수 있습니다.',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': '링크로 도전',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': '링크로 친구에게 도전하세요. PvP에서 「링크로 도전하기」를 누르면 복사하거나 공유할 링크가 나오고, 링크를 연 사람은 처음이라도 바로 당신과 친선 배틀을 합니다.',
@@ -1621,6 +1626,9 @@ export default {
     'aprendido': '배움',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '공식 사이트: <b>pokearenas.com</b>. 무료이며 브라우저에서 플레이합니다. 누군가 돈을 내거나 무언가를 내려받으라고 하면 저희가 아닙니다.',
     'MT': '기술머신',
+    'Tu posición': '내 순위',
+    'de {n}': '{n}명 중',
+    'Sin puesto': '아직 순위 없음',
     'Retar con un enlace': '링크로 도전하기',
     'Reta a un amigo con un enlace': '링크로 친구에게 도전하기',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': '이 링크를 보내세요. 열면 바로 당신과 친선 배틀을 합니다(ELO·보상 없음). 팀이 없으면 대여 팀을 씁니다.',

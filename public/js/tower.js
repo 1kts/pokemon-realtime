@@ -418,11 +418,20 @@ export const towerViews = {
       return li;
     };
     const ol = el('ol', 'lp-rest');
-    // (el top 7 y tu puesto, si estás más abajo: la lista entera se ve en «Ver la ladder completa»)
-    for (const r of msg.rows.slice(3, 7)) ol.append(row(r));
-    if (msg.me && msg.me.rank > 7) ol.append(row(msg.me));
-    body.append(top, ol);
-    if (!msg.me && board === 'ranked') body.append(el('p', 'lp-me', t('Juega PvP para entrar')));
+    // (todos los que quepan, sin cortar ninguno a medias: la lista entera se ve en «Ver la ladder completa»)
+    for (const r of msg.rows.slice(3)) ol.append(row(r));
+    // Tu posición, siempre a la vista: tu puesto y tu marca o, sin puesto, cómo entrar
+    const me = msg.me;
+    const you = el('div', 'lp-you' + (me ? '' : ' none'), me
+      ? `<i>${me.rank}</i><u></u><b>${t('Tu posición')}<small>${t('de {n}', { n: msg.total })}</small></b><span>${this.lpValue(me, board)}</span>`
+      : `<u></u><b>${t('Sin puesto')}<small>${board === 'ranked' ? t('Juega PvP para entrar') : t(unit)}</small></b>`);
+    const face = this.avatar(26, false, null, null, null); face.classList.add('row-face');   // (tu avatar, del tamaño de las filas)
+    you.querySelector('u').replaceWith(face);
+    body.append(top, ol, you);
+    const fit = () => {   // (quita del final los que no caben enteros; los primeros siempre)
+      for (let n = 0; n < 30 && body.scrollHeight > body.clientHeight + 1 && ol.children.length > 2; n++) ol.lastElementChild.remove();
+    };
+    requestAnimationFrame(fit);
     if (board === 'ranked') {
       const league = this.profile.league || leagueOf(this.profile.elo);
       body.append(el('p', 'lp-prize', `<b>${t('Premios de temporada')}</b><span>${t(league)}: ${coins(Data.SEASON_REWARDS[league])}</span>`));

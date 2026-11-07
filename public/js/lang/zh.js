@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': '菜单里的天梯会显示能放下的所有训练家，底部显示你的排名和总人数（还没有排名时会告诉你如何加入）。',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': '耿鬼远程出招',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': '鬼斯、鬼斯通和耿鬼的基础招式改为可远程发射的溶解液，舌舔仍可在资料中选择。',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': '用链接挑战',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': '用链接挑战好友：在 PvP 中点“用链接发起挑战”即可获得可复制或分享的链接，对方打开后会直接与你进行友谊对战，新玩家也可以。',
@@ -1651,6 +1656,9 @@ export default {
     'aprendido': '已学会',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '官方网站：<b>pokearenas.com</b>。游戏免费，在浏览器中游玩：如果有人要你付费或下载东西，那不是我们。',
     'MT': '招式学习器',
+    'Tu posición': '你的排名',
+    'de {n}': '共 {n} 人',
+    'Sin puesto': '暂无排名',
     'Retar con un enlace': '用链接发起挑战',
     'Reta a un amigo con un enlace': '用链接挑战好友',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': '把这个链接发给对方：打开后会直接与你进行友谊对战（不计 ELO，也没有奖励）。如果对方没有队伍，会使用租借队伍。',

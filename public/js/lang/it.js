@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'La Ladder del menu mostra tutti gli allenatori che ci stanno e, in basso, la tua posizione sul totale (o come entrare se non sei ancora in classifica).',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': 'Gengar attacca da lontano',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Gastly, Haunter e Gengar usano come mossa base Acido, lanciato da lontano, invece di Leccata, che resta disponibile nella loro scheda.',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': 'Sfida con un link',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'Sfida un amico con un link: in PvP, «Sfida con un link» te ne dà uno da copiare o condividere, e chi lo apre entra subito in una lotta amichevole con te, anche se è nuovo.',
@@ -1621,6 +1626,9 @@ export default {
     'aprendido': 'imparata',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Sito ufficiale: <b>pokearenas.com</b>. È gratis e si gioca nel browser: se qualcuno ti chiede di pagare o scaricare qualcosa, non siamo noi.',
     'MT': 'MT',
+    'Tu posición': 'La tua posizione',
+    'de {n}': 'su {n}',
+    'Sin puesto': 'Non ancora in classifica',
     'Retar con un enlace': 'Sfida con un link',
     'Reta a un amigo con un enlace': 'Sfida un amico con un link',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'Mandagli questo link: aprendolo entra subito in una lotta amichevole con te (senza ELO né premi). Se non ha una squadra, ne usa una a noleggio.',

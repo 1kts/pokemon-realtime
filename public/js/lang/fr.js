@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'La Ladder du menu affiche tous les dresseurs qui tiennent et, en bas, ta position sur le total (ou comment y entrer si tu n’es pas encore classé).',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': 'Ectoplasma attaque de loin',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Fantominus, Spectrum et Ectoplasma ont Acide comme attaque de base, lancée à distance, au lieu de Léchouille, toujours disponible dans leur fiche.',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': 'Défie avec un lien',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'Défie un ami avec un lien : dans PvP, « Défier avec un lien » t’en donne un à copier ou partager, et celui qui l’ouvre entre directement dans un combat amical avec toi, même s’il est nouveau.',
@@ -1573,6 +1578,9 @@ export default {
     'aprendido': 'apprise',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Site officiel : <b>pokearenas.com</b>. C’est gratuit et ça se joue dans le navigateur : si quelqu’un te demande de payer ou de télécharger quelque chose, ce n’est pas nous.',
     'MT': 'CT',
+    'Tu posición': 'Ta position',
+    'de {n}': 'sur {n}',
+    'Sin puesto': 'Pas encore classé',
     'Retar con un enlace': 'Défier avec un lien',
     'Reta a un amigo con un enlace': 'Défie un ami avec un lien',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'Envoie-lui ce lien : en l’ouvrant, il entre directement dans un combat amical avec toi (sans ELO ni récompenses). S’il n’a pas d’équipe, il en prend une de location.',

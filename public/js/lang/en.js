@@ -11,6 +11,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'The menu Ladder shows every trainer that fits and, at the bottom, your position out of the total (or how to join if you are not ranked yet).',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': 'Gengar attacks from afar',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'Gastly, Haunter and Gengar now use Acid as their basic move, thrown from a distance, instead of Lick, which is still available in their sheet.',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': 'Challenge with a link',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'Challenge a friend with a link: in PvP, "Challenge with a link" gives you one to copy or share, and whoever opens it goes straight into a friendly battle with you, even if they are new.',
@@ -1652,6 +1657,9 @@ export default {
     'aprendido': 'learned',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': 'Official site: <b>pokearenas.com</b>. It is free and plays in your browser: if anyone asks you to pay or download something, it isn’t us.',
     'MT': 'TM',
+    'Tu posición': 'Your position',
+    'de {n}': 'of {n}',
+    'Sin puesto': 'Not ranked yet',
     'Retar con un enlace': 'Challenge with a link',
     'Reta a un amigo con un enlace': 'Challenge a friend with a link',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'Send them this link: when they open it, they go straight into a friendly battle with you (no ELO or rewards). If they have no team, they get a rental one.',

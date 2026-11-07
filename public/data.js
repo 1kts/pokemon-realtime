@@ -418,6 +418,9 @@
   // Los niveles de los juegos, comprimidos: el mismo orden, pero antes y como mucho a Nv.50
   const LEARN_PACE = 0.75, LEARN_MAX = 50;
   const learnCache = new Map();
+  // Básico propio de una línea: Gastly, Haunter y Gengar lanzan Ácido (veneno, a distancia) en vez de depender de
+  // Lengüetazo (fantasma, de cerca): un fantasma pega desde lejos. Lengüetazo lo siguen sabiendo
+  const LINE_BASIC = { 92: 'acido', 93: 'acido', 94: 'acido' };
   function learnset(dex) {
     if (learnCache.has(dex)) return learnCache.get(dex);
     const sp = SPECIES[dex];
@@ -436,6 +439,7 @@
     if (own) own[0] = 1; else if (!karp) list.push([1, k1.basic]);
     const fill = karp ? [] : [[14, k1.skill], [26, k2.skill], [32, k1.big], [38, k2.big], [14, k1.dash || k2.dash]];   // (Magikarp es así)
     for (const [l, m] of fill) if (m && MOVES[m] && !has(m) && new Set(list.filter(([l2]) => l2 <= 50).map(([, x]) => x)).size < 4) list.push([MOVES[m].cost >= 45 ? Math.max(32, l) : l, m]);
+    if (LINE_BASIC[dex] && !has(LINE_BASIC[dex])) list.push([1, LINE_BASIC[dex]]);
     // Sin repetidos: de cada movimiento, la primera vez que se aprende
     const seen = new Set(), out = [];
     for (const e of list.sort((a, b) => a[0] - b[0])) if (!seen.has(e[1])) { seen.add(e[1]); out.push(e); }
@@ -468,7 +472,7 @@
   // como mucho: un equipo de solo curas y mejoras no pelea
   function defaultMoves(dex, level) {
     const l = learnedAt(dex, level);
-    const first = l.find(m => MOVES[m].cost === 0 && MOVES[m].dmg) || l[0];
+    const first = (LINE_BASIC[dex] && l.includes(LINE_BASIC[dex]) && LINE_BASIC[dex]) || l.find(m => MOVES[m].cost === 0 && MOVES[m].dmg) || l[0];
     const out = [first];
     let support = 0;
     for (const m of [...l].reverse()) {

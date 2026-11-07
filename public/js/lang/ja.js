@@ -12,6 +12,11 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.1 ----------
+    'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).': 'メニューのラダーに入るだけのトレーナーが表示され、下にあなたの順位と全体の人数が出ます（まだ順位がないときは参加方法）。',
+    // ---------- Novedades v0.43.1 ----------
+    'Gengar ataca de lejos': 'ゲンガーは遠くから攻撃',
+    'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.': 'ゴース、ゴースト、ゲンガーの基本技が、遠くから撃てる「ようかいえき」になりました。「したでなめる」はポケモンのページで選べます。',
     // ---------- Novedades v0.43.0 ----------
     'Reta con un enlace': 'リンクで対戦',
     'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.': 'リンクで友だちに対戦をいどめます。PvPの「リンクで対戦をいどむ」でコピーや共有ができるリンクが出て、開いた人はすぐにあなたとの親善バトルに入れます。初めての人でも大丈夫です。',
@@ -1621,6 +1626,9 @@ export default {
     'aprendido': 'おぼえた',
     'Web oficial: <b>pokearenas.com</b>. Es gratis y se juega en el navegador: si alguien te pide pagar o descargar algo, no somos nosotros.': '公式サイト：<b>pokearenas.com</b>。無料でブラウザで遊べます。お金やダウンロードを求められたら、それは私たちではありません。',
     'MT': 'わざマシン',
+    'Tu posición': 'あなたの順位',
+    'de {n}': '{n}人中',
+    'Sin puesto': 'まだ順位なし',
     'Retar con un enlace': 'リンクで対戦をいどむ',
     'Reta a un amigo con un enlace': 'リンクで友だちに対戦をいどむ',
     'Pásale este enlace: al abrirlo, entra directo a un combate amistoso contigo (sin ELO ni premios). Si no tiene equipo, lleva uno de alquiler.': 'このリンクを送ってください。開くとすぐにあなたとの親善バトルが始まります（ELOや報酬はありません）。チームがなければレンタルチームを使います。',

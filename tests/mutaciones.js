@@ -323,4 +323,10 @@ module.exports = [
   { id: 'panel-sin-salidas', que: 'El panel de admin no dice en qué pantalla cierran el juego los jugadores',
     archivo: 'server/usage.js', buscar: "  add('salida:' + (c.usage.cur || 'title'));", poner: '',
     tests: ['tools/server-test.js'] },
+  { id: 'gengar-de-cerca', que: 'Gengar vuelve a depender de Lengüetazo, de cerca, como básico',
+    archivo: 'public/data.js', buscar: "const LINE_BASIC = { 92: 'acido', 93: 'acido', 94: 'acido' };", poner: 'const LINE_BASIC = {};',
+    tests: ['tools/server-test.js'] },
+  { id: 'ladder-menu-solo-7', que: 'La Ladder del menú vuelve a enseñar solo 7 entrenadores y deja un hueco debajo',
+    archivo: 'public/js/tower.js', buscar: '    for (const r of msg.rows.slice(3)) ol.append(row(r));', poner: '    for (const r of msg.rows.slice(3, 7)) ol.append(row(r));',
+    tests: ['tests/e2e/ladder-llena.e2e.js'] },
 ];

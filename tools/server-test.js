@@ -85,6 +85,8 @@ class Client {
   ok((await err).msg.includes('no sabe'), 'un movimiento de MT no se puede llevar antes de Nv.50');
   ok(D.learnable(6, 50).includes('llamarada') && !D.learnable(6, 49).includes('llamarada') && !D.learnable(4, 10).includes('golpeAereo') && !D.learnedAt(6, 50).includes('llamarada'), 'Llamarada, por MT: Charizard a Nv.50 sí, a Nv.49 no, y no es de los que aprende subiendo');
   ok(D.levelMult(50) === 1 && D.levelMult(43) / D.levelMult(20) >= 1.4, `el nivel pesa: un Nv.43 tiene al menos un 40 % más de Ataque y PS que un Nv.20 (${(D.levelMult(43) / D.levelMult(20)).toFixed(2)}×), y a Nv.50 (PvP y Torre) todo queda igual`);
+  ok([92, 93, 94].every(d => D.defaultMoves(d, 5)[0] === 'acido' && D.MOVES.acido.kind === 'proj' && D.learnable(d, 5).includes('lenguetazo')) && D.defaultMoves(4, 7)[0] === 'aranazo',
+    'Gastly, Haunter y Gengar llevan de básico Ácido (a distancia) en vez de Lengüetazo, que siguen sabiendo; los demás, como siempre');
   ok(D.pvpMoves(6).includes('llamarada') && D.pvpMoves(6).includes('hiperrayo'), 'en PvP, Charizard puede llevar Llamarada e Hiperrayo (MT)');
   { const n = Object.keys(D.SPECIES).map(Number).filter(d => d <= 251).map(d => D.tmMoves(d).length);
     ok(Math.max(...n) <= 4 && D.tmMoves(6).length === 4 && !D.tmMoves(6).some(([, k]) => k === 'terremoto'), `de sus MT, cada especie solo las mejores: como mucho 4 (Charizard: ${D.tmMoves(6).map(([, k]) => k).join(', ')})`); }

@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.43.1', date: '2026-11-07', title: 'Gengar ataca de lejos',
+      items: [
+        ['cambio', 'La Ladder del menú enseña a todos los entrenadores que caben y, abajo, tu posición con el total (o cómo entrar si aún no tienes puesto).'],
+        ['cambio', 'Gastly, Haunter y Gengar llevan de básico Ácido, que se lanza desde lejos, en vez de Lengüetazo, que sigue disponible en su ficha.'],
+      ],
+    },
+    {
       v: '0.43.0', date: '2026-11-07', title: 'Reta con un enlace',
       items: [
         ['nuevo', 'Reta a un amigo con un enlace: en PvP, «Retar con un enlace» te da uno para copiar o compartir, y quien lo abre entra directo a un combate amistoso contigo, aunque sea nuevo.'],

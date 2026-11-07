@@ -10,7 +10,7 @@ module.exports = async ({ page, player, ok }) => {
     await page.loginAs(me.token);
     await page.waitSee('Campeona', { in: '.ladder-panel' });
     ok(await page.see('2200', { in: '.ladder-panel' }), `${w}×${h}: el menú enseña a la primera de la ladder con su ELO`);
-    ok(await page.see(/Tú: puesto \d+ de \d+|Aspirante/, { in: '.ladder-panel' }), `${w}×${h}: y dónde estás tú`);
+    ok(await page.see(/Tu posición|Tú: puesto \d+ de \d+|Aspirante/, { in: '.ladder-panel' }), `${w}×${h}: y dónde estás tú`);
     // Cada fila se ve con la cara del entrenador y, la primera, con la medalla y su liga; en escritorio, con sitio de sobra
     const fila = await page.eval(`(() => { const li = [...document.querySelectorAll('.ladder-panel li, .ladder-panel .lp-card')].find(x => x.innerText.includes('Campeona')), pic = li.querySelector('img, canvas, svg'), r = li.getBoundingClientRect(), p = pic && pic.getBoundingClientRect(), panel = document.querySelector('.ladder-panel').getBoundingClientRect(); return { alto: r.height, cara: p ? p.width : 0, liga: li.innerText, panel: panel.height, ancho: panel.width, medalla: getComputedStyle(li.querySelector('i')).backgroundImage !== 'none' }; })()`);
     ok(fila.cara >= (touch ? 16 : 28), `${w}×${h}: la fila lleva la cara del entrenador (${fila.cara} px)`);

@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-04",
- "cazadas": 100,
- "total": 100,
+ "cazadas": 102,
+ "total": 102,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -708,6 +708,20 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✗ el panel dice en qué pantalla cierran el juego"
+  },
+  "gengar-de-cerca": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✗ Gastly, Haunter y Gengar llevan de básico Ácido"
+  },
+  "ladder-menu-solo-7": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/ladder-llena.e2e.js"
+   ],
+   "motivo": "ladder-llena.e2e.js: ✗ la Ladder del menú enseña a más de 7 entrenadores"
   }
  }
 }
