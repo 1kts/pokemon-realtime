@@ -1,4 +1,5 @@
 // En el menú se ve la ladder: el top 5 de Clasificatoria y tu puesto, sin entrar en ella; «Ver todo» la abre.
+// (Que la columna se llene y abajo salga «Tu posición» con el total lo prueba ladder-llena.e2e.js.)
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'Aspirante' });
   const rival = await player({ user: 'Campeona' });
