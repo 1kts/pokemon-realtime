@@ -1,4 +1,4 @@
-// El Camino de Historia se arrastra con el ratón, de lado, como con el dedo; soltar tras arrastrar no elige la tarjeta
+// El Camino de Historia (el mapa) se arrastra con el ratón, de lado, como con el dedo; soltar tras arrastrar no elige la tarjeta
 // sobre la que acabas, y un clic normal la sigue eligiendo.
 module.exports = async ({ page, player, ok }) => {
   const me = await player({ user: 'arrastre' });
