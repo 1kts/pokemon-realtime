@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-07",
- "cazadas": 106,
- "total": 106,
+ "cazadas": 107,
+ "total": 107,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -510,7 +510,7 @@
    "por": [
     "tools/server-test.js"
    ],
-   "motivo": "server-test.js: ✗ una ruleta entera son 120 gemas"
+   "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ una ruleta entera son 160 gemas: entrando a diario se completan unas dos de las tres por semana (1.27 con 343 gemas)"
   },
   "cuerpo-a-cuerpo-corto": {
    "resultado": "cazada",
@@ -750,6 +750,13 @@
     "tools/ai-test.js"
    ],
    "motivo": "ai-test.js: ✗ la IA reacciona a un disparo como una persona: no lo esquiva hasta pasado su tiempo de reacción (menos cuanto más difícil) | ✗ ai-test: 1 fallo(s)"
+  },
+  "ruletas-regaladas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ una ruleta entera son 160 gemas: entrando a diario se completan unas dos de las tres por semana (2.86 con 343 gemas)"
   }
  }
 }

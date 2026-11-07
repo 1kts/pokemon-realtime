@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.3 ----------
+    'Ruletas más valiosas': 'More valuable wheels',
+    'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: each full wheel costs 160 gems instead of 120. Now that they change every week, playing daily completes about two of the three: you choose which one to take.',
     // ---------- Novedades v0.43.2 ----------
     'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'The AI no longer dodges your shots the instant they leave: it takes time to react like a person, less the harder it is.',
     'Disparos más certeros': 'Sharper shots',

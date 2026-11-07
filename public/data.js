@@ -1611,10 +1611,10 @@
   // dinero y caramelos). Cada tirada da uno de los que faltan: lo más común sale más; lo conseguido sale
   // de la bolsa y el resto gana probabilidad; la décima tirada da el último, seguro. Cada tirada cuesta
   // más que la anterior. Al cambiar las ruletas, lo conseguido se queda y lo que faltaba se va.
-  // Gemas: quien entra cada día y hace sus misiones diarias saca en 2 semanas (lo que dura cada tanda de
-  // ruletas) unas 400 (premio diario ~100 + misiones y cofre diario ~310), y las 3 ruletas enteras cuestan
-  // 3 × 130 = 390 (SPIN_COST): todo desbloqueable jugando a diario. Las semanales, la Torre, el online, los
-  // líderes y los salvajes raros dan más y antes: cuanto más juegas, antes lo tienes.
+  // Gemas: quien entra cada día y hace sus diarias, sus semanales y una victoria online al día saca a la semana (lo que
+  // dura cada tanda de ruletas) unas 340, y cada ruleta entera cuesta 160 (SPIN_COST): unas dos de las tres a la semana
+  // (con 120 la ruleta se las llevaba casi todas y no había que elegir). La Torre, los líderes y los salvajes raros dan
+  // más: cuanto más juegas, más completas.
   const GEMS = { missionDaily: 4, missionWeekly: 10, chestDaily: 10, chestWeekly: 40, firstWin: 10, leader: 15, leaderAgain: 4, towerBlock: 20, league: 30, rareWild: 5, shiny: 25 };
   // Cambian cada semana, los lunes (antes cada 2): la época, para que la tanda que había (Cyndaquil, Chikorita y Totodile)
   // siga hasta el lunes 9 de noviembre y nadie pierda lo que llevaba
@@ -1626,8 +1626,8 @@
     epico: { w: 13, name: 'Épico', color: '#a35cff' }, legendario: { w: 6, name: 'Legendario', color: '#ffb21a' },
     mitico: { w: 3, name: 'Mítico', color: '#ff3d6e' },
   };
-  // Cada tirada, más cara (120 gemas la ruleta entera): entrando a diario salen 2 o 3 tiradas al día; jugando más, alguna más
-  const SPIN_COST = [5, 6, 8, 9, 10, 12, 14, 16, 18, 22];
+  // Cada tirada, más cara (160 gemas la ruleta entera)
+  const SPIN_COST = [6, 8, 10, 12, 14, 16, 18, 21, 25, 30];
   // Efecto dentro de la burbuja de los retratos, según el tipo; 'aurora' es el especial (prismático)
   const PORTRAIT_FX = { fuego: 'llamas', agua: 'burbujas', electrico: 'chispas', planta: 'hojas', bicho: 'hojas', hielo: 'copos',
     fantasma: 'sombras', siniestro: 'sombras', veneno: 'sombras', psiquico: 'estrellas', hada: 'estrellas', dragon: 'estrellas' };

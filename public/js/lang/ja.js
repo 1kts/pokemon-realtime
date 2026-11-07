@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.3 ----------
+    'Ruletas más valiosas': 'より価値のあるルーレット',
+    'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin：ルーレット1つを全部回すのに 120 ではなく 160 ジェムかかります。毎週入れ替わるようになったので、毎日遊べば3つのうち2つほど完成できます。どれを取るかはあなた次第です。',
     // ---------- Novedades v0.43.2 ----------
     'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'AI は撃った瞬間に避けなくなりました。人のように反応に時間がかかり、難しいほど速く反応します。',
     'Disparos más certeros': '当たりやすい射撃',

@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.43.3', date: '2026-11-07', title: 'Ruletas más valiosas',
+      items: [
+        ['cambio', 'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.'],
+      ],
+    },
+    {
       v: '0.43.2', date: '2026-11-07', title: 'Disparos más certeros',
       items: [
         ['cambio', 'Los ataques a distancia vuelan un 25 % más rápido y son algo más grandes, así que cuesta más esquivarlos; a cambio, los básicos recargan un poco más y hay menos cosas volando.'],

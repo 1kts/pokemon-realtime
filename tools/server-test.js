@@ -871,12 +871,12 @@ class Client {
     const dp = { coins: 0, gems: 0, items: {} };
     const l = daily.claim(dp, Date.UTC(2026, 9, 26, 12));
     ok(l.loot.gems === D.DAILY_LOGIN[0].gems && dp.gems === D.DAILY_LOGIN[0].gems && !('gems' in dp.items), 'el premio diario da gemas');
-    // Quien entra cada día y hace sus diarias junta en 2 semanas lo que cuestan las 3 ruletas enteras
-    const week = D.DAILY_LOGIN.reduce((n, d) => n + (d.gems || 0), 0);
-    const fortnight = 2 * week + 14 * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily);
-    const allWheels = 3 * D.SPIN_COST.reduce((a, b) => a + b, 0);
-    const perDay = fortnight / 14 / (allWheels / 3 / D.SPIN_COST.length);
-    ok(D.SPIN_COST.reduce((a, b) => a + b, 0) === 120 && perDay >= 2 && perDay <= 3, `una ruleta entera son 120 gemas: entrando a diario (premio diario y misiones diarias) salen 2 o 3 tiradas al día (${perDay.toFixed(2)})`);
+    // Quien entra cada día y hace sus diarias, sus semanales y gana uno online al día completa a la semana (lo que dura
+    // cada tanda) unas dos de las tres ruletas: tiene que elegir, pero la skin de la que más le gusta la saca seguro
+    const week = D.DAILY_LOGIN.reduce((n, d) => n + (d.gems || 0), 0) + 7 * (D.MISSION_COUNT * D.GEMS.missionDaily + D.GEMS.chestDaily + D.GEMS.firstWin)
+      + D.MISSION_COUNT * D.GEMS.missionWeekly + D.GEMS.chestWeekly;
+    const wheel = D.SPIN_COST.reduce((a, b) => a + b, 0), wheels = week / wheel;
+    ok(wheel === 160 && wheels >= 1.8 && wheels <= 2.4, `una ruleta entera son 160 gemas: entrando a diario se completan unas dos de las tres por semana (${wheels.toFixed(2)} con ${week} gemas)`);
   }
 
   // ---------- Premio del tutorial: una sola vez ----------

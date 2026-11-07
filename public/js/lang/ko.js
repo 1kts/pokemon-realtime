@@ -12,6 +12,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.3 ----------
+    'Ruletas más valiosas': '더 가치 있는 룰렛',
+    'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: 룰렛 하나를 모두 돌리는 데 120 대신 160 젬이 듭니다. 이제 매주 바뀌므로, 매일 접속하면 세 개 중 두 개 정도를 완성할 수 있습니다. 어떤 것을 가질지 직접 고르세요.',
     // ---------- Novedades v0.43.2 ----------
     'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'AI가 더 이상 발사한 순간에 바로 피하지 않습니다. 사람처럼 반응하는 데 시간이 걸리며, 난이도가 높을수록 빨라집니다.',
     'Disparos más certeros': '더 정확한 사격',

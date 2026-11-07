@@ -11,6 +11,9 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.43.3 ----------
+    'Ruletas más valiosas': 'Des roues plus précieuses',
+    'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin : chaque roue complète coûte 160 gemmes au lieu de 120. Maintenant qu\'elles changent chaque semaine, en jouant tous les jours tu en complètes environ deux sur trois : à toi de choisir laquelle.',
     // ---------- Novedades v0.43.2 ----------
     'La IA ya no esquiva tus disparos en el mismo instante: tarda en reaccionar como una persona, menos cuanto más difícil es.': 'L\'IA n\'esquive plus tes tirs à l\'instant où ils partent : elle met du temps à réagir, comme une personne, et moins c\'est difficile, plus elle est lente.',
     'Disparos más certeros': 'Des tirs plus précis',
