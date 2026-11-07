@@ -4,6 +4,15 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.44.1', date: '2026-11-07', title: 'Torre y móvil, más claros',
+      items: [
+        ['cambio', 'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).'],
+        ['arreglo', 'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.'],
+        ['arreglo', 'Misiones: las semanales ya no dejan un hueco bajo el premio diario.'],
+        ['arreglo', 'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.'],
+      ],
+    },
+    {
       v: '0.44.0', date: '2026-11-07', title: 'Avisos al móvil',
       items: [
         ['nuevo', 'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.'],

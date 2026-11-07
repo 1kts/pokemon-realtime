@@ -622,6 +622,9 @@ button.icon { padding: 4px 9px; font-size: 14px; }
 .tower-head { display: flex; gap: 18px; align-items: center; }
 .tower-head .streak { display: flex; flex-direction: column; align-items: center; min-width: 110px; padding: 8px 14px; border-radius: 14px; background: rgba(0,0,0,.28); border: 1px solid var(--line); }
 .tower-head .streak b { font: 54px/1 var(--display); color: var(--yellow); text-shadow: 0 4px 0 rgba(0,0,0,.35); }
+.tower-head .retire-top { margin-left: auto; align-self: flex-start; padding: 6px 14px; font-size: 14px; }
+.tower-team .tcard .tmoves { display: block; margin-top: 2px; font: 600 12px var(--text); color: #b9c6e0; }
+.tower-moves-hint { margin: -2px 0 4px; }
 .tower-head .block b { font: 20px var(--display); }
 .tower-head .block small { color: var(--muted); }
 .tdots { display: flex; gap: 6px; margin: 8px 0 4px; }
@@ -1172,7 +1175,10 @@ button.buy:disabled { background: rgba(255,255,255,.08); box-shadow: none; color
 .mw-sub { margin: 4px 2px 0; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
 .mw-sub:first-child { margin-top: 0; }
 .missions-view { display: flex; flex-direction: column; min-height: 100%; }
-.mv-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; overflow: auto; padding-bottom: 20px; }
+/* (en columnas que se llenan seguidas, como un periódico: antes era una cuadrícula y las semanales empezaban debajo de lo
+   más alto de la otra columna, con un hueco bajo el premio diario) */
+.mv-body { display: block; columns: 320px 2; column-gap: 14px; overflow: auto; padding-bottom: 20px; }
+.mv-body > * { break-inside: avoid; margin: 0 0 14px; }
 .missions { display: flex; flex-direction: column; gap: 8px; }
 .missions .m-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .missions .m-head h3 { margin: 0; }

@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': 'タワーとスマホ表示を改善',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'バトルタワー：「リタイア」が連勝数の横、上部に移動。チームの各ポケモンの技も表示（自分のポケモンは「マイポケモン」で連勝中でも変更可能）。',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': 'スマホでタワーのランキングが正しく表示：アバターが収まり、4位も1行に。',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': 'ミッション：ウィークリーがデイリー報酬の下に隙間を作らなくなりました。',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': 'スマホのストーリー：道が高さいっぱいに広がり、カードが大きく、下の空白もなくなりました。',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': '自分のポケモンは「マイポケモン」で設定した技を使います。連勝中でも変更可能。レンタルは固定の技です。',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': 'スマホへの通知',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'プレイしていなくてもスマホやPCに通知：デイリー報酬、新しいルーレット、伝説…「通知する」か設定でオンに。1日1件まで、夜間は送りません。',

@@ -530,7 +530,15 @@
   .tower-board { max-height: calc(100dvh - 110px); min-height: 0; }
   .tower-board h3 { font-size: 14px; }
   .tower-board .podium { display: flex; flex-direction: column; gap: 4px; }
-  .tower-board .pod-card { flex-direction: row; padding: 4px 6px 4px 26px !important; }
+  .tower-board .pod-card { flex-direction: row; gap: 6px; padding: 4px 8px 4px 26px !important; }
+  /* (el podio en la columna estrecha: avatar pequeño, sin rayos ni destellos, y el nombre con sitio) */
+  .tower-board .pod-rays, .tower-board .pod-halo, .tower-board .pod-sparks, .tower-board .pod-crown { display: none; }
+  .tower-board .pod-who { min-width: 0; flex: 1; }
+  .tower-board .pod-name { font-size: 13px; }
+  .tower-board .pod-val b { font-size: 20px; }
+  .tower-board li { grid-template-columns: 18px 1fr auto; gap: 6px; padding: 4px 0; }
+  .tower-board li .pos { font-size: 12px; }
+  .tower-board li .who b { font-size: 13px; }
   .tower-board .pod-card small, .tower-board li small { display: none; }
   .tower-side > button { padding: 6px 8px; font-size: 12px; }
   .tower-main { min-width: 0; gap: 6px; padding: 10px 12px; }
@@ -772,6 +780,10 @@
   .story-path { --gw: 84px; --gh: 104px; --nw: 104px; --nh: 126px; --rw: 92px; --rh: 70px; --road: 10px; --nm: 10px; --goh: 26px; --stopm: 4px; padding: 4px 14px 2px; }
   /* (con algo más de alto, el Camino más grande: que llene su panel en vez de dejar una franja vacía abajo) */
   @media (min-height: 385px) { .story-path { --gw: 92px; --gh: 113px; --nw: 113px; --nh: 137px; --rw: 100px; --rh: 76px; --road: 11px; } }
+  /* (y con más aún, como el móvil con el juego instalado, a pantalla completa: ~412 px) */
+  @media (min-height: 405px) { .story-path { --gw: 100px; --gh: 124px; --nw: 122px; --nh: 148px; --rw: 112px; --rh: 86px; --road: 12px; padding-bottom: 16px; } }
+  .story-side { margin: 0 !important; }   /* (la franja de abajo, justo bajo el Camino: sin una banda vacía en medio) */
+  .story-pathwrap { align-self: stretch; }
   .story-body { gap: 6px; }   /* (un poco de aire entre el Camino y la franja de abajo) */
   /* Los Pokémon de la ruta en la barra de abajo: más grandes y con su probabilidad debajo */
   .story-side .node-info:not(.open) > .mini-team:not(.team-head ~ *) { gap: 4px; }

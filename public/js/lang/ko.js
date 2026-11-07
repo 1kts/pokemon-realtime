@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': '더 깔끔해진 타워와 모바일',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': '배틀타워: “기권”이 위쪽 연승 옆으로 이동했고, 팀의 각 포켓몬이 기술을 보여 줘요(내 포켓몬은 연승 중에도 내 포켓몬에서 변경 가능).',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': '모바일에서 타워 랭킹이 제대로 보여요: 아바타가 맞게 들어가고 4위도 한 줄에.',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': '미션: 주간 미션이 일일 보상 아래에 빈 공간을 남기지 않아요.',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': '모바일 스토리: 길이 높이를 꽉 채우고, 카드가 더 커지고 아래 빈 줄이 없어졌어요.',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': '내 포켓몬은 내 포켓몬에서 설정한 기술을 써요: 연승 중에도 바꿀 수 있어요. 대여 포켓몬은 자기 기술을 써요.',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': '휴대폰 알림',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': '게임을 하지 않아도 휴대폰이나 PC로 알림: 일일 보상, 새 룰렛, 전설… “알려줘” 또는 설정에서 켜세요. 하루 최대 한 번, 밤에는 보내지 않아요.',

@@ -1103,12 +1103,12 @@ export const accountViews = {
 
   // Podio de un ranking: los 3 primeros en tarjetas grandes (oro, plata y bronce) con su avatar, su marco, su título
   // y su marca; value(r) da [cifra grande, texto pequeño]. Los de la IA, con el sprite de su clase
-  podium(rows, value) {
+  podium(rows, value, sizes = [84, 68, 58]) {
     const box = el('div', 'podium');
     rows.slice(0, 3).forEach((r, i) => {
       const card = el('button', `pod-card p${i + 1}${r.id === this.profile.id ? ' me' : ''}`);
       // Su avatar entero (animado, con marco, brillo y efecto), más grande cuanto más arriba; corona al primero
-      const size = [84, 68, 58][i];
+      const size = sizes[i];
       const pic = r.npcKey ? el('div', 'pod-npc', trainerImg(r.npcKey)) : this.avatar(size, true, undefined, undefined, undefined, r);
       pic.style.setProperty('--s', size + 'px');
       if (i === 0) pic.insertAdjacentHTML('beforeend', '<i class="pod-crown">♛</i>');

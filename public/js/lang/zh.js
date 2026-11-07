@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': '对战塔与手机界面更清晰',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': '对战塔：“撤退”移到上方连胜旁，队伍中每只宝可梦都会显示招式（你自己的可在“我的宝可梦”中更改，连胜中也可以）。',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': '手机上的对战塔排行榜显示正常：头像大小合适，第 4 名也在自己的一行。',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': '任务：每周任务不再在每日奖励下方留出空白。',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': '手机上的故事模式：路线占满高度，卡片更大，底部不再留白。',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': '你的宝可梦会使用在“我的宝可梦”中设置的招式，连胜中也能更改。租借的使用自己的招式。',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': '手机通知',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': '不玩游戏时也能在手机或电脑上收到通知：每日奖励、新转盘、传说……点击“提醒我”或在设置中开启。每天最多一条，夜间不打扰。',

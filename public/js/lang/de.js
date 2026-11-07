@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': 'Turm und Handy übersichtlicher',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Kampfturm: „Aufgeben“ steht jetzt oben neben der Serie, und jedes Pokémon im Team zeigt seine Attacken (deine änderst du unter Meine Pokémon, auch mitten in der Serie).',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': 'Auf dem Handy sieht die Turm-Rangliste richtig aus: Avatare passen und Platz 4 steht in seiner Zeile.',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': 'Missionen: Die wöchentlichen lassen keine Lücke mehr unter der Tagesbelohnung.',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': 'Story auf dem Handy: Der Weg nutzt die ganze Höhe, mit größeren Karten und ohne leeren Streifen unten.',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': 'Deine Pokémon nutzen die Attacken aus Meine Pokémon: Du kannst sie auch mitten in der Serie ändern. Leih-Pokémon haben ihre eigenen.',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': 'Benachrichtigungen aufs Handy',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Benachrichtigungen aufs Handy oder den PC, auch ohne zu spielen: Tagesbelohnung, neue Räder, Legendäre … Aktivieren mit „Erinnere mich“ oder in den Einstellungen. Max. eine am Tag, nie nachts.',

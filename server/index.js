@@ -634,6 +634,7 @@ function handle(c, msg) {
     if (msg.item && D.SHOP.find(i => i.id === msg.item)) p.items[msg.item] = (p.items[msg.item] || 0) + (msg.qty | 0 || 1);
     if (D.SPECIES[msg.dex]) story.devAddMon(p, msg.dex, msg.level | 0 || 5, !!msg.shiny, msg.region, msg.xp);   // (xp: la que ya lleva hacia el siguiente nivel)
     if (Number.isInteger(msg.towerStreak) && p.tower && p.tower.team) { p.tower.streak = msg.towerStreak; p.tower.next = null; }
+    if (Number.isInteger(msg.towerBest)) { tower.view(p); p.tower.best = msg.towerBest; p.tower.bestAt = Date.now(); p.tower.bestTeam = [{ dex: 3 }, { dex: 6 }, { dex: 9 }]; }   // (récord de la Torre, para los rankings)
     if (msg.daily && typeof msg.daily.last === 'string') p.daily = { last: msg.daily.last, streak: msg.daily.streak | 0 };
     if (msg.tutorial === false) delete p.tutorial;
     if (msg.mastery && D.SPECIES[msg.mastery.dex] && Number.isInteger(msg.mastery.wins)) { rewards.migrate(p); p.mastery[D.lineOf(msg.mastery.dex)] = msg.mastery.wins; }

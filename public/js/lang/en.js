@@ -11,6 +11,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': 'Clearer Tower and mobile',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Battle Tower: “Retire” is now at the top, next to your streak, and each team Pokémon shows its moves (yours are changed in My Pokémon, even mid-streak).',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': 'On mobile, the Tower ranking looks right: avatars fit and 4th place sits in its own row.',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': 'Missions: weekly missions no longer leave a gap under the daily reward.',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': 'Story on mobile: the path uses the full height, with bigger cards and no empty strip at the bottom.',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': 'Your Pokémon use the moves they have in My Pokémon: you can change them even mid-streak. Rentals use their own.',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': 'Phone notifications',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Notifications on your phone or PC even when you are not playing: daily reward, new wheels, legendaries… Turn them on with “Notify me” or in Settings. At most one a day, never at night.',

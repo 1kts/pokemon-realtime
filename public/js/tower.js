@@ -142,6 +142,13 @@ export const towerViews = {
     }).join('');
     head.append(el('div', 'block', `<b>${t('Bloque {n}', { n: tw.block })}</b> · ${t('combate {n} de {total}', { n: tw.inBlock, total: BLOCK })}<div class="tdots">${dots}</div>
       <small>${tw.next && tw.next.brain ? t('¡Te espera el Cerebro de la Frontera!') : t('Cerebro de la Frontera dentro de {n} combates', { n: tw.toBrain + 1 })}</small>`));
+    // Acabar la racha: arriba, a la vista (en el móvil, abajo del todo no se veía), y con confirmación
+    const retire = el('button', 'danger retire-top', t('Retirarse'));
+    retire.onclick = () => {
+      const msg = !tw.streak ? t('¿Retirarte? Podrás elegir otro equipo.') : tw.streak >= tw.best ? t('¿Retirarte? Tu racha de {n} queda guardada como tu récord y podrás empezar otra con otro equipo.', { n: tw.streak }) : t('¿Retirarte? Tu racha de {n} queda guardada y podrás empezar otra con otro equipo.', { n: tw.streak });
+      confirmBox({ title: t('Retirarse'), text: msg, ok: t('Retirarse'), danger: true }).then(yes => yes && this.net.send({ t: 'tower', a: 'retire' }));
+    };
+    head.append(retire);
     box.append(head);
     // Siguiente rival
     if (tw.next) {
@@ -153,13 +160,16 @@ export const towerViews = {
       box.append(foe);
     }
     // Tu equipo: se puede reordenar (el primero sale al empezar)
-    box.append(el('h4', '', `${t('Tu equipo')} <small class="small">· ${t('el primero sale al empezar')}</small>`));
+    box.append(el('h4', '', `${t('Tu equipo')} <small class="small">· ${t('el primero sale al empezar')}</small>`),
+      el('p', 'small tower-moves-hint', t('Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.')));
     const team = el('div', 'tower-team');
     tw.team.forEach((e, i) => {
       const m = e.uid && p.mons.find(x => x.uid === e.uid);
       const dex = m ? m.dex : e.dex;
       const c = el('div', 'tcard');
-      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: Data.looksShiny(m) }), el('div', '', `<b>${m ? monLabel(m) : SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small>`));
+      // (con los movimientos que llevará: los suyos, si es tuyo; los de siempre, si es de alquiler)
+      const moves = [...new Set([...((m && m.moves) || []), ...Data.defaultMoves(dex, LEVEL)])].filter(k => Data.MOVES[k]).slice(0, 4);
+      c.append(el('span', 'slot', String(i + 1)), portrait(dex, 64, { shiny: Data.looksShiny(m) }), el('div', '', `<b>${m ? monLabel(m) : SPECIES[dex].name}${m && m.shiny ? ' ✦' : ''}</b><div class="types">${typeChips(dex)}</div><small class="small">${m ? t('tuyo') : t('alquiler')} · ${lv(LEVEL)}</small><small class="tmoves">${moves.map(k => escapeHtml(Data.MOVES[k].name)).join(' · ')}</small>`));
       const move = (d) => {
         const order = [0, 1, 2];
         [order[i], order[i + d]] = [order[i + d], order[i]];
@@ -176,14 +186,9 @@ export const towerViews = {
     });
     box.append(team);
     const acts = el('div', 'acts tower-acts');
-    const retire = el('button', 'danger', t('Retirarse'));
-    retire.onclick = () => {
-      const msg = !tw.streak ? t('¿Retirarte? Podrás elegir otro equipo.') : tw.streak >= tw.best ? t('¿Retirarte? Tu racha de {n} queda guardada como tu récord y podrás empezar otra con otro equipo.', { n: tw.streak }) : t('¿Retirarte? Tu racha de {n} queda guardada y podrás empezar otra con otro equipo.', { n: tw.streak });
-      confirmBox({ title: t('Retirarse'), text: msg, ok: t('Retirarse'), danger: true }).then(yes => yes && this.net.send({ t: 'tower', a: 'retire' }));
-    };
     const fight = el('button', 'primary', tw.streak ? t('Combate {n}', { n: tw.n }) : t('¡Primer combate!'));
     fight.onclick = () => this.towerBattle();
-    acts.append(retire, fight);
+    acts.append(fight);
     box.append(acts);
     return box;
   },
@@ -454,14 +459,17 @@ export const towerViews = {
     if (!box) return;
     box.innerHTML = `<h3>${t('Ranking de la Torre')}</h3>`;
     if (!msg.rows.length) return box.append(el('p', 'small', t('Todavía nadie ha ganado un combate en la Torre. ¡Sé el primero!')));
-    box.append(this.podium(msg.rows, r => [r.best, `${t('Mejor racha')}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}`]));
+    // (en el móvil en horizontal la columna es estrecha: el podio, con avatares pequeños para que quepa el nombre)
+    const narrow = matchMedia('(max-height: 500px)').matches;
+    box.append(this.podium(msg.rows, r => [r.best, `${t('Mejor racha')}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}`], narrow ? [32, 30, 30] : undefined));
     const ol = el('ol');
     ol.start = 4;
-    for (const r of msg.rows.slice(3, 10)) {
-      const li = el('li', 'clickable' + (r.id === this.profile.id ? ' me' : ''), `<b>${this.rowFace(r, 26)}${tagName(r.name, r.tag)}</b><span>${r.best}</span><small>${r.streak ? t('en racha: {n}', { n: r.streak }) : ''}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}</small>`);
+    msg.rows.slice(3, 10).forEach((r, i) => {
+      // (como las filas de la ladder del menú: puesto, cara y nombre, y su cifra)
+      const li = el('li', 'clickable' + (r.id === this.profile.id ? ' me' : ''), `<span class="pos">${i + 4}</span><span class="who">${this.rowFace(r, 26)}<b>${tagName(r.name, r.tag)}</b></span><span class="pts">${r.best}<small>${r.streak ? t('en racha: {n}', { n: r.streak }) : ''}${r.symbols.length ? ' ' + r.symbols.map(s => s.includes('Oro') ? '🥇' : '🥈').join('') : ''}</small></span>`);
       li.onclick = () => this.userModal(r.id);
       ol.append(li);
-    }
+    });
     box.append(ol);
     if (msg.me && msg.me.rank > 10) box.append(el('p', 'small', t('Tú: puesto {n} de {total}', { n: msg.me.rank, total: msg.total })));
   },

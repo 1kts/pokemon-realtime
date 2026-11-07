@@ -12,6 +12,13 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.1 ----------
+    'Torre y móvil, más claros': 'Torre e mobile più chiari',
+    'Torre Batalla: «Retirarse» arriba, junto a la racha, y cada Pokémon del equipo enseña sus movimientos (los tuyos se cambian en Mis Pokémon, también a mitad de racha).': 'Torre Lotta: «Ritirati» è in alto, accanto alla serie, e ogni Pokémon della squadra mostra le sue mosse (le tue si cambiano in I miei Pokémon, anche a metà serie).',
+    'En el móvil, el ranking de la Torre se ve bien: avatares que caben y el 4.º puesto en su fila.': 'Su mobile la classifica della Torre si vede bene: gli avatar ci stanno e il 4° posto ha la sua riga.',
+    'Misiones: las semanales ya no dejan un hueco bajo el premio diario.': 'Missioni: le settimanali non lasciano più un vuoto sotto il premio giornaliero.',
+    'Historia en el móvil: el Camino aprovecha el alto, con tarjetas más grandes y sin una franja vacía abajo.': 'Storia su mobile: il percorso usa tutta l\'altezza, con carte più grandi e senza una striscia vuota in basso.',
+    'Los movimientos de los tuyos son los que tengan en Mis Pokémon: se pueden cambiar también a mitad de racha. Los de alquiler llevan los suyos.': 'I tuoi Pokémon usano le mosse che hanno in I miei Pokémon: puoi cambiarle anche a metà serie. Quelli a noleggio usano le loro.',
     // ---------- Novedades v0.44.0 ----------
     'Avisos al móvil': 'Notifiche sul telefono',
     'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Notifiche sul telefono o sul PC anche senza giocare: premio giornaliero, nuove ruote, leggendari… Attivale con «Avvisami» o nelle Impostazioni. Al massimo una al giorno, mai di notte.',
