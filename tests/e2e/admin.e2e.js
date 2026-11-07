@@ -75,6 +75,18 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.click('[data-tab=jugadores]');
   await page.waitFor(`document.querySelectorAll('#results tr.click').length >= 2`);
   ok(await page.eval(`/perfiles en total/.test(document.querySelector('#results').textContent)`), 'Jugadores: al entrar sale la lista de todos, con cuántas cuentas e invitados hay');
+  // Actualizar sin perder la sesión: con el botón y con F5 (antes F5 recargaba la página y había que volver a entrar con el código)
+  await player({ name: 'Recienllegada' });
+  await new Promise(r => setTimeout(r, 300));
+  ok(!await page.see('Recienllegada', { in: '#results', ms: 0 }), 'quien entra después no sale en la lista hasta actualizar');
+  await page.tap('Actualizar');
+  await page.waitSee('Recienllegada', { in: '#results' });
+  ok(true, 'el botón Actualizar trae a quien acaba de entrar');
+  await player({ name: 'Otraquellega' });
+  await new Promise(r => setTimeout(r, 300));
+  await page.key('F5');
+  await page.waitSee('Otraquellega', { in: '#results' });
+  ok(await page.see('Cerrar sesión') && !await page.see('Código de la app', { ms: 0 }), 'F5 actualiza los datos y sigue dentro: no pide otra vez el código');
   await page.type('#search [name=q]', 'gamber');
   await page.key('Enter');
   await page.waitFor(`document.querySelector('#results tr.click') && /Gamberro/.test(document.querySelector('#results').innerText)`);

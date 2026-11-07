@@ -72,13 +72,13 @@ $('#logout').addEventListener('click', () => ws.send(JSON.stringify({ t: 'admin.
 
 // ---------- Pestañas ----------
 let current = 'resumen';
-function show(tab) {
+function show(tab, force) {
   current = tab;
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('sel', b.dataset.tab === tab);
   for (const s of document.querySelectorAll('.tab')) s.hidden = s.id !== tab;
   if (tab === 'resumen') overview();
-  if (tab === 'auditoria' && !$('#audit tbody').children.length) loadAudit();
-  if (tab === 'jugadores' && !$('#results').children.length) loadPlayers();
+  if (tab === 'auditoria' && (force || !$('#audit tbody').children.length)) loadAudit();
+  if (tab === 'jugadores' && (force || !$('#results').children.length)) loadPlayers();
   if (tab === 'servidor') { overview(true); loadFlags(); }
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
@@ -88,6 +88,20 @@ function show(tab) {
   if (tab === 'economia') loadEconomy();
 }
 for (const b of document.querySelectorAll('#tabs button')) b.addEventListener('click', () => show(b.dataset.tab));
+// Actualizar: vuelve a pedir los datos de la pestaña por la misma conexión. Recargar la página cerraba la sesión (va
+// con la conexión), así que F5 y Ctrl+R, con la sesión abierta, hacen esto en vez de recargar
+function refresh() {
+  if (!logged) return;
+  show(current, true);
+  const b = $('#refresh');
+  b.textContent = '✓ Actualizado';
+  clearTimeout(refresh.t);
+  refresh.t = setTimeout(() => { b.textContent = '↻ Actualizar'; }, 1200);
+}
+$('#refresh').addEventListener('click', refresh);
+addEventListener('keydown', e => {
+  if (logged && (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'r' && !e.shiftKey))) { e.preventDefault(); refresh(); }
+});
 // El resumen se actualiza solo cada 5 s mientras se mira
 setInterval(() => { if (logged && current === 'resumen' && !document.hidden) overview(); }, 5000);
 

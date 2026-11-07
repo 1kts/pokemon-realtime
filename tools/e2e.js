@@ -35,7 +35,7 @@ function findChrome() {
 const PATIENCE = Math.max(1, (+process.env.E2E_TIMEOUT || 300) / 300);
 // Teclas con nombre para page.key: [key, código de tecla]
 const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13, '\r'], Space: [' ', 32], Tab: ['Tab', 9], Backspace: ['Backspace', 8],
-  ArrowLeft: ['ArrowLeft', 37], ArrowUp: ['ArrowUp', 38], ArrowRight: ['ArrowRight', 39], ArrowDown: ['ArrowDown', 40] };
+  ArrowLeft: ['ArrowLeft', 37], ArrowUp: ['ArrowUp', 38], ArrowRight: ['ArrowRight', 39], ArrowDown: ['ArrowDown', 40], F5: ['F5', 116] };
 const freePort = () => new Promise(r => { const s = net.createServer().listen(0, () => { const p = s.address().port; s.close(() => r(p)); }); });
 
 async function waitHttp(url, ms = 10000) {
