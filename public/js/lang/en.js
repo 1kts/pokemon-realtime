@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': 'Gyms with more flair',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'New mechanics: on the Volcano the ground cracks into lava, Arena Verde has quicksand, and the Stadium has bumpers that bounce you and attacks.',
+    '¡Te hundes! Muévete para salir de la arena': 'You\'re sinking! Move to get out of the sand',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': 'Full names',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Story on mobile: the names of locked gyms (like Lt. Surge) are no longer cut off.',
@@ -1218,7 +1222,7 @@ export default {
     'Impactos alrededor del cursor': 'Impacts around the cursor',
     'Cono delante de ti': 'Cone in front of you',
     'Ola que avanza': 'Advancing wave',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Earthquakes: a wave sweeps the arena from the epicentre. Hide behind a rock (the green zone) or use Protect; Flying types aren\'t affected.',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': 'Earthquakes: a wave crosses the arena from the epicenter. Hide behind a rock (the green zone) or use Protect; Flying types aren\'t affected. Quicksand slows you down and, if you stand still in it, pulls you under.',
     '¡Terremoto! Ponte detrás de una roca': 'Earthquake! Get behind a rock',
     '¡A cubierto!': 'Covered!',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'Their team is carefully raised: perfect IVs and training in every stat.',
@@ -1475,14 +1479,14 @@ export default {
     'Sala Azafrán': 'Saffron Hall',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': 'Paired teleport tiles: step on one and you appear on its partner.',
     'Volcán Canela': 'Cinnabar Volcano',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': 'Lava burns. When a lava pool gets marked, it\'s about to erupt: get away.',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': 'Lava burns. When a lava pool gets marked, it\'s about to erupt: get away. And the ground cracks: where it gets marked, lava bursts out for a while.',
     'Arena Verde': 'Viridian Arena',
     'Torre Malva': 'Violet Tower',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Gusts of wind that drag you sideways. Flying types aren\'t affected.',
     'Invernadero Azalea': 'Azalea Greenhouse',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Cobwebs that slow you down (except Bug types) and grass that grows back. Fire burns them.',
     'Estadio Trigal': 'Goldenrod Stadium',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': 'Healing tiles: stand on them to heal while they have energy left. Then they take a while to recharge.',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Healing tiles: heal on them while they have energy left. Then they take a while to recharge. Bumpers bounce away anyone who touches them, and ranged attacks too.',
     'Torre Iris': 'Tin Tower',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Darkness: you only see your opponent up close or right when it attacks.',
     'Sala Nocturna': 'Night Hall',

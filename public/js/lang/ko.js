@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': '더 개성 있는 체육관',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '새 기믹: 화산에선 땅이 갈라져 용암이 되고, 상록 아레나엔 유사가, 경기장엔 나와 공격을 튕겨내는 범퍼가 있어요.',
+    '¡Te hundes! Muévete para salir de la arena': '빠져들고 있어요! 움직여서 모래에서 나오세요',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': '이름 전체 표시',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': '모바일 스토리: 잠긴 체육관(마티스 등)의 이름이 더 이상 잘리지 않아요.',
@@ -1365,16 +1369,16 @@ export default {
     'Sala Azafrán': '노랑 홀',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': '두 장씩 짝을 이룬 순간이동 타일: 밟으면 짝 타일로 이동한다.',
     'Volcán Canela': '홍련 화산',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': '용암은 화상을 입힌다. 용암 웅덩이에 표시가 생기면 곧 분화한다: 피하자.',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': '용암은 화상을 입혀요. 용암 웅덩이가 표시되면 곧 분출해요: 피하세요. 땅도 갈라져요: 표시된 곳에서 잠시 용암이 솟아요.',
     'Arena Verde': '상록 아레나',
     'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': '지진: 진원지에서 파동이 아레나를 휩쓴다. 방어로 막을 수 있고 비행 타입은 괜찮다.',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': '지진: 진원지에서 파동이 아레나를 휩쓴다. 바위 뒤(초록색 범위)에 숨거나 방어를 쓰자. 비행 타입은 괜찮다.',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': '지진: 진원지에서 파동이 아레나를 가로질러요. 바위 뒤(초록 영역)에 숨거나 방어를 쓰세요. 비행 타입은 영향을 받지 않아요. 유사는 느려지게 하고, 그 안에서 가만히 있으면 빠져들어요.',
     'Torre Malva': '도라지 탑',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '옆으로 밀어내는 돌풍. 비행 타입은 괜찮다.',
     'Invernadero Azalea': '고동 온실',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '움직임을 늦추는 거미줄(벌레 타입 제외)과 다시 자라는 풀. 불로 태울 수 있다.',
     'Estadio Trigal': '금빛 스타디움',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': '회복 타일: 에너지가 남아 있는 동안 위에서 회복할 수 있다. 다 쓰면 한동안 충전한다.',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '회복 타일: 에너지가 남아 있는 동안 위에서 회복해요. 그 후엔 재충전에 시간이 걸려요. 범퍼는 닿은 상대를 튕겨내고, 원거리 공격도 튕겨내요.',
     'Torre Iris': '방울탑',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': '어둠: 상대는 가까이 있거나 공격할 때만 보인다.',
     'Sala Nocturna': '밤의 홀',

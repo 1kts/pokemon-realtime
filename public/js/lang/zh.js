@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': '更有特色的道馆',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '新机制：火山的地面会裂成熔岩，常青场地有流沙，体育场有能弹开你和攻击的弹射柱。',
+    '¡Te hundes! Muévete para salir de la arena': '你在下沉！快移动离开流沙',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': '名称完整显示',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': '手机上的故事模式：未解锁道馆的名称（如马志士）不再被截断。',
@@ -1340,14 +1344,14 @@ export default {
     'Sala Azafrán': '金黄大厅',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': '成对的传送地砖：踩上一块就会出现在另一块上。',
     'Volcán Canela': '红莲火山',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': '熔岩会灼伤。熔岩池被标记时即将喷发：快离开。',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': '熔岩会灼伤。熔岩池被标记时即将喷发：快离开。地面也会裂开：被标记的地方会涌出熔岩一段时间。',
     'Arena Verde': '常青竞技场',
     'Torre Malva': '桔梗塔',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '把你吹向一侧的狂风。飞行属性不受影响。',
     'Invernadero Azalea': '桧皮温室',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '让人减速的蛛网（虫属性除外）和会重新长出的草。火可以烧掉它们。',
     'Estadio Trigal': '满金体育场',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': '回复地砖：站在上面就能回复，直到能量耗尽，之后要过一会儿才会恢复。',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '治疗地块：在能量耗尽前站在上面回复体力，之后需要一段时间充能。弹射柱会把碰到的人弹开，远程攻击也会被弹开。',
     'Torre Iris': '铃铛塔',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': '黑暗：只有靠近或对手攻击时才能看见它。',
     'Sala Nocturna': '暗夜大厅',
@@ -1466,7 +1470,7 @@ export default {
     'Impactos alrededor del cursor': '光标周围的多次冲击',
     'Cono delante de ti': '前方扇形范围',
     'Ola que avanza': '向前推进的波浪',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': '地震：冲击波从震中扫过整个场地。躲到岩石后面（绿色区域）或使用守住；飞行属性不受影响。',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': '地震：震波从震中扫过整个场地。躲到岩石后面（绿色区域）或使用守住；飞行属性不受影响。流沙会减速，如果在里面一动不动就会陷下去。',
     '¡Terremoto! Ponte detrás de una roca': '地震！快躲到岩石后面',
     '¡A cubierto!': '躲过了！',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': '其队伍经过精心培育：个体值完美，所有能力都经过训练。',

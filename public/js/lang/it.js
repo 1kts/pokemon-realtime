@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': 'Palestre con più carattere',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Nuove meccaniche: nel Vulcano il terreno si spacca in lava, l\'Arena Verde ha sabbie mobili e lo Stadio respingenti che fanno rimbalzare te e gli attacchi.',
+    '¡Te hundes! Muévete para salir de la arena': 'Stai sprofondando! Muoviti per uscire dalla sabbia',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': 'Nomi interi',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Storia su mobile: il nome delle palestre bloccate (come Lt. Surge) non è più tagliato.',
@@ -1365,16 +1369,16 @@ export default {
     'Sala Azafrán': 'Sala di Zafferanopoli',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': 'Piastrelle di teletrasporto a coppie: calpestane una e appari sulla sua gemella.',
     'Volcán Canela': 'Vulcano di Isola Cannella',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': 'La lava scotta. Quando una pozza di lava viene segnata, sta per eruttare: allontanati.',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': 'La lava brucia. Quando una pozza di lava viene segnata, sta per eruttare: allontanati. E il terreno si spacca: dove viene segnato, esce lava per un po\'.',
     'Arena Verde': 'Arena di Smeraldopoli',
     'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': 'Terremoti: un\'onda percorre l\'arena dall\'epicentro. Protezione la ferma e i tipi Volante non ne risentono.',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Terremoti: un\'onda percorre l\'arena dall\'epicentro. Nasconditi dietro una roccia (la zona verde) o usa Protezione; i tipi Volante non ne risentono.',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': 'Terremoti: un\'onda attraversa l\'arena dall\'epicentro. Nasconditi dietro una roccia (la zona verde) o usa Protezione; i tipi Volante non ne risentono. Le sabbie mobili rallentano e, se resti fermo dentro, ti risucchiano.',
     'Torre Malva': 'Torre di Violapoli',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Raffiche di vento che ti trascinano di lato. I tipi Volante non ne risentono.',
     'Invernadero Azalea': 'Serra di Azalina',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Ragnatele che rallentano (tranne i tipi Coleottero) ed erba che ricresce. Il fuoco le brucia.',
     'Estadio Trigal': 'Stadio di Fiordoropoli',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': 'Piastrelle curative: curati sopra finché hanno energia. Poi impiegano un po\' a ricaricarsi.',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Piastrelle curative: curati sopra finché hanno energia. Poi ci mettono un po\' a ricaricarsi. I respingenti fanno rimbalzare chi li tocca, e anche gli attacchi a distanza.',
     'Torre Iris': 'Torre Campana',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Oscurità: vedi l\'avversario solo da vicino o proprio quando attacca.',
     'Sala Nocturna': 'Sala Notturna',

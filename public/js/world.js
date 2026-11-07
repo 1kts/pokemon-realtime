@@ -4,7 +4,7 @@
 // elementos propios: placas eléctricas, teletransportes, baldosas de curación, faro, cascadas...
 import * as THREE from 'three';
 import { buildScenery, preloadScenery, WIND, mat } from './scenery.js';
-import { buildMechProps, pillarMesh } from './arenamech.js';
+import { bumperMesh, buildMechProps, pillarMesh } from './arenamech.js';
 
 const { CELL, COLS, ROWS, T } = Shared;
 export const U = 1 / CELL;                  // px de juego -> unidades 3D
@@ -896,6 +896,9 @@ export class World {
         mesh.userData.ghost = true;
       } else if (o.k === 'mirror') {
         mesh = new THREE.Object3D();   // el cristal ya lo dibuja la arena: esto solo choca
+      } else if (o.k === 'bumper') {
+        mesh = bumperMesh(o.r);
+        mesh.position.copy(toWorld(o.x, o.y, 0));
       } else if (o.k === 'pillar') {
         mesh = pillarMesh(o.r, this.theme ? this.theme.rock[1] : '#8a8478');
         mesh.position.copy(toWorld(o.x, o.y, -1.7));

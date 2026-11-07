@@ -129,6 +129,9 @@
   const fogZones = o => [[W * 0.3, H * 0.28], [W * 0.7, H * 0.72], [W * 0.3, H * 0.72], [W * 0.7, H * 0.28]].slice(0, o.n || 4).map(([x, y]) => ({ x, y, r: o.r || 90 }));
   const pillarSpots = o => [[W * 0.35, H * 0.3, 0], [W * 0.65, H * 0.7, 0], [W * 0.35, H * 0.7, 1], [W * 0.65, H * 0.3, 1], [W * 0.5, H * 0.5, 0], [W * 0.5, H * 0.18, 1], [W * 0.5, H * 0.82, 1]]
     .slice(0, o.n || 7).map(([x, y, g]) => ({ x, y, g }));
+  // Arenas movedizas y parachoques: lejos de la línea de salida (los Pokémon empiezan en (140, 300) y (820, 300))
+  const sandZones = o => [[W * 0.3125, H * 0.3], [W * 0.6875, H * 0.7], [W * 0.6875, H * 0.3], [W * 0.3125, H * 0.7]].slice(0, o.n || 4).map(([x, y]) => ({ x, y, r: o.r || 55 }));
+  const bumperSpots = o => [[W * 0.5, H * 0.5], [W * 0.344, H * 0.3], [W * 0.656, H * 0.3], [W * 0.344, H * 0.7], [W * 0.656, H * 0.7]].slice(0, o.n || 5).map(([x, y]) => ({ x, y, r: o.r || 22 }));
   // Espejos: segmentos [x1, y1, x2, y2] que hacen rebotar los proyectiles
   const mirrorSegs = o => o.list || [[W * 0.5 - 60, H * 0.22, W * 0.5 + 60, H * 0.22], [W * 0.5 - 60, H * 0.78, W * 0.5 + 60, H * 0.78],
     [W * 0.3, H * 0.4, W * 0.3, H * 0.6], [W * 0.7, H * 0.4, W * 0.7, H * 0.6]];
@@ -220,7 +223,7 @@
 
   parseMap.flowOf = name => { parseMap(name); return parsed.get(name).flow; };
   const api = { TICK, SPEED, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
-    parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, pushOut, stepMove, arenaStep, speedOf, monStats };
+    parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, sandZones, bumperSpots, pushOut, stepMove, arenaStep, speedOf, monStats };
   if (node) module.exports = api;
   else root.Shared = api;
 })(this);

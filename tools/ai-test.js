@@ -230,6 +230,15 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
       me.wind = null;
     }
   });
+  await check('la IA sale de las arenas movedizas (y una mala tirada no la deja hundiéndose todo el combate)', () => {
+    const bt = battle({ map: 'g-tierra', sides: [{ name: 'A', team: [{ dex: 25, level: 50 }] }, { name: 'Bot', team: [{ dex: 25, level: 50 }], ai: 1 }] });
+    run(bt, 0.3);
+    const z = S.sandZones(D.ARENAS['g-tierra'].mech.quicksand)[0], bot = bt.sides[1];
+    bot.x = z.x + 10; bot.y = z.y;
+    let out = false;
+    for (let i = 0; i < 180 && !out; i++) { bt.sides[0].inputs.push({ mx: 0, my: 0, c: -1, sw: -1 }); bt.tick(); out = Math.hypot(bot.x - z.x, bot.y - z.y) > z.r + 5; }
+    assert(out, 'en menos de 6 s ha salido de la arena (la decisión de salir se renueva cada 2 s)');
+  });
   await check('una jugada no pisa a la IA cuando esquiva o escapa: su movimiento manda', () => {
     const { b, side, st } = whitney();
     const inp = { mx: 0.3, my: -0.7, c: -1, sw: -1, a: 0, tx: 0, ty: 0 };

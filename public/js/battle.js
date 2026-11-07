@@ -282,6 +282,9 @@ export class BattleClient {
       case 'pillar': this.fx.shake = Math.max(this.fx.shake, 0.12); break;
       case 'crack': this.fx.crack(e); break;
       case 'mirror': this.fx.mirrorFlash(e); break;
+      // Parachoques y arenas movedizas: un golpe seco y una nube de arena
+      case 'bump': { const w = toWorld(e.x, e.y, 0.45); this.p.emit(w.x, w.y, w.z, { n: 14, colors: ['#ffffff', '#f0d0c8'], layer: 'solid', speed: 3, life: 0.3, size: 0.12 }); this.fx.shake = Math.max(this.fx.shake, 0.08); break; }
+      case 'sink': { const w = toWorld(e.x, e.y, 0.1); this.p.emit(w.x, w.y, w.z, { n: 26, colors: ['#a8844c', '#8a6a3c', '#c9a66b'], layer: 'solid', dir: [0, 1, 0], spread: 0.6, speed: 2.4, life: 0.6, size: 0.16, grav: 6 }); if (e.s === this.you) this.banner(t('¡Te hundes! Muévete para salir de la arena'), 'bad'); break; }
       case 'warp': {
         for (const [x, y] of [[e.x1, e.y1], [e.x2, e.y2]]) { const w = toWorld(x, y, 0.5); this.p.emit(w.x, w.y, w.z, { n: 30, colors: PALETTE.psiquico, speed: 2.4, life: 0.5, size: 0.2 }); }
         actor.ghost('#ff90d0');

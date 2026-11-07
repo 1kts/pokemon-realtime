@@ -4,6 +4,12 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.45.0', date: '2026-11-07', title: 'Gimnasios con más gracia',
+      items: [
+        ['nuevo', 'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.'],
+      ],
+    },
+    {
       v: '0.44.2', date: '2026-11-07', title: 'Nombres enteros',
       items: [
         ['arreglo', 'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.'],

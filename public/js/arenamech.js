@@ -31,8 +31,47 @@ function puff() {
   return puffTex;
 }
 
+// Arenas movedizas: arena más oscura que el suelo, con un remolino de surcos (todo mate)
+let sandTex = null;
+function sandTexture() {
+  if (sandTex) return sandTex;
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 6, 64, 64, 64);
+  gr.addColorStop(0, '#8a6a3c'); gr.addColorStop(0.7, '#a8844c'); gr.addColorStop(1, 'rgba(176,140,84,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  g.strokeStyle = 'rgba(80,58,30,0.55)'; g.lineWidth = 3;
+  for (let k = 0; k < 3; k++) {   // tres surcos en espiral hacia el centro
+    g.beginPath();
+    for (let a = 0; a < Math.PI * 3.2; a += 0.08) { const r = 54 - a * 4.6, x = 64 + Math.cos(a + k * 2.09) * r, y = 64 + Math.sin(a + k * 2.09) * r; a ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+  }
+  sandTex = new THREE.CanvasTexture(c); sandTex.colorSpace = THREE.SRGBColorSpace;
+  return sandTex;
+}
+
+// Parachoques (obstáculo 'bumper'): seta de pinball mate, roja y blanca, con su base oscura
+export function bumperMesh(r) {
+  const R = r * U, g = new THREE.Group();
+  const mat = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.75 });
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.05, R * 1.15, 0.12, 20), mat('#3a3d46')); base.position.y = 0.06;
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 0.22, 20), mat('#e8e4da')); ring.position.y = 0.23;
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.82, R, 0.16, 20), mat('#b8423a')); cap.position.y = 0.42;
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.35, R * 0.35, 0.05, 16), mat('#e8e4da')); top.position.y = 0.52;
+  for (const m of [base, ring, cap, top]) { m.castShadow = true; g.add(m); }
+  return g;
+}
+
 export function buildMechProps(group, mech, marks) {
   const anim = [];
+  // Arenas movedizas: charcas de arena con el remolino girando muy despacio
+  const sandMat = mech.quicksand && new THREE.MeshStandardMaterial({ map: sandTexture(), transparent: true, roughness: 1, depthWrite: false });
+  if (mech.quicksand) for (const z of Shared.sandZones(mech.quicksand)) {
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(z.r * U * 1.08, 28), sandMat);
+    disc.rotation.x = -Math.PI / 2; disc.position.set(z.x * U, 0.03, z.y * U);
+    disc.receiveShadow = true;
+    group.add(disc);
+    anim.push(dt => { disc.rotation.z += dt * 0.25; });
+  }
   // Cintas transportadoras: una franja por banda, con sus rodillos a los lados, que corre en su sentido
   if (mech.belts) for (const [y0, y1, dir] of mech.belts.rows) {
     const tex = beltTexture(), w = (COLS - 4) * CELL * U, h = (y1 - y0 + 1) * CELL * U;

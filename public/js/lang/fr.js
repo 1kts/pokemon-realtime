@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': 'Des arènes plus vivantes',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Nouvelles mécaniques : au Volcan le sol se fissure en lave, Arène Verte a des sables mouvants et le Stade des butoirs qui te renvoient, toi et les attaques.',
+    '¡Te hundes! Muévete para salir de la arena': 'Tu t\'enfonces ! Bouge pour sortir du sable',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': 'Noms en entier',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Histoire sur mobile : le nom des arènes verrouillées (comme Major Bob) n\'est plus coupé.',
@@ -1356,16 +1360,16 @@ export default {
     'Sala Azafrán': 'Salle de Safrania',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': 'Des dalles de téléportation par paires : marche sur l\'une et tu apparais sur l\'autre.',
     'Volcán Canela': 'Volcan de Cramois\'Île',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': 'La lave brûle. Quand une mare de lave est marquée, elle va entrer en éruption : éloigne-toi.',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': 'La lave brûle. Quand une mare de lave est marquée, elle va entrer en éruption : éloigne-toi. Et le sol se fissure : là où c\'est marqué, la lave jaillit un moment.',
     'Arena Verde': 'Arène de Jadielle',
     'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': 'Séismes : une onde parcourt l\'arène depuis l\'épicentre. Abri l\'arrête et les types Vol ne sont pas affectés.',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Séismes : une onde parcourt l\'arène depuis l\'épicentre. Cache-toi derrière un rocher (la zone verte) ou utilise Abri ; les types Vol ne sont pas affectés.',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': 'Séismes : une onde traverse l\'arène depuis l\'épicentre. Cache-toi derrière un rocher (la zone verte) ou utilise Abri ; les types Vol ne sont pas touchés. Les sables mouvants ralentissent et, si tu restes immobile dedans, ils t\'engloutissent.',
     'Torre Malva': 'Tour de Mauville',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Des rafales de vent qui te poussent sur le côté. Les types Vol ne sont pas affectés.',
     'Invernadero Azalea': 'Serre d\'Écorcia',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Des toiles qui ralentissent (sauf les types Insecte) et de l\'herbe qui repousse. Le feu les brûle.',
     'Estadio Trigal': 'Stade de Doublonville',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': 'Des dalles de soin : soigne-toi dessus tant qu\'il leur reste de l\'énergie. Ensuite elles mettent du temps à se recharger.',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Dalles de soin : soigne-toi dessus tant qu\'il leur reste de l\'énergie. Ensuite elles mettent un moment à se recharger. Les butoirs repoussent qui les touche, et les attaques à distance aussi.',
     'Torre Iris': 'Tour Carillon',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Obscurité : tu ne vois l\'adversaire que de près ou juste quand il attaque.',
     'Sala Nocturna': 'Salle Nocturne',

@@ -325,6 +325,15 @@ function utilityInput(b, side, dt) {
       mx += (side.x - d.x) / (dd || 1) * 2.5; my += (side.y - d.y) / (dd || 1) * 2.5; st.evade = true;
     }
   }
+  // Arenas movedizas: salir (a ellas no les afecta a voladores ni a los de tierra). La decisión se renueva cada 2 s:
+  // una mala tirada no la deja hundiéndose todo el combate, y cuanto más hábil, antes sale
+  if (b.arena && b.arena.sand) {
+    const tys = D.SPECIES[b.mon(side).dex].types;
+    if (!tys.includes('volador') && !tys.includes('tierra')) for (const z of b.arena.sand) {
+      const dd = Math.hypot(side.x - z.x, side.y - z.y);
+      if (dd < z.r + r && decide(st, 'q' + Math.round(z.x) + ':' + Math.floor(b.t / 2), dodgeP)) { mx += (side.x - z.x) / (dd || 1) * 2.5; my += (side.y - z.y) / (dd || 1) * 2.5; st.evade = true; }
+    }
+  }
   // Fuego, lava, veneno, bordes y atascos (su propio tipo no lo nota)
   const types = D.SPECIES[b.mon(side).dex].types;
   const bad = t => t === T.FIRE || (t === T.LAVA && !types.includes('fuego')) || (t === T.POISON && skill > 0.3 && !types.includes('veneno') && !types.includes('acero'));
@@ -443,7 +452,7 @@ function aimMove(inp, side, view, dist, m, skill) {
 function lineBlocked(b, from, to) {
   const dx = to.x - from.x, dy = to.y - from.y, len2 = dx * dx + dy * dy || 1;
   return b.obstacles.some(o => {
-    if (o.kind === 'ghost') return false;
+    if (o.kind === 'ghost' || o.kind === 'bumper' || o.kind === 'mirror') return false;   // (no tapan: rebotan)
     const k = Math.max(0, Math.min(1, ((o.x - from.x) * dx + (o.y - from.y) * dy) / len2));
     return Math.hypot(from.x + dx * k - o.x, from.y + dy * k - o.y) < o.r + 4;
   });

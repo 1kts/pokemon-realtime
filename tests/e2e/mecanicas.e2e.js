@@ -1,5 +1,5 @@
-// Mecánicas nuevas de las arenas en combate de verdad (sin errores en la página): pilares, espejos, cintas,
-// flores, niebla y las mecánicas extra de Práctica (gravedad, géiseres, tormenta) encima de una arena normal
+// Mecánicas nuevas de las arenas en combate de verdad (sin errores en la página): pilares, espejos, cintas, flores,
+// arenas movedizas, parachoques, suelo que se agrieta, niebla y las mecánicas extra de Práctica (gravedad, géiseres, tormenta)
 // (las de los gimnasios aquí y las extra de Práctica en mecanicas-extra.e2e.js: juntas rozaban los 5 minutos en el CI)
 const prueba = arenas => async ({ page, player, ok }) => {
   const me = await player({ user: 'mecanico' });
@@ -19,5 +19,5 @@ const prueba = arenas => async ({ page, player, ok }) => {
     await page.waitFor(`!window.__app.battle`, 15000);
   }
 };
-module.exports = prueba([['g-lucha', null, 'pillar'], ['g-psiquico', null, 'mirrors'], ['g-electrico', null, 'belts'], ['g-planta', null, 'flowers']]);
+module.exports = prueba([['g-lucha', null, 'pillar'], ['g-psiquico', null, 'mirrors'], ['g-electrico', null, 'belts'], ['g-planta', null, 'flowers'], ['g-tierra', null, 'quicksand'], ['g-normal', null, 'bumpers'], ['g-fuego', null, 'fissure']]);
 module.exports.prueba = prueba;

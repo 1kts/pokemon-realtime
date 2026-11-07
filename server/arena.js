@@ -23,6 +23,9 @@
 //   storm     tormenta: rayos con aviso; si caen junto al agua, electrifican a quien esté en ella
 //   fog       bancos de niebla: quien está dentro no se ve de lejos
 //   flowers   flores que curan poco a poco (F) o adormecen, que ralentiza (f)
+//   fissure   el suelo se agrieta cerca de cada Pokémon (aviso) y la grieta es lava un rato
+//   quicksand charcas de arenas movedizas: frenan, y quien se queda quieto dentro se hunde (daño); no a voladores ni tierra
+//   bumpers   parachoques: rebotan a quien los toca y hacen rebotar los proyectiles
 // Geiseres, tormenta, gravedad, niebla y pilares también pueden ir de modificador en Práctica (Data.MODIFIERS)
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
@@ -45,7 +48,7 @@ class Arena {
     this.dark = this.m.dark || 0;
     const m = this.m;
     this.timers = {};
-    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind', 'geyser', 'storm', 'gravity', 'pillars']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
+    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind', 'geyser', 'storm', 'gravity', 'pillars', 'fissure']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
     if (m.shock) { this.shock = { g: 0, phase: 'idle', t: 0 }; this.panelGroup = this.marks.panels.map(i => (((i % COLS) >> 1) + ((Math.floor(i / COLS)) >> 1)) % 2); }
     if (m.tide) { this.tideUp = false; this.tideCells = this.ringCells(); }
     if (m.regrow) this.regrowT = new Float32Array(COLS * ROWS);
@@ -65,6 +68,10 @@ class Arena {
     }
     // Pilares: empieza arriba el grupo 0
     if (m.pillars) { this.pillars = S.pillarSpots(m.pillars); this.pillarUp = 0; this.raisePillars(0); }
+    // Arenas movedizas y parachoques: sitios fijos (Shared, los mismos que dibuja el cliente)
+    this.sand = m.quicksand ? S.sandZones(m.quicksand) : null;
+    this.bumpers = m.bumpers ? S.bumperSpots(m.bumpers) : null;
+    if (this.bumpers) for (const p of this.bumpers) battle.obstacles.push({ id: battle.newId(), kind: 'bumper', x: p.x, y: p.y, r: p.r, hp: Infinity, ttl: Infinity });
     // Muros invisibles: obstáculos que no se dibujan (el cliente los recibe para chocar con ellos)
     for (const g of this.marks.ghost) battle.obstacles.push({ id: battle.newId(), ...g, hp: Infinity, ttl: Infinity, kind: 'ghost' });
   }
@@ -83,6 +90,17 @@ class Arena {
 
   // Espejos: si el proyectil toca un cristal, rebota (refleja la velocidad sobre la normal del espejo)
   bounce(p) {
+    // Parachoques: el proyectil rebota en el círculo (refleja la velocidad sobre la normal del choque)
+    if (this.bumpers) for (const q of this.bumpers) {
+      const dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
+      if (d >= q.r + p.r || d < 0.001) continue;
+      const nx = dx / d, ny = dy / d, dot = p.vx * nx + p.vy * ny;
+      if (dot >= 0) continue;
+      p.vx -= 2 * dot * nx; p.vy -= 2 * dot * ny;
+      p.x = q.x + nx * (q.r + p.r + 1); p.y = q.y + ny * (q.r + p.r + 1);
+      this.b.ev({ k: 'bump', x: Math.round(q.x), y: Math.round(q.y) });
+      return true;
+    }
     if (!this.mirrors) return false;
     for (const [x1, y1, x2, y2] of this.mirrors) {
       const ex = x2 - x1, ey = y2 - y1, L2 = ex * ex + ey * ey;
@@ -392,6 +410,62 @@ class Arena {
           s.crackT = 0;
           b.setCell(i, T.WATER, m.crack.ttl);
           b.ev({ k: 'crack', x: Math.round(S.cellCenter(i).x), y: Math.round(S.cellCenter(i).y) });
+        }
+      }
+    }
+    // Suelo que se agrieta: cerca de cada Pokémon, una grieta de 3 casillas se marca y es lava un rato
+    if (m.fissure && this.tick('fissure', dt)) {
+      const o = m.fissure;
+      for (const s of b.sides) {
+        if (b.mon(s).fainted) continue;
+        const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 70;
+        const x = S.clamp(s.x + Math.cos(a) * d, 60, S.ARENA.w - 60), y = S.clamp(s.y + Math.sin(a) * d, 60, S.ARENA.h - 60);
+        const c0 = S.cellIndex(x, y), cx = c0 % COLS, cy = Math.floor(c0 / COLS), horiz = Math.random() < 0.5;
+        const cells = [-1, 0, 1].map(k => horiz ? [cx + k, cy] : [cx, cy + k]).filter(([X, Y]) => X >= 1 && Y >= 1 && X < COLS - 1 && Y < ROWS - 1)
+          .map(([X, Y]) => Y * COLS + X).filter(i => this.base[i] === T.NONE);
+        if (!cells.length) continue;
+        const c = S.cellCenter(c0);
+        this.warnAt(c.x, c.y, o.r, o.warn, 'fuego', () => {
+          // (solo donde el suelo sigue limpio: lo que haya pintado un ataque en el aviso se queda)
+          for (const i of cells) if (b.terrain[i] === T.NONE || b.terrain[i] === T.BURNT) b.setCell(i, T.LAVA, o.ttl);
+          // (y como la lava, a los de fuego no les hace nada)
+          for (const t of b.sides) if (cells.includes(S.cellIndex(t.x, t.y)) && !typesOf(b.mon(t)).includes('fuego')) b.hazard(t, o.dmg, 'fuego', { burn: 2 });
+        });
+      }
+    }
+    // Arenas movedizas: frenan; quedarse casi quieto dentro hunde (daño y más lento). Ni a voladores ni a los de tierra
+    if (this.sand) {
+      const o = m.quicksand;
+      for (const s of b.sides) {
+        const mon = b.mon(s), tys = typesOf(mon);
+        const grounded = s.invuln <= 0 && s.forced <= 0 && !(s.dash && s.dash.m.invuln);   // (por el aire o cambiando, no)
+        const z = grounded && !mon.fainted && !tys.includes('volador') && !tys.includes('tierra') && this.sand.find(q => Math.hypot(s.x - q.x, s.y - q.y) < q.r);
+        const moved = s.sandAt ? Math.hypot(s.x - s.sandAt[0], s.y - s.sandAt[1]) : 0;
+        s.sandAt = [s.x, s.y];
+        if (!z) { s.sinkT = 0; continue; }
+        s.slow = Math.max(s.slow, 0.15);
+        s.sinkT = moved < 60 * dt ? (s.sinkT || 0) + dt : Math.max(0, (s.sinkT || 0) - dt * 2);
+        if (s.sinkT >= o.hold) {
+          s.sinkT = 0;
+          b.hazard(s, o.dmg, 'tierra', { slow: o.slow });
+          b.ev({ k: 'sink', x: Math.round(s.x), y: Math.round(s.y), s: s.idx });
+        }
+      }
+    }
+    // Parachoques: quien choca sale rebotado (con un ratito entre rebote y rebote)
+    if (this.bumpers) {
+      const o = m.bumpers;
+      for (const s of b.sides) {
+        s.bumpCd = Math.max(0, (s.bumpCd || 0) - dt);
+        if (s.bumpCd > 0 || b.mon(s).fainted || s.prot >= 0 || s.invuln > 0 || s.forced > 0 || s.dash) continue;
+        for (const q of this.bumpers) {
+          const dx = s.x - q.x, dy = s.y - q.y, d = Math.hypot(dx, dy);
+          if (d > q.r + b.rad(s) + 3) continue;
+          const ka = d > 1 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2;
+          s.kb = { vx: Math.cos(ka), vy: Math.sin(ka), speed: o.knock / 0.2, t: 0.2 }; s.wind = null;
+          s.bumpCd = 0.5;
+          b.ev({ k: 'bump', x: Math.round(q.x), y: Math.round(q.y), s: s.idx });
+          break;
         }
       }
     }

@@ -424,6 +424,77 @@ check('géiseres: avisan, hacen daño y lanzan hacia fuera', () => {
   assert(bt.mon(a).hp < hp0 && a.kb && a.kb.vx > 0, 'daño y empuje hacia fuera');
 });
 
+check('suelo que se agrieta (volcán): avisa y la grieta es lava un rato; a quien pilla encima, le quema', () => {
+  const bt = battle('g-fuego', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+  const [a] = bt.sides, hp0 = bt.mon(a).hp;
+  place(a, 300, 300); place(bt.sides[1], 700, 300);
+  bt.arena.timers.fissure = 0;
+  bt.arena.update(0.01);
+  const w = out.find(e => e.k === 'warn' && e.ty === 'fuego');
+  assert(w, 'aviso de la grieta');
+  const c = S.cellCenter(S.cellIndex(w.x, w.y));
+  assert(bt.terrain[S.cellIndex(c.x, c.y)] !== T.LAVA, 'antes del aviso no es lava');
+  place(a, c.x, c.y); a.invuln = 0;
+  for (let i = 0; i < 30; i++) bt.arena.update(0.05);
+  assert.strictEqual(bt.terrain[S.cellIndex(c.x, c.y)], T.LAVA, 'tras el aviso, la grieta es lava');
+  assert(bt.mon(a).hp < hp0 && a.burn > 0, 'y quema a quien estaba encima');
+  place(a, 480, 20);
+  run(bt, 7);
+  assert.notStrictEqual(bt.terrain[S.cellIndex(c.x, c.y)], T.LAVA, 'al rato se cierra');
+});
+
+check('arenas movedizas: frenan; quieto dentro, te hunden (daño); a los voladores y a los de tierra, nada', () => {
+  const z = S.sandZones(D.ARENAS['g-tierra'].mech.quicksand)[0];
+  const sink = (dex, moving) => {
+    const bt = battle('g-tierra', [{ dex, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+    const [a] = bt.sides, hp0 = bt.mon(a).hp;
+    bt.arena.timers.quake = 999;
+    place(a, z.x, z.y); a.invuln = 0;
+    for (let i = 0; i < 40; i++) { if (moving) a.x = z.x + (i % 2 ? 20 : -20); bt.arena.update(0.05); }
+    return { hurt: bt.mon(a).hp < hp0, sunk: out.some(e => e.k === 'sink'), slow: a.slow > 0 };
+  };
+  const still = sink(25), moving = sink(25, true), bird = sink(18), ground = sink(51);
+  assert(still.hurt && still.sunk && still.slow, `quieto dentro, se hunde (${JSON.stringify(still)})`);
+  assert(!moving.sunk && moving.slow, `moviéndose, frena pero no hunde (${JSON.stringify(moving)})`);
+  assert(!bird.hurt && !bird.slow && !ground.hurt && !ground.slow, 'a los voladores y a los de tierra no les hace nada');
+});
+
+check('parachoques (estadio): rebotan a quien los toca y hacen rebotar los proyectiles', () => {
+  const bt = battle('g-normal', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+  const [a, f] = bt.sides, q = S.bumperSpots(D.ARENAS['g-normal'].mech.bumpers)[0];
+  assert(bt.obstacles.filter(o => o.kind === 'bumper').length === 5, 'cinco parachoques');
+  place(a, q.x - q.r - bt.rad(a) - 1, q.y); place(f, 900, 560);
+  bt.arena.update(0.05);
+  assert(a.kb && a.kb.vx < 0 && out.some(e => e.k === 'bump'), 'quien lo toca sale rebotado hacia fuera');
+  // Un disparo contra el parachoques vuelve por donde venía
+  bt.obstacles = bt.obstacles.filter(o => o.kind === 'bumper');
+  const p = { id: 997, owner: a, m: { ...D.MOVES.impactrueno }, mk: 'impactrueno', x: q.x - 60, y: q.y, vx: 600, vy: 0, left: 400, r: D.MOVES.impactrueno.radius };
+  bt.projectiles.push(p);
+  for (let i = 0; i < 10; i++) bt.updateProjectiles(S.DT);
+  assert(p.vx < 0 && bt.projectiles.includes(p), `el proyectil rebota y sigue (vx ${Math.round(p.vx)})`);
+  // Con Protección puesta (o invulnerable), el parachoques no te lanza
+  const bt2 = battle('g-normal'), [c] = bt2.sides, q2 = S.bumperSpots(D.ARENAS['g-normal'].mech.bumpers)[0];
+  place(c, q2.x - q2.r - bt2.rad(c) - 1, q2.y); place(bt2.sides[1], 900, 560); c.prot = 0.1;
+  bt2.arena.update(0.05);
+  assert(!c.kb, 'con Protección no rebota');
+});
+
+check('lo justo de las mecánicas nuevas: la grieta no quema a los de fuego y nadie se hunde mientras es invulnerable', () => {
+  const bt = battle('g-fuego', [{ dex: 6, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+  const [a] = bt.sides, hp0 = bt.mon(a).hp;
+  place(a, 300, 300); place(bt.sides[1], 700, 300);
+  bt.arena.timers.fissure = 0; bt.arena.update(0.01);
+  const w = out.find(e => e.k === 'warn' && e.ty === 'fuego'), c = S.cellCenter(S.cellIndex(w.x, w.y));
+  place(a, c.x, c.y); a.invuln = 0;
+  for (let i = 0; i < 30; i++) bt.arena.update(0.05);
+  assert(bt.mon(a).hp === hp0, 'a Charizard (fuego) la grieta no le hace daño');
+  const z = S.sandZones(D.ARENAS['g-tierra'].mech.quicksand)[0];
+  const bt2 = battle('g-tierra', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]), out2 = evs(bt2), [p] = bt2.sides;
+  bt2.arena.timers.quake = 999; place(p, z.x, z.y); p.invuln = 5;
+  for (let i = 0; i < 40; i++) bt2.arena.update(0.05);
+  assert(!out2.some(e => e.k === 'sink') && !(p.slow > 0), 'invulnerable (en el aire), ni frena ni se hunde');
+});
+
 check('hielo que se rompe: quieto encima, la casilla pasa a agua y luego vuelve a ser hielo', () => {
   const bt = battle('g-hielo');
   const [a] = bt.sides, i = bt.terrain.indexOf(T.ICE), c = S.cellCenter(i);

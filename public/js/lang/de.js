@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': 'Arenen mit mehr Pfiff',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Neue Mechaniken: Im Vulkan reißt der Boden zu Lava auf, Vertania hat Treibsand und das Stadion Prallpilze, die dich und Angriffe abprallen lassen.',
+    '¡Te hundes! Muévete para salir de la arena': 'Du versinkst! Beweg dich, um aus dem Sand zu kommen',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': 'Ganze Namen',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'Story auf dem Handy: Die Namen gesperrter Arenen (wie Major Bob) werden nicht mehr abgeschnitten.',
@@ -1364,16 +1368,16 @@ export default {
     'Sala Azafrán': 'Saffronia-Halle',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': 'Teleportplatten in Paaren: Tritt auf eine, und du erscheinst auf ihrem Gegenstück.',
     'Volcán Canela': 'Zinnoberinsel-Vulkan',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': 'Lava verbrennt. Wird ein Lavabecken markiert, bricht es gleich aus: Geh weg.',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': 'Lava verbrennt. Wird ein Lavabecken markiert, bricht es gleich aus: geh weg. Und der Boden reißt auf: Wo es markiert ist, tritt eine Weile Lava aus.',
     'Arena Verde': 'Vertania-Arena',
     'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': 'Erdbeben: Eine Welle läuft vom Epizentrum über die Arena. Schutzschild hält sie auf, Flug-Pokémon sind nicht betroffen.',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'Erdbeben: Eine Welle läuft vom Epizentrum über die Arena. Versteck dich hinter einem Felsen (der grüne Bereich) oder nutze Schutzschild; Flug-Pokémon sind nicht betroffen.',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': 'Erdbeben: Eine Welle läuft vom Epizentrum durch die Arena. Versteck dich hinter einem Felsen (der grüne Bereich) oder nutze Schutzschild; Flug-Typen trifft es nicht. Treibsand bremst dich, und wenn du darin stehen bleibst, versinkst du.',
     'Torre Malva': 'Viola-Turm',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Windstöße, die dich zur Seite schieben. Flug-Pokémon sind nicht betroffen.',
     'Invernadero Azalea': 'Azalea-Gewächshaus',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Spinnennetze, die verlangsamen (außer Käfer-Pokémon), und Gras, das nachwächst. Feuer verbrennt sie.',
     'Estadio Trigal': 'Dukatia-Stadion',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': 'Heilplatten: Heile dich darauf, solange sie Energie haben. Danach brauchen sie eine Weile zum Aufladen.',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Heilfelder: Heile dich darauf, solange sie Energie haben. Danach brauchen sie eine Weile zum Aufladen. Prallpilze stoßen jeden ab, der sie berührt, und auch Fernangriffe.',
     'Torre Iris': 'Turmruine',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Dunkelheit: Du siehst den Gegner nur aus der Nähe oder wenn er angreift.',
     'Sala Nocturna': 'Nachthalle',

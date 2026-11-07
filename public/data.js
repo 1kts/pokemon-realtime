@@ -686,7 +686,7 @@
         '............c...........',
         '........................',
       ] },
-    'g-fuego': { name: 'Volcán Canela', desc: 'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.', mech: { eruption: { every: 5.5, warn: 1.2, r: 70, dmg: 0.08 } },
+    'g-fuego': { name: 'Volcán Canela', desc: 'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.', mech: { eruption: { every: 5.5, warn: 1.2, r: 70, dmg: 0.08 }, fissure: { every: 7, warn: 1.1, r: 60, dmg: 0.06, ttl: 6 } },
       rows: [
         '........................',
         '...LL..............LL...',
@@ -704,7 +704,7 @@
         '...LL..............LL...',
         '........................',
       ] },
-    'g-tierra': { name: 'Arena Verde', desc: 'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.', mech: { quake: { every: 8, warn: 1, speed: 340, dmg: 0.09, slow: 1.2 } },
+    'g-tierra': { name: 'Arena Verde', desc: 'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.', mech: { quake: { every: 8, warn: 1, speed: 340, dmg: 0.09, slow: 1.2 }, quicksand: { r: 55, hold: 1.2, dmg: 0.05, slow: 1 } },
       rows: [
         '........................',
         '........................',
@@ -758,7 +758,7 @@
         '..###....wwwwww....###..',
         '........................',
       ] },
-    'g-normal': { name: 'Estadio Trigal', desc: 'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.', mech: { heal: { rate: 0.045, drain: 0.22, cd: 12 } },
+    'g-normal': { name: 'Estadio Trigal', desc: 'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.', mech: { heal: { rate: 0.045, drain: 0.22, cd: 12 }, bumpers: { knock: 130, r: 22 } },
       rows: [
         '........................',
         '........................',

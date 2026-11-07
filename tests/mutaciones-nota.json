@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-07",
- "cazadas": 110,
- "total": 110,
+ "cazadas": 113,
+ "total": 113,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -778,6 +778,27 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ push: solo acepta los servicios de push de verdad (http://fcm.googleapis.com/x, https://127.0.0.1/x, https://evil.example/fcm.googleapis.com, https:/"
+  },
+  "grieta-sin-lava": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: tras el aviso, la grieta es lava"
+  },
+  "arena-que-no-hunde": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: quieto dentro, se hunde ({\"hurt\":false,\"sunk\":false,\"slow\":true})"
+  },
+  "parachoques-de-adorno": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: el proyectil rebota y sigue (vx 600)"
   }
  }
 }

@@ -353,4 +353,13 @@ module.exports = [
   { id: 'avisos-a-cualquier-sitio', que: 'El servidor acepta suscripciones a cualquier dirección: se puede usar para atacar otras webs (o la red interna)',
     archivo: 'server/push.js', buscar: "if (u.protocol !== 'https:' || u.port || !HOSTS.some(h => h.test(u.hostname))) return false;", poner: '',
     tests: ['tools/server-test.js'] },
+  { id: 'grieta-sin-lava', que: 'En el Volcán, el suelo avisa de que se agrieta pero no sale lava: la mecánica no hace nada',
+    archivo: 'server/arena.js', buscar: 'b.setCell(i, T.LAVA, o.ttl);', poner: '',
+    tests: ['tools/arena-test.js'] },
+  { id: 'arena-que-no-hunde', que: 'Las arenas movedizas ya no hunden a quien se queda quieto',
+    archivo: 'server/arena.js', buscar: 'if (s.sinkT >= o.hold) {', poner: 'if (false) {',
+    tests: ['tools/arena-test.js'] },
+  { id: 'parachoques-de-adorno', que: 'Los parachoques del Estadio no rebotan los disparos: los atraviesan o los paran como una roca',
+    archivo: 'server/arena.js', buscar: 'if (this.bumpers) for (const q of this.bumpers) {', poner: 'if (false) for (const q of this.bumpers) {',
+    tests: ['tools/arena-test.js'] },
 ];

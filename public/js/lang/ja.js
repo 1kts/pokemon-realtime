@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.45.0 ----------
+    'Gimnasios con más gracia': '個性が増したジム',
+    'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '新しいギミック：火山では地面が割れて溶岩に、トキワのアリーナには流砂、スタジアムには自分も攻撃も跳ね返すバンパー。',
+    '¡Te hundes! Muévete para salir de la arena': '沈んでいる！動いて砂から出よう',
     // ---------- Novedades v0.44.2 ----------
     'Nombres enteros': '名前を全部表示',
     'Historia en el móvil: el nombre de los gimnasios bloqueados (como Lt. Surge) ya no sale cortado.': 'スマホのストーリー：未開放のジム（マチスなど）の名前が切れなくなりました。',
@@ -1365,16 +1369,16 @@ export default {
     'Sala Azafrán': 'ヤマブキの 間',
     'Baldosas de teletransporte por parejas: pisa una y apareces en su pareja.': '2枚1組の ワープパネル：ふむと 相方の パネルに 移動する。',
     'Volcán Canela': 'グレンの 火山',
-    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate.': '溶岩は やけどする。溶岩だまりに 印が出たら 噴火の 合図：はなれよう。',
+    'La lava quema. Cuando un charco de lava se marca, va a entrar en erupción: aléjate. Y el suelo se agrieta: donde se marca, sale lava un rato.': '溶岩はやけどする。溶岩だまりにマークが出たら噴火する：離れよう。地面もひび割れる：マークの場所からしばらく溶岩が噴き出す。',
     'Arena Verde': 'トキワの アリーナ',
     'Terremotos: una onda recorre la arena desde el epicentro. Protección la para y a los voladores no les afecta.': 'じしん：震源から 波が アリーナを 走る。まもるで 防げて、ひこうタイプは 平気。',
-    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta.': 'じしん：震源から 波が アリーナを 走る。岩の かげ（みどりの 範囲）に かくれるか、まもるを 使おう。ひこうタイプは 平気。',
+    'Terremotos: una onda recorre la arena desde el epicentro. Escóndete detrás de una roca (la zona verde) o usa Protección; a los voladores no les afecta. Las arenas movedizas frenan y, si te quedas quieto en ellas, te hunden.': '地震：震源から波がアリーナを走る。岩の陰（緑のゾーン）に隠れるか、まもるを使おう。ひこうタイプには効かない。流砂は動きを遅くし、中で止まっていると沈む。',
     'Torre Malva': 'キキョウの 塔',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '横に 押し流す 突風。ひこうタイプは 平気。',
     'Invernadero Azalea': 'ヒワダの 温室',
     'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '動きを おそくする クモの巣（むしタイプは 平気）と、生えなおす 草。炎で 燃える。',
     'Estadio Trigal': 'コガネの スタジアム',
-    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse.': '回復パネル：エネルギーが ある間は 上で 回復できる。切れると しばらく 使えない。',
+    'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '回復タイル：エネルギーが残っている間は上で回復できる。その後は再充電に時間がかかる。バンパーは触れた者をはじき返し、遠距離攻撃も跳ね返す。',
     'Torre Iris': 'スズの 塔',
     'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'くらやみ：あいては 近くにいるか 攻撃した時しか 見えない。',
     'Sala Nocturna': '夜の 間',
