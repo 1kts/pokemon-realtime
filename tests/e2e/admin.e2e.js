@@ -95,4 +95,18 @@ module.exports = async ({ page, player, env, ok }) => {
   await page.waitFor(`document.querySelector('#player h1')`);
   ok(/Gamberro/.test(await page.eval(`document.querySelector('#player h1').textContent`)), 'buscar un jugador y abrir su ficha');
   ok(boss.id && await page.eval(`!document.querySelector('#player').textContent.includes('Desbloquear todo')`), 'en la ficha de otro no sale «Desbloquear todo»');
+
+  // Servidor: lo que cuesta el juego (sale en «Apoyar») y las ruletas de cada semana, sin sacar versión
+  await page.click('[data-tab=servidor]');
+  await page.waitSee('Lucky Spin: qué ruletas salen cada semana', { in: '#servidor', scroll: true });
+  ok(await page.see('Esta semana', { in: '#wheels' }) && await page.see('Cambiar ya', { in: '#wheels' }) && await page.see('Guardar', { in: '#wheels' }),
+    'Servidor: las ruletas de esta semana (para cambiarlas ya) y de las siguientes (para programarlas)');
+  await page.type('#costs-f [name=server]', '14.5');
+  await page.tap('Guardar', { in: '#costs-f' });
+  await page.waitSee('Costes guardados');
+  await page.goto('/');
+  await page.loginAs(boss.token);
+  await page.waitFor(`document.querySelector('.support-tip')`);
+  const tip = await page.eval(`document.querySelector('.support-tip').textContent`);
+  ok(/unos 14,5 € al mes/.test(tip), `y el juego lo enseña en «Apoyar» al momento (${tip.replace(/\s+/g, ' ').slice(0, 80)})`);
 };

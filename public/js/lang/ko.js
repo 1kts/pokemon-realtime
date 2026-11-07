@@ -1999,9 +1999,9 @@ export default {
     // ---------- Apoyo: costes reales ----------
     'Lo que cuesta mantener PokéArenas': 'PokéArenas 운영 비용',
     'Servidor': '서버',
-    'unos 10 € al mes': '한 달에 약 10유로',
+    'unos {n} € al mes': '한 달에 약 {n}유로',
     'Dominio': '도메인',
-    '12 € al año': '1년에 12유로',
+    '{n} € al año': '1년에 {n}유로',
     'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '후원금은 이 비용을 충당하는 데 쓰입니다. 게임은 무료이고 광고가 없으며, 후원해도 유리해지지 않습니다.',
     // ---------- Tarjetas de la barra superior ----------
     'Hay novedades que aún no has leído.': '아직 읽지 않은 새 소식이 있어요.',

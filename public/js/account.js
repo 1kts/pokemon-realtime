@@ -357,8 +357,11 @@ export const accountViews = {
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     a.setAttribute('aria-label', t('Apoyar'));
+    // (las cantidades se cambian desde el panel de admin: llegan con los interruptores)
+    const c = (this.flags && this.flags.costs) || { server: 10, domain: 12 };
+    const eur = n => (+n).toLocaleString(locale(), { maximumFractionDigits: 2 });
     return this.hoverTip(a, `<b>${t('Lo que cuesta mantener PokéArenas')}</b>
-      <ul><li><span>${t('Servidor')}</span><b>${t('unos 10 € al mes')}</b></li><li><span>${t('Dominio')}</span><b>${t('12 € al año')}</b></li></ul>
+      <ul><li><span>${t('Servidor')}</span><b>${t('unos {n} € al mes', { n: eur(c.server) })}</b></li><li><span>${t('Dominio')}</span><b>${t('{n} € al año', { n: eur(c.domain) })}</b></li></ul>
       <p>${t('Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.')}</p>`, 'support-tip');
   },
 

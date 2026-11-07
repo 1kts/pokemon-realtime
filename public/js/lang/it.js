@@ -1999,9 +1999,9 @@ export default {
     // ---------- Apoyo: costes reales ----------
     'Lo que cuesta mantener PokéArenas': 'Quanto costa mantenere PokéArenas',
     'Servidor': 'Server',
-    'unos 10 € al mes': 'circa 10 € al mese',
+    'unos {n} € al mes': 'circa {n} € al mese',
     'Dominio': 'Dominio',
-    '12 € al año': '12 € all\'anno',
+    '{n} € al año': '{n} € all\'anno',
     'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': 'Le donazioni aiutano a coprire questi costi. Il gioco è gratuito, senza pubblicità, e donare non dà alcun vantaggio.',
     // ---------- Tarjetas de la barra superior ----------
     'Hay novedades que aún no has leído.': 'Ci sono novità che non hai ancora letto.',

@@ -84,3 +84,7 @@ tr.few td { opacity: .55; }
 .flag-row b.warn { color: #ff8a7a; }
 .first td.warn { color: #ff8a7a; font-weight: 700; }
 .first td small { color: var(--muted); }
+.card.wide { grid-column: 1 / -1; }
+.week-row { padding: 10px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.week-row.now b { color: var(--yellow); }
+.week-row select { max-width: 220px; }

@@ -79,7 +79,7 @@ function show(tab, force) {
   if (tab === 'resumen') overview();
   if (tab === 'auditoria' && (force || !$('#audit tbody').children.length)) loadAudit();
   if (tab === 'jugadores' && (force || !$('#results').children.length)) loadPlayers();
-  if (tab === 'servidor') { overview(true); loadFlags(); ask('admin.pushcount').then(r => { if (r.n !== undefined) $('#push-n').textContent = `Les llega aunque no estén jugando: ahora mismo, ${r.n} jugador${r.n === 1 ? '' : 'es'} con los avisos activados.`; }); }
+  if (tab === 'servidor') { overview(true); loadFlags(); loadSettings(); ask('admin.pushcount').then(r => { if (r.n !== undefined) $('#push-n').textContent = `Les llega aunque no estén jugando: ahora mismo, ${r.n} jugador${r.n === 1 ? '' : 'es'} con los avisos activados.`; }); }
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
   if (tab === 'bugs') loadBugs();
@@ -502,6 +502,48 @@ $('#csv').addEventListener('click', () => {
 });
 
 // ---------- Servidor ----------
+// Ajustes sin sacar versión: costes (salen en «Apoyar») y las ruletas de cada semana
+async function loadSettings() {
+  const r = await ask('admin.settings');
+  if (!r.costs) return;
+  const f = $('#costs-f');
+  f.elements.server.value = r.costs.server; f.elements.domain.value = r.costs.domain;
+  drawWeeks(r.weeks, r.options);
+}
+const fmtDay = ms => new Date(ms).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+let wheelOpts = [];
+function drawWeeks(weeks, options) {
+  if (options) wheelOpts = options;
+  const name = l => (wheelOpts.find(o => o.line === l) || {}).name || l;
+  $('#wheels-list').replaceChildren(...weeks.map((w, i) => {
+    const sels = w.lines.map(l => h('select', {}, ...wheelOpts.map(o => h('option', { value: o.line, selected: o.line === l }, `${o.name} (${o.type})`))));
+    const save = h('button', { onclick: async () => {
+      const lines = sels.map(s => +s.value);
+      if (i === 0 && !confirm('Cambiar las ruletas de ESTA semana es al momento. Quien esté a medias en una que quites pierde sus tiradas en ella. ¿Seguro?')) return;
+      const r = await ask('admin.wheels', { period: w.period, lines });
+      if (r.err) return toast(r.err, true);
+      toast(r.ok); drawWeeks(r.weeks);
+    } }, i === 0 ? 'Cambiar ya' : 'Guardar');
+    const reset = w.custom && h('button', { class: 'ghost', onclick: async () => {
+      if (i === 0 && !confirm('¿Volver ya a las ruletas de por defecto de esta semana?')) return;
+      const r = await ask('admin.wheels', { period: w.period, lines: null });
+      if (r.err) return toast(r.err, true);
+      toast(r.ok); drawWeeks(r.weeks);
+    } }, 'Por defecto');
+    return h('div', { class: 'week-row' + (i === 0 ? ' now' : '') },
+      h('b', {}, `${i === 0 ? 'Esta semana' : 'Semana'} · ${fmtDay(w.from)} – ${fmtDay(w.to - 1)}`),
+      h('span', { class: 'tag' + (w.custom ? ' on' : '') }, w.custom ? 'elegidas' : `por defecto: ${w.def.map(name).join(', ')}`),
+      h('div', { class: 'row wrap' }, ...sels, save, reset || ''));
+  }));
+}
+$('#costs-f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const num = v => +String(v).replace(',', '.');
+  const r = await ask('admin.costs', { server: num(f.get('server')), domain: num(f.get('domain')) });
+  if (r.err) return toast(r.err, true);
+  toast(r.ok);
+});
 // Aviso push: a todos los que tienen los avisos de eventos o a los que llevan días sin entrar (con confirmación)
 $('#push-f').addEventListener('submit', async e => {
   e.preventDefault();

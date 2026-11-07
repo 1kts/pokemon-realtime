@@ -221,6 +221,34 @@ const freshCode = secret => { const now = Date.now(); let k = Math.floor(now / t
   ok(!!(await spinner.wait(m => m.t === 'loot')), 'y se vuelve a poder tirar');
   ok((await adm.ask('admin.flag', { id: 'nada', on: false })).err, 'un interruptor que no existe no se puede tocar');
 
+  // ---------- Ajustes sin sacar versión: costes de «Apoyar» y las ruletas de cada semana ----------
+  {
+    const D = require('../public/data.js');
+    const st = await adm.ask('admin.settings');
+    ok(st.costs.server === 10 && st.costs.domain === 12 && st.weeks.length === 8 && st.options.length === D.TREASURE_LINES.length,
+      `el panel enseña los costes, esta semana y las 7 siguientes y todas las ruletas que se pueden poner (${st.options.length})`);
+    ok((await adm.ask('admin.costs', { server: -5, domain: 12 })).err, 'un coste negativo no vale');
+    const cr = await adm.ask('admin.costs', { server: 14.5, domain: 15 });
+    const fc = await spinner.wait(m => m.t === 'flags' && m.flags.costs && m.flags.costs.server === 14.5);
+    ok(/guardados/.test(cr.ok) && fc && fc.flags.costs.domain === 15, 'cambiar los costes llega al momento a los jugadores (salen en «Apoyar»)');
+    // Las ruletas de esta semana, al momento: el jugador recibe el plan y puede tirar en la nueva
+    const cur = st.weeks[0].period, pick3 = D.TREASURE_LINES.filter(l => !st.weeks[0].lines.includes(l)).slice(0, 3);
+    ok((await adm.ask('admin.wheels', { period: cur, lines: [pick3[0], pick3[0], pick3[1]] })).err, 'dos ruletas iguales no valen');
+    ok((await adm.ask('admin.wheels', { period: cur - 1, lines: pick3 })).err, 'una semana pasada no se puede cambiar');
+    const wr = await adm.ask('admin.wheels', { period: cur, lines: pick3 });
+    const fw = await spinner.wait(m => m.t === 'flags' && m.flags.wheels && m.flags.wheels[cur]);
+    ok(/guardadas/.test(wr.ok) && wr.weeks[0].custom && fw && fw.flags.wheels[cur].join() === pick3.join() && D.treasures(cur)[0].id === `${cur}-${pick3[0]}`,
+      'elegir las ruletas de esta semana cambia las del juego al momento');
+    spinner.send({ t: 'treasure', id: `${cur}-${pick3[0]}` });
+    ok(!!(await spinner.wait(m => m.t === 'loot')), 'y se puede tirar en la elegida');
+    // Programar la de la semana que viene: esta no cambia; y volver a las de por defecto
+    const nx = await adm.ask('admin.wheels', { period: cur + 1, lines: pick3.slice().reverse() });
+    ok(nx.weeks[1].custom && nx.weeks[1].lines[0] === pick3[2] && D.treasures(cur)[0].id === `${cur}-${pick3[0]}`, 'programar la semana que viene no toca la de esta');
+    const back = await adm.ask('admin.wheels', { period: cur, lines: null });
+    ok(!back.weeks[0].custom && back.weeks[0].lines.join() === st.weeks[0].def.join() && D.treasures(cur)[0].id === `${cur}-${st.weeks[0].def[0]}`, 'y «Por defecto» vuelve a las de siempre');
+    ok(audit.query({ type: 'admin.ruletas' }).length >= 3 && audit.query({ type: 'admin.costes' }).length >= 1, 'todo queda en la auditoría');
+  }
+
   // ---------- Auditoría ----------
   const a1 = await adm.ask('admin.audit', { type: 'admin.' });
   ok(a1.rows.length >= 6 && a1.rows.every(r => r.type.startsWith('admin.')), 'filtrar la auditoría por tipo');

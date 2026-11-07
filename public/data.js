@@ -1661,12 +1661,22 @@
     const rnd = seeded('lucky-spin-lines');
     return [...TREASURE_STARTERS, ...roots.sort((x, y) => x - y).sort(() => rnd() - 0.5)];
   })();
+  // Las 3 líneas de una tanda: las que haya elegido un admin para esa semana (Panel > Servidor > Lucky Spin; el servidor
+  // manda el plan al juego) o, si no, las que tocan por orden
+  let wheelPlan = {};
+  const defaultWheelLines = period => {
+    const n = TREASURE_LINES.length, base = ((period * TREASURE_COUNT) % n + n) % n;
+    return Array.from({ length: TREASURE_COUNT }, (_, k) => TREASURE_LINES[(base + k) % n]);
+  };
+  const validWheelLines = lines => Array.isArray(lines) && lines.length === TREASURE_COUNT && new Set(lines).size === TREASURE_COUNT && lines.every(l => TREASURE_LINES.includes(l));
+  const wheelLines = period => validWheelLines(wheelPlan[period]) ? wheelPlan[period] : defaultWheelLines(period);
+  function setWheelPlan(plan) { wheelPlan = plan && typeof plan === 'object' ? plan : {}; treasureCache.clear(); }
   function treasures(period = treasurePeriod()) {
     if (treasureCache.has(period)) return treasureCache.get(period);
     const rnd = seeded('tesoros:' + period);   // las mismas en el servidor y en el cliente
-    const n = TREASURE_LINES.length, base = ((period * TREASURE_COUNT) % n + n) % n;
+    const lines = wheelLines(period);
     const out = Array.from({ length: TREASURE_COUNT }, (_, k) => {
-      const line = TREASURE_LINES[(base + k) % n];
+      const line = lines[k];
       const members = lineMembers(line).filter(d => d <= 251);
       const type = SPECIES[line].types[0];
       const fx = portraitFx(type);
@@ -1732,7 +1742,7 @@
 
   const api = { TYPE_NAMES, TYPE_LABEL, TYPE_COLOR, CHART, typeMult, MOVES, PROTECT, ENERGY, SWAP, SPECIES,
     DAILY_LOGIN, TUTORIAL_REWARD,
-    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, tmMoves, learnable, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds, treasureGot, treasureOwned,
+    FRAMES_SOON, AURAS_SOON, EFFECTS_SOON, frameCatalog, auraCatalog, pvpMoves, pvpSlots, levelMult, xpToNext, MAPS, ARENAS, MODIFIERS, ROUTES, GYMS, REGIONS, REGION_IDS, NODES, leadersOf, progOf, LEAGUE_FROM, leaderTeam, leaderExtras, REGION_STARTERS, STARTERS, SHOP, BALL_IDS, catchChance, routeWild, rollWild, ROUTE_SPECIALS, ROT_MS, ROT_EPOCH, rotIndex, rotEnds, dayKey, nextDay, shopMons, shopPrice, shopLevel, RARE_PERFECT, PERFECT_IVS, KIT, STONE_IDS, learnset, learnedAt, tmMoves, learnable, defaultMoves, levelCap, EV_MAX, EV_TOTAL, EV_VIT, IV_MAX, evTotal, VIT_STATS, STAT_KEYS, NATURES, NATURE_IDS, STAT6, randomNature, randomIv, natureMult, SHINY_RATE, looksShiny, sellPrice, RANKED_POOL, RANKED_LEVEL, RANKED_CALIB, pvpTeam, NICK_MAX, LEAGUES, leagueOf, SEASON, RANKED_REWARDS, SEASON_REWARDS, ACHIEVEMENTS, ACH_CATS, DEX_GENS, DEX_TOTAL, inDex, OUT_EVO_FROM, dexCount, achievementProgress, SHOWCASE_MAX, lineOf, lineMembers, MASTERY, MASTERY_TIERS, CATCH_STEP, perfectLine, MASTERY_ART, tierGoal, lineStat, SKINS, masteryWins, masteryTier, typeFrameOf, typeAuraOf, masteryTitle, masteryClaimed, masteryReady, hasMastery, skinOf, hasParticles, particlesOf, seasonTitle, RANKED_PAY, hasSkin, TOWER, GEMS, TREASURE_DAYS, treasurePeriod, treasureEnds, RARITY, SPIN_COST, TREASURE_LINES, TREASURE_COUNT, setWheelPlan, wheelLines, defaultWheelLines, validWheelLines, PORTRAIT_FX, portraitFx, EFFECTS, FACE_EMOTIONS, hasEmotion, treasures, treasureOdds, treasureGot, treasureOwned,
     achievementAvatar, badgeAvatar, avatarIds, MISSIONS, MISSION_COUNT, MISSION_TYPES, MISSION_REROLLS, MISSION_REROLL_COST, MISSION_CHEST, MISSION_BY_ID, weekKey, nextWeek, AURAS, AURA_SPECIAL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Data = api;

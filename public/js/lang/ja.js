@@ -1999,9 +1999,9 @@ export default {
     // ---------- Apoyo: costes reales ----------
     'Lo que cuesta mantener PokéArenas': 'PokéArenas の 運営費',
     'Servidor': 'サーバー',
-    'unos 10 € al mes': '月 約10ユーロ',
+    'unos {n} € al mes': '月 約{n}ユーロ',
     'Dominio': 'ドメイン',
-    '12 € al año': '年 12ユーロ',
+    '{n} € al año': '年 {n}ユーロ',
     'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '寄付は この費用に あてられます。ゲームは 無料・広告なしで、寄付しても 有利には なりません。',
     // ---------- Tarjetas de la barra superior ----------
     'Hay novedades que aún no has leído.': 'まだ 読んでいない おしらせが あります。',

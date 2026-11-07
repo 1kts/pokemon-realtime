@@ -18,6 +18,7 @@ const bugs = require('./bugs.js');
 const insights = require('./insights.js');
 const usage = require('./usage.js');
 const push = require('./push.js');
+const settings = require('./settings.js');
 const flags = require('./flags.js');
 const D = require('../public/data.js');
 
@@ -268,6 +269,23 @@ function createAdmin(ctx) {
         ctx.flagsChanged();
         audit.log('admin.interruptor', { actor: c.admin.id, ip: c.ip, id, on });
         return reply({ ok: `${flags.FLAGS[id].label}: ${on ? 'abierto' : 'cerrado para los jugadores'}`, rows: flags.list() });
+      }
+      // Ajustes sin sacar versión: lo que cuesta el juego (sale en «Apoyar») y qué ruletas salen cada semana
+      case 'admin.settings': return reply({ costs: settings.costs(), weeks: settings.weeks(), options: settings.wheelOptions() });
+      case 'admin.costs': {
+        const err = settings.setCosts({ server: msg.server, domain: msg.domain }, c.admin.id);
+        if (err) return reply({ err });
+        ctx.flagsChanged();
+        audit.log('admin.costes', { actor: c.admin.id, ip: c.ip, ...settings.costs() });
+        return reply({ ok: 'Costes guardados: ya salen así en «Apoyar»', costs: settings.costs() });
+      }
+      case 'admin.wheels': {
+        const period = msg.period | 0, lines = msg.lines === null ? null : msg.lines;
+        const err = settings.setWheels(period, lines, c.admin.id);
+        if (err) return reply({ err });
+        ctx.flagsChanged();
+        audit.log('admin.ruletas', { actor: c.admin.id, ip: c.ip, period, lines: lines || 'por defecto' });
+        return reply({ ok: lines ? 'Ruletas de esa semana guardadas' : 'Esa semana vuelve a las ruletas de por defecto', weeks: settings.weeks() });
       }
       case 'admin.logout':
         audit.log('admin.logout', { actor: c.admin.id, ip: c.ip });

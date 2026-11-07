@@ -106,6 +106,18 @@
 
   <section id="servidor" class="tab" hidden>
     <div class="grid2">
+      <form id="costs-f" class="card">
+        <h2>Lo que cuesta mantener el juego</h2>
+        <p class="small">Sale en el botón «Apoyar» del juego, en el idioma de cada uno.</p>
+        <label>Servidor (€ al mes) <input name="server" inputmode="decimal" required></label>
+        <label>Dominio (€ al año) <input name="domain" inputmode="decimal" required></label>
+        <button type="submit">Guardar</button>
+      </form>
+      <div class="card wide" id="wheels">
+        <h2>Lucky Spin: qué ruletas salen cada semana</h2>
+        <p class="small">Cambian los lunes. Elige las 3 de cualquier semana o déjala con las de por defecto. Cambiar las de <b>esta</b> semana es al momento: quien esté a medias en una ruleta que quites pierde sus tiradas en ella (lo que ya ganó se lo queda).</p>
+        <div id="wheels-list"></div>
+      </div>
       <form id="push-f" class="card">
         <h2>Aviso al móvil (notificación push)</h2>
         <p class="small" id="push-n">Les llega aunque no estén jugando: a quien ha activado los avisos de eventos.</p>

@@ -1988,9 +1988,9 @@ export default {
     // ---------- Apoyo: costes reales ----------
     'Lo que cuesta mantener PokéArenas': '维持 PokéArenas 运行的费用',
     'Servidor': '服务器',
-    'unos 10 € al mes': '每月约 10 欧元',
+    'unos {n} € al mes': '每月约 {n} 欧元',
     'Dominio': '域名',
-    '12 € al año': '每年 12 欧元',
+    '{n} € al año': '每年 {n} 欧元',
     'Las donaciones ayudan a cubrir estos gastos. El juego es gratis, sin anuncios, y donar no da ninguna ventaja.': '捐款用于帮助支付这些费用。游戏免费、没有广告，捐款不会带来任何优势。',
     // ---------- Tarjetas de la barra superior ----------
     'Hay novedades que aún no has leído.': '有尚未阅读的更新内容。',

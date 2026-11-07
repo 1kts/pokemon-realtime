@@ -202,7 +202,8 @@ net.on('disconnected', () => {
   resumeTimer = setTimeout(() => { net.hurry = false; if (!app.battle) return; endBattle(); ui.show('menu'); }, RESUME_MS);
 });
 net.on('profile', m => {
-  if (m.flags) ui.flags = m.flags; ui.setProfile(m.p, m.board, m.rank);
+  if (m.flags) { ui.flags = m.flags; Data.setWheelPlan(m.flags.wheels); }
+  ui.setProfile(m.p, m.board, m.rank);
   // Un enlace de reto (?reto=…): en cuanto entra, al combate amistoso con quien lo mandó
   const code = pendingReto();
   if (code && !app.battle) { clearReto(); net.send({ t: 'invite', a: 'join', code }); }
@@ -222,6 +223,7 @@ net.on('invite', m => ui.onInvite(m));
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
 net.on('flags', m => {
   ui.flags = m.flags;
+  Data.setWheelPlan(m.flags.wheels);   // (las ruletas de la semana las puede cambiar un admin)
   if (ui.root.hidden) return;   // (en combate no se repinta nada: se verá al volver)
   if (ui.view === 'treasure' && !ui.spinOpen()) { ui.toast(t('Lucky Spin está cerrado por ahora. ¡Vuelve pronto!'), 'bad'); ui.tzSpin = null; ui.show(ui.backView()); }
   else if ((ui.view === 'menu' || ui.view === 'treasure') && !ui.tzSpin) ui.show(ui.view, true);   // (no en mitad de una tirada)

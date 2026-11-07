@@ -30,6 +30,7 @@ const names = require('./names.js');
 const google = require('./google.js');
 const mail = require('./mail.js');
 const push = require('./push.js');
+const settings = require('./settings.js');
 const STARTED = Date.now();
 const crypto = require('crypto');
 
@@ -123,7 +124,7 @@ function sendProfile(c) {
   send(c, { t: 'profile', p: publicProfile(c.profile), board: store.leaderboard(), rank: store.rankOf(c.profile), flags: flagsOf(c) });
 }
 // Los interruptores (server/flags.js) tal como los ve este jugador: un admin lo ve todo abierto, con lo cerrado aparte
-const flagsOf = c => flags.forPlayer(!!(c.profile && adminRow(c.profile.id)));
+const flagsOf = c => ({ ...flags.forPlayer(!!(c.profile && adminRow(c.profile.id))), wheels: settings.wheelPlan(), costs: settings.costs() });
 function publicProfile(p) {
   const { account, act, ...rest } = p;
   // (el correo solo se lo enseña a su dueño: no sale en la ladder, ni en las fichas, ni en el panel de admin)
