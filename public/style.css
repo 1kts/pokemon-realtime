@@ -1724,6 +1724,15 @@ body.in-battle .now-playing { left: 50%; bottom: auto; top: 62px; transform: tra
 .daily-day.today .dd-art { animation: claimBeat 1.3s ease-in-out infinite; }
 .daily-day .claim-btn { padding: 7px 10px; font-size: 13px; }
 .daily-next { display: flex; align-items: center; gap: 6px; margin: 0 auto 0 0; }
+/* Lo que toca mañana (tras recoger el diario) y «Avísame» para que el móvil lo recuerde */
+.tomorrow { position: relative; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; margin: 0 auto 14px; padding: 8px 14px;
+  border: 1px dashed rgba(255,203,5,.45); border-radius: 12px; background: rgba(255,203,5,.07); max-width: 520px; }
+.tomorrow small { font: 800 13px var(--text); color: var(--yellow); text-transform: uppercase; letter-spacing: .04em; }
+.tomorrow .m-prize { display: flex; gap: 8px; }
+.remind { padding: 6px 14px; font-size: 15px; }
+.notif-panel .notif-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; font: 600 14px var(--text); color: #dbe4f5; cursor: pointer; }
+.notif-panel .notif-row input { width: 18px; height: 18px; accent-color: var(--yellow); }
+.notif-panel button { margin-top: 8px; }
 @media (max-width: 640px) { .daily-days { grid-template-columns: repeat(4, 1fr); } .daily-day.big { grid-column: span 2; } }
 
 /* Tutorial: tarjeta de pasos arriba del combate */

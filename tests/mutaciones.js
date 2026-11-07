@@ -344,4 +344,13 @@ module.exports = [
   { id: 'ia-carga-instantanea', que: 'La IA se aparta en cuanto empiezas a cargar un ataque, sin tiempo de reacción',
     archivo: 'server/ai.js', buscar: 'if (f.wind && !f.hidden && f.wind.t >= react) {', poner: 'if (f.wind && !f.hidden) {',
     tests: ['tools/ai-test.js'] },
+  { id: 'manana-oculto', que: 'Al recoger el premio diario ya no se ve lo que toca mañana ni «Avísame»',
+    archivo: 'public/js/missions.js', buscar: 'if (r.daily && this.tomorrowBox) box.append(', poner: 'if (false) box.append(',
+    tests: ['tests/e2e/avisos.e2e.js'] },
+  { id: 'avisos-sin-tope', que: 'Los avisos al móvil llegan cada 10 minutos en vez de uno al día: spam',
+    archivo: 'server/push.js', buscar: 'if (st.day === localDay(p, now)) return null;', poner: '',
+    tests: ['tools/server-test.js'] },
+  { id: 'avisos-a-cualquier-sitio', que: 'El servidor acepta suscripciones a cualquier dirección: se puede usar para atacar otras webs (o la red interna)',
+    archivo: 'server/push.js', buscar: "if (u.protocol !== 'https:' || u.port || !HOSTS.some(h => h.test(u.hostname))) return false;", poner: '',
+    tests: ['tools/server-test.js'] },
 ];

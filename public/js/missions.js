@@ -363,6 +363,7 @@ export const missionViews = {
     if (r.avatar) add(`<span class="ava-preview">${avatarArt(r.avatar, 56)}</span>`, `${t('Avatar')}: ${avatarName(r.avatar)}`);
     if (r.effect) { const pv = this.avatar(56, false, undefined, undefined, r.effect); pv.classList.add('ava-preview'); addEl(pv, effectName(r.effect)); }
     box.append(list);
+    if (r.daily && this.tomorrowBox) box.append(this.tomorrowBox(r.daily % Data.DAILY_LOGIN.length + 1));
     const acts = el('div', 'acts');
     if (r.avatar) {
       const use = el('button', '', t('Usar de avatar'));

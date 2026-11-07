@@ -11,6 +11,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': '手机通知',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': '不玩游戏时也能在手机或电脑上收到通知：每日奖励、新转盘、传说……点击“提醒我”或在设置中开启。每天最多一条，夜间不打扰。',
+    'Al recoger el premio diario ves lo que te toca mañana.': '领取每日奖励时，可以看到明天的奖励。',
+    'Avísame': '提醒我',
+    'Te avisaremos': '我们会提醒你',
+    'Mañana · día {n}': '明天 · 第 {n} 天',
+    'Avisos': '通知',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': '即使你不在游戏中也会提醒你：每天最多一条，夜间不打扰。',
+    'Tu premio diario está listo': '每日奖励已就绪',
+    'Ruletas nuevas en Lucky Spin': '幸运转盘上新',
+    'Un legendario en una de tus rutas': '你的道路上出现传说',
+    'Recordatorio si llevas días sin jugar': '几天没玩时提醒我',
+    'Eventos y novedades': '活动与新闻',
+    'Quitar los avisos': '关闭通知',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': '你已屏蔽通知，可以在浏览器设置中允许。',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': '在 iPhone 上，需要将游戏添加到主屏幕才能收到通知。',
+    'Este navegador no puede recibir avisos.': '此浏览器无法接收通知。',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': '无法开启通知，请稍后再试。',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': '更有价值的转盘',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': '幸运转盘：每个完整转盘需要 160 宝石，而不是 120。现在转盘每周更换，每天登录大约能完成三个中的两个：由你选择要哪个。',

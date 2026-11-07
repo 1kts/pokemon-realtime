@@ -79,7 +79,7 @@ function show(tab, force) {
   if (tab === 'resumen') overview();
   if (tab === 'auditoria' && (force || !$('#audit tbody').children.length)) loadAudit();
   if (tab === 'jugadores' && (force || !$('#results').children.length)) loadPlayers();
-  if (tab === 'servidor') { overview(true); loadFlags(); }
+  if (tab === 'servidor') { overview(true); loadFlags(); ask('admin.pushcount').then(r => { if (r.n !== undefined) $('#push-n').textContent = `Les llega aunque no estén jugando: ahora mismo, ${r.n} jugador${r.n === 1 ? '' : 'es'} con los avisos activados.`; }); }
   if (tab === 'metricas') loadMetrics();
   if (tab === 'balance') loadBalance();
   if (tab === 'bugs') loadBugs();
@@ -502,6 +502,16 @@ $('#csv').addEventListener('click', () => {
 });
 
 // ---------- Servidor ----------
+// Aviso push: a todos los que tienen los avisos de eventos o a los que llevan días sin entrar (con confirmación)
+$('#push-f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  if (!confirm(`¿Mandar este aviso?\n\n${f.get('title')}\n${f.get('body')}`)) return;
+  const r = await ask('admin.push', { title: f.get('title'), body: f.get('body'), idle: +f.get('idle') || 0, url: f.get('url') });
+  if (r.err) return toast(r.err, true);
+  toast(r.ok);
+  e.target.reset();
+});
 $('#announce').addEventListener('submit', async e => {
   e.preventDefault();
   const r = await ask('admin.broadcast', { msg: new FormData(e.target).get('msg') });

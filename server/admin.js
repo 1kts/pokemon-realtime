@@ -17,6 +17,7 @@ const metrics = require('./metrics.js');
 const bugs = require('./bugs.js');
 const insights = require('./insights.js');
 const usage = require('./usage.js');
+const push = require('./push.js');
 const flags = require('./flags.js');
 const D = require('../public/data.js');
 
@@ -244,6 +245,13 @@ function createAdmin(ctx) {
         for (const x of clients) if (x.profile) { send(x, { t: 'announce', msg: text }); n++; }
         audit.log('admin.broadcast', { actor: c.admin.id, ip: c.ip, msg: text, to: n });
         return reply({ ok: `Enviado a ${n} jugador${n === 1 ? '' : 'es'}` });
+      }
+      case 'admin.pushcount': return reply({ n: push.count() });
+      case 'admin.push': {
+        const r = await push.broadcast({ title: sanitize(msg.title, 60), body: sanitize(msg.body, 180), url: msg.url, idle: Math.max(0, Math.min(365, msg.idle | 0)) });
+        if (r.error) return reply({ err: r.error });
+        audit.log('admin.push', { actor: c.admin.id, ip: c.ip, title: sanitize(msg.title, 60), body: sanitize(msg.body, 180), idle: msg.idle | 0, to: r.n });
+        return reply({ ok: `Aviso enviado a ${r.n} jugador${r.n === 1 ? '' : 'es'}` });
       }
       case 'admin.maintenance': {
         const on = !!msg.on;

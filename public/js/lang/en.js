@@ -11,6 +11,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': 'Phone notifications',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Notifications on your phone or PC even when you are not playing: daily reward, new wheels, legendaries… Turn them on with “Notify me” or in Settings. At most one a day, never at night.',
+    'Al recoger el premio diario ves lo que te toca mañana.': 'When you claim your daily reward, you see what you get tomorrow.',
+    'Avísame': 'Notify me',
+    'Te avisaremos': 'We\'ll let you know',
+    'Mañana · día {n}': 'Tomorrow · day {n}',
+    'Avisos': 'Notifications',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': 'We\'ll notify you even when you\'re not playing: at most one a day, and never at night.',
+    'Tu premio diario está listo': 'Your daily reward is ready',
+    'Ruletas nuevas en Lucky Spin': 'New Lucky Spin wheels',
+    'Un legendario en una de tus rutas': 'A legendary on one of your routes',
+    'Recordatorio si llevas días sin jugar': 'A reminder if you haven\'t played for a few days',
+    'Eventos y novedades': 'Events and news',
+    'Quitar los avisos': 'Turn off notifications',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': 'You have blocked notifications. You can allow them in your browser settings.',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': 'On iPhone, notifications work with the game installed on your home screen.',
+    'Este navegador no puede recibir avisos.': 'This browser can\'t receive notifications.',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': 'Notifications couldn\'t be turned on. Try again in a moment.',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': 'More valuable wheels',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: each full wheel costs 160 gems instead of 120. Now that they change every week, playing daily completes about two of the three: you choose which one to take.',

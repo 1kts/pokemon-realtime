@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-07",
- "cazadas": 107,
- "total": 107,
+ "cazadas": 110,
+ "total": 110,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -757,6 +757,27 @@
     "tools/server-test.js"
    ],
    "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ una ruleta entera son 160 gemas: entrando a diario se completan unas dos de las tres por semana (2.86 con 343 gemas)"
+  },
+  "manana-oculto": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/avisos.e2e.js"
+   ],
+   "motivo": "avisos.e2e.js: ✗ al recoger el premio de hoy sale lo que toca mañana: el día 2, con sus 300 monedas | ✗ y «Avísame», para que el móvil recuerde volver"
+  },
+  "avisos-sin-tope": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ push: como mucho uno al día"
+  },
+  "avisos-a-cualquier-sitio": {
+   "resultado": "cazada",
+   "por": [
+    "tools/server-test.js"
+   ],
+   "motivo": "server-test.js: ✓ y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión ([\"error:TypeError: x is undefined @ ui.js:42\"]) | ✗ push: solo acepta los servicios de push de verdad (http://fcm.googleapis.com/x, https://127.0.0.1/x, https://evil.example/fcm.googleapis.com, https:/"
   }
  }
 }

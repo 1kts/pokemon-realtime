@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.44.0', date: '2026-11-07', title: 'Avisos al móvil',
+      items: [
+        ['nuevo', 'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.'],
+        ['nuevo', 'Al recoger el premio diario ves lo que te toca mañana.'],
+      ],
+    },
+    {
       v: '0.43.3', date: '2026-11-07', title: 'Ruletas más valiosas',
       items: [
         ['cambio', 'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.'],

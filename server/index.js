@@ -29,6 +29,7 @@ const art = require('./art.js');
 const names = require('./names.js');
 const google = require('./google.js');
 const mail = require('./mail.js');
+const push = require('./push.js');
 const STARTED = Date.now();
 const crypto = require('crypto');
 
@@ -112,6 +113,8 @@ const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
 function sendProfile(c) {
   usage.firstVisit(c);
+  if (c.lang) c.profile.lang = c.lang;   // (para los avisos, en su idioma)
+  push.touch(c.profile);
   delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
@@ -125,7 +128,7 @@ function publicProfile(p) {
   const { account, act, ...rest } = p;
   // (el correo solo se lo enseña a su dueño: no sale en la ladder, ni en las fichas, ni en el panel de admin)
   return { ...rest, account: account ? { user: account.user || null, email: account.email || null, google: !!account.google, pass: !!account.hash, since: account.since } : null, league: D.leagueOf(p.elo), tower: tower.view(p), missions: missions.view(p),
-    daily: daily.view(p) };
+    daily: daily.view(p), notif: push.view(p) };
 }
 // Qué está haciendo un jugador conectado (para su lista de amigos), o null si no está
 function doingOf(id) {
@@ -532,7 +535,7 @@ wss.on('connection', (ws, req) => {
   }
   let c = { ws, ip, limits: limits.forConn(ip), profile: null, battle: null, side: 0, queue: null, authTries: [] };
   clients.add(c);
-  send(c, { t: 'welcome', version: VERSION });
+  send(c, { t: 'welcome', version: VERSION, vapid: push.publicKey() });
   ws.on('message', raw => {
     if (c.adopted) c = c.adopted;   // (ha retomado su combate: sigue en la conexión de antes)
     let msg;
@@ -570,7 +573,7 @@ function handle(c, msg) {
   if (msg.t === 'ping') return send(c, { t: 'pong', ts: msg.ts });
   if (msg.t.startsWith('admin.')) return adminPanel.handle(c, msg);
   // Uso del juego para el panel (solo contadores del día): aparato, idioma y pantallas que se visitan
-  if (msg.t === 'ctx') return usage.session(c, msg);
+  if (msg.t === 'ctx') { if (/^[a-z]{2}$/.test(msg.lang || '')) { c.lang = msg.lang; if (c.profile) c.profile.lang = msg.lang; } return usage.session(c, msg); }
   if (msg.t === 'view') return usage.view(c, msg);
   if (msg.t === 'clienterr') return usage.clientError(c, msg);
   if (msg.t === 'first') return usage.firstFromClient(c, msg);
@@ -683,6 +686,16 @@ function handle(c, msg) {
   }
   // Misiones (recoger, cambiar, cofre), logros y medallas: lo recogido va en 'loot' para la animación
   if (msg.t === 'mission' && msg.a === 'refresh') return sendProfile(c);   // al acabar la cuenta atrás: misiones nuevas
+  // Avisos al móvil (server/push.js): activarlos en este aparato, quitarlos o elegir cuáles
+  if (msg.t === 'push') {
+    const p = c.profile;
+    if (msg.a === 'sub') { const err = push.subscribe(p, msg.sub, +msg.tz); if (err) return send(c, { t: 'error', msg: err }); }
+    else if (msg.a === 'unsub') push.unsubscribe(p, typeof msg.endpoint === 'string' ? msg.endpoint : null);
+    else if (msg.a === 'prefs') push.setPrefs(p, msg.prefs);
+    else return;
+    store.save();
+    return sendProfile(c);
+  }
   if (msg.t === 'mission' || msg.t === 'achclaim' || msg.t === 'badgeclaim' || msg.t === 'masteryclaim' || msg.t === 'daily' || msg.t === 'tutorial' || msg.t === 'treasure') {
     const r = msg.t === 'mission' && msg.a === 'claimAll' ? collectAll(c.profile, msg.scope)
       : msg.t === 'mission' ? missions.action(c.profile, msg)

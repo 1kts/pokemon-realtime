@@ -106,6 +106,15 @@
 
   <section id="servidor" class="tab" hidden>
     <div class="grid2">
+      <form id="push-f" class="card">
+        <h2>Aviso al móvil (notificación push)</h2>
+        <p class="small" id="push-n">Les llega aunque no estén jugando: a quien ha activado los avisos de eventos.</p>
+        <input name="title" maxlength="60" placeholder="Título. Ej.: 🌟 Shiny weekend!" required>
+        <textarea name="body" maxlength="180" rows="2" placeholder="Texto. Ej.: Shiny rate x2 until Sunday." required></textarea>
+        <label>A quién <select name="idle"><option value="0">A todos los que tienen avisos</option><option value="3">Solo los que llevan 3+ días sin entrar</option><option value="7">Solo los que llevan 7+ días sin entrar</option></select></label>
+        <label>Al tocarlo abre <select name="url"><option value="/">El juego</option><option value="/?ir=ruletas">Lucky Spin</option><option value="/?ir=premio">El premio diario</option><option value="/?ir=historia">La Historia</option></select></label>
+        <button type="submit">Enviar el aviso</button>
+      </form>
       <form id="announce" class="card">
         <h2>Anuncio a todos los conectados</h2>
         <textarea name="msg" maxlength="300" rows="3" placeholder="Ej.: Reinicio en 5 minutos para actualizar" required></textarea>

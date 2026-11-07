@@ -11,6 +11,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': 'Benachrichtigungen aufs Handy',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Benachrichtigungen aufs Handy oder den PC, auch ohne zu spielen: Tagesbelohnung, neue Räder, Legendäre … Aktivieren mit „Erinnere mich“ oder in den Einstellungen. Max. eine am Tag, nie nachts.',
+    'Al recoger el premio diario ves lo que te toca mañana.': 'Beim Abholen der täglichen Belohnung siehst du, was dich morgen erwartet.',
+    'Avísame': 'Erinnere mich',
+    'Te avisaremos': 'Wir sagen dir Bescheid',
+    'Mañana · día {n}': 'Morgen · Tag {n}',
+    'Avisos': 'Benachrichtigungen',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': 'Wir benachrichtigen dich auch, wenn du nicht spielst: höchstens einmal am Tag und nie nachts.',
+    'Tu premio diario está listo': 'Deine tägliche Belohnung ist bereit',
+    'Ruletas nuevas en Lucky Spin': 'Neue Lucky-Spin-Räder',
+    'Un legendario en una de tus rutas': 'Ein Legendäres auf einer deiner Routen',
+    'Recordatorio si llevas días sin jugar': 'Erinnerung, wenn du ein paar Tage nicht gespielt hast',
+    'Eventos y novedades': 'Events und Neuigkeiten',
+    'Quitar los avisos': 'Benachrichtigungen ausschalten',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': 'Du hast Benachrichtigungen blockiert. Du kannst sie in den Browsereinstellungen erlauben.',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': 'Auf dem iPhone funktionieren Benachrichtigungen, wenn das Spiel auf dem Home-Bildschirm installiert ist.',
+    'Este navegador no puede recibir avisos.': 'Dieser Browser kann keine Benachrichtigungen empfangen.',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': 'Benachrichtigungen konnten nicht aktiviert werden. Versuch es gleich noch einmal.',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': 'Wertvollere Glücksräder',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: Ein ganzes Rad kostet 160 statt 120 Edelsteine. Da sie jetzt jede Woche wechseln, schaffst du bei täglichem Spielen etwa zwei der drei – du entscheidest, welches.',

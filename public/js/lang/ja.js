@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': 'スマホへの通知',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'プレイしていなくてもスマホやPCに通知：デイリー報酬、新しいルーレット、伝説…「通知する」か設定でオンに。1日1件まで、夜間は送りません。',
+    'Al recoger el premio diario ves lo que te toca mañana.': 'デイリー報酬を受け取ると、明日の報酬が見られます。',
+    'Avísame': '通知する',
+    'Te avisaremos': 'お知らせします',
+    'Mañana · día {n}': '明日 · {n}日目',
+    'Avisos': '通知',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': 'プレイしていない時もお知らせします：1日1件まで、夜間は送りません。',
+    'Tu premio diario está listo': 'デイリー報酬を受け取れる',
+    'Ruletas nuevas en Lucky Spin': 'Lucky Spinの新しいルーレット',
+    'Un legendario en una de tus rutas': 'あなたのルートに伝説が出現',
+    'Recordatorio si llevas días sin jugar': '数日プレイしていない時のリマインダー',
+    'Eventos y novedades': 'イベントとお知らせ',
+    'Quitar los avisos': '通知をオフにする',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': '通知をブロックしています。ブラウザの設定で許可できます。',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': 'iPhoneでは、ゲームをホーム画面に追加すると通知が届きます。',
+    'Este navegador no puede recibir avisos.': 'このブラウザは通知を受け取れません。',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': '通知をオンにできませんでした。少ししてからもう一度お試しください。',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': 'より価値のあるルーレット',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin：ルーレット1つを全部回すのに 120 ではなく 160 ジェムかかります。毎週入れ替わるようになったので、毎日遊べば3つのうち2つほど完成できます。どれを取るかはあなた次第です。',

@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': 'Notifiche sul telefono',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': 'Notifiche sul telefono o sul PC anche senza giocare: premio giornaliero, nuove ruote, leggendari… Attivale con «Avvisami» o nelle Impostazioni. Al massimo una al giorno, mai di notte.',
+    'Al recoger el premio diario ves lo que te toca mañana.': 'Quando riscatti il premio giornaliero vedi quello di domani.',
+    'Avísame': 'Avvisami',
+    'Te avisaremos': 'Ti avviseremo',
+    'Mañana · día {n}': 'Domani · giorno {n}',
+    'Avisos': 'Notifiche',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': 'Ti avvisiamo anche quando non giochi: al massimo una volta al giorno, e mai di notte.',
+    'Tu premio diario está listo': 'Il premio giornaliero è pronto',
+    'Ruletas nuevas en Lucky Spin': 'Nuove ruote Lucky Spin',
+    'Un legendario en una de tus rutas': 'Un leggendario su uno dei tuoi percorsi',
+    'Recordatorio si llevas días sin jugar': 'Un promemoria se non giochi da qualche giorno',
+    'Eventos y novedades': 'Eventi e novità',
+    'Quitar los avisos': 'Disattiva le notifiche',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': 'Hai bloccato le notifiche. Puoi consentirle nelle impostazioni del browser.',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': 'Su iPhone le notifiche funzionano con il gioco installato nella schermata Home.',
+    'Este navegador no puede recibir avisos.': 'Questo browser non può ricevere notifiche.',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': 'Non è stato possibile attivare le notifiche. Riprova tra un momento.',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': 'Ruote più preziose',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: ogni ruota completa costa 160 gemme invece di 120. Ora che cambiano ogni settimana, giocando ogni giorno ne completi circa due su tre: scegli tu quale prendere.',

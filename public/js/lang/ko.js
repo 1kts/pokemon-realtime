@@ -12,6 +12,25 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.44.0 ----------
+    'Avisos al móvil': '휴대폰 알림',
+    'Avisos al móvil o al PC aunque no juegues: premio diario, ruletas nuevas, legendarios… Actívalos con «Avísame» o en Ajustes > Avisos. Uno al día como mucho, nunca de noche.': '게임을 하지 않아도 휴대폰이나 PC로 알림: 일일 보상, 새 룰렛, 전설… “알려줘” 또는 설정에서 켜세요. 하루 최대 한 번, 밤에는 보내지 않아요.',
+    'Al recoger el premio diario ves lo que te toca mañana.': '일일 보상을 받으면 내일 받을 보상을 볼 수 있어요.',
+    'Avísame': '알려줘',
+    'Te avisaremos': '알려드릴게요',
+    'Mañana · día {n}': '내일 · {n}일차',
+    'Avisos': '알림',
+    'Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.': '게임을 하지 않을 때도 알려드려요: 하루 최대 한 번, 밤에는 보내지 않아요.',
+    'Tu premio diario está listo': '일일 보상이 준비됨',
+    'Ruletas nuevas en Lucky Spin': '새 Lucky Spin 룰렛',
+    'Un legendario en una de tus rutas': '당신의 루트에 전설 등장',
+    'Recordatorio si llevas días sin jugar': '며칠 동안 플레이하지 않으면 알림',
+    'Eventos y novedades': '이벤트 및 소식',
+    'Quitar los avisos': '알림 끄기',
+    'Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.': '알림을 차단했어요. 브라우저 설정에서 허용할 수 있어요.',
+    'En el iPhone, los avisos funcionan con el juego instalado en la pantalla de inicio.': 'iPhone에서는 게임을 홈 화면에 설치해야 알림이 와요.',
+    'Este navegador no puede recibir avisos.': '이 브라우저는 알림을 받을 수 없어요.',
+    'No se han podido activar los avisos. Prueba otra vez en un momento.': '알림을 켤 수 없었어요. 잠시 후 다시 시도해 주세요.',
     // ---------- Novedades v0.43.3 ----------
     'Ruletas más valiosas': '더 가치 있는 룰렛',
     'Lucky Spin: cada ruleta entera cuesta 160 gemas en vez de 120. Ahora que cambian cada semana, entrando a diario completas unas dos de las tres: eliges cuál te llevas.': 'Lucky Spin: 룰렛 하나를 모두 돌리는 데 120 대신 160 젬이 듭니다. 이제 매주 바뀌므로, 매일 접속하면 세 개 중 두 개 정도를 완성할 수 있습니다. 어떤 것을 가질지 직접 고르세요.',

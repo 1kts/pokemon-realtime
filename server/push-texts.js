@@ -1,0 +1,68 @@
+// Textos de los avisos (server/push.js), en los idiomas del juego: [título, texto]. {n}: día del ciclo; {prize}: el
+// premio; {h}: horas que le quedan al legendario en la ruta
+module.exports = {
+  en: {
+    daily: ['🎁 Your daily reward is ready', 'Day {n}: {prize}. Claim it before it resets!'],
+    day7: ['🔥 Day 7 reward unlocked', '{prize} and more… don\'t break your streak!'],
+    wheels: ['🎡 New Lucky Spin wheels', '3 new wheels this week, with a new Elemental skin. Take a look!'],
+    rare: ['✨ Something rare appeared', 'A legendary is hiding on one of your routes for the next {h} h…'],
+    back3: ['⚔️ Your team misses you', 'Your daily reward is waiting, and the next gym leader is still undefeated.'],
+    back7: ['👀 Still there, Trainer?', 'New wheels, new routes. Your progress is saved. One battle?'],
+  },
+  es: {
+    daily: ['🎁 Tu premio diario está listo', 'Día {n}: {prize}. ¡Recógelo antes de que cambie!'],
+    day7: ['🔥 Premio del día 7 desbloqueado', '{prize} y más… ¡no rompas la racha!'],
+    wheels: ['🎡 Ruletas nuevas en Lucky Spin', '3 ruletas nuevas esta semana, con una skin Elemental nueva. ¡Échales un vistazo!'],
+    rare: ['✨ Ha aparecido algo raro', 'Un legendario se esconde en una de tus rutas durante {h} h…'],
+    back3: ['⚔️ Tu equipo te echa de menos', 'Tu premio diario te espera, y el próximo líder sigue invicto.'],
+    back7: ['👀 ¿Sigues ahí, Entrenador?', 'Ruletas nuevas, rutas nuevas. Tu progreso está guardado. ¿Un combate?'],
+  },
+  fr: {
+    daily: ['🎁 Ta récompense du jour est prête', 'Jour {n} : {prize}. Récupère-la avant qu\'elle change !'],
+    day7: ['🔥 Récompense du jour 7 débloquée', '{prize} et plus… ne casse pas ta série !'],
+    wheels: ['🎡 Nouvelles roues Lucky Spin', '3 nouvelles roues cette semaine, avec un nouveau skin Élémentaire. Viens voir !'],
+    rare: ['✨ Quelque chose de rare est apparu', 'Un légendaire se cache sur une de tes routes pendant {h} h…'],
+    back3: ['⚔️ Ton équipe s\'ennuie de toi', 'Ta récompense du jour t\'attend, et le prochain champion est toujours invaincu.'],
+    back7: ['👀 Toujours là, Dresseur ?', 'Nouvelles roues, nouvelles routes. Ta progression est sauvegardée. Un combat ?'],
+  },
+  de: {
+    daily: ['🎁 Deine tägliche Belohnung ist bereit', 'Tag {n}: {prize}. Hol sie dir, bevor sie wechselt!'],
+    day7: ['🔥 Belohnung für Tag 7 freigeschaltet', '{prize} und mehr … reiß deine Serie nicht ab!'],
+    wheels: ['🎡 Neue Lucky-Spin-Räder', '3 neue Räder diese Woche, mit einem neuen Elementar-Skin. Schau vorbei!'],
+    rare: ['✨ Etwas Seltenes ist aufgetaucht', 'Ein Legendäres versteckt sich noch {h} Std. auf einer deiner Routen …'],
+    back3: ['⚔️ Dein Team vermisst dich', 'Deine tägliche Belohnung wartet, und der nächste Arenaleiter ist noch ungeschlagen.'],
+    back7: ['👀 Noch da, Trainer?', 'Neue Räder, neue Routen. Dein Fortschritt ist gespeichert. Ein Kampf?'],
+  },
+  it: {
+    daily: ['🎁 Il tuo premio giornaliero è pronto', 'Giorno {n}: {prize}. Riscattalo prima che cambi!'],
+    day7: ['🔥 Premio del giorno 7 sbloccato', '{prize} e altro… non interrompere la serie!'],
+    wheels: ['🎡 Nuove ruote Lucky Spin', '3 nuove ruote questa settimana, con una nuova skin Elementale. Dai un\'occhiata!'],
+    rare: ['✨ È apparso qualcosa di raro', 'Un leggendario si nasconde su uno dei tuoi percorsi per {h} h…'],
+    back3: ['⚔️ La tua squadra ti aspetta', 'Il tuo premio giornaliero ti aspetta e il prossimo capopalestra è ancora imbattuto.'],
+    back7: ['👀 Ci sei ancora, Allenatore?', 'Nuove ruote, nuovi percorsi. I tuoi progressi sono salvati. Una lotta?'],
+  },
+  zh: {
+    daily: ['🎁 每日奖励已就绪', '第 {n} 天：{prize}。在重置前领取吧！'],
+    day7: ['🔥 第 7 天奖励已解锁', '{prize} 等着你……别中断连续登录！'],
+    wheels: ['🎡 新的幸运转盘', '本周有 3 个新转盘，还有全新的元素皮肤。快来看看！'],
+    rare: ['✨ 稀有的东西出现了', '一只传说中的宝可梦会在你的某条道路上出现 {h} 小时……'],
+    back3: ['⚔️ 你的队伍想你了', '每日奖励在等你，下一位道馆馆主还没被打败。'],
+    back7: ['👀 训练家，还在吗？', '新的转盘、新的道路，进度都已保存。来一场对战？'],
+  },
+  ja: {
+    daily: ['🎁 デイリー報酬を受け取れます', '{n}日目：{prize}。リセット前に受け取ろう！'],
+    day7: ['🔥 7日目の報酬が解放されました', '{prize} など…連続ログインを途切れさせないで！'],
+    wheels: ['🎡 新しいLucky Spinルーレット', '今週は新しいルーレットが3つ、新しいエレメンタルスキン付き。チェックしよう！'],
+    rare: ['✨ 珍しいものが現れた', 'あなたのルートのどこかに伝説が{h}時間ひそんでいます…'],
+    back3: ['⚔️ チームが待っています', 'デイリー報酬が待っています。次のジムリーダーはまだ無敗です。'],
+    back7: ['👀 トレーナー、まだいますか？', '新しいルーレット、新しいルート。進行状況は保存されています。1バトルどう？'],
+  },
+  ko: {
+    daily: ['🎁 일일 보상이 준비됐어요', '{n}일차: {prize}. 초기화되기 전에 받으세요!'],
+    day7: ['🔥 7일차 보상 해금', '{prize} 그리고 더… 연속 기록을 끊지 마세요!'],
+    wheels: ['🎡 새로운 Lucky Spin 룰렛', '이번 주 새 룰렛 3개, 새로운 엘리멘탈 스킨과 함께. 확인해 보세요!'],
+    rare: ['✨ 희귀한 것이 나타났어요', '전설이 당신의 루트 중 한 곳에 {h}시간 동안 숨어 있어요…'],
+    back3: ['⚔️ 팀이 당신을 기다려요', '일일 보상이 기다리고 있고, 다음 체육관 관장은 아직 무패예요.'],
+    back7: ['👀 아직 거기 있나요, 트레이너?', '새 룰렛, 새 루트. 진행 상황은 저장되어 있어요. 한 판 할까요?'],
+  },
+};

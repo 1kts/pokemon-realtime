@@ -5,6 +5,7 @@ import { t } from './i18n.js';
 import { prizeHtml, countdown } from './missions.js';
 import { item as itemImg } from './pixicons.js';
 import { storage } from './net.js';
+import { pushEnable, pushBlocked, pushHere } from './push.js';
 
 const SEEN = 'arena.dailySeen';
 
@@ -42,6 +43,26 @@ export const dailyViews = {
     return grid;
   },
 
+  // Lo que toca mañana (el día n del ciclo) y, si aún no tiene los avisos, «Avísame»: una razón para volver
+  tomorrowBox(n) {
+    const rw = Data.DAILY_LOGIN[(n - 1) % Data.DAILY_LOGIN.length];
+    const box = el('div', 'tomorrow', `<small>${t('Mañana · día {n}', { n })}</small><div class="m-prize">${prizeHtml(rw)}</div>`);
+    const p = this.profile;
+    if (p && !pushHere() && !pushBlocked()) box.append(this.remindButton());
+    return box;
+  },
+  // «Avísame»: activa los avisos en este aparato (pide permiso al navegador)
+  remindButton() {
+    const b = el('button', 'remind', `🔔 ${t('Avísame')}`);
+    b.onclick = async () => {
+      b.disabled = true;
+      const err = await pushEnable(this.net);
+      if (err) { b.disabled = false; this.toast(err, 'bad', 5000); return; }
+      b.textContent = `✓ ${t('Te avisaremos')}`;
+    };
+    return b;
+  },
+
   dailyModal() {
     if (!this.profile || !this.profile.daily || document.querySelector('.daily-modal')) return;
     const d = this.profile.daily;
@@ -57,6 +78,7 @@ export const dailyViews = {
       const next = el('p', 'small daily-next', t('Siguiente premio en'));
       next.append(' ', countdown(d.ends));
       acts.append(next);
+      box.append(this.tomorrowBox(d.day % Data.DAILY_LOGIN.length + 1));
     }
     const ok = el('button', d.ready ? '' : 'primary', d.ready ? t('Luego') : t('Cerrar'));
     ok.onclick = close;

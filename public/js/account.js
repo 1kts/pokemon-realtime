@@ -1,6 +1,7 @@
 // Pantallas de cuenta y publicación: portada con invitado / inicio de sesión / registro, perfil
 // (estadísticas, historial, títulos, marcos, avatar, contraseña), recompensas de clasificatoria,
 // novedades y aviso legal. Se añaden como métodos de UI (ver el final de ui.js).
+import { pushDisable, pushBlocked, pushHere } from './push.js';
 import { confirmBox } from './dialog.js';
 import { portrait, animatedPortrait, monIcon, face, trainerImg } from './sprites.js';
 import { escapeHtml, tagName } from './battle.js';
@@ -691,7 +692,29 @@ export const accountViews = {
       up.onclick = () => { storage.set('arena.gfx', '0'); location.reload(); };
       gfxBox.append(up);
     }
-    body.append(lang, mus, gfxBox, cursorBox, me, news, bug, about);
+    // Avisos al móvil o al PC (aunque el juego esté cerrado): activarlos en este aparato y elegir cuáles
+    const notif = p.notif || {};
+    const nb = el('div', 'panel notif-panel');
+    nb.append(el('h3', '', `🔔 ${t('Avisos')}`), el('p', 'small', t('Te avisamos aunque no estés jugando: como mucho uno al día, y nunca de noche.')));
+    if (notif.on) {
+      const KINDS = [['daily', t('Tu premio diario está listo')], ['wheels', t('Ruletas nuevas en Lucky Spin')], ['rare', t('Un legendario en una de tus rutas')],
+        ['back', t('Recordatorio si llevas días sin jugar')], ['events', t('Eventos y novedades')]];
+      for (const [k, label] of KINDS) {
+        const row = el('label', 'notif-row');
+        const cb = el('input'); cb.type = 'checkbox'; cb.checked = notif[k] !== false;
+        cb.onchange = () => this.net.send({ t: 'push', a: 'prefs', prefs: { [k]: cb.checked } });
+        row.append(cb, document.createTextNode(label));
+        nb.append(row);
+      }
+    }
+    // (los avisos van por aparato: en este, activarlos o quitarlos)
+    if (pushHere()) {
+      const off = el('button', '', t('Quitar los avisos'));
+      off.onclick = () => pushDisable(this.net);
+      nb.append(off);
+    } else if (pushBlocked()) nb.append(el('p', 'small', t('Has bloqueado los avisos. Puedes permitirlos en los ajustes del navegador.')));
+    else nb.append(this.remindButton());
+    body.append(lang, mus, nb, gfxBox, cursorBox, me, news, bug, about);
     wrap.append(body);
     this.root.append(wrap);
   },
@@ -1024,6 +1047,7 @@ export const accountViews = {
   },
 
   logout() {
+    if (pushHere()) pushDisable(this.net);   // (en un aparato compartido, que no le lleguen los avisos del que se va)
     this.net.logout();
     this.profile = null;
     this.authTab = 'login';

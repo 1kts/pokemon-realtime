@@ -24,6 +24,7 @@ import { netPanel, netStats } from './netstats.js';
 import { pacer } from './smooth.js';
 import { Sfx } from './sfx.js';
 import { lowerQuality, density } from './gfx.js';
+import { setVapid, pushInit, onPushOpen } from './push.js';
 
 // Los trozos de chino, japonés y coreano de la letra (más de 200 reglas, 60 KB): aparte, sin bloquear el primer pintado,
 // y en los demás idiomas cuando la página ya ha cargado (solo hacen falta para los nombres de esos idiomas en Ajustes)
@@ -205,7 +206,18 @@ net.on('profile', m => {
   // Un enlace de reto (?reto=…): en cuanto entra, al combate amistoso con quien lo mandó
   const code = pendingReto();
   if (code && !app.battle) { clearReto(); net.send({ t: 'invite', a: 'join', code }); }
+  // Al tocar un aviso (?ir=…): a esa pantalla, una vez
+  const ir = new URLSearchParams(location.search).get('ir');
+  if (ir) { history.replaceState(null, '', location.pathname); goTo(ir); }
 });
+// La pantalla de un aviso (nunca en mitad de un combate: ahí se queda donde está)
+function goTo(ir) {
+  if (app.battle || !ui.profile) return;
+  if (ir === 'premio') ui.dailyModal();
+  else if (ir === 'ruletas' && ui.spinOpen()) ui.show('treasure');
+  else if (ir === 'historia' || ir === 'ruta') ui.show('story');
+}
+onPushOpen(goTo);
 net.on('invite', m => ui.onInvite(m));
 // Un interruptor del panel de admin ha cambiado (server/flags.js): si cierra Lucky Spin y estás dentro, vuelves
 net.on('flags', m => {
@@ -252,7 +264,8 @@ net.on('replaced', () => {
   box.append(inner);
   document.body.append(box);
 });
-net.on('welcome', m => { ui.versionCheck(m.version); clearChallenge(ui); });
+net.on('welcome', m => { ui.versionCheck(m.version); clearChallenge(ui); if (m.vapid) setVapid(m.vapid); });
+pushInit();
 net.on('autherr', m => { ui.authError(tServer(m.msg)); if (!ui.authMsg || !ui.authMsg.isConnected) ui.toast(tServer(m.msg), 'bad'); });
 friendNotices(net, ui);
 net.on('bugok', () => { if (ui.onBugSent) { ui.onBugSent(); ui.onBugSent = null; } });

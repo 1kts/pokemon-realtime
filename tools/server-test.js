@@ -15,6 +15,7 @@ process.env.ARENA_NPCS = '0';   // sin entrenadores IA: estas pruebas miran el r
 const crypto = require('crypto');
 const googleKey = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
 process.env.MAIL_TEST = '1';
+process.env.PUSH_TEST = '1';   // (los avisos push no salen: se quedan en push.sent)
 process.env.GOOGLE_CLIENT_ID = 'prueba.apps.googleusercontent.com';
 process.env.GOOGLE_TEST_JWKS = JSON.stringify({ keys: [{ ...googleKey.publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256', use: 'sig' }] });
 function googleToken(claims = {}, key = googleKey.privateKey, kid = 'k1') {
@@ -693,6 +694,80 @@ class Client {
     }
     ok(us['error:TypeError: x is undefined @ ui.js:42'] === 5, `y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión (${JSON.stringify(Object.keys(us).filter(k => k.startsWith('error:')))})`);
   }
+  // ---------- Avisos al móvil (Web Push) ----------
+  {
+    const push = require('../server/push.js'), crypto = require('crypto'), D = require('../public/data.js');
+    // El navegador: sus claves (como las que da pushManager.subscribe) y cómo descifra (RFC 8291)
+    const ua = crypto.createECDH('prime256v1'); ua.generateKeys();
+    const authSecret = crypto.randomBytes(16);
+    const sub = { endpoint: 'https://fcm.googleapis.com/fcm/send/prueba-1', keys: { p256dh: ua.getPublicKey().toString('base64url'), auth: authSecret.toString('base64url') } };
+    const decrypt = buf => {
+      const salt = buf.subarray(0, 16), idlen = buf.readUInt8(20), as = buf.subarray(21, 21 + idlen), ct = buf.subarray(21 + idlen);
+      const shared = ua.computeSecret(as);
+      const ikm = Buffer.from(crypto.hkdfSync('sha256', shared, authSecret, Buffer.concat([Buffer.from('WebPush: info\0'), ua.getPublicKey(), as]), 32));
+      const cek = Buffer.from(crypto.hkdfSync('sha256', ikm, salt, Buffer.from('Content-Encoding: aes128gcm\0'), 16));
+      const nonce = Buffer.from(crypto.hkdfSync('sha256', ikm, salt, Buffer.from('Content-Encoding: nonce\0'), 12));
+      const d = crypto.createDecipheriv('aes-128-gcm', cek, nonce); d.setAuthTag(ct.subarray(ct.length - 16));
+      const out = Buffer.concat([d.update(ct.subarray(0, ct.length - 16)), d.final()]);
+      return out.subarray(0, out.lastIndexOf(2)).toString();
+    };
+    ok(decrypt(push.encrypt('{"title":"¡Hola!"}', sub.keys.p256dh, sub.keys.auth)) === '{"title":"¡Hola!"}', 'push: el aviso va cifrado y solo ese navegador lo descifra (RFC 8291)');
+    // La firma VAPID se comprueba con la clave pública que se manda al juego
+    const auth = push.vapidAuth(sub.endpoint), [h64, b64j, s64] = auth.match(/t=([^,]+)/)[1].split('.');
+    const pub = Buffer.from(push.publicKey(), 'base64url');
+    const key = crypto.createPublicKey({ key: { kty: 'EC', crv: 'P-256', x: pub.subarray(1, 33).toString('base64url'), y: pub.subarray(33).toString('base64url') }, format: 'jwk' });
+    ok(crypto.verify('sha256', Buffer.from(`${h64}.${b64j}`), { key, dsaEncoding: 'ieee-p1363' }, Buffer.from(s64, 'base64url')) && JSON.parse(Buffer.from(b64j, 'base64url')).aud === 'https://fcm.googleapis.com',
+      'push: firmado con VAPID (ES256) para el servicio de push del navegador');
+    // Seguridad: solo los servicios de push de los navegadores, nunca una dirección cualquiera (el servidor no hace de proxy)
+    const bad = ['http://fcm.googleapis.com/x', 'https://127.0.0.1/x', 'https://evil.example/fcm.googleapis.com', 'https://fcm.googleapis.com.evil.com/x', 'https://fcm.googleapis.com:8443/x']
+      .filter(e => push.validSub({ ...sub, endpoint: e }));
+    ok(!bad.length && push.validSub(sub) && push.validSub({ ...sub, endpoint: 'https://web.push.apple.com/abc' }) && !push.validSub({ ...sub, keys: { p256dh: 'x', auth: 'y' } }),
+      `push: solo acepta los servicios de push de verdad (${bad.join(', ') || 'ninguna rara'})`);
+    // Activarlos desde el juego: el perfil dice que están puestos y con todos los tipos
+    const u = new Client(port); await u.open();
+    await u.req({ t: 'hello', token });
+    let pr = await u.req({ t: 'push', a: 'sub', sub, tz: 60 });
+    ok(pr.p.notif.on && pr.p.notif.daily && pr.p.notif.wheels, 'push: «Avísame» guarda la suscripción y enciende los avisos');
+    pr = await u.req({ t: 'push', a: 'prefs', prefs: { wheels: false } });
+    ok(pr.p.notif.on && !pr.p.notif.wheels && pr.p.notif.daily, 'push: cada tipo de aviso se apaga por separado');
+    const err = u.wait('error'); u.send({ t: 'push', a: 'sub', sub: { ...sub, endpoint: 'https://169.254.169.254/latest' } });
+    ok(/no es válida/.test((await err).msg), 'push: una suscripción a otra dirección se rechaza');
+    // Las reglas: a su hora, nunca de noche, uno al día, y al mes sin entrar ya nada
+    const H = 3600e3, mon = Date.UTC(2026, 10, 9, 0, 0);   // lunes (ruletas nuevas)
+    const base = () => ({ id: 'np', notif: { on: true, daily: true, wheels: true, rare: false, back: true, events: true }, tz: 0, playHour: 18,
+      daily: { last: D.dayKey(mon + 2 * 864e5), streak: 2 }, seen: mon + 2 * 864e5 + 10 * H, created: mon - 30 * 864e5 });
+    const at = (p, t) => (push.pick(p, t) || {}).key || null;
+    const wed = mon + 2 * 864e5, thu = mon + 3 * 864e5;
+    ok(at(base(), thu + 19 * H) === 'daily' && at(base(), thu + 12 * H) === null && at(base(), thu + 23 * H) === null,
+      'push: el premio diario se avisa a la hora a la que suele jugar, y nunca de noche');
+    ok(at({ ...base(), tz: 540 }, thu + 10 * H) === 'daily' && at({ ...base(), tz: 540 }, thu + 19 * H) === null, 'push: con su hora local (alguien en Japón)');
+    ok(at({ ...base(), notifSt: { day: D.dayKey(thu) } }, thu + 20 * H) === null, 'push: como mucho uno al día');
+    ok(at({ ...base(), daily: { last: D.dayKey(mon + 5 * 864e5), streak: 6 }, seen: mon + 5 * 864e5 }, mon + 6 * 864e5 + 19 * H) === 'day7', 'push: el del día 7, con su propio texto');
+    ok(at({ ...base(), daily: { last: D.dayKey(mon - 864e5), streak: 1 }, seen: mon - 864e5 }, mon + 19 * H) === 'wheels', 'push: el lunes, las ruletas nuevas');
+    ok(at({ ...base(), seen: wed - 4 * 864e5 }, thu + 19 * H) === 'back3' && at({ ...base(), seen: wed - 9 * 864e5, notifSt: { back3: true } }, thu + 19 * H) === 'back7',
+      'push: si lleva 3 o 7 días sin entrar, un recordatorio (una vez cada uno)');
+    ok(at({ ...base(), seen: thu - 40 * 864e5 }, thu + 19 * H) === null, 'push: al mes sin entrar, ya ninguno');
+    ok(at({ ...base(), notif: { on: false } }, thu + 19 * H) === null && at({ ...base(), notif: { ...base().notif, daily: false } }, thu + 19 * H) === null, 'push: apagados (todos o ese tipo), nada');
+    // Un aviso del admin: a quien tenga los de eventos y, si se pide, solo a quien lleva días sin entrar
+    push.sent.length = 0;
+    const r1 = await push.broadcast({ title: 'Shiny weekend!', body: 'Shiny rate x2 until Sunday.', url: '/?ir=ruletas' });
+    const r2 = await push.broadcast({ title: 'Te echamos de menos', body: 'Vuelve', idle: 30 });
+    const r3 = await push.broadcast({ title: 'Malo', body: 'x', url: 'https://phish.example' });
+    ok(push.safePath('//phish.example/login') === '/' && push.safePath('/\\phish.example') === '/' && push.safePath('/?ir=ruletas') === '/?ir=ruletas',
+      'push: «//otra-web» (que el navegador lee como otra web) tampoco cuela');
+    // Al volver a jugar, los recordatorios de «llevas días sin entrar» vuelven a valer para la próxima ausencia
+    const back = { ...base(), notifSt: { back3: true, back7: true } };
+    push.touch(back);
+    ok(!back.notifSt.back3 && !back.notifSt.back7, 'push: al volver, el «te echamos de menos» vale otra vez para la próxima vez que se vaya');
+    ok(r1.n === 1 && push.sent[0].title === 'Shiny weekend!' && push.sent[0].url === '/?ir=ruletas' && r2.n === 0 && push.sent[push.sent.length - 1].url === '/',
+      'push: el aviso del admin llega a quien tiene los avisos, se puede limitar a los que no entran, y solo abre páginas del juego');
+    void r3;
+    pr = await u.req({ t: 'push', a: 'unsub', endpoint: 'https://fcm.googleapis.com/fcm/send/otro-aparato' });
+    ok(pr.p.notif.on && push.count() === 1, 'push: van por aparato: quitar los de otro no toca los de este');
+    pr = await u.req({ t: 'push', a: 'unsub', endpoint: sub.endpoint });
+    ok(!pr.p.notif.on && push.count() === 0, 'push: quitarlos en Ajustes borra la suscripción de este aparato (y sin ninguna, apagados)');
+    u.ws.close();
+  }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));
   ok(hz.ok && hz.version === require('../package.json').version, '/healthz responde con la versión');
   // Los sprites, en WebP (un 42 % menos que los PNG, sin perder un píxel), con su tipo y guardados un día en el navegador
@@ -701,6 +776,8 @@ class Client {
     const w = await head('/sprites/6/Idle.webp'), p = await head('/sprites/6/Idle.png');
     ok(w.code === 200 && /image\/webp/.test(w.type) && /max-age=86400/.test(w.cache), `los sprites se sirven en WebP, con caché (${w.code} ${w.type} ${w.cache})`);
     ok(p.code === 200 && /image\/webp/.test(p.type), `quien aún tiene abierta una versión de antes y los pide en PNG recibe el WebP, no un hueco (${p.code} ${p.type})`);
+    const sw = await head('/sw.js');
+    ok(sw.code === 200 && /javascript/.test(sw.type) && /no-cache/.test(sw.cache), `el service worker de los avisos se sirve como JavaScript y sin caché (para que se actualice) (${sw.code} ${sw.type} ${sw.cache})`);
     const pr = await head('/portraits/emo/25/Happy.png'), ic = await head('/icons/25.png');
     ok(pr.code === 200 && /image\/webp/.test(pr.type) && ic.code === 200 && /image\/webp/.test(ic.type), `los retratos y los iconos también van en WebP, y los PNG de antes reciben el WebP (${pr.type}, ${ic.type})`);
     ok((await head('/sprites/6/NoExiste.png')).code === 404 && (await head('/js/../../package.json')).code !== 200, 'lo que no existe sigue sin existir');
