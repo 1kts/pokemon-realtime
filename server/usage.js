@@ -18,8 +18,10 @@ const VIEW_RE = /^[a-z_]{2,20}$/;
 function session(c, msg) {
   if (c.usage) return;
   c.usage = { at: Date.now(), views: new Set() };
+  c.dev = DEVICES.includes(msg.device) ? msg.device : 'pc';
   add('sesiones');
-  add('aparato:' + (DEVICES.includes(msg.device) ? msg.device : 'pc'));
+  add('aparato:' + c.dev);
+  firstVisit(c);
   if (/^[a-z]{2}$/.test(msg.lang || '')) add('idioma:' + msg.lang);
   if (msg.app) add('app');
 }
@@ -52,6 +54,27 @@ function clientError(c, msg) {
   add(`error:${text} @ ${where}`);
 }
 
+// Primera sesión de los nuevos: hasta qué paso llega cada perfil nuevo en sus primeras 24 h (y si vuelve otro día), por
+// aparato. Cada paso cuenta una vez por perfil (p.onb). Lo que pasa en el navegador (la bienvenida, el aviso de girar el
+// móvil) lo dice el juego; lo demás, el servidor. Para ver en qué paso se va la gente nueva
+const FIRST_STEPS = ['nuevo', 'bienvenida', 'girar', 'tutorial', 'inicial', 'combate', 'acabado', 'captura', 'vuelve'];
+const FIRST_CLIENT = ['bienvenida', 'girar'];
+const FIRST_FROM = Date.UTC(2026, 10, 7);   // (los perfiles de antes no tienen sus primeros pasos apuntados)
+function first(c, step) {
+  const p = c && c.profile;
+  if (!p || p.npc || !c.dev || !FIRST_STEPS.includes(step) || (p.created || 0) < FIRST_FROM) return;
+  const age = Date.now() - p.created;
+  if (step === 'vuelve' ? D.dayKey(Date.now()) === D.dayKey(p.created) || age > 3 * DAY : age > DAY) return;
+  const o = p.onb || (p.onb = { dev: c.dev, s: {} });
+  if (o.s[step]) return;
+  o.s[step] = 1;
+  add(`primera:${o.dev}:${step}`);
+}
+// Al conectar o al cargar el perfil (lo que llegue segundo): si es nuevo, y si vuelve otro día
+function firstVisit(c) { first(c, 'nuevo'); first(c, 'vuelve'); }
+// Lo que cuenta el navegador (solo esos pasos)
+const firstFromClient = (c, msg) => { if (FIRST_CLIENT.includes(msg.s)) first(c, msg.s); };
+
 // Resumen de los últimos `days` días: total por clave y por día
 function summary(days = 14) {
   const from = D.dayKey(Date.now() - (Math.max(1, Math.min(KEEP_DAYS, days | 0)) - 1) * DAY);
@@ -66,4 +89,4 @@ function summary(days = 14) {
 
 setInterval(() => db.prepare('DELETE FROM usage WHERE day < ?').run(D.dayKey(Date.now() - KEEP_DAYS * DAY)), 6 * 3600e3).unref();
 
-module.exports = { session, view, close, clientError, summary };
+module.exports = { session, view, close, clientError, summary, first, firstVisit, firstFromClient, FIRST_STEPS };

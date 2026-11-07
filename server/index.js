@@ -111,6 +111,7 @@ const server = http.createServer((req, res) => {
 const clients = new Set();
 function send(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
 function sendProfile(c) {
+  usage.firstVisit(c);
   delete c.profile.admin;   // marca del antiguo "acceso total", ya quitado
   story.migrate(c.profile);
   rewards.migrate(c.profile);
@@ -205,12 +206,13 @@ function startBattle(clientsBySide, opts, onEnd) {
     ...opts, sides,
     onEnd: (result, b) => {
       clientsBySide.forEach(c => { if (c && c.battle === battle) c.battle = null; });
+      clientsBySide.forEach((c, i) => { if (c && !opts.tutorial) { usage.first(c, 'acabado'); if (i === 0 && result && result.captured) usage.first(c, 'captura'); } });
       try { balance.battle(b, result); } catch (e) { console.error('Datos de equilibrio:', e); }
       // (lo que espera, después: al soltarlo se guarda, y tiene que ir con el ELO y los premios ya puestos)
       try { return onEnd(result, b); } finally { clientsBySide.forEach(c => { if (c && c.profile) endHold(c.profile); }); }
     },
   });
-  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); } });
+  clientsBySide.forEach((c, i) => { if (c) { c.battle = battle; c.side = i; if (c.profile && !c.npc) metrics.battle(c.profile); usage.first(c, opts.tutorial ? 'tutorial' : 'combate'); } });
   // (quien entra en combate deja caer el reto que tuviera a medias)
   for (const c of clientsBySide) { const ch = c && !c.npc && challengeOf(c); if (ch) endChallenge(ch, 'gone', c.profile); }
   return battle;
@@ -571,6 +573,7 @@ function handle(c, msg) {
   if (msg.t === 'ctx') return usage.session(c, msg);
   if (msg.t === 'view') return usage.view(c, msg);
   if (msg.t === 'clienterr') return usage.clientError(c, msg);
+  if (msg.t === 'first') return usage.firstFromClient(c, msg);
   // Reportar un bug desde el juego (se guarda y avisa al admin)
   if (msg.t === 'bug') {
     const err = bugs.report(c, msg);
@@ -705,6 +708,7 @@ function handle(c, msg) {
     if (c.queue && ['use', 'sell'].includes(msg.a)) return send(c, { t: 'error', msg: 'Sal de la cola antes' });
     const coins = c.profile.coins;
     const err = story.action(c.profile, msg);
+    if (!err && msg.a === 'starter') usage.first(c, 'inicial');
     if (err) send(c, { t: 'error', msg: err });
     // Lo que mueve dinero o Pokémon queda apuntado (para investigar trampas o reclamaciones)
     else if (msg.a === 'nick') audit.log('pokemon.mote', { actor: c.profile.id, ip: c.ip, uid: msg.uid | 0, nick: (c.profile.mons.find(m => m.uid === (msg.uid | 0)) || {}).nick || '' });

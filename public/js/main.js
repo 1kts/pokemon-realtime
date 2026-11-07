@@ -180,6 +180,15 @@ net.on('connected', () => {
   net.send({ t: 'ctx', device: touch ? (small ? 'movil' : 'tablet') : 'pc', lang: getLang(), app: matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || !!navigator.standalone });
   ui.viewsSent = new Set();
   if (ui.view) ui.sendView(ui.view);
+  // (primera sesión: si el móvil en vertical le enseña el aviso de girar, para el embudo del panel)
+  const gate = document.querySelector('.rotate-gate');
+  if (gate && getComputedStyle(gate).display !== 'none') net.send({ t: 'first', s: 'girar' });
+});
+// (y si lo ve más tarde, al girar a vertical)
+let toldGate = false;
+addEventListener('resize', () => {
+  const gate = document.querySelector('.rotate-gate');
+  if (!toldGate && gate && getComputedStyle(gate).display !== 'none') { toldGate = true; net.send({ t: 'first', s: 'girar' }); }
 });
 net.on('disconnected', () => {
   if (!ui.profile) return;

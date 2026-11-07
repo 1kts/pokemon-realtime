@@ -82,3 +82,5 @@ tr.few td { opacity: .55; }
 .flag-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,.08); }
 .flag-row b.ok { color: #4fd06a; }
 .flag-row b.warn { color: #ff8a7a; }
+.first td.warn { color: #ff8a7a; font-weight: 700; }
+.first td small { color: var(--muted); }

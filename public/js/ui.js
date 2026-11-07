@@ -334,6 +334,7 @@ export class UI {
 
   // Bienvenida: qué es el juego y los dos primeros pasos (el tutorial con premio y elegir el primer Pokémon)
   welcome() {
+    if (this.net) this.net.send({ t: 'first', s: 'bienvenida' });   // (para el embudo de la primera sesión del panel)
     const back = el('div', 'modal');
     const box = el('div', 'panel modal-box welcome-box');
     const close = () => back.remove();

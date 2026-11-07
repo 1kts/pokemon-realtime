@@ -33,6 +33,7 @@ module.exports = async ({ page, player, env, ok }) => {
   const todayRow = await page.eval(`[...${daysRows}[0].children].map(td => td.textContent)`);
   ok(+todayRow[1] >= 2 && +todayRow[2] >= 2 && await page.eval(`[...document.querySelectorAll('#metricas .stat span')].some(s => /vuelven al día siguiente/.test(s.textContent))`),
     `Métricas: los últimos 14 días con los jugadores y los nuevos de hoy (${todayRow.slice(1, 3).join(' / ')}) y cuántos vuelven`);
+  ok(await page.see('Primera sesión de los nuevos', { in: '#met', scroll: true }), 'Actividad: el embudo de la primera sesión de los nuevos, para ver en qué paso se van');
 
   // Balance: un combate de práctica (rendido) ya cuenta para su Pokémon, en el modo Práctica
   const pr = await player({ user: 'practicante' });

@@ -670,12 +670,27 @@ class Client {
     await u.req({ t: 'hello', token });   // (con un perfil que ya existe: los nuevos por IP tienen tope)
     u.send({ t: 'ctx', device: 'movil', lang: 'es' });
     u.send({ t: 'view', v: 'shop' });
+    for (const st of ['bienvenida', 'bienvenida', 'girar', 'captura', 'inventado']) u.send({ t: 'first', s: st });
     for (let i = 0; i < 8; i++) u.send({ t: 'clienterr', m: 'TypeError: x is undefined https://pokearenas.com/js/ui.js', s: 'https://pokearenas.com/js/ui.js', l: 42 });
     await new Promise(r => setTimeout(r, 300));
     u.ws.close();
     await new Promise(r => setTimeout(r, 300));
     const us = require('../server/usage.js').summary(7).total;
     ok(us['salida:shop'] >= 1, `el panel dice en qué pantalla cierran el juego (en la Tienda: ${us['salida:shop'] || 0})`);
+    // Primera sesión de los nuevos: cada paso una vez por perfil, por aparato; del navegador solo valen la bienvenida y girar
+    ok(us['primera:movil:nuevo'] === 1 && us['primera:movil:bienvenida'] === 1 && us['primera:movil:girar'] === 1 && !us['primera:movil:captura'] && !Object.keys(us).some(k => /inventado/.test(k)),
+      `primera sesión: entra nuevo desde el móvil, ve la bienvenida (una vez aunque llegue dos) y el aviso de girar; lo demás no lo puede decir el navegador (${JSON.stringify(Object.keys(us).filter(k => k.startsWith('primera:')))})`);
+    {
+      const usage = require('../server/usage.js');
+      const fresh = { profile: { id: 'x1', created: Date.now() - 3600e3 }, dev: 'pc' }, old = { profile: { id: 'x2', created: Date.UTC(2026, 9, 1) }, dev: 'pc' };
+      for (const st of ['nuevo', 'inicial', 'combate', 'acabado', 'captura', 'acabado']) { usage.first(fresh, st); usage.first(old, st); }
+      usage.first({ profile: { id: 'x3', created: Date.now() - 2 * 864e5 }, dev: 'pc' }, 'nuevo');   // (pasadas sus primeras 24 h ya no cuenta)
+      const t2 = usage.summary(7).total;
+      ok(t2['primera:pc:nuevo'] === 1 && t2['primera:pc:acabado'] === 1 && t2['primera:pc:captura'] === 1 && fresh.profile.onb.dev === 'pc' && !old.profile.onb,
+        `primera sesión: el servidor apunta sus pasos (elegir inicial, combatir, acabar, capturar) una vez; los perfiles de antes y pasadas 24 h, no (${JSON.stringify(t2['primera:pc:nuevo'])})`);
+      usage.first(fresh, 'vuelve');
+      ok(!usage.summary(7).total['primera:pc:vuelve'], 'y «vuelve» solo cuenta si entra otro día');
+    }
     ok(us['error:TypeError: x is undefined @ ui.js:42'] === 5, `y los errores del navegador, por mensaje y archivo, sin direcciones y como mucho 5 por conexión (${JSON.stringify(Object.keys(us).filter(k => k.startsWith('error:')))})`);
   }
   const hz = await new Promise(r => require('http').get(`http://localhost:${port}/healthz`, res => { let d = ''; res.on('data', x => { d += x; }); res.on('end', () => r(JSON.parse(d))); }));

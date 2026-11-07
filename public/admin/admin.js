@@ -137,6 +137,24 @@ async function overview(onlyServer) {
           h('td', {}, fmtDate(r.at)), h('td', {}, typeTag(r.type)), h('td', {}, r.actorName || r.actor || '—'), h('td', {}, r.targetName || r.target || '—'))))
           : h('p', { class: 'small' }, 'Ninguna todavía.'))));
 }
+// Primera sesión de los nuevos: cuántos llegan a cada paso, por aparato, y cuántos se pierden respecto al anterior
+const FIRST = [['nuevo', 'Entran por primera vez'], ['bienvenida', 'Ven la bienvenida'], ['girar', 'Les pide girar el móvil'], ['tutorial', 'Empiezan el tutorial'],
+  ['inicial', 'Eligen su primer Pokémon'], ['combate', 'Empiezan un combate'], ['acabado', 'Acaban un combate'], ['captura', 'Capturan uno'], ['vuelve', 'Vuelven otro día']];
+function firstSession(T) {
+  const devs = [['movil', 'Móvil'], ['pc', 'PC'], ['tablet', 'Tablet']].filter(([d]) => T[`primera:${d}:nuevo`]);
+  const card = h('div', { class: 'card scroll first' }, h('h2', {}, 'Primera sesión de los nuevos (en sus primeras 24 h)'));
+  if (!devs.length) return card.appendChild(h('p', { class: 'small' }, 'Aún no ha entrado nadie nuevo desde que se mide.')), card;
+  const cell = (d, k, i) => {
+    const n = T[`primera:${d}:${k}`] || 0, base = T[`primera:${d}:nuevo`] || 1;
+    // (la pérdida, respecto al paso anterior del embudo; girar y tutorial no son pasos obligatorios)
+    const prev = FIRST.slice(0, i).reverse().find(([pk]) => !['girar', 'tutorial'].includes(pk));
+    const lost = prev && !['girar', 'tutorial'].includes(k) && T[`primera:${d}:${prev[0]}`] ? 1 - n / T[`primera:${d}:${prev[0]}`] : 0;
+    return h('td', { class: lost >= 0.4 ? 'warn' : '' }, `${n} · ${Math.round(n / base * 100)} %`, lost > 0 ? h('small', {}, ` −${Math.round(lost * 100)} %`) : '');
+  };
+  card.append(table(['Paso', ...devs.map(([, l]) => l)], FIRST.map(([k, l], i) => h('tr', {}, h('td', {}, l), ...devs.map(([d]) => cell(d, k, i))))));
+  return card;
+}
+
 // ---------- Métricas ----------
 // Jugadores por día, nuevos, combates y cuántos vuelven (de los que se crearon ese día, cuántos entraron
 // al día siguiente y a los 7 días). Los datos salen de los últimos 35 días que guarda cada perfil.
@@ -168,6 +186,7 @@ async function loadMetrics() {
       dist('Idioma del juego', keys('idioma:').map(r => ({ ...r, label: r.label.toUpperCase() })), ses),
       dist('Pantallas que visitan (en cuántas sesiones)', keys('pantalla:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses),
       dist('Dónde cierran el juego (la última pantalla de cada sesión)', keys('salida:').map(r => ({ ...r, label: VIEWS[r.label] || r.label })), ses)),
+    firstSession(T),
     h('div', { class: 'card scroll errs' }, h('h2', {}, `Errores en el navegador de los jugadores (${days} días)`),
       keys('error:').length ? table(['Error', 'Dónde', 'Veces'], keys('error:').sort((a, b) => b.n - a.n).slice(0, 30).map(r => {
         const [msg, where] = r.label.split(' @ ');
