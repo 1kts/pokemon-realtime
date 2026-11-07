@@ -4,7 +4,7 @@
 // elementos propios: placas eléctricas, teletransportes, baldosas de curación, faro, cascadas...
 import * as THREE from 'three';
 import { buildScenery, preloadScenery, WIND, mat } from './scenery.js';
-import { bumperMesh, buildMechProps, pillarMesh } from './arenamech.js';
+import { bumperMesh, magnetMesh, buildMechProps, pillarMesh } from './arenamech.js';
 
 const { CELL, COLS, ROWS, T } = Shared;
 export const U = 1 / CELL;                  // px de juego -> unidades 3D
@@ -566,7 +566,8 @@ export class World {
     const mech = Shared.mechFor(name, mod);
     const marks = Shared.parseMap(name);
     // Cintas, niebla, espejos, flores y pozo de gravedad (arenamech.js)
-    this.mechAnim = buildMechProps(this.props, mech, marks);
+    this.mechLive = { ar: null };
+    this.mechAnim = buildMechProps(this.props, mech, marks, this.mechLive);
     if (marks.panels.length) {   // placas eléctricas: dos grupos en damero
       const mats = [0, 1].map(() => new THREE.MeshStandardMaterial({ color: '#4a4e56', emissive: '#ffd23a', emissiveIntensity: 0.05, metalness: 0.5, roughness: 0.4 }));
       const geo = new THREE.BoxGeometry(0.9, 0.05, 0.9);
@@ -670,10 +671,14 @@ export class World {
 
   // Estado continuo de la arena que llega en cada instantánea (haz del faro, baldosas)
   setArena(ar) {
+    if (this.mechLive) this.mechLive.ar = ar || null;   // (vagonetas y esporas, en arenamech.js)
     if (!ar) return;
     if (this.beam && ar.ba !== undefined) this.beam.target = ar.ba;
     if (this.healPads && ar.hl) ar.hl.forEach((c, k) => { if (this.healPads[k]) this.healPads[k].c = c; });
   }
+
+  // Vagonetas: la vía que va a usar se ilumina mientras dura el aviso
+  railWarn(y, d) { if (this.mechLive && this.mechLive.railWarn) this.mechLive.railWarn(y, d); }
 
   // Placas eléctricas: aviso (parpadeo) y descarga (destello)
   panelFlash(g, ph, d) {
@@ -899,6 +904,10 @@ export class World {
       } else if (o.k === 'bumper') {
         mesh = bumperMesh(o.r);
         mesh.position.copy(toWorld(o.x, o.y, 0));
+      } else if (o.k === 'magnet') {
+        mesh = magnetMesh(o.r);
+        mesh.position.copy(toWorld(o.x, o.y, 0));
+        if (o.y > Shared.ARENA.h / 2) mesh.rotation.y = Math.PI;   // (las puntas, hacia el campo)
       } else if (o.k === 'pillar') {
         mesh = pillarMesh(o.r, this.theme ? this.theme.rock[1] : '#8a8478');
         mesh.position.copy(toWorld(o.x, o.y, -1.7));

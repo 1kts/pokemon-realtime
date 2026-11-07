@@ -591,7 +591,7 @@ class Battle {
         // Espejos: rebota (y la gravedad del pozo lo curva mientras late)
         if (this.arena.bounce(p)) continue;
         // Obstáculos
-        const o = this.obstacles.find(o => o.kind !== 'mirror' && o.kind !== 'bumper' && Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
+        const o = this.obstacles.find(o => o.kind !== 'mirror' && o.kind !== 'bumper' && o.kind !== 'magnet' && Math.hypot(o.x - p.x, o.y - p.y) < o.r + p.r);
         if (o) { this.damageObstacle(o, p.m.dmg || 1); this.projectileEnd(p, true); break; }
         // Interacciones con el terreno al pasar
         const i = S.cellIndex(p.x, p.y);

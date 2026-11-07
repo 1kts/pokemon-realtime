@@ -325,17 +325,31 @@ function utilityInput(b, side, dt) {
       mx += (side.x - d.x) / (dd || 1) * 2.5; my += (side.y - d.y) / (dd || 1) * 2.5; st.evade = true;
     }
   }
+  const tys = D.SPECIES[b.mon(side).dex].types;
+  // Vagonetas: si va a pasar una por su vía (o ya pasa), salir de lado, hacia el centro del campo
+  for (const c of (b.arena && b.arena.carts) || []) {
+    if (Math.abs(side.y - c.y) < 22 + r + 16 && decide(st, 'c' + Math.round(c.y) + ':' + Math.floor(b.t / 2), dodgeP)) {
+      // (fuera de la vía por el lado más cercano; si está justo encima, hacia el centro del campo)
+      my += (side.y === c.y ? (c.y < S.ARENA.h / 2 ? 1 : -1) : side.y < c.y ? -1 : 1) * 2.5; st.evade = true;
+    }
+  }
   // Arenas movedizas: salir (a ellas no les afecta a voladores ni a los de tierra). La decisión se renueva cada 2 s:
   // una mala tirada no la deja hundiéndose todo el combate, y cuanto más hábil, antes sale
   if (b.arena && b.arena.sand) {
-    const tys = D.SPECIES[b.mon(side).dex].types;
     if (!tys.includes('volador') && !tys.includes('tierra')) for (const z of b.arena.sand) {
       const dd = Math.hypot(side.x - z.x, side.y - z.y);
       if (dd < z.r + r && decide(st, 'q' + Math.round(z.x) + ':' + Math.floor(b.t / 2), dodgeP)) { mx += (side.x - z.x) / (dd || 1) * 2.5; my += (side.y - z.y) / (dd || 1) * 2.5; st.evade = true; }
     }
   }
+  // Nubes de esporas: igual, salir de ellas (no les afecta a bicho, planta ni voladores)
+  if (b.arena && b.arena.spores) {
+    if (!tys.some(t => t === 'bicho' || t === 'planta' || t === 'volador')) b.arena.spores.forEach((z, k) => {
+      const dd = Math.hypot(side.x - z.x, side.y - z.y);
+      if (dd < z.r + r && decide(st, 'e' + k + ':' + Math.floor(b.t / 2), dodgeP)) { mx += (side.x - z.x) / (dd || 1) * 2; my += (side.y - z.y) / (dd || 1) * 2; st.evade = true; }
+    });
+  }
   // Fuego, lava, veneno, bordes y atascos (su propio tipo no lo nota)
-  const types = D.SPECIES[b.mon(side).dex].types;
+  const types = tys;
   const bad = t => t === T.FIRE || (t === T.LAVA && !types.includes('fuego')) || (t === T.POISON && skill > 0.3 && !types.includes('veneno') && !types.includes('acero'));
   const ahead = b.terrain[S.cellIndex(side.x + mx * 30, side.y + my * 30)];
   if (bad(ahead) && skill > 0.15) { const t = mx; mx = -my; my = t; st.evade = true; }

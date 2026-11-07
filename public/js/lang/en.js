@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': 'More gyms with flair',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'More mechanics: grabbing hands in the ghost Tower, magnets that bend shots at the Lighthouse, mine carts in the rock Cave and spore clouds in the Greenhouse.',
+    '¡Vagoneta! Sal de la vía que se ilumina': 'Mine cart! Get off the track that lights up',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': 'Gyms with more flair',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'New mechanics: on the Volcano the ground cracks into lava, Arena Verde has quicksand, and the Stadium has bumpers that bounce you and attacks.',
@@ -1467,7 +1471,7 @@ export default {
 
     // ---------- Arenas de gimnasio ----------
     'Cueva de Plateada': 'Pewter Cave',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': 'Rocks fall from the ceiling: get off the marks before they land. Fallen rocks give cover for a while.',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': 'Rocks fall from the ceiling: get off the marks before they land. Fallen rocks give cover for a while. When a track lights up, a mine cart is about to pass: get off it.',
     'Piscina Celeste': 'Cerulean Pool',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': 'The tide rises and falls every few seconds. In the water you\'re soaked (more electric and ice damage) and a shock electrifies the whole pool.',
     'Central de Carmín': 'Vermilion Power Plant',
@@ -1484,17 +1488,17 @@ export default {
     'Torre Malva': 'Violet Tower',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Gusts of wind that drag you sideways. Flying types aren\'t affected.',
     'Invernadero Azalea': 'Azalea Greenhouse',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Cobwebs that slow you down (except Bug types) and grass that grows back. Fire burns them.',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': 'Cobwebs that slow you down (except Bug types) and grass that grows back. Fire burns them. Spore clouds make anyone who crosses them drowsy.',
     'Estadio Trigal': 'Goldenrod Stadium',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Healing tiles: heal on them while they have energy left. Then they take a while to recharge. Bumpers bounce away anyone who touches them, and ranged attacks too.',
     'Torre Iris': 'Tin Tower',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Darkness: you only see your opponent up close or right when it attacks.',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Darkness: you only see your opponent up close or right when it attacks. And hands come out of the ground: if the spot under your feet gets marked, move or they grab you.',
     'Sala Nocturna': 'Night Hall',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': 'Pitch-black night: you only see your opponent up close or right when it attacks.',
     'Cascadas Orquídea': 'Cianwood Falls',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': 'Two waterfalls with a current that drags you. Cross them over the stone bridges.',
     'Faro Olivo': 'Olivine Lighthouse',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': 'The lighthouse beam keeps spinning and burns whoever it hits. Steel types aren\'t affected.',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': 'The lighthouse beam keeps spinning and burns whoever it hits. Steel types aren\'t affected. Magnets bend ranged attacks that pass close by.',
     'Pista Caoba': 'Mahogany Rink',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': 'Icy floor: you slide and it\'s hard to stop. Fire melts it for a while and ice attacks freeze water.',
     'Cráter Endrino': 'Blackthorn Crater',

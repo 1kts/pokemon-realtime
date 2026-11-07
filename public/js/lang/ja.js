@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': '個性的なジムがさらに',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'ギミック追加：ゴーストの塔で捕まえる手、灯台で攻撃を曲げる磁石、岩の洞窟のトロッコ、温室の胞子の雲。',
+    '¡Vagoneta! Sal de la vía que se ilumina': 'トロッコだ！光っている線路から離れよう',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': '個性が増したジム',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '新しいギミック：火山では地面が割れて溶岩に、トキワのアリーナには流砂、スタジアムには自分も攻撃も跳ね返すバンパー。',
@@ -1357,7 +1361,7 @@ export default {
 
     // ---------- バトルの 舞台 ----------
     'Cueva de Plateada': 'ニビの どうくつ',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': '天井から 岩が 落ちてくる：落ちる前に 印から 出よう。落ちた岩は しばらく 盾に なる。',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': '天井から 岩が 落ちてくる：落ちる前に 印から 出よう。落ちた岩は しばらく 盾に なる。 線路が光ったらトロッコが通る：線路から離れよう。',
     'Piscina Celeste': 'ハナダの プール',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': '数秒ごとに 潮が 満ち引きする。水の中では ぬれて（でんき・こおりの ダメージが 増える）、放電すると プール全体に 電気が 走る。',
     'Central de Carmín': 'クチバの 発電所',
@@ -1376,17 +1380,17 @@ export default {
     'Torre Malva': 'キキョウの 塔',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '横に 押し流す 突風。ひこうタイプは 平気。',
     'Invernadero Azalea': 'ヒワダの 温室',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '動きを おそくする クモの巣（むしタイプは 平気）と、生えなおす 草。炎で 燃える。',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': '動きを おそくする クモの巣（むしタイプは 平気）と、生えなおす 草。炎で 燃える。 胞子の雲を通ると眠くなる。',
     'Estadio Trigal': 'コガネの スタジアム',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '回復タイル：エネルギーが残っている間は上で回復できる。その後は再充電に時間がかかる。バンパーは触れた者をはじき返し、遠距離攻撃も跳ね返す。',
     'Torre Iris': 'スズの 塔',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'くらやみ：あいては 近くにいるか 攻撃した時しか 見えない。',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'くらやみ：あいては 近くにいるか 攻撃した時しか 見えない。 地面から手も出てくる：足元にマークが出たら動こう、さもないと捕まる。',
     'Sala Nocturna': '夜の 間',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': 'まっくらな 夜：あいては 近くにいるか 攻撃した時しか 見えない。',
     'Cascadas Orquídea': 'タンバの 滝',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': '流れに さらわれる 2本の 滝。石の 橋を わたろう。',
     'Faro Olivo': 'アサギの 灯台',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': '灯台の 光が 回りつづけ、当たると やけどする。はがねタイプは 平気。',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': '灯台の 光が 回りつづけ、当たると やけどする。はがねタイプは 平気。 磁石は近くを通る遠距離攻撃を曲げる。',
     'Pista Caoba': 'チョウジの スケートリンク',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': '凍った 床：すべって 止まりにくい。炎で しばらく とけて、こおりわざで 水が 凍る。',
     'Cráter Endrino': 'フスベの 火口',

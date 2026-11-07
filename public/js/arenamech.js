@@ -61,8 +61,96 @@ export function bumperMesh(r) {
   return g;
 }
 
-export function buildMechProps(group, mech, marks) {
+// Imán (obstáculo 'magnet'): herradura mate, roja con las puntas grises, tumbada mirando al campo
+export function magnetMesh(r) {
+  const R = r * U * 1.3, g = new THREE.Group();
+  const red = new THREE.MeshStandardMaterial({ color: '#a83a32', roughness: 0.7 }), grey = new THREE.MeshStandardMaterial({ color: '#b8bcc4', roughness: 0.5, metalness: 0.4 });
+  const arc = new THREE.Mesh(new THREE.TorusGeometry(R, R * 0.32, 8, 16, Math.PI), red);
+  arc.rotation.x = -Math.PI / 2; arc.position.y = R * 0.4;
+  g.add(arc);
+  for (const sx of [-1, 1]) {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.32, R * 0.32, R * 0.9, 10), red);
+    leg.rotation.x = Math.PI / 2; leg.position.set(sx * R, R * 0.4, R * 0.45);
+    const tip = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.33, R * 0.33, R * 0.35, 10), grey);
+    tip.rotation.x = Math.PI / 2; tip.position.set(sx * R, R * 0.4, R * 1.05);
+    g.add(leg, tip);
+  }
+  g.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  return g;
+}
+
+// Vagoneta: caja de madera oscura con ruedas y un poco de piedra encima
+const cartMats = {};
+function cartMesh() {
+  const g = new THREE.Group(), mat = c => cartMats[c] || (cartMats[c] = new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 }));
+  const box = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.55, 0.85), mat('#5a4030')); box.position.y = 0.45;
+  const rim = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.08, 0.9), mat('#3a3a40')); rim.position.y = 0.74;
+  const ore = new THREE.Mesh(new THREE.DodecahedronGeometry(0.32, 0), new THREE.MeshStandardMaterial({ color: '#8a8478', roughness: 0.9, flatShading: true })); ore.position.y = 0.82;
+  g.add(box, rim, ore);
+  for (const x of [-0.42, 0.42]) for (const z of [-0.42, 0.42]) {
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.1, 10), mat('#2a2a2e'));
+    w.rotation.x = Math.PI / 2; w.position.set(x, 0.16, z); g.add(w);
+  }
+  g.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  return g;
+}
+
+// live: lo que llega en cada instantánea (vagonetas y esporas) y el aviso de las vías (World.railWarn)
+export function buildMechProps(group, mech, marks, live = {}) {
   const anim = [];
+  // Vías de las vagonetas: dos raíles con traviesas; al avisar, la vía se ilumina un poco (amarillo apagado)
+  if (mech.carts) {
+    const rails = [];
+    for (const y of Shared.cartRails(mech.carts)) {
+      const railMat = new THREE.MeshStandardMaterial({ color: '#6a6c72', roughness: 0.6, metalness: 0.3, emissive: '#ffb020', emissiveIntensity: 0 });
+      const z = y * U;
+      for (const dz of [-0.28, 0.28]) {
+        const r = new THREE.Mesh(new THREE.BoxGeometry(COLS, 0.05, 0.07), railMat); r.position.set(COLS / 2, 0.04, z + dz); group.add(r);
+      }
+      const tie = new THREE.InstancedMesh(new THREE.BoxGeometry(0.16, 0.04, 0.85), new THREE.MeshStandardMaterial({ color: '#5a4434', roughness: 1 }), COLS * 2);
+      const mm = new THREE.Matrix4();
+      for (let k = 0; k < COLS * 2; k++) { mm.makeTranslation(0.25 + k * 0.5, 0.02, z); tie.setMatrixAt(k, mm); }
+      group.add(tie);
+      const cart = cartMesh(); cart.visible = false; cart.position.set(0, 0, z); group.add(cart);
+      rails.push({ y, mat: railMat, cart, warn: 0, x: null });
+    }
+    live.railWarn = (y, d) => { const r = rails.find(q => Math.abs(q.y - y) < 20); if (r) r.warn = d; };
+    anim.push((dt, t) => {
+      const ct = (live.ar && live.ar.ct) || [];
+      for (const r of rails) {
+        r.warn = Math.max(0, r.warn - dt);
+        r.mat.emissiveIntensity = r.warn > 0 ? 0.35 + 0.25 * Math.sin(t * 14) : 0;
+        const c = ct.find(q => Math.abs(q[1] - r.y) < 20);
+        r.cart.visible = !!c;
+        if (c) { const tx = c[0] * U; r.x = r.x === null ? tx : r.x + (tx - r.x) * Math.min(1, dt * 18); r.cart.position.x = r.x; }
+        else r.x = null;
+      }
+    });
+  }
+  // Esporas: nubes blandas, amarillo verdoso apagado, que siguen a donde dice el servidor
+  if (mech.spores) {
+    const clouds = Array.from({ length: mech.spores.n || 3 }, () => {
+      const zg = new THREE.Group(), R = (mech.spores.r || 70) * U;
+      const mat = new THREE.SpriteMaterial({ map: puff(), color: '#c8d090', transparent: true, opacity: 0.38, depthWrite: false });
+      for (let k = 0; k < 7; k++) {
+        const s = new THREE.Sprite(mat); const a = k * 0.9;
+        s.position.set(Math.cos(a) * R * 0.5, 0.35 + (k % 3) * 0.18, Math.sin(a) * R * 0.5); s.scale.setScalar(R * 1.1);
+        zg.add(s);
+      }
+      zg.visible = false; group.add(zg);
+      return zg;
+    });
+    anim.push((dt, t) => {
+      const sp = live.ar && live.ar.sp;
+      clouds.forEach((g, k) => {
+        if (!sp || !sp[k]) return;
+        const tx = sp[k][0] * U, tz = sp[k][1] * U;
+        if (!g.visible) { g.position.set(tx, 0, tz); g.visible = true; }
+        g.position.x += (tx - g.position.x) * Math.min(1, dt * 6); g.position.z += (tz - g.position.z) * Math.min(1, dt * 6);
+        g.rotation.y = t * 0.15 + k;
+      });
+    });
+  }
   // Arenas movedizas: charcas de arena con el remolino girando muy despacio
   const sandMat = mech.quicksand && new THREE.MeshStandardMaterial({ map: sandTexture(), transparent: true, roughness: 1, depthWrite: false });
   if (mech.quicksand) for (const z of Shared.sandZones(mech.quicksand)) {

@@ -1,7 +1,7 @@
 {
  "fecha": "2026-11-07",
- "cazadas": 113,
- "total": 113,
+ "cazadas": 117,
+ "total": 117,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -799,6 +799,34 @@
     "tools/arena-test.js"
    ],
    "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: el proyectil rebota y sigue (vx 600)"
+  },
+  "manos-que-no-atrapan": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: SyntaxError: Unexpected token '}'"
+  },
+  "imanes-de-adorno": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: se curva hacia el imán (vy 0) sin ganar ni perder velocidad"
+  },
+  "vagoneta-fantasma": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: la vagoneta le hace daño y lo arrastra en su sentido"
+  },
+  "esporas-inofensivas": {
+   "resultado": "cazada",
+   "por": [
+    "tools/arena-test.js"
+   ],
+   "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: dentro, a Pikachu lo frena y a Butterfree (bicho) no"
   }
  }
 }

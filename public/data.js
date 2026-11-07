@@ -578,7 +578,7 @@
   // 'A'/'a' 'B'/'b' 'C'/'c' teletransportes por parejas · 'v' / '^' agua con corriente · 'E' placa eléctrica.
   // mech: mecánicas del entorno (server/arena.js).
   const ARENAS = {
-    'g-roca': { name: 'Cueva de Plateada', desc: 'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.', mech: { rockfall: { every: 3.4, warn: 1.1, r: 48, dmg: 0.08, ttl: 7 } },
+    'g-roca': { name: 'Cueva de Plateada', desc: 'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.', mech: { rockfall: { every: 3.4, warn: 1.1, r: 48, dmg: 0.08, ttl: 7 }, carts: { every: 9, warn: 1.3, speed: 520, dmg: 0.08, knock: 140, rows: [4, 10] } },
       rows: [
         '........................',
         '...o................o...',
@@ -740,7 +740,7 @@
         '........................',
         '........................',
       ] },
-    'g-bicho': { name: 'Invernadero Azalea', desc: 'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.', mech: { regrow: 8 },
+    'g-bicho': { name: 'Invernadero Azalea', desc: 'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.', mech: { regrow: 8, spores: { n: 3, r: 70, slow: 0.35 } },
       rows: [
         '........................',
         '..###....wwwwww....###..',
@@ -776,7 +776,7 @@
         '........................',
         '........................',
       ] },
-    'g-fantasma': { name: 'Torre Iris', desc: 'Oscuridad: solo ves al rival de cerca o justo cuando ataca.', mech: { dark: 320 },
+    'g-fantasma': { name: 'Torre Iris', desc: 'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.', mech: { dark: 320, hands: { every: 6, warn: 0.9, r: 36, dmg: 0.04, stun: 0.5 } },
       rows: [
         '........................',
         '....o..............o....',
@@ -830,7 +830,7 @@
         '.......vv......^^.......',
         '.......vv......^^.......',
       ] },
-    'g-acero': { name: 'Faro Olivo', desc: 'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.', mech: { beam: { speed: 0.55, len: 560, width: 14, dmg: 0.07 } },
+    'g-acero': { name: 'Faro Olivo', desc: 'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.', mech: { beam: { speed: 0.55, len: 560, width: 14, dmg: 0.07 }, magnets: { force: 1800, R: 210 } },
       rows: [
         '........................',
         '........................',

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': 'Altre palestre con carattere',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Altre meccaniche: mani che afferrano nella Torre spettrale, magneti che curvano i colpi al Faro, carrelli nella Grotta di roccia e nuvole di spore nella Serra.',
+    '¡Vagoneta! Sal de la vía que se ilumina': 'Carrello! Spostati dal binario che si illumina',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': 'Palestre con più carattere',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Nuove meccaniche: nel Vulcano il terreno si spacca in lava, l\'Arena Verde ha sabbie mobili e lo Stadio respingenti che fanno rimbalzare te e gli attacchi.',
@@ -1357,7 +1361,7 @@ export default {
 
     // ---------- Arene ----------
     'Cueva de Plateada': 'Grotta di Plumbeopoli',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': 'Cadono rocce dal soffitto: esci dai segni prima che arrivino. Le rocce cadute fanno da riparo per un po\'.',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': 'Cadono rocce dal soffitto: esci dai segni prima che arrivino. Le rocce cadute fanno da riparo per un po\'. Quando un binario si illumina, sta per passare un carrello: spostati.',
     'Piscina Celeste': 'Piscina di Celestopoli',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': 'La marea sale e scende ogni pochi secondi. Nell\'acqua sei bagnato (più danni Elettro e Ghiaccio) e una scarica fulmina tutta la vasca.',
     'Central de Carmín': 'Centrale di Aranciopoli',
@@ -1376,17 +1380,17 @@ export default {
     'Torre Malva': 'Torre di Violapoli',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Raffiche di vento che ti trascinano di lato. I tipi Volante non ne risentono.',
     'Invernadero Azalea': 'Serra di Azalina',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Ragnatele che rallentano (tranne i tipi Coleottero) ed erba che ricresce. Il fuoco le brucia.',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': 'Ragnatele che rallentano (tranne i tipi Coleottero) ed erba che ricresce. Il fuoco le brucia. Le nuvole di spore intorpidiscono chi le attraversa.',
     'Estadio Trigal': 'Stadio di Fiordoropoli',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Piastrelle curative: curati sopra finché hanno energia. Poi ci mettono un po\' a ricaricarsi. I respingenti fanno rimbalzare chi li tocca, e anche gli attacchi a distanza.',
     'Torre Iris': 'Torre Campana',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Oscurità: vedi l\'avversario solo da vicino o proprio quando attacca.',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Oscurità: vedi l\'avversario solo da vicino o proprio quando attacca. E dal suolo escono delle mani: se il punto sotto i tuoi piedi viene segnato, spostati o ti afferrano.',
     'Sala Nocturna': 'Sala Notturna',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': 'Notte fonda: vedi l\'avversario solo da vicino o proprio quando attacca.',
     'Cascadas Orquídea': 'Cascate di Fiordipoli',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': 'Due cascate con una corrente che ti trascina. Attraversale sui ponti di pietra.',
     'Faro Olivo': 'Faro di Olivinopoli',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': 'Il fascio del faro gira senza sosta e scotta chi colpisce. I tipi Acciaio non ne risentono.',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': 'Il fascio del faro gira senza sosta e scotta chi colpisce. I tipi Acciaio non ne risentono. I magneti curvano gli attacchi a distanza che passano vicino.',
     'Pista Caoba': 'Pista di Mogania',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': 'Pavimento ghiacciato: scivoli ed è difficile frenare. Il fuoco lo scioglie per un po\' e gli attacchi Ghiaccio congelano l\'acqua.',
     'Cráter Endrino': 'Cratere di Ebanopoli',

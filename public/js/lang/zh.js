@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': '更多有特色的道馆',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': '更多机制：幽灵塔里会抓人的手、灯塔里让攻击弯曲的磁铁、岩石洞窟里的矿车，以及温室里的孢子云。',
+    '¡Vagoneta! Sal de la vía que se ilumina': '矿车来了！快离开亮起的轨道',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': '更有特色的道馆',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '新机制：火山的地面会裂成熔岩，常青场地有流沙，体育场有能弹开你和攻击的弹射柱。',
@@ -1332,7 +1336,7 @@ export default {
 
     // ---------- 道馆场地 ----------
     'Cueva de Plateada': '深灰洞窟',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': '岩石从洞顶落下：在它们砸下前离开标记。落下的岩石能暂时当掩体。',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': '岩石从洞顶落下：在它们砸下前离开标记。落下的岩石能暂时当掩体。 轨道亮起时会有矿车经过：快离开轨道。',
     'Piscina Celeste': '华蓝泳池',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': '潮水每隔几秒涨落一次。在水里会被淋湿（受到的电和冰伤害增加），放电会电到整片水域。',
     'Central de Carmín': '枯叶发电厂',
@@ -1349,17 +1353,17 @@ export default {
     'Torre Malva': '桔梗塔',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '把你吹向一侧的狂风。飞行属性不受影响。',
     'Invernadero Azalea': '桧皮温室',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '让人减速的蛛网（虫属性除外）和会重新长出的草。火可以烧掉它们。',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': '让人减速的蛛网（虫属性除外）和会重新长出的草。火可以烧掉它们。 孢子云会让穿过的人昏昏欲睡。',
     'Estadio Trigal': '满金体育场',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '治疗地块：在能量耗尽前站在上面回复体力，之后需要一段时间充能。弹射柱会把碰到的人弹开，远程攻击也会被弹开。',
     'Torre Iris': '铃铛塔',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': '黑暗：只有靠近或对手攻击时才能看见它。',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': '黑暗：只有靠近或对手攻击时才能看见它。 地面还会伸出手：脚下被标记时快躲开，否则会被抓住。',
     'Sala Nocturna': '暗夜大厅',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': '漆黑之夜：只有靠近或对手攻击时才能看见它。',
     'Cascadas Orquídea': '湛蓝瀑布',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': '两道会把你冲走的瀑布激流。从石桥上过去吧。',
     'Faro Olivo': '浅葱灯塔',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': '灯塔的光束不停旋转，照到谁就灼伤谁。钢属性不受影响。',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': '灯塔的光束不停旋转，照到谁就灼伤谁。钢属性不受影响。 磁铁会让经过附近的远程攻击弯曲。',
     'Pista Caoba': '卡吉溜冰场',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': '结冰的地面：会打滑，很难停下。火能让冰暂时融化，冰招式会把水冻住。',
     'Cráter Endrino': '烟墨火山口',

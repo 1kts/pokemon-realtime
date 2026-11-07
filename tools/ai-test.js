@@ -239,6 +239,17 @@ const STYLES = ['luchador', 'francotirador', 'controlador', 'tanque'];
     for (let i = 0; i < 180 && !out; i++) { bt.sides[0].inputs.push({ mx: 0, my: 0, c: -1, sw: -1 }); bt.tick(); out = Math.hypot(bot.x - z.x, bot.y - z.y) > z.r + 5; }
     assert(out, 'en menos de 6 s ha salido de la arena (la decisión de salir se renueva cada 2 s)');
   });
+  await check('la IA se sale de la vía cuando va a pasar una vagoneta (de lado: no se queda resbalando por ella)', () => {
+    const bt = battle({ map: 'g-roca', sides: [{ name: 'A', team: [{ dex: 25, level: 50 }] }, { name: 'Bot', team: [{ dex: 25, level: 50 }], ai: 1 }] });
+    run(bt, 0.3);
+    bt.arena.timers.rockfall = 999; bt.arena.timers.carts = 999;
+    const y = S.cartRails(D.ARENAS['g-roca'].mech.carts)[0], bot = bt.sides[1];
+    bot.x = 600; bot.y = y;
+    bt.arena.carts.push({ y, dir: 1, x: -40, warn: 1.3, hit: new Set() });
+    let off = false;
+    for (let i = 0; i < 39 && !off; i++) { bt.sides[0].inputs.push({ mx: 0, my: 0, c: -1, sw: -1 }); bt.tick(); off = Math.abs(bot.y - y) > 22 + 30; }
+    assert(off, 'antes de que llegue la vagoneta (1,3 s), se ha apartado de la vía');
+  });
   await check('una jugada no pisa a la IA cuando esquiva o escapa: su movimiento manda', () => {
     const { b, side, st } = whitney();
     const inp = { mx: 0.3, my: -0.7, c: -1, sw: -1, a: 0, tx: 0, ty: 0 };

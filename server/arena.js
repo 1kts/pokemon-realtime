@@ -26,6 +26,10 @@
 //   fissure   el suelo se agrieta cerca de cada Pokémon (aviso) y la grieta es lava un rato
 //   quicksand charcas de arenas movedizas: frenan, y quien se queda quieto dentro se hunde (daño); no a voladores ni tierra
 //   bumpers   parachoques: rebotan a quien los toca y hacen rebotar los proyectiles
+//   hands     manos fantasma: con aviso bajo cada Pokémon salen del suelo y atrapan (daño y aturden); no a los fantasma
+//   magnets   imanes: curvan los proyectiles que pasan cerca
+//   carts     vagonetas: con aviso en la vía, una cruza la arena y arrastra a quien pilla
+//   spores    nubes de esporas a la deriva: dentro adormecen (frenan); no a bicho, planta ni voladores
 // Geiseres, tormenta, gravedad, niebla y pilares también pueden ir de modificador en Práctica (Data.MODIFIERS)
 const D = require('../public/data.js');
 const S = require('../public/shared.js');
@@ -48,7 +52,7 @@ class Arena {
     this.dark = this.m.dark || 0;
     const m = this.m;
     this.timers = {};
-    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind', 'geyser', 'storm', 'gravity', 'pillars', 'fissure']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
+    for (const k of ['rockfall', 'tide', 'shock', 'toxic', 'eruption', 'quake', 'wind', 'geyser', 'storm', 'gravity', 'pillars', 'fissure', 'hands', 'carts']) if (m[k]) this.timers[k] = (m[k].every || 8) * 0.6;
     if (m.shock) { this.shock = { g: 0, phase: 'idle', t: 0 }; this.panelGroup = this.marks.panels.map(i => (((i % COLS) >> 1) + ((Math.floor(i / COLS)) >> 1)) % 2); }
     if (m.tide) { this.tideUp = false; this.tideCells = this.ringCells(); }
     if (m.regrow) this.regrowT = new Float32Array(COLS * ROWS);
@@ -71,6 +75,10 @@ class Arena {
     // Arenas movedizas y parachoques: sitios fijos (Shared, los mismos que dibuja el cliente)
     this.sand = m.quicksand ? S.sandZones(m.quicksand) : null;
     this.bumpers = m.bumpers ? S.bumperSpots(m.bumpers) : null;
+    this.magnets = m.magnets ? S.magnetSpots(m.magnets) : null;
+    if (this.magnets) for (const q of this.magnets) battle.obstacles.push({ id: battle.newId(), kind: 'magnet', x: q.x, y: q.y, r: q.r, hp: Infinity, ttl: Infinity });
+    this.carts = [];     // vagonetas en marcha: { y, dir, x, warn, hit }
+    this.sporeT = Math.random() * 100;   // (las nubes empiezan en un punto distinto cada combate)
     if (this.bumpers) for (const p of this.bumpers) battle.obstacles.push({ id: battle.newId(), kind: 'bumper', x: p.x, y: p.y, r: p.r, hp: Infinity, ttl: Infinity });
     // Muros invisibles: obstáculos que no se dibujan (el cliente los recibe para chocar con ellos)
     for (const g of this.marks.ghost) battle.obstacles.push({ id: battle.newId(), ...g, hp: Infinity, ttl: Infinity, kind: 'ghost' });
@@ -119,6 +127,14 @@ class Arena {
 
   // Gravedad: mientras late el pozo, los proyectiles se curvan hacia el centro (sin ganar velocidad)
   bend(p, dt) {
+    // Imanes: cerca de uno, el proyectil se curva hacia él (sin ganar velocidad)
+    if (this.magnets && !p.wide) for (const q of this.magnets) {
+      const dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy) || 1;
+      if (d > q.R) continue;
+      const sp = Math.hypot(p.vx, p.vy), k = this.m.magnets.force * (1 - d / q.R);
+      p.vx += dx / d * k * dt; p.vy += dy / d * k * dt;
+      const f = sp / (Math.hypot(p.vx, p.vy) || 1); p.vx *= f; p.vy *= f;
+    }
     if (!this.pull || p.wide) return;
     const sp = Math.hypot(p.vx, p.vy), dx = CX - p.x, dy = CY - p.y, d = Math.hypot(dx, dy) || 1;
     p.vx += dx / d * this.pull * 9 * dt; p.vy += dy / d * this.pull * 9 * dt;
@@ -469,6 +485,48 @@ class Arena {
         }
       }
     }
+    // Manos fantasma: aviso bajo cada Pokémon; si no se aparta, lo atrapan (a los de tipo fantasma no)
+    if (m.hands && this.tick('hands', dt)) {
+      const o = m.hands;
+      for (const s of b.sides) {
+        if (b.mon(s).fainted || typesOf(b.mon(s)).includes('fantasma')) continue;
+        this.warnAt(s.x, s.y, o.r, o.warn, 'fantasma', p => {
+          b.ev({ k: 'grab', x: Math.round(p.x), y: Math.round(p.y) });
+          for (const t of b.sides) if (Math.hypot(t.x - p.x, t.y - p.y) < p.r + b.rad(t) * 0.5 && !typesOf(b.mon(t)).includes('fantasma')) b.hazard(t, o.dmg, 'fantasma', { stun: o.stun });
+        });
+      }
+    }
+    // Vagonetas: aviso en una vía (la IA la ve como peligro) y luego cruza; a quien pilla, daño y lo arrastra
+    if (m.carts && this.tick('carts', dt)) {
+      const o = m.carts, rails = S.cartRails(o), y = rails[Math.floor(Math.random() * rails.length)], dir = Math.random() < 0.5 ? 1 : -1;
+      const cart = { y, dir, x: dir > 0 ? -40 : S.ARENA.w + 40, warn: o.warn, hit: new Set() };
+      this.carts.push(cart);
+      b.ev({ k: 'rail', y: Math.round(y), d: o.warn, dir });
+    }
+    for (const c of this.carts) {
+      if ((c.warn -= dt) > 0) continue;
+      c.x += c.dir * m.carts.speed * dt;
+      for (const s of b.sides) {
+        if (c.hit.has(s.idx) || b.mon(s).fainted || s.invuln > 0 || s.forced > 0 || s.dash || b.state !== 'fight') continue;
+        if (Math.abs(s.y - c.y) < 22 + b.rad(s) && Math.abs(s.x - c.x) < 30 + b.rad(s)) {
+          c.hit.add(s.idx);
+          b.hazard(s, m.carts.dmg, 'roca', { stun: 0.3 });
+          const ka = Math.atan2((s.y > c.y ? 1 : -1) * 0.5, c.dir);
+          if (s.prot < 0) { s.kb = { vx: Math.cos(ka), vy: Math.sin(ka), speed: m.carts.knock / 0.25, t: 0.25 }; s.wind = null; }
+        }
+      }
+    }
+    this.carts = this.carts.filter(c => c.x > -60 && c.x < S.ARENA.w + 60);
+    // Esporas: nubes a la deriva; dentro, adormecen (frenan). Ni a bicho, planta ni voladores, ni por el aire
+    if (m.spores) {
+      this.sporeT += dt;
+      this.spores = S.sporeClouds(m.spores, this.sporeT);
+      for (const s of b.sides) {
+        const tys = typesOf(b.mon(s));
+        if (s.invuln > 0 || tys.includes('bicho') || tys.includes('planta') || tys.includes('volador')) continue;
+        if (this.spores.some(c => Math.hypot(s.x - c.x, s.y - c.y) < c.r)) s.slow = Math.max(s.slow, m.spores.slow);
+      }
+    }
     // Flores: las rosas curan poco a poco; las moradas adormecen (ralentizan; a los de tipo planta no)
     if (this.flowers) {
       const o = m.flowers;
@@ -504,6 +562,8 @@ class Arena {
     if (this.m.beam) o.ba = +this.beamA.toFixed(3);
     if (this.pull) o.gv = this.pull;
     if (this.pads) o.hl = this.pads.map(p => (p.cd > 0 ? -1 : +p.c.toFixed(2)));
+    if (this.carts.some(c => c.warn <= 0)) o.ct = this.carts.filter(c => c.warn <= 0).map(c => [Math.round(c.x), Math.round(c.y), c.dir]);
+    if (this.spores) o.sp = this.spores.map(c => [Math.round(c.x), Math.round(c.y)]);
     return Object.keys(o).length ? o : undefined;
   }
 }

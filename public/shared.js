@@ -132,6 +132,12 @@
   // Arenas movedizas y parachoques: lejos de la línea de salida (los Pokémon empiezan en (140, 300) y (820, 300))
   const sandZones = o => [[W * 0.3125, H * 0.3], [W * 0.6875, H * 0.7], [W * 0.6875, H * 0.3], [W * 0.3125, H * 0.7]].slice(0, o.n || 4).map(([x, y]) => ({ x, y, r: o.r || 55 }));
   const bumperSpots = o => [[W * 0.5, H * 0.5], [W * 0.344, H * 0.3], [W * 0.656, H * 0.3], [W * 0.344, H * 0.7], [W * 0.656, H * 0.7]].slice(0, o.n || 5).map(([x, y]) => ({ x, y, r: o.r || 22 }));
+  // Imanes (arriba y abajo, lejos de la salida), vías de las vagonetas (filas sin rocas) y nubes de esporas a la deriva
+  // (su sitio sale del tiempo: el servidor lo manda en cada instantánea)
+  const magnetSpots = o => [[W * 0.5, H * 0.1], [W * 0.5, H * 0.9]].map(([x, y]) => ({ x, y, r: 20, R: o.R || 210 }));
+  const cartRails = o => (o.rows || [4, 10]).map(row => row * CELL + CELL / 2);
+  const sporeClouds = (o, t) => Array.from({ length: o.n || 3 }, (_, k) => ({
+    x: W / 2 + W * 0.24 * Math.sin(0.09 * t + k * 2.1), y: H / 2 + H * 0.3 * Math.sin(0.13 * t + k * 1.3 + 0.7), r: o.r || 70 }));
   // Espejos: segmentos [x1, y1, x2, y2] que hacen rebotar los proyectiles
   const mirrorSegs = o => o.list || [[W * 0.5 - 60, H * 0.22, W * 0.5 + 60, H * 0.22], [W * 0.5 - 60, H * 0.78, W * 0.5 + 60, H * 0.78],
     [W * 0.3, H * 0.4, W * 0.3, H * 0.6], [W * 0.7, H * 0.4, W * 0.7, H * 0.6]];
@@ -223,7 +229,7 @@
 
   parseMap.flowOf = name => { parseMap(name); return parsed.get(name).flow; };
   const api = { TICK, SPEED, DT, ARENA, RADIUS, CELL, COLS, ROWS, ROCK_R, T, F, PERMANENT, clamp, cellIndex, cellCenter, hitboxOf,
-    parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, sandZones, bumperSpots, pushOut, stepMove, arenaStep, speedOf, monStats };
+    parseMap, rowsOf, hashStr, mechOf, mechFor, fogZones, pillarSpots, mirrorSegs, sandZones, bumperSpots, magnetSpots, cartRails, sporeClouds, pushOut, stepMove, arenaStep, speedOf, monStats };
   if (node) module.exports = api;
   else root.Shared = api;
 })(this);

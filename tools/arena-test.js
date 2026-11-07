@@ -495,6 +495,65 @@ check('lo justo de las mecánicas nuevas: la grieta no quema a los de fuego y na
   assert(!out2.some(e => e.k === 'sink') && !(p.slow > 0), 'invulnerable (en el aire), ni frena ni se hunde');
 });
 
+check('manos fantasma: avisan bajo el Pokémon y, si no se aparta, lo atrapan (a los fantasma ni les avisan)', () => {
+  const grab = (dex, move) => {
+    const bt = battle('g-fantasma', [{ dex, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+    const [a] = bt.sides, hp0 = bt.mon(a).hp;
+    place(a, 300, 300); place(bt.sides[1], 800, 300); a.invuln = 0;
+    bt.arena.timers.hands = 0; bt.arena.update(0.01);
+    const warned = out.some(e => e.k === 'warn' && e.ty === 'fantasma' && Math.hypot(e.x - 300, e.y - 300) < 1);
+    if (dex !== 94) assert(warned, 'aviso bajo sus pies');
+    else assert(!warned, 'a un fantasma ni siquiera le sale el aviso (no le hace nada)');
+    if (move) place(a, 420, 300);
+    for (let i = 0; i < 25; i++) bt.arena.update(0.05);
+    return { hurt: bt.mon(a).hp < hp0, stun: a.stun > 0 };
+  };
+  const still = grab(25), away = grab(25, true), ghost = grab(94);
+  assert(still.hurt && still.stun, 'quieto, lo atrapan: daño y aturdido');
+  assert(!away.hurt, 'si se aparta, nada');
+  assert(!ghost.hurt, 'a un fantasma no lo atrapan');
+});
+
+check('imanes (faro): curvan hacia ellos los proyectiles que pasan cerca, sin cambiarles la velocidad', () => {
+  const bt = battle('g-acero'), [a] = bt.sides, q = S.magnetSpots(D.ARENAS['g-acero'].mech.magnets)[0];
+  bt.obstacles = bt.obstacles.filter(o => o.kind === 'magnet');
+  const p = { id: 996, owner: a, m: { ...D.MOVES.impactrueno }, mk: 'impactrueno', x: q.x - 200, y: q.y + 120, vx: 600, vy: 0, left: 600, r: D.MOVES.impactrueno.radius };
+  bt.projectiles.push(p);
+  for (let i = 0; i < 10; i++) bt.updateProjectiles(S.DT);
+  assert(p.vy < -60 && Math.abs(Math.hypot(p.vx, p.vy) - 600) < 2, `se curva hacia el imán (vy ${Math.round(p.vy)}) sin ganar ni perder velocidad`);
+  const far = { ...p, id: 995, x: 100, y: 300, vx: 600, vy: 0 };
+  bt.projectiles.push(far);
+  for (let i = 0; i < 6; i++) bt.updateProjectiles(S.DT);
+  assert(far.vy === 0, 'lejos de los imanes, recto');
+});
+
+check('vagonetas (cantera): avisan en la vía, cruzan, y a quien pillan le hacen daño y lo arrastran', () => {
+  const bt = battle('g-roca', [{ dex: 25, level: 30 }], [{ dex: 74, level: 30 }]), out = evs(bt);
+  const [a] = bt.sides, hp0 = bt.mon(a).hp;
+  bt.arena.timers.rockfall = 999; bt.arena.timers.carts = 0; bt.arena.update(0.01);
+  const r = out.find(e => e.k === 'rail');
+  assert(r && bt.arena.carts.length === 1, 'aviso en la vía (y la vagoneta, esperando a cruzar)');
+  place(a, 480, r.y); place(bt.sides[1], 480, 40); a.invuln = 0;
+  for (let i = 0; i < 70; i++) bt.arena.update(0.05);
+  assert(bt.mon(a).hp < hp0 && a.kb && Math.sign(a.kb.vx) === r.dir, 'la vagoneta le hace daño y lo arrastra en su sentido');
+  for (let i = 0; i < 40; i++) bt.arena.update(0.05);
+  assert(!bt.arena.carts.length, 'y sale de la arena');
+});
+
+check('esporas (invernadero): las nubes van a la deriva; dentro, adormecen (no a bicho ni planta)', () => {
+  const bt = battle('g-bicho', [{ dex: 25, level: 30 }], [{ dex: 12, level: 30 }]);
+  const [a, f] = bt.sides;
+  bt.arena.update(0.05);
+  const c0 = bt.arena.spores[0];
+  place(a, c0.x, c0.y); place(f, c0.x, c0.y); a.slow = f.slow = 0;
+  bt.arena.update(0.05);
+  assert(a.slow > 0 && !(f.slow > 0), 'dentro, a Pikachu lo frena y a Butterfree (bicho) no');
+  const x0 = bt.arena.spores[0].x;
+  for (let i = 0; i < 100; i++) bt.arena.update(0.05);
+  assert(Math.abs(bt.arena.spores[0].x - x0) > 20, 'las nubes se mueven');
+  assert(bt.arena.snap().sp.length === 3, 'y el juego recibe dónde están');
+});
+
 check('hielo que se rompe: quieto encima, la casilla pasa a agua y luego vuelve a ser hielo', () => {
   const bt = battle('g-hielo');
   const [a] = bt.sides, i = bt.terrain.indexOf(T.ICE), c = S.cellCenter(i);

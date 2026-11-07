@@ -18,7 +18,11 @@ module.exports = async ({ page, ok }) => {
     // (en las arenas a oscuras, la luz del Pokémon en el centro, como en combate)
     await page.eval(`window.__app.world.loadMap('${k}', Shared.parseMap('${k}').terrain); window.__app.world.setFocus(Shared.COLS * Shared.CELL / 2, Shared.ROWS * Shared.CELL / 2); true`);
     // (los parachoques son obstáculos del combate: aquí se ponen a mano para que salgan en la foto)
-    await page.eval(`(() => { const m = Shared.mechFor('${k}'); window.__app.world.syncObstacles(m.bumpers ? Shared.bumperSpots(m.bumpers).map((p, i) => ({ id: 9000 + i, x: p.x, y: p.y, r: p.r, k: 'bumper' })) : []); return true; })()`);
+    // (y los imanes; las nubes de esporas, donde estarían a los 20 s de combate)
+    await page.eval(`(() => { const m = Shared.mechFor('${k}'), w = window.__app.world;
+      w.syncObstacles([...(m.bumpers ? Shared.bumperSpots(m.bumpers).map((p, i) => ({ id: 9000 + i, x: p.x, y: p.y, r: p.r, k: 'bumper' })) : []),
+        ...(m.magnets ? Shared.magnetSpots(m.magnets).map((p, i) => ({ id: 9100 + i, x: p.x, y: p.y, r: p.r, k: 'magnet' })) : [])]);
+      w.setArena(m.spores ? { sp: Shared.sporeClouds(m.spores, 20).map(c => [c.x, c.y]) } : null); return true; })()`);
     await new Promise(r => setTimeout(r, 2500));   // modelos del decorado y unos cuantos fotogramas
     await page.shot(`${OUT}/${k}.png`);
   }

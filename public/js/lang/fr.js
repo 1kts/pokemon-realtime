@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': 'Encore plus d\'arènes vivantes',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Plus de mécaniques : des mains qui attrapent dans la Tour spectrale, des aimants qui courbent les tirs au Phare, des wagonnets dans la Grotte et des nuages de spores dans la Serre.',
+    '¡Vagoneta! Sal de la vía que se ilumina': 'Wagonnet ! Sors de la voie qui s\'allume',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': 'Des arènes plus vivantes',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Nouvelles mécaniques : au Volcan le sol se fissure en lave, Arène Verte a des sables mouvants et le Stade des butoirs qui te renvoient, toi et les attaques.',
@@ -1348,7 +1352,7 @@ export default {
 
     // ---------- Arènes ----------
     'Cueva de Plateada': 'Grotte d\'Argenta',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': 'Des rochers tombent du plafond : sors des marques avant qu\'ils n\'arrivent. Les rochers tombés servent d\'abri un moment.',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': 'Des rochers tombent du plafond : sors des marques avant qu\'ils n\'arrivent. Les rochers tombés servent d\'abri un moment. Quand une voie s\'allume, un wagonnet va passer : sors de là.',
     'Piscina Celeste': 'Piscine d\'Azuria',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': 'La marée monte et descend toutes les quelques secondes. Dans l\'eau tu es mouillé (plus de dégâts Électrik et Glace) et une décharge électrocute tout le bassin.',
     'Central de Carmín': 'Centrale de Carmin sur Mer',
@@ -1367,17 +1371,17 @@ export default {
     'Torre Malva': 'Tour de Mauville',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Des rafales de vent qui te poussent sur le côté. Les types Vol ne sont pas affectés.',
     'Invernadero Azalea': 'Serre d\'Écorcia',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Des toiles qui ralentissent (sauf les types Insecte) et de l\'herbe qui repousse. Le feu les brûle.',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': 'Des toiles qui ralentissent (sauf les types Insecte) et de l\'herbe qui repousse. Le feu les brûle. Les nuages de spores endorment à moitié ceux qui les traversent.',
     'Estadio Trigal': 'Stade de Doublonville',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Dalles de soin : soigne-toi dessus tant qu\'il leur reste de l\'énergie. Ensuite elles mettent un moment à se recharger. Les butoirs repoussent qui les touche, et les attaques à distance aussi.',
     'Torre Iris': 'Tour Carillon',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Obscurité : tu ne vois l\'adversaire que de près ou juste quand il attaque.',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Obscurité : tu ne vois l\'adversaire que de près ou juste quand il attaque. Et des mains sortent du sol : si l\'endroit sous tes pieds est marqué, bouge ou elles t\'attrapent.',
     'Sala Nocturna': 'Salle Nocturne',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': 'Nuit noire : tu ne vois l\'adversaire que de près ou juste quand il attaque.',
     'Cascadas Orquídea': 'Cascades d\'Irisia',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': 'Deux cascades dont le courant t\'emporte. Traverse-les par les ponts de pierre.',
     'Faro Olivo': 'Phare d\'Oliville',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': 'Le faisceau du phare tourne sans arrêt et brûle tout ce qu\'il touche. Les types Acier ne sont pas affectés.',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': 'Le faisceau du phare tourne sans arrêt et brûle tout ce qu\'il touche. Les types Acier ne sont pas affectés. Les aimants courbent les attaques à distance qui passent près d\'eux.',
     'Pista Caoba': 'Patinoire d\'Acajou',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': 'Sol gelé : tu glisses et c\'est dur de freiner. Le feu le fait fondre un moment et les attaques Glace gèlent l\'eau.',
     'Cráter Endrino': 'Cratère d\'Ébènelle',

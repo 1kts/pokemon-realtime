@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': '더 많은 개성 있는 체육관',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': '기믹 추가: 고스트 탑의 붙잡는 손, 등대의 공격을 휘게 하는 자석, 바위 동굴의 광차, 온실의 포자 구름.',
+    '¡Vagoneta! Sal de la vía que se ilumina': '광차다! 불이 들어온 선로에서 비켜요',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': '더 개성 있는 체육관',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': '새 기믹: 화산에선 땅이 갈라져 용암이 되고, 상록 아레나엔 유사가, 경기장엔 나와 공격을 튕겨내는 범퍼가 있어요.',
@@ -1357,7 +1361,7 @@ export default {
 
     // ---------- 배틀 무대 ----------
     'Cueva de Plateada': '회색 동굴',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': '천장에서 바위가 떨어진다: 떨어지기 전에 표시에서 벗어나자. 떨어진 바위는 잠시 엄폐물이 된다.',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': '천장에서 바위가 떨어진다: 떨어지기 전에 표시에서 벗어나자. 떨어진 바위는 잠시 엄폐물이 된다. 선로에 불이 들어오면 광차가 지나가요: 비켜서세요.',
     'Piscina Celeste': '블루 수영장',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': '몇 초마다 물이 들어오고 빠진다. 물속에서는 젖어서(전기·얼음 대미지 증가), 방전하면 수영장 전체에 전기가 흐른다.',
     'Central de Carmín': '갈색 발전소',
@@ -1376,17 +1380,17 @@ export default {
     'Torre Malva': '도라지 탑',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': '옆으로 밀어내는 돌풍. 비행 타입은 괜찮다.',
     'Invernadero Azalea': '고동 온실',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': '움직임을 늦추는 거미줄(벌레 타입 제외)과 다시 자라는 풀. 불로 태울 수 있다.',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': '움직임을 늦추는 거미줄(벌레 타입 제외)과 다시 자라는 풀. 불로 태울 수 있다. 포자 구름을 지나가면 졸려요.',
     'Estadio Trigal': '금빛 스타디움',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': '회복 타일: 에너지가 남아 있는 동안 위에서 회복해요. 그 후엔 재충전에 시간이 걸려요. 범퍼는 닿은 상대를 튕겨내고, 원거리 공격도 튕겨내요.',
     'Torre Iris': '방울탑',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': '어둠: 상대는 가까이 있거나 공격할 때만 보인다.',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': '어둠: 상대는 가까이 있거나 공격할 때만 보인다. 땅에서 손도 나와요: 발밑이 표시되면 피하세요, 아니면 잡혀요.',
     'Sala Nocturna': '밤의 홀',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': '칠흑 같은 밤: 상대는 가까이 있거나 공격할 때만 보인다.',
     'Cascadas Orquídea': '진청 폭포',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': '물살에 휩쓸리는 두 개의 폭포. 돌다리로 건너자.',
     'Faro Olivo': '담청 등대',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': '등대의 빛이 쉬지 않고 돌며, 닿으면 화상을 입힌다. 강철 타입은 괜찮다.',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': '등대의 빛이 쉬지 않고 돌며, 닿으면 화상을 입힌다. 강철 타입은 괜찮다. 자석은 가까이 지나가는 원거리 공격을 휘게 해요.',
     'Pista Caoba': '황토 스케이트장',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': '얼어붙은 바닥: 미끄러워서 멈추기 어렵다. 불로 잠시 녹이고, 얼음 기술로 물을 얼릴 수 있다.',
     'Cráter Endrino': '검은먹 분화구',

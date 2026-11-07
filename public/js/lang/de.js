@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.0 ----------
+    'Más gimnasios con gracia': 'Noch mehr Arenen mit Pfiff',
+    'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Mehr Mechaniken: greifende Hände im Geisterturm, Magnete, die Schüsse am Leuchtturm ablenken, Loren in der Felshöhle und Sporenwolken im Gewächshaus.',
+    '¡Vagoneta! Sal de la vía que se ilumina': 'Lore! Runter vom Gleis, das aufleuchtet',
     // ---------- Novedades v0.45.0 ----------
     'Gimnasios con más gracia': 'Arenen mit mehr Pfiff',
     'Mecánicas nuevas: en el Volcán el suelo se agrieta en lava, en Arena Verde hay arenas movedizas y en el Estadio, parachoques que rebotan a ti y a los ataques.': 'Neue Mechaniken: Im Vulkan reißt der Boden zu Lava auf, Vertania hat Treibsand und das Stadion Prallpilze, die dich und Angriffe abprallen lassen.',
@@ -1356,7 +1360,7 @@ export default {
 
     // ---------- Arenen ----------
     'Cueva de Plateada': 'Marmoria-Höhle',
-    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato.': 'Felsen fallen von der Decke: Verlass die Markierungen, bevor sie einschlagen. Gefallene Felsen bieten eine Weile Deckung.',
+    'Caen rocas del techo: sal de las marcas antes de que lleguen. Las rocas caídas sirven de cobertura un rato. Cuando una vía se ilumina, va a pasar una vagoneta: sal de ella.': 'Felsen fallen von der Decke: Verlass die Markierungen, bevor sie einschlagen. Gefallene Felsen bieten eine Weile Deckung. Leuchtet ein Gleis auf, kommt gleich eine Lore: runter da.',
     'Piscina Celeste': 'Azuria-Becken',
     'La marea sube y baja cada pocos segundos. En el agua estás mojado (más daño eléctrico y de hielo) y una descarga electrocuta todo el charco.': 'Die Flut steigt und fällt alle paar Sekunden. Im Wasser bist du durchnässt (mehr Elektro- und Eisschaden), und ein Stromschlag trifft das ganze Becken.',
     'Central de Carmín': 'Orania-Kraftwerk',
@@ -1375,17 +1379,17 @@ export default {
     'Torre Malva': 'Viola-Turm',
     'Ráfagas de viento que te arrastran hacia un lado. A los voladores no les afecta.': 'Windstöße, die dich zur Seite schieben. Flug-Pokémon sind nicht betroffen.',
     'Invernadero Azalea': 'Azalea-Gewächshaus',
-    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema.': 'Spinnennetze, die verlangsamen (außer Käfer-Pokémon), und Gras, das nachwächst. Feuer verbrennt sie.',
+    'Telarañas que ralentizan (menos a los de tipo bicho) y hierba que vuelve a crecer. El fuego las quema. Las nubes de esporas adormecen a quien las cruza.': 'Spinnennetze, die verlangsamen (außer Käfer-Pokémon), und Gras, das nachwächst. Feuer verbrennt sie. Sporenwolken machen jeden schläfrig, der sie durchquert.',
     'Estadio Trigal': 'Dukatia-Stadion',
     'Baldosas de curación: cúrate encima mientras les quede energía. Luego tardan en recargarse. Los parachoques rebotan a quien los toca, y también los ataques a distancia.': 'Heilfelder: Heile dich darauf, solange sie Energie haben. Danach brauchen sie eine Weile zum Aufladen. Prallpilze stoßen jeden ab, der sie berührt, und auch Fernangriffe.',
     'Torre Iris': 'Turmruine',
-    'Oscuridad: solo ves al rival de cerca o justo cuando ataca.': 'Dunkelheit: Du siehst den Gegner nur aus der Nähe oder wenn er angreift.',
+    'Oscuridad: solo ves al rival de cerca o justo cuando ataca. Y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Dunkelheit: Du siehst den Gegner nur aus der Nähe oder wenn er angreift. Und aus dem Boden kommen Hände: Wird die Stelle unter dir markiert, geh weg, sonst packen sie dich.',
     'Sala Nocturna': 'Nachthalle',
     'Noche cerrada: solo ves al rival de cerca o justo cuando ataca.': 'Stockfinstere Nacht: Du siehst den Gegner nur aus der Nähe oder wenn er angreift.',
     'Cascadas Orquídea': 'Anemonia-Wasserfälle',
     'Dos cascadas con corriente que te arrastran. Crúzalas por los puentes de piedra.': 'Zwei Wasserfälle mit Strömung, die dich mitreißt. Überquere sie über die Steinbrücken.',
     'Faro Olivo': 'Oliviana-Leuchtturm',
-    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta.': 'Der Strahl des Leuchtturms dreht sich ständig und verbrennt alle, die er trifft. Stahl-Pokémon sind nicht betroffen.',
+    'El haz del faro gira sin parar y quema al que alcanza. A los de tipo acero no les afecta. Los imanes curvan los ataques a distancia que pasan cerca.': 'Der Strahl des Leuchtturms dreht sich ständig und verbrennt alle, die er trifft. Stahl-Pokémon sind nicht betroffen. Magnete lenken Fernangriffe ab, die nah vorbeifliegen.',
     'Pista Caoba': 'Mahagonia-Eisbahn',
     'Suelo helado: resbalas y cuesta frenar. El fuego lo derrite un rato y los ataques de hielo congelan el agua.': 'Vereister Boden: Du rutschst und bremst schwer. Feuer taut ihn eine Weile auf, Eis-Attacken lassen Wasser gefrieren.',
     'Cráter Endrino': 'Ebenholz-Krater',
