@@ -1,7 +1,7 @@
 {
- "fecha": "2026-11-07",
- "cazadas": 117,
- "total": 117,
+ "fecha": "2026-11-08",
+ "cazadas": 118,
+ "total": 118,
  "escapadas": [],
  "mutaciones": {
   "camino-desafiar-mudo": {
@@ -827,6 +827,13 @@
     "tools/arena-test.js"
    ],
    "motivo": "arena-test.js: AssertionError [ERR_ASSERTION]: dentro, a Pikachu lo frena y a Butterfree (bicho) no"
+  },
+  "campeon-sin-vagonetas": {
+   "resultado": "cazada",
+   "por": [
+    "tests/e2e/alto-mando-mecanicas.e2e.js"
+   ],
+   "motivo": "alto-mando-mecanicas.e2e.js: ✗ en la Sala del Campeón, la vagoneta avisa en pantalla antes de cruzar"
   }
  }
 }

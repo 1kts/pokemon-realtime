@@ -903,7 +903,7 @@
         '.iiiiiiiiiiiiiiiiiiiiii.',
         '..iiiiiiiiiiiiiiiiiiii..',
       ] },
-    'e-bruno': { name: 'Dojo de Roca', desc: 'Alto Mando. Terremotos seguidos y rocas que caen del techo.', mech: { quake: { every: 6.5, warn: 0.9, speed: 380, dmg: 0.1, slow: 1.4 }, rockfall: { every: 3.2, warn: 1, r: 48, dmg: 0.08, ttl: 6 } },
+    'e-bruno': { name: 'Dojo de Roca', desc: 'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.', mech: { quake: { every: 6.5, warn: 0.9, speed: 380, dmg: 0.1, slow: 1.4 }, quicksand: { r: 55, hold: 1.1, dmg: 0.06, slow: 1 } },
       rows: [
         '........................',
         '..o..................o..',
@@ -921,7 +921,7 @@
         '..o..................o..',
         '........................',
       ] },
-    'e-agatha': { name: 'Cripta Espectral', desc: 'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.', mech: { dark: 290, warp: { cd: 1.5 }, toxic: { every: 6, ttl: 6 } },
+    'e-agatha': { name: 'Cripta Espectral', desc: 'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.', mech: { dark: 290, warp: { cd: 1.5 }, hands: { every: 5, warn: 0.9, r: 36, dmg: 0.05, stun: 0.5 } },
       rows: [
         '........................',
         '...o................o...',
@@ -939,7 +939,7 @@
         '...o................o...',
         '........................',
       ] },
-    'e-lance': { name: 'Guarida del Dragón', desc: 'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.', mech: { beam: { speed: 0.7, len: 560, width: 16, dmg: 0.08, ty: 'dragon' }, eruption: { every: 6, warn: 1.1, r: 70, dmg: 0.08 }, wind: { every: 9, warn: 1.1, dur: 2.2, force: 90 } },
+    'e-lance': { name: 'Guarida del Dragón', desc: 'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.', mech: { beam: { speed: 0.7, len: 560, width: 16, dmg: 0.08, ty: 'dragon' }, eruption: { every: 6, warn: 1.1, r: 70, dmg: 0.08 }, fissure: { every: 7, warn: 1.1, r: 60, dmg: 0.06, ttl: 6 } },
       rows: [
         'LLL..................LLL',
         'LL....................LL',
@@ -957,7 +957,7 @@
         'LL....................LL',
         'LLL..................LLL',
       ] },
-    'e-azul': { name: 'Sala del Campeón', desc: 'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.', mech: { shock: { every: 2.8, warn: 0.9, dmg: 0.08, stun: 0.6 }, quake: { every: 9, warn: 1, speed: 360, dmg: 0.09, slow: 1.2 }, heal: { rate: 0.04, drain: 0.3, cd: 15 } },
+    'e-azul': { name: 'Sala del Campeón', desc: 'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.', mech: { shock: { every: 2.8, warn: 0.9, dmg: 0.08, stun: 0.6 }, carts: { every: 9, warn: 1.3, speed: 520, dmg: 0.08, knock: 140, rows: [4, 10] }, heal: { rate: 0.04, drain: 0.3, cd: 15 } },
       rows: [
         '........................',
         '..H..................H..',
@@ -993,7 +993,7 @@
         '....b..............a....',
         '........................',
       ] },
-    'e-kogaj': { name: 'Dojo Ninja', desc: 'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.', mech: { dark: 340, toxic: { every: 3.5, ttl: 9 } },
+    'e-kogaj': { name: 'Dojo Ninja', desc: 'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.', mech: { dark: 340, spores: { n: 4, r: 70, slow: 0.35 } },
       rows: [
         '........................',
         '..pp....x......x....pp..',
@@ -1029,7 +1029,7 @@
         '......vv........^^......',
         '......vv........^^......',
       ] },
-    'e-karen': { name: 'Sala de las Sombras', desc: 'Alto Mando. Oscuridad y emboscadas desde las sombras.', mech: { dark: 290, rockfall: { every: 3, warn: 0.9, r: 46, dmg: 0.08, ttl: 5, ty: 'siniestro' } },
+    'e-karen': { name: 'Sala de las Sombras', desc: 'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.', mech: { dark: 290, rockfall: { every: 3, warn: 0.9, r: 46, dmg: 0.08, ttl: 5, ty: 'siniestro' }, magnets: { force: 1800, R: 210 } },
       rows: [
         '........................',
         '...##..............##...',

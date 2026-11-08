@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': '四天王焕新',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': '四天王有了新机关：菊子那里有抓人的手，梨花那里有磁铁，希巴用流沙代替落石，忍者道场有孢子。',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': '阿渡把狂风换成了会裂出熔岩的地面，冠军之间的地震换成了矿车：快离开亮起的轨道。',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': '更多有特色的道馆',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': '更多机制：幽灵塔里会抓人的手、灯塔里让攻击弯曲的磁铁、岩石洞窟里的矿车，以及温室里的孢子云。',
@@ -1481,21 +1485,21 @@ export default {
     'Cámara Glacial': '冰川之间',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': '四天王。结冰的地面、从天花板落下的冰柱，以及会把你吹走的暴风雪。',
     'Dojo de Roca': '岩石道场',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': '四天王。接连不断的地震和从天花板落下的岩石。',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': '四天王。接连不断的地震和流沙：会减速，站着不动就会陷下去。',
     'Cripta Espectral': '幽灵墓穴',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': '四天王。一片黑暗，有传送点和不断扩散的毒水洼。',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': '四天王。一片黑暗，有传送点，地面还会伸出手来：脚下出现标记时快躲开，不然会被抓住。',
     'Guarida del Dragón': '龙之巢穴',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': '四天王。熔岩环、从中心旋转的龙之吐息、喷发和阵风。',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': '四天王。熔岩环、从中心旋转的龙之吐息、喷发，还有会开裂的地面：出现标记的地方会喷出一阵熔岩。',
     'Sala del Campeón': '冠军大厅',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': '冠军。中央的电击地板、地震以及角落里的回复地砖。',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': '冠军。中央有电击板，轨道亮起时会有矿车驶过，四角有回复地砖。',
     'Sala Psíquica': '超能力大厅',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': '四天王。传送点和旋转的超能光束，被击中会眩晕。',
     'Dojo Ninja': '忍者道场',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': '四天王。昏暗中有看不见的墙壁和迅速扩散的毒水洼。',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': '四天王。昏暗、隐形墙、毒水洼，还有穿过就会犯困的孢子云。',
     'Templo de las Cascadas': '瀑布神殿',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': '四天王。水流湍急的瀑布和地震。',
     'Sala de las Sombras': '暗影大厅',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': '四天王。黑暗之中，有来自阴影的伏击。',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': '四天王。黑暗、来自阴影的伏击，还有会让附近经过的远程攻击拐弯的磁铁。',
     'Cumbre del Dragón': '龙之巅',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': '冠军。熔岩、不断的喷发、狂风和地震。',
     'Rutas, práctica, clasificatoria y Torre': '道路、练习、排位赛和对战塔',

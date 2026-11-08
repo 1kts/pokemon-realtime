@@ -4,6 +4,13 @@
 (function (root) {
   const CHANGELOG = [
     {
+      v: '0.46.1', date: '2026-11-08', title: 'Alto Mando renovado',
+      items: [
+        ['cambio', 'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.'],
+        ['cambio', 'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.'],
+      ],
+    },
+    {
       v: '0.46.0', date: '2026-11-07', title: 'Más gimnasios con gracia',
       items: [
         ['nuevo', 'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.'],

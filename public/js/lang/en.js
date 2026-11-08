@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': 'Elite Four revamped',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': 'The Elite Four get new mechanics: grabbing hands with Agatha, magnets with Karen, quicksand instead of rocks with Bruno, and spores in the Ninja Dojo.',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': 'Lance swaps the gusts for a floor that cracks into lava, and in the Champion\'s Room the earthquakes make way for mine carts: get off the track that lights up.',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': 'More gyms with flair',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'More mechanics: grabbing hands in the ghost Tower, magnets that bend shots at the Lighthouse, mine carts in the rock Cave and spore clouds in the Greenhouse.',
@@ -1233,21 +1237,21 @@ export default {
     'Cámara Glacial': 'Glacial Chamber',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': 'Elite Four. Icy floor, icicles falling from the ceiling and blizzards that drag you along.',
     'Dojo de Roca': 'Rock Dojo',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': 'Elite Four. Back-to-back earthquakes and rocks falling from the ceiling.',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': 'Elite Four. Back-to-back earthquakes and quicksand: it slows you down, and if you stand still in it, you sink.',
     'Cripta Espectral': 'Spectral Crypt',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': 'Elite Four. In the dark, with teleporters and spreading toxic puddles.',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Elite Four. In the dark, with teleporters, and hands come out of the ground: if the spot under your feet gets marked, move or they grab you.',
     'Guarida del Dragón': 'Dragon\'s Lair',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': 'Elite Four. A ring of lava, dragon breath sweeping from the center, eruptions and gusts.',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': 'Elite Four. A ring of lava, dragon breath spinning from the center, eruptions and a floor that cracks: where it gets marked, lava bursts out for a while.',
     'Sala del Campeón': 'Champion\'s Hall',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': 'Champion. Electric plates in the middle, earthquakes and healing tiles in the corners.',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': 'Champion. Electric plates in the center, mine carts that cross when a track lights up, and healing tiles in the corners.',
     'Sala Psíquica': 'Psychic Hall',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': 'Elite Four. Teleporters and a spinning psychic beam that stuns.',
     'Dojo Ninja': 'Ninja Dojo',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': 'Elite Four. Gloom, invisible walls and toxic puddles that spread fast.',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': 'Elite Four. Gloom, invisible walls, toxic puddles and spore clouds that make anyone who crosses them drowsy.',
     'Templo de las Cascadas': 'Waterfall Temple',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': 'Elite Four. Waterfalls with a strong current and earthquakes.',
     'Sala de las Sombras': 'Hall of Shadows',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': 'Elite Four. Darkness and ambushes from the shadows.',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': 'Elite Four. Darkness, ambushes from the shadows, and magnets that bend ranged attacks passing close by.',
     'Cumbre del Dragón': 'Dragon\'s Summit',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'Champion. Lava, nonstop eruptions, gales and earthquakes.',
     'Rutas, práctica, clasificatoria y Torre': 'Routes, practice, ranked and Tower',

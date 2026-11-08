@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': 'Conseil 4 revisité',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': 'Le Conseil 4 a de nouvelles mécaniques : des mains qui attrapent chez Agatha, des aimants chez Marion, des sables mouvants au lieu des rochers chez Aldo et des spores au Dojo Ninja.',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': 'Peter remplace les rafales par un sol qui se fissure en lave, et dans la Salle du Maître les séismes laissent place aux wagonnets : quitte la voie qui s\'allume.',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': 'Encore plus d\'arènes vivantes',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Plus de mécaniques : des mains qui attrapent dans la Tour spectrale, des aimants qui courbent les tirs au Phare, des wagonnets dans la Grotte et des nuages de spores dans la Serre.',
@@ -1389,21 +1393,21 @@ export default {
     'Cámara Glacial': 'Chambre Glaciale',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': 'Conseil 4. Sol gelé, stalactites de glace qui tombent du plafond et blizzards qui t\'emportent.',
     'Dojo de Roca': 'Dojo de Roche',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': 'Conseil 4. Séismes à la chaîne et rochers qui tombent du plafond.',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': 'Conseil 4. Séismes à répétition et sables mouvants : ils te ralentissent et, si tu restes immobile dedans, tu t\'enfonces.',
     'Cripta Espectral': 'Crypte Spectrale',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': 'Conseil 4. Dans le noir, avec des téléporteurs et des flaques toxiques qui s\'étendent.',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Conseil 4. Dans le noir, avec des téléporteurs, et des mains sortent du sol : si l\'endroit sous tes pieds est marqué, bouge ou elles t\'attrapent.',
     'Guarida del Dragón': 'Repaire du Dragon',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': 'Conseil 4. Un anneau de lave, un souffle de dragon qui tourne depuis le centre, des éruptions et des rafales.',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': 'Conseil 4. Un anneau de lave, un souffle de dragon qui tourne depuis le centre, des éruptions et un sol qui se fissure : là où c\'est marqué, la lave jaillit un moment.',
     'Sala del Campeón': 'Salle du Maître',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': 'Maître. Dalles électriques au centre, séismes et dalles de soin dans les coins.',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': 'Maître. Plaques électriques au centre, wagonnets qui passent quand une voie s\'allume, et dalles de soin dans les coins.',
     'Sala Psíquica': 'Salle Psychique',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': 'Conseil 4. Des téléporteurs et un faisceau psychique qui tourne et étourdit.',
     'Dojo Ninja': 'Dojo Ninja',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': 'Conseil 4. Pénombre, murs invisibles et flaques toxiques qui s\'étendent vite.',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': 'Conseil 4. Pénombre, murs invisibles, flaques toxiques et nuages de spores qui endorment ceux qui les traversent.',
     'Templo de las Cascadas': 'Temple des Cascades',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': 'Conseil 4. Des cascades au fort courant et des séismes.',
     'Sala de las Sombras': 'Salle des Ombres',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': 'Conseil 4. Obscurité et embuscades depuis les ombres.',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': 'Conseil 4. Obscurité, embuscades depuis les ombres et aimants qui courbent les attaques à distance qui passent près d\'eux.',
     'Cumbre del Dragón': 'Sommet du Dragon',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'Maître. Lave, éruptions incessantes, bourrasques et séismes.',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'Son équipe est élevée avec soin : IV parfaits et entraînement dans toutes les statistiques.',

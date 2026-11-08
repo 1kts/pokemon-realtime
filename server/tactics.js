@@ -27,7 +27,7 @@ const LEADER_PLAYS = {
   brock: ['trinchera', 'cerco'], misty: ['cerco', 'acoso'], surge: ['cerco', 'acoso'], erika: ['emboscada', 'acoso'],
   koga: ['refugio', 'emboscada'], sabrina: ['teletransporte', 'trinchera'], blaine: ['refugio', 'cerco'], giovanni: ['trinchera', 'acoso'],
   lorelei: ['mojado', 'cerco', 'viento'], bruno: ['trinchera', 'cerco', 'acoso'], agatha: ['teletransporte', 'refugio', 'emboscada'],
-  lance: ['cerco', 'viento', 'trinchera'], azul: ['curacion', 'cerco', 'trinchera'],
+  lance: ['cerco', 'trinchera', 'acoso'], azul: ['curacion', 'cerco', 'trinchera'],
   falkner: ['viento', 'cerco'], bugsy: ['refugio', 'emboscada'], whitney: ['curacion', 'acoso'], morty: ['emboscada', 'acoso'],
   chuck: ['trinchera', 'acoso'], jasmine: ['trinchera', 'acoso'], pryce: ['mojado', 'trinchera', 'acoso'], clair: ['cerco', 'viento'],
   will: ['teletransporte', 'trinchera'], kogaj: ['refugio', 'emboscada'], brunoj: ['trinchera', 'acoso'], karen: ['emboscada', 'cerco'],
@@ -128,11 +128,12 @@ const PLAYS = {
       return true;
     },
   },
-  // El rival está en una zona avisada de la arena (roca que cae, géiser, placa, erupción, rayo): ralentizarlo o
-  // aturdirlo para que no salga a tiempo
+  // El rival está en una zona avisada de la arena (roca que cae, géiser, placa, erupción, rayo, grieta, manos, vía de
+  // la vagoneta) o en unas arenas movedizas: ralentizarlo o aturdirlo para que no salga a tiempo (o se hunda)
   cerco: {
-    fits: (b) => ['rockfall', 'geyser', 'shock', 'eruption', 'storm'].some(k => b.arena.m[k]),
-    when: c => !c.view.hidden && c.b.arena.danger.some(d => d.t > 0.25 && Math.hypot(c.view.x - d.x, c.view.y - d.y) < d.r + 6),
+    fits: (b) => ['rockfall', 'geyser', 'shock', 'eruption', 'storm', 'fissure', 'hands', 'carts'].some(k => b.arena.m[k]) || !!b.arena.sand,
+    when: c => !c.view.hidden && (c.b.arena.danger.some(d => d.t > 0.25 && Math.hypot(c.view.x - d.x, c.view.y - d.y) < d.r + 6)
+      || (c.b.arena.sand || []).some(z => Math.hypot(c.view.x - z.x, c.view.y - z.y) < z.r)),
     act: c => attack(c, m => m.stun || m.slow, m => (m.stun ? 2 : 1) + m.dmg / 100) || attack(c, m => m.kind !== 'dash'),
   },
   // Pelear desde el terreno que a su tipo no le afecta y al rival sí (que tenga que entrar para pegarle), cuando el

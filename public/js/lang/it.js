@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': 'Superquattro rinnovati',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': 'I Superquattro hanno nuove meccaniche: mani che afferrano con Agatha, magneti con Karen, sabbie mobili al posto delle rocce con Bruno e spore nel Dojo Ninja.',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': 'Lance sostituisce le raffiche con un suolo che si crepa in lava, e nella Sala del Campione i terremoti lasciano il posto ai carrelli: esci dal binario che si illumina.',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': 'Altre palestre con carattere',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Altre meccaniche: mani che afferrano nella Torre spettrale, magneti che curvano i colpi al Faro, carrelli nella Grotta di roccia e nuvole di spore nella Serra.',
@@ -1398,21 +1402,21 @@ export default {
     'Cámara Glacial': 'Camera Glaciale',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': 'Superquattro. Pavimento ghiacciato, ghiaccioli che cadono dal soffitto e bufere che ti trascinano.',
     'Dojo de Roca': 'Dojo di Roccia',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': 'Superquattro. Terremoti a ripetizione e rocce che cadono dal soffitto.',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': 'Superquattro. Terremoti a raffica e sabbie mobili: rallentano e, se resti fermo dentro, sprofondi.',
     'Cripta Espectral': 'Cripta Spettrale',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': 'Superquattro. Al buio, con teletrasporti e pozze tossiche che si allargano.',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Superquattro. Al buio, con teletrasporti, e dal terreno escono delle mani: se il punto sotto i tuoi piedi viene segnato, spostati o ti afferrano.',
     'Guarida del Dragón': 'Rifugio del Drago',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': 'Superquattro. Un anello di lava, il soffio del drago che gira dal centro, eruzioni e raffiche.',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': 'Superquattro. Un anello di lava, il soffio del drago che ruota dal centro, eruzioni e un suolo che si crepa: dove viene segnato, esce lava per un po\'.',
     'Sala del Campeón': 'Sala del Campione',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': 'Campione. Piastre elettriche al centro, terremoti e piastrelle curative negli angoli.',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': 'Campione. Piastre elettriche al centro, carrelli che passano quando un binario si illumina e caselle curative negli angoli.',
     'Sala Psíquica': 'Sala Psichica',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': 'Superquattro. Teletrasporti e un fascio psichico che gira e stordisce.',
     'Dojo Ninja': 'Dojo Ninja',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': 'Superquattro. Penombra, muri invisibili e pozze tossiche che si allargano in fretta.',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': 'Superquattro. Penombra, muri invisibili, pozze tossiche e nuvole di spore che intorpidiscono chi le attraversa.',
     'Templo de las Cascadas': 'Tempio delle Cascate',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': 'Superquattro. Cascate con forte corrente e terremoti.',
     'Sala de las Sombras': 'Sala delle Ombre',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': 'Superquattro. Oscurità e imboscate dalle ombre.',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': 'Superquattro. Oscurità, imboscate dalle ombre e magneti che curvano gli attacchi a distanza che passano vicino.',
     'Cumbre del Dragón': 'Vetta del Drago',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'Campione. Lava, eruzioni continue, bufere e terremoti.',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'La sua squadra è allevata con cura: VI perfetti e allenamento in tutte le statistiche.',

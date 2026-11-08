@@ -374,4 +374,7 @@ module.exports = [
   { id: 'esporas-inofensivas', que: 'Las nubes de esporas del invernadero no adormecen',
     archivo: 'server/arena.js', buscar: 'if (this.spores.some(c => Math.hypot(s.x - c.x, s.y - c.y) < c.r)) s.slow = Math.max(s.slow, m.spores.slow);', poner: '',
     tests: ['tools/arena-test.js'] },
+  { id: 'campeon-sin-vagonetas', que: 'La Sala del Campeón no tiene las vagonetas que dice: el Alto Mando sigue con las mecánicas de siempre',
+    archivo: 'public/data.js', buscar: "carts: { every: 9, warn: 1.3, speed: 520, dmg: 0.08, knock: 140, rows: [4, 10] }, heal: { rate: 0.04, drain: 0.3, cd: 15 } },", poner: "heal: { rate: 0.04, drain: 0.3, cd: 15 } },",
+    tests: ['tests/e2e/alto-mando-mecanicas.e2e.js'] },
 ];

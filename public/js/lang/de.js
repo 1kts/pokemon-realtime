@@ -11,6 +11,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': 'Top Vier überarbeitet',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': 'Die Top Vier haben neue Mechaniken: packende Hände bei Agathe, Magnete bei Melanie, Treibsand statt Felsen bei Bruno und Sporen im Ninja-Dojo.',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': 'Siegfried tauscht die Böen gegen einen Boden, der zu Lava aufreißt, und im Saal des Champs weichen die Erdbeben Loren: Runter vom Gleis, das aufleuchtet.',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': 'Noch mehr Arenen mit Pfiff',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'Mehr Mechaniken: greifende Hände im Geisterturm, Magnete, die Schüsse am Leuchtturm ablenken, Loren in der Felshöhle und Sporenwolken im Gewächshaus.',
@@ -1397,21 +1401,21 @@ export default {
     'Cámara Glacial': 'Gletscherkammer',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': 'Top Vier. Vereister Boden, Eiszapfen, die von der Decke fallen, und Schneestürme, die dich mitreißen.',
     'Dojo de Roca': 'Felsen-Dojo',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': 'Top Vier. Erdbeben am laufenden Band und Felsen, die von der Decke fallen.',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': 'Top Vier. Erdbeben am laufenden Band und Treibsand: Er bremst dich, und wenn du darin stehen bleibst, versinkst du.',
     'Cripta Espectral': 'Geistergruft',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': 'Top Vier. Im Dunkeln, mit Teleportern und sich ausbreitenden Giftpfützen.',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': 'Top Vier. Im Dunkeln, mit Teleportern, und aus dem Boden kommen Hände: Wird die Stelle unter dir markiert, geh weg, sonst packen sie dich.',
     'Guarida del Dragón': 'Drachenhort',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': 'Top Vier. Ein Lavaring, Drachenatem, der sich von der Mitte aus dreht, Ausbrüche und Windstöße.',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': 'Top Vier. Ein Lavaring, Drachenatem, der sich von der Mitte aus dreht, Ausbrüche und ein Boden, der aufreißt: Wo er markiert wird, tritt eine Weile Lava aus.',
     'Sala del Campeón': 'Halle des Champs',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': 'Champ. Elektroplatten in der Mitte, Erdbeben und Heilplatten in den Ecken.',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': 'Champion. Elektroplatten in der Mitte, Loren, die fahren, wenn ein Gleis aufleuchtet, und Heilfelder in den Ecken.',
     'Sala Psíquica': 'Psycho-Halle',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': 'Top Vier. Teleporter und ein kreisender Psycho-Strahl, der betäubt.',
     'Dojo Ninja': 'Ninja-Dojo',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': 'Top Vier. Halbdunkel, unsichtbare Wände und Giftpfützen, die sich schnell ausbreiten.',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': 'Top Vier. Halbdunkel, unsichtbare Wände, Giftpfützen und Sporenwolken, die jeden schläfrig machen, der sie durchquert.',
     'Templo de las Cascadas': 'Wasserfalltempel',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': 'Top Vier. Wasserfälle mit starker Strömung und Erdbeben.',
     'Sala de las Sombras': 'Halle der Schatten',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': 'Top Vier. Dunkelheit und Hinterhalte aus den Schatten.',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': 'Top Vier. Dunkelheit, Hinterhalte aus den Schatten und Magnete, die Fernangriffe in ihrer Nähe ablenken.',
     'Cumbre del Dragón': 'Drachengipfel',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'Champ. Lava, ständige Ausbrüche, Stürme und Erdbeben.',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': 'Sein Team ist sorgfältig gezüchtet: perfekte DVs und Training in allen Werten.',

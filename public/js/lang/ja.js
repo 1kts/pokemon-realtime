@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': '四天王リニューアル',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': '四天王に新ギミック：キクコの部屋には捕まえる手、カリンには磁石、シバは岩の代わりに流砂、ニンジャ道場には胞子。',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': 'ワタルは突風の代わりに溶岩に割れる地面、チャンピオンの部屋は地震の代わりにトロッコ：光った線路から離れよう。',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': '個性的なジムがさらに',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': 'ギミック追加：ゴーストの塔で捕まえる手、灯台で攻撃を曲げる磁石、岩の洞窟のトロッコ、温室の胞子の雲。',
@@ -1398,21 +1402,21 @@ export default {
     'Cámara Glacial': '氷の 間',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': '四天王。凍った 床、天井から 落ちる つらら、押し流す 吹雪。',
     'Dojo de Roca': '岩の 道場',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': '四天王。つづけざまの じしんと、天井から 落ちる 岩。',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': '四天王。立て続けの地震と流砂：動きが遅くなり、中で止まっていると沈む。',
     'Cripta Espectral': 'ゴーストの 墓所',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': '四天王。くらやみの中、ワープパネルと 広がる 毒の 水たまり。',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': '四天王。くらやみの中、ワープパネルがあり、地面から手が出てくる：足元にマークが出たら動こう、さもないと捕まる。',
     'Guarida del Dragón': 'ドラゴンの すみか',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': '四天王。溶岩の 輪、中央から 回る ドラゴンの 息、噴火と 突風。',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': '四天王。溶岩の輪、中央から回るドラゴンの息、噴火、そしてひび割れる地面：マークの場所からしばらく溶岩が噴き出す。',
     'Sala del Campeón': 'チャンピオンの 間',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': 'チャンピオン。中央に 電気パネル、じしん、四すみに 回復パネル。',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': 'チャンピオン。中央に電気パネル、線路が光ると通るトロッコ、四隅に回復パネル。',
     'Sala Psíquica': 'エスパーの 間',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': '四天王。ワープパネルと、回って スタンさせる サイコビーム。',
     'Dojo Ninja': '忍者 道場',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': '四天王。うす暗がり、見えない壁、すぐ 広がる 毒の 水たまり。',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': '四天王。うす暗がり、見えない壁、毒の水たまり、そして通ると眠くなる胞子の雲。',
     'Templo de las Cascadas': '滝の 神殿',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': '四天王。流れの 強い 滝と じしん。',
     'Sala de las Sombras': '影の 間',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': '四天王。くらやみと、影からの 不意打ち。',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': '四天王。くらやみと 影からの 奇襲、そして近くを通る遠距離攻撃を曲げる磁石。',
     'Cumbre del Dragón': 'ドラゴンの 頂',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': 'チャンピオン。溶岩、止まらない 噴火、暴風、じしん。',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': '手持ちは しっかり 育てられている：個体値 最高、全能力に 努力値。',

@@ -12,6 +12,10 @@ const CLASSES = {
 
 export default {
   text: {
+    // ---------- Novedades v0.46.1 ----------
+    'Alto Mando renovado': '사천왕 리뉴얼',
+    'El Alto Mando estrena mecánicas: manos que atrapan con Agatha, imanes con Karen, arenas movedizas en vez de rocas con Bruno y esporas en el Dojo Ninja.': '사천왕에 새 기믹: 국화에게는 붙잡는 손, 카렌에게는 자석, 시바는 바위 대신 모래늪, 닌자 도장에는 포자.',
+    'Lance cambia las ráfagas por un suelo que se agrieta en lava, y en la Sala del Campeón los terremotos dejan paso a vagonetas: sal de la vía que se ilumina.': '목호는 돌풍 대신 용암으로 갈라지는 바닥, 챔피언의 방은 지진 대신 광차: 빛나는 선로에서 벗어나.',
     // ---------- Novedades v0.46.0 ----------
     'Más gimnasios con gracia': '더 많은 개성 있는 체육관',
     'Más mecánicas: manos que atrapan en la Torre fantasma, imanes que curvan los disparos en el Faro, vagonetas en la Cueva de roca y nubes de esporas en el Invernadero.': '기믹 추가: 고스트 탑의 붙잡는 손, 등대의 공격을 휘게 하는 자석, 바위 동굴의 광차, 온실의 포자 구름.',
@@ -1398,21 +1402,21 @@ export default {
     'Cámara Glacial': '얼음의 방',
     'Alto Mando. Suelo helado, carámbanos que caen del techo y ventiscas que te arrastran.': '사천왕. 얼어붙은 바닥, 천장에서 떨어지는 고드름, 밀어내는 눈보라.',
     'Dojo de Roca': '바위 도장',
-    'Alto Mando. Terremotos seguidos y rocas que caen del techo.': '사천왕. 연이은 지진과 천장에서 떨어지는 바위.',
+    'Alto Mando. Terremotos seguidos y arenas movedizas: frenan y, si te quedas quieto en ellas, te hunden.': '사천왕. 연이은 지진과 모래늪: 느려지고, 안에서 가만히 있으면 가라앉는다.',
     'Cripta Espectral': '유령의 묘실',
-    'Alto Mando. A oscuras, con teletransportes y charcos tóxicos que se extienden.': '사천왕. 어둠 속에서 순간이동 타일과 번지는 독 웅덩이.',
+    'Alto Mando. A oscuras, con teletransportes, y salen manos del suelo: si se marca bajo tus pies, apártate o te atrapan.': '사천왕. 어둠 속에 순간이동 타일이 있고, 땅에서 손이 나온다: 발밑에 표시가 뜨면 피하지 않으면 붙잡힌다.',
     'Guarida del Dragón': '드래곤의 소굴',
-    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y ráfagas.': '사천왕. 용암 고리, 중앙에서 도는 드래곤의 숨결, 분화와 돌풍.',
+    'Alto Mando. Un anillo de lava, el aliento de dragón que gira desde el centro, erupciones y un suelo que se agrieta: donde se marca, sale lava un rato.': '사천왕. 용암 고리, 중앙에서 회전하는 드래곤의 숨결, 분화, 그리고 갈라지는 바닥: 표시된 곳에서 잠시 용암이 솟는다.',
     'Sala del Campeón': '챔피언의 방',
-    'Campeón. Placas eléctricas en el centro, terremotos y baldosas de curación en las esquinas.': '챔피언. 가운데 전기 패널, 지진, 네 모서리의 회복 타일.',
+    'Campeón. Placas eléctricas en el centro, vagonetas que cruzan cuando una vía se ilumina y baldosas de curación en las esquinas.': '챔피언. 중앙의 전기 발판, 선로가 빛나면 지나가는 광차, 그리고 구석의 회복 타일.',
     'Sala Psíquica': '에스퍼의 방',
     'Alto Mando. Teletransportes y un haz psíquico que gira y aturde.': '사천왕. 순간이동 타일과 빙글빙글 돌며 기절시키는 사이코 빔.',
     'Dojo Ninja': '닌자 도장',
-    'Alto Mando. Penumbra, muros invisibles y charcos tóxicos que se extienden deprisa.': '사천왕. 어스름, 보이지 않는 벽, 빠르게 번지는 독 웅덩이.',
+    'Alto Mando. Penumbra, muros invisibles, charcos tóxicos y nubes de esporas que adormecen a quien las cruza.': '사천왕. 어스름, 보이지 않는 벽, 독 웅덩이, 그리고 지나가면 졸리게 하는 포자 구름.',
     'Templo de las Cascadas': '폭포의 신전',
     'Alto Mando. Cascadas con mucha corriente y terremotos.': '사천왕. 물살이 센 폭포와 지진.',
     'Sala de las Sombras': '그림자의 방',
-    'Alto Mando. Oscuridad y emboscadas desde las sombras.': '사천왕. 어둠과 그림자 속의 기습.',
+    'Alto Mando. Oscuridad, emboscadas desde las sombras e imanes que curvan los ataques a distancia que pasan cerca.': '사천왕. 어둠과 그림자 속 기습, 그리고 근처를 지나는 원거리 공격을 휘게 하는 자석.',
     'Cumbre del Dragón': '드래곤의 정상',
     'Campeón. Lava, erupciones continuas, vendavales y terremotos.': '챔피언. 용암, 끊이지 않는 분화, 폭풍, 지진.',
     'Su equipo está criado a conciencia: IV perfectos y entrenamiento en todas las estadísticas.': '꼼꼼하게 키운 포켓몬: 개체값 최고, 모든 능력치에 노력치.',
